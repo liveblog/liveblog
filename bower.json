@@ -1,6 +1,6 @@
 {
   "name": "liveblog-client",
-  "version": "0.0.0",
+  "version": "3.0.0",
   "homepage": "https://github.com/superdesk/liveblog-client",
   "authors": [
     "Nistor Mihai <Mihai.Nistor@sourcefabric.org>"
@@ -14,6 +14,6 @@
     "tests"
   ],
   "dependencies": {
-    "superdesk": "git@github.com:superdesk/superdesk-client.git#devel"
+    "superdesk": "git@github.com:liveblog/superdesk-client.git#devel"
   }
 }

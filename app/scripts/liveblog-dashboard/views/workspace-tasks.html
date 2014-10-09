@@ -1,0 +1,117 @@
+<div class="subnav">
+
+	<div class="button-stack right-stack">
+        <button class="navbtn" ng-click="create()">
+            <i class="svg-icon-add"></i>
+        </button>
+    </div>
+
+    <div class="button-stack">
+        <div class="navbtn dropdown" sd-user-desks data-desk="selected.desk"></div>
+		
+		<div class="navbtn toggle-list">
+			<ul>
+				<li><a href="">All tasks</a></li>
+				<li class="active"><a href="">Desk 1 tasks</a></li>
+				<li><a href="">Desk 2 tasks</a></li>
+			</ul>
+		</div>
+    
+    </div>
+
+</div>
+
+<section class="main-section workspace-tasks">
+	<div class="preview-layout" ng-class="{closed: !selected.preview}">
+		<div class="list-pane task-list">
+			<header>
+				<div class="switch-view">
+					<button ng-click="wsTasksView = true" ng-class="{active: wsTasksView}">
+						<i class="icon-kanban-view"></i>
+					</button>
+					<button ng-click="wsTasksView = false" ng-class="{active: !wsTasksView}">
+						<i class="icon-list-view"></i>
+					</button>
+				</div>
+				<ul class="nav nav-tabs status-tabs">
+                    <li class="active">
+                        <button class="todo" translate>To do</button>
+                    </li>
+                    <li>
+                        <button class="in-progress" translate>In progress</button>
+                    </li>
+                    <li>
+                        <button class="done" translate>Done</button>
+                    </li>
+                </ul>
+			</header>
+			<div class="content">
+				<div sd-shadow>
+					<div 
+		            	sd-list-view
+		                data-items="tasks._items"
+		                data-select="preview(item)">
+		                <div class="card" ng-class="{selected: item === selected}">
+		                	<span class="marker {{ item.task.status }}"></span>
+							<div class="header">
+								<figure class="avatar small"><img sd-user-avatar data-src="userLookup[item.task.user].picture_url"></figure>
+								<div class="title">{{item.slugline}}</div>
+							</div>
+		                	<div class="info">
+		                		<ul class="task-labels clearfix">
+									<li><i class="icon-desk-time"></i> {{ item.task.due_date | reldate }}</li>
+								</ul>
+		                	</div>
+		                </div>
+		            </div>
+				</div>
+			</div>
+		</div>
+		<div class="preview-pane" sd-task-preview data-item="selected.preview" data-users="userLookup"></div>
+	</div>
+	<div sd-workqueue></div>
+</section>
+
+<div sd-modal-view data-model="newTask" class="create-task responsive-popup split-popup">
+    <div class="modal-header"> <button class="close" ng-click="close()"><i class="icon-close-small"></i></button>
+        <h3 translate>Create New Task</h3>
+    </div>
+
+    <div class="modal-body task-details">
+       <div class="main">
+			<div class="content">
+				<ul class="task-labels clearfix"></ul>
+				<textarea class="title" sd-auto-height ng-model="newTask.slugline" placeholder="{{'Add task title' | translate}}" required></textarea>
+				<textarea class="description" sd-auto-height ng-model="newTask.description_text" placeholder="{{'Add task description' | translate}}"></textarea>
+			</div>
+       </div>
+       <aside class="sidebar">
+       		<header translate>Assignee</header>
+       		<section class="assignee-container">
+				<div sd-assignee-box data-selected-id="newTask.task.user"></div>
+				<div class="assignee-name"><span ng-show="newTask.task.user">{{userLookup[newTask.task.user].display_name}}</span><span ng-hide="newTask.task.user" translate>Unassigned</span></div>
+			</section>
+			<header translate>Action</header>
+			<section>
+				<form>
+					<fieldset>
+						<div class="field">
+							<label>Due date:</label>
+							<input type="date" ng-model="newTask.task.due_date">
+						</div>
+						<div class="field">
+							<label>Due time:</label>
+							<input type="time" ng-model="newTask.task.due_time">
+						</div>
+					</fieldset>
+				</form>
+								
+			</section>
+       </aside>
+    </div>
+
+    <div class="modal-footer">
+        <button class="btn btn-default" ng-click="close()" translate>Cancel</button>
+        <button class="btn btn-primary" ng-disabled="!newTask.task.user || !newTask.slugline" ng-click="save()" translate>Save</button>
+    </div>
+</div>

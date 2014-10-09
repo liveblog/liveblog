@@ -8,17 +8,21 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
     <!-- build:css styles/css/bootstrap.css -->
-    <link rel="stylesheet" href="styles/css/bootstrap.css">
+    <link rel="stylesheet" href="scripts/bower_components/superdesk/app/styles/css/bootstrap.css">
     <!-- endbuild -->
 
     <!-- build:css styles/css/app.css -->
-    <link rel="stylesheet" href="styles/css/app.css">
+    <link rel="stylesheet" href="scripts/bower_components/superdesk/app/styles/css/app.css">
     <!-- endbuild -->
 
     <!-- build:css styles/css/jquery.jcrop.css -->
     <link rel="stylesheet" href="scripts/bower_components/jcrop/css/jquery.Jcrop.css">
     <!-- endbuild -->
 
+    <!-- build:css styles/css/medium-editor.css -->
+    <link rel="stylesheet" href="scripts/bower_components/medium-editor/dist/css/medium-editor.css">
+    <link rel="stylesheet" href="scripts/bower_components/medium-editor/dist/css/themes/flat.css">
+    <!-- endbuild -->
   </head>
   <body>
 
@@ -35,14 +39,10 @@
     <!-- endbuild -->
 
     <!-- build:js scripts/superdesk.js -->
-    <script src="scripts/superdesk/editor/editor.js"></script>
-    <script src="scripts/superdesk/menu/menu.js"></script>
-    <script src="scripts/superdesk/menu/notifications/notifications.js"></script>
-    <script src="scripts/superdesk-authoring/widgets/widgets.js"></script>
-    <script src="scripts/superdesk-authoring/comments/comments.js"></script>
-    <script src="scripts/superdesk-workspace/content/content.js"></script>
-    <script src="scripts/superdesk-authoring/versioning/versions.js"></script>
-    <script src="scripts/superdesk-authoring/metadata/metadata.js"></script>
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk/editor/editor.js"></script>
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk/menu/menu.js"></script>
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk/menu/notifications/notifications.js"></script>
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk-workspace/content/content.js"></script>
     <!-- endbuild -->
 
     <!-- build:js scripts/config.js -->
@@ -57,28 +57,17 @@
         var config = <%= grunt.toJSON(config) %>;
         var modules = [
             'superdesk.settings',
-            'superdesk.dashboard',
+            'liveblog.dashboard',
             'superdesk.users',
-            'superdesk.planning',
-            'superdesk.archive',
-            'superdesk.ingest',
-            'superdesk.scratchpad',
-            'superdesk.desks',
-            'superdesk.authoring',
-            'superdesk.editor'
+            'superdesk.scratchpad'
         ];
 
         require([
             'main',
             'superdesk-settings/module',
-            'superdesk-dashboard/module',
+            'liveblog-dashboard/module',
             'superdesk-users/module',
-            'superdesk-planning/module',
-            'superdesk-archive/module',
-            'superdesk-ingest/module',
-            'superdesk-scratchpad/module',
-            'superdesk-desks/module',
-            'superdesk-authoring/module'
+            'superdesk-scratchpad/module'
         ], function(bootstrap) {
             bootstrap(config, modules);
         });
