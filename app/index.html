@@ -7,17 +7,9 @@
     <meta name="viewport" content="width=device-width">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <!-- build:css styles/css/bootstrap.css -->
-    <link rel="stylesheet" href="scripts/bower_components/superdesk/app/styles/css/bootstrap.css">
-    <!-- endbuild -->
-
-    <!-- build:css styles/css/app.css -->
-    <link rel="stylesheet" href="scripts/bower_components/superdesk/app/styles/css/app.css">
-    <!-- endbuild -->
-
-    <!-- build:css styles/css/jquery.jcrop.css -->
+    <link rel="stylesheet" href="scripts/bower_components/superdesk/dist/styles/css/bootstrap.css">
+    <link rel="stylesheet" href="scripts/bower_components/superdesk/dist/styles/css/app.css">
     <link rel="stylesheet" href="scripts/bower_components/jcrop/css/jquery.Jcrop.css">
-    <!-- endbuild -->
 
     <!-- build:css styles/css/medium-editor.css -->
     <link rel="stylesheet" href="scripts/bower_components/medium-editor/dist/css/medium-editor.css">
@@ -55,6 +47,9 @@
 
     <script>
         var config = <%= grunt.toJSON(config) %>;
+        config.paths = {
+            superdesk: 'scripts/bower_components/superdesk/app/'
+        };
         var modules = [
             'superdesk.settings',
             'liveblog.dashboard',

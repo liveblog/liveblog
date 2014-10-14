@@ -1,9 +1,9 @@
-# Superdesk Client 
-[![Build Status](https://travis-ci.org/superdesk/superdesk-client.png?branch=devel)](https://travis-ci.org/superdesk/superdesk-client)
-[![devDependency Status](https://david-dm.org/superdesk/superdesk-client/dev-status.png)](https://david-dm.org/superdesk/superdesk-client#info=devDependencies)
-[![Coverage Status](https://coveralls.io/repos/superdesk/superdesk-client/badge.png?branch=devel)](https://coveralls.io/r/superdesk/superdesk-client?branch=devel)
+# Liveblog Client based on Superdesk Client
+[![Build Status](https://travis-ci.org/superdesk/liveblog-client.svg)](https://travis-ci.org/superdesk/liveblog-client)
+[![devDependency Status](https://david-dm.org/superdesk/liveblog-client/dev-status.png)](https://david-dm.org/superdesk/liveblog-client#info=devDependencies)
+[![Coverage Status](https://coveralls.io/repos/superdesk/liveblog-client/badge.png?branch=master)](https://coveralls.io/r/superdesk/superdesk-client?branch=master)
 
-Superdesk Client is a javascript client for Superdesk REST API server.
+Liveblog Client is a javascript client for Liveblog REST API server.
 
 *License*: [GPLv3](http://www.gnu.org/licenses/gpl-3.0.txt)
 
@@ -27,8 +27,8 @@ grunt server
 This also will start frontend on localhost:9000.
 Change `http://localhost:5000` to an actual backend server.
 ```
-docker build -t superdesk-client:devel ./
-docker run -i -p 9000:9000 -t superdesk-client:devel grunt server --server=http://localhost:5000 --force
+docker build -t liveblog-client:devel ./
+docker run -i -p 9000:9000 -t liveblog-client:devel grunt server --server=http://localhost:5000 --force
 ```
 
 Also u can start it with default parameters using vagrant:
@@ -50,9 +50,9 @@ Description]
 JIRA ref]
 ```
 
-Where [JIRA ref](https://confluence.atlassian.com/display/FISHEYE/Using+smart+commits) is at least Issue code eg. ```SDUX-13```.
+Where [JIRA ref](https://confluence.atlassian.com/display/FISHEYE/Using+smart+commits) is at least Issue code eg. ```LBSD-13```.
 
-For trivial changes you can ommit JIRA ref or Description or both: ```Fix typo in superdesk.translate docs.```
+For trivial changes you can ommit JIRA ref or Description or both: ```Fix typo in liveblog.translate docs.```
 
 ### CI
 

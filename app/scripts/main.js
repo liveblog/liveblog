@@ -18,7 +18,6 @@ define('main', [
     'use strict';
 
     return function bootstrap(config, apps) {
-
         apps.unshift(superdesk.name);
         superdesk.constant('config', config);
 
