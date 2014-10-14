@@ -1,5 +1,4 @@
 import os
-from datetime import timedelta
 import json
 
 try:
@@ -36,7 +35,7 @@ ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL', 'http://localhost:9200')
 ELASTICSEARCH_INDEX = os.environ.get('ELASTICSEARCH_INDEX', 'liveblog')
 if os.environ.get('ELASTIC_PORT'):
     ELASTICSEARCH_URL = os.environ.get('ELASTIC_PORT').replace('tcp:', 'http:')
-    
+
 
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
 SENTRY_INCLUDE_PATHS = ['liveblog']
@@ -50,7 +49,9 @@ INSTALLED_APPS = [
     'superdesk.activity',
 
     'apps.archive',
-    'apps.preferences'
+    'apps.preferences',
+
+    'live-blog.blogs'
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
