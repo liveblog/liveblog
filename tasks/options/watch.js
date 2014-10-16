@@ -6,8 +6,8 @@ module.exports = {
         tasks: ['style'],
         files: [
             '<%= appDir %>/styles/{,*/}*.less',
-            '<%= appDir %>/scripts/superdesk/**/*.less',
-            '<%= appDir %>/scripts/superdesk-*/**/*.less'
+            '<%= appDir %>/scripts/liveblog/**/*.less',
+            '<%= appDir %>/scripts/liveblog-*/**/*.less'
         ]
     },
     code: {

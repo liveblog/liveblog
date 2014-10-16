@@ -6,7 +6,7 @@ module.exports = function(grunt) {
         path = require('path');
 
     function getModules() {
-        var pattern = grunt.template.process('<%= appDir %>/scripts/superdesk-*/module.js');
+        var pattern = grunt.template.process('<%= appDir %>/scripts/liveblog-*/module.js');
         return _.map(grunt.file.expand(pattern), function(modulePath) {
             return path.basename(path.dirname(modulePath)) + '/module';
         });
