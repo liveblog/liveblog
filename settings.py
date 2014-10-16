@@ -11,8 +11,8 @@ IF_MATCH = False
 BANDWIDTH_SAVER = False
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S+0000'
 
-server_url = urlparse(os.environ.get('LIVEBLOG_URL', 'http://localhost:5000'))
-CLIENT_URL = os.environ.get('LIVEBLOG_CLIENT_URL', 'http://localhost:9000')
+server_url = urlparse(os.environ.get('SUPERDESK_URL', 'http://localhost:5000'))
+CLIENT_URL = os.environ.get('SUPERDESK_CLIENT_URL', 'http://localhost:9000')
 URL_PROTOCOL = server_url.scheme or None
 SERVER_NAME = server_url.netloc or None
 URL_PREFIX = server_url.path.lstrip('/') or ''
