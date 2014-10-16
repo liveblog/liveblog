@@ -4,8 +4,8 @@ exports.scripts = [
     '<%= appDir %>/scripts/main.js',
     '<%= appDir %>/scripts/config.js',
     '<%= appDir %>/scripts/gettext.js',
-    '<%= appDir %>/scripts/superdesk/**/*.js',
-    '<%= appDir %>/scripts/superdesk-*/**/*.js',
+    '<%= appDir %>/scripts/liveblog/**/*.js',
+    '<%= appDir %>/scripts/liveblog-*/**/*.js',
     'spec/**/*.js',
     'tasks/**/*.js'
 ];

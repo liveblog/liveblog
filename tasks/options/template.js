@@ -27,8 +27,7 @@ module.exports = function(grunt) {
     }
 
     var files = {
-        '<%= distDir %>/index.html': '<%= appDir %>/index.html',
-        '<%= distDir %>/liveblog.html': '<%= appDir %>/liveblog.html'
+        '<%= distDir %>/index.html': '<%= appDir %>/index.html'
     };
 
     return {
