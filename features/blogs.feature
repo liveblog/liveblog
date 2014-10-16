@@ -34,6 +34,23 @@ Feature: Blog operations
         {"description":"the test of the test"}
         """
         Then we get updated response
+        
+    @auth
+    Scenario: Check states
+        Given "blogs"
+        """
+        [{"name": "testBlog", "state": "closed"}, {"name": "testBlog2", "state": "closed"}, {"name": "testBlog3", "state": "open"}]
+        """
+        When we get "/blogs?where={"state": "closed"}"
+        Then we get list with 2 items
+	    """
+	    {"_items": [{"name": "testBlog"}, {"name": "testBlog2"}]}
+	    """
+	    When we get "/blogs?where={"state": "open"}"
+	    Then we get list with 1 items
+	    """
+	    {"_items": [{"name": "testBlog3"}]}
+	    """
 
    	@auth
     Scenario: Delete blog
