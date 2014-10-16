@@ -12,6 +12,7 @@ BANDWIDTH_SAVER = False
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S+0000'
 
 server_url = urlparse(os.environ.get('LIVEBLOG_URL', 'http://localhost:5000'))
+CLIENT_URL = os.environ.get('LIVEBLOG_CLIENT_URL', 'http://localhost:9000')
 URL_PROTOCOL = server_url.scheme or None
 SERVER_NAME = server_url.netloc or None
 URL_PREFIX = server_url.path.lstrip('/') or ''
@@ -75,7 +76,9 @@ RENDITIONS = {
 SERVER_DOMAIN = 'localhost'
 
 BCRYPT_GENSALT_WORK_FACTOR = 12
-RESET_PASSWORD_TOKEN_TIME_TO_LIVE = int(os.environ.get('RESET_PASS_TTL', 24))  # The number of hours a token is valid
+RESET_PASSWORD_TOKEN_TIME_TO_LIVE = int(os.environ.get('RESET_PASS_TTL', 1))  # The number of days a token is valid
+# The number of days an activation token is valid
+ACTIVATE_ACCOUNT_TOKEN_TIME_TO_LIVE = int(os.environ.get('ACTIVATE_TTL', 7))
 
 # email server
 MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.googlemail.com')
@@ -83,7 +86,7 @@ MAIL_PORT = int(os.environ.get('MAIL_PORT', 465))
 MAIL_USE_TLS = json.loads(os.environ.get('MAIL_USE_TLS', 'False').lower())
 MAIL_USE_SSL = json.loads(os.environ.get('MAIL_USE_SSL', 'True').lower())
 MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'admin@sourcefabric.org')
-MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'admin-password')
+MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'admin-test')
 ADMINS = [MAIL_USERNAME]
 
 # LDAP settings
