@@ -2,7 +2,6 @@ define([
     'angular',
     'require',
     './workspace-controller',
-    './tasks-controller',
     './workspace-service',
     './sd-widget-directive',
     './widgets-provider',
@@ -10,16 +9,6 @@ define([
     './world-clock/world-clock'
 ], function(angular, require) {
     'use strict';
-
-    function TaskPreviewDirective() {
-        return {
-            templateUrl: 'scripts/liveblog-dashboard/views/task-preview.html',
-            scope: {
-                item: '=',
-                users: '='
-            }
-        };
-    }
 
     // to avoid circular dependency
     angular.module('liveblog.dashboard.widgets', []).
@@ -34,7 +23,6 @@ define([
 
     .service('workspace', require('./workspace-service'))
     .directive('sdWidget', require('./sd-widget-directive'))
-    .directive('sdTaskPreview', TaskPreviewDirective)
 
     .filter('wcodeFilter', function() {
         return function(input, values) {
@@ -50,19 +38,6 @@ define([
             topTemplateUrl: require.toUrl('./views/workspace-topnav.html'),
             priority: -1000,
             category: superdesk.MENU_MAIN
-        });
-        superdesk.activity('/workspace/tasks', {
-            label: gettext('Workspace'),
-            controller: require('./tasks-controller'),
-            templateUrl: require.toUrl('./views/workspace-tasks.html'),
-            topTemplateUrl: require.toUrl('./views/workspace-topnav.html'),
-            beta: true
-        });
-        superdesk.activity('/workspace/stream', {
-            label: gettext('Workspace'),
-            templateUrl: require.toUrl('./views/workspace-stream.html'),
-            topTemplateUrl: require.toUrl('./views/workspace-topnav.html'),
-            beta: true
         });
     }]);
 });
