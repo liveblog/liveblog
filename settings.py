@@ -7,10 +7,11 @@ except ImportError:
     from urlparse import urlparse
 
 XML = False
-IF_MATCH = False
+IF_MATCH = True
 BANDWIDTH_SAVER = False
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S+0000'
 
+APPLICATION_NAME = os.environ.get('APP_NAME', 'Liveblog')
 server_url = urlparse(os.environ.get('SUPERDESK_URL', 'http://localhost:5000'))
 CLIENT_URL = os.environ.get('SUPERDESK_CLIENT_URL', 'http://localhost:9000')
 URL_PROTOCOL = server_url.scheme or None
@@ -31,12 +32,19 @@ if os.environ.get('MONGOLAB_URI'):
 elif os.environ.get('MONGODB_PORT'):
     MONGO_URI = '{0}/{1}'.format(os.environ.get('MONGODB_PORT').replace('tcp:', 'mongodb:'), MONGO_DBNAME)
 
-
 ELASTICSEARCH_URL = os.environ.get('ELASTICSEARCH_URL', 'http://localhost:9200')
 ELASTICSEARCH_INDEX = os.environ.get('ELASTICSEARCH_INDEX', 'liveblog')
 if os.environ.get('ELASTIC_PORT'):
     ELASTICSEARCH_URL = os.environ.get('ELASTIC_PORT').replace('tcp:', 'http:')
 
+REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379')
+if os.environ.get('REDIS_PORT'):
+    REDIS_URL = os.environ.get('REDIS_PORT').replace('tcp:', 'redis:')
+BROKER_URL = os.environ.get('CELERY_BROKER_URL', REDIS_URL)
+CELERY_RESULT_BACKEND = os.environ.get('CELERY_RESULT_BACKEND', REDIS_URL)
+CELERY_ALWAYS_EAGER = (os.environ.get('CELERY_ALWAYS_EAGER', False) == 'True')
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_ACCEPT_CONTENT = ['pickle', 'json']  # it's using pickle when in eager mode
 
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
 SENTRY_INCLUDE_PATHS = ['liveblog']
@@ -51,8 +59,8 @@ INSTALLED_APPS = [
 
     'apps.archive',
     'apps.preferences',
-
     'live-blog.blogs'
+
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
@@ -91,3 +99,5 @@ ADMINS = [MAIL_USERNAME]
 
 # LDAP settings
 LDAP_SERVER = None  # Ex: ldap://sourcefabric.org
+
+TESTING = (os.environ.get('SUPERDESK_TESTING', 'false').lower() == 'true')
