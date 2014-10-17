@@ -93,8 +93,8 @@ MAIL_SERVER = os.environ.get('MAIL_SERVER', 'smtp.googlemail.com')
 MAIL_PORT = int(os.environ.get('MAIL_PORT', 465))
 MAIL_USE_TLS = json.loads(os.environ.get('MAIL_USE_TLS', 'False').lower())
 MAIL_USE_SSL = json.loads(os.environ.get('MAIL_USE_SSL', 'True').lower())
-MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'admin@sourcefabric.org')
-MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'admin-test')
+MAIL_USERNAME = os.environ.get('MAIL_USERNAME', 'liveblogsf@gmail.com')
+MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'fabric2010')
 ADMINS = [MAIL_USERNAME]
 
 # LDAP settings
