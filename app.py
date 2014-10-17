@@ -13,6 +13,7 @@ from eve.auth import TokenAuth
 from superdesk.storage.desk_media_storage import SuperdeskGridFSMediaStorage
 from superdesk.validator import SuperdeskValidator
 from raven.contrib.flask import Sentry
+from superdesk.celery_app import init_celery
 
 
 logger = logging.getLogger('liveblog')
@@ -44,7 +45,7 @@ def get_app(config=None):
 
     custom_loader = jinja2.ChoiceLoader([
         app.jinja_loader,
-        jinja2.FileSystemLoader(['liveblog/templates'])
+        jinja2.FileSystemLoader(['live-blog/templates'])
     ])
     app.jinja_loader = custom_loader
 
@@ -65,6 +66,8 @@ def get_app(config=None):
         logger.exception(error)
         return_error = superdesk.SuperdeskError(status_code=500)
         return client_error_handler(return_error)
+
+    init_celery(app)
 
     for module_name in app.config['INSTALLED_APPS']:
         app_module = importlib.import_module(module_name)
@@ -91,10 +94,10 @@ def get_app(config=None):
 if __name__ == '__main__':
 
     debug = True
-    port = int(os.environ.get('PORT', '5001'))
+    port = int(os.environ.get('PORT', '5000'))
     host = '0.0.0.0'
     superdesk.logger.setLevel(logging.INFO)
     superdesk.logger.addHandler(logging.StreamHandler())
 
     app = get_app()
-    app.run(host=host, port=port, debug=debug, use_reloader=debug)
+    app.run(host=host, port=port, debug=debug, use_reloader=False)
