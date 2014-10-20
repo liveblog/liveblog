@@ -9,18 +9,18 @@ module.exports = function(config) {
 
         preprocessors: {
             '**/*.html': ['ng-html2js'],
-            'app/scripts/bower_components/superdesk/app/scripts/superdesk/**/*.js': ['coverage']
+            'app/scripts/!(bower_components)/*.js': ['coverage']
         },
 
         // list of files / patterns to load in the browser
         files: [
+            'test-main.js',
             'app/scripts/bower_components/jquery/dist/jquery.js',
             'app/scripts/bower_components/angular/angular.js',
             {pattern: 'app/**/*.js', included: false},
             {pattern: 'app/scripts/liveblog-*/**/*[sS]pec.js', included: false},
             'app/scripts/liveblog-*/**/views/*.html',
-            'app/scripts/liveblog/**/*.html',
-            'test-main.js'
+            'app/scripts/liveblog/**/*.html'
         ],
 
         // list of files to exclude
