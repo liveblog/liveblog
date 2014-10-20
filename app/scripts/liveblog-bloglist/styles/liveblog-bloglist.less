@@ -1,0 +1,86 @@
+// planning.less
+// Styling for the superdesk content planing modules
+// ----------------------------------------------------------------------------------------
+@import 'mixins.less';
+@import 'variables.less';
+
+.bloglist {
+	header {
+		position: absolute;
+		top: 0; left: 0; right: 0;
+		height: @nav-height;
+		border-bottom: 1px solid #e0e0e0;
+		.view-select {
+			button {
+				border: 0;
+				background: none;
+				padding: 10px;
+			}
+		}
+	}
+	.list-container {
+		position: absolute;
+		top: @nav-height;
+		left: 0; right: 0; bottom: 0;
+		padding: 30px;
+		ul {
+			> li {
+				width: 260px;
+				height: 260px;
+				padding: 0;
+				.border-box();
+				float: left;
+				border: 1px solid #d4d4d4;
+				float: left;
+				margin: 0 0 20px 20px;
+				.close {
+					position: absolute;
+					right: 10px;
+					top: 10px;
+				}
+				.content {
+					height: 195px;
+					.border-box();
+					padding: 20px;
+					overflow: hidden;
+					.time {
+						font-size: 13px;
+						font-style: italic;
+						color: #bcbcbc;
+					}
+					h3 {
+						color: @sd-blue;
+						padding: 5px 0;
+						max-height: 54px;
+						overflow: hidden;
+					}
+					.description {
+						max-height: 70px;
+						overflow: hidden;
+					}
+				}
+
+				.footer {
+					height: 65px;
+					border-top: 1px solid #ebebeb;
+					padding: 12px 20px;
+					.border-box();
+					dl {
+						margin: 0;
+						font-size: 13px;
+						dt {
+							.text-light();
+							clear: both;
+							float: left;
+							color: #bcbcbc;
+						}
+						dd {
+							.text-light();
+							float: left;
+						}
+					}
+				};
+			}
+		}
+	}
+}
