@@ -59,7 +59,8 @@ INSTALLED_APPS = [
 
     'apps.archive',
     'apps.preferences',
-    'live-blog.blogs'
+    'live-blog.blogs',
+    'live-blog.posts'
 
 ]
 
