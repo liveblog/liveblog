@@ -1,0 +1,71 @@
+<div class="subnav">
+
+    <div class="button-stack left-stack" >
+        <a class="navbtn homebtn" href="/#/liveblog">
+            <i class="icon-th-large"></i>
+        </a>
+    </div>
+
+     <h3 class="page-nav-title" translate>{{ blog.title }}</h3>
+
+    <div class="button-stack right-stack">
+        <button class="navbtn">
+            <i class="svg-icon-settings"></i>
+        </button>
+    </div>
+</div>
+
+<section class="main-section blogedit">
+
+	<!-- left sidebar -->
+	<div class="side-menu"></div>
+
+	<div class="columns-holder">
+
+		<!-- editor column -->
+		<div class="column column-editor">
+			<header>
+				<button class="btn btn-info pull-right" ng-click="create()" translate>New</button>
+			</header>
+			<div class="content">
+				<div class="editor-holder">
+					<div class="editor">
+						<textarea class="editor" ng-model="post"></textarea>
+					</div>
+					<div class="actions">
+						<button class="btn" translate><i class="filetype-icon-text"></i> Add text</button>
+						<button class="btn" translate><i class="filetype-icon-photo"></i> Add image</button>
+						<button class="btn" translate><i class="icon-dots"></i>Add embed</button>
+					</div>
+				</div>
+				<div class="actions">
+					<button class="btn" ng-disabled="!post" translate>Save as draft</button>
+					<button class="btn btn-info" ng-disabled="!post" ng-click="publish()" translate>Publish</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- timeline column -->
+		<div class="column column-timeline" ng-init="isTimeline = true">
+			<header>
+				<ul class="nav nav-tabs">
+		            <li ng-class="{active: isTimeline}" ng-click="isTimeline = true">
+		                <button translate>Timeline</button>
+		            </li>
+		            <li ng-class="{active: !isTimeline}" ng-click="isTimeline = false">
+		                <button translate>Blog details</button>
+		            </li>
+		        </ul>
+			</header>
+			<div class="content">
+				<ul class="posts card-list" ng-if="isTimeline">
+					<li ng-repeat="post in timeline track by $index">{{ post }}</li>
+				</ul>
+				<div ng-if="!isTimeline">
+					These are blog details
+				</div>
+			</div>
+		</div>
+	</div>
+</setion>
+

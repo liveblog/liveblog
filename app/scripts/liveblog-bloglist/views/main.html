@@ -31,7 +31,7 @@
 	</header>
 	<div class="list-container">
 		<ul class="card-list">
-			<li ng-repeat="blog in blogs._items">
+			<li ng-repeat="blog in blogs._items" ng-click="edit(blog)">
 				<div class="close" ng-click="remove(blog)"><i class="icon-close-small"></i></div>
 				<div class="content">
 					<span class="time">{{ 'Last udpated' | translate}}: <time>{{ blog.last_updated | reldate }}</time></span>
