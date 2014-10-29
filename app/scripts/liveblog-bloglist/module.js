@@ -1,6 +1,4 @@
-define([
-    'angular'
-], function(angular) {
+(function() {
     'use strict';
 
     BlogListController.$inject = ['$scope', 'bloglist', '$location'];
@@ -80,4 +78,4 @@ define([
         }]);
 
     return app;
-});
+})();
