@@ -1,7 +1,7 @@
 define([
     'angular',
     'require',
-    'superdesk-dashboard/workspace-controller'
+    'superdesk-dashboard/module'
 ], function(angular, require) {
     'use strict';
 
