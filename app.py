@@ -9,11 +9,11 @@ import superdesk
 from flask.ext.mail import Mail
 from eve.io.mongo import MongoJSONEncoder
 from eve.render import send_response
+from superdesk.celery_app import init_celery
 from eve.auth import TokenAuth
 from superdesk.storage.desk_media_storage import SuperdeskGridFSMediaStorage
 from superdesk.validator import SuperdeskValidator
 from raven.contrib.flask import Sentry
-from superdesk.celery_app import init_celery
 
 
 logger = logging.getLogger('liveblog')
@@ -24,7 +24,7 @@ def get_app(config=None):
     """App factory.
 
     :param config: configuration that can override config from `settings.py`
-    :return: a new LiveblogEve app instance
+    :return: a new LiveBlogEve app instance
     """
     if config is None:
         config = {}
@@ -100,4 +100,4 @@ if __name__ == '__main__':
     superdesk.logger.addHandler(logging.StreamHandler())
 
     app = get_app()
-    app.run(host=host, port=port, debug=debug, use_reloader=debug)
+    app.run(host=host, port=port, debug=debug, use_reloader=False)
