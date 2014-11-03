@@ -1,0 +1,139 @@
+// liveblog-edit.less
+// Styling for the liveblog edit page
+// ----------------------------------------------------------------------------------------
+@import 'mixins.less';
+@import 'variables.less';
+
+
+.blogedit {
+	//left menu
+	.side-menu {
+		position: absolute;
+		left: 0; top:0; bottom: 0;
+		width: 48px;
+		background: #a1a1a1;
+	}
+
+	.columns-holder {
+		position: absolute;
+		left: 48px; right: 0;
+		top:0; bottom: 0;
+	}
+
+	.column {
+		position: absolute;
+		top: 0; bottom: 0;
+		width: 50%;
+		.border-box();
+		header {
+			height: @nav-height;
+			width: 100%;
+			.border-box();
+			border-bottom: 1px solid #e0e0e0;
+			padding: 0 20px;
+			.btn {
+				margin-top: 10px;
+			}
+		}
+		.content {
+			position: absolute;
+			top: @nav-height; left: 0; right: 0; bottom: @bottom-view-padding;
+			overflow: auto;
+			padding: 20px;
+		}
+	}
+
+	.column-editor {
+		left: 0;
+	}
+
+	.column-timeline {
+		right: 0;
+		background: #f0f0f0;
+		border-left: 3px solid #c3c3c3;
+		header {
+			background: #fff;
+		}
+	}
+
+	// editor
+	
+	.column-editor .content {
+		overflow: none;
+		.editor-holder {
+			position: absolute;
+			bottom: 88px; left: 0; right: 0; top:0;
+			padding: 20px;
+			overflow: auto;
+			.editor {
+				textarea {
+					border: 1px solid #dfdfdf !important;
+					resize:vertical;
+					height: 180px;
+					padding: 10px;
+					font-size: 14px;
+					line-height: 24px;
+					.border-radius(5px) !important;
+					margin-bottom: 20px;
+					&:focus {
+						.box-shadow(inset 0 3px 0 0 #f0f0f0) !important;
+					}
+				}
+			}	
+			.actions {
+				.btn {
+					width: 32%;
+					margin-left: 2%;
+					float: left;
+					height: 48px;
+					padding: 0;
+					line-height: 48px;
+					font-size: 14px;
+					[class^="filetype-icon-"], [class*="filetype-icon-"] {
+						float: none;
+						vertical-align: text-top;
+						padding-left: 24px;
+					}
+					i {
+						.opacity(70);
+					}
+					&:first-child {
+						margin-left: 0;
+					}
+					.icon-dots {
+						margin-right: 10px;
+					}
+				}
+			}
+		}
+		> .actions {
+			position: absolute;
+			bottom: 0; left: 20px; right: 20px; height: 88px;
+			.border-box();
+			padding: 20px 0;
+			.btn {
+				width: 47%;
+				float: left;
+				height: 48px;
+				padding: 0;
+				line-height: 48px;
+				font-size: 14px;
+				&:last-child {
+					margin-left: 6%; 
+				}	
+			}
+		}
+	}
+
+	// timeline
+	.column-timeline {
+		.posts {
+			> li {
+				padding: 20px;
+				.border-radius(5px);
+				margin-bottom: 15px;
+			}
+		}
+	}
+
+}

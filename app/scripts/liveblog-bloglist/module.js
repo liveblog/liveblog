@@ -3,8 +3,8 @@ define([
 ], function(angular) {
     'use strict';
 
-    BlogListController.$inject = ['$scope', 'bloglist'];
-    function BlogListController($scope, bloglist) {
+    BlogListController.$inject = ['$scope', 'bloglist', '$location'];
+    function BlogListController($scope, bloglist, $location) {
         $scope.blogs = bloglist;
 
         $scope.modalActive = false;
@@ -26,6 +26,9 @@ define([
             _.remove($scope.blogs._items, blog);
         };
 
+        $scope.edit = function(blog) {
+            $location.path('/edit');
+        };
     }
 
     var app = angular.module('liveblog.bloglist', []);
