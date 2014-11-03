@@ -1,11 +1,11 @@
 from superdesk.resource import Resource
 import superdesk
 from superdesk.services import BaseService
-from apps.archive.common import update_dates_for, set_user
+from apps.archive.common import update_dates_for
 from superdesk.notification import push_notification
 
 blogs_schema = {
-    'name': {
+    'title': {
         'type': 'string',
         'required': True,
     },
@@ -18,7 +18,7 @@ blogs_schema = {
     'settings': {
         'type': 'dict'
     },
-    'collaborator': Resource.rel('users', True),
+    'author': Resource.rel('users', True),
     'state': {
         'type': 'string',
         'allowed': ['open', 'closed'],
@@ -30,7 +30,6 @@ blogs_schema = {
 def on_create_blog(docs):
     for doc in docs:
         update_dates_for(doc)
-        doc['original_creator'] = set_user(doc)
 
 
 def init_app(app):

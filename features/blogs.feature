@@ -8,22 +8,27 @@ Feature: Blog operations
         
     @auth
     Scenario: Create new blog
+    	Given empty "users"
         Given empty "blogs"
-        When we post to "blogs"
-	    """
-	    [{"name": "testBlog", "language": "en"}]
-	    """
+        When we post to "/users"
+       """
+       {"username": "foo", "email": "foo@bar.com", "is_active": true}
+       """
+       When we post to "/blogs"
+       """
+       {"title": "testBlog", "author": "#USERS_ID#"}
+       """
         And we get "/blogs"
         Then we get list with 1 items
-	    """
-	    {"_items": [{"name": "testBlog", "language": "en", "state": "open"}]}
-	    """
+        """
+        {"_items": [{"title": "testBlog", "author": "#USERS_ID#"}]}
+        """
 	    
 	@auth
     Scenario: Update blog
         Given "blogs"
         """
-        [{"name": "testBlog"}]
+        [{"title": "testBlog"}]
         """
         When we patch given
         """
@@ -39,38 +44,46 @@ Feature: Blog operations
     Scenario: Check states
         Given "blogs"
         """
-        [{"name": "testBlog", "state": "closed"}, {"name": "testBlog2", "state": "closed"}, {"name": "testBlog3", "state": "open"}]
+        [{"title": "testBlog", "state": "closed"}, {"title": "testBlog2", "state": "closed"}, {"title": "testBlog3", "state": "open"}]
         """
         When we get "/blogs?where={"state": "closed"}"
         Then we get list with 2 items
 	    """
-	    {"_items": [{"name": "testBlog"}, {"name": "testBlog2"}]}
+	    {"_items": [{"title": "testBlog"}, {"title": "testBlog2"}]}
 	    """
 	    When we get "/blogs?where={"state": "open"}"
 	    Then we get list with 1 items
 	    """
-	    {"_items": [{"name": "testBlog3"}]}
+	    {"_items": [{"title": "testBlog3"}]}
 	    """
 
    	@auth
-    Scenario: Delete blog
-        Given empty "blogs"
-        When we post to "blogs"
+	Scenario: Delete blog
+		Given empty "users"
+		When we post to "users"
         """
-        [{"name": "testBlog"}]
+       	{"username": "foo", "email": "foo@bar.com", "is_active": true}
+       	"""
+		Given "blogs"
+		"""
+		[{"title": "test_blog1"}]
+		"""
+		When we post to "/blogs"
         """
+       	[{"title": "test_blog2", "author": "#USERS_ID#"}]
+		 """
         And we delete latest
         Then we get deleted response
 
+
 	@auth
-    Scenario: Create posts
-    	Given empty "blogs"
-        Given empty "posts"
-        When we post to "blogs"
-	    """
-	    [{"name": "testBlog", "language": "en"}]
-	    """
-        When we post to "posts"
+    	Scenario: Create posts
+    	Given empty "posts"
+    	Given "blogs"
+		"""
+		[{"title": "test_blog1"}]
+		"""
+		When we post to "posts"
         """
         [{"text": "test post for an open blog", "blog": "#BLOGS_ID#"}]
         """
@@ -79,15 +92,18 @@ Feature: Blog operations
         [{"text": "test post for the same blog",  "blog": "#BLOGS_ID#"}]
         """
         And we get "/posts"
-        Then we get list with 2 items
+       Then we get list with 2 items
         
 	@auth
     Scenario: Retrieve posts from blogs
-    	Given empty "blogs"
         Given empty "posts"
+        Given "blogs"
+		"""
+		[{"title": "test_blog1"}]
+		"""
         When we post to "blogs"
 	    """
-	    [{"name": "testBlog", "language": "fr"}]
+	    [{"title": "testBlog", "language": "fr"}]
 	    """
         When we post to "posts"
         """
