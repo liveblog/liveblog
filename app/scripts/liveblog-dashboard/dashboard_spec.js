@@ -1,9 +1,14 @@
-define(['./module', 'angular'], function(DashboardModule, angular) {
+define([
+    'angular',
+    './module',
+    'superdesk-dashboard/module',
+    'superdesk-dashboard/workspace-tasks/tasks'
+], function(angular) {
     'use strict';
 
     var USER_URL = '/users/1';
 
-    describe('liveblog-dashboard', function() {
+    describe('dashboard', function() {
 
         beforeEach(module(function($provide) {
 
