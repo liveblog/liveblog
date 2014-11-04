@@ -40,7 +40,7 @@ def init_app(app):
 
 class BlogsResource(Resource):
     schema = blogs_schema
-    datasource = {'default_sort': [('created', -1)]}
+    datasource = {'default_sort': [('_updated', -1)]}
 
 
 class BlogService(BaseService):
