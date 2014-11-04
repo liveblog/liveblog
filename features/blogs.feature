@@ -16,12 +16,12 @@ Feature: Blog operations
        """
        When we post to "/blogs"
        """
-       {"title": "testBlog", "author": "#USERS_ID#"}
+       {"title": "testBlog", "original_creator": "#USERS_ID#"}
        """
         And we get "/blogs"
         Then we get list with 1 items
         """
-        {"_items": [{"title": "testBlog", "author": "#USERS_ID#"}]}
+        {"_items": [{"title": "testBlog", "original_creator": "#USERS_ID#"}]}
         """
 	    
 	@auth
@@ -70,7 +70,7 @@ Feature: Blog operations
 		"""
 		When we post to "/blogs"
         """
-       	[{"title": "test_blog2", "author": "#USERS_ID#"}]
+       	[{"title": "test_blog2", "original_creator": "#USERS_ID#"}]
 		 """
         And we delete latest
         Then we get deleted response

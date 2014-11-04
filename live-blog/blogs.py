@@ -18,7 +18,7 @@ blogs_schema = {
     'settings': {
         'type': 'dict'
     },
-    'author': Resource.rel('users', True),
+    'original_creator': Resource.rel('users', True),
     'state': {
         'type': 'string',
         'allowed': ['open', 'closed'],
