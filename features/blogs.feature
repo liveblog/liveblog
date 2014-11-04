@@ -111,3 +111,22 @@ Feature: Blog operations
         """
         And we get "/blogs/#BLOGS_ID#/posts"
 		Then we get list with 1 items
+		
+	     
+	@auth
+    Scenario: Retrieve embedded authors
+        Given empty "users"
+        Given empty "blogs"
+		When we post to "users"
+        """
+       	{"username": "foo", "email": "foo@bar.com", "is_active": true}
+       	"""
+        When we post to "blogs"
+	    """
+	    [{"title": "testBlog", "language": "fr", "original_creator":"#USERS_ID#"}]
+	    """
+        And we get "/blogs?embedded={"original_creator":1}"
+		Then we get list with 1 items
+		"""
+	    {"_items": [{"title": "testBlog", "language":"fr", "original_creator":{"username":"foo", "display_name": "foo", "email":"foo@bar.com"}}]}
+	    """	
