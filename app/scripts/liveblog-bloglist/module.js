@@ -43,6 +43,7 @@
             var params = $location.search(),
                 criteria = {
                     max_results: $scope.maxResults,
+                    embedded: {'original_creator': 1},
                     where: {state: $scope.activeState.code}
                 };
 
@@ -86,5 +87,10 @@
                 category: superdesk.MENU_MAIN
             });
     }]);
-    return app;
+    app.filter('username', ['session', function usernameFilter(session) {
+        return function getUsername(user) {
+            return user ? user.display_name || user.username : null;
+        };
+    }])
+    ;
 })();
