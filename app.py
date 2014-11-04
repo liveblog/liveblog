@@ -43,6 +43,8 @@ def get_app(config=None):
         json_encoder=MongoJSONEncoder,
         validator=SuperdeskValidator)
 
+    superdesk.app = app
+
     custom_loader = jinja2.ChoiceLoader([
         app.jinja_loader,
         jinja2.FileSystemLoader(['live-blog/templates'])
@@ -88,7 +90,6 @@ def get_app(config=None):
 
     app.sentry = sentry
     sentry.init_app(app)
-    superdesk.app = app
     return app
 
 if __name__ == '__main__':
