@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 import json
 
 try:
@@ -46,6 +47,13 @@ CELERY_ALWAYS_EAGER = (os.environ.get('CELERY_ALWAYS_EAGER', False) == 'True')
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']  # it's using pickle when in eager mode
 
+CELERYBEAT_SCHEDULE = {
+    'auth_session_purge': {
+        'task': 'apps.auth.session_purge',
+        'schedule': timedelta(minutes=30)
+    }
+}
+
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
 SENTRY_INCLUDE_PATHS = ['liveblog']
 
@@ -59,9 +67,11 @@ INSTALLED_APPS = [
 
     'apps.archive',
     'apps.preferences',
+    'apps.groups',
+    # 'apps.prepopulate',
+
     'live-blog.blogs',
     'live-blog.posts'
-
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
@@ -102,3 +112,6 @@ ADMINS = [MAIL_USERNAME]
 LDAP_SERVER = None  # Ex: ldap://sourcefabric.org
 
 TESTING = (os.environ.get('SUPERDESK_TESTING', 'false').lower() == 'true')
+
+# The number of minutes since the last update of the Mongo auth object after which it will be deleted
+SESSION_EXPIRY_MINUTES = 240
