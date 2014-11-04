@@ -68,7 +68,7 @@ INSTALLED_APPS = [
     'apps.archive',
     'apps.preferences',
     'apps.groups',
-    # 'apps.prepopulate',
+    'apps.prepopulate',
 
     'live-blog.blogs',
     'live-blog.posts'
