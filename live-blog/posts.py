@@ -12,7 +12,7 @@ posts_schema = {
         'required': True,
     },
     'blog': Resource.rel('blogs', True),
-    'editor': Resource.rel('users', True)
+    'original_creator': Resource.rel('users', True)
 }
 
 
