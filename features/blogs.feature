@@ -16,14 +16,23 @@ Feature: Blog operations
        """
        When we post to "/blogs"
        """
-       {"title": "testBlog", "original_creator": "#USERS_ID#"}
+       {"title": "testBlog1", "original_creator": "#USERS_ID#"}
        """
         And we get "/blogs"
         Then we get list with 1 items
         """
-        {"_items": [{"title": "testBlog", "original_creator": "#USERS_ID#"}]}
+        {"_items": [{"title": "testBlog1", "original_creator": "#USERS_ID#"}]}
         """
-	    
+        When we post to "/blogs"
+       	"""
+       	{"title": "testBlog2", "original_creator": "#USERS_ID#"}
+       	"""
+        And we get "/blogs"
+        Then we get list with 2 items
+        """
+        {"_items": [{"title": "testBlog2", "original_creator": "#USERS_ID#"}, {"title": "testBlog1", "original_creator": "#USERS_ID#"}]}
+        """
+
 	@auth
     Scenario: Update blog
         Given "blogs"
