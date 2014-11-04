@@ -5,10 +5,9 @@
             <i class="icon-th-large"></i>
         </button>
         <div class="navbtn dropdown">
-    		<button class="dropdown-toggle">Active blogs <b class="caret"></b></button>
+    		<button class="dropdown-toggle">{{ activeState.text }} <b class="caret"></b></button>
 			<ul class="dropdown-menu">
-				<li><a href="">Active blogs</a></li>
-				<li><a href="">Archived blogs</a></li>
+                <li ng-repeat="state in states"><button ng-click="changeState(state)" translate>{{ state.text }}</button></li>
 			</ul>
     	</div>
     </div>
@@ -32,7 +31,7 @@
 	<div class="list-container">
 		<ul class="card-list">
 			<li ng-repeat="blog in blogs._items" ng-click="edit(blog)">
-				<div class="close" ng-click="remove(blog)"><i class="icon-close-small"></i></div>
+				<!--<div class="close" ng-click="remove(blog)"><i class="icon-close-small"></i></div>-->
 				<div class="content">
 					<span class="time">{{ 'Last udpated' | translate}}: <time>{{ blog._updated | reldate }}</time></span>
 					<h3>{{ blog.name }}</h3>
@@ -41,7 +40,7 @@
 				<div class="footer">
 					<dl>
 					  <dt>{{ 'Blog owner' | translate }}:</dt>
-					    <dd>{{ blog.user }}</dd>
+					    <dd>{{ blog.original_creator | username }}</dd>
 					  <dt>{{ 'Created' | translate}}:</dt>
 					    <dd sd-reldate ng-model="blog._created"></dd>
 					</dl>

@@ -1,9 +1,21 @@
 (function() {
     'use strict';
 
-    BlogListController.$inject = ['$scope', '$location', 'api'];
-    function BlogListController($scope, $location, api) {
+    BlogListController.$inject = ['$scope', '$location', 'api', 'gettext'];
+    function BlogListController($scope, $location, api, gettext) {
         $scope.maxResults = 25;
+
+        $scope.states = [
+            {code: 'open', text: gettext('Active blogs')},
+            {code: 'closed', text: gettext('Archived blogs')}
+        ];
+
+        $scope.activeState = $scope.states[0];
+
+        $scope.changeState = function(state) {
+            $scope.activeState = state;
+        };
+
         $scope.modalActive = false;
 
         $scope.newBlog = {
@@ -30,18 +42,19 @@
         function getCriteria() {
             var params = $location.search(),
                 criteria = {
-                    max_results: $scope.maxResults
+                    max_results: $scope.maxResults,
+                    embedded: {'original_creator': 1},
+                    where: {state: $scope.activeState.code}
                 };
 
             if (params.q) {
-                criteria.where = JSON.stringify({
-                    '$or': [
+                criteria.where.$or =  [
                         {name: {'$regex': params.q}},
                         {description: {'$regex': params.q}}
-                    ]
-                });
+                    ];
             }
 
+            criteria.where = JSON.stringify(criteria.where);
             if (params.page) {
                 criteria.page = parseInt(params.page, 10);
             }
@@ -74,5 +87,10 @@
                 category: superdesk.MENU_MAIN
             });
     }]);
-    return app;
+    app.filter('username', ['session', function usernameFilter(session) {
+        return function getUsername(user) {
+            return user ? user.display_name || user.username : null;
+        };
+    }])
+    ;
 })();
