@@ -36,7 +36,7 @@ class PostsService(BaseService):
     def on_create(self, docs):
         for doc in docs:
             update_dates_for(doc)
-            doc['editor'] = set_user(doc)
+            doc['original_creator'] = set_user(doc)
 
 
 class BlogPostResource(Resource):
