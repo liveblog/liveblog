@@ -13,7 +13,7 @@
     </div>
 
     <div class="button-stack right-stack">
-        <button class="navbtn navbtn-info" ng-click="modalActive = true">
+        <button class="navbtn navbtn-info" ng-click="openNewBlog();">
             <i class="svg-icon-add inverse"></i> <span class="title" translate>Create Blog</span>
         </button>
     </div>
@@ -49,30 +49,32 @@
 		</ul>
 	</div>
 
-	<div sd-modal-view data-model="modalActive">
-		<div class="modal-header"> 
-			<button class="close" ng-click="cancel()"><i class="icon-close-small"></i></button>
-			<h3 translate>Create New Blog</h3>
-		</div>
-		
-		<div class="modal-body">
-			<form>
-				<fieldset>
-					<div class="field">
-						<label>Blog name</label>
-						<input type="text" ng-model="newBlog.title">
-					</div>
-					<div class="field">
-						<label>Blog description</label>
-						<textarea ng-model="newBlog.description"></textarea>
-					</div>
-				</fieldset>
-			</form>
-		</div>
+	<div sd-modal-view data-model="newBlogModalActive">
+        <form ng-submit="createBlog()">
+    		<div class="modal-header"> 
+    			<button class="close" ng-click="cancelCreate()"><i class="icon-close-small"></i></button>
+    			<h3 translate>Create New Blog</h3>
+    		</div>
+    		
+    		<div class="modal-body">
+    			<fieldset>
+    				<div class="field">
+    					<label translate>Blog title</label>
+    					<input type="text" ng-model="newBlog.title" required>
+    				</div>
+    				<div class="field">
+    					<label translate>Blog description</label>
+    					<textarea ng-model="newBlog.description"></textarea>
+    				</div>
+    			</fieldset>
+    		</div>
 
-		<div class="modal-footer"> 
-		  	<button class="btn btn-primary" ng-click="create()" translate>Create</button>
-		</div>
+    		<div class="modal-footer"> 
+    		  	<span class="error" translate>{{newBlogError}}</span> 
+                <button type="submit" class="btn btn-primary" translate>Create</button>
+                <button type="button" class="btn btn-primary" ng-click="cancelCreate()" translate>Cancel</button>
+    		</div>
+        </form>
 	</div>
 
 
