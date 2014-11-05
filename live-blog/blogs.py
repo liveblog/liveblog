@@ -2,7 +2,9 @@ from superdesk.resource import Resource
 import superdesk
 from superdesk.services import BaseService
 from apps.archive.common import update_dates_for
+from .common import set_user, get_user
 from superdesk.notification import push_notification
+from superdesk.utc import utcnow
 
 blogs_schema = {
     'title': {
@@ -19,6 +21,7 @@ blogs_schema = {
         'type': 'dict'
     },
     'original_creator': Resource.rel('users', True),
+    'version_creator': Resource.rel('users', True),
     'state': {
         'type': 'string',
         'allowed': ['open', 'closed'],
@@ -30,6 +33,7 @@ blogs_schema = {
 def on_create_blog(docs):
     for doc in docs:
         update_dates_for(doc)
+        doc['original_creator'] = set_user(doc)
 
 
 def init_app(app):
@@ -50,6 +54,11 @@ class BlogService(BaseService):
 
     def on_created(self, docs):
         push_notification('blogs', created=1)
+
+    def on_update(self, updates, original):
+        user = get_user()
+        updates['versioncreated'] = utcnow()
+        updates['version_creator'] = str(user.get('_id'))
 
     def on_updated(self, updates, original):
         push_notification('blogs', updated=1)
