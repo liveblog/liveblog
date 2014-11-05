@@ -6,33 +6,7 @@ Feature: Blog operations
         When we get "/blogs"
         Then we get list with 0 items
         
-    @auth
-    Scenario: Create new blog
-    	Given empty "users"
-        Given empty "blogs"
-        When we post to "/users"
-       """
-       {"username": "foo", "email": "foo@bar.com", "is_active": true}
-       """
-       When we post to "/blogs"
-       """
-       {"title": "testBlog1", "original_creator": "#USERS_ID#"}
-       """
-        And we get "/blogs"
-        Then we get list with 1 items
-        """
-        {"_items": [{"title": "testBlog1", "original_creator": "#USERS_ID#"}]}
-        """
-        When we post to "/blogs"
-       	"""
-       	{"title": "testBlog2", "original_creator": "#USERS_ID#"}
-       	"""
-        And we get "/blogs"
-        Then we get list with 2 items
-        """
-        {"_items": [{"title": "testBlog2", "original_creator": "#USERS_ID#"}, {"title": "testBlog1", "original_creator": "#USERS_ID#"}]}
-        """
-
+    
 	@auth
     Scenario: Update blog
         Given "blogs"
@@ -68,18 +42,13 @@ Feature: Blog operations
 
    	@auth
 	Scenario: Delete blog
-		Given empty "users"
-		When we post to "users"
-        """
-       	{"username": "foo", "email": "foo@bar.com", "is_active": true}
-       	"""
 		Given "blogs"
 		"""
 		[{"title": "test_blog1"}]
 		"""
 		When we post to "/blogs"
         """
-       	[{"title": "test_blog2", "original_creator": "#USERS_ID#"}]
+       	[{"title": "test_blog2"}]
 		 """
         And we delete latest
         Then we get deleted response
@@ -120,22 +89,3 @@ Feature: Blog operations
         """
         And we get "/blogs/#BLOGS_ID#/posts"
 		Then we get list with 1 items
-		
-	     
-	@auth
-    Scenario: Retrieve embedded authors
-        Given empty "users"
-        Given empty "blogs"
-		When we post to "users"
-        """
-       	{"username": "foo", "email": "foo@bar.com", "is_active": true}
-       	"""
-        When we post to "blogs"
-	    """
-	    [{"title": "testBlog", "language": "fr", "original_creator":"#USERS_ID#"}]
-	    """
-        And we get "/blogs?embedded={"original_creator":1}"
-		Then we get list with 1 items
-		"""
-	    {"_items": [{"title": "testBlog", "language":"fr", "original_creator":{"username":"foo", "display_name": "foo", "email":"foo@bar.com"}}]}
-	    """	
