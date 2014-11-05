@@ -18,17 +18,33 @@
 
         $scope.modalActive = false;
 
-        $scope.newBlog = {
-            title: null,
-            description: null
+        function clearCreateBlogForm() {
+            $scope.newBlog = {
+                title: '',
+                description: ''
+            };
+            $scope.newBlogError = '';
+        }
+        clearCreateBlogForm();
+
+        $scope.cancelCreate = function() {
+            clearCreateBlogForm();
+            $scope.newBlogModalActive = false;
+        };
+        $scope.openNewBlog = function() {
+            $scope.newBlogModalActive = true;
         };
 
-        $scope.cancel = function() {
-            $scope.newBlog = {
-                title: null,
-                description: null
-            };
-            $scope.modalActive = false;
+        $scope.createBlog = function() {
+            api.blogs.save({title: $scope.newBlog.title, description: $scope.newBlog.description})
+                .then(function(message) {
+                    clearCreateBlogForm();
+                    $scope.newBlogModalActive = false;
+                    fetchBlogs(getCriteria());
+                }, function(error) {
+                    //error handler
+                    $scope.newBlogError = 'Something went wrong. Please try again later';
+                });
         };
 
         $scope.remove = function(blog) {
