@@ -27,16 +27,15 @@ define([
      */
     BlogResolver.$inject = ['api', '$route', '$location'];
     function BlogResolver(api, $route, $location) {
-        // return api('blogs').getById($route.current.params._id)
-        //     .then(null, function(response) {
-        //         if (response.status === 404) {
-        //             $location.path('/liveblog');
-        //         }
+        return api('blogs').getById($route.current.params._id)
+            .then(null, function(response) {
+                if (response.status === 404) {
+                    notify.error(gettext('Blog was not found, sorry.'), 5000);
+                    $location.path('/liveblog');
+                }
 
-        //         return response;
-        //     });
-
-        return {title: 'This is simple blog'};
+                return response;
+            });
     }
 
     var app = angular.module('liveblog.edit', []);
@@ -44,7 +43,7 @@ define([
     app
         .config(['superdeskProvider', function(superdesk) {
             superdesk
-                .activity('/edit', {
+                .activity('/liveblog/edit/:_id', {
                     label: gettext('Blog Edit'),
                     controller: BlogEditController,
                     templateUrl: 'scripts/liveblog-edit/views/main.html',
