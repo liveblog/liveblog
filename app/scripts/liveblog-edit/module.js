@@ -5,9 +5,7 @@ define([
 
     BlogEditController.$inject = ['api', '$scope', 'blog', 'notify'];
     function BlogEditController(api, $scope, blog, notify) {
-        
         $scope.blog = blog;
-
         $scope.post = '';
 
         $scope.timeline = [];
@@ -21,25 +19,27 @@ define([
         };
 
         $scope.$watch('blog.state', function() {
-            $scope.toggleStateText = $scope.blog.state == 'open' ? 'Close Blog': 'Open Blog';
+            //the text on the open/close button
+            $scope.toggleStateText = $scope.blog.state === 'open' ? 'Close Blog': 'Open Blog';
+            $scope.disableInterfaceSwitch = $scope.blog.state === 'open' ? false: true;
         });
 
         $scope.toggleBlogState = function() {
-            var newStateValue = $scope.blog.state == 'open' ? 'closed': 'open';
+            var newStateValue = $scope.blog.state === 'open' ? 'closed': 'open';
             api.blogs.save($scope.blog, {'state': newStateValue})
             .then(function() {
                 $scope.blog.state = newStateValue;
             }, function(response) {
-                notify.error(gettext('Something went wrong. Please try again later'));               
+                notify.error(gettext('Something went wrong. Please try again later'));
             });
-        }
+        };
     }
 
     /**
      * Resolve a blog by route id and redirect to /liveblog if such blog does not exist
      */
-    BlogResolver.$inject = ['api', '$route', '$location', 'notify'];
-    function BlogResolver(api, $route, $location, notify) {
+    BlogResolver.$inject = ['api', '$route', '$location', 'notify', 'gettext'];
+    function BlogResolver(api, $route, $location, notify, gettext) {
         return api('blogs').getById($route.current.params._id)
             .then(null, function(response) {
                 if (response.status === 404) {
