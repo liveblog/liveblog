@@ -8,7 +8,7 @@ var getIdFromHref = utils.getIdFromHref;
 var getToken = require('./liveblog_auth').getToken;
 
 var liveblogBackend = require('./liveblog_backend');
-var backendRequest = liveblogBackend.backendRequest;
+var backendRequestAuth = liveblogBackend.backendRequestAuth;
 
 var liveblogPosts = require('./liveblog_posts.js');
 var postCreate = liveblogPosts.postCreate;
@@ -22,9 +22,9 @@ exports.resetApp = resetApp;
 exports.uploadFixtures = uploadFixtures;
 
 function resetApp(callback) {
-    backendRequest({
-        uri: '/Tool/TestFixture/default',
-        method: 'PUT',
+    backendRequestAuth({
+        uri: '/prepopulate',
+        method: 'POST',
         json: {
             'Name': 'default',
             'ApplyOnDatabase': true,
@@ -32,6 +32,7 @@ function resetApp(callback) {
         }
     }, function(e, r, j) {
         getToken(function(e2, r2, j2) {
+            //console.log(j2);
             callback(e, r, j);
         });
     });

@@ -2,6 +2,7 @@
 
 /*global beforeEach, afterEach */
 
+var getToken = require('./helpers/liveblog_auth').getToken;
 var resetApp = require('./helpers/liveblog_fixtures').resetApp;
 
 // runs before every spec
@@ -11,8 +12,9 @@ beforeEach(function(done) {
     //browser.ignoreSynchronization = true;
     // for angular:
     browser.get(protractor.getInstance().params.baseUrl);
-
-    resetApp(function() {done();});
+    getToken(function() {
+        resetApp(function() {done();});
+    });
 });
 
 // runs after every spec
