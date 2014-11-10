@@ -25,15 +25,16 @@ describe('login', function() {
         modal.login('admin', 'admin');
         expect(modal.btn).not.toBeDisplayed();
         expect(browser.getCurrentUrl()).toBe(pp.baseUrl + '/#/workspace');
-        expect(element(by.binding('display_name')).getText()).toBe('John Doe');
+        element(by.css('button.current-user')).click();
+        expect(element(by.css('.user-info .displayname')).getText()).toBe('admin');
     });
 
     it('can logout', function() {
         modal.login('admin', 'admin');
-        element(by.binding('display_name')).click();
+        element(by.css('button.current-user')).click();
         element(by.buttonText('SIGN OUT')).click();
 
-        protractor.getInstance().sleep(2000); // it reloads page
+        //protractor.getInstance().sleep(2000); // it reloads page @TODO: remove it?
         protractor.getInstance().waitForAngular();
 
         expect(modal.btn).toBeDisplayed();
