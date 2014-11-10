@@ -41,7 +41,7 @@ describe('login', function() {
         expect(modal.username.getAttribute('value')).toBe('');
     });
 
-    it('uknown user can\'t log in', function() {
+    it('unknown user can\'t log in', function() {
         modal.login('foo', 'bar');
         expect(modal.btn).toBeDisplayed();
         expect(browser.getCurrentUrl()).not.toBe(pp.baseUrl + '/#/workspace');
