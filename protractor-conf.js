@@ -2,8 +2,6 @@
 
 var ScreenShotReporter = require('protractor-screenshot-reporter');
 
-//baseUrl: 'http://nodejs-dev.sourcefabric.org/?liveblog[servers][rest]=master.lb-test.sourcefabric.org&liveblog[limit]=5&liveblog[theme]=default',
-
 var frontendServerUrl = 'https://liveblog.sd-test.sourcefabric.org';
 var backendServerHostname = 'liveblog.sd-test.sourcefabric.org';
 
