@@ -2,20 +2,11 @@
 
 var ScreenShotReporter = require('protractor-screenshot-reporter');
 
-var frontendServerUrl = 'https://liveblog.sd-test.sourcefabric.org';
-var backendServerHostname = 'liveblog.sd-test.sourcefabric.org';
-
 exports.config = {
     params: {
 
-        maxTimeout: 120 * 1000,
-
-        baseUrl: frontendServerUrl,
-        blogId: '1',
-        baseGetParams: {},
-
-        backendServerHostname: backendServerHostname,
-        baseBackendUrl: 'https://' + backendServerHostname + '/api/',
+        baseUrl: 'https://master.sd-test.sourcefabric.org',
+        baseBackendUrl: 'https://master.sd-test.sourcefabric.org/api/',
         username: 'admin',
         password: 'admin'
 
