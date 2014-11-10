@@ -4,7 +4,7 @@
 
 var request = require('request');
 
-var getBackendUrl = require('./liveblog_backend').getBackendUrl;
+var getBackendUrl = require('./backend').getBackendUrl;
 
 var pp = protractor.getInstance().params;
 

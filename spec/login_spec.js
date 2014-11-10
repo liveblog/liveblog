@@ -1,5 +1,5 @@
 
-var gotoUri = require('./helpers/liveblog_frontend').gotoUri;
+var gotoUri = require('./helpers/browser').gotoUri;
 var Login = require('./helpers/pages').login;
 
 var pp = protractor.getInstance().params;

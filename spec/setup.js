@@ -2,8 +2,8 @@
 
 /*global beforeEach, afterEach */
 
-var getToken = require('./helpers/liveblog_auth').getToken;
-var resetApp = require('./helpers/liveblog_fixtures').resetApp;
+var getToken = require('./helpers/auth').getToken;
+var resetApp = require('./helpers/fixtures').resetApp;
 
 // runs before every spec
 beforeEach(function(done) {
