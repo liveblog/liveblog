@@ -14,7 +14,6 @@ function resetApp(callback) {
             'ApplyOnFiles': true
         }
     }, function(e, r, j) {
-        console.log('+++DEBUG')
         callback(e, r, j);
     });
 }
