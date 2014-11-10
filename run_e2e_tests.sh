@@ -1,7 +1,7 @@
 #!/bin/sh
 
-#node_modules/.bin/protractor protractor-conf.js \
-protractor protractor-conf.js \
+#protractor protractor-conf.js \
+./node_modules/.bin/protractor protractor-conf.js \
   --stackTrace --verbose \
   --params.baseUrl 'https://petr.sd-test.sourcefabric.org' \
   --params.baseBackendUrl 'https://petr.sourcefabric.org/api' \
