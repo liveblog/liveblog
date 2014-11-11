@@ -11,9 +11,13 @@ beforeEach(function(done) {
     // if not using angular:
     //browser.ignoreSynchronization = true;
     // for angular:
-    browser.get(protractor.getInstance().params.baseUrl);
     getToken(function() {
-        resetApp(function() {done();});
+        resetApp(function() {
+            browser.get('/');
+            browser.executeScript('sessionStorage.clear();localStorage.clear();');
+            protractor.getInstance().waitForAngular();
+            done();
+        });
     });
 });
 
