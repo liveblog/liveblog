@@ -1,10 +1,11 @@
-from superdesk.resource import Resource
 import superdesk
-from superdesk.services import BaseService
-from apps.archive.common import update_dates_for
-from .common import set_user, get_user
 from superdesk.notification import push_notification
+from superdesk.resource import Resource
+from superdesk.services import BaseService
 from superdesk.utc import utcnow
+
+from .common import set_user, get_user, update_dates_for
+
 
 blogs_schema = {
     'title': {

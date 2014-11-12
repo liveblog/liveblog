@@ -1,7 +1,6 @@
-from superdesk import tests
-# from superdesk.io.tests import setup_providers, teardown_providers
 from settings import LDAP_SERVER
 from flask import json
+from superdesk import tests
 
 
 readonly_fields = ['display_name', 'password', 'phone', 'first_name', 'last_name']
@@ -18,6 +17,9 @@ def before_feature(context, feature):
 
 def before_scenario(context, scenario):
     config = {}
+    if scenario.status != 'skipped' and 'notesting' in scenario.tags:
+        config['SUPERDESK_TESTING'] = False
+
     tests.setup(context, config)
     context.headers = [
         ('Content-Type', 'application/json'),
@@ -30,17 +32,11 @@ def before_scenario(context, scenario):
     if scenario.status != 'skipped' and 'auth' in scenario.tags:
         tests.setup_auth_user(context)
 
-#     if scenario.status != 'skipped' and 'provider' in scenario.tags:
-#         setup_providers(context)
-
     if scenario.status != 'skipped' and 'notification' in scenario.tags:
         tests.setup_notification(context)
 
 
-# def after_scenario(context, scenario):
-#     if 'provider' in scenario.tags:
-#         teardown_providers(context)
-
+def after_scenario(context, scenario):
     if 'notification' in scenario.tags:
         tests.teardown_notification(context)
 

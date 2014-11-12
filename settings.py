@@ -12,8 +12,8 @@ IF_MATCH = True
 BANDWIDTH_SAVER = False
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S+0000'
 
-APPLICATION_NAME = os.environ.get('APP_NAME', 'Liveblog')
-server_url = urlparse(os.environ.get('SUPERDESK_URL', 'http://localhost:5000'))
+APPLICATION_NAME = os.environ.get('APP_NAME', 'Superdesk')
+server_url = urlparse(os.environ.get('SUPERDESK_URL', 'http://localhost:5000/api'))
 CLIENT_URL = os.environ.get('SUPERDESK_CLIENT_URL', 'http://localhost:9000')
 URL_PROTOCOL = server_url.scheme or None
 SERVER_NAME = server_url.netloc or None
@@ -55,15 +55,15 @@ CELERYBEAT_SCHEDULE = {
 }
 
 SENTRY_DSN = os.environ.get('SENTRY_DSN')
-SENTRY_INCLUDE_PATHS = ['liveblog']
+SENTRY_INCLUDE_PATHS = ['superdesk']
 
 INSTALLED_APPS = [
     'apps.auth',
-    'apps.auth.db',
     'apps.users',
     'superdesk.upload',
     'superdesk.notification',
     'superdesk.activity',
+    'superdesk.storage.amazon.import_from_amazon',
 
     'apps.archive',
     'apps.preferences',
@@ -78,6 +78,11 @@ RESOURCE_METHODS = ['GET', 'POST']
 ITEM_METHODS = ['GET', 'PATCH', 'PUT', 'DELETE']
 EXTENDED_MEDIA_INFO = ['content_type', 'name', 'length']
 RETURN_MEDIA_AS_BASE64_STRING = False
+
+AMAZON_CONTAINER_NAME = os.environ.get('AMAZON_CONTAINER_NAME', '')
+AMAZON_ACCESS_KEY_ID = os.environ.get('AMAZON_ACCESS_KEY_ID', '')
+AMAZON_SECRET_ACCESS_KEY = os.environ.get('AMAZON_SECRET_ACCESS_KEY', '')
+AMAZON_REGION = os.environ.get('AMAZON_REGION', '')
 
 
 RENDITIONS = {
@@ -109,9 +114,28 @@ MAIL_PASSWORD = os.environ.get('MAIL_PASSWORD', 'fabric2010')
 ADMINS = [MAIL_USERNAME]
 
 # LDAP settings
-LDAP_SERVER = None  # Ex: ldap://sourcefabric.org
+LDAP_SERVER = os.environ.get('LDAP_SERVER', '')  # Ex: ldap://sourcefabric.org
+LDAP_SERVER_PORT = os.environ.get('LDAP_SERVER_PORT', 389)
 
-TESTING = (os.environ.get('SUPERDESK_TESTING', 'false').lower() == 'true')
+# Fully Qualified Domain Name. Ex: sourcefabric.org
+LDAP_FQDN = os.environ.get('LDAP_FQDN', '')
+
+# LDAP_BASE_FILTER limit the base filter to the security group. Ex: OU=Superdesk Users,dc=sourcefabric,dc=org
+LDAP_BASE_FILTER = os.environ.get('LDAP_BASE_FILTER', '')
+
+# change the user depending on the LDAP directory structure
+LDAP_USER_FILTER = os.environ.get('LDAP_USER_FILTER', "(&(objectCategory=user)(objectClass=user)(sAMAccountName={}))")
+
+# LDAP User Attributes to fetch. Keys would be LDAP Attribute Name and Value would be Supderdesk Model Attribute Name
+LDAP_USER_ATTRIBUTES = {'givenName': 'first_name', 'sn': 'last_name', 'displayName': 'display_name',
+                        'mail': 'email', 'ipPhone': 'phone'}
+
+if LDAP_SERVER:
+    INSTALLED_APPS.append('apps.auth.ldap')
+else:
+    INSTALLED_APPS.append('apps.auth.db')
+
+SUPERDESK_TESTING = (os.environ.get('SUPERDESK_TESTING', 'false').lower() == 'true')
 
 # The number of minutes since the last update of the Mongo auth object after which it will be deleted
 SESSION_EXPIRY_MINUTES = 240
