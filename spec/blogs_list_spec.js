@@ -1,26 +1,21 @@
 var Login = require('./helpers/pages').login;
 
-var ptor = protractor.getInstance();
-
 describe('blogs', function() {
     'use strict';
-
-    var modal;
-
+    var waitTime = 2 * 1000;
     var blogs = [
-            {title: 'title: end to end One', description: 'description: end to end one', username: ptor.params.username},
-            {title: 'title: end to end two', description: 'description: end to end two', username: ptor.params.username},
-            {title: 'title: end To end three', description: 'description: end to end three', username: ptor.params.username}
+            {title: 'title: end to end One', description: 'description: end to end one', username: 'admin'},
+            {title: 'title: end to end two', description: 'description: end to end two', username: 'admin'},
+            {title: 'title: end To end three', description: 'description: end to end three', username: 'admin'}
     ], arhived = [
-            {title: 'title one', description: 'description one', username: ptor.params.username},
+            {title: 'title: end to end closed', description: 'description: end to end closed', username: 'admin'}
     ], searchs = [
             {blogs: [0, 1, 2], search: 'title'},
             {blogs: [0], search: 'One'},
             {blogs: [0, 1, 2], search: 'to'}
     ];
     beforeEach(function() {
-        modal = new Login();
-        modal.login(ptor.params.username, ptor.params.password);
+        (new Login()).login();
     });
 
     describe('blogs list:', function() {
@@ -28,36 +23,39 @@ describe('blogs', function() {
             element.all(by.css('[href="#/liveblog"]')).get(0).click();
         });
         it('can list blogs', function() {
-            var blogsLength = blogs.length;
-            expectBlogsLength(blogsLength);
-            for (var i = 0; i < blogsLength; i++) {
-                expectBlog(blogs[i], i);
-            }
+            browser.wait(function() {
+                var blogsLength = blogs.length;
+                expectBlogsLength(blogsLength);
+                for (var i = 0; i < blogsLength; i++) {
+                    expectBlog(blogs[i], i);
+                }
+            }, waitTime, 'blogs list didn\'t appeared in 2 seconds');
         });
         it('can search blogs', function() {
             element(by.css('[ng-click="flags.open = !flags.open"]')).click();
-            for (var i = 0, counti = searchs.length, search; i < counti; i++) {
-                search = searchs[i];
-                element(by.model('search')).sendKeys(search.search);
-                //ptor.waitForAngular();
-                ptor.sleep(1000);
+            function checkSearch() {
                 expectBlogsLength(search.blogs.length);
                 for (var j = 0, countj = search.blogs.length; j < countj; j++) {
                     expectBlog(blogs[search.blogs[j]], j);
                 }
             }
+            for (var i = 0, counti = searchs.length, search; i < counti; i++) {
+                search = searchs[i];
+                element(by.model('search')).sendKeys(search.search);
+                browser.wait(checkSearch, waitTime, 'blogs search didn\'t appeared in 2 seconds');
+            }
         });
         it('can list archived blogs', function() {
             element(by.binding('activeState.text')).click();
             element(by.repeater('state in states').row(1).column('state.text')).click();
-            //ptor.waitForAngular();
-            ptor.sleep(1000);
-            var blogsLength = ahived.length;
-            expectBlogsLength(blogsLength);
-            for (var i = 0; i < blogsLength; i++) {
-                expectBlog(ahived[i], i);
-            }
-        });
+            browser.wait(function() {
+            var blogsLength = arhived.length;
+                expectBlogsLength(blogsLength);
+                for (var i = 0; i < blogsLength; i++) {
+                    expectBlog(arhived[i], i);
+                }
+            });
+        }, waitTime, 'blogs list archived didn\'t appeared in 2 seconds');
 
     });
     function expectBlogsLength(len) {
@@ -69,6 +67,11 @@ describe('blogs', function() {
         index = index || 0;
         expect(element(by.repeater('blog in blogs._items').row(index).column('blog.title')).getText()).toBe(info.title);
         expect(element(by.repeater('blog in blogs._items').row(index).column('blog.description')).getText()).toBe(info.description);
-        expect(element(by.repeater('blog in blogs._items').row(index).column('blog.original_creator | username')).getText()).toBe(info.username);
+        expect(element(
+            by.repeater('blog in blogs._items')
+                .row(index)
+                .column('blog.original_creator | username'))
+                .getText())
+        .toBe(info.username);
     }
 });
