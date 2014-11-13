@@ -52,7 +52,7 @@
         };
 
         $scope.edit = function(blog) {
-            $location.path('/edit');
+            $location.path('/liveblog/edit/' + blog._id);
         };
 
         function getCriteria() {
