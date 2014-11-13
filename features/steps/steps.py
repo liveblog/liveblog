@@ -7,7 +7,7 @@ from flask import json
 from eve.methods.common import parse
 from superdesk import default_user_preferences, get_resource_service, utc
 
-from wooper.general import fail_and_print_body, apply_path,\
+from wooper.general import fail_and_print_body, apply_path, \
     parse_json_response
 from wooper.expect import (
     expect_status, expect_status_in,

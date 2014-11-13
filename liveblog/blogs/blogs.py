@@ -1,10 +1,9 @@
-import superdesk
 from superdesk.notification import push_notification
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk.utc import utcnow
 
-from .common import set_user, get_user, update_dates_for
+from liveblog.common import get_user, update_dates_for
 
 
 blogs_schema = {
@@ -31,27 +30,19 @@ blogs_schema = {
 }
 
 
-def on_create_blog(docs):
-    for doc in docs:
-        update_dates_for(doc)
-        doc['original_creator'] = set_user(doc)
-
-
-def init_app(app):
-    endpoint_name = 'blogs'
-    service = BlogService(endpoint_name, backend=superdesk.get_backend())
-    BlogsResource(endpoint_name, app=app, service=service)
-
-
 class BlogsResource(Resource):
     schema = blogs_schema
-    datasource = {'default_sort': [('_updated', -1)]}
+    datasource = {
+        'default_sort': [('_updated', -1)]
+    }
 
 
 class BlogService(BaseService):
 
     def on_create(self, docs):
-        on_create_blog(docs)
+        for doc in docs:
+            update_dates_for(doc)
+            doc['original_creator'] = get_user()
 
     def on_created(self, docs):
         push_notification('blogs', created=1)

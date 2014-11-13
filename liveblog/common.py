@@ -10,16 +10,6 @@ def get_user(required=False):
     return user
 
 
-def set_user(doc):
-    usr = get_user()
-    user = str(usr.get('_id', ''))
-    sent_user = doc.get('user', None)
-    if sent_user and user and sent_user != user:
-        raise superdesk.SuperdeskError()
-    doc['user'] = user
-    return user
-
-
 def update_dates_for(doc):
     for item in ['firstcreated', 'versioncreated']:
         doc.setdefault(item, utcnow())
