@@ -16,7 +16,7 @@ from superdesk.validator import SuperdeskValidator
 from raven.contrib.flask import Sentry
 
 
-logger = logging.getLogger('liveblog')
+logger = logging.getLogger('superdesk')
 sentry = Sentry(register_signal=False, wrap_wsgi=False)
 
 
@@ -24,21 +24,31 @@ def get_app(config=None):
     """App factory.
 
     :param config: configuration that can override config from `settings.py`
-    :return: a new LiveBlogEve app instance
+    :return: a new SuperdeskEve app instance
     """
     if config is None:
         config = {}
 
+    config['APP_ABSPATH'] = os.path.abspath(os.path.dirname(__file__))
+
     for key in dir(settings):
         if key.isupper():
             config.setdefault(key, getattr(settings, key))
+
+    media_storage = SuperdeskGridFSMediaStorage
+
+    if config['AMAZON_CONTAINER_NAME']:
+        from superdesk.storage.amazon.amazon_media_storage import AmazonMediaStorage
+        from superdesk.storage.amazon.import_from_amazon import ImportFromAmazonCommand
+        media_storage = AmazonMediaStorage
+        superdesk.command('import:amazon', ImportFromAmazonCommand())
 
     config['DOMAIN'] = {}
 
     app = eve.Eve(
         data=superdesk.SuperdeskDataLayer,
         auth=TokenAuth,
-        media=SuperdeskGridFSMediaStorage,
+        media=media_storage,
         settings=config,
         json_encoder=MongoJSONEncoder,
         validator=SuperdeskValidator)
@@ -47,7 +57,7 @@ def get_app(config=None):
 
     custom_loader = jinja2.ChoiceLoader([
         app.jinja_loader,
-        jinja2.FileSystemLoader(['live-blog/templates'])
+        jinja2.FileSystemLoader(['superdesk/templates'])
     ])
     app.jinja_loader = custom_loader
 
@@ -101,4 +111,4 @@ if __name__ == '__main__':
     superdesk.logger.addHandler(logging.StreamHandler())
 
     app = get_app()
-    app.run(host=host, port=port, debug=debug, use_reloader=False)
+    app.run(host=host, port=port, debug=debug, use_reloader=debug)

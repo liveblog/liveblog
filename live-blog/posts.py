@@ -1,8 +1,10 @@
-from superdesk.resource import Resource
-from apps.archive.common import update_dates_for, set_user
-import superdesk
-from superdesk.services import BaseService
 from bson.objectid import ObjectId
+import superdesk
+from superdesk.resource import Resource
+from superdesk.services import BaseService
+
+from .common import set_user, update_dates_for
+
 
 posts_schema = {
     'text': {

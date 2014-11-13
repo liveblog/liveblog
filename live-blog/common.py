@@ -1,5 +1,6 @@
 import flask
 import superdesk
+from superdesk.utc import utcnow
 
 
 def get_user(required=False):
@@ -17,3 +18,8 @@ def set_user(doc):
         raise superdesk.SuperdeskError()
     doc['user'] = user
     return user
+
+
+def update_dates_for(doc):
+    for item in ['firstcreated', 'versioncreated']:
+        doc.setdefault(item, utcnow())
