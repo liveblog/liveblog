@@ -6,6 +6,19 @@ Feature: Blog operations
         When we get "/blogs"
         Then we get list with 0 items
         
+        
+    @auth
+    Scenario: Add blog
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "title One", "description": "description", "state": "open"}]
+        """  
+        And we get "blogs"
+        Then we get list with 1 items
+	    """
+	    {"_items": [{"title": "title One", "description": "description", "state": "open", "original_creator": {"username": "test_user"}}]}
+	    """
     
 	@auth
     Scenario: Update blog
@@ -40,6 +53,33 @@ Feature: Blog operations
 	    {"_items": [{"title": "testBlog3"}]}
 	    """
 
+    @auth
+    Scenario: Search for blogs
+        Given "blogs"
+        """
+        [
+         {"title": "title One", "description": "description", "state": "open"}, 
+         {"title": "title Two", "description": "one", "state": "open"}, 
+         {"title": "Title three", "state": "open"},
+         {"title": "title one, two, three", "description": "description", "state": "closed"}
+        ]
+        """
+        
+        When we get "/blogs?where={"state": "open", "$or":[{"title":{"$regex":"description","$options":"-i"}},{"description":{"$regex":"description","$options":"-i"}}]}"
+        Then we get list with 1 items
+	    """
+	    {"_items": [{"title": "title One", "description": "description", "state": "open"}]}
+	    """
+
+        When we get "/blogs?where={"state": "open", "$or":[{"title":{"$regex":"One","$options":"-i"}}, {"description":{"$regex":"One","$options":"-i"}}]}"
+        Then we get list with 2 items
+	    """
+	    {"_items": [
+                    {"title": "title One", "description": "description", "state": "open"}, 
+                    {"title": "title Two", "description": "one", "state": "open"} 
+	               ]}
+	    """
+	    
    	@auth
 	Scenario: Delete blog
 		Given "blogs"
@@ -67,10 +107,16 @@ Feature: Blog operations
         """
         When we post to "posts"
         """
-        [{"text": "test post for the same blog",  "blog": "#BLOGS_ID#"}]
+        [{"text": "test post for the same blog", "blog": "#BLOGS_ID#"}]
         """
         And we get "/posts"
-       Then we get list with 2 items
+        Then we get list with 2 items
+        """
+        {"_items": [
+                    {"text": "test post for an open blog", "blog": "#BLOGS_ID#", "original_creator": {"username": "test_user"}}, 
+                    {"text": "test post for the same blog",  "blog": "#BLOGS_ID#", "original_creator": {"username": "test_user"}} 
+	               ]}
+	    """       
         
 	@auth
     Scenario: Retrieve posts from blogs

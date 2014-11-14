@@ -1,9 +1,8 @@
 from bson.objectid import ObjectId
-import superdesk
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 
-from .common import set_user, update_dates_for
+from liveblog.common import update_dates_for, get_user
 
 
 posts_schema = {
@@ -18,19 +17,12 @@ posts_schema = {
 }
 
 
-def init_app(app):
-    endpoint_name = 'posts'
-    service = PostsService(endpoint_name, backend=superdesk.get_backend())
-    PostsResource(endpoint_name, app=app, service=service)
-    endpoint_name = 'blog_posts'
-    service = BlogPostService(endpoint_name, backend=superdesk.get_backend())
-    BlogPostResource(endpoint_name, app=app, service=service)
-
-
 class PostsResource(Resource):
     schema = posts_schema
     resource_methods = ['GET', 'POST', 'DELETE']
-    datasource = {'default_sort': [('_created', -1)]}
+    datasource = {
+        'default_sort': [('_created', -1)]
+    }
 
 
 class PostsService(BaseService):
@@ -38,13 +30,16 @@ class PostsService(BaseService):
     def on_create(self, docs):
         for doc in docs:
             update_dates_for(doc)
-            doc['original_creator'] = set_user(doc)
+            doc['original_creator'] = get_user()
 
 
 class BlogPostResource(Resource):
     url = 'blogs/<regex("[a-f0-9]{24}"):blog_id>/posts'
     schema = posts_schema
-    datasource = {'source': 'posts'}
+    datasource = {
+        'source': 'posts',
+        'search_backend': 'elastic'
+    }
     resource_methods = ['GET']
 
 
