@@ -1,0 +1,40 @@
+[{
+    "resource": "users",
+    "data": {
+        "username": "admin",
+        "first_name": "first name",
+        "last_name": "last name",
+        "password": "admin",
+        "user_type": "administrator",
+        "email": "a@a_other.com"
+    }
+},
+{
+    "resource": "blogs",
+    "data": {
+        "title": "title: end to end One",
+        "description": "description: end to end one"
+    }
+},
+{
+    "resource": "blogs",
+    "data": {
+        "title": "title: end to end two",
+        "description": "description: end to end two"
+    }
+},
+{
+    "resource": "blogs",
+    "data": {
+        "title": "title: end To end three",
+        "description": "description: end to end three"
+    }
+},
+{
+    "resource": "blogs",
+    "data": {
+        "title": "title: end to end closed",
+        "description": "description: end to end closed",
+        "state": "closed"
+    }
+}]
