@@ -2,8 +2,8 @@ var Login = require('./helpers/pages').login;
 
 describe('blogs', function() {
     'use strict';
-    var waitTime = 2 * 1000;
-    var blogs = [
+    var waitTime = 2 * 1000,
+    blogs = [
             {title: 'title: end to end One', description: 'description: end to end one', username: 'admin'},
             {title: 'title: end to end two', description: 'description: end to end two', username: 'admin'},
             {title: 'title: end To end three', description: 'description: end to end three', username: 'admin'}
@@ -14,6 +14,7 @@ describe('blogs', function() {
             {blogs: [0], search: 'One'},
             {blogs: [0, 1, 2], search: 'to'}
     ];
+
     beforeEach(function() {
         (new Login()).login();
     });
@@ -23,11 +24,11 @@ describe('blogs', function() {
             element.all(by.css('[href="#/liveblog"]')).get(0).click();
         });
         it('can list blogs', function() {
-                var blogsLength = blogs.length;
-                expectBlogsLength(blogsLength);
-                for (var i = 0; i < blogsLength; i++) {
-                    expectBlog(blogs[i], i);
-                }
+            var blogsLength = blogs.length;
+            expectBlogsLength(blogsLength);
+            for (var i = 0; i < blogsLength; i++) {
+                expectBlog(blogs[i], i);
+            }
         });
         it('can search blogs', function() {
             element(by.css('[ng-click="flags.open = !flags.open"]')).click();
