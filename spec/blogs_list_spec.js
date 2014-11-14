@@ -7,7 +7,7 @@ describe('blogs', function() {
             {title: 'title: end to end One', description: 'description: end to end one', username: 'admin'},
             {title: 'title: end to end two', description: 'description: end to end two', username: 'admin'},
             {title: 'title: end To end three', description: 'description: end to end three', username: 'admin'}
-    ], arhived = [
+    ], archived = [
             {title: 'title: end to end closed', description: 'description: end to end closed', username: 'admin'}
     ], searchs = [
             {blogs: [0, 1, 2], search: 'title'},
@@ -23,13 +23,11 @@ describe('blogs', function() {
             element.all(by.css('[href="#/liveblog"]')).get(0).click();
         });
         it('can list blogs', function() {
-            browser.wait(function() {
                 var blogsLength = blogs.length;
                 expectBlogsLength(blogsLength);
                 for (var i = 0; i < blogsLength; i++) {
                     expectBlog(blogs[i], i);
                 }
-            }, waitTime, 'blogs list didn\'t appeared in 2 seconds');
         });
         it('can search blogs', function() {
             element(by.css('[ng-click="flags.open = !flags.open"]')).click();
@@ -42,20 +40,18 @@ describe('blogs', function() {
             for (var i = 0, counti = searchs.length, search; i < counti; i++) {
                 search = searchs[i];
                 element(by.model('search')).sendKeys(search.search);
-                browser.wait(checkSearch, waitTime, 'blogs search didn\'t appeared in 2 seconds');
+                browser.wait(checkSearch, waitTime, 'correct search result didn\'t appeared in 2 seconds');
             }
         });
         it('can list archived blogs', function() {
             element(by.binding('activeState.text')).click();
             element(by.repeater('state in states').row(1).column('state.text')).click();
-            browser.wait(function() {
-            var blogsLength = arhived.length;
+            var blogsLength = archived.length;
                 expectBlogsLength(blogsLength);
                 for (var i = 0; i < blogsLength; i++) {
-                    expectBlog(arhived[i], i);
+                    expectBlog(archived[i], i);
                 }
             });
-        }, waitTime, 'blogs list archived didn\'t appeared in 2 seconds');
 
     });
     function expectBlogsLength(len) {
