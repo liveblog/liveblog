@@ -64,8 +64,8 @@
                 };
 
             if (params.q) {
-                criteria.where.$or =  [
-                        {name: {'$regex': params.q}},
+                criteria.where.$or = [
+                        {title: {'$regex': params.q}},
                         {description: {'$regex': params.q}}
                     ];
             }
