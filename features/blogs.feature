@@ -14,7 +14,7 @@ Feature: Blog operations
         """
         [{"title": "title One", "description": "description", "state": "open"}]
         """  
-        And we get "blogs"
+        And we get "blogs?embedded={"original_creator":1}"
         Then we get list with 1 items
 	    """
 	    {"_items": [{"title": "title One", "description": "description", "state": "open", "original_creator": {"username": "test_user"}}]}
@@ -109,7 +109,7 @@ Feature: Blog operations
         """
         [{"text": "test post for the same blog", "blog": "#BLOGS_ID#"}]
         """
-        And we get "/posts"
+        And we get "/posts?embedded={"original_creator":1}"
         Then we get list with 2 items
         """
         {"_items": [

@@ -88,7 +88,7 @@ Feature: Prepopulate
         {"_status": "OK"}
         """
         
-	When we setup test user
+	    When we setup test user
 		
         When we get "/users"
         Then we get list with 2 items
