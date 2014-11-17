@@ -3,8 +3,8 @@ define([
 ], function(angular) {
     'use strict';
 
-    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify'];
-    function BlogEditController(api, $scope, blog, notify) {
+    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext'];
+    function BlogEditController(api, $scope, blog, notify, gettext) {
         $scope.blog = blog;
         $scope.post = '';
 
@@ -20,7 +20,7 @@ define([
 
         $scope.$watch('blog.state', function() {
             //the text on the open/close button
-            $scope.toggleStateText = $scope.blog.state === 'open' ? 'Close Blog': 'Open Blog';
+            $scope.toggleStateText = $scope.blog.state === 'open' ? gettext('Close Blog'): gettext('Reopen Blog');
             $scope.disableInterfaceSwitch = $scope.blog.state === 'open' ? false: true;
         });
 

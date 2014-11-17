@@ -6,13 +6,13 @@
         </a>
     </div>
 
-     <h3 class="page-nav-title" translate>{{ blog.title }}</h3>
-     <button class="btn" style="margin-left: 20px;" type="button" translate ng-click="toggleBlogState()">{{ toggleStateText }}</button>
+    <h3 class="page-nav-title" translate>{{ blog.title }}</h3>
     <div class="button-stack right-stack">
         <button class="navbtn">
             <i class="svg-icon-settings"></i>
         </button>
     </div>
+    <button class="btn btn-info pull-right" type="button" translate ng-click="toggleBlogState()">{{ toggleStateText }}</button>
 </div>
 
 <section class="main-section blogedit">
@@ -24,25 +24,33 @@
 
 		<!-- editor column -->
 		<div class="column column-editor">
-			<header>
-				<button class="btn btn-info pull-right" ng-click="create()" translate ng-disabled="disableInterfaceSwitch">New</button>
-			</header>
-			<div class="content">
-				<div class="editor-holder">
-					<div class="editor">
-						<textarea class="editor" ng-model="post"></textarea>
-					</div>
-					<div class="actions">
-						<button class="btn" translate><i class="filetype-icon-text"></i> Add text</button>
-						<button class="btn" translate><i class="filetype-icon-photo"></i> Add image</button>
-						<button class="btn" translate><i class="icon-dots"></i>Add embed</button>
-					</div>
-				</div>
-				<div class="actions">
-					<button class="btn" ng-disabled="!post&&disableInterfaceSwitch" translate>Save as draft</button>
-					<button class="btn btn-info" ng-disabled="!post&&disableInterfaceSwitch" ng-click="publish()" translate>Publish</button>
-				</div>
-			</div>
+            <span ng-show="!disableInterfaceSwitch">
+    			<header>
+    				<button class="btn btn-info pull-right" ng-click="create()" translate ng-disabled="disableInterfaceSwitch">New</button>
+    			</header>
+    			<div class="content">
+    				<div class="editor-holder">
+    					<div class="editor">
+    						<textarea class="editor" ng-model="post"></textarea>
+    					</div>
+    					<div class="actions">
+    						<button class="btn" translate><i class="filetype-icon-text"></i> Add text</button>
+    						<button class="btn" translate><i class="filetype-icon-photo"></i> Add image</button>
+    						<button class="btn" translate><i class="icon-dots"></i>Add embed</button>
+    					</div>
+    				</div>
+    				<div class="actions">
+    					<button class="btn" ng-disabled="!post&&disableInterfaceSwitch" translate>Save as draft</button>
+    					<button class="btn btn-info" ng-disabled="!post&&disableInterfaceSwitch" ng-click="publish()" translate>Publish</button>
+    				</div>
+    			</div>
+            </span>
+            <span ng-show="disableInterfaceSwitch">
+                <div class="alert alert-danger margin15px" role="alert">
+                    <span><strong translate>This blog is closed!</strong></span><br />
+                    <span translate >No posts allowed on closed blogs. Reopen the blogs in order to make any changes</span>
+                </div>
+            </span>
 		</div>
 
 		<!-- timeline column -->
