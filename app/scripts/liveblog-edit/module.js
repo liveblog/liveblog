@@ -3,8 +3,8 @@ define([
 ], function(angular) {
     'use strict';
 
-    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext'];
-    function BlogEditController(api, $scope, blog, notify, gettext) {
+    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route'];
+    function BlogEditController(api, $scope, blog, notify, gettext, $route) {
         $scope.blog = blog;
         $scope.oldBlog = _.create(blog);
         $scope.updateBlog = function(blog) {
@@ -23,12 +23,20 @@ define([
         $scope.post = '';
         $scope.timeline = [];
         $scope.publish = function() {
-            $scope.timeline.push($scope.post);
-            $scope.create();
+            notify.info(gettext('Saving post'));
+            $scope.create().then(function() {
+                notify.pop();
+                notify.info(gettext('Post saved'));
+                $scope.timeline.push($scope.post);
+                $scope.post = '';
+            }, function() {
+                notify.pop();
+                notify.error(gettext('Something went wrong. Please try again later'));
+            });
         };
 
         $scope.create = function() {
-            $scope.post = '';
+            return api.posts.save({text: $scope.post, blog: $route.current.params._id});
         };
 
         $scope.$watch('blog.state', function() {
@@ -65,16 +73,20 @@ define([
     }
 
     var app = angular.module('liveblog.edit', []);
-    app
-        .config(['superdeskProvider', function(superdesk) {
-            superdesk
-                .activity('/liveblog/edit/:_id', {
-                    label: gettext('Blog Edit'),
-                    controller: BlogEditController,
-                    templateUrl: 'scripts/liveblog-edit/views/main.html',
-                    resolve: {blog: BlogResolver}
-                });
-        }]);
+    app.config(['superdeskProvider', function(superdesk) {
+    superdesk
+        .activity('/liveblog/edit/:_id', {
+            label: gettext('Blog Edit'),
+            controller: BlogEditController,
+            templateUrl: 'scripts/liveblog-edit/views/main.html',
+            resolve: {blog: BlogResolver}
+        });
+    }]).config(['apiProvider', function(apiProvider) {
+        apiProvider.api('posts', {
+            type: 'http',
+            backend: {rel: 'posts'}
+        });
+    }]);
 
     return app;
 });
