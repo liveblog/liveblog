@@ -42,7 +42,7 @@ class BlogService(BaseService):
     def on_create(self, docs):
         for doc in docs:
             update_dates_for(doc)
-            doc['original_creator'] = get_user()
+            doc['original_creator'] = str(get_user().get('_id'))
 
     def on_created(self, docs):
         push_notification('blogs', created=1)
