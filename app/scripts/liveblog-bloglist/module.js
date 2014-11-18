@@ -65,8 +65,8 @@
 
             if (params.q) {
                 criteria.where.$or = [
-                        {title: {'$regex': params.q}},
-                        {description: {'$regex': params.q}}
+                        {title: {'$regex': params.q, '$options':'-i'}},
+                        {description: {'$regex': params.q, '$options':'-i'}}
                     ];
             }
 
