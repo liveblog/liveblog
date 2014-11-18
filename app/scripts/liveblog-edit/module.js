@@ -6,8 +6,21 @@ define([
     BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext'];
     function BlogEditController(api, $scope, blog, notify, gettext) {
         $scope.blog = blog;
-        $scope.post = '';
+        $scope.oldBlog = _.create(blog);
+        $scope.updateBlog = function(blog) {
+            if (_.isEmpty(blog)) {
+                return;
+            }
+            notify.info(gettext('saving..'));
+            api.blogs.save($scope.blog, blog).then(function(newBlog) {
+                notify.pop();
+                notify.success(gettext('blog saved.'));
+                $scope.oldBlog = _.create(newBlog);
+                $scope.blog = newBlog;
+            });
+        };
 
+        $scope.post = '';
         $scope.timeline = [];
         $scope.publish = function() {
             $scope.timeline.push($scope.post);
@@ -52,7 +65,6 @@ define([
     }
 
     var app = angular.module('liveblog.edit', []);
-
     app
         .config(['superdeskProvider', function(superdesk) {
             superdesk
