@@ -1,6 +1,7 @@
 Feature: Prepopulate
 
     @auth
+    @dbauth
     Scenario: Prepopulate and erase
         Given empty "users"
         Given empty "roles"
@@ -20,7 +21,7 @@ Feature: Prepopulate
         Then we get list with 2 items
         """
         {"_items": [{"username":"admin", "first_name":"first name", "last_name":"last name", "user_type": "administrator", "email": "a@a.com"}, 
-                   {"username": "test_user", "user_type": "administrator"}]}
+                   {"username": "test_user"}]}
         """
         
         When we get "/roles"
@@ -31,6 +32,7 @@ Feature: Prepopulate
         
 
     @auth
+    @dbauth
     @notesting
     Scenario: Prepopulate and app not on testing mode
         Given empty "users"
@@ -44,6 +46,7 @@ Feature: Prepopulate
 		
         
     @auth
+    @dbauth
     Scenario: Prepopulate and no erase
         Given empty "users"
         Given empty "roles"
@@ -67,14 +70,16 @@ Feature: Prepopulate
         """
 		
         When we get "/users"
-        Then we get list with 2 items
+        Then we get list with 3 items
         """
         {"_items": [{"username":"admin", "first_name":"first name", "last_name":"last name", "user_type": "administrator", "email": "a@a.com"},
-                    {"username": "foo", "email": "foo@bar.com"}]}
+                    {"username": "foo", "email": "foo@bar.com"},
+                    {"username": "test_user"}]}
         """
         
         
     @auth
+    @dbauth
     Scenario: Prepopulate with custom profile
         Given empty "users"
         Given empty "roles"
@@ -94,7 +99,7 @@ Feature: Prepopulate
         Then we get list with 2 items
         """
         {"_items": [{"username":"admin_other", "first_name":"first name other", "last_name":"last name other", "user_type": "administrator", "email": "a@a_other.com"}, 
-                   {"username": "test_user", "user_type": "administrator"}]}
+                   {"username": "test_user"}]}
         """
         
         When we get "/roles"
