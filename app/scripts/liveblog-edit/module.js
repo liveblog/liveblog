@@ -33,7 +33,7 @@ define([
 
         $scope.$watch('blog.state', function() {
             //the text on the open/close button
-            $scope.toggleStateText = $scope.blog.state === 'open' ? gettext('Close Blog'): gettext('Reopen Blog');
+            $scope.toggleStateText = $scope.blog.state === 'open' ? gettext('Archive Blog'): gettext('Activate Blog');
             $scope.disableInterfaceSwitch = $scope.blog.state === 'open' ? false: true;
         });
 
