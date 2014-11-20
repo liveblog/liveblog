@@ -97,6 +97,44 @@ describe('blogs', function() {
             expect(blogs[0], 0);
         });
     });
+
+    describe('change title and description for blog', function() {
+        it('should modify title for blog', function() {
+            //open first blog
+            openBlog(0);
+            element(by.buttonText('blog details')).click();
+            //modifying the title
+            blogs[0].title = 'ABC';
+            var inputTitle = element(by.model('blogs.title'));
+            inputTitle.clear();
+            inputTitle.sendKeys('ABC');
+            //click back to liveblog list
+            element(by.css('[class="icon-th-large"]')).click();
+            //go to active blogs
+            element(by.binding('activeState.text')).click();
+            element(by.repeater('state in states').row(0).column('state.text')).click();
+            expectBlog(blogs[0]);
+
+        });
+
+        it('should modify description for blog', function() {
+            //open first blog
+            openBlog(0);
+            element(by.buttonText('blog details')).click();
+            //modifying the description
+            blogs[0].description = 'test description';
+            var inputDescription = element(by.model('blogs.description'));
+            inputDescription.clear();
+            inputDescription.sendKeys('test description');
+            //click back to liveblog list
+            element(by.css('[class="icon-th-large"]')).click();
+            //go to active blogs
+            element(by.binding('activeState.text')).click();
+            element(by.repeater('state in states').row(0).column('state.text')).click();
+            expectBlog(blogs[0]);
+        });
+    });
+
     function expectBlogsLength(len) {
         expect(element.all(by.repeater('blog in blogs._items')).count()).toEqual(len);
     }
