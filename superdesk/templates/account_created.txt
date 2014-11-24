@@ -1,9 +1,10 @@
 Hi there,
 
-Someone created for you a {{app_name}} user account with username {{username}}. 
+Someone created a {{app_name}} user account for you.
+Your username is {{username}} 
 Please go to {{url}} and complete your profile.
 
-This link expires after {{expires}} hours.
+This link expires after 7 days.
 
 Please ignore this email if you think your {{app_name}} account was created in error.
 
