@@ -1,4 +1,5 @@
 var openUrl = require('./helpers/utils').open;
+var lodash = require('lodash');
 
 describe('blogs', function() {
     'use strict';
@@ -71,6 +72,7 @@ describe('blogs', function() {
             }
         });
     });
+
     describe('archive and activate a blog', function() {
         it('should archive a blog', function() {
             //open first blog
@@ -103,12 +105,13 @@ describe('blogs', function() {
 
     describe('change title and description for blog', function() {
         it('should modify title for blog', function() {
+            var blog = lodash.clone(blogs[0]);
             //open first blog
             openBlog(0);
-            element(by.buttonText('blog details')).click();
+            element(by.buttonText('Blog details')).click();
             //modifying the title
-            blogs[0].title = 'ABC';
-            var inputTitle = element(by.model('blogs.title'));
+            blog.title = 'ABC';
+            var inputTitle = element(by.model('oldBlog.title'));
             inputTitle.clear();
             inputTitle.sendKeys('ABC');
             //click back to liveblog list
@@ -116,25 +119,26 @@ describe('blogs', function() {
             //go to active blogs
             element(by.binding('activeState.text')).click();
             element(by.repeater('state in states').row(0).column('state.text')).click();
-            expectBlog(blogs[0]);
+            expectBlog(blog);
 
         });
 
         it('should modify description for blog', function() {
+            var blog = lodash.clone(blogs[0]);
             //open first blog
             openBlog(0);
-            element(by.buttonText('blog details')).click();
+            element(by.buttonText('Blog details')).click();
             //modifying the description
-            blogs[0].description = 'test description';
-            var inputDescription = element(by.model('blogs.description'));
+            blog.description = 'test description ABC';
+            var inputDescription = element(by.model('oldBlog.description'));
             inputDescription.clear();
-            inputDescription.sendKeys('test description');
+            inputDescription.sendKeys('test description ABC');
             //click back to liveblog list
             element(by.css('[class="icon-th-large"]')).click();
             //go to active blogs
             element(by.binding('activeState.text')).click();
             element(by.repeater('state in states').row(0).column('state.text')).click();
-            expectBlog(blogs[0]);
+            expectBlog(blog);
         });
     });
 
@@ -150,6 +154,7 @@ describe('blogs', function() {
             expectBlog(newBlog);
         });
     });
+
     function expectBlogsLength(len) {
         expect(element.all(by.repeater('blog in blogs._items')).count()).toEqual(len);
     }
