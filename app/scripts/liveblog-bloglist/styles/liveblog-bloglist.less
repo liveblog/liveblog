@@ -23,16 +23,30 @@
 		top: @nav-height;
 		left: 0; right: 0; bottom: 0;
 		padding: 30px;
-		ul {
+		.row-list {
+			tr {
+				cursor: pointer;
+				.content {
+					.time {
+						font-size: 13px;
+						font-style: italic;
+						color: #bcbcbc;
+					}
+				}
+			}
+		}
+		.card-list {
 			> li {
+				border: 1px solid #d4d4d4;
+				background-color: white;
+				margin: 0 0 20px 20px;
+				padding: 20px;
+				cursor: pointer;
 				width: 260px;
 				height: 260px;
 				padding: 0;
 				.border-box();
 				float: left;
-				border: 1px solid #d4d4d4;
-				float: left;
-				margin: 0 0 20px 20px;
 				.close {
 					position: absolute;
 					right: 10px;
