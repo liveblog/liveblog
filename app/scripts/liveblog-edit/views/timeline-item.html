@@ -1,0 +1,18 @@
+<li>
+    <div class="post-item-holder">
+        <div class="table-cell post-item-figure">
+            <figure class="avatar">
+                <img class="ng-isolate-scope" data-src="post.picture_url" sd-user-avatar="" style="display: none;">
+            </figure>
+        </div> 
+        <div class="table-cell">
+            <div class="table-row">
+            <strong>{{ post.original_creator_name }}</strong> | <time>{{ post._updated | reldate }}</time>
+            </div>
+            <div class="table-row">
+                {{ post.text }}
+            </div>
+        </div>
+    </div>
+    <div style="border-top:1px solid #CCCCCC; height: 15px"></div>
+</li>
