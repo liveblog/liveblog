@@ -31,6 +31,16 @@ describe('blogs', function() {
                 expectBlog(blogs[i], i);
             }
         });
+        it('can list blogs in a listed view', function() {
+            // assert we have no <table> as inital state. We should arrive on the grid view.
+            expect(element(by.css('.list-container table')).isPresent()).toBe(false);
+            // click on the "switch to listed view" button
+            element(by.css('button[ng-show="gridview"]')).click();
+            // assert we have a listed view (we look for a <table>)
+            expect(element(by.css('.list-container table')).isPresent()).toBe(true);
+            // check the number of blogs
+            expectBlogsLength(blogs.length);
+        });
         function searchBlogs(search) {
             element(by.css('[ng-click="flags.open = !flags.open"]')).click();
             element(by.model('search')).clear().sendKeys(search.search);
