@@ -14,6 +14,10 @@
     "tests"
   ],
   "dependencies": {
-    "superdesk": "https://github.com/liveblog/superdesk-client.git#devel"
+    "superdesk": "https://github.com/liveblog/superdesk-client.git#devel",
+    "sir-trevor-js": "~0.3.2"
+  },
+  "resolutions": {
+    "jquery": "2.1.1"
   }
 }
