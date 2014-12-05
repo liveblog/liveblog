@@ -6,8 +6,10 @@ from behave import given, when, then  # @UnresolvedImport
 from flask import json
 from eve.methods.common import parse
 from superdesk import default_user_preferences, get_resource_service, utc
+from superdesk.utc import utcnow
+from eve.io.mongo import MongoJSONEncoder
 
-from wooper.general import fail_and_print_body, apply_path, \
+from wooper.general import fail_and_print_body, apply_path,\
     parse_json_response
 from wooper.expect import (
     expect_status, expect_status_in,
@@ -20,6 +22,7 @@ from wooper.assertions import (
 from urllib.parse import urlparse
 from os.path import basename
 from superdesk.tests import test_user, get_prefixed_url
+from re import findall
 
 external_url = 'http://thumbs.dreamstime.com/z/digital-nature-10485007.jpg'
 
@@ -29,7 +32,6 @@ def test_json(context):
         response_data = json.loads(context.response.get_data())
     except Exception:
         fail_and_print_body(context.response, 'response is not valid json')
-
     context_data = json.loads(apply_placeholders(context, context.text))
     assert_equal(json_match(context_data, response_data), True,
                  msg=str(context_data) + '\n != \n' + str(response_data))
@@ -136,15 +138,24 @@ def set_placeholder(context, name, value):
     old_p = getattr(context, 'placeholders', None)
     if not old_p:
         context.placeholders = dict()
-    context.placeholders['#%s#' % name] = value
+    context.placeholders[name] = value
 
 
 def apply_placeholders(context, text):
-    placeholders = getattr(context, 'placeholders', None)
-    if not placeholders:
-        return text
-    for tag, value in placeholders.items():
-        text = text.replace(tag, value)
+    placeholders = getattr(context, 'placeholders', {})
+    for placeholder in findall('#([^#]+)#', text):
+        if placeholder not in placeholders:
+            resource_name, field_name = placeholder.lower().split('_')
+            if field_name == 'id':
+                field_name = '_%s' % field_name
+            resource = getattr(context, resource_name, None)
+            if resource and field_name in resource:
+                value = str(resource[field_name])
+            else:
+                continue
+        else:
+            value = placeholders[placeholder]
+        text = text.replace('#%s#' % placeholder, value)
     return text
 
 
@@ -160,6 +171,9 @@ def step_impl_given_(context, resource):
     with context.app.test_request_context(context.app.config['URL_PREFIX']):
         get_resource_service(resource).delete_action()
         items = [parse(item, resource) for item in json.loads(data)]
+        if resource in ('users', '/users'):
+            for item in items:
+                item.setdefault('needs_activation', False)
         get_resource_service(resource).post(items)
         context.data = items
         context.resource = resource
@@ -201,7 +215,7 @@ def step_impl_given_config(context):
 def step_impl_given_role(context, role_name):
     with context.app.test_request_context(context.app.config['URL_PREFIX']):
         role = get_resource_service('roles').find_one(name=role_name, req=None)
-        data = json.dumps({'roles': [str(role['_id'])]})
+        data = MongoJSONEncoder().encode({'role': role.get('_id')})
     response = patch_current_user(context, data)
     assert_ok(response)
 
@@ -212,14 +226,6 @@ def step_impl_given_user_type(context, user_type):
         data = json.dumps({'user_type': user_type})
     response = patch_current_user(context, data)
     assert_ok(response)
-
-
-@given('role "{extending_name}" extends "{extended_name}"')
-def step_impl_given_role_extends(context, extending_name, extended_name):
-    with context.app.test_request_context(context.app.config['URL_PREFIX']):
-        extended = get_resource_service('roles').find_one(name=extended_name, req=None)
-        extending = get_resource_service('roles').find_one(name=extending_name, req=None)
-        get_resource_service('roles').patch(extending['_id'], {'extends': extended['_id']})
 
 
 @when('we post to auth')
@@ -234,13 +240,25 @@ def step_impl_fetch_from_provider_ingest(context, provider_name, guid):
         provider = get_resource_service('ingest_providers').find_one(name=provider_name, req=None)
         provider_service = context.provider_services[provider.get('type')]
         provider_service.provider = provider
-        context.ingest_items(provider, provider_service.fetch_ingest(guid))
+        items = provider_service.fetch_ingest(guid)
+        for item in items:
+            item['versioncreated'] = utcnow()
+        context.ingest_items(provider, items)
 
 
 @when('we post to "{url}"')
 def step_impl_when_post_url(context, url):
     data = apply_placeholders(context, context.text)
+    if url in ('/users', 'users'):
+        user = json.loads(data)
+        user.setdefault('needs_activation', False)
+        data = json.dumps(user)
     context.response = context.client.post(get_prefixed_url(context.app, url), data=data, headers=context.headers)
+    print('context.response: ', context.response)
+    store_placeholder(context, url)
+
+
+def store_placeholder(context, url):
     if context.response.status_code in (200, 201):
         item = json.loads(context.response.get_data())
         if item['_status'] == 'OK' and item.get('_id'):
@@ -281,6 +299,16 @@ def when_we_get_url(context, url):
     context.response = context.client.get(get_prefixed_url(context.app, url), headers=headers)
 
 
+@then('we get latest')
+def steo_impl_we_get_latest(context):
+    data = get_json_data(context.response)
+    href = get_self_href(data, context)
+    headers = if_match(context, data.get('_etag'))
+    href = get_prefixed_url(context.app, href)
+    context.response = context.client.get(href, headers=headers)
+    assert_200(context.response)
+
+
 @when('we find for "{resource}" the id as "{name}" by "{search_criteria}"')
 def when_we_find_for_resource_the_id_as_name_by_search_criteria(context, resource, name, search_criteria):
     url = '/' + resource + '?where=' + search_criteria
@@ -296,10 +324,12 @@ def when_we_find_for_resource_the_id_as_name_by_search_criteria(context, resourc
 
 @when('we delete "{url}"')
 def step_impl_when_delete_url(context, url):
+    url = apply_placeholders(context, url)
     res = get_res(url, context)
     href = get_self_href(res, context)
     headers = if_match(context, res.get('_etag'))
-    context.response = context.client.delete(get_prefixed_url(context.app, href), headers=headers)
+    href = get_prefixed_url(context.app, href)
+    context.response = context.client.delete(href, headers=headers)
 
 
 @when('we delete latest')
@@ -307,7 +337,8 @@ def when_we_delete_it(context):
     res = get_json_data(context.response)
     href = get_self_href(res, context)
     headers = if_match(context, res.get('_etag'))
-    context.response = context.client.delete(get_prefixed_url(context.app, href), headers=headers)
+    href = get_prefixed_url(context.app, href)
+    context.response = context.client.delete(href, headers=headers)
 
 
 @when('we patch "{url}"')
@@ -323,10 +354,10 @@ def step_impl_when_patch_url(context, url):
 @when('we patch latest')
 def step_impl_when_patch_again(context):
     data = get_json_data(context.response)
-    href = get_self_href(data, context)
+    href = get_prefixed_url(context.app, get_self_href(data, context))
     headers = if_match(context, data.get('_etag'))
     data2 = apply_placeholders(context, context.text)
-    context.response = context.client.patch(get_prefixed_url(context.app, href), data=data2, headers=headers)
+    context.response = context.client.patch(href, data=data2, headers=headers)
     if context.response.status_code in (200, 201):
         item = json.loads(context.response.get_data())
         if item['_status'] == 'OK' and item.get('_id'):
@@ -376,8 +407,10 @@ def upload_file(context, dest, filename, crop_data=None):
             data.update(crop_data)
         headers = [('Content-Type', 'multipart/form-data')]
         headers = unique_headers(headers, context.headers)
-        context.response = context.client.post(get_prefixed_url(context.app, dest), data=data, headers=headers)
+        url = get_prefixed_url(context.app, dest)
+        context.response = context.client.post(url, data=data, headers=headers)
         assert_ok(context.response)
+        store_placeholder(context, url)
 
 
 @when('we upload a file from URL')
@@ -424,8 +457,13 @@ def step_impl_then_get_error(context, code):
 @then('we get list with {total_count} items')
 def step_impl_then_get_list(context, total_count):
     assert_200(context.response)
-    expect_json_length(context.response, int(total_count), path='_items')
-    if total_count == 0 or not context.text:
+    data = get_json_data(context.response)
+    int_count = int(total_count.replace('+', ''))
+    if '+' in total_count:
+        assert int_count <= data['_meta']['total']
+    else:
+        assert int_count == data['_meta']['total']
+    if int_count == 0 or not context.text:
         return
     test_json(context)
 
@@ -455,6 +493,8 @@ def step_impl_then_get_code(context, code):
 @then('we get updated response')
 def step_impl_then_get_updated(context):
     assert_ok(context.response)
+    if context.text:
+        test_json(context)
 
 
 @then('we get "{key}" in "{url}"')
@@ -729,14 +769,14 @@ def step_impl_then_get_picture(context):
     expect_json_contains(context.response, 'picture_url')
 
 
-@then('we get facets "{keys}"')
-def step_impl_then_get_facets(context, keys):
+@then('we get aggregations "{keys}"')
+def step_impl_then_get_aggs(context, keys):
     assert_200(context.response)
-    expect_json_contains(context.response, '_facets')
+    expect_json_contains(context.response, '_aggregations')
     data = get_json_data(context.response)
-    facets = data['_facets']
+    aggs = data['_aggregations']
     for key in keys.split(','):
-        assert_in(key, facets)
+        assert_in(key, aggs)
 
 
 @then('the file is stored localy')
@@ -828,7 +868,6 @@ def start_reset_password_for_user(context):
     headers = unique_headers(headers, context.headers)
     context.response = context.client.post(get_prefixed_url(context.app, '/reset_user_password'),
                                            data=data, headers=headers)
-    print(context.response.get_data())
 
 
 @then('we fail to reset password for user')
@@ -853,6 +892,7 @@ def we_reset_password_for_user(context):
 def when_we_switch_user(context):
     user = {'username': 'test-user-2', 'password': 'pwd', 'is_active': True, 'needs_activation': False}
     tests.setup_auth_user(context, user)
+    set_placeholder(context, 'USERS_ID', str(context.user['_id']))
 
 
 @when('we setup test user')
@@ -1028,12 +1068,6 @@ def step_get_activation_email(context):
     assert token
 
 
-@when('role "{extending_name}" extends "{extended_name}"')
-def step_role_extends(context, extending_name, extended_name):
-    with context.app.test_request_context(context.app.config['URL_PREFIX']):
-        extended = get_resource_service('roles').find_one(name=extended_name, req=None)
-        extending = get_resource_service('roles').find_one(name=extending_name, req=None)
-        headers = if_match(context, extending.get('_etag'))
-        data = json.dumps({'extends': str(extended['_id'])})
-        context.response = context.client.patch(get_prefixed_url(context.app, '/roles/%s' % extending['_id']),
-                                                data=data, headers=headers)
+@then('we set elastic limit')
+def step_set_limit(context):
+    context.app.settings['MAX_SEARCH_DEPTH'] = 1
