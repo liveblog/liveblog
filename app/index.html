@@ -36,6 +36,7 @@
     <script src="scripts/bower_components/superdesk/app/scripts/superdesk/editor/editor.js"></script>
     <script src="scripts/bower_components/superdesk/app/scripts/superdesk/features/features.js"></script>
     <script src="scripts/bower_components/superdesk/app/scripts/superdesk/services/asset.js"></script>
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk/privileges/privileges.js"></script>    
 
     <script src="scripts/bower_components/superdesk/app/scripts/superdesk/menu/menu.js"></script>
     <script src="scripts/bower_components/superdesk/app/scripts/superdesk/menu/notifications/notifications.js"></script>
@@ -76,7 +77,11 @@
             'liveblog.edit',
             'liveblog.timeline',
             'superdesk.users',
-            'superdesk.scratchpad'
+            'superdesk.scratchpad',
+
+            'superdesk.users.import',
+            'superdesk.users.profile',
+            'superdesk.users.activity'            
         ];
 
         require([
@@ -84,8 +89,8 @@
             'superdesk-settings/module',
             'superdesk-dashboard/module',
             'liveblog-dashboard/module',
-            'liveblog-edit/module',            
-            'liveblog-edit/timeline',            
+            'liveblog-edit/module',
+            'liveblog-edit/timeline',       
             'superdesk-scratchpad/module'
         ], function(bootstrap) {
             bootstrap(config, modules);
