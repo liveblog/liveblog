@@ -1,4 +1,20 @@
 [
-{"resource":"users", "id_name":"-id user admin-", "data":{"username":"admin", "first_name":"first name", "last_name":"last name", "password":"admin", "user_type": "administrator", "email": "a@a.com"}},
-{"resource":"roles", "data":{"name": "Editor", "permissions": {"ingest": {"read": 1}}}}
+{
+    "resource": "users",
+    "id_name": "-id user admin-",
+    "data": {
+        "username": "admin",
+        "first_name": "first name",
+        "last_name": "last name",
+        "password": "admin",
+        "user_type": "administrator",
+        "email": "a@a.com"
+    }
+},
+{
+    "resource": "roles",
+    "data": {
+        "name": "Editor"
+    }
+}
 ]

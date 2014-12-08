@@ -35,6 +35,7 @@ class BlogsResource(Resource):
     datasource = {
         'default_sort': [('_updated', -1)]
     }
+    privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
 
 
 class BlogService(BaseService):
