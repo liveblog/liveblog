@@ -1,6 +1,6 @@
 define([
     'angular',
-    'ng-sir-trevor'
+    'ng-sir-trevor-blocks'
 ], function(angular) {
     'use strict';
 
@@ -76,7 +76,7 @@ define([
             });
     }
 
-    var app = angular.module('liveblog.edit', ['SirTrevor']);
+    var app = angular.module('liveblog.edit', ['SirTrevor', 'SirTrevorBlocks']);
     app.config(['superdeskProvider', function(superdesk) {
     superdesk
         .activity('/liveblog/edit/:_id', {
@@ -92,7 +92,22 @@ define([
         });
     }]).config(['SirTrevorOptionsProvider', function(SirTrevorOptions) {
         SirTrevorOptions.$extend({
-            blockTypes: ['Text']
+            blockTypes: ['Text', 'Quote'],
+            transform: {
+                get: function(block) {
+                    return {
+                        type: block.blockStorage.type,
+                        text: block.toHTML()
+                        //,meta: block.toMeta()
+                    };
+                },
+                set: function(block) {
+                    return {
+                        type: block.type,
+                        data: block.data
+                    };
+                }
+            }
         });
     }]);
 
