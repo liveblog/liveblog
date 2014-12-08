@@ -15,7 +15,7 @@
   ],
   "dependencies": {
     "superdesk": "https://github.com/liveblog/superdesk-client.git#devel",
-    "sir-trevor-js": "~0.3.2"
+    "ng-sir-trevor": "https://github.com/nistormihai/ng-sir-trevor.git"
   },
   "resolutions": {
     "jquery": "2.1.1"
