@@ -78,8 +78,7 @@ define([
 
     var app = angular.module('liveblog.edit', ['SirTrevor']);
     app.config(['superdeskProvider', function(superdesk) {
-    superdesk
-        .activity('/liveblog/edit/:_id', {
+        superdesk.activity('/liveblog/edit/:_id', {
             label: gettext('Blog Edit'),
             controller: BlogEditController,
             templateUrl: 'scripts/liveblog-edit/views/main.html',
