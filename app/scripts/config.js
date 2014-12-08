@@ -22,6 +22,9 @@ require.config({
         'moment-timezone': 'bower_components/moment-timezone/moment-timezone',
 
         'jquery-ui': 'bower_components/jquery-ui/jquery-ui',
+        'eventable': 'bower_components/Eventable/eventable',
+        'sir-trevor': 'bower_components/sir-trevor/sir-trevor',
+        'ng-sir-trevor': 'bower_components/ng-sir-trevor/dist/ng-sir-trevor.min',
 
         'bootstrap-daterange': 'bower_components/bootstrap-daterangepicker/daterangepicker',
         'raven-js': 'bower_components/raven-js/dist/raven',
@@ -40,6 +43,13 @@ require.config({
             exports: 'angular'
         },
 
+        'sir-trevor': {
+            deps: ['jquery', 'eventable', 'lodash'],
+            exports: 'SirTrevor'
+        },
+        'ng-sir-trevor': {
+            deps: ['sir-trevor', 'angular']
+        },
         'raven-js': {exports: 'Raven'},
         'angular-resource': ['angular'],
         'angular-route': ['angular'],
