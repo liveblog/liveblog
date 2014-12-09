@@ -10,7 +10,7 @@ define([
         return SirTrevor.Block.extend({
             type: block_name,
             title: function() {
-                return 'image';
+                return 'Add image';
             },
             droppable: true,
             uploadable: true,
