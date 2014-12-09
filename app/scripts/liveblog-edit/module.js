@@ -6,12 +6,11 @@ define([
 ], function(angular, require, imageBlockFactory) {
     'use strict';
 
-    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route'];
-    function BlogEditController(api, $scope, blog, notify, gettext, $route) {
+    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route', 'upload'];
+    function BlogEditController(api, $scope, blog, notify, gettext, $route, upload) {
         $scope.editor = {};
         $scope.blog = blog;
         $scope.oldBlog = _.create(blog);
-        $scope.stUploader = function(file, success, error) {console.log('stUploader working');};
         $scope.updateBlog = function(blog) {
             if (_.isEmpty(blog)) {
                 return;
@@ -61,6 +60,30 @@ define([
                 notify.error(gettext('Something went wrong. Please try again later'));
             });
         };
+
+        // provide an uploader to the editor for media (custom sir-trevor image block uses it)
+        $scope.stUploader = function(file, success_callback, error_callback) {
+
+            var handleError = function(reason) {
+                error_callback();
+            };
+
+            // return a promise of upload which will call the success/error callback
+            return api.upload.getUrl().then(function(url) {
+                upload.start({
+                    method: 'POST',
+                    url: url,
+                    data: {media: file}
+                })
+                .then(function(response) {
+                    if (response.data._issues) {
+                        return handleError(response);
+                    }
+                    success_callback();
+                }, handleError, function(progress) {
+                });
+            });
+        };
     }
 
     /**
@@ -92,6 +115,11 @@ define([
                 type: 'http',
                 backend: {rel: 'posts'}
             });
+            apiProvider.api('upload', {
+                type: 'http',
+                backend: {rel: 'upload'}
+            });
+
         }]).config(['SirTrevorOptionsProvider', function(SirTrevorOptions) {
             SirTrevorOptions.$extend({
                 blockTypes: ['Text', 'ImageWithDescriptionAndCredit']
