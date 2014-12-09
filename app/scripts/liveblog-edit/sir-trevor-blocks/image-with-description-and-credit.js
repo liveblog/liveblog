@@ -33,6 +33,10 @@ define([
                 }));
             },
             onBlockRender: function() {
+                // assert we have an uploader function in options
+                if (typeof(options.uploader) !== 'function') {
+                    throw block_name  + ' need an `uploader` function in options.';
+                }
                 /* Setup the upload button */
                 this.$inputs.find('button').bind('click', function(ev) {
                     ev.preventDefault();
@@ -57,17 +61,17 @@ define([
                             url: urlAPI.createObjectURL(file)
                         }
                     });
-                    // this.uploader(
-                    //     file,
-                    //     function(data) {
-                    //         this.setData(data);
-                    //         this.ready();
-                    //     },
-                    //     function(error) {
-                    //         this.addMessage(window.i18n.t('blocks:image:upload_error'));
-                    //         this.ready();
-                    //     }
-                    // );
+                    options.uploader(
+                        file,
+                        function(data) {
+                            this.setData(data);
+                            this.ready();
+                        },
+                        function(error) {
+                            this.addMessage(window.i18n.t('blocks:image:upload_error'));
+                            this.ready();
+                        }
+                    );
                 }
             }
         });

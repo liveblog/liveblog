@@ -99,6 +99,12 @@ define([
             // retrieve the options from SirTrevorOptions provider
             var options = SirTrevorOptions.$get();
             // add a custom block and provide a name. It must be the class name in lower case with hyphens.
-            SirTrevor.Blocks.ImageWithDescriptionAndCredit = new ImageBlockFactory('image-with-description-and-credit', options);
+            SirTrevor.Blocks.ImageWithDescriptionAndCredit = new ImageBlockFactory('image-with-description-and-credit', _.extend(
+                {
+                    uploader : function(file, success, error) {
+                        // use here the `upload` service
+                    }
+                }, options)
+            );
         }]);
 });
