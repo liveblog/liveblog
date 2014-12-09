@@ -3,7 +3,7 @@ define([
     'require',
     './sir-trevor-blocks/image-with-description-and-credit',
     'ng-sir-trevor'
-], function(angular, require, ImageBlockFactory) {
+], function(angular, require, imageBlockFactory) {
     'use strict';
 
     BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route'];
@@ -11,6 +11,7 @@ define([
         $scope.editor = {};
         $scope.blog = blog;
         $scope.oldBlog = _.create(blog);
+        $scope.stUploader = function(file, success, error) {console.log('stUploader working');};
         $scope.updateBlog = function(blog) {
             if (_.isEmpty(blog)) {
                 return;
@@ -93,18 +94,11 @@ define([
             });
         }]).config(['SirTrevorOptionsProvider', function(SirTrevorOptions) {
             SirTrevorOptions.$extend({
-                blockTypes : ['Text', 'ImageWithDescriptionAndCredit']
+                blockTypes: ['Text', 'ImageWithDescriptionAndCredit']
             });
-        }]).config(['SirTrevorProvider', 'SirTrevorOptionsProvider', function(SirTrevor, SirTrevorOptions) {
-            // retrieve the options from SirTrevorOptions provider
-            var options = SirTrevorOptions.$get();
-            // add a custom block and provide a name. It must be the class name in lower case with hyphens.
-            SirTrevor.Blocks.ImageWithDescriptionAndCredit = new ImageBlockFactory('image-with-description-and-credit', _.extend(
-                {
-                    uploader : function(file, success, error) {
-                        // use here the `upload` service
-                    }
-                }, options)
-            );
+        }]).config(['SirTrevorProvider', function(SirTrevor) {
+            // add a custom block with the name as parameter
+            // NOTE: It must be the class name in lower case with hyphens
+            SirTrevor.Blocks.ImageWithDescriptionAndCredit = imageBlockFactory('image-with-description-and-credit');
         }]);
 });
