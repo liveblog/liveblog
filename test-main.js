@@ -16,46 +16,49 @@ for (var file in window.__karma__.files) {
 var paths = {superdesk: 'bower_components/superdesk/app/scripts/'};
 // we have to put here files tested without requirejs
 // core
-tests.push(paths.superdesk + 'superdesk/mocks');
-tests.push(paths.superdesk + 'superdesk/api/api');
-tests.push(paths.superdesk + 'superdesk/auth/auth');
-tests.push(paths.superdesk + 'superdesk/menu/menu');
-tests.push(paths.superdesk + 'superdesk/config/config');
-tests.push(paths.superdesk + 'superdesk/editor/editor');
-tests.push(paths.superdesk + 'superdesk/notify/notify');
-tests.push(paths.superdesk + 'superdesk/activity/activity');
-tests.push(paths.superdesk + 'superdesk/menu/notifications/notifications');
-tests.push(paths.superdesk + 'superdesk/services/translate');
-tests.push(paths.superdesk + 'superdesk/services/modalService');
-tests.push(paths.superdesk + 'superdesk/services/preferencesService');
-tests.push(paths.superdesk + 'superdesk/features/features');
-tests.push(paths.superdesk + 'superdesk/services/asset');
-tests.push(paths.superdesk + 'superdesk/privileges/privileges');
-tests.push(paths.superdesk + 'superdesk/beta/beta');
-tests.push(paths.superdesk + 'superdesk/services/storage');
+tests.push('superdesk/mocks');
+tests.push('superdesk/api/api');
+tests.push('superdesk/auth/auth');
+tests.push('superdesk/menu/menu');
+tests.push('superdesk/config/config');
+tests.push('superdesk/editor/editor');
+tests.push('superdesk/notify/notify');
+tests.push('superdesk/activity/activity');
+tests.push('superdesk/menu/notifications/notifications');
+tests.push('superdesk/services/translate');
+tests.push('superdesk/services/modalService');
+tests.push('superdesk/services/preferencesService');
+tests.push('superdesk/features/features');
+tests.push('superdesk/services/asset');
+tests.push('superdesk/privileges/privileges');
+tests.push('superdesk/beta/beta');
+tests.push('superdesk/services/storage');
 
 // apps
-tests.push(paths.superdesk + 'superdesk-authoring/authoring');
-tests.push(paths.superdesk + 'superdesk-authoring/widgets/widgets');
-tests.push(paths.superdesk + 'superdesk-authoring/comments/comments');
-tests.push(paths.superdesk + 'superdesk-authoring/workqueue/workqueue');
-tests.push(paths.superdesk + 'superdesk-authoring/metadata/metadata');
-tests.push(paths.superdesk + 'superdesk-authoring/versioning/versions');
-tests.push(paths.superdesk + 'superdesk-workspace/content/content');
-tests.push(paths.superdesk + 'superdesk-desks/module');
-tests.push(paths.superdesk + 'superdesk-groups/groups');
-tests.push(paths.superdesk + 'superdesk-search/search');
+tests.push('superdesk-authoring/authoring');
+tests.push('superdesk-authoring/widgets/widgets');
+tests.push('superdesk-authoring/comments/comments');
+tests.push('superdesk-authoring/workqueue/workqueue');
+tests.push('superdesk-authoring/metadata/metadata');
+tests.push('superdesk-authoring/versioning/versions');
+tests.push('superdesk-workspace/content/content');
+tests.push('superdesk-desks/module');
+tests.push('superdesk-groups/groups');
+tests.push('superdesk-search/search');
 
-tests.push(paths.superdesk + 'superdesk-users/users');
-tests.push(paths.superdesk + 'superdesk-users/profile');
-tests.push(paths.superdesk + 'superdesk-users/activity/activity');
-tests.push(paths.superdesk + 'superdesk-users/import/import');
+tests.push('superdesk-users/users');
+tests.push('superdesk-users/profile');
+tests.push('superdesk-users/activity/activity');
+tests.push('superdesk-users/import/import');
 
-tests.push(paths.superdesk + 'superdesk-dashboard/module');
-tests.push(paths.superdesk + 'superdesk-dashboard/workspace-tasks/tasks');
+tests.push('liveblog-dashboard/module');
 
-tests.push(paths.superdesk + 'superdesk-archive/module');
+tests.push('superdesk-dashboard/module');
+tests.push('superdesk-dashboard/workspace-tasks/tasks');
 
+tests.push('superdesk-archive/module');
+
+tests.push('liveblog-dashboard/module');
 // libs
 tests.push('bower_components/ment.io/dist/mentio');
 tests.push('angular-gettext');
@@ -88,7 +91,14 @@ requirejs.config({
         'superdesk': paths.superdesk + 'superdesk',
         'superdesk-settings': paths.superdesk + 'superdesk-settings',
         'superdesk-dashboard': paths.superdesk + 'superdesk-dashboard',
+        'superdesk-dashboard': 'bower_components/superdesk/app/scripts/superdesk-dashboard',
         'superdesk-users': paths.superdesk + 'superdesk-users',
+        'superdesk-authoring': paths.superdesk + 'superdesk-authoring',
+        'superdesk-desks': paths.superdesk + 'superdesk-desks',
+        'superdesk-archive': paths.superdesk + 'superdesk-archive',
+        'superdesk-workspace': paths.superdesk + 'superdesk-workspace',
+        'superdesk-groups': paths.superdesk + 'superdesk-groups',
+        'superdesk-search': paths.superdesk + 'superdesk-search',
         'superdesk-scratchpad': paths.superdesk + 'superdesk-scratchpad'
     },
 
