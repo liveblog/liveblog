@@ -23,8 +23,8 @@ require.config({
 
         'jquery-ui': 'bower_components/jquery-ui/jquery-ui',
         'eventable': 'bower_components/Eventable/eventable',
-        'sir-trevor': 'bower_components/sir-trevor/sir-trevor',
-        'ng-sir-trevor': 'bower_components/ng-sir-trevor/dist/ng-sir-trevor.min',
+        'sir-trevor': 'bower_components/sir-trevor/sir-trevor.min',
+        'ng-sir-trevor': 'bower_components/ng-sir-trevor/dist/ng-sir-trevor',
 
         'bootstrap-daterange': 'bower_components/bootstrap-daterangepicker/daterangepicker',
         'raven-js': 'bower_components/raven-js/dist/raven',

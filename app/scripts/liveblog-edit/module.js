@@ -1,7 +1,9 @@
 define([
     'angular',
+    'require',
+    './sir-trevor-blocks/image-with-description-and-credit',
     'ng-sir-trevor'
-], function(angular) {
+], function(angular, require, ImageBlockFactory) {
     'use strict';
 
     BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route'];
@@ -76,24 +78,27 @@ define([
             });
     }
 
-    var app = angular.module('liveblog.edit', ['SirTrevor']);
-    app.config(['superdeskProvider', function(superdesk) {
-        superdesk.activity('/liveblog/edit/:_id', {
-            label: gettext('Blog Edit'),
-            controller: BlogEditController,
-            templateUrl: 'scripts/liveblog-edit/views/main.html',
-            resolve: {blog: BlogResolver}
-        });
-    }]).config(['apiProvider', function(apiProvider) {
-        apiProvider.api('posts', {
-            type: 'http',
-            backend: {rel: 'posts'}
-        });
-    }]).config(['SirTrevorOptionsProvider', function(SirTrevorOptions) {
-        SirTrevorOptions.$extend({
-            blockTypes: ['Text']
-        });
-    }]);
-
-    return app;
+    return angular.module('liveblog.edit', ['SirTrevor'])
+        .config(['superdeskProvider', function(superdesk) {
+            superdesk.activity('/liveblog/edit/:_id', {
+                label: gettext('Blog Edit'),
+                controller: BlogEditController,
+                templateUrl: 'scripts/liveblog-edit/views/main.html',
+                resolve: {blog: BlogResolver}
+            });
+        }]).config(['apiProvider', function(apiProvider) {
+            apiProvider.api('posts', {
+                type: 'http',
+                backend: {rel: 'posts'}
+            });
+        }]).config(['SirTrevorOptionsProvider', function(SirTrevorOptions) {
+            SirTrevorOptions.$extend({
+                blockTypes : ['Text', 'ImageWithDescriptionAndCredit']
+            });
+        }]).config(['SirTrevorProvider', 'SirTrevorOptionsProvider', function(SirTrevor, SirTrevorOptions) {
+            // retrieve the options from SirTrevorOptions provider
+            var options = SirTrevorOptions.$get();
+            // add a custom block and provide a name. It must be the class name in lower case with hyphens.
+            SirTrevor.Blocks.ImageWithDescriptionAndCredit = new ImageBlockFactory('image-with-description-and-credit', options);
+        }]);
 });
