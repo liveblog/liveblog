@@ -1,38 +1,39 @@
+from apps.content import metadata_schema, LINKED_IN_PACKAGES
 from bson.objectid import ObjectId
-from superdesk.resource import Resource
-from superdesk.services import BaseService
+from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
+from superdesk.resource import Resource, build_custom_hateoas
+from superdesk.services import BaseService
 from superdesk.utc import utcnow
 
 from liveblog.common import update_dates_for, get_user
 
+
 posts_schema = {
-    'text': {
-        'type': 'string',
-        'minlength': 1,
-        'maxlength': 1000,
-        'required': True,
-    },
-    'type': {
-        'type': 'string',
-        'allowed': ['post', 'item'],
-        'default': 'post'
-    },
+    'text': metadata_schema['body_html'],
+    'original_creator': metadata_schema['original_creator'],
+    'version_creator': metadata_schema['version_creator'],
+    'pubstatus': metadata_schema['pubstatus'],
+    'type': metadata_schema['type'],
+    'groups': metadata_schema['groups'],
+    LINKED_IN_PACKAGES:  metadata_schema[LINKED_IN_PACKAGES],
+    'meta': {'type': 'string'},    
     'blog': Resource.rel('blogs', True),
-    'original_creator': Resource.rel('users', True),
-    'version_creator': Resource.rel('users', True),
-    'meta': {
-        'type': 'string'
+    'particular_type': {
+        'type': 'string',
+        'allowed': ['post'],
+        'default': 'post'
     }
 }
 
 
 class PostsResource(Resource):
-    schema = posts_schema
-    resource_methods = ['GET', 'POST', 'DELETE']
     datasource = {
-        'default_sort': [('_created', -1)]
+      'source': 'archive',
+      'elastic_filter': {'term': {'particular_type': 'post'}},
+      'default_sort': [('_updated', -1)]
     }
+    schema = posts_schema
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
 
 
@@ -42,15 +43,20 @@ class PostsService(BaseService):
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
-
-    def on_created(self, docs):
-        push_notification('posts', created=1)
-
+            
+    def get(self, req, lookup):
+        if req is None:
+            req = ParsedRequest()
+        return self.backend.get('posts', req=req, lookup=lookup)
+    
     def on_update(self, updates, original):
         user = get_user()
         updates['versioncreated'] = utcnow()
         updates['version_creator'] = str(user.get('_id'))
 
+    def on_created(self, docs):
+        push_notification('posts', created=1)
+    
     def on_updated(self, updates, original):
         push_notification('posts', updated=1)
 
@@ -60,19 +66,27 @@ class PostsService(BaseService):
 
 class BlogPostResource(Resource):
     url = 'blogs/<regex("[a-f0-9]{24}"):blog_id>/posts'
-    schema = posts_schema
+    schema = {
+              'parent_post_id': Resource.rel('posts', True)
+    }
+    schema.update(posts_schema)
     datasource = {
         'source': 'posts'
     }
-    resource_methods = ['GET']
+    privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
+    resource_methods = ['GET', 'POST']
 
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
 
 
 class BlogPostService(BaseService):
+    custom_hateoas = {'self': {'title': 'Posts', 'href': '/{location}/{_id}'}}
 
     def get(self, req, lookup):
         if lookup.get('blog_id'):
             lookup['blog'] = ObjectId(lookup['blog_id'])
             del lookup['blog_id']
-        return super().get(req, lookup)
+        docs = super().get(req, lookup)
+        for doc in docs:
+            build_custom_hateoas(self.custom_hateoas, doc, location='posts')
+        return docs

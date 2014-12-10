@@ -2,39 +2,39 @@ from superdesk.notification import push_notification
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk.utc import utcnow
+from eve.utils import ParsedRequest
 
 from liveblog.common import get_user, update_dates_for
-
-
-blogs_schema = {
-    'title': {
-        'type': 'string',
-        'required': True,
-    },
-    'description': {
-        'type': 'string'
-    },
-    'language': {
-        'type': 'string'
-    },
-    'settings': {
-        'type': 'dict'
-    },
-    'original_creator': Resource.rel('users', True),
-    'version_creator': Resource.rel('users', True),
-    'state': {
-        'type': 'string',
-        'allowed': ['open', 'closed'],
-        'default': 'open'
-    }
-}
+from apps.content import metadata_schema
 
 
 class BlogsResource(Resource):
-    schema = blogs_schema
     datasource = {
+        'source': 'archive',
+        'search_backend': 'elastic',
+        'elastic_filter': {'term': {'particular_type': 'blog'}},
         'default_sort': [('_updated', -1)]
     }
+    
+    schema = {
+              'title': metadata_schema['headline'],
+              'description': metadata_schema['description'],
+              'language': metadata_schema['language'],
+              'settings': {'type': 'dict'},
+              'original_creator': metadata_schema['original_creator'],
+              'version_creator': metadata_schema['version_creator'],
+              'state': {
+                    'type': 'string',
+                    'allowed': ['open', 'closed'],
+                    'default': 'open'
+               },
+              'particular_type': {
+                            'type': 'string',
+                            'allowed': ['blog'],
+                            'default': 'blog'
+            }
+    }
+    
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
 
 
@@ -44,6 +44,11 @@ class BlogService(BaseService):
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
+            
+    def get(self, req, lookup):
+        if req is None:
+            req = ParsedRequest()
+        return self.backend.get('blogs', req=req, lookup=lookup)
 
     def on_created(self, docs):
         push_notification('blogs', created=1)
