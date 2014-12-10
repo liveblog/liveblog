@@ -9,7 +9,7 @@ describe('dashboard', function() {
     };
 
     beforeEach(module('templates'));
-    beforeEach(module('superdesk.dashboard'));
+    beforeEach(module('liveblog.dashboard'));
 
     beforeEach(inject(function(session) {
         session.start({}, USER);
