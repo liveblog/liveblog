@@ -91,7 +91,6 @@ requirejs.config({
         'superdesk': paths.superdesk + 'superdesk',
         'superdesk-settings': paths.superdesk + 'superdesk-settings',
         'superdesk-dashboard': paths.superdesk + 'superdesk-dashboard',
-        'superdesk-dashboard': 'bower_components/superdesk/app/scripts/superdesk-dashboard',
         'superdesk-users': paths.superdesk + 'superdesk-users',
         'superdesk-authoring': paths.superdesk + 'superdesk-authoring',
         'superdesk-desks': paths.superdesk + 'superdesk-desks',
