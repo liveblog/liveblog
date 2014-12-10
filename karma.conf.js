@@ -19,7 +19,8 @@ module.exports = function(config) {
             'app/scripts/bower_components/angular/angular.js',
             {pattern: 'app/**/*.js', included: false},
             {pattern: 'app/scripts/liveblog-*/**/*[sS]pec.js', included: false},
-            'app/scripts/liveblog-*/**/views/*.html'
+            'app/scripts/liveblog-*/**/views/*.html',
+            'app/scripts/bower_components/superdesk/app/scripts/superdesk-*/**/*.html'
         ],
 
         // list of files to exclude
