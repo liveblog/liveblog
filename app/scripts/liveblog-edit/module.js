@@ -1,10 +1,12 @@
 define([
-    'angular'
+    'angular',
+    'ng-sir-trevor-blocks'
 ], function(angular) {
     'use strict';
 
     BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route'];
     function BlogEditController(api, $scope, blog, notify, gettext, $route) {
+        $scope.editor = {};
         $scope.blog = blog;
         $scope.oldBlog = _.create(blog);
         $scope.updateBlog = function(blog) {
@@ -20,15 +22,12 @@ define([
             });
         };
 
-        $scope.post = '';
-        $scope.timeline = [];
         $scope.publish = function() {
             notify.info(gettext('Saving post'));
             $scope.create().then(function() {
                 notify.pop();
                 notify.info(gettext('Post saved'));
-                $scope.timeline.push($scope.post);
-                $scope.post = '';
+                $scope.editor.clear();
             }, function() {
                 notify.pop();
                 notify.error(gettext('Something went wrong. Please try again later'));
@@ -36,7 +35,12 @@ define([
         };
 
         $scope.create = function() {
-            return api.posts.save({text: $scope.post, blog: $route.current.params._id});
+            //@TODO: refactor with a propper deferred of with a blocks save.
+            var dfd;
+            _.each($scope.editor.get(), function(block) {
+                dfd = api.posts.save({text: block.data.text, blog: $route.current.params._id});
+            });
+            return dfd;
         };
 
         $scope.$watch('blog.state', function() {
@@ -72,7 +76,7 @@ define([
             });
     }
 
-    var app = angular.module('liveblog.edit', []);
+    var app = angular.module('liveblog.edit', ['SirTrevor', 'SirTrevorBlocks']);
     app.config(['superdeskProvider', function(superdesk) {
     superdesk
         .activity('/liveblog/edit/:_id', {
@@ -85,6 +89,25 @@ define([
         apiProvider.api('posts', {
             type: 'http',
             backend: {rel: 'posts'}
+        });
+    }]).config(['SirTrevorOptionsProvider', function(SirTrevorOptions) {
+        SirTrevorOptions.$extend({
+            blockTypes: ['Text', 'Quote'],
+            transform: {
+                get: function(block) {
+                    return {
+                        type: block.blockStorage.type,
+                        text: block.toHTML()
+                        //,meta: block.toMeta()
+                    };
+                },
+                set: function(block) {
+                    return {
+                        type: block.type,
+                        data: block.data
+                    };
+                }
+            }
         });
     }]);
 
