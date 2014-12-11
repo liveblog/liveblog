@@ -8,7 +8,6 @@ define([
 
     BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route', 'upload'];
     function BlogEditController(api, $scope, blog, notify, gettext, $route, upload) {
-        $scope.editor = {};
         $scope.blog = blog;
         $scope.oldBlog = _.create(blog);
         $scope.updateBlog = function(blog) {
@@ -61,28 +60,26 @@ define([
             });
         };
 
-        // provide an uploader to the editor for media (custom sir-trevor image block uses it)
-        $scope.stUploader = function(file, success_callback, error_callback) {
-
-            var handleError = function(reason) {
-                error_callback();
-            };
-
-            // return a promise of upload which will call the success/error callback
-            return api.upload.getUrl().then(function(url) {
-                upload.start({
-                    method: 'POST',
-                    url: url,
-                    data: {media: file}
-                })
-                .then(function(response) {
-                    if (response.data._issues) {
-                        return handleError(response);
-                    }
-                    success_callback();
-                }, handleError, function(progress) {
+        $scope.stParams = {
+            // provide an uploader to the editor for media (custom sir-trevor image block uses it)
+            uploader: function(file, success_callback, error_callback) {
+                var handleError = error_callback;
+                // return a promise of upload which will call the success/error callback
+                return api.upload.getUrl().then(function(url) {
+                    upload.start({
+                        method: 'POST',
+                        url: url,
+                        data: {media: file}
+                    })
+                    .then(function(response) {
+                        if (response.data._issues) {
+                            return handleError(response);
+                        }
+                        success_callback();
+                    }, handleError, function(progress) {
+                    });
                 });
-            });
+            }
         };
     }
 
