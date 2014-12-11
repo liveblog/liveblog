@@ -20,10 +20,6 @@
     <link rel="stylesheet" href="scripts/bower_components/sir-trevor/sir-trevor-icons.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <link rel="stylesheet" href="scripts/bower_components/sir-trevor/sir-trevor.css" type="text/css" media="screen" title="no title" charset="utf-8">
 
-    <!-- Sir-Trevor styles -->
-    <link rel="stylesheet" href="scripts/bower_components/sir-trevor-js/sir-trevor.css">
-    <link rel="stylesheet" href="scripts/bower_components/sir-trevor-js/sir-trevor-icons.css">
-
   </head>
   <body>
 
@@ -32,9 +28,6 @@
     <!-- build:js scripts/vendor.js -->
     <script src="scripts/bower_components/jquery/dist/jquery.js"></script>
     <script src="scripts/bower_components/jquery-ui/jquery-ui.js"></script>
-    <script src="scripts/bower_components/underscore/underscore-min.js"></script>
-    <script src="scripts/bower_components/Eventable/eventable.js"></script>
-    <script src="scripts/bower_components/sir-trevor-js/sir-trevor.min.js"></script>
     <script src="scripts/bower_components/angular/angular.js"></script>
     <script src="scripts/bower_components/gridster/dist/jquery.gridster.with-extras.js"></script>
     <script src="scripts/bower_components/requirejs/require.js"></script>
@@ -91,8 +84,7 @@
 
             'superdesk.users.import',
             'superdesk.users.profile',
-            'superdesk.users.activity',
-            'sir-trevor'
+            'superdesk.users.activity'
         ];
 
         require([
@@ -102,8 +94,7 @@
             'liveblog-dashboard/module',
             'liveblog-edit/module',
             'liveblog-edit/timeline',       
-            'superdesk-scratchpad/module',
-            'sir-trevor/module'
+            'superdesk-scratchpad/module'
         ], function(bootstrap) {
             bootstrap(config, modules);
         });
