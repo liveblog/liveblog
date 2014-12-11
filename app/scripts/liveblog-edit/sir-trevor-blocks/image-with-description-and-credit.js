@@ -49,6 +49,7 @@ define([
                 }, this));
             },
             onDrop: function(transferData) {
+                var that = this;
                 var file = transferData.files[0];
                 var urlAPI = window.URL;
                 if (typeof urlAPI === 'undefined') {
@@ -67,12 +68,12 @@ define([
                     this.getOptions().uploader(
                         file,
                         function(data) {
-                            this.setData(data);
-                            this.ready();
+                            that.setData(data);
+                            that.ready();
                         },
                         function(error) {
-                            this.addMessage(window.i18n.t('blocks:image:upload_error'));
-                            this.ready();
+                            that.addMessage(window.i18n.t('blocks:image:upload_error'));
+                            that.ready();
                         }
                     );
                 }
