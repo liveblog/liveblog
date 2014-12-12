@@ -5,7 +5,7 @@ from liveblog.posts.posts import PostsService, PostsResource,\
 
 def init_app(app):
     endpoint_name = 'posts'
-    service = PostsService(endpoint_name, backend=superdesk.get_backend())
+    service = PostsService(PostsResource.datasource['source'], backend=superdesk.get_backend())
     PostsResource(endpoint_name, app=app, service=service)
 
     endpoint_name = 'blog_posts'
