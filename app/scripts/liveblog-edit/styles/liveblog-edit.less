@@ -79,6 +79,49 @@
 						.box-shadow(inset 0 3px 0 0 #f0f0f0) !important;
 					}
 				}
+				// style for sir-trevor elements
+				.st-block {
+					&__inputs {
+						background-color: transparent; // prevent style from sir-trevor.css
+					}
+					&__dropzone {
+						background-color: transparent; // prevent style from sir-trevor.css
+						border: 1px dashed @grayLight;
+						padding: @main-content-padding * 2;
+						p, .st-icon {
+							color: @grayLight;
+						}
+					}
+					&__upload-container {
+						text-align: left; // prevent style from sir-trevor.css
+						.st-upload-btn {
+							// NOTE: responsive layout from bootstrap is currently disabled.
+							// To be removed when grid system is activated
+							min-width: 50%;	white-space: nowrap;
+						}
+					}
+					&__editor {
+						[contenteditable="true"] {
+							-webkit-box-sizing: border-box; // width and height doesn't include the margin
+							-moz-box-sizing: border-box;
+							box-sizing: border-box;
+							width: 100%;
+							min-height: 1em;
+							padding: 3px 5px;
+							margin: @main-content-padding 0;
+							border-bottom: 1px solid @grayLight;
+							opacity: .7;
+							.transition(opacity .25s ease);
+							&:focus {
+								opacity: 1;
+							}
+							&:empty:before {
+								content: attr(placeholder);
+							}
+						}
+					}
+				}
+
 			}	
 			.actions {
 				.btn {

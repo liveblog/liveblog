@@ -53,6 +53,21 @@ define([
                 }
             });
 
+            // Image Block
+            var upload_options = {
+            // NOTE: responsive layout is currently disabled. so row and col-md-6 are useless
+                html: [
+                    '<div class="row st-block__upload-container">',
+                    '    <input type="file" type="st-file-upload">',
+                    '        <div class="col-md-6">',
+                    '            <button class="btn btn-default"><%= i18n.t("general:upload") %></button>',
+                    '        </div>',
+                    '    </div>',
+                    '</div>'
+                ].join('\n')
+            };
+            SirTrevor.DEFAULTS.Block.upload_options = upload_options;
+            SirTrevor.Locales.en.general.upload = 'Select from folder';
             SirTrevor.Blocks.Image =  SirTrevor.Block.extend({
                 type: 'Image',
                 title: function() {
@@ -62,19 +77,20 @@ define([
                 uploadable: true,
                 icon_name: 'image',
                 loadData: function(data) {
+                    var file_url = (typeof(data.file) !== 'undefined') ? data.file.url : data.media.viewImage.href;
                     this.$editor.html($('<img>', {
-                        src: data.file.url
+                        src: file_url
                     })).show();
-                    this.$editor.append($('<input>', {
-                        type: 'text',
+                    this.$editor.append($('<div>', {
                         name: 'caption',
-                        placeholder: 'Caption'
-                    }));
-                    this.$editor.append($('<input>', {
-                        type: 'text',
+                        contenteditable: true,
+                        placeholder: 'Add a description'
+                    }).html(data.caption));
+                    this.$editor.append($('<div>', {
                         name: 'credit',
-                        placeholder: 'Credit'
-                    }));
+                        contenteditable: true,
+                        placeholder: 'Add author / photographer'
+                    }).html(data.credit));
                 },
                 onBlockRender: function() {
                     // assert we have an uploader function in options
@@ -119,8 +135,15 @@ define([
                         );
                     }
                 },
+                retrieveData: function() {
+                    return {
+                        media: this.getData().media,
+                        caption: this.$('[name=caption]').text(),
+                        credit: this.$('[name=credit]').text()
+                    };
+                },
                 toHTML: function() {
-                    var data = this.getData();
+                    var data = this.retrieveData();
                     return [
                         '<figure>',
                         '    <img src="' + data.media.viewImage.href + '" alt="' + data.caption + '"/>',
@@ -129,7 +152,7 @@ define([
                     ].join('');
                 },
                 toMeta: function() {
-                    return this.getData();
+                    return this.retrieveData();
                 }
             });
 
