@@ -95,7 +95,7 @@ Feature: Blog operations
 
 
 	@auth
-    	Scenario: Create posts
+    Scenario: Create posts
     	Given empty "posts"
     	Given "blogs"
 		"""
@@ -134,4 +134,42 @@ Feature: Blog operations
         [{"text": "test post for an open blog", "blog": "#BLOGS_ID#"}]
         """
         And we get "/blogs/#BLOGS_ID#/posts"
+		Then we get list with 1 items
+		
+	@auth
+    Scenario: Create items
+    	Given empty "items"
+    	Given "posts"
+		"""
+		[{"text": "test_post1"}]
+		"""
+		When we post to "items"
+        """
+        [{"headline": "test item for a post", "post": "#POSTS_ID#"}, {"headline": "test item for the same post", "post": "#POSTS_ID#"}]
+        """
+        And we get "/items?embedded={"original_creator":1}"
+        Then we get list with 2 items
+        """
+        {"_items": [
+                    {"headline": "test item for a post", "post": "#POSTS_ID#", "original_creator": {"username": "test_user"}}, 
+                    {"headline": "test item for the same post", "post": "#POSTS_ID#", "original_creator": {"username": "test_user"}} 
+	               ]}
+	    """
+	    
+	@auth
+    Scenario: Retrieve items from posts
+        Given empty "items"
+        Given "posts"
+		"""
+		[{"text": "test_post1"}]
+		"""
+        When we post to "posts"
+	    """
+	    [{"text": "test_post2"}]
+	    """
+        When we post to "items"
+        """
+        [{"headline": "test item for a post", "post": "#POSTS_ID#"}]
+        """
+        And we get "/posts/#POSTS_ID#/items"
 		Then we get list with 1 items
