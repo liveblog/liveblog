@@ -91,7 +91,8 @@ INSTALLED_APPS = [
     'apps.prepopulate',
 
     'liveblog.blogs',
-    'liveblog.posts'
+    'liveblog.posts',
+    'liveblog.items'
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']

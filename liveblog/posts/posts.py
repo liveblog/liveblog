@@ -4,7 +4,6 @@ from superdesk.services import BaseService
 
 from liveblog.common import update_dates_for, get_user
 
-
 posts_schema = {
     'text': {
         'type': 'string',
@@ -13,7 +12,10 @@ posts_schema = {
         'required': True,
     },
     'blog': Resource.rel('blogs', True),
-    'original_creator': Resource.rel('users', True)
+    'original_creator': Resource.rel('users', True),
+    'meta': {
+        'type': 'string'
+    }
 }
 
 
@@ -38,13 +40,15 @@ class BlogPostResource(Resource):
     url = 'blogs/<regex("[a-f0-9]{24}"):blog_id>/posts'
     schema = posts_schema
     datasource = {
-        'source': 'posts',
-        'search_backend': 'elastic'
+        'source': 'posts'
     }
     resource_methods = ['GET']
 
+    privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
+
 
 class BlogPostService(BaseService):
+
     def get(self, req, lookup):
         if lookup.get('blog_id'):
             lookup['blog'] = ObjectId(lookup['blog_id'])
