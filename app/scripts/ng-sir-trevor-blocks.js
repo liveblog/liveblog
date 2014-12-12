@@ -67,15 +67,13 @@ define([
                     })).show();
                     this.$editor.append($('<input>', {
                         type: 'text',
-                        name: 'description',
-                        placeholder: 'Description',
-                        value: data.text
+                        name: 'caption',
+                        placeholder: 'Caption'
                     }));
                     this.$editor.append($('<input>', {
                         type: 'text',
                         name: 'credit',
-                        placeholder: 'Credit',
-                        value: data.text
+                        placeholder: 'Credit'
                     }));
                 },
                 onBlockRender: function() {
@@ -120,6 +118,18 @@ define([
                             }
                         );
                     }
+                },
+                toHTML: function() {
+                    var data = this.getData();
+                    return [
+                        '<figure>',
+                        '    <img src="' + data.media.viewImage.href + '" alt="' + data.caption + '"/>',
+                        '    <figcaption>' + data.caption + ' from ' + data.credit + '.</figcaption>',
+                        '</figure>'
+                    ].join('');
+                },
+                toMeta: function() {
+                    return this.getData();
                 }
             });
 

@@ -75,7 +75,8 @@ define([
                         if (response.data._issues) {
                             return handleError(response);
                         }
-                        success_callback();
+                        // add to the block data a `media` attribute
+                        success_callback({media: response.data.renditions});
                     }, handleError, function(progress) {
                     });
                 });
@@ -124,8 +125,8 @@ define([
                 get: function(block) {
                     return {
                         type: block.blockStorage.type,
-                        text: block.toHTML()
-                        //,meta: block.toMeta()
+                        text: block.toHTML(),
+                        meta: block.toMeta()
                     };
                 },
                 set: function(block) {
