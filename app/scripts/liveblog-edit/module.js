@@ -1,9 +1,8 @@
 define([
     'angular',
-    'require',
     'ng-sir-trevor',
     'ng-sir-trevor-blocks'
-], function(angular, require) {
+], function(angular) {
     'use strict';
 
     BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route', 'upload'];
