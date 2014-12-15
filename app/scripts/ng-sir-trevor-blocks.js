@@ -77,7 +77,7 @@ define([
                 uploadable: true,
                 icon_name: 'image',
                 loadData: function(data) {
-                    var file_url = (typeof(data.file) !== 'undefined') ? data.file.url : data.media.viewImage.href;
+                    var file_url = (typeof(data.file) !== 'undefined') ? data.file.url : data.media._url;
                     this.$editor.html($('<img>', {
                         src: file_url
                     })).show();
@@ -146,7 +146,7 @@ define([
                     var data = this.retrieveData();
                     return [
                         '<figure>',
-                        '    <img src="' + data.media.viewImage.href + '" alt="' + data.caption + '"/>',
+                        '    <img src="' + data.media._url + '" alt="' + data.caption + '"/>',
                         '    <figcaption>' + data.caption + ' from ' + data.credit + '.</figcaption>',
                         '</figure>'
                     ].join('');

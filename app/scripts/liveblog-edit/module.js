@@ -5,8 +5,8 @@ define([
 ], function(angular) {
     'use strict';
 
-    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route', 'upload'];
-    function BlogEditController(api, $scope, blog, notify, gettext, $route, upload) {
+    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route', 'upload', 'config'];
+    function BlogEditController(api, $scope, blog, notify, gettext, $route, upload, config) {
         $scope.blog = blog;
         $scope.oldBlog = _.create(blog);
         $scope.updateBlog = function(blog) {
@@ -74,8 +74,14 @@ define([
                         if (response.data._issues) {
                             return handleError(response);
                         }
-                        // add to the block data a `media` attribute
-                        success_callback({media: response.data.renditions});
+                        // used in `SirTrevor.Blocks.Image` to fill in the block content.
+                        var media_meta = {
+                            _info: config.server.url + response.data._links.self.href,
+                            _id: response.data._id,
+                            _url: response.data.renditions.viewImage.href
+                        };
+                        // media will be added latter in the `meta` if this item in this callback
+                        success_callback({media: media_meta});
                     }, handleError, function(progress) {
                     });
                 });
