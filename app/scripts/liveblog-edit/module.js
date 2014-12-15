@@ -1,12 +1,12 @@
 define([
     'angular',
+    'ng-sir-trevor',
     'ng-sir-trevor-blocks'
 ], function(angular) {
     'use strict';
 
-    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route'];
-    function BlogEditController(api, $scope, blog, notify, gettext, $route) {
-        $scope.editor = {};
+    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route', 'upload', 'config'];
+    function BlogEditController(api, $scope, blog, notify, gettext, $route, upload, config) {
         $scope.blog = blog;
         $scope.oldBlog = _.create(blog);
         $scope.updateBlog = function(blog) {
@@ -58,6 +58,35 @@ define([
                 notify.error(gettext('Something went wrong. Please try again later'));
             });
         };
+
+        $scope.stParams = {
+            // provide an uploader to the editor for media (custom sir-trevor image block uses it)
+            uploader: function(file, success_callback, error_callback) {
+                var handleError = error_callback;
+                // return a promise of upload which will call the success/error callback
+                return api.upload.getUrl().then(function(url) {
+                    upload.start({
+                        method: 'POST',
+                        url: url,
+                        data: {media: file}
+                    })
+                    .then(function(response) {
+                        if (response.data._issues) {
+                            return handleError(response);
+                        }
+                        // used in `SirTrevor.Blocks.Image` to fill in the block content.
+                        var media_meta = {
+                            _info: config.server.url + response.data._links.self.href,
+                            _id: response.data._id,
+                            _url: response.data.renditions.viewImage.href
+                        };
+                        // media will be added latter in the `meta` if this item in this callback
+                        success_callback({media: media_meta});
+                    }, handleError, function(progress) {
+                    });
+                });
+            }
+        };
     }
 
     /**
@@ -90,15 +119,19 @@ define([
             type: 'http',
             backend: {rel: 'posts'}
         });
+        apiProvider.api('upload', {
+            type: 'http',
+            backend: {rel: 'upload'}
+        });
     }]).config(['SirTrevorOptionsProvider', function(SirTrevorOptions) {
         SirTrevorOptions.$extend({
-            blockTypes: ['Text', 'Quote'],
+            blockTypes: ['Text', 'Image', 'Quote'],
             transform: {
                 get: function(block) {
                     return {
                         type: block.blockStorage.type,
-                        text: block.toHTML()
-                        //,meta: block.toMeta()
+                        text: block.toHTML(),
+                        meta: block.toMeta()
                     };
                 },
                 set: function(block) {
