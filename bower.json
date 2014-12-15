@@ -15,6 +15,7 @@
   ],
   "dependencies": {
     "superdesk": "https://github.com/liveblog/superdesk-client.git#devel",
+    "Eventable": "https://github.com/nistormihai/eventable.git",
     "ng-sir-trevor": "~1.0.0"
   }
 }
