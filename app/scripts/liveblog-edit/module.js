@@ -38,7 +38,7 @@ define([
             //@TODO: refactor with a propper deferred of with a blocks save.
             var dfd;
             _.each($scope.editor.get(), function(block) {
-                dfd = api.posts.save({text: block.data.text, blog: $route.current.params._id});
+                dfd = api.posts.save({text: block.text, blog: $route.current.params._id});
             });
             return dfd;
         };
