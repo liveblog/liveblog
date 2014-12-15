@@ -58,10 +58,9 @@ define([
             // NOTE: responsive layout is currently disabled. so row and col-md-6 are useless
                 html: [
                     '<div class="row st-block__upload-container">',
-                    '    <input type="file" type="st-file-upload">',
-                    '        <div class="col-md-6">',
-                    '            <button class="btn btn-default"><%= i18n.t("general:upload") %></button>',
-                    '        </div>',
+                    '    <input type="file" type="st-file-upload" />',
+                    '    <div class="col-md-6">',
+                    '        <button class="btn btn-default"><%= i18n.t("general:upload") %></button>',
                     '    </div>',
                     '</div>'
                 ].join('\n')
