@@ -124,9 +124,11 @@ define([
             backend: {rel: 'upload'}
         });
     }]).config(['SirTrevorOptionsProvider', 'SirTrevorProvider', function(SirTrevorOptions, SirTrevor) {
+        // here comes all the sir trevor customization (except custom blocks which are in the SirTrevorBlocks module)
         SirTrevor = SirTrevor.$get();
         // change the remove trash icon by a cross
         SirTrevor.BlockDeletion.prototype.attributes['data-icon'] = 'close';
+        // extends the options given as parameter to the editor contructor
         SirTrevorOptions.$extend({
             onEditorRender: function() {
                 // when the editor is instantiated, shows the block types instead of the "+",
