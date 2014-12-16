@@ -134,6 +134,7 @@ define([
                 $(window).unbind('click', editor.hideAllTheThings);
             },
             blockTypes: ['Text', 'Image', 'Quote'],
+            defaultType: 'Text',
             transform: {
                 get: function(block) {
                     return {
