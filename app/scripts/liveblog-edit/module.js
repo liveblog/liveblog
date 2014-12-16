@@ -123,8 +123,18 @@ define([
             type: 'http',
             backend: {rel: 'upload'}
         });
-    }]).config(['SirTrevorOptionsProvider', function(SirTrevorOptions) {
+    }]).config(['SirTrevorOptionsProvider', 'SirTrevorProvider', function(SirTrevorOptions, SirTrevor) {
+        SirTrevor = SirTrevor.$get();
         SirTrevorOptions.$extend({
+            // when the editor is instantiated, shows the block types instead of the "+",
+            // and also shows under new block added
+            onEditorRender: function(e) {
+                var editor = this;
+                editor.showBlockControls($('.st-block-controls__top'));
+                SirTrevor.EventBus.on('block:create:new', function(block) {
+                    editor.showBlockControls($(block.el));
+                });
+            },
             blockTypes: ['Text', 'Image', 'Quote'],
             transform: {
                 get: function(block) {
