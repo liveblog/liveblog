@@ -125,7 +125,7 @@
 									background-color: @gray;
 									color: @white;
 								}
-								// adapt the border style for the position
+								// adapt the border style for the new position on the top right
 								border-bottom: 2px solid @gray;
 								border-top: 0;
 								// hide the reorder button
@@ -153,7 +153,8 @@
 							.st-text-block {
 								font-size: 1em;
 							}
-							.st-image-block[contenteditable="true"] {
+							// make a contenteditable div looking like a custom input
+							.inline-field() {
 								-webkit-box-sizing: border-box; // width and height doesn't include the margin
 								-moz-box-sizing: border-box;
 								box-sizing: border-box;
@@ -167,8 +168,30 @@
 								&:focus {
 									opacity: 1;
 								}
-								&:empty:before {
+								&:empty:after {
 									content: attr(placeholder);
+								}
+							}
+							.st-image-block[contenteditable="true"]{
+								.inline-field();
+							}
+							.st-quote-block {
+								&.js-cite-input {
+									.inline-field();
+									&:before {
+										content: "\2014"; // —
+										margin-left: -20px;
+										padding-right: 5px;
+									}
+								}
+								&.quote-input {
+									position: relative;
+									&:before {
+										content: "\201C"; // “
+										font-size: 2em;
+										position: absolute;
+										left: -0.5em;
+									}
 								}
 							}
 						}
