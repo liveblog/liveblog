@@ -127,13 +127,11 @@ define([
         SirTrevor = SirTrevor.$get();
         SirTrevorOptions.$extend({
             // when the editor is instantiated, shows the block types instead of the "+",
-            // and also shows under new block added
+            // and unbind the behavior which closes everything on outside mouse click
             onEditorRender: function(e) {
                 var editor = this;
                 editor.showBlockControls($('.st-block-controls__top'));
-                SirTrevor.EventBus.on('block:create:new', function(block) {
-                    editor.showBlockControls($(block.el));
-                });
+                $(window).unbind('click', editor.hideAllTheThings);
             },
             blockTypes: ['Text', 'Image', 'Quote'],
             transform: {
