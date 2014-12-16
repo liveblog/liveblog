@@ -125,12 +125,14 @@ define([
         });
     }]).config(['SirTrevorOptionsProvider', 'SirTrevorProvider', function(SirTrevorOptions, SirTrevor) {
         SirTrevor = SirTrevor.$get();
+        // change the remove trash icon by a cross
+        SirTrevor.BlockDeletion.prototype.attributes['data-icon'] = 'close';
         SirTrevorOptions.$extend({
-            // when the editor is instantiated, shows the block types instead of the "+",
-            // and unbind the behavior which closes everything on outside mouse click
-            onEditorRender: function(e) {
+            onEditorRender: function() {
+                // when the editor is instantiated, shows the block types instead of the "+",
+                // and unbind the behavior which closes everything on outside mouse click
                 var editor = this;
-                editor.showBlockControls($('.st-block-controls__top'));
+                editor.showBlockControls($(editor.$wrapper).find('.st-block'));
                 $(window).unbind('click', editor.hideAllTheThings);
             },
             blockTypes: ['Text', 'Image', 'Quote'],

@@ -81,8 +81,23 @@
 				}
 				// style for sir-trevor elements
 				.st-block {
+					.st-block-ui-btn, .st-block-control {
+						&:hover { text-decoration: none; }  // prevent style from bootstrap
+					}
 					&__inputs {
 						background-color: transparent; // prevent style from sir-trevor.css
+					}
+					&__ui {
+						// set the reorder and close button on the top right
+						bottom: auto;
+						top: 0;
+						.st-block-ui-btn {
+							// adapt the border style for the position
+							border-bottom: 2px solid #34e0c2;
+							border-top: 0;
+							// hide the reorder button
+							&--reorder { display: none; }
+						}
 					}
 					&__dropzone {
 						background-color: transparent; // prevent style from sir-trevor.css
