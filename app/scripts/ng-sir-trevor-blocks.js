@@ -82,11 +82,13 @@ define([
                     })).show();
                     this.$editor.append($('<div>', {
                         name: 'caption',
+                        class: 'st-image-block',
                         contenteditable: true,
                         placeholder: 'Add a description'
                     }).html(data.caption));
                     this.$editor.append($('<div>', {
                         name: 'credit',
+                        class: 'st-image-block',
                         contenteditable: true,
                         placeholder: 'Add author / photographer'
                     }).html(data.credit));

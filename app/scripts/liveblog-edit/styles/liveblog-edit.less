@@ -115,8 +115,12 @@
 							min-width: 50%;	white-space: nowrap;
 						}
 					}
-					&__editor {
-						[contenteditable="true"] {
+					&__inner {
+						// style for diffrent types of editor
+						.st-text-block {
+							font-size: 1em;
+						}
+						.st-image-block[contenteditable="true"] {
 							-webkit-box-sizing: border-box; // width and height doesn't include the margin
 							-moz-box-sizing: border-box;
 							box-sizing: border-box;
