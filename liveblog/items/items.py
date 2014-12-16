@@ -8,8 +8,15 @@ from liveblog.common import get_user, update_dates_for
 
 
 items_schema = {
-    'headline': {
-        'type': 'string'
+    'item': {
+        'type': 'list',
+        'schema': {
+            'type': 'dict',
+            'schema': {
+                'headline':
+                    {'type': 'string'},
+            }
+        }
     },
     'original_creator': Resource.rel('users', True),
     'version_creator': Resource.rel('users', True),

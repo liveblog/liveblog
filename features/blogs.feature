@@ -138,24 +138,21 @@ Feature: Blog operations
 		
 	@auth
     Scenario: Create items
-    	Given empty "items"
-    	Given "posts"
+        Given empty "items"
+        Given "posts"
 		"""
 		[{"text": "test_post1"}]
 		"""
 		When we post to "items"
-        """
-        [{"headline": "test item for a post", "post": "#POSTS_ID#"}, {"headline": "test item for the same post", "post": "#POSTS_ID#"}]
-        """
-        And we get "/items?embedded={"original_creator":1}"
-        Then we get list with 2 items
-        """
-        {"_items": [
-                    {"headline": "test item for a post", "post": "#POSTS_ID#", "original_creator": {"username": "test_user"}}, 
-                    {"headline": "test item for the same post", "post": "#POSTS_ID#", "original_creator": {"username": "test_user"}} 
-	               ]}
-	    """
-	    
+		"""
+		[{"item":[{"headline":"first"}, {"headline": "second"}], "post": "#POSTS_ID#"}]
+ 		"""
+		And we get "/items?embedded={"original_creator":1}" 
+		Then we get list with 1 items
+		"""
+		{"_items": [{"post": "#POSTS_ID#", "item": [{"headline": "first"}, {"headline":"second"}], "original_creator": {"username": "test_user"}}]}
+		"""
+
 	@auth
     Scenario: Retrieve items from posts
         Given empty "items"
@@ -167,9 +164,9 @@ Feature: Blog operations
 	    """
 	    [{"text": "test_post2"}]
 	    """
-        When we post to "items"
-        """
-        [{"headline": "test item for a post", "post": "#POSTS_ID#"}]
-        """
+		When we post to "items"
+		"""
+		[{"item":[{"headline":"first"}, {"headline": "second"}], "post": "#POSTS_ID#"}]
+		"""
         And we get "/posts/#POSTS_ID#/items"
 		Then we get list with 1 items
