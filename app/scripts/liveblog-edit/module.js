@@ -138,7 +138,9 @@ define([
                 $(window).unbind('click', editor.hideAllTheThings);
             },
             blockTypes: ['Text', 'Image', 'Quote'],
-            defaultType: 'Text',
+            // render a default block when the editor is loaded
+            // Note: Disable to let the user understand what a "Text" block is. Stay here in case we change our mind
+            // defaultType: 'Text',
             transform: {
                 get: function(block) {
                     return {
