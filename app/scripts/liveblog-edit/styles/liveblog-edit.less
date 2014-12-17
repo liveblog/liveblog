@@ -6,261 +6,261 @@
 
 
 .blogedit {
-	//left menu
-	.side-menu {
-		position: absolute;
-		left: 0; top:0; bottom: 0;
-		width: 48px;
-		background: #a1a1a1;
-	}
+    //left menu
+    .side-menu {
+        position: absolute;
+        left: 0; top:0; bottom: 0;
+        width: 48px;
+        background: #a1a1a1;
+    }
 
-	.columns-holder {
-		position: absolute;
-		left: 48px; right: 0;
-		top:0; bottom: 0;
-	}
+    .columns-holder {
+        position: absolute;
+        left: 48px; right: 0;
+        top:0; bottom: 0;
+    }
 
-	.column {
-		position: absolute;
-		top: 0; bottom: 0;
-		width: 50%;
-		.border-box();
-		header {
-			height: @nav-height;
-			width: 100%;
-			.border-box();
-			border-bottom: 1px solid #e0e0e0;
-			padding: 0 20px;
-			.btn {
-				margin-top: 10px;
-			}
-		}
-		.content {
-			position: absolute;
-			top: @nav-height; left: 0; right: 0; bottom: @bottom-view-padding;
-			overflow: auto;
-			padding: 20px;
-		}
-	}
+    .column {
+        position: absolute;
+        top: 0; bottom: 0;
+        width: 50%;
+        .border-box();
+        header {
+            height: @nav-height;
+            width: 100%;
+            .border-box();
+            border-bottom: 1px solid #e0e0e0;
+            padding: 0 20px;
+            .btn {
+                margin-top: 10px;
+            }
+        }
+        .content {
+            position: absolute;
+            top: @nav-height; left: 0; right: 0; bottom: @bottom-view-padding;
+            overflow: auto;
+            padding: 20px;
+        }
+    }
 
-	.column-editor {
-		left: 0;
-	}
+    .column-editor {
+        left: 0;
+    }
 
-	.column-timeline {
-		right: 0;
-		background: #f0f0f0;
-		border-left: 3px solid #c3c3c3;
-		header {
-			background: #fff;
-		}
-	}
+    .column-timeline {
+        right: 0;
+        background: #f0f0f0;
+        border-left: 3px solid #c3c3c3;
+        header {
+            background: #fff;
+        }
+    }
 
-	// editor
-	
-	.column-editor .content {
-		overflow: none;
-		.editor-holder {
-			position: absolute;
-			bottom: 88px; left: 0; right: 0; top:0;
-			padding: 20px;
-			overflow: auto;
-			.editor {
-				textarea {
-					border: 1px solid #dfdfdf !important;
-					resize:vertical;
-					height: 180px;
-					padding: 10px;
-					font-size: 14px;
-					line-height: 24px;
-					.border-radius(5px) !important;
-					margin-bottom: 20px;
-					&:focus {
-						.box-shadow(inset 0 3px 0 0 #f0f0f0) !important;
-					}
-				}
-				// Sir-trevor elements ---------------------------
-				.st-outer {
-					// ["+" bars]
-					.st-block-controls__top:hover:before, .st-block--with-plus:after {
-						background: #f3f3f3;
-						color: @black;
-						cursor: pointer;
-					}
-					// [block types bar]
-					.st-block-controls--active {
-						padding-left: 6px;
-						.st-block-control {
-							margin: 0 6px 6px 0;
-							position: relative;
-							padding: 0 20px 0 50px;
-							text-align: left;
-							min-width: 24%;
-							height: 48px;
-							line-height: 48px;
-							font-size: 14px;
-							&:hover {color: inherit; font-family: inherit; } // prevent style from sir-trevor
-							.st-icon {
-								font-size: 2em;
-								display: inline;
-								vertical-align: top;
-								position: absolute;
-								left: 10px;
-								top: 9px;
-							}
-						}
-					}
-					// [remove and reorder buttons]
-					.st-block-ui-btn {
-						&:hover { text-decoration: inherit;} // prevent style from sir-trevor
-					}
-					// [border on error or delete states]
-					.st-block--with-errors .st-block__inner,
-					.st-block--delete-active .st-block__inner {
-						border-color: #d70014 !important;
-						.st-block-ui-btn:hover {
-							color:@black;
-						}
-					}
-					.st-block {
-						&__inner {
-							&:hover { border-color: @gray; }
-							label { margin-bottom: auto; } // prevent style from bootstrap
-						}
-						&__inputs {
-							background-color: transparent; // prevent style from sir-trevor.css
-						}
-						&__ui { // [reorder and close buttons]
-							// set it at the top right corner
-							bottom: auto;
-							top: 0;
-							.st-block-ui-btn {
-								color : @gray;
-								border-color: @gray;
-								&:hover {
-									background-color: @gray;
-									color: @white;
-								}
-								// adapt the border style for the new position on the top right
-								border-bottom: 2px solid @gray;
-								border-top: 0;
-								// hide the reorder button
-								&--reorder { display: none; }
-							}
-						}
-						&__ui-delete-controls { // [delete confirmation buttons]
-							// set it at the top right corner
-							bottom: auto;
-							top: 0;
-							.st-block__delete-label {
-								border-style: none none none solid;
-							}
-							.st-block-ui-btn {
-								border-width: 2px 0px 2px 2px;
-								border-style: solid solid solid solid;
-							}
-						}
-						&__dropzone {
-							background-color: transparent; // prevent style from sir-trevor.css
-							border: 1px dashed @grayLight;
-							padding: @main-content-padding * 2;
-							p, .st-icon {
-								color: @grayLight;
-							}
-						}
-						&__upload-container {
-							text-align: left; // prevent style from sir-trevor.css
-							.st-upload-btn {
-								// NOTE: responsive layout from bootstrap is currently disabled.
-								// To be removed when grid system is activated
-								min-width: 50%;	white-space: nowrap;
-							}
-						}
-						&__inner {
-							// style for diffrent types of editor
-							.st-text-block {
-								font-size: 1em;
-							}
-							// make a contenteditable div looking like a custom input
-							.inline-field() {
-								.box-sizing(border-box); // width and height doesn't include the margin
-								width: 100%;
-								min-height: 1em;
-								padding: 3px 5px;
-								margin: @main-content-padding 0;
-								border-bottom: 1px solid @grayLight;
-								opacity: .7;
-								.transition(opacity .25s ease);
-								&:focus {
-									opacity: 1;
-								}
-								&:empty:after {
-									content: attr(placeholder);
-								}
-							}
-							.st-image-block[contenteditable="true"]{
-								.inline-field();
-							}
-							.st-quote-block {
-								&.quote-input {
-									.inline-field();
-									position: relative;
-									&:before {
-										content: "\201C"; // “
-										font-size: 2em;
-										position: absolute;
-										left: -0.5em;
-									}
-								}
-								&.js-cite-input {
-									.inline-field();
-									&:before {
-										content: "\2014"; // —
-										margin-left: -20px;
-										padding-right: 5px;
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		> .actions {
-			position: absolute;
-			bottom: 0; left: 20px; right: 20px; height: 88px;
-			.border-box();
-			padding: 20px 0;
-			.btn {
-				width: 47%;
-				float: left;
-				height: 48px;
-				padding: 0;
-				line-height: 48px;
-				font-size: 14px;
-				&:last-child {
-					margin-left: 6%; 
-				}	
-			}
-		}
-	}
+    // editor
+    
+    .column-editor .content {
+        overflow: none;
+        .editor-holder {
+            position: absolute;
+            bottom: 88px; left: 0; right: 0; top:0;
+            padding: 20px;
+            overflow: auto;
+            .editor {
+                textarea {
+                    border: 1px solid #dfdfdf !important;
+                    resize:vertical;
+                    height: 180px;
+                    padding: 10px;
+                    font-size: 14px;
+                    line-height: 24px;
+                    .border-radius(5px) !important;
+                    margin-bottom: 20px;
+                    &:focus {
+                        .box-shadow(inset 0 3px 0 0 #f0f0f0) !important;
+                    }
+                }
+                // Sir-trevor elements ---------------------------
+                .st-outer {
+                    // ["+" bars]
+                    .st-block-controls__top:hover:before, .st-block--with-plus:after {
+                        background: #f3f3f3;
+                        color: @black;
+                        cursor: pointer;
+                    }
+                    // [block types bar]
+                    .st-block-controls--active {
+                        padding-left: 6px;
+                        .st-block-control {
+                            margin: 0 6px 6px 0;
+                            position: relative;
+                            padding: 0 20px 0 50px;
+                            text-align: left;
+                            min-width: 24%;
+                            height: 48px;
+                            line-height: 48px;
+                            font-size: 14px;
+                            &:hover {color: inherit; font-family: inherit; } // prevent style from sir-trevor
+                            .st-icon {
+                                font-size: 2em;
+                                display: inline;
+                                vertical-align: top;
+                                position: absolute;
+                                left: 10px;
+                                top: 9px;
+                            }
+                        }
+                    }
+                    // [remove and reorder buttons]
+                    .st-block-ui-btn {
+                        &:hover { text-decoration: inherit;} // prevent style from sir-trevor
+                    }
+                    // [border on error or delete states]
+                    .st-block--with-errors .st-block__inner,
+                    .st-block--delete-active .st-block__inner {
+                        border-color: #d70014 !important;
+                        .st-block-ui-btn:hover {
+                            color:@black;
+                        }
+                    }
+                    .st-block {
+                        &__inner {
+                            &:hover { border-color: @gray; }
+                            label { margin-bottom: auto; } // prevent style from bootstrap
+                        }
+                        &__inputs {
+                            background-color: transparent; // prevent style from sir-trevor.css
+                        }
+                        &__ui { // [reorder and close buttons]
+                            // set it at the top right corner
+                            bottom: auto;
+                            top: 0;
+                            .st-block-ui-btn {
+                                color : @gray;
+                                border-color: @gray;
+                                &:hover {
+                                    background-color: @gray;
+                                    color: @white;
+                                }
+                                // adapt the border style for the new position on the top right
+                                border-bottom: 2px solid @gray;
+                                border-top: 0;
+                                // hide the reorder button
+                                &--reorder { display: none; }
+                            }
+                        }
+                        &__ui-delete-controls { // [delete confirmation buttons]
+                            // set it at the top right corner
+                            bottom: auto;
+                            top: 0;
+                            .st-block__delete-label {
+                                border-style: none none none solid;
+                            }
+                            .st-block-ui-btn {
+                                border-width: 2px 0px 2px 2px;
+                                border-style: solid solid solid solid;
+                            }
+                        }
+                        &__dropzone {
+                            background-color: transparent; // prevent style from sir-trevor.css
+                            border: 1px dashed @grayLight;
+                            padding: @main-content-padding * 2;
+                            p, .st-icon {
+                                color: @grayLight;
+                            }
+                        }
+                        &__upload-container {
+                            text-align: left; // prevent style from sir-trevor.css
+                            .st-upload-btn {
+                                // NOTE: responsive layout from bootstrap is currently disabled.
+                                // To be removed when grid system is activated
+                                min-width: 50%; white-space: nowrap;
+                            }
+                        }
+                        &__inner {
+                            // style for diffrent types of editor
+                            .st-text-block {
+                                font-size: 1em;
+                            }
+                            // make a contenteditable div looking like a custom input
+                            .inline-field() {
+                                .box-sizing(border-box); // width and height doesn't include the margin
+                                width: 100%;
+                                min-height: 1em;
+                                padding: 3px 5px;
+                                margin: @main-content-padding 0;
+                                border-bottom: 1px solid @grayLight;
+                                opacity: .7;
+                                .transition(opacity .25s ease);
+                                &:focus {
+                                    opacity: 1;
+                                }
+                                &:empty:after {
+                                    content: attr(placeholder);
+                                }
+                            }
+                            .st-image-block[contenteditable="true"]{
+                                .inline-field();
+                            }
+                            .st-quote-block {
+                                &.quote-input {
+                                    .inline-field();
+                                    position: relative;
+                                    &:before {
+                                        content: "\201C"; // “
+                                        font-size: 2em;
+                                        position: absolute;
+                                        left: -0.5em;
+                                    }
+                                }
+                                &.js-cite-input {
+                                    .inline-field();
+                                    &:before {
+                                        content: "\2014"; // —
+                                        margin-left: -20px;
+                                        padding-right: 5px;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        > .actions {
+            position: absolute;
+            bottom: 0; left: 20px; right: 20px; height: 88px;
+            .border-box();
+            padding: 20px 0;
+            .btn {
+                width: 47%;
+                float: left;
+                height: 48px;
+                padding: 0;
+                line-height: 48px;
+                font-size: 14px;
+                &:last-child {
+                    margin-left: 6%; 
+                }   
+            }
+        }
+    }
 
     .margin15px {
         margin: 15px;
     }
 
 
-	// timeline
-	.column-timeline {
+    // timeline
+    .column-timeline {
         border: 0px;
-		.posts {
-			> li {
+        .posts {
+            > li {
                 background-color: white;
-				.border-radius(5px);
-				margin-bottom: 15px;
-			}
-		}
-	}
+                .border-radius(5px);
+                margin-bottom: 15px;
+            }
+        }
+    }
     .post-item-holder {
         display:block;
         padding: 20px; 
