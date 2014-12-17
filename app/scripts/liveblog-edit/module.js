@@ -144,6 +144,8 @@ define([
                 });
                 // and unbind the behavior which closes everything on outside mouse click
                 $(window).unbind('click', editor.hideAllTheThings);
+                // add the bootstrap classes to the block types bar buttons
+                editor_nui.find('.st-block-control').addClass('btn btn-default');
             },
             blockTypes: ['Text', 'Image', 'Quote'],
             // render a default block when the editor is loaded

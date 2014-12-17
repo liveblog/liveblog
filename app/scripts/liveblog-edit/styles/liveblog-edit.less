@@ -81,17 +81,40 @@
 				}
 				// Sir-trevor elements ---------------------------
 				.st-outer {
-					// "+" bars
+					// ["+" bars]
 					.st-block-controls__top:hover:before, .st-block--with-plus:after {
 						background: #f3f3f3;
 						color: @black;
 						cursor: pointer;
 					}
-					// block types icons and remove and reorder buttons
-					.st-block-ui-btn, .st-block-control {
-						&:hover { text-decoration: none; color: @linkColorHover; } // prevent style from bootstrap
+					// [block types bar]
+					.st-block-controls--active {
+						padding-left: 6px;
+						.st-block-control {
+							margin: 0 6px 6px 0;
+							position: relative;
+							padding: 0 20px 0 50px;
+							text-align: left;
+							min-width: 24%;
+							height: 48px;
+							line-height: 48px;
+							font-size: 14px;
+							&:hover {color: inherit; font-family: inherit; } // prevent style from sir-trevor
+							.st-icon {
+								font-size: 2em;
+								display: inline;
+								vertical-align: top;
+								position: absolute;
+								left: 10px;
+								top: 9px;
+							}
+						}
 					}
-					// border on error or delete states
+					// [remove and reorder buttons]
+					.st-block-ui-btn {
+						&:hover { text-decoration: inherit;} // prevent style from sir-trevor
+					}
+					// [border on error or delete states]
 					.st-block--with-errors .st-block__inner,
 					.st-block--delete-active .st-block__inner {
 						border-color: #d70014 !important;
@@ -107,7 +130,7 @@
 						&__inputs {
 							background-color: transparent; // prevent style from sir-trevor.css
 						}
-						&__ui { // reorder and close buttons
+						&__ui { // [reorder and close buttons]
 							// set it at the top right corner
 							bottom: auto;
 							top: 0;
@@ -125,7 +148,7 @@
 								&--reorder { display: none; }
 							}
 						}
-						&__ui-delete-controls { // delete confirmation buttons
+						&__ui-delete-controls { // [delete confirmation buttons]
 							// set it at the top right corner
 							bottom: auto;
 							top: 0;
@@ -160,9 +183,7 @@
 							}
 							// make a contenteditable div looking like a custom input
 							.inline-field() {
-								-webkit-box-sizing: border-box; // width and height doesn't include the margin
-								-moz-box-sizing: border-box;
-								box-sizing: border-box;
+								.box-sizing(border-box); // width and height doesn't include the margin
 								width: 100%;
 								min-height: 1em;
 								padding: 3px 5px;
@@ -201,32 +222,6 @@
 								}
 							}
 						}
-					}
-				}
-
-			}	
-			.actions {
-				.btn {
-					width: 32%;
-					margin-left: 2%;
-					float: left;
-					height: 48px;
-					padding: 0;
-					line-height: 48px;
-					font-size: 14px;
-					[class^="filetype-icon-"], [class*="filetype-icon-"] {
-						float: none;
-						vertical-align: text-top;
-						padding-left: 24px;
-					}
-					i {
-						.opacity(70);
-					}
-					&:first-child {
-						margin-left: 0;
-					}
-					.icon-dots {
-						margin-right: 10px;
 					}
 				}
 			}
