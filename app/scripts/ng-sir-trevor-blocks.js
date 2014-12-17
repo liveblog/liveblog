@@ -20,35 +20,41 @@ define([
 
                 editorHTML: function() {
                     var template = _.template([
-                        '<div class="st-required st-quote-block quote-input" placeholder="quote" contenteditable="true"></div>',
+                        '<div class="st-required st-text-block st-quote-block quote-input" ',
+                        ' placeholder="quote" contenteditable="true"></div>',
                         '<div contenteditable="true" name="cite" placeholder="<%= i18n.t("blocks:quote:credit_field") %>"',
-                        ' class="st-input-string st-required js-cite-input st-quote-block"></div>'
+                        ' class="st-text-block js-cite-input st-quote-block"></div>'
                     ].join('\n'));
                     return template(this);
                 },
-          
-                loadData: function(data){
-                    this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
-                    this.$('.js-cite-input').val(data.cite);
+                focus: function() {
+                    this.$('.quote-input').focus();
                 },
-          
+                retrieveData: function() {
+                    return {
+                        quote: this.$('.quote-input').text() || undefined,
+                        credit: this.$('.js-cite-input').text() || undefined
+                    };
+                },
+                loadData: function(data){
+                    this.$('.quote-input').text(SirTrevor.toHTML(data.text, this.type));
+                    this.$('.js-cite-input').text(data.credit);
+                },
                 toMarkdown: function(markdown) {
                     return markdown.replace(/^(.+)$/mg,'> $1');
                 },
                 toHTML: function(html) {
+                    var data = this.retrieveData();
                     return [
                         '<blockquote><p>',
-                        this.getTextBlock().html(),
+                        data.quote,
                         '</p><ul><li>',
-                        this.$('.js-cite-input').val(),
+                        data.credit,
                         '</li></ul></blockquote>'
                     ].join('');
                 },
                 toMeta: function() {
-                    return {
-                        quote: this.getTextBlock().html(),
-                        credit: this.$('.js-cite-input').val()
-                    };
+                    return this.retrieveData();
                 }
             });
 
