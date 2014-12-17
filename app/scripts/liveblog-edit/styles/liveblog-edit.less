@@ -114,7 +114,7 @@
 						&__inputs {
 							background-color: transparent; // prevent style from sir-trevor.css
 						}
-						&__ui {
+						&__ui { // reorder and close buttons
 							// set the reorder and close button on the top right
 							bottom: auto;
 							top: 0;
@@ -176,21 +176,22 @@
 								.inline-field();
 							}
 							.st-quote-block {
-								&.js-cite-input {
-									.inline-field();
-									&:before {
-										content: "\2014"; // —
-										margin-left: -20px;
-										padding-right: 5px;
-									}
-								}
 								&.quote-input {
+									.inline-field();
 									position: relative;
 									&:before {
 										content: "\201C"; // “
 										font-size: 2em;
 										position: absolute;
 										left: -0.5em;
+									}
+								}
+								&.js-cite-input {
+									.inline-field();
+									&:before {
+										content: "\2014"; // —
+										margin-left: -20px;
+										padding-right: 5px;
 									}
 								}
 							}
