@@ -108,7 +108,7 @@
 							background-color: transparent; // prevent style from sir-trevor.css
 						}
 						&__ui { // reorder and close buttons
-							// set the reorder and close button on the top right
+							// set it at the top right corner
 							bottom: auto;
 							top: 0;
 							.st-block-ui-btn {
@@ -123,6 +123,18 @@
 								border-top: 0;
 								// hide the reorder button
 								&--reorder { display: none; }
+							}
+						}
+						&__ui-delete-controls { // delete confirmation buttons
+							// set it at the top right corner
+							bottom: auto;
+							top: 0;
+							.st-block__delete-label {
+								border-style: none none none solid;
+							}
+							.st-block-ui-btn {
+								border-width: 2px 0px 2px 2px;
+								border-style: solid solid solid solid;
 							}
 						}
 						&__dropzone {
