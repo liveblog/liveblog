@@ -131,10 +131,18 @@ define([
         // extends the options given as parameter to the editor contructor
         SirTrevorOptions.$extend({
             onEditorRender: function() {
-                // when the editor is instantiated, shows the block types instead of the "+",
-                // and unbind the behavior which closes everything on outside mouse click
                 var editor = this;
-                editor.showBlockControls($(editor.$wrapper).find('.st-block'));
+                var editor_nui = $(editor.$wrapper);
+                var showFirstBlockControls = function() {editor.showBlockControls(editor_nui.find('.st-block-controls__top'));};
+                // when the editor is instantiated, shows the block types instead of the "+",
+                showFirstBlockControls();
+                // even when we come back to the initial state, where every blocks were removed
+                SirTrevor.EventBus.on('block:remove', function() {
+                    if (editor_nui.find('.st-block').length <= 0) {
+                        showFirstBlockControls();
+                    }
+                });
+                // and unbind the behavior which closes everything on outside mouse click
                 $(window).unbind('click', editor.hideAllTheThings);
             },
             blockTypes: ['Text', 'Image', 'Quote'],
