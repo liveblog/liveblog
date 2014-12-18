@@ -1,6 +1,7 @@
 import os
-from datetime import timedelta
 import json
+
+from celery.schedules import crontab
 
 try:
     from urllib.parse import urlparse
@@ -70,7 +71,7 @@ CELERYBEAT_SCHEDULE_FILENAME = env('CELERYBEAT_SCHEDULE_FILENAME', './celerybeat
 CELERYBEAT_SCHEDULE = {
     'session:gc': {
         'task': 'apps.auth.session_purge',
-        'schedule': timedelta(minutes=30)
+        'schedule': crontab(minute=20)
     }
 }
 
@@ -89,6 +90,9 @@ INSTALLED_APPS = [
     'apps.preferences',
     'apps.groups',
     'apps.prepopulate',
+    'apps.search',
+    'apps.packages',
+    'apps.privilege',
 
     'liveblog.blogs',
     'liveblog.posts',
@@ -169,3 +173,6 @@ SPIKE_EXPIRY_MINUTES = 300
 # If for example the elastic has 5 shards and you wish to limit the number of search results to 1000 then set the value
 # to 200 (1000/5).
 MAX_SEARCH_DEPTH = -1
+
+# Defines the maximum value of Ingest Sequence Number after which the value will start from 1
+MAX_VALUE_OF_INGEST_SEQUENCE = 9999
