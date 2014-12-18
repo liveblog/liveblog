@@ -27,7 +27,7 @@ define([
             $scope.create().then(function() {
                 notify.pop();
                 notify.info(gettext('Post saved'));
-                $scope.editor.clear();
+                $scope.editor.reinitialize();
             }, function() {
                 notify.pop();
                 notify.error(gettext('Something went wrong. Please try again later'));
