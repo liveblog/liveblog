@@ -139,34 +139,28 @@ Feature: Blog operations
 	@auth
     Scenario: Create items
         Given empty "items"
-        Given "posts"
-		"""
-		[{"text": "test_post1"}]
-		"""
 		When we post to "items"
 		"""
-		[{"item":[{"headline":"first"}, {"headline": "second"}], "post": "#POSTS_ID#"}]
+		[{ "text": "first"}, {"text": "second"}, {"text": "third"}]
  		"""
 		And we get "/items?embedded={"original_creator":1}" 
-		Then we get list with 1 items
-		"""
-		{"_items": [{"post": "#POSTS_ID#", "item": [{"headline": "first"}, {"headline":"second"}], "original_creator": {"username": "test_user"}}]}
-		"""
+		Then we get list with 3 items
+		 """
+        {"_items": [
+                    {"text": "first", "original_creator": {"username": "test_user"}, "type": "post"}, 
+                    {"text": "second", "original_creator": {"username": "test_user"}, "type":"item"},
+                    {"text": "third", "original_creator": {"username": "test_user"}, "type": "item"}
+	               ]}
+	    """       
 
 	@auth
-    Scenario: Retrieve items from posts
+    Scenario: Retrieve items
         Given empty "items"
-        Given "posts"
-		"""
-		[{"text": "test_post1"}]
-		"""
-        When we post to "posts"
-	    """
-	    [{"text": "test_post2"}]
-	    """
 		When we post to "items"
 		"""
-		[{"item":[{"headline":"first"}, {"headline": "second"}], "post": "#POSTS_ID#"}]
-		"""
-        And we get "/posts/#POSTS_ID#/items"
+		[{ "text": "first"}, {"text": "second"}]
+ 		"""
+        When we get "/items?where={"type":"item"}"
+        Then we get list with 1 items
+        When we get "items/?where={"type":"post"}"
 		Then we get list with 1 items
