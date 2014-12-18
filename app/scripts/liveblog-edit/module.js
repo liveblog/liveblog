@@ -123,9 +123,34 @@ define([
             type: 'http',
             backend: {rel: 'upload'}
         });
-    }]).config(['SirTrevorOptionsProvider', function(SirTrevorOptions) {
+    }]).config(['SirTrevorOptionsProvider', 'SirTrevorProvider', function(SirTrevorOptions, SirTrevor) {
+        // here comes all the sir trevor customization (except custom blocks which are in the SirTrevorBlocks module)
+        SirTrevor = SirTrevor.$get();
+        // change the remove trash icon by a cross
+        SirTrevor.BlockDeletion.prototype.attributes['data-icon'] = 'close';
+        // extends the options given as parameter to the editor contructor
         SirTrevorOptions.$extend({
+            onEditorRender: function() {
+                var editor = this;
+                var editor_nui = $(editor.$wrapper);
+                var showFirstBlockControls = function() {editor.showBlockControls(editor_nui.find('.st-block-controls__top'));};
+                // when the editor is instantiated, shows the block types instead of the "+",
+                showFirstBlockControls();
+                // even when we come back to the initial state, where every blocks were removed
+                SirTrevor.EventBus.on('block:remove', function() {
+                    if (editor_nui.find('.st-block').length <= 0) {
+                        showFirstBlockControls();
+                    }
+                });
+                // and unbind the behavior which closes everything on outside mouse click
+                $(window).unbind('click', editor.hideAllTheThings);
+                // add the bootstrap classes to the block types bar buttons
+                editor_nui.find('.st-block-control').addClass('btn btn-default');
+            },
             blockTypes: ['Text', 'Image', 'Quote'],
+            // render a default block when the editor is loaded
+            // Note: Disable to let the user understand what a "Text" block is. Stay here in case we change our mind
+            // defaultType: 'Text',
             transform: {
                 get: function(block) {
                     return {
