@@ -130,10 +130,17 @@ define([
         SirTrevor.BlockDeletion.prototype.attributes['data-icon'] = 'close';
         // extends the options given as parameter to the editor contructor
         SirTrevorOptions.$extend({
-            // onEditorRender: function() {
-            //     var editor = this;
-            //     var editor_nui = $(editor.$wrapper);
-            // },
+            onEditorRender: function() {
+                var editor = this;
+                // when a new block is added, remove empty blocks
+                SirTrevor.EventBus.on('block:create:new', function(new_block) {
+                    _.each(editor.blocks, function(block) {
+                        if (block !== new_block && block.isEmpty()) {
+                            editor.removeBlock(block.blockID);
+                        }
+                    });
+                });
+            },
             blockTypes: ['Text', 'Image', 'Quote'],
             // render a default block when the editor is loaded
             defaultType: 'Text',
