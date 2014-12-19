@@ -12,12 +12,12 @@ Feature: Blog operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "title One", "description": "description", "state": "open"}]
+        [{"title": "title One", "description": "description", "blog_status": "open"}]
         """  
         And we get "blogs?embedded={"original_creator":1}"
         Then we get list with 1 items
 	    """
-	    {"_items": [{"title": "title One", "description": "description", "state": "open", "original_creator": {"username": "test_user"}}]}
+	    {"_items": [{"title": "title One", "description": "description", "blog_status": "open", "original_creator": {"username": "test_user"}}]}
 	    """
     
 	@auth
@@ -37,17 +37,17 @@ Feature: Blog operations
         Then we get updated response
         
     @auth
-    Scenario: Check states
+    Scenario: Check blog_statuss
         Given "blogs"
         """
-        [{"title": "testBlog", "state": "closed"}, {"title": "testBlog2", "state": "closed"}, {"title": "testBlog3", "state": "open"}]
+        [{"title": "testBlog", "blog_status": "closed"}, {"title": "testBlog2", "blog_status": "closed"}, {"title": "testBlog3", "blog_status": "open"}]
         """
-        When we get "/blogs?where={"state": "closed"}"
+        When we get "/blogs?source={"query": {"filtered": {"filter": {"term": {"blog_status": "closed"}}}}}"
         Then we get list with 2 items
 	    """
 	    {"_items": [{"title": "testBlog"}, {"title": "testBlog2"}]}
 	    """
-	    When we get "/blogs?where={"state": "open"}"
+	    When we get "/blogs?source={"query": {"filtered": {"filter": {"term": {"blog_status": "open"}}}}}"
 	    Then we get list with 1 items
 	    """
 	    {"_items": [{"title": "testBlog3"}]}
@@ -58,25 +58,25 @@ Feature: Blog operations
         Given "blogs"
         """
         [
-         {"title": "title One", "description": "description", "state": "open"}, 
-         {"title": "title Two", "description": "one", "state": "open"}, 
-         {"title": "Title three", "state": "open"},
-         {"title": "title one, two, three", "description": "description", "state": "closed"}
+         {"title": "title One", "description": "Description", "blog_status": "open"}, 
+         {"title": "title Two", "description": "one", "blog_status": "open"}, 
+         {"title": "Title three", "blog_status": "open"},
+         {"title": "title one, two, three", "description": "description", "blog_status": "closed"}
         ]
         """
         
-        When we get "/blogs?where={"state": "open", "$or":[{"title":{"$regex":"description","$options":"-i"}},{"description":{"$regex":"description","$options":"-i"}}]}"
+        When we get "/blogs?source={"query": {"filtered": {"filter": {"term": {"blog_status": "open"}}, "query": {"query_string": {"query": "title:(descript*) description:(descript*)", "lenient": false, "default_operator": "OR"}} }}}"
         Then we get list with 1 items
 	    """
-	    {"_items": [{"title": "title One", "description": "description", "state": "open"}]}
+	    {"_items": [{"title": "title One", "description": "Description", "blog_status": "open"}]}
 	    """
 
-        When we get "/blogs?where={"state": "open", "$or":[{"title":{"$regex":"One","$options":"-i"}}, {"description":{"$regex":"One","$options":"-i"}}]}"
+        When we get "/blogs?source={"query": {"filtered": {"filter": {"term": {"blog_status": "open"}}, "query": {"query_string": {"query": "title:(One) description:(One)", "lenient": false, "default_operator": "OR"}} }}}"
         Then we get list with 2 items
 	    """
 	    {"_items": [
-                    {"title": "title One", "description": "description", "state": "open"}, 
-                    {"title": "title Two", "description": "one", "state": "open"} 
+                    {"title": "title One", "description": "Description", "blog_status": "open"}, 
+                    {"title": "title Two", "description": "one", "blog_status": "open"} 
 	               ]}
 	    """
 	    
@@ -94,73 +94,4 @@ Feature: Blog operations
         Then we get deleted response
 
 
-	@auth
-    Scenario: Create posts
-    	Given empty "posts"
-    	Given "blogs"
-		"""
-		[{"title": "test_blog1"}]
-		"""
-		When we post to "posts"
-        """
-        [{"text": "test post for an open blog", "blog": "#BLOGS_ID#"}]
-        """
-        When we post to "posts"
-        """
-        [{"text": "test post for the same blog", "blog": "#BLOGS_ID#"}]
-        """
-        And we get "/posts?embedded={"original_creator":1}"
-        Then we get list with 2 items
-        """
-        {"_items": [
-                    {"text": "test post for an open blog", "blog": "#BLOGS_ID#", "original_creator": {"username": "test_user"}}, 
-                    {"text": "test post for the same blog",  "blog": "#BLOGS_ID#", "original_creator": {"username": "test_user"}} 
-	               ]}
-	    """       
-        
-	@auth
-    Scenario: Retrieve posts from blogs
-        Given empty "posts"
-        Given "blogs"
-		"""
-		[{"title": "test_blog1"}]
-		"""
-        When we post to "blogs"
-	    """
-	    [{"title": "testBlog", "language": "fr"}]
-	    """
-        When we post to "posts"
-        """
-        [{"text": "test post for an open blog", "blog": "#BLOGS_ID#"}]
-        """
-        And we get "/blogs/#BLOGS_ID#/posts"
-		Then we get list with 1 items
-		
-	@auth
-    Scenario: Create items
-        Given empty "items"
-		When we post to "items"
-		"""
-		[{ "text": "first"}, {"text": "second"}, {"text": "third"}]
- 		"""
-		And we get "/items?embedded={"original_creator":1}" 
-		Then we get list with 3 items
-		 """
-        {"_items": [
-                    {"text": "first", "original_creator": {"username": "test_user"}, "type": "post"}, 
-                    {"text": "second", "original_creator": {"username": "test_user"}, "type":"item"},
-                    {"text": "third", "original_creator": {"username": "test_user"}, "type": "item"}
-	               ]}
-	    """       
-
-	@auth
-    Scenario: Retrieve items
-        Given empty "items"
-		When we post to "items"
-		"""
-		[{ "text": "first"}, {"text": "second"}]
- 		"""
-        When we get "/items?where={"type":"item"}"
-        Then we get list with 1 items
-        When we get "items/?where={"type":"post"}"
-		Then we get list with 1 items
+	

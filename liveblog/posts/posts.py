@@ -21,7 +21,7 @@ posts_schema = {
     'blog': Resource.rel('blogs', True),
     'particular_type': {
         'type': 'string',
-        'allowed': ['post'],
+        'allowed': ['post', 'item'],
         'default': 'post'
     }
 }
@@ -40,9 +40,13 @@ class PostsResource(Resource):
 class PostsService(BaseService):
 
     def on_create(self, docs):
+        is_item = False
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
+            if is_item:
+                doc['particular_type'] = 'item'
+            is_item = True
 
     def get(self, req, lookup):
         if req is None:
@@ -68,7 +72,9 @@ class BlogPostResource(Resource):
     url = 'blogs/<regex("[a-f0-9]{24}"):blog_id>/posts'
     schema = posts_schema
     datasource = {
-        'source': 'posts'
+        'source': 'archive',
+        'elastic_filter': {'term': {'particular_type': 'post'}},
+        'default_sort': [('_updated', -1)]
     }
     resource_methods = ['GET', 'POST']
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}

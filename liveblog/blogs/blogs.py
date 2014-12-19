@@ -11,7 +11,6 @@ from apps.content import metadata_schema
 class BlogsResource(Resource):
     datasource = {
         'source': 'archive',
-        'search_backend': 'elastic',
         'elastic_filter': {'term': {'particular_type': 'blog'}},
         'default_sort': [('_updated', -1)]
     }
@@ -23,7 +22,7 @@ class BlogsResource(Resource):
         'settings': {'type': 'dict'},
         'original_creator': metadata_schema['original_creator'],
         'version_creator': metadata_schema['version_creator'],
-        'state': {
+        'blog_status': {
             'type': 'string',
             'allowed': ['open', 'closed'],
             'default': 'open'

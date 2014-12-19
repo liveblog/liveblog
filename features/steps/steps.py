@@ -240,7 +240,12 @@ def step_impl_fetch_from_provider_ingest(context, provider_name, guid):
         provider = get_resource_service('ingest_providers').find_one(name=provider_name, req=None)
         provider_service = context.provider_services[provider.get('type')]
         provider_service.provider = provider
-        items = provider_service.fetch_ingest(guid)
+
+        if provider.get('type') == 'aap':
+            items = provider_service.parse_file(guid, provider)
+        else:
+            items = provider_service.fetch_ingest(guid)
+
         for item in items:
             item['versioncreated'] = utcnow()
         context.ingest_items(provider, items)
@@ -254,7 +259,6 @@ def step_impl_when_post_url(context, url):
         user.setdefault('needs_activation', False)
         data = json.dumps(user)
     context.response = context.client.post(get_prefixed_url(context.app, url), data=data, headers=context.headers)
-    print('context.response: ', context.response)
     store_placeholder(context, url)
 
 
@@ -462,7 +466,7 @@ def step_impl_then_get_list(context, total_count):
     if '+' in total_count:
         assert int_count <= data['_meta']['total']
     else:
-        assert int_count == data['_meta']['total']
+        assert int_count == data['_meta']['total'], 'got %d' % (data['_meta']['total'])
     if int_count == 0 or not context.text:
         return
     test_json(context)
@@ -939,11 +943,21 @@ def get_default_prefs(context):
     assert_equal(response_data['user_preferences'], default_user_preferences)
 
 
-@when('we unspike "{url}"')
-def step_impl_when_unspike_url(context, url):
-    res = get_res(url, context)
+@when('we spike "{item_id}"')
+def step_impl_when_spike_url(context, item_id):
+    res = get_res('/archive/' + item_id, context)
     headers = if_match(context, res.get('_etag'))
-    context.response = context.client.delete(get_prefixed_url(context.app, url + "/spike"), headers=headers)
+
+    context.response = context.client.patch(get_prefixed_url(context.app, '/archive/spike/' + item_id),
+                                            data='{"state": "spiked"}', headers=headers)
+
+
+@when('we unspike "{item_id}"')
+def step_impl_when_unspike_url(context, item_id):
+    res = get_res('/archive/' + item_id, context)
+    headers = if_match(context, res.get('_etag'))
+    context.response = context.client.patch(get_prefixed_url(context.app, '/archive/unspike/' + item_id),
+                                            data='{}', headers=headers)
 
 
 @then('we get spiked content "{id}"')
@@ -952,7 +966,7 @@ def get_spiked_content(context, id):
     when_we_get_url(context, url)
     assert_200(context.response)
     response_data = json.loads(context.response.get_data())
-    assert_equal(response_data['is_spiked'], True)
+    assert_equal(response_data['state'], 'spiked')
 
 
 @then('we get unspiked content "{id}"')
@@ -961,7 +975,7 @@ def get_unspiked_content(context, id):
     when_we_get_url(context, url)
     assert_200(context.response)
     response_data = json.loads(context.response.get_data())
-    assert_equal(response_data['is_spiked'], None)
+    assert_equal(response_data['state'], 'draft')
     # Tolga Akin (05/11/14)
     # Expiry value doesn't get set to None properly in Elastic.
     # Discussed with Petr so we'll look into this later

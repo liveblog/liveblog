@@ -38,29 +38,18 @@ class ItemsResource(Resource):
 
 
 class ItemsService(BaseService):
-
-    def on_create(self, docs):
-        first = True
-        for doc in docs:
-            update_dates_for(doc)
-            doc['original_creator'] = str(get_user().get('_id'))
-            if not first:
-                doc['type'] = 'item'
-            else:
-                doc['type'] = 'post'
-            first = False
-
-    def on_created(self, docs):
-        push_notification('items', created=1)
-        for doc in docs:
-            if doc['type'] == 'item':
-                doc['post'] = docs[0]['_id']
-                self.update(doc['_id'], doc)
-
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
         return self.backend.get('items', req=req, lookup=lookup)
+
+    def on_create(self, docs):
+        for doc in docs:
+            update_dates_for(doc)
+            doc['original_creator'] = str(get_user().get('_id'))
+
+    def on_created(self, docs):
+        push_notification('items', created=1)
 
     def on_update(self, updates, original):
         user = get_user()
@@ -78,8 +67,9 @@ class ItemsPostResource(Resource):
     url = 'posts/<regex("[a-f0-9]{24}"):post_id>/items'
     schema = items_schema
     datasource = {
-        'source': 'items',
-        'search_backend': 'elastic'
+        'source': 'archive',
+        'elastic_filter': {'term': {'particular_type': 'item'}},
+        'default_sort': [('_updated', -1)]
     }
     resource_methods = ['GET', 'POST']
 

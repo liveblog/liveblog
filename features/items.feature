@@ -10,33 +10,24 @@ Feature: Items operations
     @auth
     Scenario: Add item
         Given empty "items"
+        Given "blogs"
+		"""
+		[{"title": "test_blog1"}]
+		"""
         When we post to "items"
         """
-        [{"headline": "item 1"}]
+        [{"text": "test item for an open blog", "blog": "#BLOGS_ID#"}]
         """  
-        And we get "items?embedded={"original_creator":1}"
+        Then we get existing resource
+        """
+        {"text": "test item for an open blog", "blog": "#BLOGS_ID#"}
+        """  
+        When we get "items?embedded={"original_creator":1}"
         Then we get list with 1 items
 	    """
-	    {"_items": [{"headline": "item 1"}]}
+	    {"_items": [{"text": "test item for an open blog", "blog": "#BLOGS_ID#"}]}
 	    """
 	    
-	@auth
-    Scenario: Retrieve items from posts
-        Given empty "items"
-        Given "posts"
-		"""
-		[{"text": "test_post1"}]
-		"""
-        When we post to "posts"
-	    """
-	    [{"text": "testPost"}]
-	    """
-        When we post to "items"
-        """
-        [{"headline": "test item for a given post", "post": "#POSTS_ID#"}]
-        """
-        And we get "/posts/#POSTS_ID#/items"
-		Then we get list with 1 items
 		
 	@auth
     Scenario: Update item
@@ -46,10 +37,30 @@ Feature: Items operations
         """
         When we patch given
         """
-        {"headline": "this is a test item"}
+        {"text": "this is a test item"}
         """
         And we patch latest
         """
-        {"headline":"the test of the test"}
+        {"text":"the test of the test"}
         """
         Then we get updated response
+
+   
+#     @auth
+#     Scenario: Retrieve items from posts
+#         Given empty "items"
+#         Given "posts"
+#         """
+#         [{"text": "test_post1"}]
+#         """
+#         When we post to "posts"
+#         """
+#         [{"text": "testPost"}]
+#         """
+#         When we post to "items"
+#         """
+#         [{"headline": "test item for a given post", "post": "#POSTS_ID#"}]
+#         """
+#         And we get "/posts/#POSTS_ID#/items"
+#         Then we get list with 1 items
+		
