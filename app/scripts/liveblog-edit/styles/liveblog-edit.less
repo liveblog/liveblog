@@ -176,9 +176,12 @@
                             }
                         }
                         &__inner {
-                            // style for diffrent types of editor
+                            // give more space at the top of the block to let the remove button appear without hiding fields.
+                            padding-top: 2.875em;
+                            // for every text input field (textarea, input and div[content-editable])
                             .st-text-block {
                                 font-size: 1em;
+                                word-break: break-all;
                             }
                             // make a contenteditable div looking like a custom input
                             .inline-field() {
