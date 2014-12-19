@@ -138,38 +138,29 @@ Feature: Blog operations
 		
 	@auth
     Scenario: Create items
-    	Given empty "items"
-    	Given "posts"
-		"""
-		[{"text": "test_post1"}]
-		"""
-		When we post to "items"
-        """
-        [{"headline": "test item for a post", "post": "#POSTS_ID#"}, {"headline": "test item for the same post", "post": "#POSTS_ID#"}]
-        """
-        And we get "/items?embedded={"original_creator":1}"
-        Then we get list with 2 items
-        """
-        {"_items": [
-                    {"headline": "test item for a post", "post": "#POSTS_ID#", "original_creator": {"username": "test_user"}}, 
-                    {"headline": "test item for the same post", "post": "#POSTS_ID#", "original_creator": {"username": "test_user"}} 
-	               ]}
-	    """
-	    
-	@auth
-    Scenario: Retrieve items from posts
         Given empty "items"
-        Given "posts"
+		When we post to "items"
 		"""
-		[{"text": "test_post1"}]
+		[{ "text": "first"}, {"text": "second"}, {"text": "third"}]
+ 		"""
+		And we get "/items?embedded={"original_creator":1}" 
+		Then we get list with 3 items
+		 """
+        {"_items": [
+                    {"text": "first", "original_creator": {"username": "test_user"}, "type": "post"}, 
+                    {"text": "second", "original_creator": {"username": "test_user"}, "type":"item"},
+                    {"text": "third", "original_creator": {"username": "test_user"}, "type": "item"}
+	               ]}
+	    """       
+
+	@auth
+    Scenario: Retrieve items
+        Given empty "items"
+		When we post to "items"
 		"""
-        When we post to "posts"
-	    """
-	    [{"text": "test_post2"}]
-	    """
-        When we post to "items"
-        """
-        [{"headline": "test item for a post", "post": "#POSTS_ID#"}]
-        """
-        And we get "/posts/#POSTS_ID#/items"
+		[{ "text": "first"}, {"text": "second"}]
+ 		"""
+        When we get "/items?where={"type":"item"}"
+        Then we get list with 1 items
+        When we get "items/?where={"type":"post"}"
 		Then we get list with 1 items
