@@ -1,7 +1,8 @@
-import os
 import json
+import os
 
 from celery.schedules import crontab
+
 
 try:
     from urllib.parse import urlparse
@@ -90,7 +91,6 @@ INSTALLED_APPS = [
     'apps.preferences',
     'apps.groups',
     'apps.prepopulate',
-    'apps.search',
     'apps.packages',
     'apps.privilege',
 
