@@ -72,7 +72,10 @@ define([
         $scope.stParams = {
             // provide an uploader to the editor for media (custom sir-trevor image block uses it)
             uploader: function(file, success_callback, error_callback) {
-                var handleError = error_callback;
+                var handleError = function(response) {
+                    // call the uploader callback with the error message as parameter
+                    error_callback(response.data? response.data._message : undefined);
+                };
                 // return a promise of upload which will call the success/error callback
                 return api.upload.getUrl().then(function(url) {
                     upload.start({

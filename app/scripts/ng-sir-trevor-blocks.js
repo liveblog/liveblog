@@ -145,7 +145,8 @@ define([
                                 that.ready();
                             },
                             function(error) {
-                                that.addMessage(window.i18n.t('blocks:image:upload_error'));
+                                var message = error || window.i18n.t('blocks:image:upload_error');
+                                that.addMessage(message);
                                 that.ready();
                             }
                         );
