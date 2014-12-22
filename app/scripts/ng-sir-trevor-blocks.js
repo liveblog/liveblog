@@ -1,3 +1,13 @@
+/**
+ * This file is part of Superdesk.
+ *
+ * Copyright 2013, 2014 Sourcefabric z.u. and contributors.
+ *
+ * For the full copyright and license information, please see the
+ * AUTHORS and LICENSE files distributed with this source code, or
+ * at https://www.sourcefabric.org/superdesk/license
+ */
+
 define([
     'angular',
     'ng-sir-trevor'
@@ -87,13 +97,13 @@ define([
                     })).show();
                     this.$editor.append($('<div>', {
                         name: 'caption',
-                        class: 'st-image-block',
+                        class: 'st-image-block st-text-block',
                         contenteditable: true,
                         placeholder: 'Add a description'
                     }).html(data.caption));
                     this.$editor.append($('<div>', {
                         name: 'credit',
-                        class: 'st-image-block',
+                        class: 'st-image-block st-text-block',
                         contenteditable: true,
                         placeholder: 'Add author / photographer'
                     }).html(data.credit));

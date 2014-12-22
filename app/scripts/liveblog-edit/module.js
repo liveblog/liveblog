@@ -1,3 +1,13 @@
+/**
+ * This file is part of Superdesk.
+ *
+ * Copyright 2013, 2014 Sourcefabric z.u. and contributors.
+ *
+ * For the full copyright and license information, please see the
+ * AUTHORS and LICENSE files distributed with this source code, or
+ * at https://www.sourcefabric.org/superdesk/license
+ */
+
 define([
     'angular',
     'ng-sir-trevor',
@@ -132,25 +142,18 @@ define([
         SirTrevorOptions.$extend({
             onEditorRender: function() {
                 var editor = this;
-                var editor_nui = $(editor.$wrapper);
-                var showFirstBlockControls = function() {editor.showBlockControls(editor_nui.find('.st-block-controls__top'));};
-                // when the editor is instantiated, shows the block types instead of the "+",
-                showFirstBlockControls();
-                // even when we come back to the initial state, where every blocks were removed
-                SirTrevor.EventBus.on('block:remove', function() {
-                    if (editor_nui.find('.st-block').length <= 0) {
-                        showFirstBlockControls();
-                    }
+                // when a new block is added, remove empty blocks
+                SirTrevor.EventBus.on('block:create:new', function(new_block) {
+                    _.each(editor.blocks, function(block) {
+                        if (block !== new_block && block.isEmpty()) {
+                            editor.removeBlock(block.blockID);
+                        }
+                    });
                 });
-                // and unbind the behavior which closes everything on outside mouse click
-                $(window).unbind('click', editor.hideAllTheThings);
-                // add the bootstrap classes to the block types bar buttons
-                editor_nui.find('.st-block-control').addClass('btn btn-default');
             },
             blockTypes: ['Text', 'Image', 'Quote'],
             // render a default block when the editor is loaded
-            // Note: Disable to let the user understand what a "Text" block is. Stay here in case we change our mind
-            // defaultType: 'Text',
+            defaultType: 'Text',
             transform: {
                 get: function(block) {
                     return {
