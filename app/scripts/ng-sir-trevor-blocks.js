@@ -20,14 +20,50 @@ define([
             SirTrevor.Block.prototype.toMeta = function(){return;};
             SirTrevor.Block.prototype.getOptions = function(){return SirTrevor.$get().getInstance(this.instanceID).options;};
 
+            SirTrevor.Blocks.Link =  SirTrevor.Block.extend({
+                type: 'link',
+                title: function(){ return 'Link'; },
+                icon_name: 'link',
+                editorHTML: function() {
+                    var template = _.template([
+                        '<div class="st-required st-text-block"',
+                        ' placeholder="quote" contenteditable="true"></div>'
+                    ].join('\n'));
+                    return template(this);
+                },
+                onBlockRender: function() {
+                    // create and trigger a 'change' event for the $editor which is a contenteditable
+                    this.$editor.filter('[contenteditable]').on('focus', function(ev) {
+                        var $this = $(this);
+                        $this.data('before', $this.html());
+                    });
+                    this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
+                        var $this = $(this);
+                        if ($this.data('before') !== $this.html()) {
+                            $this.data('before', $this.html());
+                            $this.trigger('change');
+                        }
+                    });
+                    // when the link field changes
+                    this.$editor.on('change', function() {
+                        var $this = $(this);
+                        console.log('changed', $this.html());
+                    });
+                }
+                // focus: function() {},
+                // retrieveData: function() {},
+                // loadData: function(data){},
+                // toMarkdown: function(markdown) {},
+                // toHTML: function(html) {},
+                // toMeta: function() {
+                //     return this.retrieveData();
+                // }
+            });
+
             SirTrevor.Blocks.Quote =  SirTrevor.Block.extend({
-
                 type: 'quote',
-
                 title: function(){ return window.i18n.t('blocks:quote:title'); },
-
                 icon_name: 'quote',
-
                 editorHTML: function() {
                     var template = _.template([
                         '<div class="st-required st-quote-block quote-input" ',

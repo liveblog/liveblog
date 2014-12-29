@@ -155,7 +155,7 @@ define([
                     });
                 });
             },
-            blockTypes: ['Text', 'Image', 'Quote'],
+            blockTypes: ['Text', 'Link', 'Image', 'Quote'],
             // render a default block when the editor is loaded
             defaultType: 'Text',
             transform: {
