@@ -11,12 +11,13 @@
 define([
     'angular',
     'ng-sir-trevor',
-    'ng-sir-trevor-blocks'
+    'ng-sir-trevor-blocks',
+    'angular-embedly'
 ], function(angular) {
     'use strict';
 
-    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route', 'upload', 'config', 'publishCounter'];
-    function BlogEditController(api, $scope, blog, notify, gettext, $route, upload, config, publishCounter) {
+    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route', 'upload', 'config', 'publishCounter', 'embedlyService'];
+    function BlogEditController(api, $scope, blog, notify, gettext, $route, upload, config, publishCounter, embedlyService) {
         $scope.blog = blog;
         $scope.oldBlog = _.create(blog);
         $scope.updateBlog = function(blog) {
@@ -71,6 +72,7 @@ define([
         };
 
         $scope.stParams = {
+            embedly: embedlyService,
             // provide an uploader to the editor for media (custom sir-trevor image block uses it)
             uploader: function(file, success_callback, error_callback) {
                 var handleError = function(response) {
@@ -119,7 +121,7 @@ define([
             });
     }
 
-    var app = angular.module('liveblog.edit', ['SirTrevor', 'SirTrevorBlocks']);
+    var app = angular.module('liveblog.edit', ['SirTrevor', 'SirTrevorBlocks', 'angular-embedly']);
     app.config(['superdeskProvider', function(superdesk) {
     superdesk
         .activity('/liveblog/edit/:_id', {
@@ -184,6 +186,8 @@ define([
                 return this.counter;
             }
         };
+    }])).config(['embedlyServiceProvider', function(embedlyServiceProvider) {
+        embedlyServiceProvider.setKey('6dc2ebdf2a104f08bdc59f6b95c73793');
     }]);
 
     return app;

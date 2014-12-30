@@ -264,6 +264,34 @@
                                     }
                                 }
                             }
+                            .st-link-block {
+                                &.link-input {.inline-field();}
+                                &.embed-preview {
+                                    // responsive embed
+                                    position: relative;
+                                    padding-bottom: 67.5%;
+                                    height: 0;
+                                    margin: 10px 0;
+                                    overflow: hidden;
+                                    iframe, embed, object {
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                        width: 100%;
+                                        height: 100%;
+                                    }
+                                }
+                                &.cover-preview {
+                                    max-width: 100%;
+                                }
+                                &.title-preview {
+                                    .inline-field();
+                                    font-size: 1.2em;
+                                }
+                                &.description-preview {
+                                    .inline-field();
+                                }
+                            }
                         }
                     }
                 }
