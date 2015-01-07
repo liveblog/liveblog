@@ -1,5 +1,15 @@
 <li>
     <div class="post-item-holder">
+        <div class="hide" rollshow style="top:2px; right:2px; float: right">
+            <span class="dropdown" dropdown >
+                <div class="timeline-actions-more dropdown-toggle" dropdown-toggle></div>
+                <ul class="dropdown-menu" id="timeline-dropdown">
+                    <li><a href="#" onclick="return false;"><i class="icon-edit"></i>Edit</a></li>
+                    <li><a ng-click="removeItem(post._id);" style="cursor: pointer"><i class="icon-remove"></i>Remove</a></li>
+                    <li><a href="#" onclick="return false;"><i class="icon-align-justify"></i>Another action</a></li>
+                </ul>
+            </span> 
+        </div>
         <div class="table-cell post-item-figure">
             <figure class="avatar">
                 <img class="ng-isolate-scope" data-src="post.picture_url" sd-user-avatar="" style="display: none;">
