@@ -53,17 +53,17 @@ define([
             return dfd;
         };
 
-        $scope.$watch('blog.state', function() {
+        $scope.$watch('blog.blog_status', function() {
             //the text on the open/close button
-            $scope.toggleStateText = $scope.blog.state === 'open' ? gettext('Archive Blog'): gettext('Activate Blog');
-            $scope.disableInterfaceSwitch = $scope.blog.state === 'open' ? false: true;
+            $scope.toggleStateText = $scope.blog.blog_status === 'open' ? gettext('Archive Blog'): gettext('Activate Blog');
+            $scope.disableInterfaceSwitch = $scope.blog.blog_status === 'open' ? false: true;
         });
 
         $scope.toggleBlogState = function() {
-            var newStateValue = $scope.blog.state === 'open' ? 'closed': 'open';
-            api.blogs.save($scope.blog, {'state': newStateValue})
+            var newStateValue = $scope.blog.blog_status === 'open' ? 'closed': 'open';
+            api.blogs.save($scope.blog, {'blog_status': newStateValue})
             .then(function() {
-                $scope.blog.state = newStateValue;
+                $scope.blog.blog_status = newStateValue;
             }, function(response) {
                 notify.error(gettext('Something went wrong. Please try again later'));
             });
