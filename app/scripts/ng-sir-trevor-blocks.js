@@ -30,10 +30,10 @@ define([
 
                 editorHTML: function() {
                     var template = _.template([
-                        '<div class="st-required st-text-block st-quote-block quote-input" ',
+                        '<div class="st-required st-quote-block quote-input" ',
                         ' placeholder="quote" contenteditable="true"></div>',
                         '<div contenteditable="true" name="cite" placeholder="<%= i18n.t("blocks:quote:credit_field") %>"',
-                        ' class="st-text-block js-cite-input st-quote-block"></div>'
+                        ' class="js-cite-input st-quote-block"></div>'
                     ].join('\n'));
                     return template(this);
                 },
