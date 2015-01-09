@@ -123,16 +123,8 @@
                         border-color: #d70014 !important;
                     }
                     .st-block {
-                        &__inner {
-                            border: 0;
-                            padding: 0;
-                            label { margin-bottom: auto; } // prevent style from bootstrap
-                            .transition(box-shadow .25s ease);
-                            &:hover {
-                                .box-shadow(0px 2px 4px rgba(0, 0, 0, 0.17));
-                            }
-                        }
-                        &__inputs {
+                        &__inputs, &__editor {
+                            padding: 1.6em 0px 1em;
                             background-color: transparent; // prevent style from sir-trevor.css
                         }
                         &__ui { // [reorder and close buttons]
@@ -148,6 +140,7 @@
                                 height: 2em;
                                 line-height: 2em;
                                 font-size: 1em;
+                                background-color: transparent;
                                 &:hover {
                                     background-color: @grayLighter;
                                 }
@@ -204,7 +197,17 @@
                                 min-width: 50%; white-space: nowrap;
                             }
                         }
+                        // padding
+                        &__inner {padding: 0;}
+                        &[data-type='quote'], &[data-type='image'] { .st-block__inner { padding: 20px; } }
                         &__inner {
+                            border: 0;
+
+                            label { margin-bottom: auto; } // prevent style from bootstrap
+                            .transition(box-shadow .25s ease);
+                            &:hover {
+                                .box-shadow(0px 2px 4px rgba(0, 0, 0, 0.17));
+                            }
                             // for text input field (div[content-editable] looking like a textarea)
                             .st-text-block {
                                 padding: 20px;

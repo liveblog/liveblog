@@ -50,6 +50,9 @@ define([
                     this.$('.quote-input').text(SirTrevor.toHTML(data.text, this.type));
                     this.$('.js-cite-input').text(data.credit);
                 },
+                isEmpty: function() {
+                    return _.isEmpty(this.retrieveData().quote);
+                },
                 toMarkdown: function(markdown) {
                     return markdown.replace(/^(.+)$/mg,'> $1');
                 },
@@ -83,7 +86,7 @@ define([
             SirTrevor.DEFAULTS.Block.upload_options = upload_options;
             SirTrevor.Locales.en.general.upload = 'Select from folder';
             SirTrevor.Blocks.Image =  SirTrevor.Block.extend({
-                type: 'Image',
+                type: 'image',
                 title: function() {
                     return 'Image';
                 },
@@ -97,13 +100,13 @@ define([
                     })).show();
                     this.$editor.append($('<div>', {
                         name: 'caption',
-                        class: 'st-image-block st-text-block',
+                        class: 'st-image-block',
                         contenteditable: true,
                         placeholder: 'Add a description'
                     }).html(data.caption));
                     this.$editor.append($('<div>', {
                         name: 'credit',
-                        class: 'st-image-block st-text-block',
+                        class: 'st-image-block',
                         contenteditable: true,
                         placeholder: 'Add author / photographer'
                     }).html(data.credit));
