@@ -3,12 +3,13 @@ define([
     'angular'
 ], function(angular) {
     'use strict';
-    TimelineController.$inject = ['api', '$scope', '$rootScope', 'notify', 'gettext', '$route', '$q', '$cacheFactory', 'userList'];
-    function TimelineController(api, $scope, $rootScope, notify, gettext, $route, $q, $cacheFactory, userList) {
+    TimelineController.$inject = ['api', '$scope', '$rootScope', 'notify', 'gettext',
+                                '$route', '$q', '$cacheFactory', 'userList', 'publishCounter'];
+    function TimelineController(api, $scope, $rootScope, notify, gettext,
+                                 $route, $q, $cacheFactory, userList, publishCounter) {
         var blog = {
             _id: $route.current.params._id
         };
-
         $scope.posts = {};
         $scope.noPosts = false;
         $scope.getPosts = function() {
@@ -35,6 +36,11 @@ define([
         $scope.$watch('isTimeline', function() {
             $scope.getPosts();
         });
+        $scope.$watch(function() { return publishCounter.getNewPosts(); }, function(newVal, oldVal) {
+            if (newVal !== 0) {
+                $scope.getPosts();
+            }
+        });
         $scope.$watch('posts', function() {
             if ($scope.posts.length === 0) {
                 $scope.noPosts = true;
@@ -44,7 +50,7 @@ define([
         });
     }
 
-    var app = angular.module('liveblog.timeline', ['superdesk.users'])
+    var app = angular.module('liveblog.timeline', ['superdesk.users', 'liveblog.edit'])
     .config(['apiProvider', function(apiProvider) {
         apiProvider.api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {
             type: 'http',
