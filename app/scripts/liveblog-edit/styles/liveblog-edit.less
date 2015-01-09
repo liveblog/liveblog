@@ -85,10 +85,14 @@
                 // Sir-trevor elements ---------------------------
                 .st-outer {
                     // ["+" bars]
+                    .st-block-controls__top:before, .st-icon--add:after {
+                        background-color: transparent;
+                        color: #CBCBCB;
+                    }
                     .st-block-controls__top:hover:before, .st-block--with-plus:after {
-                        background: #f3f3f3;
-                        color: @black;
                         cursor: pointer;
+                        background-color: #E5E5E5;
+                        color: #666666;
                     }
                     // [block types bar]
                     .st-block-controls--active {
