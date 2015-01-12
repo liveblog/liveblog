@@ -25,7 +25,7 @@ define([
                 title: function(){ return 'Link'; },
                 icon_name: 'link',
                 editorHTML: function() {
-                    var template = _.template([
+                    return [
                         '<div class="st-required st-link-block link-input"',
                         ' placeholder="url" contenteditable="true"></div>',
                         '<div class="hidden st-link-block embed-preview"></div>',
@@ -33,8 +33,7 @@ define([
                         '<div class="hidden st-link-block title-preview" contenteditable="true"></div>',
                         '<div class="hidden st-link-block description-preview" contenteditable="true"></div>',
                         '<div class="hidden st-link-block link-preview"></div>'
-                    ].join('\n'));
-                    return template(this);
+                    ].join('\n');
                 },
                 onBlockRender: function() {
                     var that = this;
@@ -53,21 +52,24 @@ define([
                     // when the link field changes
                     this.$editor.on('change', function() {
                         var $this = $(this);
-                        var url = $this.html();
-                        that.getOptions().embedly.embed(url, '100%')
-                            .then(function loadDataFromEmbedly(data) {
-                                console.log('data from', url, ':', data);
+                        var url = $this.text();
+                        if (url.trim() === '') {
+                            return false;
+                        }
+                        that.getOptions().embedService.get(url)
+                            .then(function loadData(data) {
                                 var link_data = {
                                     url: url,
-                                    title: data.data.title,
-                                    description: data.data.description
+                                    title: data.title,
+                                    description: data.description
                                 };
                                 // add an embed code or a cover
-                                if (data.data.html !== undefined) {
-                                    link_data.embedCode = data.data.html;
+                                if (data.html !== undefined) {
+                                    link_data.embedCode = data.html;
                                 } else {
-                                    link_data.cover = data.data.thumbnail_url;
+                                    link_data.cover = data.thumbnail_url;
                                 }
+                                that.data = link_data;
                                 that.loadData(link_data);
                             });
                     });
@@ -84,22 +86,23 @@ define([
                     this.focus();
                 },
                 focus: function() {
-                    console.log('focus');
                     this.$('.link-input').focus();
-                }
+                },
                 // toMarkdown: function(markdown) {},
-                // toHTML: function() {
-                //     return [
-                //         '<div class="embed-preview"></div>',
-                //         '<img class="cover-preview"/>',
-                //         '<div class="title-preview"></div>',
-                //         '<div class="description-preview"></div>',
-                //         '<div class="link-preview"></div>'
-                //     ].join('\n');
-                // },
-                // toMeta: function() {
-                //     return this.retrieveData();
-                // }
+                toHTML: function() {
+                    var compile = _.template([
+                        '<div class="embed-preview"><%= embedCode %></div>',
+                        '<img class="cover-preview" src="<%= cover %>"/>',
+                        '<div class="title-preview"><%= title %></div>',
+                        '<div class="description-preview"><%= description %></div>',
+                        '<div class="link-preview"></div>'
+                    ].join('\n'));
+                    console.log(compile(this.data));
+                    return compile(this.data);
+                },
+                toMeta: function() {
+                    return this.retrieveData();
+                }
             });
 
             SirTrevor.Blocks.Quote =  SirTrevor.Block.extend({
