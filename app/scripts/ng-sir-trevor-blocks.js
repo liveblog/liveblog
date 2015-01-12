@@ -32,7 +32,7 @@ define([
                         '<img class="hidden st-link-block cover-preview" />',
                         '<div class="hidden st-link-block title-preview" contenteditable="true"></div>',
                         '<div class="hidden st-link-block description-preview" contenteditable="true"></div>',
-                        '<div class="hidden st-link-block link-preview"></div>'
+                        '<a class="hidden st-link-block link-preview"></a>'
                     ].join('\n');
                 },
                 onBlockRender: function() {
@@ -52,8 +52,9 @@ define([
                     // when the link field changes
                     this.$editor.on('change', function() {
                         var $this = $(this);
-                        var url = $this.text();
-                        if (url.trim() === '') {
+                        var url = $this.text().trim();
+                        // exit if empty
+                        if (url === '') {
                             return false;
                         }
                         that.getOptions().embedService.get(url)
@@ -74,7 +75,12 @@ define([
                             });
                     });
                 },
-                // retrieveData: function() {},
+                isEmpty: function() {
+                    return _.isEmpty(this.retrieveData().url);
+                },
+                retrieveData: function() {
+                    return this.data;
+                },
                 loadData: function(data) {
                     // TODO: reset fields
                     this.$('.link-input, .embed-preview, .cover-preview, .title-preview, .description-preview').addClass('hidden');
@@ -90,15 +96,22 @@ define([
                 },
                 // toMarkdown: function(markdown) {},
                 toHTML: function() {
-                    var compile = _.template([
-                        '<div class="embed-preview"><%= embedCode %></div>',
-                        '<img class="cover-preview" src="<%= cover %>"/>',
-                        '<div class="title-preview"><%= title %></div>',
-                        '<div class="description-preview"><%= description %></div>',
-                        '<div class="link-preview"></div>'
-                    ].join('\n'));
-                    console.log(compile(this.data));
-                    return compile(this.data);
+                    var html = '';
+                    var data = this.retrieveData();
+                    if (data.embedCode !== undefined) {
+                        html += '<div class="embed-preview">'+data.embedCode+'</div>';
+                    }
+                    if (data.cover !== undefined) {
+                        html += '<img class="cover-preview" src="'+data.cover+'"/>';
+                    }
+                    if (data.title !== undefined) {
+                        html += '<div class="title-preview">'+data.title+'</div>';
+                    }
+                    if (data.description !== undefined) {
+                        html += '<div class="description-preview">'+data.description+'</div>';
+                    }
+                    html += '<a class="link-preview">'+data.url+'</a>';
+                    return html;
                 },
                 toMeta: function() {
                     return this.retrieveData();
