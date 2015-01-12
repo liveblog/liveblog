@@ -79,10 +79,16 @@ define([
                     return _.isEmpty(this.retrieveData().url);
                 },
                 retrieveData: function() {
-                    return this.data;
+                    var data = {
+                        embedCode: this.$('.embed-preview').html(),
+                        cover: this.$('.cover-preview').attr('src'),
+                        title: this.$('.title-preview').html(),
+                        description: this.$('.description-preview').html(),
+                        url: this.$('.url-preview').text()
+                    };
+                    return data;
                 },
                 loadData: function(data) {
-                    // TODO: reset fields
                     this.$('.link-input, .embed-preview, .cover-preview, .title-preview, .description-preview').addClass('hidden');
                     this.$('.link-preview').removeClass('hidden').html(data.url);
                     if (data.embedCode !== undefined) {this.$('.embed-preview').removeClass('hidden').html(data.embedCode);}
