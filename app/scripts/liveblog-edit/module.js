@@ -15,8 +15,8 @@ define([
 ], function(angular) {
     'use strict';
 
-    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route', 'upload', 'config'];
-    function BlogEditController(api, $scope, blog, notify, gettext, $route, upload, config) {
+    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route', 'upload', 'config', 'publishCounter'];
+    function BlogEditController(api, $scope, blog, notify, gettext, $route, upload, config, publishCounter) {
         $scope.blog = blog;
         $scope.oldBlog = _.create(blog);
         $scope.updateBlog = function(blog) {
@@ -37,6 +37,7 @@ define([
             $scope.create().then(function() {
                 notify.pop();
                 notify.info(gettext('Post saved'));
+                publishCounter.oneMore();
                 $scope.editor.reinitialize();
             }, function() {
                 notify.pop();
@@ -173,6 +174,16 @@ define([
                 }
             }
         });
+    }]).factory('publishCounter', [function() {
+        return {
+            counter: 0,
+            oneMore: function() {
+                this.counter ++;
+            },
+            getNewPosts: function() {
+                return this.counter;
+            }
+        };
     }]);
 
     return app;
