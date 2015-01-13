@@ -1,3 +1,4 @@
+from apps.content import metadata_schema
 from bson.objectid import ObjectId
 from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
@@ -6,17 +7,18 @@ from superdesk.services import BaseService
 from superdesk.utc import utcnow
 
 from liveblog.common import get_user, update_dates_for
-from apps.content import metadata_schema, LINKED_IN_PACKAGES
+from apps.archive.common import generate_guid, GUID_TAG
 
 
 items_schema = {
+    'guid': metadata_schema['guid'],
     'text': metadata_schema['body_html'],
     'original_creator': metadata_schema['original_creator'],
     'version_creator': metadata_schema['version_creator'],
     'pubstatus': metadata_schema['pubstatus'],
     'type': metadata_schema['type'],
     'groups': metadata_schema['groups'],
-    LINKED_IN_PACKAGES: metadata_schema[LINKED_IN_PACKAGES],
+    'linked_in_packages': metadata_schema['linked_in_packages'],
     'meta': {'type': 'string'},
     'blog': Resource.rel('blogs', True),
     'particular_type': {
@@ -44,9 +46,11 @@ class ItemsService(BaseService):
         return self.backend.get('items', req=req, lookup=lookup)
 
     def on_create(self, docs):
+        print('items on create')
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
+            doc['guid'] = generate_guid(type=GUID_TAG)
 
     def on_created(self, docs):
         push_notification('items', created=1)
@@ -63,7 +67,7 @@ class ItemsService(BaseService):
         push_notification('items', deleted=1)
 
 
-class ItemsPostResource(Resource):
+class PostItemsResource(Resource):
     url = 'posts/<regex("[a-f0-9]{24}"):post_id>/items'
     schema = items_schema
     datasource = {
@@ -71,13 +75,33 @@ class ItemsPostResource(Resource):
         'elastic_filter': {'term': {'particular_type': 'item'}},
         'default_sort': [('_updated', -1)]
     }
-    resource_methods = ['GET', 'POST']
+    resource_methods = ['GET']
+    privileges = {'GET': 'blogs'}
 
 
-class ItemsPostService(BaseService):
-
+class PostItemsService(BaseService):
     def get(self, req, lookup):
         if lookup.get('post_id'):
             lookup['post'] = ObjectId(lookup['post_id'])
             del lookup['post_id']
+        return super().get(req, lookup)
+
+
+class BlogItemsResource(Resource):
+    url = 'posts/<regex("[a-f0-9]{24}"):blog_id>/items'
+    schema = items_schema
+    datasource = {
+        'source': 'archive',
+        'elastic_filter': {'term': {'particular_type': 'item'}},
+        'default_sort': [('_updated', -1)]
+    }
+    resource_methods = ['GET']
+    privileges = {'GET': 'blogs'}
+
+
+class BlogItemsService(BaseService):
+    def get(self, req, lookup):
+        if lookup.get('blog_id'):
+            lookup['blog'] = ObjectId(lookup['blog_id'])
+            del lookup['blog_id']
         return super().get(req, lookup)

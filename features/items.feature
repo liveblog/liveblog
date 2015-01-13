@@ -16,16 +16,16 @@ Feature: Items operations
 		"""
         When we post to "items"
         """
-        [{"text": "test item for an open blog", "blog": "#BLOGS_ID#"}]
+        [{"text": "test item for an open blog", "blog": "#blogs._id#"}]
         """  
         Then we get existing resource
         """
-        {"text": "test item for an open blog", "blog": "#BLOGS_ID#"}
+        {"text": "test item for an open blog", "blog": "#blogs._id#"}
         """  
         When we get "items?embedded={"original_creator":1}"
         Then we get list with 1 items
 	    """
-	    {"_items": [{"text": "test item for an open blog", "blog": "#BLOGS_ID#"}]}
+	    {"_items": [{"text": "test item for an open blog", "blog": "#blogs._id#"}]}
 	    """
 	    
 		

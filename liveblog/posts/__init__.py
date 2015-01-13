@@ -1,6 +1,6 @@
 import superdesk
 from liveblog.posts.posts import PostsService, PostsResource,\
-    BlogPostService, BlogPostResource
+    BlogPostsService, BlogPostsResource
 
 
 def init_app(app):
@@ -9,5 +9,5 @@ def init_app(app):
     PostsResource(endpoint_name, app=app, service=service)
 
     endpoint_name = 'blog_posts'
-    service = BlogPostService(endpoint_name, backend=superdesk.get_backend())
-    BlogPostResource(endpoint_name, app=app, service=service)
+    service = BlogPostsService(endpoint_name, backend=superdesk.get_backend())
+    BlogPostsResource(endpoint_name, app=app, service=service)

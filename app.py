@@ -1,3 +1,13 @@
+# -*- coding: utf-8; -*-
+#
+# This file is part of Superdesk.
+#
+# Copyright 2013, 2014 Sourcefabric z.u. and contributors.
+#
+# For the full copyright and license information, please see the
+# AUTHORS and LICENSE files distributed with this source code, or
+# at https://www.sourcefabric.org/superdesk/license
+
 
 import os
 import logging
@@ -14,6 +24,7 @@ from eve.auth import TokenAuth
 from superdesk.storage.desk_media_storage import SuperdeskGridFSMediaStorage
 from superdesk.validator import SuperdeskValidator
 from raven.contrib.flask import Sentry
+from superdesk.errors import SuperdeskError, SuperdeskApiError
 
 
 logger = logging.getLogger('superdesk')
@@ -22,7 +33,6 @@ sentry = Sentry(register_signal=False, wrap_wsgi=False)
 
 def get_app(config=None):
     """App factory.
-
     :param config: configuration that can override config from `settings.py`
     :return: a new SuperdeskEve app instance
     """
@@ -64,10 +74,9 @@ def get_app(config=None):
 
     app.mail = Mail(app)
 
-    @app.errorhandler(superdesk.SuperdeskError)
+    @app.errorhandler(SuperdeskError)
     def client_error_handler(error):
         """Return json error response.
-
         :param error: an instance of :attr:`superdesk.SuperdeskError` class
         """
         return send_response(None, (error.to_dict(), None, None, error.status_code))
@@ -77,7 +86,7 @@ def get_app(config=None):
         """Log server errors."""
         app.sentry.captureException()
         logger.exception(error)
-        return_error = superdesk.SuperdeskError(status_code=500)
+        return_error = SuperdeskApiError.internalError()
         return client_error_handler(return_error)
 
     init_celery(app)
