@@ -11,11 +11,15 @@ Feature: Post operations
         """
         [{"text": "test post for an open blog", "blog": "#blogs._id#"}]
         """
+        Then we get response code 201
+        
         When we post to "posts"
         """
         [{"text": "test post for the same blog", "blog": "#blogs._id#"}]
         """
-        And we get "/posts?embedded={"original_creator":1}"
+        Then we get response code 201
+        
+        When we get "/posts?embedded={"original_creator":1}"
         Then we get list with 2 items
         """
         {"_items": [
@@ -44,10 +48,12 @@ Feature: Post operations
 		
 	@auth
     Scenario: Create post with multiple items
-		When we post to "posts"
+		When we post to "/posts?test=xxx"
 		"""
 		[{ "text": "first"}, {"text": "second"}, {"text": "third"}]
  		"""
+ 		Then we get response code 201
+ 		
 		When we get "/posts?embedded={"original_creator":1}" 
 		Then we get list with 1 items
 		"""
@@ -63,5 +69,3 @@ Feature: Post operations
                     {"text": "third", "original_creator": {"username": "test_user"}, "particular_type": "item"}
 	               ]}
 	    """        
-
-

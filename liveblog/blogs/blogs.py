@@ -6,6 +6,7 @@ from eve.utils import ParsedRequest
 
 from liveblog.common import get_user, update_dates_for
 from apps.content import metadata_schema
+from apps.archive.common import generate_guid, GUID_TAG
 
 
 class BlogsResource(Resource):
@@ -16,6 +17,7 @@ class BlogsResource(Resource):
     }
 
     schema = {
+        'guid': metadata_schema['guid'],
         'title': metadata_schema['headline'],
         'description': metadata_schema['description'],
         'language': metadata_schema['language'],
@@ -43,6 +45,7 @@ class BlogService(BaseService):
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
+            doc['guid'] = generate_guid(type=GUID_TAG)
 
     def get(self, req, lookup):
         if req is None:

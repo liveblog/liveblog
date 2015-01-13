@@ -1,6 +1,6 @@
 import superdesk
 from liveblog.items.items import ItemsService, ItemsResource,\
-    ItemsPostService, ItemsPostResource
+    PostItemsService, PostItemsResource, BlogItemsService, BlogItemsResource
 
 
 def init_app(app):
@@ -9,6 +9,10 @@ def init_app(app):
     service = ItemsService(endpoint_name, backend=superdesk.get_backend())
     ItemsResource(endpoint_name, app=app, service=service)
 
-    endpoint_name = 'item_posts'
-    service = ItemsPostService(endpoint_name, backend=superdesk.get_backend())
-    ItemsPostResource(endpoint_name, app=app, service=service)
+    endpoint_name = 'post_items'
+    service = PostItemsService(endpoint_name, backend=superdesk.get_backend())
+    PostItemsResource(endpoint_name, app=app, service=service)
+
+    endpoint_name = 'blog_items'
+    service = BlogItemsService(endpoint_name, backend=superdesk.get_backend())
+    BlogItemsResource(endpoint_name, app=app, service=service)
