@@ -29,7 +29,9 @@ define([
                         '<div class="st-required st-link-block link-input"',
                         ' placeholder="url" contenteditable="true"></div>',
                         '<div class="hidden st-link-block embed-preview"></div>',
-                        '<img class="hidden st-link-block cover-preview" />',
+                        '<div class="hidden st-link-block cover-preview-handler">',
+                        '  <div class="st-link-block cover-preview"></div>',
+                        '</div>',
                         '<div class="hidden st-link-block title-preview" contenteditable="true"></div>',
                         '<div class="hidden st-link-block description-preview" contenteditable="true"></div>',
                         '<a class="hidden st-link-block link-preview"></a>'
@@ -62,13 +64,22 @@ define([
                                 var link_data = {
                                     url: url,
                                     title: data.title,
-                                    description: data.description
+                                    description: data.description,
+                                    thumbnail_width: data.thumbnail_width,
+                                    thumbnail_height: data.thumbnail_height,
+                                    embed_code: data.html,
+                                    cover: data.thumbnail_url
                                 };
-                                // add an embed code or a cover
-                                if (data.html !== undefined) {
-                                    link_data.embedCode = data.html;
-                                } else {
-                                    link_data.cover = data.thumbnail_url;
+                                if (data.type === 'photo') {
+                                    link_data.cover = data.url;
+                                    link_data.thumbnail_width = data.width;
+                                    link_data.thumbnail_height = data.height;
+                                }
+                                if (data.media_url !== undefined) {
+                                    link_data.cover = data.media_url;
+                                    link_data.embed_code = undefined;
+                                    link_data.thumbnail_width = data.width;
+                                    link_data.thumbnail_height = data.height;
                                 }
                                 that.data = link_data;
                                 that.loadData(link_data);
@@ -80,22 +91,58 @@ define([
                 },
                 retrieveData: function() {
                     var data = {
-                        embedCode: this.$('.embed-preview').html(),
-                        cover: this.$('.cover-preview').attr('src'),
+                        embed_code: this.$('.embed-preview').html(),
+                        cover: this.$('.cover-preview').css('background-image').slice(4, -1),
                         title: this.$('.title-preview').html(),
                         description: this.$('.description-preview').html(),
-                        url: this.$('.url-preview').text()
+                        url: this.$('.link-preview').attr('href')
                     };
                     return data;
                 },
+                renderCard: function() {
+
+                },
                 loadData: function(data) {
-                    this.$('.link-input, .embed-preview, .cover-preview, .title-preview, .description-preview').addClass('hidden');
-                    this.$('.link-preview').removeClass('hidden').html(data.url);
-                    if (data.embedCode !== undefined) {this.$('.embed-preview').removeClass('hidden').html(data.embedCode);}
-                    if (data.cover !== undefined) {this.$('.cover-preview').removeClass('hidden').attr('src', data.cover);}
-                    if (data.title !== undefined) {this.$('.title-preview').removeClass('hidden').html(data.title);}
-                    if (data.description !== undefined) {this.$('.description-preview').removeClass('hidden').html(data.description);}
-                    this.focus();
+                    // hide everything
+                    this.$(
+                        ['.link-input',
+                        '.embed-preview',
+                        '.cover-preview-handler',
+                        '.title-preview',
+                        '.description-preview'].join(', ')
+                    ).addClass('hidden');
+                    // set the link
+                    this.$('.link-preview')
+                        .attr('href', data.url)
+                        .html(data.url)
+                        .removeClass('hidden');
+                    // set the embed code
+                    if (data.embed_code !== undefined) {
+                        this.$('.embed-preview')
+                            .html(data.embed_code).removeClass('hidden');
+                    }
+                    // set the cover illustration
+                    if (data.embed_code === undefined && data.cover !== undefined) {
+                        var ratio = data.thumbnail_width / data.thumbnail_height;
+                        var cover_width = Math.min(447, data.thumbnail_width);
+                        var cover_height = cover_width / ratio;
+                        this.$('.cover-preview').css({
+                            'background-image': 'url('+data.cover+')',
+                            width: cover_width,
+                            height: cover_height
+                        });
+                        this.$('.cover-preview-handler').removeClass('hidden');
+                    }
+                    // set the title
+                    if (data.title !== undefined) {
+                        this.$('.title-preview')
+                            .html(data.title).removeClass('hidden');
+                    }
+                    // set the description
+                    if (data.description !== undefined) {
+                        this.$('.description-preview')
+                            .html(data.description).removeClass('hidden');
+                    }
                 },
                 focus: function() {
                     this.$('.link-input').focus();
@@ -104,8 +151,8 @@ define([
                 toHTML: function() {
                     var html = '';
                     var data = this.retrieveData();
-                    if (data.embedCode !== undefined) {
-                        html += '<div class="embed-preview">'+data.embedCode+'</div>';
+                    if (data.embed_code !== undefined) {
+                        html += '<div class="embed-preview">'+data.embed_code+'</div>';
                     }
                     if (data.cover !== undefined) {
                         html += '<img class="cover-preview" src="'+data.cover+'"/>';

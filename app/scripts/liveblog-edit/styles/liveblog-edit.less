@@ -201,12 +201,11 @@
                                 min-width: 50%; white-space: nowrap;
                             }
                         }
-                        // padding
-                        &__inner {padding: 0;}
-                        &[data-type='quote'], &[data-type='image'], &[data-type='link'] { .st-block__inner { padding: 20px; } }
+                        // padding for text block is handled by the .st-text-block
+                        &[data-type='text'] {.st-block__inner {padding: 0;}}
                         &__inner {
+                            padding: 20px;
                             border: 0;
-
                             label { margin-bottom: auto; } // prevent style from bootstrap
                             .transition(box-shadow .25s ease);
                             &:hover {
@@ -280,8 +279,14 @@
                                         height: 100%;
                                     }
                                 }
+                                &.remove-cover-preview {
+                                    position: absolute;
+                                    &:after {
+                                        content: "x";
+                                    }
+                                }
                                 &.cover-preview {
-                                    max-width: 100%;
+                                    background-size: cover;
                                 }
                                 &.title-preview {
                                     .inline-field();
