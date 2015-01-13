@@ -27,14 +27,7 @@ define([
                 editorHTML: function() {
                     return [
                         '<div class="st-required st-link-block link-input"',
-                        ' placeholder="url" contenteditable="true"></div>',
-                        '<div class="hidden st-link-block embed-preview"></div>',
-                        '<div class="hidden st-link-block cover-preview-handler">',
-                        '  <div class="st-link-block cover-preview"></div>',
-                        '</div>',
-                        '<div class="hidden st-link-block title-preview" contenteditable="true"></div>',
-                        '<div class="hidden st-link-block description-preview" contenteditable="true"></div>',
-                        '<a class="hidden st-link-block link-preview"></a>'
+                        ' placeholder="url" contenteditable="true"></div>'
                     ].join('\n');
                 },
                 onBlockRender: function() {
@@ -55,7 +48,7 @@ define([
                     this.$editor.on('change', function() {
                         var $this = $(this);
                         var url = $this.text().trim();
-                        // exit if empty
+                        // exit if the url is empty. Not needed to disturb the service
                         if (url === '') {
                             return false;
                         }
@@ -90,35 +83,56 @@ define([
                     return _.isEmpty(this.retrieveData().url);
                 },
                 retrieveData: function() {
+                    // retrieve new data from editor
                     var data = {
                         embed_code: this.$('.embed-preview').html(),
-                        cover: this.$('.cover-preview').css('background-image').slice(4, -1),
-                        title: this.$('.title-preview').html(),
-                        description: this.$('.description-preview').html(),
+                        cover: this.$('.cover-preview').css('background-image').slice(5, -2),
+                        title: this.$('.title-preview').text(),
+                        description: this.$('.description-preview').text(),
                         url: this.$('.link-preview').attr('href')
                     };
-                    return data;
+                    // remove empty string
+                    _.forEach(data, function(value, key) {
+                        if (typeof(value) === 'string' && value.trim() === '') {
+                            delete data[key];
+                        }
+                    });
+                    // add data which are not in the editor but has been saved before (like thumbnail_width)
+                    _.merge(this.data, data);
+                    return this.data;
                 },
-                renderCard: function() {
-
-                },
-                loadData: function(data) {
+                renderCard: function(data) {
+                    var card_class = 'liveblog--card';
+                    var html = $([
+                        '<div class="'+card_class+' hidden">',
+                        '  <div class="hidden st-link-block embed-preview"></div>',
+                        '  <div class="hidden st-link-block cover-preview-handler">',
+                        '    <div class="st-link-block cover-preview"></div>',
+                        '  </div>',
+                        '  <div class="hidden st-link-block title-preview" contenteditable="true"></div>',
+                        '  <div class="hidden st-link-block description-preview" contenteditable="true"></div>',
+                        '  <a class="hidden st-link-block link-preview"></a>',
+                        '</div>'
+                    ].join('\n'));
+                    // but this html to the DOM (neeeded to use jquery)
+                    $('body > .'+card_class).remove();
+                    $('body').append(html);
+                    html = $('body > .'+card_class);
                     // hide everything
-                    this.$(
-                        ['.link-input',
-                        '.embed-preview',
+                    html.find(
+                        ['.embed-preview',
                         '.cover-preview-handler',
                         '.title-preview',
                         '.description-preview'].join(', ')
                     ).addClass('hidden');
                     // set the link
-                    this.$('.link-preview')
+                    html.find('.link-preview')
                         .attr('href', data.url)
                         .html(data.url)
                         .removeClass('hidden');
                     // set the embed code
                     if (data.embed_code !== undefined) {
-                        this.$('.embed-preview')
+                        html.find('.embed-preview')
                             .html(data.embed_code).removeClass('hidden');
                     }
                     // set the cover illustration
@@ -126,45 +140,44 @@ define([
                         var ratio = data.thumbnail_width / data.thumbnail_height;
                         var cover_width = Math.min(447, data.thumbnail_width);
                         var cover_height = cover_width / ratio;
-                        this.$('.cover-preview').css({
+                        html.find('.cover-preview').css({
                             'background-image': 'url('+data.cover+')',
                             width: cover_width,
                             height: cover_height
                         });
-                        this.$('.cover-preview-handler').removeClass('hidden');
+                        html.find('.cover-preview-handler').removeClass('hidden');
                     }
                     // set the title
                     if (data.title !== undefined) {
-                        this.$('.title-preview')
+                        html.find('.title-preview')
                             .html(data.title).removeClass('hidden');
                     }
                     // set the description
                     if (data.description !== undefined) {
-                        this.$('.description-preview')
+                        html.find('.description-preview')
                             .html(data.description).removeClass('hidden');
                     }
+                    // retrieve the final html code
+                    var html_to_return = '';
+                    html_to_return = '<div class="'+card_class+'">';
+                    html_to_return += html.get(0).innerHTML;
+                    html_to_return += '</div>';
+                    // remove html from the DOM
+                    html.remove();
+                    return html_to_return;
+                },
+                loadData: function(data) {
+                    this.$('.link-input')
+                        .addClass('hidden')
+                        .after(this.renderCard(data));
                 },
                 focus: function() {
                     this.$('.link-input').focus();
                 },
                 // toMarkdown: function(markdown) {},
                 toHTML: function() {
-                    var html = '';
                     var data = this.retrieveData();
-                    if (data.embed_code !== undefined) {
-                        html += '<div class="embed-preview">'+data.embed_code+'</div>';
-                    }
-                    if (data.cover !== undefined) {
-                        html += '<img class="cover-preview" src="'+data.cover+'"/>';
-                    }
-                    if (data.title !== undefined) {
-                        html += '<div class="title-preview">'+data.title+'</div>';
-                    }
-                    if (data.description !== undefined) {
-                        html += '<div class="description-preview">'+data.description+'</div>';
-                    }
-                    html += '<a class="link-preview">'+data.url+'</a>';
-                    return html;
+                    return this.renderCard(data);
                 },
                 toMeta: function() {
                     return this.retrieveData();
