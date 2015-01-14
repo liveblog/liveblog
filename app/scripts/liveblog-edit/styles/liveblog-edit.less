@@ -23,7 +23,6 @@
     .column {
         position: absolute;
         top: 0; bottom: 0;
-        width: 50%;
         .border-box();
         header {
             height: @nav-height;
@@ -45,10 +44,14 @@
 
     .column-editor {
         left: 0;
+        width: 540px;
+        .box-shadow(3px 0 0 @gray);
+        z-index: 1;
     }
 
     .column-timeline {
         right: 0;
+        left: 540px;
         background: #f0f0f0;
         border-left: 3px solid #c3c3c3;
         header {
@@ -82,10 +85,15 @@
                 // Sir-trevor elements ---------------------------
                 .st-outer {
                     // ["+" bars]
+                    .st-block-controls__top:before, .st-icon--add:after {
+                        background-color: transparent;
+                        color: #CBCBCB;
+                        border-radius: 0;
+                    }
                     .st-block-controls__top:hover:before, .st-block--with-plus:after {
-                        background: #f3f3f3;
-                        color: @black;
                         cursor: pointer;
+                        background-color: #E5E5E5;
+                        color: #666666;
                     }
                     // [block types bar]
                     .st-block-controls--active {
@@ -115,35 +123,32 @@
                         &:hover { text-decoration: inherit;} // prevent style from sir-trevor
                     }
                     // [border on error or delete states]
-                    .st-block--with-errors .st-block__inner,
-                    .st-block--delete-active .st-block__inner {
+                    .st-block--with-errors .st-block__inner .st-text-block,
+                    .st-block--delete-active .st-block__inner .st-text-block {
                         border-color: #d70014 !important;
-                        .st-block-ui-btn:hover {
-                            color:@black;
-                        }
                     }
                     .st-block {
-                        &__inner {
-                            &:hover { border-color: @gray; }
-                            label { margin-bottom: auto; } // prevent style from bootstrap
-                        }
-                        &__inputs {
+                        &__inputs, &__editor {
+                            padding: 1.6em 0px 1em;
                             background-color: transparent; // prevent style from sir-trevor.css
                         }
                         &__ui { // [reorder and close buttons]
                             // set it at the top right corner
                             bottom: auto;
-                            top: 0;
+                            top: 10px;
+                            right: 10px;
                             .st-block-ui-btn {
-                                color : @gray;
-                                border-color: @gray;
+                                color: @gray;
+                                border: none;
+                                // background-color: transparent;
+                                width: 2em;
+                                height: 2em;
+                                line-height: 2em;
+                                font-size: 1em;
+                                background-color: transparent;
                                 &:hover {
-                                    background-color: @gray;
-                                    color: @white;
+                                    background-color: @grayLighter;
                                 }
-                                // adapt the border style for the new position on the top right
-                                border-bottom: 2px solid @gray;
-                                border-top: 0;
                                 // hide the reorder button
                                 &--reorder { display: none; }
                             }
@@ -152,12 +157,33 @@
                             // set it at the top right corner
                             bottom: auto;
                             top: 0;
-                            .st-block__delete-label {
-                                border-style: none none none solid;
+                            .st-block__delete-label { // hide the label
+                                display: none;
+                                border-style: none;
                             }
                             .st-block-ui-btn {
-                                border-width: 2px 0px 2px 2px;
-                                border-style: solid solid solid solid;
+                                border-width: 0;
+                                border-style: none;
+                                width: auto;
+                                height: auto;
+                                line-height: normal;
+                                margin-top: 10px;
+                                margin-right: 10px;
+                                &:hover {
+                                    background-color: inherit;
+                                }
+                            }
+                            .st-block-ui-btn--confirm-delete, .st-block-ui-btn--deny-delete {
+                                    .btn;
+                                &:before {
+                                    text-transform: uppercase;
+                                    font-family: @baseFontFamily; // remove the sir-trevor icon behavior
+                                } 
+                            }
+                            .st-block-ui-btn--confirm-delete {.btn-danger; &:before {content: "delete"; }}
+                            .st-block-ui-btn--deny-delete {
+                                .buttonStates(#DBDBDB, @black); // needed to give a no transparent background in order to hide the cross
+                                &:before {content: "cancel"; }
                             }
                         }
                         &__dropzone {
@@ -176,13 +202,27 @@
                                 min-width: 50%; white-space: nowrap;
                             }
                         }
+                        // padding
+                        &__inner {padding: 0;}
+                        &[data-type='quote'], &[data-type='image'] { .st-block__inner { padding: 20px; } }
                         &__inner {
-                            // give more space at the top of the block to let the remove button appear without hiding fields.
-                            padding-top: 2.875em;
-                            // for every text input field (textarea, input and div[content-editable])
+                            border: 0;
+
+                            label { margin-bottom: auto; } // prevent style from bootstrap
+                            .transition(box-shadow .25s ease);
+                            &:hover {
+                                .box-shadow(0px 2px 4px rgba(0, 0, 0, 0.17));
+                            }
+                            // for text input field (div[content-editable] looking like a textarea)
                             .st-text-block {
+                                padding: 20px;
                                 font-size: 1em;
+                                border: 2px solid @white;
                                 word-break: break-all;
+                                background-color: white;
+                                &:focus, &:hover {
+                                    border: 2px solid @sd-blue;
+                                }
                             }
                             // make a contenteditable div looking like a custom input
                             .inline-field() {
