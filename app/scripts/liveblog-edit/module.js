@@ -186,9 +186,8 @@ define([
                 return this.counter;
             }
         };
-    }])).config(['embedlyServiceProvider', function(embedlyServiceProvider) {
+    }]).config(['embedlyServiceProvider', function(embedlyServiceProvider) {
         embedlyServiceProvider.setKey('6dc2ebdf2a104f08bdc59f6b95c73793');
     }]);
-
     return app;
 });
