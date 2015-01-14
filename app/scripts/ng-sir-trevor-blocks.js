@@ -22,6 +22,7 @@ define([
 
             SirTrevor.Blocks.Link =  SirTrevor.Block.extend({
                 type: 'link',
+                data: {},
                 title: function(){ return 'Link'; },
                 icon_name: 'link',
                 editorHTML: function() {
@@ -51,6 +52,9 @@ define([
                         if (url === '') {
                             return false;
                         }
+                        // start a loader over the block, it will be stopped in the loadData function
+                        that.loading();
+                        // request the embedService with the provided url
                         that.getOptions().embedService.get(url)
                             .then(function saveAndLoadData(data) {
                                 that.data = data;
@@ -162,6 +166,14 @@ define([
                     this.$('.link-input')
                         .addClass('hidden')
                         .after(this.renderCard(data, true));
+                    // remove the loader when media is loaded
+                    var iframe = this.$('.embed-preview iframe');
+                    if (iframe.length > 0) {
+                        // special case for iframe
+                        iframe.ready(this.ready.bind(this));
+                    } else {
+                        this.ready();
+                    }
                 },
                 focus: function() {
                     this.$('.link-input').focus();
