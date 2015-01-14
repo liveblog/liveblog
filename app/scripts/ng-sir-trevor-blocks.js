@@ -46,36 +46,17 @@ define([
                     });
                     // when the link field changes
                     this.$editor.on('change', function() {
-                        var $this = $(this);
-                        var url = $this.text().trim();
+                        var url = $(this).text().trim();
                         // exit if the url is empty. Not needed to disturb the service
                         if (url === '') {
                             return false;
                         }
                         that.getOptions().embedService.get(url)
-                            .then(function loadData(data) {
-                                var link_data = {
-                                    url: url,
-                                    title: data.title,
-                                    description: data.description,
-                                    thumbnail_width: data.thumbnail_width,
-                                    thumbnail_height: data.thumbnail_height,
-                                    embed_code: data.html,
-                                    cover: data.thumbnail_url
-                                };
-                                if (data.type === 'photo') {
-                                    link_data.cover = data.url;
-                                    link_data.thumbnail_width = data.width;
-                                    link_data.thumbnail_height = data.height;
-                                }
-                                if (data.media_url !== undefined) {
-                                    link_data.cover = data.media_url;
-                                    link_data.embed_code = undefined;
-                                    link_data.thumbnail_width = data.width;
-                                    link_data.thumbnail_height = data.height;
-                                }
-                                that.data = link_data;
-                                that.loadData(link_data);
+                            .then(function saveAndLoadData(data) {
+                                that.data = data;
+                                that.loadData(that.data);
+                            }, function errorCallback(error) {
+                                that.addMessage('an error occured: ' + error);
                             });
                     });
                 },
@@ -85,12 +66,14 @@ define([
                 retrieveData: function() {
                     // retrieve new data from editor
                     var data = {
-                        embed_code: this.$('.embed-preview').html(),
-                        cover: this.$('.cover-preview').css('background-image').slice(5, -2),
+                        html: this.$('.embed-preview').html(),
                         title: this.$('.title-preview').text(),
                         description: this.$('.description-preview').text(),
                         url: this.$('.link-preview').attr('href')
                     };
+                    if (this.$('.cover-preview-handler').hasClass('hidden')) {
+                        delete data.thumbnail_url;
+                    }
                     // remove empty string
                     _.forEach(data, function(value, key) {
                         if (typeof(value) === 'string' && value.trim() === '') {
@@ -131,17 +114,17 @@ define([
                         .html(data.url)
                         .removeClass('hidden');
                     // set the embed code
-                    if (data.embed_code !== undefined) {
+                    if (data.html !== undefined) {
                         html.find('.embed-preview')
-                            .html(data.embed_code).removeClass('hidden');
+                            .html(data.html).removeClass('hidden');
                     }
                     // set the cover illustration
-                    if (data.embed_code === undefined && data.cover !== undefined) {
+                    if (data.html === undefined && data.thumbnail_url !== undefined) {
                         var ratio = data.thumbnail_width / data.thumbnail_height;
                         var cover_width = Math.min(447, data.thumbnail_width);
                         var cover_height = cover_width / ratio;
                         html.find('.cover-preview').css({
-                            'background-image': 'url('+data.cover+')',
+                            'background-image': 'url('+data.thumbnail_url+')',
                             width: cover_width,
                             height: cover_height
                         });
