@@ -16,8 +16,12 @@ define([
 ], function(angular) {
     'use strict';
 
-    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route', 'upload', 'config', 'publishCounter', 'embedService'];
-    function BlogEditController(api, $scope, blog, notify, gettext, $route, upload, config, publishCounter, embedService) {
+    BlogEditController.$inject = [
+        'api', '$scope', 'blog', 'notify', 'gettext', '$route',
+        'upload', 'config', 'publishCounter', 'embedService'
+    ];
+    function BlogEditController(api, $scope, blog, notify, gettext, $route,
+        upload, config, publishCounter, embedService) {
         $scope.blog = blog;
         $scope.oldBlog = _.create(blog);
         $scope.updateBlog = function(blog) {
