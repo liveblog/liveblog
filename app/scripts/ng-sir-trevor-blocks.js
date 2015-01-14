@@ -84,7 +84,8 @@ define([
                     _.merge(this.data, data);
                     return this.data;
                 },
-                renderCard: function(data) {
+                renderCard: function(data, editable) {
+                    if (editable === undefined) {editable = false;}
                     var card_class = 'liveblog--card';
                     var html = $([
                         '<div class="'+card_class+' hidden">',
@@ -92,9 +93,9 @@ define([
                         '  <div class="hidden st-link-block cover-preview-handler">',
                         '    <div class="st-link-block cover-preview"></div>',
                         '  </div>',
-                        '  <div class="hidden st-link-block title-preview" contenteditable="true"></div>',
-                        '  <div class="hidden st-link-block description-preview" contenteditable="true"></div>',
-                        '  <a class="hidden st-link-block link-preview"></a>',
+                        '  <div class="st-link-block title-preview"></div>',
+                        '  <div class="st-link-block description-preview"></div>',
+                        '  <a class="st-link-block link-preview"></a>',
                         '</div>'
                     ].join('\n'));
                     // but this html to the DOM (neeeded to use jquery)
@@ -104,15 +105,12 @@ define([
                     // hide everything
                     html.find(
                         ['.embed-preview',
-                        '.cover-preview-handler',
-                        '.title-preview',
-                        '.description-preview'].join(', ')
+                        '.cover-preview-handler'].join(', ')
                     ).addClass('hidden');
                     // set the link
                     html.find('.link-preview')
                         .attr('href', data.url)
-                        .html(data.url)
-                        .removeClass('hidden');
+                        .html(data.url);
                     // set the embed code
                     if (data.html !== undefined) {
                         html.find('.embed-preview')
@@ -133,12 +131,23 @@ define([
                     // set the title
                     if (data.title !== undefined) {
                         html.find('.title-preview')
-                            .html(data.title).removeClass('hidden');
+                            .html(data.title);
                     }
                     // set the description
                     if (data.description !== undefined) {
                         html.find('.description-preview')
-                            .html(data.description).removeClass('hidden');
+                            .html(data.description);
+                    }
+                    // set editable if needed
+                    if (editable) {
+                        html.find('.title-preview').attr({
+                            contenteditable: true,
+                            placeholder: 'title'
+                        });
+                        html.find('.description-preview').attr({
+                            contenteditable: true,
+                            placeholder: 'description'
+                        });
                     }
                     // retrieve the final html code
                     var html_to_return = '';
@@ -152,7 +161,7 @@ define([
                 loadData: function(data) {
                     this.$('.link-input')
                         .addClass('hidden')
-                        .after(this.renderCard(data));
+                        .after(this.renderCard(data, true));
                 },
                 focus: function() {
                     this.$('.link-input').focus();
