@@ -1,5 +1,4 @@
 var openUrl = require('./helpers/utils').open;
-var lodash = require('lodash');
 describe('editor-embed:', function() {
     'use strict';
 
