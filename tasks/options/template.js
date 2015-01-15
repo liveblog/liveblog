@@ -32,7 +32,7 @@ module.exports = function(grunt) {
 
     return {
         mock: {
-            options: data('http://superdesk.apiary.io', true),
+            options: data('http://localhost:5000/api', true),
             files: files
         },
         test: {
