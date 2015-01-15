@@ -35,6 +35,6 @@
     "data": {
         "title": "title: end to end closed",
         "description": "description: end to end closed",
-        "state": "closed"
+        "blog_status": "closed"
     }
 }]
