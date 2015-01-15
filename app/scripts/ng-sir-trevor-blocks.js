@@ -68,28 +68,29 @@ define([
                     return _.isEmpty(this.retrieveData().url);
                 },
                 retrieveData: function() {
+                    var that = this;
                     // retrieve new data from editor
-                    var data = {
-                        html: this.$('.embed-preview').html(),
-                        title: this.$('.title-preview').text(),
-                        description: this.$('.description-preview').text(),
-                        url: this.$('.link-preview').attr('href')
+                    var editor_data = {
+                        html: that.$('.embed-preview').html(),
+                        title: that.$('.title-preview').text(),
+                        description: that.$('.description-preview').text(),
+                        url: that.$('.link-preview').attr('href')
                     };
-                    if (this.$('.cover-preview-handler').hasClass('hidden')) {
-                        delete data.thumbnail_url;
+                    // remove thumbnail_url if it was removed by user
+                    if (that.$('.cover-preview').hasClass('hidden')) {
+                        editor_data.thumbnail_url = null;
                     }
-                    // remove empty string
-                    _.forEach(data, function(value, key) {
+                    // add data which are not in the editor but has been saved before (like thumbnail_width)
+                    _.merge(that.data, editor_data);
+                    // clean data by removing empty string
+                    _.forEach(that.data, function(value, key) {
                         if (typeof(value) === 'string' && value.trim() === '') {
-                            delete data[key];
+                            delete that.data[key];
                         }
                     });
-                    // add data which are not in the editor but has been saved before (like thumbnail_width)
-                    _.merge(this.data, data);
-                    return this.data;
+                    return that.data;
                 },
-                renderCard: function(data, editable) {
-                    if (editable === undefined) {editable = false;}
+                renderCard: function(data) {
                     var card_class = 'liveblog--card';
                     var html = $([
                         '<div class="'+card_class+' hidden">',
@@ -121,7 +122,7 @@ define([
                             .html(data.html).removeClass('hidden');
                     }
                     // set the cover illustration
-                    if (data.html === undefined && data.thumbnail_url !== undefined) {
+                    if (data.html === undefined && !_.isEmpty(data.thumbnail_url)) {
                         var ratio = data.thumbnail_width / data.thumbnail_height;
                         var cover_width = Math.min(447, data.thumbnail_width);
                         var cover_height = cover_width / ratio;
@@ -142,17 +143,6 @@ define([
                         html.find('.description-preview')
                             .html(data.description);
                     }
-                    // set editable if needed
-                    if (editable) {
-                        html.find('.title-preview').attr({
-                            contenteditable: true,
-                            placeholder: 'title'
-                        });
-                        html.find('.description-preview').attr({
-                            contenteditable: true,
-                            placeholder: 'description'
-                        });
-                    }
                     // retrieve the final html code
                     var html_to_return = '';
                     html_to_return = '<div class="'+card_class+'">';
@@ -162,10 +152,20 @@ define([
                     html.remove();
                     return html_to_return;
                 },
+                // render a card from data, and make it editable
                 loadData: function(data) {
-                    this.$('.link-input')
+                    var that = this;
+                    // hide the link input field, render the card and add it to the DOM
+                    that.$('.link-input')
                         .addClass('hidden')
-                        .after(this.renderCard(data, true));
+                        .after(that.renderCard(data));
+                    // set somes fields contenteditable
+                    ['title', 'description'].forEach(function(field_name) {
+                        that.$('.'+field_name+'-preview').attr({
+                            contenteditable: true,
+                            placeholder: field_name
+                        });
+                    });
                     // remove the loader when media is loaded
                     var iframe = this.$('.embed-preview iframe');
                     if (iframe.length > 0) {
@@ -173,6 +173,28 @@ define([
                         iframe.ready(this.ready.bind(this));
                     } else {
                         this.ready();
+                    }
+                    // add a link to remove/show the cover
+                    var $cover_handler = this.$('.cover-preview-handler');
+                    if ($cover_handler.length > 0 && !$cover_handler.hasClass('hidden')) {
+                        var $cover_preview = $cover_handler.find('.cover-preview');
+                        var $remove_link = $('<a href="#">').text('remove the cover');
+                        var $show_link = $('<a href="#">').text('show the cover').addClass('hidden');
+                        $remove_link.on('click', function removeCoverAndDisplayShowLink(e) {
+                            that.saved_cover_url = that.data.thumbnail_url;
+                            $cover_preview.addClass('hidden');
+                            $(this).addClass('hidden');
+                            $show_link.removeClass('hidden');
+                            e.preventDefault();
+                        });
+                        $show_link.on('click', function showCoverAndDisplayRemoveLink(e) {
+                            that.data.thumbnail_url = that.saved_cover_url;
+                            $cover_preview.removeClass('hidden');
+                            $(this).addClass('hidden');
+                            $remove_link.removeClass('hidden');
+                            e.preventDefault();
+                        });
+                        $cover_handler.append($remove_link, $show_link);
                     }
                 },
                 focus: function() {
