@@ -46,23 +46,26 @@ define([
                         }
                     });
                     // when the link field changes
-                    this.$editor.on('change', function() {
+                    this.$editor.on('change', _.debounce(function callServiceAndLoadData() {
                         var url = $(this).text().trim();
-                        // exit if the url is empty. Not needed to disturb the service
-                        if (url === '') {
+                        // exit if the url is empty. Don't need to disturb the service
+                        if (_.isEmpty(url)) {
                             return false;
                         }
                         // start a loader over the block, it will be stopped in the loadData function
                         that.loading();
+                        // reset error messages
+                        that.resetMessages();
                         // request the embedService with the provided url
-                        that.getOptions().embedService.get(url)
-                            .then(function saveAndLoadData(data) {
-                                that.data = data;
-                                that.loadData(that.data);
-                            }, function errorCallback(error) {
-                                that.addMessage('an error occured: ' + error);
-                            });
-                    });
+                        that.getOptions().embedService.get(url).then(
+                            // return loadData function with the right context
+                            that.loadData.bind(that),
+                            function errorCallback(error) {
+                                that.addMessage(error);
+                                that.ready();
+                            }
+                        );
+                    }, 200));
                 },
                 isEmpty: function() {
                     return _.isEmpty(this.retrieveData().url);
@@ -155,6 +158,7 @@ define([
                 // render a card from data, and make it editable
                 loadData: function(data) {
                     var that = this;
+                    that.data = data;
                     // hide the link input field, render the card and add it to the DOM
                     that.$('.link-input')
                         .addClass('hidden')
