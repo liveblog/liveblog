@@ -190,8 +190,8 @@ define([
                 return this.counter;
             }
         };
-    }]).config(['embedlyServiceProvider', function(embedlyServiceProvider) {
-        embedlyServiceProvider.setKey('6dc2ebdf2a104f08bdc59f6b95c73793');
+    }]).config(['embedlyServiceProvider', 'config', function(embedlyServiceProvider, config) {
+        embedlyServiceProvider.setKey(config.embedly);
     }]);
     return app;
 });
