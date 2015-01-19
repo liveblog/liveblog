@@ -1,4 +1,5 @@
 var openUrl = require('./helpers/utils').open;
+var openBlog = require('./helpers/utils').openBlog;
 var lodash = require('lodash');
 
 describe('blogs', function() {
@@ -179,9 +180,4 @@ describe('blogs', function() {
                 .getText())
         .toBe(blog.username);
     }
-    function openBlog(index) {
-        index = index || 0;
-        element(by.repeater('blog in blogs._items').row(index).column('blog.title')).click();
-    }
-
 });
