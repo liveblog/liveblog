@@ -15,7 +15,7 @@ describe('editor-embed:', function() {
         // click on the image button
         element(by.css('[data-type="image"]')).click();
         // add a picture to be uploaded
-        element(by.css('input[type="file"]')).sendKeys(rootDir+'/app/images/superdesk-icon-large.png');
+        element(by.css('input[type="file"]')).sendKeys(rootDir + '/app/images/superdesk-icon-large.png');
         // wait for an image
         var image = element(by.css('.st-block__editor img'));
         image.getAttribute('src').then(function(src) {
