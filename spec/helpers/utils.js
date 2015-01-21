@@ -2,6 +2,7 @@
 
 exports.login = login;
 exports.open = openUrl;
+exports.openBlog = openBlog;
 
 // construct url from uri and base url
 exports.constructUrl = function(base, uri) {
@@ -26,4 +27,9 @@ function openUrl(url) {
         browser.get(url);
         login();
     };
+}
+
+function openBlog(index) {
+    index = index || 0;
+    element(by.repeater('blog in blogs._items').row(index).column('blog.title')).click();
 }
