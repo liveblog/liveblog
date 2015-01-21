@@ -1,33 +1,63 @@
 Feature: Post operations
 
-    @auth
+	@auth
     Scenario: Create posts
-    	Given empty "posts"
-    	Given "blogs"
+        Given empty "posts"
+        Given empty "items"
+         Given "blogs"
 		"""
-		[{"title": "test_blog1"}]
+		[{"title": "TEST_BLOG"}]
 		"""
-		When we post to "posts"
+        When we post to "items" with success
         """
-        [{"text": "test post for an open blog", "blog": "#blogs._id#"}]
+        [{"headline": "test", "blog": "#blogs._id#"}]
         """
-        Then we get response code 201
-        
-        When we post to "posts"
+        When we post to "/posts" with success
         """
-        [{"text": "test post for the same blog", "blog": "#blogs._id#"}]
+        {
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "headline": "test package with text",
+                            "residRef": "#items._id#",
+                            "slugline": "awesome post"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ],
+            "guid": "tag:example.com,0000:newsml_BRE9A605"
+        }
         """
-        Then we get response code 201
-        
-        When we get "/posts?embedded={"original_creator":1}"
-        Then we get list with 2 items
+        And we get "/packages"
+        Then we get list with 1 items
         """
-        {"_items": [
-                    {"text": "test post for an open blog", "blog": "#blogs._id#", "original_creator": {"username": "test_user"}}, 
-                    {"text": "test post for the same blog",  "blog": "#blogs._id#", "original_creator": {"username": "test_user"}} 
-	               ]}
-	    """       
-        
+        {
+            "_items": [
+                {
+                    "groups": [
+                        {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                        {
+                            "id": "main",
+                            "refs": [
+                                {
+                                    "headline": "test package with text",
+                                    "residRef": "#items._id#",
+                                    "slugline": "awesome post"
+                                }
+                            ],
+                            "role": "grpRole:Main"
+                        }
+                    ],
+                    "guid": "tag:example.com,0000:newsml_BRE9A605"
+                }
+            ]
+        }
+        """
+
 	@auth
     Scenario: Retrieve posts from blogs
         Given empty "posts"
@@ -41,31 +71,122 @@ Feature: Post operations
 	    """
         When we post to "posts"
         """
-        [{"text": "test post for an open blog", "blog": "#blogs._id#"}]
+        [{"headline": "test post for an open blog", "blog": "#blogs._id#"}]
         """
         And we get "/blogs/#blogs._id#/posts"
 		Then we get list with 1 items
-		
+
+        
 	@auth
-    Scenario: Create post with multiple items
-		When we post to "/posts?test=xxx"
+    Scenario: Patch created package
+		Given "blogs"
 		"""
-		[{ "text": "first"}, {"text": "second"}, {"text": "third"}]
- 		"""
- 		Then we get response code 201
- 		
-		When we get "/posts?embedded={"original_creator":1}" 
-		Then we get list with 1 items
+		[{"title": "test_blog1"}]
 		"""
-        {"_items": [
-                    {"text": "first", "original_creator": {"username": "test_user"}, "particular_type": "post"}
-	               ]}
-	    """ 
-	    When we get "/items?embedded={"original_creator":1}" 
-		Then we get list with 2 items
-		 """
-        {"_items": [
-                    {"text": "second", "original_creator": {"username": "test_user"}, "particular_type":"item"},
-                    {"text": "third", "original_creator": {"username": "test_user"}, "particular_type": "item"}
-	               ]}
-	    """        
+        Given empty "posts"
+        When we post to "items"
+        """
+        [{"headline": "test", "blog": "#blogs._id#"}]
+        """
+        When we upload a file "bike.jpg" to "archive_media"
+        When we post to "/posts" with success
+        """
+        {
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "headline": "test package with text",
+                            "residRef": "#items._id#",
+                            "slugline": "awesome article"
+                        }
+                    ],
+                    "role": "main"
+                }
+            ],
+            "guid": "tag:example.com,0000:newsml_BRE9A605"
+        }
+        """
+        And we patch latest
+        """
+        {
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "headline": "test package with pic",
+                            "residRef": "#archive_media._id#",
+                            "slugline": "awesome picture"
+                        },
+                        {
+                            "headline": "test package with text",
+                            "residRef": "#items._id#",
+                            "slugline": "awesome article"
+                        }
+                    ],
+                    "role": "main"
+                }
+            ]
+        }
+        """
+        Then we get existing resource
+        """
+        {
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "headline": "test package with pic",
+                            "residRef": "#archive_media._id#",
+                            "slugline": "awesome picture"
+                        },
+                        {
+                            "headline": "test package with text",
+                            "residRef": "#items._id#",
+                            "slugline": "awesome article"
+                        }
+                    ],
+                    "role": "main"
+                }
+            ],
+            "guid": "tag:example.com,0000:newsml_BRE9A605",
+            "type": "composite"
+        }
+        """
+
+	@auth
+    Scenario: Delete package
+        Given empty "packages"
+        When we post to "posts"
+        """
+        [{"headline": "test"}]
+        """
+        When we post to "/packages" with success
+        """
+        {
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "headline": "test package with text",
+                            "residRef": "#posts._id#",
+                            "slugline": "awesome article"
+                        }
+                    ],
+                    "role": "main"
+                }
+            ]
+        }
+        """
+        When we delete "/posts/#posts._id#"
+        Then we get response code 405
+        
+  

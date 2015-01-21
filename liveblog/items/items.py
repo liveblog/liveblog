@@ -1,56 +1,45 @@
-from apps.content import metadata_schema
 from bson.objectid import ObjectId
 from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
 from superdesk.resource import Resource
-from superdesk.services import BaseService
 from superdesk.utc import utcnow
 
 from liveblog.common import get_user, update_dates_for
-from apps.archive.common import generate_guid, GUID_TAG
+from apps.archive.archive import ArchiveResource, ArchiveService
 
 
-items_schema = {
-    'guid': metadata_schema['guid'],
-    'text': metadata_schema['body_html'],
-    'original_creator': metadata_schema['original_creator'],
-    'version_creator': metadata_schema['version_creator'],
-    'pubstatus': metadata_schema['pubstatus'],
-    'type': metadata_schema['type'],
-    'groups': metadata_schema['groups'],
-    'linked_in_packages': metadata_schema['linked_in_packages'],
-    'meta': {'type': 'string'},
-    'blog': Resource.rel('blogs', True),
-    'particular_type': {
-        'type': 'string',
-        'allowed': ['item'],
-        'default': 'item'
-    }
-}
-
-
-class ItemsResource(Resource):
+class ItemsResource(ArchiveResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'item'}},
         'default_sort': [('_updated', -1)]
     }
-    schema = items_schema
+
+    item_methods = ['GET', 'PATCH', 'PUT', 'DELETE']
+
+    schema = ArchiveResource.schema
+    schema.update(schema)
+    schema.update({
+        'blog': Resource.rel('blogs', True),
+        'particular_type': {
+            'type': 'string',
+            'allowed': ['post', 'item'],
+            'default': 'item'
+        }
+    })
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
 
 
-class ItemsService(BaseService):
+class ItemsService(ArchiveService):
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
         return self.backend.get('items', req=req, lookup=lookup)
 
     def on_create(self, docs):
-        print('items on create')
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
-            doc['guid'] = generate_guid(type=GUID_TAG)
 
     def on_created(self, docs):
         push_notification('items', created=1)
@@ -67,9 +56,9 @@ class ItemsService(BaseService):
         push_notification('items', deleted=1)
 
 
-class PostItemsResource(Resource):
-    url = 'posts/<regex("[a-f0-9]{24}"):post_id>/items'
-    schema = items_schema
+class BlogItemsResource(ArchiveResource):
+    url = 'blogs/<regex("[a-f0-9]{24}"):blog_id>/items'
+    schema = ItemsResource.schema
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'item'}},
@@ -79,27 +68,7 @@ class PostItemsResource(Resource):
     privileges = {'GET': 'blogs'}
 
 
-class PostItemsService(BaseService):
-    def get(self, req, lookup):
-        if lookup.get('post_id'):
-            lookup['post'] = ObjectId(lookup['post_id'])
-            del lookup['post_id']
-        return super().get(req, lookup)
-
-
-class BlogItemsResource(Resource):
-    url = 'posts/<regex("[a-f0-9]{24}"):blog_id>/items'
-    schema = items_schema
-    datasource = {
-        'source': 'archive',
-        'elastic_filter': {'term': {'particular_type': 'item'}},
-        'default_sort': [('_updated', -1)]
-    }
-    resource_methods = ['GET']
-    privileges = {'GET': 'blogs'}
-
-
-class BlogItemsService(BaseService):
+class BlogItemsService(ArchiveService):
     def get(self, req, lookup):
         if lookup.get('blog_id'):
             lookup['blog'] = ObjectId(lookup['blog_id'])
