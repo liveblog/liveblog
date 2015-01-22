@@ -128,7 +128,7 @@ define([
                     // set the cover illustration
                     if (data.html === undefined && !_.isEmpty(data.thumbnail_url)) {
                         var ratio = data.thumbnail_width / data.thumbnail_height;
-                        var cover_width = Math.min(447, data.thumbnail_width);
+                        var cover_width = Math.min(this.getOptions().coverMaxWidth, data.thumbnail_width);
                         var cover_height = cover_width / ratio;
                         html.find('.cover-preview').css({
                             'background-image': 'url('+data.thumbnail_url+')',
