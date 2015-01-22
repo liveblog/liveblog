@@ -4,8 +4,8 @@
         <button class="navbtn hover" href="/#/liveblog">
             <i class="icon-th-large"></i>
         </button>
-        <div class="navbtn dropdown">
-            <button class="dropdown-toggle">{{ activeState.text }} <b class="caret"></b></button>
+        <div class="navbtn dropdown" dropdown>
+            <button class="dropdown-toggle" dropdown-toggle>{{ activeState.text }} <b class="caret"></b></button>
             <ul class="dropdown-menu">
                 <li ng-repeat="state in states"><button ng-click="changeState(state)" translate>{{ state.text }}</button></li>
             </ul>
