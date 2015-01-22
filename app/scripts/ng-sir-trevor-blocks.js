@@ -20,14 +20,14 @@ define([
             SirTrevor.Block.prototype.toMeta = function(){return;};
             SirTrevor.Block.prototype.getOptions = function(){return SirTrevor.$get().getInstance(this.instanceID).options;};
 
-            SirTrevor.Blocks.Link =  SirTrevor.Block.extend({
-                type: 'link',
+            SirTrevor.Blocks.Embed =  SirTrevor.Block.extend({
+                type: 'embed',
                 data: {},
-                title: function(){ return 'Link'; },
-                icon_name: 'link',
+                title: function(){ return 'Embed'; },
+                icon_name: 'embed',
                 editorHTML: function() {
                     return [
-                        '<div class="st-required st-link-block link-input"',
+                        '<div class="st-required st-embed-block link-input"',
                         ' placeholder="url" contenteditable="true"></div>'
                     ].join('\n');
                 },
@@ -97,13 +97,14 @@ define([
                     var card_class = 'liveblog--card';
                     var html = $([
                         '<div class="'+card_class+' hidden">',
-                        '  <div class="hidden st-link-block embed-preview"></div>',
-                        '  <div class="hidden st-link-block cover-preview-handler">',
-                        '    <div class="st-link-block cover-preview"></div>',
+                        '  <a class="st-embed-block link-preview" target="_blank"></a>',
+                        '  <div class="hidden st-embed-block embed-preview"></div>',
+                        '  <div class="hidden st-embed-block cover-preview-handler">',
+                        '    <div class="st-embed-block cover-preview"></div>',
                         '  </div>',
-                        '  <div class="st-link-block title-preview"></div>',
-                        '  <div class="st-link-block description-preview"></div>',
-                        '  <a class="st-link-block link-preview"></a>',
+                        '  <div class="st-embed-block title-preview"></div>',
+                        '  <div class="st-embed-block description-preview"></div>',
+                        '  <div class="st-embed-block credit-preview"></div>',
                         '</div>'
                     ].join('\n'));
                     // but this html to the DOM (neeeded to use jquery)
@@ -146,6 +147,14 @@ define([
                         html.find('.description-preview')
                             .html(data.description);
                     }
+                    // set the credit
+                    if (data.provider_name !== undefined || data.author_name !== undefined) {
+                        var credit_text  = data.provider_name;
+                        if (data.author_name !== undefined) {
+                            credit_text += ' | by ' + data.author_name;
+                        }
+                        html.find('.credit-preview').html(credit_text);
+                    }
                     // retrieve the final html code
                     var html_to_return = '';
                     html_to_return = '<div class="'+card_class+'">';
@@ -164,7 +173,7 @@ define([
                         .addClass('hidden')
                         .after(that.renderCard(data));
                     // set somes fields contenteditable
-                    ['title', 'description'].forEach(function(field_name) {
+                    ['title', 'description', 'credit'].forEach(function(field_name) {
                         that.$('.'+field_name+'-preview').attr({
                             contenteditable: true,
                             placeholder: field_name
