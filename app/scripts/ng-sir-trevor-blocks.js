@@ -77,6 +77,7 @@ define([
                         html: that.$('.embed-preview').html(),
                         title: that.$('.title-preview').text(),
                         description: that.$('.description-preview').text(),
+                        credit: that.$('.credit-preview').text(),
                         url: that.$('.link-preview').attr('href')
                     };
                     // remove thumbnail_url if it was removed by user
