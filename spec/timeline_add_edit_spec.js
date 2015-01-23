@@ -31,4 +31,32 @@ describe('timeline add to top and edit', function() {
             });
         });
     });
+    it('can edit an item on the timeline', function() {
+        openBlog(0);
+        var randomText = randomString(10);
+        //go and check the timeline
+        element.all(by.repeater('post in posts')).then(function(posts) {
+            var textElement = posts[0].element(by.css('span[medium-editable]'));
+            //add some text
+            textElement.sendKeys(randomText);
+            //click the save button
+            posts[0].element(by.css('[ng-click="updateMedium()"]')).click();
+
+            //get the new edited text
+            textElement.getText().then(function(editedText) {
+                //click on back to liveblog list
+                element(by.css('[class="icon-th-large"]')).click();
+                //open first blog
+                openBlog(0);
+                //go and check the timeline
+                element.all(by.repeater('post in posts')).then(function(posts) {
+                    var textElement = posts[0].element(by.css('span[medium-editable]'));
+                    textElement.getText().then(function(text) {
+                        //first element should have the new edited value
+                        expect(text).toEqual(editedText);
+                    });
+                });
+            });
+        });
+    });
 });
