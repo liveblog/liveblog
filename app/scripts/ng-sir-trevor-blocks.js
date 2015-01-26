@@ -10,15 +10,16 @@
 
 define([
     'angular',
+    'lodash',
     'ng-sir-trevor'
-], function(angular) {
+], function(angular, _) {
     'use strict';
     angular
     .module('SirTrevorBlocks', [])
         .config(['SirTrevorProvider', function(SirTrevor) {
             // Add toMeta method to all blocks.
-            SirTrevor.Block.prototype.toMeta = function(){return;};
-            SirTrevor.Block.prototype.getOptions = function(){return SirTrevor.$get().getInstance(this.instanceID).options;};
+            SirTrevor.Block.prototype.toMeta = function() {return;};
+            SirTrevor.Block.prototype.getOptions = function() {return SirTrevor.$get().getInstance(this.instanceID).options;};
 
             SirTrevor.Blocks.Embed =  SirTrevor.Block.extend({
                 type: 'embed',
@@ -226,7 +227,7 @@ define([
 
             SirTrevor.Blocks.Quote =  SirTrevor.Block.extend({
                 type: 'quote',
-                title: function(){ return window.i18n.t('blocks:quote:title'); },
+                title: function() { return window.i18n.t('blocks:quote:title'); },
                 icon_name: 'quote',
                 editorHTML: function() {
                     var template = _.template([
@@ -246,7 +247,7 @@ define([
                         credit: this.$('.js-cite-input').text() || undefined
                     };
                 },
-                loadData: function(data){
+                loadData: function(data) {
                     this.$('.quote-input').text(SirTrevor.toHTML(data.text, this.type));
                     this.$('.js-cite-input').text(data.credit);
                 },
@@ -254,7 +255,7 @@ define([
                     return _.isEmpty(this.retrieveData().quote);
                 },
                 toMarkdown: function(markdown) {
-                    return markdown.replace(/^(.+)$/mg,'> $1');
+                    return markdown.replace(/^(.+)$/mg, '> $1');
                 },
                 toHTML: function(html) {
                     var data = this.retrieveData();
@@ -367,7 +368,7 @@ define([
                     return [
                         '<figure>',
                         '    <img src="' + data.media._url + '" alt="' + data.caption + '"/>',
-                        '    <figcaption>' + data.caption + (data.credit === '' ? '' : ' from ' + data.credit) +'</figcaption>',
+                        '    <figcaption>' + data.caption + (data.credit === '' ? '' : ' from ' + data.credit) + '</figcaption>',
                         '</figure>'
                     ].join('');
                 },
@@ -380,6 +381,11 @@ define([
             SirTrevor.Blocks.Text.prototype.toHTML = function() {
                 return this.getTextBlock().html();
             };
+            SirTrevor.Blocks.Text.prototype.onContentPasted = _.debounce(function(event) {
+                // Content pasted. Delegate to the drop parse method
+                var input = $(event.target),
+                val = input.html(input.html().replace(/<(?!\s*\/?(br|p|b|i|strike|ul|ol|li|a)\b)[^>]+>/ig, ''));
+            }, 0);
 
             var Strikethrough = SirTrevor.Formatter.extend({
                 title: 'strikethrough',
