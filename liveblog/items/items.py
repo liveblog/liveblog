@@ -25,6 +25,9 @@ class ItemsResource(ArchiveResource):
             'type': 'string',
             'allowed': ['post', 'item'],
             'default': 'item'
+        },
+        'item_type': {
+            'type': 'string'
         }
     })
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
