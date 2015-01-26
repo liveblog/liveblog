@@ -411,5 +411,14 @@ define([
             });
             SirTrevor.Formatters.BulletList = new UnorderedList();
 
+            var RemoveFormat = SirTrevor.Formatter.extend({
+                title: 'removeformat',
+                iconName: 'removeformat',
+                cmd: 'removeformat',
+                text: 'removeformat'
+            });
+
+            SirTrevor.Formatters.RemoveFormat = new RemoveFormat();
+
         }]);
 });
