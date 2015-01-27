@@ -60,7 +60,7 @@
                 criteria = {
                     max_results: $scope.maxResults,
                     embedded: {'original_creator': 1},
-                    where: {state: $scope.activeState.code}
+                    q: $scope.activeState.code
                 };
 
             if (params.q) {

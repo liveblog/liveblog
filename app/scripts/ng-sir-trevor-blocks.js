@@ -75,10 +75,10 @@ define([
             var upload_options = {
             // NOTE: responsive layout is currently disabled. so row and col-md-6 are useless
                 html: [
-                    '<div class="row st-block__upload-container">',
-                    '    <input type="file" type="st-file-upload" />',
+                    '<div class="row st-block__upload-container">',                    
                     '    <div class="col-md-6">',
-                    '        <button class="btn btn-default"><%= i18n.t("general:upload") %></button>',
+                    '       <label for="file-upload" class="btn btn-default"><%= i18n.t("general:upload") %></label>',
+                    '       <input id="file-upload" type="file" type="st-file-upload" />',
                     '    </div>',
                     '</div>'
                 ].join('\n')
