@@ -6,7 +6,7 @@ var request = require('request');
 
 var getBackendUrl = require('./backend').getBackendUrl;
 
-var pp = protractor.getInstance().params;
+var pp = browser.params;
 
 exports.getToken = getToken;
 

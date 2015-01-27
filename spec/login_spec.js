@@ -1,6 +1,6 @@
 var Login = require('./helpers/pages').login;
 
-var ptor = protractor.getInstance();
+var ptor = browser;
 
 describe('login', function() {
     'use strict';
@@ -28,8 +28,8 @@ describe('login', function() {
         modal.login('admin', 'admin');
         element(by.css('button.current-user')).click();
         element(by.buttonText('SIGN OUT')).click();
-        protractor.getInstance().sleep(2000); // it reloads page
-        protractor.getInstance().waitForAngular();
+        browser.sleep(2000); // it reloads page
+        browser.waitForAngular();
 
         expect(modal.btn).toBeDisplayed();
         expect(modal.username).toBeDisplayed();
