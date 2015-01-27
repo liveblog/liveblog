@@ -6,6 +6,7 @@ from superdesk.utc import utcnow
 from liveblog.common import update_dates_for, get_user
 from apps.packages import PackageService
 from apps.packages.resource import PackageResource
+from superdesk import get_resource_service
 
 
 class PostsResource(PackageResource):
@@ -14,6 +15,9 @@ class PostsResource(PackageResource):
         'elastic_filter': {'term': {'particular_type': 'post'}},
         'default_sort': [('_updated', -1)]
     }
+
+    item_methods = ['GET', 'PATCH', 'DELETE']
+
     schema = PackageResource.schema
     schema.update(schema)
     schema.update({
@@ -31,7 +35,13 @@ class PostsService(PackageService):
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
-        return self.backend.get('posts', req=req, lookup=lookup)
+        docs = super().get(req, lookup)
+        for doc in docs:
+            for assoc in self._get_associations(doc):
+                if assoc.get('residRef'):
+                    item = get_resource_service('archive').find_one(req=None, _id=assoc['residRef'])
+                    assoc['item'] = item
+        return docs
 
     def on_create(self, docs):
         for doc in docs:

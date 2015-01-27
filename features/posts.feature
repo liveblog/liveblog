@@ -32,7 +32,7 @@ Feature: Post operations
             "guid": "tag:example.com,0000:newsml_BRE9A605"
         }
         """
-        And we get "/packages"
+        And we get "/posts"
         Then we get list with 1 items
         """
         {
@@ -46,7 +46,12 @@ Feature: Post operations
                                 {
                                     "headline": "test package with text",
                                     "residRef": "#items._id#",
-                                    "slugline": "awesome post"
+                                    "slugline": "awesome post",
+                                     "item": {
+										"headline": "test",
+										"particular_type": "item",
+										"type": "text"
+									}
                                 }
                             ],
                             "role": "grpRole:Main"
@@ -75,6 +80,12 @@ Feature: Post operations
         """
         And we get "/blogs/#blogs._id#/posts"
 		Then we get list with 1 items
+	     When we post to "posts"
+        """
+        [{"headline": "test post 2", "blog": "#blogs._id#"}]
+        """
+		And we get "/blogs/#blogs._id#/posts"
+		Then we get list with 2 items
 
         
 	@auth
@@ -120,12 +131,22 @@ Feature: Post operations
                         {
                             "headline": "test package with pic",
                             "residRef": "#archive_media._id#",
-                            "slugline": "awesome picture"
+                            "slugline": "awesome picture",
+                            "item": {
+                            	"headline" : "bike.jpg",
+                            	"particular_type": "item",
+								"type": "picture"
+                            }
                         },
                         {
                             "headline": "test package with text",
                             "residRef": "#items._id#",
-                            "slugline": "awesome article"
+                            "slugline": "awesome article",
+                            "item": {
+                            	"headline" : "test",
+                            	"particular_type": "item",
+								"type": "text"
+                            }
                         }
                     ],
                     "role": "main"
@@ -144,12 +165,22 @@ Feature: Post operations
                         {
                             "headline": "test package with pic",
                             "residRef": "#archive_media._id#",
-                            "slugline": "awesome picture"
+                            "slugline": "awesome picture",
+                            "item": {
+                            	"headline" : "bike.jpg",
+                            	"particular_type": "item",
+								"type": "picture"
+                            }
                         },
                         {
                             "headline": "test package with text",
                             "residRef": "#items._id#",
-                            "slugline": "awesome article"
+                            "slugline": "awesome article",
+                            "item": {
+                            	"headline" : "test",
+                            	"particular_type": "item",
+								"type": "text"
+                            }
                         }
                     ],
                     "role": "main"
@@ -159,34 +190,3 @@ Feature: Post operations
             "type": "composite"
         }
         """
-
-	@auth
-    Scenario: Delete package
-        Given empty "packages"
-        When we post to "posts"
-        """
-        [{"headline": "test"}]
-        """
-        When we post to "/packages" with success
-        """
-        {
-            "groups": [
-                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
-                {
-                    "id": "main",
-                    "refs": [
-                        {
-                            "headline": "test package with text",
-                            "residRef": "#posts._id#",
-                            "slugline": "awesome article"
-                        }
-                    ],
-                    "role": "main"
-                }
-            ]
-        }
-        """
-        When we delete "/posts/#posts._id#"
-        Then we get response code 405
-        
-  
