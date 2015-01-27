@@ -73,7 +73,22 @@ define([
             replace: true,
             restrict: 'E',
             templateUrl: 'scripts/liveblog-edit/views/timeline-item.html',
-            link: function(scope, elem, attrs) {}
+            link: function(scope, elem, attrs) {
+                scope.shortText = '';
+                scope.isCollapsed = false;
+                scope.needCollaped = false;
+                scope.toggleCollapsed = function() {
+                    scope.isCollapsed = !scope.isCollapsed;
+                };
+                //only text items are collapsable
+                if (scope.post.type === 'text') {
+                    if (scope.post.text.length > 200) {
+                        scope.shortText = scope.post.text.substr(0, 200) + ' ...';
+                        scope.isCollapsed = true;
+                        scope.needCollapsed = true;
+                    }
+                }
+            }
         };
     }])
     .directive('lbBindHtml', [function() {
