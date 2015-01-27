@@ -384,4 +384,36 @@
     .simple-edit-buttons {
         display: block;
     }
+    .timeline-expander-holder {
+        height: 1px;
+        background-color: #A6A6A6;
+        text-align: center;
+        margin-bottom:15px;
+        cursor: pointer;
+    }
+    .timeline-expander-single-item {
+        position: relative;
+        top: -0.5em;
+        width: 20px;
+        height: 13px;
+        background-image: url('../../images/timeline-show-full-item.png');
+        right: 40px;
+        float: right;
+    #timeline-dropdown.dropdown-menu:before {
+        background-image: none!important;
+        border: none !important;
+        content: ''!important;
+    }
+    #timeline-dropdown.dropdown-menu {
+        left: -162px!important;
+    }
+    .timeline-actions-more {
+        background-image: url('../../images/timeline-more.png');
+        width: 40px;
+        height: 47px;
+        cursor: pointer;
+        position: absolute;
+        left: -20px;
+        bottom: -20px;
+    }
 }
