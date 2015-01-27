@@ -27,8 +27,8 @@ define([
                 icon_name: 'embed',
                 editorHTML: function() {
                     return [
-                        '<div class="st-required st-embed-block link-input"',
-                        ' placeholder="url" contenteditable="true"></div>'
+                        '<div class="st-required st-embed-block embed-input"',
+                        ' placeholder="url or embed code" contenteditable="true"></div>'
                     ].join('\n');
                 },
                 onBlockRender: function() {
@@ -47,28 +47,34 @@ define([
                     });
                     // when the link field changes
                     this.$editor.on('change', _.debounce(function callServiceAndLoadData() {
-                        var url = $(this).text().trim();
-                        // exit if the url is empty. Don't need to disturb the service
-                        if (_.isEmpty(url)) {
+                        var input = $(this).text().trim();
+                        // exit if the input field is empty
+                        if (_.isEmpty(input)) {
                             return false;
                         }
-                        // start a loader over the block, it will be stopped in the loadData function
-                        that.loading();
                         // reset error messages
                         that.resetMessages();
-                        // request the embedService with the provided url
-                        that.getOptions().embedService.get(url).then(
-                            // return loadData function with the right context
-                            that.loadData.bind(that),
-                            function errorCallback(error) {
-                                that.addMessage(error);
-                                that.ready();
-                            }
-                        );
+                        // start a loader over the block, it will be stopped in the loadData function
+                        that.loading();
+                        // if the input is an url, use embed services
+                        if (_.isURI(input)) {
+                            // request the embedService with the provided url
+                            that.getOptions().embedService.get(input).then(
+                                // loadData function with the right context
+                                that.loadData.bind(that),
+                                function errorCallback(error) {
+                                    that.addMessage(error);
+                                    that.ready();
+                                }
+                            );
+                        // otherwise, use the input as the embed code
+                        } else {
+                            that.loadData({html: input});
+                        }
                     }, 200));
                 },
                 isEmpty: function() {
-                    return _.isEmpty(this.retrieveData().url);
+                    return _.isEmpty(this.retrieveData().url || this.retrieveData().html);
                 },
                 retrieveData: function() {
                     var that = this;
@@ -98,7 +104,7 @@ define([
                     var card_class = 'liveblog--card';
                     var html = $([
                         '<div class="'+card_class+' hidden">',
-                        '  <a class="st-embed-block link-preview" target="_blank"></a>',
+                        '  <a class="hidden st-embed-block link-preview" target="_blank"></a>',
                         '  <div class="hidden st-embed-block embed-preview"></div>',
                         '  <div class="hidden st-embed-block cover-preview-handler">',
                         '    <div class="st-embed-block cover-preview"></div>',
@@ -118,9 +124,9 @@ define([
                         '.cover-preview-handler'].join(', ')
                     ).addClass('hidden');
                     // set the link
-                    html.find('.link-preview')
-                        .attr('href', data.url)
-                        .html(data.url);
+                    if (data.url !== undefined) {
+                        html.find('.link-preview').attr('href', data.url).html(data.url).removeClass('hidden');
+                    }
                     // set the embed code
                     if (data.html !== undefined) {
                         html.find('.embed-preview')
@@ -170,7 +176,7 @@ define([
                     var that = this;
                     that.data = data;
                     // hide the link input field, render the card and add it to the DOM
-                    that.$('.link-input')
+                    that.$('.embed-input')
                         .addClass('hidden')
                         .after(that.renderCard(data));
                     // set somes fields contenteditable
@@ -212,7 +218,7 @@ define([
                     }
                 },
                 focus: function() {
-                    this.$('.link-input').focus();
+                    this.$('.embed-input').focus();
                 },
                 // toMarkdown: function(markdown) {},
                 toHTML: function() {

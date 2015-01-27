@@ -13,7 +13,7 @@ describe('editor-embed:', function() {
         // click on the embed button
         element(by.css('[data-type="link"]')).click();
         // write a youtube url
-        element(by.css('.link-input')).sendKeys(youtube_url);
+        element(by.css('.embed-input')).sendKeys(youtube_url);
         // wait for an iframe
         var iframe = element(by.css('.liveblog--card iframe'));
         browser.wait(function() {return iframe.isPresent();});
