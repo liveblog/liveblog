@@ -1,7 +1,5 @@
 'use strict';
 
-/*global protractor */
-
 var request = require('request'),
     bt = require('btoa');
 
