@@ -11,7 +11,7 @@ describe('editor-embed:', function() {
         // click on the "+" bar
         element(by.css('[class="st-block-controls__top"]')).click();
         // click on the embed button
-        element(by.css('[data-type="link"]')).click();
+        element(by.css('[data-type="embed"]')).click();
         // write a youtube url
         element(by.css('.embed-input')).sendKeys(youtube_url);
         // wait for an iframe
