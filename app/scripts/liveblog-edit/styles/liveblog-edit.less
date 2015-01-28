@@ -139,6 +139,11 @@
                     .st-block-ui-btn {
                         &:hover { text-decoration: inherit;} // prevent style from sir-trevor
                     }
+                    // error messages
+                    .st-block__messages {
+                        top: -20px;
+                        left: -20px;
+                    }
                     // [border on error or delete states]
                     .st-block--with-errors .st-block__inner .st-text-block,
                     .st-block--delete-active .st-block__inner .st-text-block {
@@ -245,7 +250,7 @@
                         }
                         // padding
                         &__inner {padding: 0;}
-                        &[data-type='quote'], &[data-type='image'] { 
+                        &[data-type='quote'], &[data-type='image'], &[data-type='embed'] { 
                             .st-block__inner { 
                                 padding: 20px; 
                                 background: @white; 
@@ -319,6 +324,45 @@
                                         margin-left: -20px;
                                         padding-right: 5px;
                                     }
+                                }
+                            }
+                            .st-embed-block {
+                                font-size: .9em;
+                                &.embed-input {.inline-field();}
+                                &.embed-preview .noembed-embed {
+                                    // responsive embed
+                                    position: relative;
+                                    padding-bottom: 67.5%;
+                                    height: 0;
+                                    margin: 10px 0;
+                                    overflow: hidden;
+                                    iframe, embed, object {
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                        width: 100%;
+                                        height: 100%;
+                                    }
+                                }
+                                &.remove-cover-preview {
+                                    position: absolute;
+                                    &:after {
+                                        content: "x";
+                                    }
+                                }
+                                &.cover-preview {
+                                    background-size: cover;
+                                }
+                                &.title-preview {
+                                    .inline-field();
+                                    font-weight: bold;
+                                }
+                                &.description-preview {
+                                    .inline-field();
+                                }
+                                &.credit-preview {
+                                    .inline-field();
+                                    text-transform: uppercase;
                                 }
                             }
                         }

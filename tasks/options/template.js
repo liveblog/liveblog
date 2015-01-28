@@ -12,6 +12,7 @@ module.exports = function(grunt) {
         var config = {
             raven: {dsn: process.env.SUPERDESK_RAVEN_DSN || ''},
             server: {url: server, ws: ws},
+            embedly: grunt.option('embedly-key') || process.env.EMBEDLY_KEY,
             analytics: {
                 piwik: {
                     url: process.env.PIWIK_URL || '',
@@ -32,7 +33,7 @@ module.exports = function(grunt) {
 
     return {
         mock: {
-            options: data('http://superdesk.apiary.io', true),
+            options: data('http://localhost:5000/api', true),
             files: files
         },
         test: {
