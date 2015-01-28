@@ -152,7 +152,7 @@ define([
                     if (data.provider_name !== undefined || data.author_name !== undefined) {
                         var credit_text  = data.provider_name;
                         if (data.author_name !== undefined) {
-                            credit_text += ' | by ' + data.author_name;
+                            credit_text += ' | by <a href="'+data.author_url+'" target="_blank">'+data.author_name+'</a>';
                         }
                         html.find('.credit-preview').html(credit_text);
                     }
