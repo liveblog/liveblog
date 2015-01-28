@@ -11,12 +11,17 @@
 define([
     'angular',
     'ng-sir-trevor',
-    'ng-sir-trevor-blocks'
+    'ng-sir-trevor-blocks',
+    'angular-embed'
 ], function(angular) {
     'use strict';
 
-    BlogEditController.$inject = ['api', '$scope', 'blog', 'notify', 'gettext', '$route', 'upload', 'config', 'publishCounter'];
-    function BlogEditController(api, $scope, blog, notify, gettext, $route, upload, config, publishCounter) {
+    BlogEditController.$inject = [
+        'api', '$scope', 'blog', 'notify', 'gettext', '$route',
+        'upload', 'config', 'publishCounter', 'embedService'
+    ];
+    function BlogEditController(api, $scope, blog, notify, gettext, $route,
+        upload, config, publishCounter, embedService) {
         $scope.blog = blog;
         $scope.oldBlog = _.create(blog);
         $scope.updateBlog = function(blog) {
@@ -71,6 +76,8 @@ define([
         };
 
         $scope.stParams = {
+            coverMaxWidth: 447,
+            embedService: embedService,
             // provide an uploader to the editor for media (custom sir-trevor image block uses it)
             uploader: function(file, success_callback, error_callback) {
                 var handleError = function(response) {
@@ -119,7 +126,7 @@ define([
             });
     }
 
-    var app = angular.module('liveblog.edit', ['SirTrevor', 'SirTrevorBlocks']);
+    var app = angular.module('liveblog.edit', ['SirTrevor', 'SirTrevorBlocks', 'angular-embed']);
     app.config(['superdeskProvider', function(superdesk) {
     superdesk
         .activity('/liveblog/edit/:_id', {
@@ -155,7 +162,7 @@ define([
                     });
                 });
             },
-            blockTypes: ['Text', 'Image', 'Quote'],
+            blockTypes: ['Text', 'Image', 'Embed', 'Quote'],
             // render a default block when the editor is loaded
             defaultType: 'Text',
             transform: {
@@ -184,7 +191,8 @@ define([
                 return this.counter;
             }
         };
+    }]).config(['embedlyServiceProvider', 'config', function(embedlyServiceProvider, config) {
+        embedlyServiceProvider.setKey(config.embedly);
     }]);
-
     return app;
 });

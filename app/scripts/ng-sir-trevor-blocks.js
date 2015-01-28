@@ -20,14 +20,214 @@ define([
             SirTrevor.Block.prototype.toMeta = function(){return;};
             SirTrevor.Block.prototype.getOptions = function(){return SirTrevor.$get().getInstance(this.instanceID).options;};
 
+            SirTrevor.Blocks.Embed =  SirTrevor.Block.extend({
+                type: 'embed',
+                data: {},
+                title: function(){ return 'Embed'; },
+                icon_name: 'embed',
+                editorHTML: function() {
+                    return [
+                        '<div class="st-required st-embed-block embed-input"',
+                        ' placeholder="url or embed code" contenteditable="true"></div>'
+                    ].join('\n');
+                },
+                onBlockRender: function() {
+                    var that = this;
+                    // create and trigger a 'change' event for the $editor which is a contenteditable
+                    this.$editor.filter('[contenteditable]').on('focus', function(ev) {
+                        var $this = $(this);
+                        $this.data('before', $this.html());
+                    });
+                    this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
+                        var $this = $(this);
+                        if ($this.data('before') !== $this.html()) {
+                            $this.data('before', $this.html());
+                            $this.trigger('change');
+                        }
+                    });
+                    // when the link field changes
+                    this.$editor.on('change', _.debounce(function callServiceAndLoadData() {
+                        var input = $(this).text().trim();
+                        // exit if the input field is empty
+                        if (_.isEmpty(input)) {
+                            return false;
+                        }
+                        // reset error messages
+                        that.resetMessages();
+                        // start a loader over the block, it will be stopped in the loadData function
+                        that.loading();
+                        // if the input is an url, use embed services
+                        if (_.isURI(input)) {
+                            // request the embedService with the provided url
+                            that.getOptions().embedService.get(input).then(
+                                // loadData function with the right context
+                                that.loadData.bind(that),
+                                function errorCallback(error) {
+                                    that.addMessage(error);
+                                    that.ready();
+                                }
+                            );
+                        // otherwise, use the input as the embed code
+                        } else {
+                            that.loadData({html: input});
+                        }
+                    }, 200));
+                },
+                isEmpty: function() {
+                    return _.isEmpty(this.retrieveData().url || this.retrieveData().html);
+                },
+                retrieveData: function() {
+                    var that = this;
+                    // retrieve new data from editor
+                    var editor_data = {
+                        html: that.$('.embed-preview').html(),
+                        title: that.$('.title-preview').text(),
+                        description: that.$('.description-preview').text(),
+                        credit: that.$('.credit-preview').text()
+                    };
+                    // remove thumbnail_url if it was removed by user
+                    if (that.$('.cover-preview').hasClass('hidden')) {
+                        editor_data.thumbnail_url = null;
+                    }
+                    // add data which are not in the editor but has been saved before (like thumbnail_width)
+                    _.merge(that.data, editor_data);
+                    // clean data by removing empty string
+                    _.forEach(that.data, function(value, key) {
+                        if (typeof(value) === 'string' && value.trim() === '') {
+                            delete that.data[key];
+                        }
+                    });
+                    return that.data;
+                },
+                renderCard: function(data) {
+                    var card_class = 'liveblog--card';
+                    var html = $([
+                        '<div class="'+card_class+' hidden">',
+                        '  <div class="hidden st-embed-block embed-preview"></div>',
+                        '  <div class="hidden st-embed-block cover-preview-handler">',
+                        '    <div class="st-embed-block cover-preview"></div>',
+                        '  </div>',
+                        '  <div class="st-embed-block title-preview"></div>',
+                        '  <div class="st-embed-block description-preview"></div>',
+                        '  <div class="st-embed-block credit-preview"></div>',
+                        '</div>'
+                    ].join('\n'));
+                    // but this html to the DOM (neeeded to use jquery)
+                    $('body > .'+card_class).remove();
+                    $('body').append(html);
+                    html = $('body > .'+card_class);
+                    // hide everything
+                    html.find(
+                        ['.embed-preview',
+                        '.cover-preview-handler'].join(', ')
+                    ).addClass('hidden');
+                    // set the embed code
+                    if (data.html !== undefined) {
+                        html.find('.embed-preview')
+                            .html(data.html).removeClass('hidden');
+                    }
+                    // set the cover illustration
+                    if (data.html === undefined && !_.isEmpty(data.thumbnail_url)) {
+                        var ratio = data.thumbnail_width / data.thumbnail_height;
+                        var cover_width = Math.min(this.getOptions().coverMaxWidth, data.thumbnail_width);
+                        var cover_height = cover_width / ratio;
+                        html.find('.cover-preview').css({
+                            'background-image': 'url('+data.thumbnail_url+')',
+                            width: cover_width,
+                            height: cover_height
+                        });
+                        html.find('.cover-preview-handler').removeClass('hidden');
+                    }
+                    // set the title
+                    if (data.title !== undefined) {
+                        html.find('.title-preview')
+                            .html(data.title);
+                    }
+                    // set the description
+                    if (data.description !== undefined) {
+                        html.find('.description-preview')
+                            .html(data.description);
+                    }
+                    // set the credit
+                    if (data.provider_name !== undefined || data.author_name !== undefined) {
+                        var credit_text  = data.provider_name;
+                        if (data.author_name !== undefined) {
+                            credit_text += ' | by <a href="'+data.author_url+'" target="_blank">'+data.author_name+'</a>';
+                        }
+                        html.find('.credit-preview').html(credit_text);
+                    }
+                    // retrieve the final html code
+                    var html_to_return = '';
+                    html_to_return = '<div class="'+card_class+'">';
+                    html_to_return += html.get(0).innerHTML;
+                    html_to_return += '</div>';
+                    // remove html from the DOM
+                    html.remove();
+                    return html_to_return;
+                },
+                // render a card from data, and make it editable
+                loadData: function(data) {
+                    var that = this;
+                    that.data = data;
+                    // hide the embed input field, render the card and add it to the DOM
+                    that.$('.embed-input')
+                        .addClass('hidden')
+                        .after(that.renderCard(data));
+                    // set somes fields contenteditable
+                    ['title', 'description', 'credit'].forEach(function(field_name) {
+                        that.$('.'+field_name+'-preview').attr({
+                            contenteditable: true,
+                            placeholder: field_name
+                        });
+                    });
+                    // remove the loader when media is loaded
+                    var iframe = this.$('.embed-preview iframe');
+                    if (iframe.length > 0) {
+                        // special case for iframe
+                        iframe.ready(this.ready.bind(this));
+                    } else {
+                        this.ready();
+                    }
+                    // add a link to remove/show the cover
+                    var $cover_handler = this.$('.cover-preview-handler');
+                    if ($cover_handler.length > 0 && !$cover_handler.hasClass('hidden')) {
+                        var $cover_preview = $cover_handler.find('.cover-preview');
+                        var $remove_link = $('<a href="#">').text('remove the illustration');
+                        var $show_link = $('<a href="#">').text('show the illustration').addClass('hidden');
+                        $remove_link.on('click', function removeCoverAndDisillustrationplayShowLink(e) {
+                            that.saved_cover_url = that.data.thumbnail_url;
+                            $cover_preview.addClass('hidden');
+                            $(this).addClass('hidden');
+                            $show_link.removeClass('hidden');
+                            e.preventDefault();
+                        });
+                        $show_link.on('click', function showCoverAndDisplayRemoveLink(e) {
+                            that.data.thumbnail_url = that.saved_cover_url;
+                            $cover_preview.removeClass('hidden');
+                            $(this).addClass('hidden');
+                            $remove_link.removeClass('hidden');
+                            e.preventDefault();
+                        });
+                        $cover_handler.append($remove_link, $show_link);
+                    }
+                },
+                focus: function() {
+                    this.$('.embed-input').focus();
+                },
+                // toMarkdown: function(markdown) {},
+                toHTML: function() {
+                    var data = this.retrieveData();
+                    return this.renderCard(data);
+                },
+                toMeta: function() {
+                    return this.retrieveData();
+                }
+            });
+
             SirTrevor.Blocks.Quote =  SirTrevor.Block.extend({
-
                 type: 'quote',
-
                 title: function(){ return window.i18n.t('blocks:quote:title'); },
-
                 icon_name: 'quote',
-
                 editorHTML: function() {
                     var template = _.template([
                         '<div class="st-required st-quote-block quote-input" ',
