@@ -17,6 +17,8 @@ require.config({
         'angular-file-upload': 'bower_components/ng-file-upload/angular-file-upload',
         'angular-file-upload-shim': 'bower_components/ng-file-upload/angular-file-upload-shim',
         'angular-slider': 'bower_components/angular-slider-royale/angular-slider',
+        'angular-embed': 'bower_components/angular-embed/dist/angular-embed',
+        'angular-embedly': 'bower_components/angular-embedly/em-minified/angular-embedly.min',
 
         'moment-timezone': 'bower_components/moment-timezone/builds/moment-timezone-with-data-2010-2020',
 
@@ -49,6 +51,7 @@ require.config({
         'ng-sir-trevor': {
             deps: ['sir-trevor', 'angular']
         },
+        'angular-embedly': ['angular'],
         'raven-js': {exports: 'Raven'},
         'angular-resource': ['angular'],
         'angular-route': ['angular'],
@@ -59,6 +62,7 @@ require.config({
         'translations': ['angular-gettext'],
         'angular-ui': ['angular', 'bootstrap'],
         'angular-slider': ['angular'],
+        'angular-embed': ['angular', 'angular-embedly'],
 
         'bootstrap': ['jquery'],
         'jquery-ui': ['jquery'],
