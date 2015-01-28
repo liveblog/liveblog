@@ -19,7 +19,9 @@ define([
         .config(['SirTrevorProvider', function(SirTrevor) {
             // Add toMeta method to all blocks.
             SirTrevor.Block.prototype.toMeta = function() {return;};
-            SirTrevor.Block.prototype.getOptions = function() {return SirTrevor.$get().getInstance(this.instanceID).options;};
+            SirTrevor.Block.prototype.getOptions = function() {
+                return SirTrevor.$get().getInstance(this.instanceID).options;
+            };
 
             SirTrevor.Blocks.Embed =  SirTrevor.Block.extend({
                 type: 'embed',
@@ -276,7 +278,7 @@ define([
             var upload_options = {
             // NOTE: responsive layout is currently disabled. so row and col-md-6 are useless
                 html: [
-                    '<div class="row st-block__upload-container">',                    
+                    '<div class="row st-block__upload-container">',
                     '    <div class="col-md-6">',
                     '       <label for="file-upload" class="btn btn-default"><%= i18n.t("general:upload") %></label>',
                     '       <input id="file-upload" type="file" type="st-file-upload" />',
