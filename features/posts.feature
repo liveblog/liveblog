@@ -10,11 +10,12 @@ Feature: Post operations
 		"""
         When we post to "items" with success
         """
-        [{"headline": "test", "blog": "#blogs._id#"}]
+        [{"text": "test", "blog": "#blogs._id#"}]
         """
         When we post to "/posts" with success
         """
         {
+        	"blog": "#blogs._id#",
             "groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
@@ -28,8 +29,7 @@ Feature: Post operations
                     ],
                     "role": "grpRole:Main"
                 }
-            ],
-            "guid": "tag:example.com,0000:newsml_BRE9A605"
+            ]
         }
         """
         And we get "/posts"
@@ -48,7 +48,7 @@ Feature: Post operations
                                     "residRef": "#items._id#",
                                     "slugline": "awesome post",
                                      "item": {
-										"headline": "test",
+										"text": "test",
 										"particular_type": "item",
 										"type": "text"
 									}
@@ -57,7 +57,7 @@ Feature: Post operations
                             "role": "grpRole:Main"
                         }
                     ],
-                    "guid": "tag:example.com,0000:newsml_BRE9A605"
+                    "blog": "#blogs._id#"
                 }
             ]
         }
@@ -90,19 +90,21 @@ Feature: Post operations
         
 	@auth
     Scenario: Patch created package
+		Given empty "posts"
+		Given empty "items"
 		Given "blogs"
 		"""
 		[{"title": "test_blog1"}]
 		"""
-        Given empty "posts"
         When we post to "items"
         """
-        [{"headline": "test", "blog": "#blogs._id#"}]
+        [{"text": "test", "blog": "#blogs._id#"}]
         """
         When we upload a file "bike.jpg" to "archive_media"
         When we post to "/posts" with success
         """
         {
+        	"blog": "#blogs._id#",
             "groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
@@ -116,13 +118,13 @@ Feature: Post operations
                     ],
                     "role": "main"
                 }
-            ],
-            "guid": "tag:example.com,0000:newsml_BRE9A605"
+            ]
         }
         """
         And we patch latest
         """
         {
+        	"blog": "#blogs._id#",
             "groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
@@ -143,7 +145,7 @@ Feature: Post operations
                             "residRef": "#items._id#",
                             "slugline": "awesome article",
                             "item": {
-                            	"headline" : "test",
+                            	"text" : "test",
                             	"particular_type": "item",
 								"type": "text"
                             }
@@ -177,7 +179,7 @@ Feature: Post operations
                             "residRef": "#items._id#",
                             "slugline": "awesome article",
                             "item": {
-                            	"headline" : "test",
+                            	"text" : "test",
                             	"particular_type": "item",
 								"type": "text"
                             }
@@ -186,7 +188,7 @@ Feature: Post operations
                     "role": "main"
                 }
             ],
-            "guid": "tag:example.com,0000:newsml_BRE9A605",
-            "type": "composite"
+            "type": "composite",
+            "blog": "#blogs._id#"
         }
         """
