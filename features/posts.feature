@@ -22,7 +22,7 @@ Feature: Post operations
                     "id": "main",
                     "refs": [
                         {
-                            "headline": "test package with text",
+                            "headline": "test post with text",
                             "residRef": "#items._id#",
                             "slugline": "awesome post"
                         }
@@ -44,7 +44,7 @@ Feature: Post operations
                             "id": "main",
                             "refs": [
                                 {
-                                    "headline": "test package with text",
+                                    "headline": "test post with text",
                                     "residRef": "#items._id#",
                                     "slugline": "awesome post",
                                      "item": {
@@ -89,7 +89,7 @@ Feature: Post operations
 
         
 	@auth
-    Scenario: Patch created package
+    Scenario: Patch created post
 		Given empty "posts"
 		Given empty "items"
 		Given "blogs"
@@ -111,7 +111,7 @@ Feature: Post operations
                     "id": "main",
                     "refs": [
                         {
-                            "headline": "test package with text",
+                            "headline": "test post with text",
                             "residRef": "#items._id#",
                             "slugline": "awesome article"
                         }
@@ -131,24 +131,14 @@ Feature: Post operations
                     "id": "main",
                     "refs": [
                         {
-                            "headline": "test package with pic",
+                            "headline": "test post with pic",
                             "residRef": "#archive_media._id#",
-                            "slugline": "awesome picture",
-                            "item": {
-                            	"headline" : "bike.jpg",
-                            	"particular_type": "item",
-								"type": "picture"
-                            }
+                            "slugline": "awesome picture"
                         },
                         {
-                            "headline": "test package with text",
+                            "headline": "test post with text",
                             "residRef": "#items._id#",
-                            "slugline": "awesome article",
-                            "item": {
-                            	"text" : "test",
-                            	"particular_type": "item",
-								"type": "text"
-                            }
+                            "slugline": "awesome article"
                         }
                     ],
                     "role": "main"
@@ -165,24 +155,122 @@ Feature: Post operations
                     "id": "main",
                     "refs": [
                         {
-                            "headline": "test package with pic",
+                            "headline": "test post with pic",
                             "residRef": "#archive_media._id#",
-                            "slugline": "awesome picture",
-                            "item": {
-                            	"headline" : "bike.jpg",
-                            	"particular_type": "item",
-								"type": "picture"
-                            }
+                            "slugline": "awesome picture"
                         },
                         {
-                            "headline": "test package with text",
+                            "headline": "test post with text",
                             "residRef": "#items._id#",
-                            "slugline": "awesome article",
-                            "item": {
-                            	"text" : "test",
-                            	"particular_type": "item",
-								"type": "text"
-                            }
+                            "slugline": "awesome article"
+                        }
+                    ],
+                    "role": "main"
+                }
+            ],
+            "type": "composite",
+            "blog": "#blogs._id#"
+        }
+        """
+
+        
+	@auth
+    Scenario: Delete post
+        Given empty "posts"
+        When we post to "items"
+        """
+        [{"text": "test item", "blog": "#blogs._id#"}]
+        """
+        When we post to "/posts" with success
+        """
+        {
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "headline": "test post with text",
+                            "residRef": "#posts._id#",
+                            "slugline": "awesome article"
+                        }
+                    ],
+                    "role": "main"
+                }
+            ]
+        }
+        """
+        When we delete latest
+        Then we get deleted response
+        
+	@auth
+    Scenario: Delete item from post i.e. update post
+		Given empty "posts"
+		Given empty "items"
+		Given "blogs"
+		"""
+		[{"title": "test_blog3"}]
+		"""
+        When we post to "items"
+        """
+        [{"text": "test", "blog": "#blogs._id#"}]
+        """
+        When we upload a file "bike.jpg" to "archive_media"
+        When we post to "/posts" with success
+        """
+        {
+        	"blog": "#blogs._id#",
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "#items._id#",
+                            "slugline": "awesome article"
+                        },
+                        {
+                            "residRef": "#archive_media._id#",
+                            "slugline": "awesome picture"
+                        }
+                    ],
+                    "role": "main"
+                }
+            ]
+        }
+        """
+        And we patch latest
+        """
+        {
+        	"blog": "#blogs._id#",
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "headline": "test post with text",
+                            "residRef": "#items._id#",
+                            "slugline": "awesome article"
+                        }
+                    ],
+                    "role": "main"
+                }
+            ]
+        }
+        """
+        Then we get existing resource
+        """
+        {
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "headline": "test post with text",
+                            "residRef": "#items._id#",
+                            "slugline": "awesome article"
                         }
                     ],
                     "role": "main"

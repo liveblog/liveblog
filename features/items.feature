@@ -16,33 +16,49 @@ Feature: Items operations
 		"""
         When we post to "items"
         """
-        [{"headline": "test item for an open blog", "blog": "#blogs._id#"}]
+        [{"text": "test item for an open blog", "blog": "#blogs._id#"}]
         """  
         Then we get existing resource
         """
-        {"headline": "test item for an open blog", "blog": "#blogs._id#"}
+        {"text": "test item for an open blog", "blog": "#blogs._id#"}
         """  
         When we get "items?embedded={"original_creator":1}"
         Then we get list with 1 items
 	    """
-	    {"_items": [{"headline": "test item for an open blog", "blog": "#blogs._id#"}]}
+	    {"_items": [{"text": "test item for an open blog", "blog": "#blogs._id#"}]}
 	    """
 	    
 		
 	@auth
     Scenario: Update item
+    	Given "blogs"
+		"""
+		[{"title": "test_blog1"}]
+		"""
         Given "items"
         """
-        [{"headline": "testItem"}]
+        [{"text": "testItem", "blog": "#blogs._id#"}]
         """
         When we patch given
         """
-        {"headline": "this is a test item"}
+        {"text": "this is a test item"}
         """
         And we patch latest
         """
-        {"headline":"the test of the test"}
+        {"text":"the test of the test"}
         """
         Then we get updated response
-
-		
+        
+	@auth
+    Scenario: Delete item
+        Given empty "items"
+        Given "blogs"
+		"""
+		[{"title": "test_blog1"}]
+		"""
+        When we post to "items"
+        """
+        [{"text": "test item", "blog": "#blogs._id#"}]
+        """
+        When we delete latest
+        Then we get deleted response
