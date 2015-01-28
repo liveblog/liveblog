@@ -192,9 +192,9 @@ define([
                     var $cover_handler = this.$('.cover-preview-handler');
                     if ($cover_handler.length > 0 && !$cover_handler.hasClass('hidden')) {
                         var $cover_preview = $cover_handler.find('.cover-preview');
-                        var $remove_link = $('<a href="#">').text('remove the cover');
-                        var $show_link = $('<a href="#">').text('show the cover').addClass('hidden');
-                        $remove_link.on('click', function removeCoverAndDisplayShowLink(e) {
+                        var $remove_link = $('<a href="#">').text('remove the illustration');
+                        var $show_link = $('<a href="#">').text('show the illustration').addClass('hidden');
+                        $remove_link.on('click', function removeCoverAndDisillustrationplayShowLink(e) {
                             that.saved_cover_url = that.data.thumbnail_url;
                             $cover_preview.addClass('hidden');
                             $(this).addClass('hidden');
