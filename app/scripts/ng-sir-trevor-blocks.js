@@ -83,8 +83,7 @@ define([
                         html: that.$('.embed-preview').html(),
                         title: that.$('.title-preview').text(),
                         description: that.$('.description-preview').text(),
-                        credit: that.$('.credit-preview').text(),
-                        url: that.$('.link-preview').attr('href')
+                        credit: that.$('.credit-preview').text()
                     };
                     // remove thumbnail_url if it was removed by user
                     if (that.$('.cover-preview').hasClass('hidden')) {
@@ -104,7 +103,6 @@ define([
                     var card_class = 'liveblog--card';
                     var html = $([
                         '<div class="'+card_class+' hidden">',
-                        '  <a class="hidden st-embed-block link-preview" target="_blank"></a>',
                         '  <div class="hidden st-embed-block embed-preview"></div>',
                         '  <div class="hidden st-embed-block cover-preview-handler">',
                         '    <div class="st-embed-block cover-preview"></div>',
@@ -123,10 +121,6 @@ define([
                         ['.embed-preview',
                         '.cover-preview-handler'].join(', ')
                     ).addClass('hidden');
-                    // set the link
-                    if (data.url !== undefined) {
-                        html.find('.link-preview').attr('href', data.url).html(data.url).removeClass('hidden');
-                    }
                     // set the embed code
                     if (data.html !== undefined) {
                         html.find('.embed-preview')
@@ -175,7 +169,7 @@ define([
                 loadData: function(data) {
                     var that = this;
                     that.data = data;
-                    // hide the link input field, render the card and add it to the DOM
+                    // hide the embed input field, render the card and add it to the DOM
                     that.$('.embed-input')
                         .addClass('hidden')
                         .after(that.renderCard(data));
