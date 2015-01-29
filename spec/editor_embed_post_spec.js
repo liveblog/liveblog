@@ -1,5 +1,5 @@
 var openUrl = require('./helpers/utils').open;
-describe('editor-embed:', function() {
+describe('editor embed:', function() {
     'use strict';
 
     var youtube_url = 'https://www.youtube.com/watch?v=Ksd-a9lIIDc';
