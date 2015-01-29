@@ -17,10 +17,10 @@ define([
     'use strict';
 
     BlogEditController.$inject = [
-        'api', '$scope', 'blog', 'notify', 'gettext', '$route',
+        'api', '$q', '$scope', 'blog', 'notify', 'gettext', '$route',
         'upload', 'config', 'publishCounter', 'embedService'
     ];
-    function BlogEditController(api, $scope, blog, notify, gettext, $route,
+    function BlogEditController(api, $q, $scope, blog, notify, gettext, $route,
         upload, config, publishCounter, embedService) {
         $scope.blog = blog;
         $scope.oldBlog = _.create(blog);
@@ -51,12 +51,33 @@ define([
         };
 
         $scope.create = function() {
-            //@TODO: refactor with a propper deferred of with a blocks save.
-            var dfd;
+            var dfds = [];
             _.each($scope.editor.get(), function(block) {
-                dfd = api.posts.save({text: block.text, blog: $route.current.params._id});
+                dfds.push(api.items.save({
+                    text: block.text,
+                    item_type: block.type
+                }));
             });
-            return dfd;
+            var post = {
+                blog: $route.current.params._id,
+                groups: [
+                    {
+                        id: 'root',
+                        refs: [{idRef: 'main'}],
+                        role: 'grpRole:NEP'
+                    }, {
+                        id: 'main',
+                        refs: [],
+                        role: 'grpRole:Main'
+                    }
+                ]
+            };
+            return $q.all(dfds).then(function(items) {
+                _.each(items, function(item) {
+                    post.groups[1].refs.push({residRef: item._id});
+                });
+                api.posts.save(post);
+            });
         };
 
         $scope.$watch('blog.blog_status', function() {
@@ -139,6 +160,10 @@ define([
         apiProvider.api('posts', {
             type: 'http',
             backend: {rel: 'posts'}
+        });
+        apiProvider.api('items', {
+            type: 'http',
+            backend: {rel: 'items'}
         });
         apiProvider.api('upload', {
             type: 'http',
