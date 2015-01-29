@@ -147,7 +147,7 @@ define([
             });
     }
 
-    var app = angular.module('liveblog.edit', ['SirTrevor', 'SirTrevorBlocks', 'angular-embed']);
+    var app = angular.module('liveblog.edit', ['SirTrevor', 'SirTrevorBlocks', 'angular-embed', 'angular-embed-handlers']);
     app.config(['superdeskProvider', function(superdesk) {
     superdesk
         .activity('/liveblog/edit/:_id', {
@@ -218,6 +218,8 @@ define([
         };
     }]).config(['embedlyServiceProvider', 'config', function(embedlyServiceProvider, config) {
         embedlyServiceProvider.setKey(config.embedly);
-    }]);
+    }]).run(['embedService', 'ngEmbedTwitterHandler', function(embedService, ngEmbedTwitterHandler) {
+            embedService.registerHandler(ngEmbedTwitterHandler);
+        }]);
     return app;
 });
