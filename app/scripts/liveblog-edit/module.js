@@ -218,9 +218,9 @@ define([
         };
     }]).config(['embedlyServiceProvider', 'config', function(embedlyServiceProvider, config) {
         embedlyServiceProvider.setKey(config.embedly);
-    }]).run(['$q', 'embedService', 'ngEmbedTwitterHandler', 'embedlyService', 'ngEmbedFacebookHandler',
+    }]).run(['$q', 'embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',
             'ngEmbedYoutubeHandler', 'ngEmbedInstagramHandler',
-        function($q, embedService, ngEmbedTwitterHandler, embedlyService, ngEmbedFacebookHandler,
+        function($q, embedService, ngEmbedTwitterHandler, ngEmbedFacebookHandler,
                 ngEmbedYoutubeHandler, ngEmbedInstagramHandler) {
             // register all the special handlers we want to use for angular-embed
             embedService.registerHandler(ngEmbedFacebookHandler); // use embed.ly and update the embed code with a max_width
