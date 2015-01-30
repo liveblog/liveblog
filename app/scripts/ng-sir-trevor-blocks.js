@@ -62,7 +62,7 @@ define([
                         // if the input is an url, use embed services
                         if (_.isURI(input)) {
                             // request the embedService with the provided url
-                            that.getOptions().embedService.get(input).then(
+                            that.getOptions().embedService.get(input, that.getOptions().coverMaxWidth).then(
                                 // loadData function with the right context
                                 that.loadData.bind(that),
                                 function errorCallback(error) {
