@@ -218,10 +218,12 @@ define([
         };
     }]).config(['embedlyServiceProvider', 'config', function(embedlyServiceProvider, config) {
         embedlyServiceProvider.setKey(config.embedly);
-    }]).run(['embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',
-        function(embedService, ngEmbedTwitterHandler, ngEmbedFacebookHandler) {
+    }]).run(['embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler', 'ngEmbedYoutubeHandler', 'ngEmbedInstagramHandler',
+        function(embedService, ngEmbedTwitterHandler, ngEmbedFacebookHandler, ngEmbedYoutubeHandler, ngEmbedInstagramHandler) {
             embedService.registerHandler(ngEmbedTwitterHandler);
             embedService.registerHandler(ngEmbedFacebookHandler);
+            embedService.registerHandler(ngEmbedYoutubeHandler);
+            embedService.registerHandler(ngEmbedInstagramHandler);
         }
     ]);
     return app;
