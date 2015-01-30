@@ -3,12 +3,12 @@ var openUrl = require('./helpers/utils').open;
 var openBlog = require('./helpers/utils').openBlog;
 var rootDir = path.resolve(__dirname, '..');
 
-describe('editor-embed:', function() {
+describe('editor image upload:', function() {
     'use strict';
 
     beforeEach(openUrl('/#/liveblog'));
 
-    it('blogs list:', function() {
+    it('upload an image and show it in the editor', function() {
         openBlog(0);
         // click on the "+" bar
         element(by.css('[class="st-block-controls__top"]')).click();

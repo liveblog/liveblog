@@ -12,7 +12,7 @@ beforeEach(function(done) {
             browser.driver.getCurrentUrl().then(function(url) {
                 if (url.indexOf('data:') !== 0) {
                     browser.executeScript('sessionStorage.clear();localStorage.clear();');
-                    protractor.getInstance().waitForAngular();
+                    browser.waitForAngular();
                 }
                 done();
             });
