@@ -218,12 +218,38 @@ define([
         };
     }]).config(['embedlyServiceProvider', 'config', function(embedlyServiceProvider, config) {
         embedlyServiceProvider.setKey(config.embedly);
-    }]).run(['embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler', 'ngEmbedYoutubeHandler', 'ngEmbedInstagramHandler',
-        function(embedService, ngEmbedTwitterHandler, ngEmbedFacebookHandler, ngEmbedYoutubeHandler, ngEmbedInstagramHandler) {
-            embedService.registerHandler(ngEmbedTwitterHandler);
-            embedService.registerHandler(ngEmbedFacebookHandler);
-            embedService.registerHandler(ngEmbedYoutubeHandler);
-            embedService.registerHandler(ngEmbedInstagramHandler);
+    }]).run(['$q', 'embedService', 'ngEmbedTwitterHandler', 'embedlyService', 'ngEmbedFacebookHandler',
+            'ngEmbedYoutubeHandler', 'ngEmbedInstagramHandler',
+        function($q, embedService, ngEmbedTwitterHandler, embedlyService, ngEmbedFacebookHandler,
+                ngEmbedYoutubeHandler, ngEmbedInstagramHandler) {
+            // register all the special handlers we want to use for angular-embed
+            embedService.registerHandler(ngEmbedFacebookHandler); // use embed.ly and update the embed code with a max_width
+            embedService.registerHandler(ngEmbedYoutubeHandler); // use embed.ly
+            embedService.registerHandler(ngEmbedInstagramHandler); // Use embed.ly
+            embedService.registerHandler({ // use embed.ly, load a script to render the card and remove some fields
+                name: 'Twitter',
+                patterns: [
+                    'https?://(?:www|mobile\\.)?twitter\\.com/(?:#!/)?[^/]+/status(?:es)?/(\\d+)/?$',
+                    'https?://t\\.co/[a-zA-Z0-9]+'
+                ],
+                embed: function(url, max_width) {
+                    var deferred = $q.defer();
+                    ngEmbedTwitterHandler.embed(url, max_width).then(
+                        function successCallback(response) {
+                            // remove all these fileds in the response
+                            delete response.description;
+                            delete response.title;
+                            delete response.author_name;
+                            delete response.provider_name;
+                            deferred.resolve(response);
+                        },
+                        function errorCallback(error) {
+                            deferred.reject(error.error_message || error.data.error_message);
+                        }
+                    );
+                    return deferred.promise;
+                }
+            });
         }
     ]);
     return app;
