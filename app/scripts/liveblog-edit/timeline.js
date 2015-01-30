@@ -22,7 +22,9 @@ define([
                 };
             };
             api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', blog).query().then(function(data) {
-                $scope.posts = data._items;
+                $scope.posts = _.map(data._items, function(item) {
+                    return item.groups[1].refs[0].item;
+                });
                 //add original creator name and prepare for image
                 for (var i = 0; i < $scope.posts.length; i++) {
                     var callback = callbackCreator(i);
