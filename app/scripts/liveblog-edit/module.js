@@ -237,10 +237,9 @@ define([
                     ngEmbedTwitterHandler.embed(url, max_width).then(
                         function successCallback(response) {
                             // remove all these fileds in the response
-                            delete response.description;
-                            delete response.title;
-                            delete response.author_name;
-                            delete response.provider_name;
+                            ['description', 'title', 'author_name', 'provider_name'].forEach(function (key) {
+                                delete response[key];
+                            });
                             deferred.resolve(response);
                         },
                         function errorCallback(error) {
