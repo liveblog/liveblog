@@ -115,7 +115,7 @@ define([
                         '  <div class="st-embed-block credit-preview"></div>',
                         '</div>'
                     ].join('\n'));
-                    // but this html to the DOM (neeeded to use jquery)
+                    // add this html to the DOM (neeeded to use jquery)
                     $('body > .'+card_class).remove();
                     $('body').append(html);
                     html = $('body > .'+card_class);
