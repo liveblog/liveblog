@@ -43,19 +43,19 @@ describe('blogs', function() {
             expectBlogsLength(blogs.length);
         });
         function searchBlogs(search) {
-            element(by.css('[ng-click="flags.open = !flags.open"]')).click();
+            element(by.css('[ng-click="flags.extended = !flags.extended"]')).click();
             element(by.model('search')).clear().sendKeys(search.search);
             var currentUrl;
             browser.getCurrentUrl().then(function(url) {
-                    currentUrl = url;
-                }
+                currentUrl = url;
+            }
             ).then(function() {
-                    browser.wait(function() {
-                        return browser.getCurrentUrl().then(function (url) {
-                            return url !== currentUrl;
-                        });
-                    }, waitTime);
-                }
+                browser.wait(function() {
+                    return browser.getCurrentUrl().then(function (url) {
+                        return url !== currentUrl;
+                    });
+                }, waitTime);
+            }
             ).then(function () {
                 expectBlogsLength(search.blogs.length);
                 for (var j = 0, countj = search.blogs.length; j < countj; j++) {
@@ -81,6 +81,28 @@ describe('blogs', function() {
             for (var i = 0; i < blogsLength; i++) {
                 expectBlog(archived[i], i);
             }
+        });
+    });
+
+    describe('change title and description for blog', function() {
+        it('should modify title and description for blog', function() {
+            var blog = lodash.clone(blogs[0]);
+            //open first blog
+            openBlog(0);
+            element(by.buttonText('Blog details')).click();
+            //modifying the title
+            blog.title = 'ABC';
+            var inputTitle = element(by.model('oldBlog.title'));
+            inputTitle.clear();
+            inputTitle.sendKeys('ABC');
+            //modifying the description
+            blog.description = 'test description ABC';
+            var inputDescription = element(by.model('oldBlog.description'));
+            inputDescription.clear();
+            inputDescription.sendKeys('test description ABC');
+            //click back to liveblog list
+            element(by.css('[class="icon-th-large"]')).click();
+            expectBlog(blog);
         });
     });
 
@@ -111,45 +133,6 @@ describe('blogs', function() {
             element(by.repeater('state in states').row(0).column('state.text')).click();
             //expect the first blog to be the one we activated (blog[0])
             expect(blogs[0], 0);
-        });
-    });
-
-    describe('change title and description for blog', function() {
-        it('should modify title for blog', function() {
-            var blog = lodash.clone(blogs[0]);
-            //open first blog
-            openBlog(0);
-            element(by.buttonText('Blog details')).click();
-            //modifying the title
-            blog.title = 'ABC';
-            var inputTitle = element(by.model('oldBlog.title'));
-            inputTitle.clear();
-            inputTitle.sendKeys('ABC');
-            //click back to liveblog list
-            element(by.css('[class="icon-th-large"]')).click();
-            //go to active blogs
-            element(by.binding('activeState.text')).click();
-            element(by.repeater('state in states').row(0).column('state.text')).click();
-            expectBlog(blog);
-
-        });
-
-        it('should modify description for blog', function() {
-            var blog = lodash.clone(blogs[0]);
-            //open first blog
-            openBlog(0);
-            element(by.buttonText('Blog details')).click();
-            //modifying the description
-            blog.description = 'test description ABC';
-            var inputDescription = element(by.model('oldBlog.description'));
-            inputDescription.clear();
-            inputDescription.sendKeys('test description ABC');
-            //click back to liveblog list
-            element(by.css('[class="icon-th-large"]')).click();
-            //go to active blogs
-            element(by.binding('activeState.text')).click();
-            element(by.repeater('state in states').row(0).column('state.text')).click();
-            expectBlog(blog);
         });
     });
 

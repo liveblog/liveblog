@@ -1,7 +1,5 @@
 'use strict';
 
-/*global protractor */
-
 var request = require('request'),
     bt = require('btoa');
 
@@ -14,7 +12,7 @@ exports.backendRequestAuth = backendRequestAuth;
 function getBackendUrl(uri)
 {
     return constructUrl(
-        protractor.getInstance().params.baseBackendUrl, uri
+        browser.params.baseBackendUrl, uri
     );
 }
 
@@ -48,7 +46,7 @@ function backendRequest(params, callback) {
 
 function backendRequestAuth (params, callback) {
     callback = callback || function() {};
-    var token = protractor.getInstance().params.token;
+    var token = browser.params.token;
     if (!token) {
         throw new Error('No auth token');
     }

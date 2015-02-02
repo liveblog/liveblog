@@ -1,17 +1,17 @@
 var openUrl = require('./helpers/utils').open;
-describe('editor-embed:', function() {
+describe('editor embed:', function() {
     'use strict';
 
     var youtube_url = 'https://www.youtube.com/watch?v=Ksd-a9lIIDc';
 
     beforeEach(openUrl('/#/liveblog'));
 
-    it('blogs list:', function() {
+    it('add a youtube iframe in the editor', function() {
         openBlog(0);
         // click on the "+" bar
         element(by.css('[class="st-block-controls__top"]')).click();
         // click on the embed button
-        element(by.css('[data-type="link"]')).click();
+        element(by.css('[data-type="embed"]')).click();
         // write a youtube url
         element(by.css('.embed-input')).sendKeys(youtube_url);
         // wait for an iframe
