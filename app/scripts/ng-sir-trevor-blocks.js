@@ -62,7 +62,7 @@ define([
                         // if the input is an url, use embed services
                         if (_.isURI(input)) {
                             // request the embedService with the provided url
-                            that.getOptions().embedService.get(input).then(
+                            that.getOptions().embedService.get(input, that.getOptions().coverMaxWidth).then(
                                 // loadData function with the right context
                                 that.loadData.bind(that),
                                 function errorCallback(error) {
@@ -115,7 +115,7 @@ define([
                         '  <div class="st-embed-block credit-preview"></div>',
                         '</div>'
                     ].join('\n'));
-                    // but this html to the DOM (neeeded to use jquery)
+                    // add this html to the DOM (neeeded to use jquery)
                     $('body > .'+card_class).remove();
                     $('body').append(html);
                     html = $('body > .'+card_class);
@@ -158,6 +158,13 @@ define([
                             credit_text += ' | by <a href="'+data.author_url+'" target="_blank">'+data.author_name+'</a>';
                         }
                         html.find('.credit-preview').html(credit_text);
+                    }
+                    // special case for twitter
+                    if (data.provider_name === 'Twitter') {
+                        // remove credit and title fields (duplicated with rendered card)
+                        html.find('.credit-preview, .title-preview').remove();
+                        // empty the description
+                        html.find('.description-preview').html('');
                     }
                     // retrieve the final html code
                     var html_to_return = '';
