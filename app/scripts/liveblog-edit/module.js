@@ -226,29 +226,7 @@ define([
             embedService.registerHandler(ngEmbedFacebookHandler); // use embed.ly and update the embed code with a max_width
             embedService.registerHandler(ngEmbedYoutubeHandler); // use embed.ly
             embedService.registerHandler(ngEmbedInstagramHandler); // Use embed.ly
-            embedService.registerHandler({ // use embed.ly, load a script to render the card and remove some fields
-                name: 'Twitter',
-                patterns: [
-                    'https?://(?:www|mobile\\.)?twitter\\.com/(?:#!/)?[^/]+/status(?:es)?/(\\d+)/?$',
-                    'https?://t\\.co/[a-zA-Z0-9]+'
-                ],
-                embed: function(url, max_width) {
-                    var deferred = $q.defer();
-                    ngEmbedTwitterHandler.embed(url, max_width).then(
-                        function successCallback(response) {
-                            // remove all these fileds in the response
-                            ['description', 'title', 'author_name', 'provider_name'].forEach(function (key) {
-                                delete response[key];
-                            });
-                            deferred.resolve(response);
-                        },
-                        function errorCallback(error) {
-                            deferred.reject(error.error_message || error.data.error_message);
-                        }
-                    );
-                    return deferred.promise;
-                }
-            });
+            embedService.registerHandler(ngEmbedTwitterHandler); // use embed.ly, load a script to render the card.
         }
     ]);
     return app;

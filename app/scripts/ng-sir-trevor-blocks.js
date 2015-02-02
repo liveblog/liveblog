@@ -159,6 +159,13 @@ define([
                         }
                         html.find('.credit-preview').html(credit_text);
                     }
+                    // special case for twitter
+                    if (data.provider_name === 'Twitter') {
+                        // remove credit and title fields (duplicated with rendered card)
+                        html.find('.credit-preview, .title-preview').remove();
+                        // empty the description
+                        html.find('.description-preview').html('');
+                    }
                     // retrieve the final html code
                     var html_to_return = '';
                     html_to_return = '<div class="'+card_class+'">';
