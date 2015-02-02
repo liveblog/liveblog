@@ -5,7 +5,24 @@ from superdesk.resource import Resource
 from superdesk.utc import utcnow
 
 from liveblog.common import get_user, update_dates_for
-from apps.archive.archive import ArchiveResource, ArchiveService
+from apps.archive.archive import ArchiveResource, ArchiveService, ArchiveVersionsResource, ArchiveVersionsService
+
+
+class ItemsVersionsResource(ArchiveVersionsResource):
+    """
+    Resource class for versions of archive_media
+    """
+
+    datasource = {
+        'source': 'archive' + '_versions'
+    }
+
+
+class ItemsVersionsService(ArchiveVersionsService):
+    def get(self, req, lookup):
+        if req is None:
+            req = ParsedRequest()
+        return self.backend.get('archive_versions', req=req, lookup=lookup)
 
 
 class ItemsResource(ArchiveResource):

@@ -7,6 +7,25 @@ from liveblog.common import update_dates_for, get_user
 from apps.packages import PackageService
 from apps.packages.resource import PackageResource
 from superdesk import get_resource_service
+from apps.archive.archive import ArchiveVersionsService, ArchiveVersionsResource
+
+
+class PostsVersionsResource(ArchiveVersionsResource):
+    """
+    Resource class for versions of archive_media
+    """
+
+    datasource = {
+        'source': 'archive' + '_versions',
+        'filter': {'type': 'composite'}
+    }
+
+
+class PostsVersionsService(ArchiveVersionsService):
+    def get(self, req, lookup):
+        if req is None:
+            req = ParsedRequest()
+        return self.backend.get('archive_versions', req=req, lookup=lookup)
 
 
 class PostsResource(PackageResource):
