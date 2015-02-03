@@ -167,7 +167,7 @@ define([
                         html.find('.credit-preview').html(credit_text);
                     }
                     // remove link for some provider (included in the card)
-                    if (data.provider_name in ['Facebook', 'Youtube', 'Twitter', 'Soundcloud']) {
+                    if (['Facebook', 'Youtube', 'Twitter', 'Soundcloud'].indexOf(data.provider_name) > -1) {
                         html.find('.link-preview').remove();
                     }
                     // special case for twitter
