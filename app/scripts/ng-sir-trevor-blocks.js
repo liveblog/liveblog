@@ -128,16 +128,16 @@ define([
                         '.cover-preview-handler'].join(', ')
                     ).addClass('hidden');
                     // set the link
-                    if (data.url !== undefined) {
+                    if (_.has(data, 'url')) {
                         html.find('.link-preview').attr('href', data.original_url).html(data.original_url).removeClass('hidden');
                     }
                     // set the embed code
-                    if (data.html !== undefined) {
+                    if (_.has(data, 'html')) {
                         html.find('.embed-preview')
                             .html(data.html).removeClass('hidden');
                     }
                     // set the cover illustration
-                    if (data.html === undefined && !_.isEmpty(data.thumbnail_url)) {
+                    if (!_.has(data, 'html') && !_.isEmpty(data.thumbnail_url)) {
                         var ratio = data.thumbnail_width / data.thumbnail_height;
                         var cover_width = Math.min(this.getOptions().coverMaxWidth, data.thumbnail_width);
                         var cover_height = cover_width / ratio;
@@ -149,19 +149,19 @@ define([
                         html.find('.cover-preview-handler').removeClass('hidden');
                     }
                     // set the title
-                    if (data.title !== undefined) {
+                    if (_.has(data, 'title')) {
                         html.find('.title-preview')
                             .html(data.title);
                     }
                     // set the description
-                    if (data.description !== undefined) {
+                    if (_.has(data, 'description')) {
                         html.find('.description-preview')
                             .html(data.description);
                     }
                     // set the credit
-                    if (data.provider_name !== undefined || data.author_name !== undefined) {
+                    if (_.has(data, 'provider_name')) {
                         var credit_text  = data.provider_name;
-                        if (data.author_name !== undefined) {
+                        if (_.has(data, 'author_name')) {
                             credit_text += ' | by <a href="'+data.author_url+'" target="_blank">'+data.author_name+'</a>';
                         }
                         html.find('.credit-preview').html(credit_text);
