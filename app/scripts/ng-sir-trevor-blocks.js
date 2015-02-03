@@ -63,8 +63,10 @@ define([
                         if (_.isURI(input)) {
                             // request the embedService with the provided url
                             that.getOptions().embedService.get(input, that.getOptions().coverMaxWidth).then(
-                                // loadData function with the right context
-                                that.loadData.bind(that),
+                                function successCallback(data) {
+                                    data.original_url = input;
+                                    that.loadData(data);
+                                },
                                 function errorCallback(error) {
                                     that.addMessage(error);
                                     that.ready();
@@ -86,8 +88,7 @@ define([
                         html: that.$('.embed-preview').html(),
                         title: that.$('.title-preview').text(),
                         description: that.$('.description-preview').text(),
-                        credit: that.$('.credit-preview').text(),
-                        url: that.$('.link-preview').attr('href')
+                        credit: that.$('.credit-preview').text()
                     };
                     // remove thumbnail_url if it was removed by user
                     if (that.$('.cover-preview').hasClass('hidden')) {
@@ -107,7 +108,6 @@ define([
                     var card_class = 'liveblog--card';
                     var html = $([
                         '<div class="'+card_class+' hidden">',
-                        '  <a class="hidden st-embed-block link-preview" target="_blank"></a>',
                         '  <div class="hidden st-embed-block embed-preview"></div>',
                         '  <div class="hidden st-embed-block cover-preview-handler">',
                         '    <div class="st-embed-block cover-preview"></div>',
@@ -115,6 +115,7 @@ define([
                         '  <div class="st-embed-block title-preview"></div>',
                         '  <div class="st-embed-block description-preview"></div>',
                         '  <div class="st-embed-block credit-preview"></div>',
+                        '  <a class="hidden st-embed-block link-preview" target="_blank"></a>',
                         '</div>'
                     ].join('\n'));
                     // add this html to the DOM (neeeded to use jquery)
@@ -128,7 +129,7 @@ define([
                     ).addClass('hidden');
                     // set the link
                     if (data.url !== undefined) {
-                        html.find('.link-preview').attr('href', data.url).html(data.url).removeClass('hidden');
+                        html.find('.link-preview').attr('href', data.original_url).html(data.original_url).removeClass('hidden');
                     }
                     // set the embed code
                     if (data.html !== undefined) {
@@ -165,6 +166,10 @@ define([
                         }
                         html.find('.credit-preview').html(credit_text);
                     }
+                    // remove link for some provider (included in the card)
+                    if (data.provider_name in ['Facebook', 'Youtube', 'Twitter', 'Soundcloud']) {
+                        html.find('.link-preview').remove();
+                    }
                     // special case for twitter
                     if (data.provider_name === 'Twitter') {
                         // remove credit and title fields (duplicated with rendered card)
@@ -185,7 +190,7 @@ define([
                 loadData: function(data) {
                     var that = this;
                     that.data = data;
-                    // hide the link input field, render the card and add it to the DOM
+                    // hide the embed input field, render the card and add it to the DOM
                     that.$('.embed-input')
                         .addClass('hidden')
                         .after(that.renderCard(data));
