@@ -60,6 +60,7 @@
                 criteria = {
                     max_results: $scope.maxResults,
                     embedded: {'original_creator': 1},
+                    sort: '[("_updated", -1)]',
                     q: $scope.activeState.code
                 };
 
