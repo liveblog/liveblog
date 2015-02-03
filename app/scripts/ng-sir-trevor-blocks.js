@@ -63,8 +63,10 @@ define([
                         if (_.isURI(input)) {
                             // request the embedService with the provided url
                             that.getOptions().embedService.get(input, that.getOptions().coverMaxWidth).then(
-                                // loadData function with the right context
-                                that.loadData.bind(that),
+                                function successCallback(data) {
+                                    data.original_url = input;
+                                    that.loadData(data);
+                                },
                                 function errorCallback(error) {
                                     that.addMessage(error);
                                     that.ready();
@@ -113,6 +115,7 @@ define([
                         '  <div class="st-embed-block title-preview"></div>',
                         '  <div class="st-embed-block description-preview"></div>',
                         '  <div class="st-embed-block credit-preview"></div>',
+                        '  <a class="hidden st-embed-block link-preview" target="_blank"></a>',
                         '</div>'
                     ].join('\n'));
                     // add this html to the DOM (neeeded to use jquery)
@@ -124,13 +127,17 @@ define([
                         ['.embed-preview',
                         '.cover-preview-handler'].join(', ')
                     ).addClass('hidden');
+                    // set the link
+                    if (_.has(data, 'url')) {
+                        html.find('.link-preview').attr('href', data.original_url).html(data.original_url).removeClass('hidden');
+                    }
                     // set the embed code
-                    if (data.html !== undefined) {
+                    if (_.has(data, 'html')) {
                         html.find('.embed-preview')
                             .html(data.html).removeClass('hidden');
                     }
                     // set the cover illustration
-                    if (data.html === undefined && !_.isEmpty(data.thumbnail_url)) {
+                    if (!_.has(data, 'html') && !_.isEmpty(data.thumbnail_url)) {
                         var ratio = data.thumbnail_width / data.thumbnail_height;
                         var cover_width = Math.min(this.getOptions().coverMaxWidth, data.thumbnail_width);
                         var cover_height = cover_width / ratio;
@@ -142,22 +149,26 @@ define([
                         html.find('.cover-preview-handler').removeClass('hidden');
                     }
                     // set the title
-                    if (data.title !== undefined) {
+                    if (_.has(data, 'title')) {
                         html.find('.title-preview')
                             .html(data.title);
                     }
                     // set the description
-                    if (data.description !== undefined) {
+                    if (_.has(data, 'description')) {
                         html.find('.description-preview')
                             .html(data.description);
                     }
                     // set the credit
-                    if (data.provider_name !== undefined || data.author_name !== undefined) {
+                    if (_.has(data, 'provider_name')) {
                         var credit_text  = data.provider_name;
-                        if (data.author_name !== undefined) {
+                        if (_.has(data, 'author_name')) {
                             credit_text += ' | by <a href="'+data.author_url+'" target="_blank">'+data.author_name+'</a>';
                         }
                         html.find('.credit-preview').html(credit_text);
+                    }
+                    // remove link for some provider (included in the card)
+                    if (['Facebook', 'Youtube', 'Twitter', 'Soundcloud'].indexOf(data.provider_name) > -1) {
+                        html.find('.link-preview').remove();
                     }
                     // special case for twitter
                     if (data.provider_name === 'Twitter') {
