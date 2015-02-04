@@ -16,12 +16,13 @@
                 </div>
                 <div ng-if="post.show_all">
                      <ul>
-                         <li ng-repeat="item in post.items" lb-bind-html html-content="{{ item.text }}" style="padding: 10px 0px" ng-class-even="'timeline-even-item'"></li>
+                         <li ng-repeat="item in post.items" lb-bind-html html-content="{{ item.text }}" style="padding: 10px 0px" ng-class-even="'timeline-even-item'"
+                         html-location="medium-editable" lb-simple-edit se-item="item"></li>
                      </ul>
                 </div>
             </div>
             <div ng-if="!post.multiple_items" style="padding: 10px 0px">
-                <div lb-bind-html html-content="{{ post.mainItem.text }}"></div>
+                <div lb-bind-html html-content="{{ post.mainItem.text }}" html-location="medium-editable" lb-simple-edit se-item="post.mainItem"></div>
             </div>
         </div>
     </div>

@@ -233,15 +233,17 @@ define([
                     scope.hideButtons();
                 };
                 scope.updateMedium = function() {
-                    //temp solution so quick edit items
-                    var tempQE = {};
-                    _.extend(tempQE, scope.seItem);
-                    tempQE._links.self.href = '/posts/' + tempQE._id;
+                    scope.seItem._links = {
+                        self: {
+                            href: ''
+                        }
+                    };
+                    scope.seItem._links.self.href = '/items/' + scope.seItem._id;
                     notify.info(gettext('Updating post'));
                     var textModif = editbl.html();
-                    api.posts.save(tempQE, {text: textModif}).then(function() {
+                    api.items.save(scope.seItem, {text: textModif}).then(function() {
                         notify.pop();
-                        notify.info(gettext('Post updated'));
+                        notify.info(gettext('Item updated'));
                         scope.hideButtons();
                     }, function() {
                         notify.pop();
