@@ -16,7 +16,7 @@ COPY ./package.json /opt/superdesk-client/
 RUN npm install
 COPY ./bower.json /opt/superdesk-client/
 COPY ./.bowerrc /opt/superdesk-client/
-RUN bower --allow-root --force-latest install
+RUN bower --allow-root install
 
 # copy sources
 COPY . /opt/superdesk-client
