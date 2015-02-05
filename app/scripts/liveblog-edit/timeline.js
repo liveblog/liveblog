@@ -4,9 +4,9 @@ define([
 ], function(angular) {
     'use strict';
     TimelineController.$inject = ['api', '$scope', '$rootScope', 'notify', 'gettext',
-                                '$route', '$q', '$cacheFactory', 'userList', 'publishCounter', 'itemsService'];
+                                '$route', '$q', '$cacheFactory', 'userList', 'publishCounter', 'itemsService', '$timeout'];
     function TimelineController(api, $scope, $rootScope, notify, gettext,
-                                 $route, $q, $cacheFactory, userList, publishCounter, itemsService) {
+                                 $route, $q, $cacheFactory, userList, publishCounter, itemsService, $timeout) {
         var blog = {
             _id: $route.current.params._id
         };
@@ -55,7 +55,9 @@ define([
         });
         $scope.$watch(function() { return publishCounter.getNewPosts(); }, function(newVal, oldVal) {
             if (newVal !== 0) {
-                $scope.getPosts();
+                // FIXME: Use a timeout here, because sometimes, the API crash if it happens
+                // just after the previous POST request
+                $timeout($scope.getPosts, 1000);
             }
         });
         $scope.$watch('posts', function() {
