@@ -32,7 +32,6 @@ define([
             api.blogs.save($scope.blog, blog).then(function(newBlog) {
                 notify.pop();
                 notify.success(gettext('blog saved.'));
-                $scope.oldBlog = _.create(newBlog);
                 $scope.blog = newBlog;
             });
         };
