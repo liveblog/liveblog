@@ -4,9 +4,9 @@ define([
 ], function(angular) {
     'use strict';
     TimelineController.$inject = ['api', '$scope', '$rootScope', 'notify', 'gettext',
-                                '$route', '$q', '$cacheFactory', 'userList', 'publishCounter'];
+                                '$route', '$q', '$cacheFactory', 'userList', 'publishCounter', 'itemsService'];
     function TimelineController(api, $scope, $rootScope, notify, gettext,
-                                 $route, $q, $cacheFactory, userList, publishCounter) {
+                                 $route, $q, $cacheFactory, userList, publishCounter, itemsService) {
         var blog = {
             _id: $route.current.params._id
         };
@@ -22,8 +22,19 @@ define([
                 };
             };
             api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', blog).query().then(function(data) {
-                $scope.posts = _.map(data._items, function(item) {
-                    return item.groups[1].refs[0].item;
+                $scope.posts = _.map(data._items, function(post) {
+                    //build the new post system
+                    post.show_all = false;
+                    post.multiple_items = post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false;
+                    for (var i = 0, ref; i < post.groups[1].refs.length; i ++) {
+                        ref = post.groups[1].refs[i];
+                        if (i === 0) {
+                            post.mainItem = ref.item;
+                            continue;
+                        }
+                        itemsService.addExtraItem(post._id, ref.item);
+                    }
+                    return post;
                 });
                 //add original creator name and prepare for image
                 for (var i = 0; i < $scope.posts.length; i++) {
@@ -74,9 +85,10 @@ define([
             type: 'http',
             backend: {rel: 'items'}
         });
-    }]).controller('TimelineController', TimelineController)
+    }])
     .factory('itemsService', ['api', '$q', 'notify', 'gettext', function(api, $q, notify, gettext) {
         var service = {};
+        service.posts = [];
         service.removeItem = function(id) {
             var deferred = $q.defer();
             api.items.remove(id).then(function() {
@@ -86,8 +98,18 @@ define([
             });
             return deferred.promise;
         };
+        service.addExtraItem = function(post_id, item) {
+            if (!this.posts[post_id]) {
+                this.posts[post_id] = [];
+            }
+            this.posts[post_id].push(item);
+        };
+        service.getExtraItems = function(post_id) {
+            return this.posts[post_id];
+        };
         return service;
     }])
+    .controller('TimelineController', TimelineController)
     .directive('lbTimelineItem', ['api', 'notify', 'gettext', 'asset', 'itemsService', function(api, notify, gettext, asset, itemsService) {
         return {
             scope: {
@@ -104,6 +126,21 @@ define([
                 scope.toggleCollapsed = function() {
                     scope.isCollapsed = !scope.isCollapsed;
                 };
+                scope.toggleMultipleItems = function() {
+                    scope.post.show_all = !scope.post.show_all;
+                    if (scope.post.show_all) {
+                        //create the items array
+                        if (!scope.post.items) {
+                            scope.post.items = [];
+                            scope.post.items.push(scope.post.mainItem);
+                            var extraItems = itemsService.getExtraItems(scope.post._id);
+                            for (var j = 0; j < extraItems.length; j++) {
+                                scope.post.items.push(extraItems[j]);
+                            }
+                        }
+                    }
+                };
+
                 //only text items are collapsable
                 if (scope.post.type === 'text') {
                     if (scope.post.text.length > 200) {
@@ -196,15 +233,17 @@ define([
                     scope.hideButtons();
                 };
                 scope.updateMedium = function() {
-                    //temp solution so quick edit items
-                    var tempQE = {};
-                    _.extend(tempQE, scope.seItem);
-                    tempQE._links.self.href = '/posts/' + tempQE._id;
+                    scope.seItem._links = {
+                        self: {
+                            href: ''
+                        }
+                    };
+                    scope.seItem._links.self.href = '/items/' + scope.seItem._id;
                     notify.info(gettext('Updating post'));
                     var textModif = editbl.html();
-                    api.posts.save(tempQE, {text: textModif}).then(function() {
+                    api.items.save(scope.seItem, {text: textModif}).then(function() {
                         notify.pop();
-                        notify.info(gettext('Post updated'));
+                        notify.info(gettext('Item updated'));
                         scope.hideButtons();
                     }, function() {
                         notify.pop();

@@ -409,11 +409,12 @@
     }
     .post-item-holder {
         display:block;
-        padding: 20px; 
+        padding: 20px 20px 0px 20px; 
     }
     .post-item-figure {
         float: left;
         width:30px;
+        height:100%;
         margin-right:15px;
     }
     .table-cell {
@@ -430,7 +431,7 @@
     }
     .timeline-expander-holder {
         height: 1px;
-        background-color: #A6A6A6;
+        background-color: #ebebeb;
         text-align: center;
         margin-bottom:15px;
         cursor: pointer;
@@ -443,6 +444,44 @@
         background-image: url('../../images/timeline-show-full-item.png');
         right: 40px;
         float: right;
+    }
+    .timeline-collapser-multiple-items {
+        position: relative;
+        top: -0.5em;
+        width: 21px;
+        height: 14px;
+        background-image: url('../../images/timeline-collapse.png');
+        right: 80px;
+        float: right;
+    }
+    .timeline-expander-multiple-items {
+        position: relative;
+        top: -7px;
+        width: 70px;
+        height: 13px;
+        right: 40px;
+        float: right;
+        background-color: white;
+    }
+    .timeline-expander-multiple-items-roundel {
+        border: 1px solid #a6a6a6;
+        border-radius: 10px;
+        width:20px; display: inline-block;
+        height:13px;
+        background-color: #a6a6a6;
+        margin-left:-40px;
+        margin-right:4px;
+    }
+    .timeline-expander-multiple-items-roundel-text {
+        position: absolute;
+        margin-left: 6px; top: -2px;
+        color: #f6f6f6
+    }
+    .timeline-expander-multiple-items-roundel-label {
+        color: #ababab;
+        position: absolute;
+        margin-top: -2px;
+        display: inline-block
     }
     #timeline-dropdown.dropdown-menu:before {
         background-image: none!important;
@@ -460,5 +499,8 @@
         position: absolute;
         left: -20px;
         bottom: -20px;
+    }
+    .timeline-even-item {
+        border-top: 1px solid #ebebeb;
     }
 }
