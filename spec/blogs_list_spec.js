@@ -140,11 +140,10 @@ describe('blogs', function() {
         it('should add a blog', function() {
             element(by.css('[ng-click="openNewBlog();"]')).click();
             //after the add new blog model is displayed
-            element(by.model('newBlog.title')).isDisplayed().then(function(isVisible) {
-                element(by.model('newBlog.title')).sendKeys(newBlog.title);
-                element(by.model('newBlog.description')).sendKeys(newBlog.description);
-                element(by.buttonText('CREATE')).click();
-            });
+            browser.wait(element(by.model('newBlog.title')).isDisplayed);
+            element(by.model('newBlog.title')).sendKeys(newBlog.title);
+            element(by.model('newBlog.description')).sendKeys(newBlog.description);
+            element(by.buttonText('CREATE')).click();
             expectBlog(newBlog);
         });
     });
