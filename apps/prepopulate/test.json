@@ -13,7 +13,7 @@
     "resource": "blogs",
     "data": {
         "title": "title: end to end One",
-        "_updated" : "2014-02-03T19:34:00+0000",
+        "versioncreated" : "2014-02-03T19:34:00+0000",
         "_created" : "2014-02-03T19:34:00+0000",
         "description": "description: end to end one"
     },
@@ -23,7 +23,7 @@
     "resource": "blogs",
     "data": {
         "title": "title: end to end two",
-        "_updated" : "2014-02-03T19:35:00+0000",
+        "versioncreated" : "2014-02-03T19:35:00+0000",
         "_created" : "2014-02-03T19:35:00+0000",
         "description": "description: end to end two"
     }
@@ -32,7 +32,7 @@
     "resource": "blogs",
     "data": {
         "title": "title: end To end three",
-        "_updated" : "2014-02-03T19:36:00+0000",
+        "versioncreated" : "2014-02-03T19:36:00+0000",
         "_created" : "2014-02-03T19:36:00+0000",
         "description": "description: end to end three"
     }
@@ -42,7 +42,7 @@
     "data": {
         "title": "title: end to end closed",
         "description": "description: end to end closed",
-        "_updated" : "2014-02-03T19:37:00+0000",
+        "versioncreated" : "2014-02-03T19:37:00+0000",
         "_created" : "2014-02-03T19:37:00+0000",
         "blog_status": "closed"
     }
