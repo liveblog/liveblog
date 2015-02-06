@@ -21,7 +21,6 @@ describe('timeline add to top and edit', function() {
         //click the publish button
         element(by.css('[ng-click="publish()"]')).click();
         browser.waitForAngular();
-
         //go and check the timeline
         element.all(by.repeater('post in posts')).then(function(posts) {
             var textElement = posts[0].element(by.css('span[medium-editable]'));
@@ -32,10 +31,15 @@ describe('timeline add to top and edit', function() {
         });
     });
     it('can edit an item on the timeline', function() {
-        openBlog(0);
+        openBlog(2);
         var randomText = randomString(10);
         //go and check the timeline
         element.all(by.repeater('post in posts')).then(function(posts) {
+            posts[0].isElementPresent(by.css('.timeline-expander-holder')).then(function(present) {
+                if (present) {
+                    posts[0].element(by.css('.timeline-expander-holder')).click();
+                }
+            });
             var textElement = posts[0].element(by.css('span[medium-editable]'));
             //add some text
             textElement.sendKeys(randomText);
@@ -47,9 +51,14 @@ describe('timeline add to top and edit', function() {
                 //click on back to liveblog list
                 element(by.css('[class="icon-th-large"]')).click();
                 //open first blog
-                openBlog(0);
+                openBlog(2);
                 //go and check the timeline
                 element.all(by.repeater('post in posts')).then(function(posts) {
+                    posts[0].isElementPresent(by.css('.timeline-expander-holder')).then(function(present) {
+                        if (present) {
+                            posts[0].element(by.css('.timeline-expander-holder')).click();
+                        }
+                    });
                     var textElement = posts[0].element(by.css('span[medium-editable]'));
                     textElement.getText().then(function(text) {
                         //first element should have the new edited value

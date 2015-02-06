@@ -76,7 +76,7 @@
                     </form>
                 </div>
                 <div ng-if="isTimeline" ng-controller="TimelineController" class="column-timeline">
-                    <div ng-if="noPosts" class="alert alert-info" role="alert">
+                    <div ng-if="isPostsEmpty()" class="alert alert-info" role="alert">
                         <span><strong translate>There are no posts yet for this blog!</strong></span>
                     </div>
                     <ul class="posts">

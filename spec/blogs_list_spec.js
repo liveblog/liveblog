@@ -6,15 +6,15 @@ describe('blogs', function() {
     'use strict';
     var waitTime = 2 * 1000;
     var blogs = [
-            {title: 'title: end to end One', description: 'description: end to end one', username: 'first name last name'},
-            {title: 'title: end to end two', description: 'description: end to end two', username: 'first name last name'},
-            {title: 'title: end To end three', description: 'description: end to end three', username: 'first name last name'}
+        {title: 'title: end To end three', description: 'description: end to end three', username: 'first name last name'},
+        {title: 'title: end to end two', description: 'description: end to end two', username: 'first name last name'},
+        {title: 'title: end to end One', description: 'description: end to end one', username: 'first name last name'}
     ], archived = [
-            {title: 'title: end to end closed', description: 'description: end to end closed', username: 'first name last name'}
+        {title: 'title: end to end closed', description: 'description: end to end closed', username: 'first name last name'}
     ], searchs = [
-            {blogs: [0, 1, 2], search: 'title'},
-            {blogs: [0], search: 'One'},
-            {blogs: [0, 1, 2], search: 'to'}
+        {blogs: [0, 1, 2], search: 'title'},
+        {blogs: [2], search: 'One'},
+        {blogs: [0, 1, 2], search: 'to'}
     ], newBlog = {
         title: 'new blog title',
         description: 'new blog description',
@@ -140,11 +140,10 @@ describe('blogs', function() {
         it('should add a blog', function() {
             element(by.css('[ng-click="openNewBlog();"]')).click();
             //after the add new blog model is displayed
-            element(by.model('newBlog.title')).isDisplayed().then(function(isVisible) {
-                element(by.model('newBlog.title')).sendKeys(newBlog.title);
-                element(by.model('newBlog.description')).sendKeys(newBlog.description);
-                element(by.buttonText('CREATE')).click();
-            });
+            browser.wait(element(by.model('newBlog.title')).isDisplayed);
+            element(by.model('newBlog.title')).sendKeys(newBlog.title);
+            element(by.model('newBlog.description')).sendKeys(newBlog.description);
+            element(by.buttonText('CREATE')).click();
             expectBlog(newBlog);
         });
     });
