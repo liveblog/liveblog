@@ -4,14 +4,16 @@ define([
 ], function(angular) {
     'use strict';
     TimelineController.$inject = ['api', '$scope', '$rootScope', 'notify', 'gettext',
-                                '$route', '$q', '$cacheFactory', 'userList', 'publishCounter', 'itemsService'];
+                                '$route', '$q', '$cacheFactory', 'userList', 'itemsService'];
     function TimelineController(api, $scope, $rootScope, notify, gettext,
-                                 $route, $q, $cacheFactory, userList, publishCounter, itemsService) {
+                                 $route, $q, $cacheFactory, userList, itemsService) {
         var blog = {
             _id: $route.current.params._id
         };
-        $scope.posts = {};
-        $scope.noPosts = false;
+        $scope.posts = [];
+        $scope.isPostsEmpty = function() {
+            return $scope.posts.length === 0;
+        };
         $scope.getPosts = function() {
             var callbackCreator = function(i) {
                 return function(user) {
@@ -50,21 +52,10 @@ define([
         $scope.removeFromPosts = function(post) {
             $scope.posts.splice($scope.posts.indexOf(post), 1);
         };
-        $scope.$watch('isTimeline', function() {
-            $scope.getPosts();
-        });
-        $scope.$watch(function() { return publishCounter.getNewPosts(); }, function(newVal, oldVal) {
-            if (newVal !== 0) {
-                $scope.getPosts();
-            }
-        });
-        $scope.$watch('posts', function() {
-            if ($scope.posts.length === 0) {
-                $scope.noPosts = true;
-            } else {
-                $scope.noPosts = false;
-            }
-        });
+        // refresh the posts list when the user arrives on the timeline
+        $scope.$watch('isTimeline', $scope.getPosts);
+        // refresh the posts list when the user add a new post
+        $rootScope.$on('lb.editor.postsaved', $scope.getPosts);
     }
 
     var app = angular.module('liveblog.timeline', ['superdesk.users', 'liveblog.edit'])
