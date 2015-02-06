@@ -18,10 +18,10 @@ define([
 
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext', '$route',
-        'upload', 'config', 'publishCounter', 'embedService'
+        'upload', 'config', '$rootScope', 'embedService'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext, $route,
-        upload, config, publishCounter, embedService) {
+        upload, config, $rootScope, embedService) {
         $scope.blog = blog;
         $scope.oldBlog = _.create(blog);
         $scope.updateBlog = function(blog) {
@@ -41,7 +41,6 @@ define([
             $scope.create().then(function() {
                 notify.pop();
                 notify.info(gettext('Post saved'));
-                publishCounter.oneMore();
                 $scope.editor.reinitialize();
             }, function() {
                 notify.pop();
@@ -51,6 +50,7 @@ define([
 
         $scope.create = function() {
             var dfds = [];
+            // save every items
             _.each($scope.editor.get(), function(block) {
                 dfds.push(api.items.save({
                     text: block.text,
@@ -72,10 +72,15 @@ define([
                 ]
             };
             return $q.all(dfds).then(function(items) {
+                // update the post reference (links with items)
                 _.each(items, function(item) {
                     post.groups[1].refs.push({residRef: item._id});
                 });
-                api.posts.save(post);
+                // save the post
+                post = api.posts.save(post);
+                // broadcast an event to say a new post was saved
+                $rootScope.$broadcast('lb.editor.postsaved', post);
+                return post;
             });
         };
 
@@ -205,16 +210,6 @@ define([
                 }
             }
         });
-    }]).factory('publishCounter', [function() {
-        return {
-            counter: 0,
-            oneMore: function() {
-                this.counter ++;
-            },
-            getNewPosts: function() {
-                return this.counter;
-            }
-        };
     }]).config(['embedlyServiceProvider', 'config', function(embedlyServiceProvider, config) {
         embedlyServiceProvider.setKey(config.embedly);
     }]).run(['$q', 'embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',
