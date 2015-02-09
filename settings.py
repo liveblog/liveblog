@@ -1,8 +1,9 @@
+#!/usr/bin/env python
 # -*- coding: utf-8; -*-
 #
 # This file is part of Superdesk.
 #
-# Copyright 2013, 2014 Sourcefabric z.u. and contributors.
+# Copyright 2013, 2014, 2015 Sourcefabric z.u. and contributors.
 #
 # For the full copyright and license information, please see the
 # AUTHORS and LICENSE files distributed with this source code, or
@@ -44,6 +45,7 @@ URL_PROTOCOL = server_url.scheme or None
 SERVER_NAME = server_url.netloc or None
 URL_PREFIX = server_url.path.lstrip('/') or ''
 VALIDATION_ERROR_STATUS = 400
+JSON_SORT_KEYS = True
 
 CACHE_CONTROL = 'max-age=0, no-cache'
 
@@ -96,15 +98,19 @@ INSTALLED_APPS = [
     'superdesk.upload',
     'superdesk.notification',
     'superdesk.activity',
+    'superdesk.comments',
     'superdesk.storage.amazon.import_from_amazon',
+
 
     'apps.archive',
     'apps.preferences',
+    'apps.desks',
+    'apps.stages',
     'apps.groups',
     'apps.prepopulate',
     'apps.packages',
     'apps.privilege',
-    'apps.legal_archive',
+
 
     'liveblog.blogs',
     'liveblog.posts',
@@ -145,7 +151,7 @@ ACTIVATE_ACCOUNT_TOKEN_TIME_TO_LIVE = int(env('ACTIVATE_TTL', 7))
 MAIL_SERVER = env('MAIL_SERVER', 'smtp.googlemail.com')
 MAIL_PORT = int(env('MAIL_PORT', 465))
 MAIL_USE_TLS = json.loads(env('MAIL_USE_TLS', 'False').lower())
-MAIL_USE_SSL = json.loads(env('MAIL_USE_SSL', 'True').lower())
+MAIL_USE_SSL = json.loads(env('MAIL_USE_SSL', 'False').lower())
 MAIL_USERNAME = env('MAIL_USERNAME', 'liveblogsf@gmail.com')
 MAIL_PASSWORD = env('MAIL_PASSWORD', 'fabric2010')
 ADMINS = [MAIL_USERNAME]

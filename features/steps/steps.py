@@ -18,6 +18,7 @@ from eve.methods.common import parse
 from superdesk import default_user_preferences, get_resource_service, utc
 from superdesk.utc import utcnow
 from eve.io.mongo import MongoJSONEncoder
+from base64 import b64encode
 
 from wooper.general import fail_and_print_body, apply_path,\
     parse_json_response
@@ -93,7 +94,7 @@ def get_res(url, context):
 
 def assert_200(response):
     """Assert we get status code 200."""
-    expect_status_in(response, (200, 201))
+    expect_status_in(response, (200, 201, 204))
 
 
 def assert_404(response):
@@ -246,6 +247,12 @@ def step_impl_given_user_type(context, user_type):
 def step_impl_when_auth(context):
     data = context.text
     context.response = context.client.post(get_prefixed_url(context.app, '/auth'), data=data, headers=context.headers)
+    if context.response.status_code == 200 or context.response.status_code == 201:
+        item = json.loads(context.response.get_data())
+        if item.get('_id'):
+            set_placeholder(context, 'AUTH_ID', item['_id'])
+        context.headers.append(('Authorization', b'basic ' + b64encode(item['token'].encode('ascii') + b':')))
+        context.user = item['user']
 
 
 @when('we fetch from "{provider_name}" ingest "{guid}"')
@@ -737,12 +744,6 @@ def check_rendition(context, rendition_name):
 @then('we get archive ingest result')
 def step_impl_then_get_archive_ingest_result(context):
     assert_200(context.response)
-    expect_json_contains(context.response, 'task_id')
-    item = json.loads(context.response.get_data())
-    url = '/archive_ingest/%s' % (item['task_id'])
-    context.response = context.client.get(get_prefixed_url(context.app, url), headers=context.headers)
-    assert_200(context.response)
-    test_json(context)
 
 
 @then('we get "{key}"')
@@ -1027,14 +1028,23 @@ def get_global_spike_expiry(context):
     get_desk_spike_expiry(context, context.app.config['SPIKE_EXPIRY_MINUTES'])
 
 
+@then('we get global content expiry')
+def get_global_content_expiry(context):
+    get_desk_spike_expiry(context, context.app.config['CONTENT_EXPIRY_MINUTES'])
+
+
+@then('we get content expiry {minutes}')
+def get_content_expiry(context, minutes):
+    get_desk_spike_expiry(context, int(minutes))
+
+
 @then('we get desk spike expiry after "{test_minutes}"')
 def get_desk_spike_expiry(context, test_minutes):
     response_data = json.loads(context.response.get_data())
     assert response_data['expiry']
-    response_expiry = datetime.strptime(response_data['expiry'], "%Y-%m-%dT%H:%M:%S+0000")
+    response_expiry = datetime.strptime(response_data['expiry'], "%Y-%m-%dT%H:%M:%S%z")
     expiry = utc.utcnow() + timedelta(minutes=int(test_minutes))
-    assert_equal(response_expiry.hour, expiry.hour)
-    assert_equal(response_expiry.minute, expiry.minute)
+    assert response_expiry <= expiry
 
 
 @when('we mention user in comment for "{url}"')
@@ -1170,3 +1180,25 @@ def when_we_login_as_user(context, username, password):
 
 def is_user_resource(resource):
     return resource in ('users', '/users')
+
+
+@then('we get {no_of_stages} invisible stages')
+def when_we_get_invisible_stages(context, no_of_stages):
+    with context.app.test_request_context(context.app.config['URL_PREFIX']):
+        stages = get_resource_service('stages').get_stages_by_visibility(is_visible=False)
+        assert len(stages) == int(no_of_stages)
+
+
+@then('we get {no_of_stages} visible stages')
+def when_we_get_visible_stages(context, no_of_stages):
+    with context.app.test_request_context(context.app.config['URL_PREFIX']):
+        stages = get_resource_service('stages').get_stages_by_visibility(is_visible=True)
+        assert len(stages) == int(no_of_stages)
+
+
+@then('we get {no_of_stages} invisible stages for user')
+def when_we_get_invisible_stages_for_user(context, no_of_stages):
+    data = json.loads(apply_placeholders(context, context.text))
+    with context.app.test_request_context(context.app.config['URL_PREFIX']):
+        stages = get_resource_service('users').get_invisible_stages(data['user'])
+        assert len(stages) == int(no_of_stages)

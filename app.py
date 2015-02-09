@@ -1,8 +1,9 @@
+#!/usr/bin/env python
 # -*- coding: utf-8; -*-
 #
 # This file is part of Superdesk.
 #
-# Copyright 2013, 2014 Sourcefabric z.u. and contributors.
+# Copyright 2013, 2014, 2015 Sourcefabric z.u. and contributors.
 #
 # For the full copyright and license information, please see the
 # AUTHORS and LICENSE files distributed with this source code, or
@@ -33,6 +34,7 @@ sentry = Sentry(register_signal=False, wrap_wsgi=False)
 
 def get_app(config=None):
     """App factory.
+
     :param config: configuration that can override config from `settings.py`
     :return: a new SuperdeskEve app instance
     """
@@ -77,6 +79,7 @@ def get_app(config=None):
     @app.errorhandler(SuperdeskError)
     def client_error_handler(error):
         """Return json error response.
+
         :param error: an instance of :attr:`superdesk.SuperdeskError` class
         """
         return send_response(None, (error.to_dict(), None, None, error.status_code))
