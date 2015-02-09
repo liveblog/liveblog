@@ -85,7 +85,6 @@ define([
                     var that = this;
                     // retrieve new data from editor
                     var editor_data = {
-                        html: that.$('.embed-preview').html(),
                         title: that.$('.title-preview').text(),
                         description: that.$('.description-preview').text(),
                         credit: that.$('.credit-preview').text()
