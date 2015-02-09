@@ -26,7 +26,7 @@ define([
             SirTrevor.Blocks.Embed =  SirTrevor.Block.extend({
                 type: 'embed',
                 data: {},
-                title: function(){ return 'Embed'; },
+                title: function() { return 'Embed'; },
                 icon_name: 'embed',
                 editorHTML: function() {
                     return [
@@ -107,7 +107,7 @@ define([
                 renderCard: function(data) {
                     var card_class = 'liveblog--card';
                     var html = $([
-                        '<div class="'+card_class+' hidden">',
+                        '<div class="' + card_class + ' hidden">',
                         '  <div class="hidden st-embed-block embed-preview"></div>',
                         '  <div class="hidden st-embed-block cover-preview-handler">',
                         '    <div class="st-embed-block cover-preview"></div>',
@@ -119,9 +119,9 @@ define([
                         '</div>'
                     ].join('\n'));
                     // add this html to the DOM (neeeded to use jquery)
-                    $('body > .'+card_class).remove();
+                    $('body > .' + card_class).remove();
                     $('body').append(html);
-                    html = $('body > .'+card_class);
+                    html = $('body > .' + card_class);
                     // hide everything
                     html.find(
                         ['.embed-preview',
@@ -142,7 +142,7 @@ define([
                         var cover_width = Math.min(this.getOptions().coverMaxWidth, data.thumbnail_width);
                         var cover_height = cover_width / ratio;
                         html.find('.cover-preview').css({
-                            'background-image': 'url('+data.thumbnail_url+')',
+                            'background-image': 'url(' + data.thumbnail_url + ')',
                             width: cover_width,
                             height: cover_height
                         });
@@ -162,7 +162,7 @@ define([
                     if (_.has(data, 'provider_name')) {
                         var credit_text  = data.provider_name;
                         if (_.has(data, 'author_name')) {
-                            credit_text += ' | by <a href="'+data.author_url+'" target="_blank">'+data.author_name+'</a>';
+                            credit_text += ' | by <a href="' + data.author_url + '" target="_blank">' + data.author_name + '</a>';
                         }
                         html.find('.credit-preview').html(credit_text);
                     }
@@ -179,7 +179,7 @@ define([
                     }
                     // retrieve the final html code
                     var html_to_return = '';
-                    html_to_return = '<div class="'+card_class+'">';
+                    html_to_return = '<div class="' + card_class + '">';
                     html_to_return += html.get(0).innerHTML;
                     html_to_return += '</div>';
                     // remove html from the DOM
@@ -196,7 +196,7 @@ define([
                         .after(that.renderCard(data));
                     // set somes fields contenteditable
                     ['title', 'description', 'credit'].forEach(function(field_name) {
-                        that.$('.'+field_name+'-preview').attr({
+                        that.$('.' + field_name + '-preview').attr({
                             contenteditable: true,
                             placeholder: field_name
                         });
