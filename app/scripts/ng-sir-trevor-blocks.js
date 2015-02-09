@@ -404,7 +404,12 @@ define([
             SirTrevor.Blocks.Text.prototype.onContentPasted = _.debounce(function(event) {
                 // Content pasted. Delegate to the drop parse method
                 var input = $(event.target),
-                val = input.html(input.html().replace(/<(?!\s*\/?(br|p|b|i|strike|ul|ol|li|a)\b)[^>]+>/ig, ''));
+                    val = input.html();
+                val = val.replace(/(<style\b[^>]*>)[^<>]*(<\/style>)/ig, '');
+                val = val.replace(/(<script\b[^>]*>)[^<>]*(<\/script>)/ig, '');
+                val = val.replace(/<(br|p|b|i|strike|ul|ol|li|a)[^\/>]+>/ig, '<$1>');
+                val = val.replace(/<(?!\s*\/?(br|p|b|i|strike|ul|ol|li|a)\b)[^>]+>/ig, '');
+                input.html(val);
             }, 0);
 
             var Strikethrough = SirTrevor.Formatter.extend({
