@@ -403,7 +403,7 @@ define([
             };
             SirTrevor.Blocks.Text.prototype.onContentPasted = _.debounce(function(event) {
                 // Content pasted. Delegate to the drop parse method
-                var input = $(event.target),
+                var input = $(event.target).closest('[contenteditable]'),
                     val = input.html();
                 val = val.replace(/(<style\b[^>]*>)[^<>]*(<\/style>)/ig, '');
                 val = val.replace(/(<script\b[^>]*>)[^<>]*(<\/script>)/ig, '');
