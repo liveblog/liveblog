@@ -409,13 +409,13 @@ define([
                 title: 'strikethrough',
                 iconName: 'strikethrough',
                 cmd: 'strikeThrough',
-                text: 'S'
+                text: 'strike'
             });
             SirTrevor.Formatters.Strikethrough = new Strikethrough();
 
             var OrderedList = SirTrevor.Formatter.extend({
                 title: 'orderedlist',
-                iconName: 'link',
+                iconName: 'orderedlist',
                 cmd: 'insertOrderedList',
                 text: 'orderedlist'
             });
@@ -423,7 +423,7 @@ define([
 
             var UnorderedList = SirTrevor.Formatter.extend({
                 title: 'unorderedlist',
-                iconName: 'link',
+                iconName: 'unorderedlist',
                 cmd: 'insertUnorderedList',
                 text: 'unorderedlist'
             });
@@ -435,8 +435,32 @@ define([
                 cmd: 'removeformat',
                 text: 'removeformat'
             });
-
             SirTrevor.Formatters.RemoveFormat = new RemoveFormat();
 
+            var Bold = SirTrevor.Formatter.extend({
+                title: 'bold',
+                iconName: 'bold',
+                cmd: 'bold',
+                keyCode: 66,
+                text: 'bold'
+            });
+            SirTrevor.Formatters.Bold = new Bold();
+
+            var Italic = SirTrevor.Formatter.extend({
+                title: 'italic',
+                iconName: 'italic',
+                cmd: 'italic',
+                keyCode: 73,
+                text: 'italic'
+            });
+            SirTrevor.Formatters.Italic = new Italic();
+
+            var UnLink = SirTrevor.Formatter.extend({
+                title: 'unlink',
+                iconName: 'unlink',
+                cmd: 'unlink',
+                text: 'unlink'
+            });
+            SirTrevor.Formatters.Unlink = new UnLink();
         }]);
 });
