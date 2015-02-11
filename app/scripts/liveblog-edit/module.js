@@ -151,7 +151,7 @@ define([
             });
     }
 
-    var app = angular.module('liveblog.edit', ['SirTrevor', 'SirTrevorBlocks', 'angular-embed', 'angular-embed-handlers']);
+    var app = angular.module('liveblog.edit', ['SirTrevor', 'SirTrevorBlocks', 'angular-embed', 'angular-embed.handlers']);
     app.config(['superdeskProvider', function(superdesk) {
     superdesk
         .activity('/liveblog/edit/:_id', {
@@ -210,8 +210,9 @@ define([
                 }
             }
         });
-    }]).config(['embedlyServiceProvider', 'config', function(embedlyServiceProvider, config) {
+    }]).config(['embedlyServiceProvider', 'embedServiceProvider', 'config', function(embedlyServiceProvider, embedServiceProvider, config) {
         embedlyServiceProvider.setKey(config.embedly);
+        embedServiceProvider.setConfig('facebookAppId', config.facebookAppId);
     }]).run(['$q', 'embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',
             'ngEmbedYoutubeHandler', 'ngEmbedInstagramHandler', 'ngEmbedPictureHandler',
         function($q, embedService, ngEmbedTwitterHandler, ngEmbedFacebookHandler,

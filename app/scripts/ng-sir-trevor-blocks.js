@@ -85,7 +85,6 @@ define([
                     var that = this;
                     // retrieve new data from editor
                     var editor_data = {
-                        html: that.$('.embed-preview').html(),
                         title: that.$('.title-preview').text(),
                         description: that.$('.description-preview').text(),
                         credit: that.$('.credit-preview').text()
@@ -118,10 +117,6 @@ define([
                         '  <a class="hidden st-embed-block link-preview" target="_blank"></a>',
                         '</div>'
                     ].join('\n'));
-                    // add this html to the DOM (neeeded to use jquery)
-                    $('body > .' + card_class).remove();
-                    $('body').append(html);
-                    html = $('body > .' + card_class);
                     // hide everything
                     html.find(
                         ['.embed-preview',
@@ -182,8 +177,6 @@ define([
                     html_to_return = '<div class="' + card_class + '">';
                     html_to_return += html.get(0).innerHTML;
                     html_to_return += '</div>';
-                    // remove html from the DOM
-                    html.remove();
                     return html_to_return;
                 },
                 // render a card from data, and make it editable
@@ -403,7 +396,7 @@ define([
             };
             SirTrevor.Blocks.Text.prototype.onContentPasted = _.debounce(function(event) {
                 // Content pasted. Delegate to the drop parse method
-                var input = $(event.target),
+                var input = $(event.target).closest('[contenteditable]'),
                     val = input.html();
                 val = val.replace(/(<style\b[^>]*>)[^<>]*(<\/style>)/ig, '');
                 val = val.replace(/(<script\b[^>]*>)[^<>]*(<\/script>)/ig, '');

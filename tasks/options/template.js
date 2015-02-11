@@ -13,6 +13,7 @@ module.exports = function(grunt) {
             raven: {dsn: process.env.SUPERDESK_RAVEN_DSN || ''},
             server: {url: server, ws: ws},
             embedly: grunt.option('embedly-key') || process.env.EMBEDLY_KEY,
+            facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID,
             analytics: {
                 piwik: {
                     url: process.env.PIWIK_URL || '',
