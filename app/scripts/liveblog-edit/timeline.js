@@ -28,6 +28,7 @@ define([
                     //build the new post system
                     post.show_all = false;
                     post.multiple_items = post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false;
+                    itemsService.clearExtraItems(post._id);
                     for (var i = 0, ref; i < post.groups[1].refs.length; i ++) {
                         ref = post.groups[1].refs[i];
                         if (i === 0) {
@@ -88,6 +89,11 @@ define([
                 deferred.reject('something went wrong');
             });
             return deferred.promise;
+        };
+        service.clearExtraItems = function(post_id) {
+            if (this.posts[post_id]) {
+                this.posts[post_id] = [];
+            }
         };
         service.addExtraItem = function(post_id, item) {
             if (!this.posts[post_id]) {
