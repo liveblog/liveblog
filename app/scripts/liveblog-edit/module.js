@@ -10,10 +10,11 @@
 
 define([
     'angular',
+    'lodash',
     'ng-sir-trevor',
     'ng-sir-trevor-blocks',
     'angular-embed'
-], function(angular) {
+], function(angular, _) {
     'use strict';
 
     BlogEditController.$inject = [

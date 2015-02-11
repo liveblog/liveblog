@@ -8,6 +8,7 @@ require.config({
         bootstrap: 'bower_components/bootstrap/dist/js/bootstrap',
         moment: 'bower_components/momentjs/moment',
         bower_components: 'bower_components/',
+        underscore: 'bower_components/underscore/underscore-min',
 
         'angular-ui': 'bower_components/angular-bootstrap/ui-bootstrap',
         'angular-resource': 'bower_components/angular-resource/angular-resource',
@@ -43,9 +44,8 @@ require.config({
             deps: ['jquery'],
             exports: 'angular'
         },
-
         'sir-trevor': {
-            deps: ['jquery', 'eventable', 'lodash'],
+            deps: ['jquery', 'eventable', 'underscore'],
             exports: 'SirTrevor'
         },
         'ng-sir-trevor': {
