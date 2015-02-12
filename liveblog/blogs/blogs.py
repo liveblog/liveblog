@@ -24,6 +24,7 @@ class BlogsResource(Resource):
         'settings': {'type': 'dict'},
         'original_creator': metadata_schema['original_creator'],
         'version_creator': metadata_schema['version_creator'],
+        'versioncreated': metadata_schema['versioncreated'],
         'blog_status': {
             'type': 'string',
             'allowed': ['open', 'closed'],
