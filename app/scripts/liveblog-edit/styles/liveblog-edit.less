@@ -200,6 +200,7 @@
                             .st-block-ui-btn--confirm-delete, .st-block-ui-btn--deny-delete {
                                     .btn;
                                     padding: 9px 20px;
+                                    font-size: 12px !important;
                                     &:hover {
                                         .box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5)) !important;
                                     }
@@ -394,7 +395,6 @@
         margin: 15px;
     }
 
-
     // timeline
     .column-timeline {
         border: 0px;
@@ -502,5 +502,24 @@
     }
     .timeline-even-item {
         border-top: 1px solid #ebebeb;
+    }
+}
+
+// fix for the btns in editor
+.st-format-bar {
+    padding: 0.6em 1em 0.7em 0.7em !important;
+    .border-radius(3px) !important;
+    &:before {
+        top:2.7em !important;
+    }
+    .st-format-btn {
+        padding: 0 0.3em 0 0;
+        margin: 0 0.3em 0 0;
+        &--Italic {
+            font-style: normal; 
+        }
+        &:hover, &:active, &--is-active {
+            color: #5ea9c8;
+        }
     }
 }
