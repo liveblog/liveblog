@@ -25,17 +25,22 @@ define([
             };
             api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', blog).query().then(function(data) {
                 $scope.posts = _.map(data._items, function(post) {
+
                     //build the new post system
                     post.show_all = false;
                     post.multiple_items = post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false;
+                    if (!post.multiple_items) {
+                        post.items = [];
+                        post.items.push(post.groups[1].refs[0]);
+                    }
                     itemsService.clearExtraItems(post._id);
                     for (var i = 0, ref; i < post.groups[1].refs.length; i ++) {
                         ref = post.groups[1].refs[i];
                         if (i === 0) {
-                            post.mainItem = ref.item;
+                            post.mainItem = ref;
                             continue;
                         }
-                        itemsService.addExtraItem(post._id, ref.item);
+                        itemsService.addExtraItem(post._id, ref);
                     }
                     return post;
                 });
@@ -81,9 +86,15 @@ define([
     .factory('itemsService', ['api', '$q', 'notify', 'gettext', function(api, $q, notify, gettext) {
         var service = {};
         service.posts = [];
-        service.removeItem = function(id) {
+        service.removeItem = function(item) {
             var deferred = $q.defer();
-            api.items.remove(id).then(function() {
+            item._links = {
+                self: {
+                    href: ''
+                }
+            };
+            item._links.self.href = '/items/' + item._id;
+            api.items.remove(item).then(function() {
                 deferred.resolve('removing done');
             }, function() {
                 deferred.reject('something went wrong');
@@ -146,19 +157,6 @@ define([
                         scope.needCollapsed = true;
                     }
                 }
-                scope.removeItem = function(id) {
-                    if (window.confirm(gettext('Are you sure you want to remove the post?'))) {
-                        notify.info(gettext('Removing'));
-                        itemsService.removeItem(scope.post).then(function(message) {
-                            notify.pop();
-                            notify.info(gettext('Removing done'));
-                            scope.remove({post:scope.post});
-                        }, function() {
-                            notify.pop();
-                            notify.error(gettext('Something went wrong'));
-                        });
-                    }
-                };
             }
         };
     }])
@@ -171,6 +169,60 @@ define([
                 elem.parent().on('mouseout', function() {
                     elem.hide();
                 });
+            }
+        };
+    }])
+    .directive('itemActions', ['api', 'notify', 'gettext', 'asset', 'itemsService', 'modal',
+        function(api, notify, gettext, asset, itemsService, modal) {
+        return {
+            restrict: 'E',
+            replace: true,
+            templateUrl: 'scripts/liveblog-edit/views/timeline-item-actions.html',
+            link: function(scope, elem, attrs) {
+                scope.removeItem = function(item, index) {
+                    confirm().then(function() {
+                        if (scope.post.items.length === 1) {
+                            //remove the whole post
+                            api.posts.remove(scope.post).then(function(message) {
+                                notify.pop();
+                                notify.info(gettext('Post removed'));
+                                scope.remove({post:scope.post});
+                                itemsService.removeItem(item.item);
+                            }, function() {
+                                notify.pop();
+                                notify.error(gettext('Something went wrong'));
+                            });
+
+                        } else {
+                            //update the post
+                            //creating the update for items
+                            var update = {
+                                groups: []
+                            };
+                            update.groups = scope.post.groups;
+                            scope.post.items.splice(index, 1);
+                            update.groups[1].refs = scope.post.items;
+                            //update the post
+                            api.posts.save(scope.post, update).then(function(message) {
+                                //reconsider if the post still have multiple items
+                                scope.post.multiple_items = scope.post.items.length > 1 ? scope.post.items.length : false;
+                                //if it the item removed was the first item in the list update main Item
+                                if (index === 0) {
+                                    scope.post.mainItem = scope.post.items[0];
+                                }
+                                itemsService.removeItem(item.item);
+                                notify.pop();
+                                notify.info(gettext('Item removed'));
+                            }, function(erro) {
+                                notify.pop();
+                                notify.error(gettext('Something went wrong'));
+                            });
+                        }
+                    });
+                    function confirm() {
+                        return modal.confirm(gettext('Are you sure you want to delete the item?'));
+                    }
+                };
             }
         };
     }])
