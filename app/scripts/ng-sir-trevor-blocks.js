@@ -14,6 +14,11 @@ define([
     'ng-sir-trevor'
 ], function(angular, _) {
     'use strict';
+  
+    function isURI(string) {
+        var url_regex = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
+        return (url_regex.test(string));
+    }
     angular
     .module('SirTrevorBlocks', [])
         .config(['SirTrevorProvider', function(SirTrevor) {
@@ -60,7 +65,7 @@ define([
                         // start a loader over the block, it will be stopped in the loadData function
                         that.loading();
                         // if the input is an url, use embed services
-                        if (_.isURI(input)) {
+                        if (isURI(input)) {
                             // request the embedService with the provided url
                             that.getOptions().embedService.get(input, that.getOptions().coverMaxWidth).then(
                                 function successCallback(data) {
