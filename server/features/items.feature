@@ -33,13 +33,13 @@ Feature: Items operations
     Scenario: Update item
     	Given "blogs"
 		"""
-		[{"title": "test_blog1"}]
+		[{"title": "test_blog1", "cid": "0"}]
 		"""
-        Given "items"
+       When we post to "items"
         """
-        [{"text": "testItem", "blog": "#blogs._id#"}]
-        """
-        When we patch given
+        [{"text": "test item for an open blog", "blog": "#blogs._id#"}]
+        """  
+        When we patch latest
         """
         {"text": "this is a test item"}
         """
