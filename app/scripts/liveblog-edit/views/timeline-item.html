@@ -10,19 +10,28 @@
                 <strong>{{ post.original_creator_name }}</strong> | <time>{{ post._updated | reldate }}</time>
             </div>
             
-            <div ng-if="post.multiple_items">
-                <div ng-if="!post.show_all"  style="cursor: pointer; display: block; padding: 10px 0px;" title="Click to show all items" ng-click="toggleMultipleItems()">
-                    <div lb-bind-html html-content="{{ post.mainItem.text }}" style="display: block"></div>
+            <div ng-if="post.multiple_items" style="padding: 10px 0px">
+                <div ng-if="!post.show_all"  style="cursor: pointer; display: block;" title="Click to show all items" ng-click="toggleMultipleItems()">
+                    <div lb-bind-html html-content="{{ post.mainItem.item.text }}" style="display: block"></div>
                 </div>
                 <div ng-if="post.show_all">
                      <ul>
-                         <li ng-repeat="item in post.items" lb-bind-html html-content="{{ item.text }}" style="padding: 10px 0px" ng-class-even="'timeline-even-item'"
-                         html-location="medium-editable" lb-simple-edit se-item="item"></li>
+                         <li ng-repeat="item in post.items">
+                            <div lb-bind-html html-content="{{ item.item.text }}" style="width: calc(100% - 40px)" class="timeline-simple-item" ng-class="{'timeline-even-item': !$first}"
+                           html-location="medium-editable" lb-simple-edit se-item="item.item"></div>
+                           <item-actions></item-actions>
+                         </li>
                      </ul>
                 </div>
             </div>
             <div ng-if="!post.multiple_items" style="padding: 10px 0px">
-                <div lb-bind-html html-content="{{ post.mainItem.text }}" html-location="medium-editable" lb-simple-edit se-item="post.mainItem"></div>
+                <ul>
+                     <li ng-repeat="item in post.items">
+                        <div lb-bind-html html-content="{{ item.item.text }}" class="timeline-simple-item" style="width: calc(100% - 40px)"  ng-class-even="'timeline-even-item'"
+                       html-location="medium-editable" lb-simple-edit se-item="item.item"></div>
+                       <item-actions></item-actions>
+                     </li>
+                 </ul>
             </div>
         </div>
     </div>
