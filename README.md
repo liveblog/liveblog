@@ -1,2 +1,2 @@
 # liveblog
-Liveblog  https://liveblog.sd-test.sourcefabric.org/#/  
+Liveblog  https://liveblog.sd-test.sourcefabric.org
