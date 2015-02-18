@@ -19,7 +19,7 @@ function getBackendUrl(uri)
 function backendRequest(params, callback) {
     callback = callback || function() {};
     if (params.uri) {
-        params.url = exports.getBackendUrl(params.uri);
+        params.url = getBackendUrl(params.uri);
         delete params.uri;
     }
     params.rejectUnauthorized = false;

@@ -5,19 +5,23 @@ var ScreenShotReporter = require('protractor-screenshot-reporter');
 exports.config = {
     baseUrl: 'http://localhost:9090',
     params: {
-        baseBackendUrl: 'http://localhost:5000/api/',
+        baseBackendUrl: 'http://localhost:5000/api',
         username: 'admin',
         password: 'admin'
     },
     specs: ['spec/setup.js', 'spec/matchers.js', 'spec/**/*[Ss]pec.js'],
     capabilities: {
-        browserName: 'chrome'
+        browserName: 'chrome',
+        chromeOptions: {
+            args: ['--no-sandbox']
+        }
     },
+    allScriptsTimeout: 21000,
     framework: 'jasmine',
     jasmineNodeOpts: {
         showColors: true,
-        isVerbose: false,
-        includeStackTrace: false,
+        isVerbose: true,
+        includeStackTrace: true,
         defaultTimeoutInterval: 30000
     },
     /* global jasmine */

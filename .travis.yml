@@ -44,9 +44,9 @@ install:
 before_script:
     - if [ "${TARGET}" = "e2e" ]; then
         cd server &&
-        env SUPERDESK_URL='http://127.0.0.1:5000/api' SUPERDESK_CLIENT_URL='http://127.0.0.1:9000' SUPERDESK_TESTING='True' honcho start &
+        env SUPERDESK_URL='http://localhost:5000/api' SUPERDESK_CLIENT_URL='http://localhost:9090' SUPERDESK_TESTING='True' honcho start &
         cd client &&
-        grunt --server='http://127.0.0.1:5000/api' --ws='ws://127.0.0.1:5100' &
+        grunt server:e2e --server='http://localhost:5000/api' --ws='ws://localhost:5100' &
       fi
 
 script:
@@ -75,9 +75,9 @@ script:
         cd ../client &&
         ./node_modules/.bin/webdriver-manager update &&
         ./node_modules/.bin/protractor protractor-conf.js
+          --params.baseBackendUrl 'http://localhost:5000/api'
           --stackTrace --verbose
-          --baseUrl 'http://127.0.0.1:9000'
-          --params.baseBackendUrl 'http://127.0.0.1:5000/api'
+          --baseUrl 'http://localhost:9090'
           --params.username 'admin'
           --params.password 'admin'
           --capabilities.browserName 'chrome'
@@ -87,7 +87,7 @@ script:
 after_failure:
     - if [ "${TARGET}" = "e2e" ]; then
         tar cjf screenshots.tar.bz2 screenshots &&
-        curl -F "file=@./screenshots.tar.bz2" http://curl.io/send/cyusjvxu ;
+        curl -F "file=@./screenshots.tar.bz2" http://curl.io/send/cyusjvxv ;
       fi
 
 after_success:
