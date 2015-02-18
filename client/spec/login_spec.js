@@ -8,6 +8,7 @@ describe('login', function() {
     var modal;
 
     beforeEach(function() {
+        browser.driver.manage().window().setSize(1280, 1024);
         browser.get('/');
         modal = new Login();
     });
@@ -26,6 +27,7 @@ describe('login', function() {
     it('user can log out', function() {
         modal.login('admin', 'admin');
         element(by.css('button.current-user')).click();
+        browser.waitForAngular();
         element(by.buttonText('SIGN OUT')).click();
         browser.sleep(2000); // it reloads page
         browser.waitForAngular();
