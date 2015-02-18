@@ -1,0 +1,158 @@
+[{
+    "resource": "users",
+    "data": {
+        "username": "admin",
+        "first_name": "first name",
+        "last_name": "last name",
+        "password": "admin",
+        "user_type": "administrator",
+        "email": "a@a_other.com"
+    }
+},
+{
+    "resource": "blogs",
+    "data": {
+        "title": "title: end to end One",
+        "versioncreated" : "2014-02-03T19:34:00+0000",
+        "description": "description: end to end one"
+    },
+    "id_name": "-id blog one-"
+},
+{
+    "resource": "blogs",
+    "data": {
+        "title": "title: end to end two",
+        "versioncreated" : "2014-02-03T19:35:00+0000",
+        "description": "description: end to end two"
+    }
+},
+{
+    "resource": "blogs",
+    "data": {
+        "title": "title: end To end three",
+        "versioncreated" : "2014-02-03T19:36:00+0000",
+        "description": "description: end to end three"
+    }
+},
+{
+    "resource": "blogs",
+    "data": {
+        "title": "title: end to end closed",
+        "description": "description: end to end closed",
+        "versioncreated" : "2014-02-03T19:37:00+0000",
+        "blog_status": "closed"
+    }
+},
+{
+    "resource": "items",
+    "data": {
+        "text": "text post one: end to end item One",
+        "item_type": "text"
+    },
+    "id_name": "-id post one item one-"
+},
+{
+    "resource": "items",
+    "data": {
+        "text": "text post one: end to end item two",
+        "item_type": "text"
+    },
+    "id_name": "-id post one item two-"
+},
+{
+    "resource": "items",
+    "data": {
+        "text": "text post one: End to End item three",
+        "item_type": "text"
+    },
+    "id_name": "-id post one item three-"
+},
+{
+    "resource": "posts",
+    "data": {
+        "blog": "-id blog one-",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-id post one item one-"
+                }, {
+                    "residRef": "-id post one item two-"
+                }, {
+                    "residRef": "-id post one item three-"                    
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
+},
+{
+    "resource": "items",
+    "data": {
+        "text": "text post two: end to end item onE",
+        "item_type": "text"
+    },
+    "id_name": "-id post two item one-"
+},
+{
+    "resource": "items",
+    "data": {
+        "text": "text post two: end to end item two",
+        "item_type": "text"
+    },
+    "id_name": "-id post two item two-"
+},
+{
+    "resource": "posts",
+    "data": {
+        "blog": "-id blog one-",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-id post two item one-"
+                }, {
+                    "residRef": "-id post two item two-"
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
+},
+{
+    "resource": "items",
+    "data": {
+        "text": "text post three: end to end item one",
+        "item_type": "text"
+    },
+    "id_name": "-id post three item one-"
+},
+{
+    "resource": "posts",
+    "data": {
+        "blog": "-id blog one-",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-id post three item one-"
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
+}
+
+]
