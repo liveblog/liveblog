@@ -1,0 +1,104 @@
+<!doctype html>
+<html class="no-js">
+  <head>
+    <meta charset="utf-8">
+    <title>Liveblog</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <!-- Superdesk styles -->
+    <link rel="stylesheet" href="scripts/bower_components/superdesk/bower/styles/css/bootstrap.css">
+    <link rel="stylesheet" href="scripts/bower_components/superdesk/bower/styles/css/app.css">
+
+    <!-- Liveblog specific styles -->
+    <link rel="stylesheet" href="styles/css/liveblog.css">
+    <link rel="stylesheet" href="styles/css/app.css">
+    <link rel="stylesheet" href="styles/css/sir-trevor-icons.css" type="text/css" media="screen" title="no title" charset="utf-8">    
+    <link rel="stylesheet" href="styles/css/sir-trevor.css" type="text/css" media="screen" title="no title" charset="utf-8">    
+
+    <!-- Dependecy specific styles -->
+    <link rel="stylesheet" href="scripts/bower_components/jcrop/css/jquery.Jcrop.css">
+    <link rel="stylesheet" href="scripts/bower_components/sir-trevor/sir-trevor.css" type="text/css" media="screen" title="no title" charset="utf-8">
+
+  </head>
+  <body>
+
+    <div sd-superdesk-view></div>
+
+    <!-- build:js scripts/vendor.js -->
+    <script src="scripts/bower_components/jquery/dist/jquery.js"></script>
+    <script src="scripts/bower_components/jquery-ui/jquery-ui.js"></script>
+    <script src="scripts/bower_components/angular/angular.js"></script>
+    <script src="scripts/bower_components/gridster/dist/jquery.gridster.with-extras.js"></script>
+    <script src="scripts/bower_components/medium-editor/dist/js/medium-editor.js"></script>
+    <script src="scripts/bower_components/requirejs/require.js"></script>
+    <script src="scripts/bower_components/ment.io/dist/mentio.js"></script>
+    <!-- endbuild -->
+
+   <!-- build:js scripts/superdesk-core.js -->
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk/editor/editor.js"></script>
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk/features/features.js"></script>
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk/services/asset.js"></script>
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk/privileges/privileges.js"></script>    
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk/notification/notification.js"></script>
+    
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk/menu/menu.js"></script>
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk/menu/notifications/notifications.js"></script>
+
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk-workspace/content/content.js"></script>
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk-dashboard/workspace-tasks/tasks.js"></script>
+
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk-users/users.js"></script>
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk-users/profile.js"></script>
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk-users/activity/activity.js"></script>
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk-users/import/import.js"></script>
+    <script src="scripts/bower_components/superdesk/app/scripts/superdesk-groups/groups.js"></script>
+    <!-- endbuild -->
+
+    <!-- build:js scripts/liveblog.js -->
+    <script src="scripts/liveblog-bloglist/module.js"></script>
+    <!-- endbuild -->
+
+    <!-- build:js scripts/config.js -->
+    <script src="scripts/config.js"></script>
+    <!-- endbuild -->
+
+    <!-- build:js scripts/main.js -->
+    <script src="scripts/main.js"></script>
+    <!-- endbuild -->
+
+    <script>
+        var config = <%= grunt.toJSON(config) %>;
+        config.paths = {
+            superdesk: 'scripts/bower_components/superdesk/app/'
+        };
+        var modules = [
+            'superdesk.settings',
+            'superdesk.dashboard',
+            'liveblog.dashboard',
+            'liveblog.bloglist',
+            'liveblog.edit',
+            'liveblog.timeline',
+            'superdesk.users',
+            'superdesk.scratchpad',
+            'superdesk.notification',
+            'superdesk.users.import',
+            'superdesk.users.profile',
+            'superdesk.users.activity'
+        ];
+
+        require([
+            'main',
+            'superdesk-settings/module',
+            'superdesk-dashboard/module',
+            'liveblog-dashboard/module',
+            'liveblog-edit/module',
+            'liveblog-edit/timeline',
+            'superdesk-scratchpad/module'
+        ], function(bootstrap) {
+            bootstrap(config, modules);
+        });
+    </script>
+  </body>
+</html>

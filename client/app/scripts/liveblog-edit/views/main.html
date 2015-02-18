@@ -1,0 +1,90 @@
+<div class="subnav">
+
+    <div class="button-stack left-stack" >
+        <a class="navbtn homebtn" href="/#/liveblog">
+            <i class="icon-th-large"></i>
+        </a>
+    </div>
+
+    <h3 class="page-nav-title">{{ blog.title }}</h3>
+    <div class="button-stack right-stack">
+        <button class="navbtn">
+            <i class="svg-icon-settings"></i>
+        </button>
+    </div>
+    <button class="btn btn-info pull-right" type="button" translate ng-click="toggleBlogState()">{{ toggleStateText }}</button>
+</div>
+
+<section class="main-section blogedit">
+
+    <!-- left sidebar -->
+    <div class="side-menu"></div>
+
+    <div class="columns-holder">
+
+        <!-- editor column -->
+        <div class="column column-editor">
+            <span ng-show="!disableInterfaceSwitch">
+                <header>
+                    <button class="btn btn-info pull-right" ng-click="create()" translate ng-disabled="disableInterfaceSwitch">New</button>
+                </header>
+                <div class="content">
+                    <div class="editor-holder">
+                        <div class="editor">
+                            <div class="editor" ng-sir-trevor st-model="editor" st-params="stParams"></div>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn" ng-disabled="!post" translate>Save as draft</button>
+                        <button class="btn btn-info" ng-click="publish()" translate>Publish</button>
+                    </div>
+                </div>
+            </span>
+            <span ng-show="disableInterfaceSwitch">
+                <div class="alert alert-danger margin15px" role="alert">
+                    <span><strong translate>This blog is closed!</strong></span><br />
+                    <span translate >No posts allowed on closed blogs. Reopen the blogs in order to make any changes</span>
+                </div>
+            </span>
+        </div>
+
+        <!-- timeline column -->
+        <div class="column column-timeline" ng-init="isTimeline = true">
+            <header>
+                <ul class="nav nav-tabs">
+                    <li ng-class="{active: isTimeline}" ng-click="isTimeline = true">
+                        <button translate>Timeline</button>
+                    </li>
+                    <li ng-class="{active: !isTimeline}" ng-click="isTimeline = false">
+                        <button translate>Blog details</button>
+                    </li>
+                </ul>
+            </header>
+            <div class="content">
+                <div ng-if="!isTimeline">
+                    <form ng-submit="updateBlog(oldBlog)" name="blogForm" class="flat">
+                        <fieldset>
+                            <div class="field">
+                                <label translate>Blog title</label>
+                                <input type="text" name="title" ng-model="oldBlog.title" ng-blur="updateBlog(oldBlog)">
+                            </div>
+                            <div class="field">
+                                <label translate>Blog description</label>
+                                <textarea name="description" ng-model="oldBlog.description" ng-blur="updateBlog(oldBlog)"></textarea>
+                            </div>
+                        </fieldset>
+                    </form>
+                </div>
+                <div ng-if="isTimeline" ng-controller="TimelineController" class="column-timeline">
+                    <div ng-if="isPostsEmpty()" class="alert alert-info" role="alert">
+                        <span><strong translate>There are no posts yet for this blog!</strong></span>
+                    </div>
+                    <ul class="posts">
+                        <lb-timeline-item ng-repeat="post in posts" post="post" remove="removeFromPosts(post)"></lb-timeline-item>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

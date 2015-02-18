@@ -1,0 +1,49 @@
+<li>
+    <div class="post-item-holder">
+        <div class="post-item-figure">
+            <figure class="avatar">
+                <img class="ng-isolate-scope" data-src="post.picture_url" sd-user-avatar="" style="display: none;">
+            </figure>
+        </div> 
+        <div style="margin-left:45px">
+            <div>
+                <strong>{{ post.original_creator_name }}</strong> | <time>{{ post._updated | reldate }}</time>
+            </div>
+            
+            <div ng-if="post.multiple_items" style="padding: 10px 0px">
+                <div ng-if="!post.show_all"  style="cursor: pointer; display: block;" title="Click to show all items" ng-click="toggleMultipleItems()">
+                    <div lb-bind-html html-content="{{ post.mainItem.item.text }}" style="display: block"></div>
+                </div>
+                <div ng-if="post.show_all">
+                     <ul>
+                         <li ng-repeat="item in post.items">
+                            <div lb-bind-html html-content="{{ item.item.text }}" style="width: calc(100% - 40px)" class="timeline-simple-item" ng-class="{'timeline-even-item': !$first}"
+                           html-location="medium-editable" lb-simple-edit se-item="item.item"></div>
+                           <item-actions></item-actions>
+                         </li>
+                     </ul>
+                </div>
+            </div>
+            <div ng-if="!post.multiple_items" style="padding: 10px 0px">
+                <ul>
+                     <li ng-repeat="item in post.items">
+                        <div lb-bind-html html-content="{{ item.item.text }}" class="timeline-simple-item" style="width: calc(100% - 40px)"  ng-class-even="'timeline-even-item'"
+                       html-location="medium-editable" lb-simple-edit se-item="item.item"></div>
+                       <item-actions></item-actions>
+                     </li>
+                 </ul>
+            </div>
+        </div>
+    </div>
+    <div class="timeline-expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && !post.show_all">
+        <div class="timeline-expander-multiple-items">
+            <div class="timeline-expander-multiple-items-roundel">
+                <div class="timeline-expander-multiple-items-roundel-text">{{ post.multiple_items }}</div>
+            </div>
+            <div translate class="timeline-expander-multiple-items-roundel-label">ITEMS</div>
+        </div>
+    </div>
+    <div class="timeline-expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && post.show_all">
+        <div class="timeline-collapser-multiple-items"></div>
+    </div>
+</li>
