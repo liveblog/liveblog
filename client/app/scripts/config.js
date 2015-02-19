@@ -30,11 +30,11 @@ require.config({
 
         'bootstrap-daterange': 'bower_components/bootstrap-daterangepicker/daterangepicker',
         'raven-js': 'bower_components/raven-js/dist/raven',
-        'superdesk': 'bower_components/superdesk/app/scripts/superdesk',
-        'superdesk-settings': 'bower_components/superdesk/app/scripts/superdesk-settings',
-        'superdesk-dashboard': 'bower_components/superdesk/app/scripts/superdesk-dashboard',
-        'superdesk-users': 'bower_components/superdesk/app/scripts/superdesk-users',
-        'superdesk-scratchpad': 'bower_components/superdesk/app/scripts/superdesk-scratchpad'
+        'superdesk': 'bower_components/superdesk/client/app/scripts/superdesk',
+        'superdesk-settings': 'bower_components/superdesk/client/app/scripts/superdesk-settings',
+        'superdesk-dashboard': 'bower_components/superdesk/client/app/scripts/superdesk-dashboard',
+        'superdesk-users': 'bower_components/superdesk/client/app/scripts/superdesk-users',
+        'superdesk-scratchpad': 'bower_components/superdesk/client/app/scripts/superdesk-scratchpad'
     },
     shim: {
         jquery: {exports: 'jQuery'},
