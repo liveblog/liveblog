@@ -13,7 +13,7 @@ for (var file in window.__karma__.files) {
         }
     }
 }
-var paths = {superdesk: 'bower_components/superdesk/app/scripts/'};
+var paths = {superdesk: 'bower_components/superdesk/client/app/scripts/'};
 // we have to put here files tested without requirejs
 // core
 tests.push('superdesk/mocks');
