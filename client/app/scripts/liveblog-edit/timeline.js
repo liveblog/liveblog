@@ -11,22 +11,32 @@ define([
             _id: $route.current.params._id
         };
         $scope.posts = [];
+        $scope.totalPosts = 0;
+        $scope.timelineLoading = false;
         $scope.isPostsEmpty = function() {
-            return $scope.posts.length === 0;
+            return $scope.posts.length === 0 && !$scope.timelineLoading;
         };
-        $scope.getPosts = function() {
-            var callbackCreator = function(i) {
-                return function(user) {
-                    $scope.posts[i].original_creator_name = user.display_name;
-                    if (user.picture_url) {
-                        $scope.posts[i].picture_url = user.picture_url;
-                    }
-                };
+        $scope.postsCriteria = {
+            max_results: 10,
+            page: 1
+        };
+        function callbackCreator (i) {
+            return function(user) {
+                $scope.posts[i].original_creator_name = user.display_name;
+                if (user.picture_url) {
+                    $scope.posts[i].picture_url = user.picture_url;
+                }
             };
-            api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', blog).query().then(function(data) {
-                $scope.posts = _.map(data._items, function(post) {
+        }
+        $scope.getPosts = function() {
+            $scope.timelineLoading = true;
+            api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', blog).query($scope.postsCriteria).then(function(data) {
+                $scope.totalPosts = data._meta.total;
+                //$scope.posts = _.map(data._items, function(post) {
+                for (var j = 0, post = {}; j < data._items.length; j ++) {
 
                     //build the new post system
+                    post = data._items[j];
                     post.show_all = false;
                     post.multiple_items = post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false;
                     if (!post.multiple_items) {
@@ -42,29 +52,44 @@ define([
                         }
                         itemsService.addExtraItem(post._id, ref);
                     }
-                    return post;
-                });
-                //add original creator name and prepare for image
-                for (var i = 0; i < $scope.posts.length; i++) {
-                    var callback = callbackCreator(i);
-                    userList.getUser($scope.posts[i].original_creator).then(callback);
+                    $scope.posts.push(post);
                 }
+                //add original creator name and prepare for image
 
+                for (var k = (($scope.postsCriteria.page - 1) * $scope.postsCriteria.max_results); k < $scope.posts.length; k ++) {
+                    var callback = callbackCreator(k);
+                    userList.getUser($scope.posts[k].original_creator).then(callback);
+                }
+                $scope.timelineLoading = false;
             }, function(reason) {
                 notify.error(gettext('Could not load posts... please try again later'));
+                $scope.timelineLoading = false;
             });
+        };
+        $scope.loadMore = function() {
+            //check if we still have posts to load
+            if ($scope.totalPosts > ($scope.postsCriteria.page  * $scope.postsCriteria.max_results)) {
+                $scope.postsCriteria.page ++;
+                $scope.getPosts();
+            } else {
+                return;
+            }
         };
         //remove the item from the list as a stopgap until update works
         $scope.removeFromPosts = function(post) {
             $scope.posts.splice($scope.posts.indexOf(post), 1);
         };
         // refresh the posts list when the user arrives on the timeline
-        $scope.$watch('isTimeline', $scope.getPosts);
+        $scope.$watch('isTimeline', function() {
+            //set paging back to number 1
+            $scope.postsCriteria.page = 1;
+            $scope.getPosts();
+        });
         // refresh the posts list when the user add a new post
         $rootScope.$on('lb.editor.postsaved', $scope.getPosts);
     }
 
-    var app = angular.module('liveblog.timeline', ['superdesk.users', 'liveblog.edit'])
+    var app = angular.module('liveblog.timeline', ['superdesk.users', 'liveblog.edit', 'lrInfiniteScroll'])
     .config(['apiProvider', function(apiProvider) {
         apiProvider.api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {
             type: 'http',
@@ -239,6 +264,23 @@ define([
                         //inject streaght in the elem
                         elem.html(attrs.htmlContent);
                     }
+                });
+            }
+        };
+    }])
+    .directive('setTimelineHeight', ['$window', function($window) {
+        return {
+            restrict: 'A',
+            link: function(scope, elem, attrs) {
+                var w = angular.element($window);
+                scope.getWindowHeight = function () {
+                    return w.height();
+                };
+                scope.$watch(scope.getWindowHeight, function (newHeight) {
+                    elem.height(newHeight - 220);
+                });
+                w.bind('resize', function() {
+                    scope.$apply();
                 });
             }
         };
