@@ -1,7 +1,0 @@
-Liveblog server Changelog
-==========================
-
-Version 3.0
------------
-
-
