@@ -1,6 +1,8 @@
 # liveblog
 Liveblog  https://liveblog.sd-test.sourcefabric.org
 
+[![Build Status](https://travis-ci.org/superdesk/liveblog.svg?branch=master)](https://travis-ci.org/superdesk/liveblog)
+
 ## 1. Download the project
 
 ```
