@@ -23,33 +23,8 @@ define([
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext, $route,
         upload, config, $rootScope, embedService) {
-        $scope.blog = blog;
-        $scope.oldBlog = _.create(blog);
-        $scope.updateBlog = function(blog) {
-            if (_.isEmpty(blog)) {
-                return;
-            }
-            notify.info(gettext('saving..'));
-            api.blogs.save($scope.blog, blog).then(function(newBlog) {
-                notify.pop();
-                notify.success(gettext('blog saved.'));
-                $scope.blog = newBlog;
-            });
-        };
 
-        $scope.publish = function() {
-            notify.info(gettext('Saving post'));
-            $scope.create().then(function() {
-                notify.pop();
-                notify.info(gettext('Post saved'));
-                $scope.editor.reinitialize();
-            }, function() {
-                notify.pop();
-                notify.error(gettext('Something went wrong. Please try again later'));
-            });
-        };
-
-        $scope.create = function() {
+        function savePost() {
             var dfds = [];
             // save every items
             _.each($scope.editor.get(), function(block) {
@@ -78,62 +53,91 @@ define([
                     post.groups[1].refs.push({residRef: item._id});
                 });
                 // save the post
-                post = api.posts.save(post);
-                // broadcast an event to say a new post was saved
-                $rootScope.$broadcast('lb.editor.postsaved', post);
-                return post;
+                return api.posts.save(post);
             });
-        };
+        }
 
-        $scope.$watch('blog.blog_status', function() {
-            //the text on the open/close button
-            $scope.disableInterfaceSwitch = $scope.blog.blog_status !== 'open';
-            $scope.toggleStateText = $scope.disableInterfaceSwitch ? gettext('Activate Blog') : gettext('Archive Blog');
-        });
-
-        $scope.toggleBlogState = function() {
-            var newStateValue = $scope.blog.blog_status === 'open' ? 'closed': 'open';
-            api.blogs.save($scope.blog, {'blog_status': newStateValue})
-            .then(function() {
-                $scope.blog.blog_status = newStateValue;
-            }, function(response) {
-                notify.error(gettext('Something went wrong. Please try again later'));
-            });
-        };
-
-        $scope.stParams = {
-            coverMaxWidth: 447,
-            embedService: embedService,
-            // provide an uploader to the editor for media (custom sir-trevor image block uses it)
-            uploader: function(file, success_callback, error_callback) {
-                var handleError = function(response) {
-                    // call the uploader callback with the error message as parameter
-                    error_callback(response.data? response.data._message : undefined);
-                };
-                // return a promise of upload which will call the success/error callback
-                return api.upload.getUrl().then(function(url) {
-                    upload.start({
-                        method: 'POST',
-                        url: url,
-                        data: {media: file}
-                    })
-                    .then(function(response) {
-                        if (response.data._issues) {
-                            return handleError(response);
-                        }
-                        // used in `SirTrevor.Blocks.Image` to fill in the block content.
-                        var media_meta = {
-                            _info: config.server.url + response.data._links.self.href,
-                            _id: response.data._id,
-                            _url: response.data.renditions.viewImage.href
-                        };
-                        // media will be added latter in the `meta` if this item in this callback
-                        success_callback({media: media_meta});
-                    }, handleError, function(progress) {
-                    });
+        // define the $scope
+        angular.extend($scope, {
+            blog: blog,
+            oldBlog: _.create(blog),
+            updateBlog: function(blog) {
+                if (_.isEmpty(blog)) {
+                    return;
+                }
+                notify.info(gettext('saving..'));
+                api.blogs.save($scope.blog, blog).then(function(newBlog) {
+                    notify.pop();
+                    notify.success(gettext('blog saved.'));
+                    $scope.blog = newBlog;
                 });
+            },
+            // remove and clean every items from the editor
+            resetEditor: function() {
+                $scope.editor.reinitialize();
+            },
+            saveAsDraft: function() {
+                // TODO
+            },
+            publish: function() {
+                notify.info(gettext('Saving post'));
+                savePost().then(function(post) {
+                    notify.pop();
+                    notify.info(gettext('Post saved'));
+                    $scope.resetEditor();
+                    // broadcast an event to say a new post was saved
+                    $rootScope.$broadcast('lb.editor.postsaved', post);
+                }, function() {
+                    notify.pop();
+                    notify.error(gettext('Something went wrong. Please try again later'));
+                });
+            },
+            toggleBlogState: function() {
+                var newStateValue = $scope.blog.blog_status === 'open' ? 'closed': 'open';
+                api.blogs.save($scope.blog, {'blog_status': newStateValue})
+                .then(function() {
+                    $scope.blog.blog_status = newStateValue;
+                }, function(response) {
+                    notify.error(gettext('Something went wrong. Please try again later'));
+                });
+            },
+            stParams: {
+                coverMaxWidth: 447,
+                embedService: embedService,
+                // provide an uploader to the editor for media (custom sir-trevor image block uses it)
+                uploader: function(file, success_callback, error_callback) {
+                    var handleError = function(response) {
+                        // call the uploader callback with the error message as parameter
+                        error_callback(response.data? response.data._message : undefined);
+                    };
+                    // return a promise of upload which will call the success/error callback
+                    return api.upload.getUrl().then(function(url) {
+                        upload.start({
+                            method: 'POST',
+                            url: url,
+                            data: {media: file}
+                        })
+                        .then(function(response) {
+                            if (response.data._issues) {
+                                return handleError(response);
+                            }
+                            // used in `SirTrevor.Blocks.Image` to fill in the block content.
+                            var media_meta = {
+                                _info: config.server.url + response.data._links.self.href,
+                                _id: response.data._id,
+                                _url: response.data.renditions.viewImage.href
+                            };
+                            // media will be added latter in the `meta` if this item in this callback
+                            success_callback({media: media_meta});
+                        }, handleError, function(progress) {
+                        });
+                    });
+                }
+            },
+            isBlogOpened: function() {
+                return $scope.blog.blog_status === 'open';
             }
-        };
+        });
     }
 
     /**
@@ -154,8 +158,7 @@ define([
 
     var app = angular.module('liveblog.edit', ['SirTrevor', 'SirTrevorBlocks', 'angular-embed', 'angular-embed.handlers']);
     app.config(['superdeskProvider', function(superdesk) {
-    superdesk
-        .activity('/liveblog/edit/:_id', {
+        superdesk.activity('/liveblog/edit/:_id', {
             label: gettext('Blog Edit'),
             controller: BlogEditController,
             templateUrl: 'scripts/liveblog-edit/views/main.html',
