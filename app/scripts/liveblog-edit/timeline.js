@@ -225,10 +225,14 @@ define([
                                 groups: []
                             };
                             update.groups = scope.post.groups;
-                            scope.post.items.splice(index, 1);
-                            update.groups[1].refs = scope.post.items;
+                            //remove the item from the post only after
+                            var tempRef = scope.post.items;
+                            tempRef.splice(index, 1);
+                            update.groups[1].refs = tempRef;
                             //update the post
                             api.posts.save(scope.post, update).then(function(message) {
+                                //remove item from the dom
+                                scope.post.items.splice(index, 1);
                                 //reconsider if the post still have multiple items
                                 scope.post.multiple_items = scope.post.items.length > 1 ? scope.post.items.length : false;
                                 //if it the item removed was the first item in the list update main Item
