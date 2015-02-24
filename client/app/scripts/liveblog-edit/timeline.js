@@ -32,11 +32,14 @@ define([
             $scope.timelineLoading = true;
             api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', blog).query($scope.postsCriteria).then(function(data) {
                 $scope.totalPosts = data._meta.total;
-                //$scope.posts = _.map(data._items, function(post) {
-                for (var j = 0, post = {}; j < data._items.length; j ++) {
-
+                var posts = data._items;
+                // keep only opened posts
+                posts = posts.filter(function(post) {
+                    return post.post_status === 'open';
+                });
+                for (var j = 0, post = {}; j < posts.length; j ++) {
                     //build the new post system
-                    post = data._items[j];
+                    post = posts[j];
                     post.show_all = false;
                     post.multiple_items = post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false;
                     if (!post.multiple_items) {
