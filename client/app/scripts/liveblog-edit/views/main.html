@@ -21,10 +21,27 @@
 <section class="main-section blogedit">
 
     <!-- left sidebar -->
-    <div class="side-menu"></div>
+    <div class="side-menu">
+        <button class="navbtn" ng-click="toggleDraftPanel()">
+            <i class="icon-archive" alt="draft posts"></i>
+        </button>
+    </div>
 
     <div class="columns-holder">
 
+        <!-- draft posts column -->
+<!--         <div class="column column-draft-posts">
+            <header>Drafts</header>
+            <div class="content">
+                <ul>
+                    <li>post 1</li>
+                    <li>post 2</li>
+                    <li>post 3</li>
+                    <li>post 4</li>
+                </ul>
+            </div>
+        </div>
+ -->
         <!-- editor column -->
         <div class="column column-editor">
             <span ng-show="isBlogOpened()">

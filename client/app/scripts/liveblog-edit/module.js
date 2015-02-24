@@ -101,6 +101,9 @@ define([
                     notify.error(gettext('Something went wrong. Please try again later'));
                 });
             },
+            toggleDraftPanel: function() {
+                var newStateValue = $scope.blog.draftPanel === 'open' ? 'closed': 'open';
+            },
             stParams: {
                 coverMaxWidth: 447,
                 embedService: embedService,
