@@ -24,7 +24,7 @@ define([
     function BlogEditController(api, $q, $scope, blog, notify, gettext, $route,
         upload, config, $rootScope, embedService) {
 
-        function savePost() {
+        function savePost(post_status) {
             var dfds = [];
             // save every items
             _.each($scope.editor.get(), function(block) {
@@ -35,6 +35,7 @@ define([
             });
             var post = {
                 blog: $route.current.params._id,
+                post_status: post_status || 'open',
                 groups: [
                     {
                         id: 'root',
@@ -77,7 +78,15 @@ define([
                 $scope.editor.reinitialize();
             },
             saveAsDraft: function() {
-                // TODO
+                notify.info(gettext('Saving post'));
+                savePost('draft').then(function(data) {
+                    notify.pop();
+                    notify.info(gettext('Post saved'));
+                    $scope.resetEditor();
+                }, function() {
+                    notify.pop();
+                    notify.error(gettext('Something went wrong. Please try again later'));
+                });
             },
             publish: function() {
                 notify.info(gettext('Saving post'));
