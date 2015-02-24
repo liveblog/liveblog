@@ -48,6 +48,13 @@
         }
     }
 
+    .column-draft-posts {
+        left: 48px;
+        width: 300px;
+        .box-shadow(3px 0 0 @grayLight);
+        z-index: 2;
+    }
+
     .column-editor {
         left: 0;
         width: 540px;
@@ -62,6 +69,15 @@
         border-left: 3px solid #c3c3c3;
         header {
             background: #fff;
+        }
+    }
+
+    .column-draft-posts {
+        header {
+            background-color: white;
+            color: @gray;
+            font-size: 2em;
+            line-height: 2em;
         }
     }
 

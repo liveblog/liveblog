@@ -101,8 +101,11 @@ define([
                     notify.error(gettext('Something went wrong. Please try again later'));
                 });
             },
+            // FIXME: to be changed to 'closed'
+            draftPanelState: 'open',
             toggleDraftPanel: function() {
-                var newStateValue = $scope.blog.draftPanel === 'open' ? 'closed': 'open';
+                var newStateValue = $scope.draftPanelState === 'open' ? 'closed': 'open';
+                $scope.draftPanelState = newStateValue;
             },
             stParams: {
                 coverMaxWidth: 447,
