@@ -29,16 +29,11 @@
 
     <!-- draft posts column -->
     <div class="column column-draft-posts"
-        slideable="draftPanelState === 'open'"
-        slideable-move=".columns-holder">
+         slideable="draftPanelState === 'open'"
+         slideable-move=".columns-holder">
         <header>Drafts</header>
         <div class="content">
-            <ul>
-                <li>post 1</li>
-                <li>post 2</li>
-                <li>post 3</li>
-                <li>post 4</li>
-            </ul>
+            <ng-include src="'scripts/liveblog-edit/views/draft-posts.html'"></ng-include>
         </div>
     </div>
 
