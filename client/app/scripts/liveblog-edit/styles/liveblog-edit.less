@@ -37,8 +37,9 @@
         .content {
             position: absolute;
             top: @nav-height; left: 0; right: 0; bottom: @bottom-view-padding;
-            overflow: auto;
-            padding: 20px;
+            .inner-padding {
+                padding: 20px;
+            }
         }
     }
 
@@ -401,6 +402,7 @@
         .posts {
             height: auto;
             overflow-y: scroll;
+            padding: 20px;
             > li {
                 background-color: white;
                 .border-radius(3px);
