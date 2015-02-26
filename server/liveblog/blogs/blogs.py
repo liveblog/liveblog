@@ -65,14 +65,16 @@ class BlogsResource(ArchiveResource):
 
 
 def set_cid_on_blogs(item):
-        cid = update_key('blog_cid', flag=True)
-        if cid:
-            item['cid'] = cid
-        return cid
+    key = 'blog_cid' + str(item.get('blog'))
+    cid = update_key(key, flag=True)
+    if cid:
+        item['cid'] = cid
+    return cid
 
 
 def get_last_cid(item):
-    cid = update_key('blog_cid', flag=False)
+    key = 'blog_cid' + str(item.get('_id'))
+    cid = update_key(key, flag=False)
     if cid:
         item['cid'] = cid
     return cid
