@@ -10,6 +10,9 @@ define([
         var blog = {
             _id: $route.current.params._id
         };
+        $scope.$on('posts', function() {
+            console.log('posts');
+        });
         $scope.posts = [];
         $scope.totalPosts = 0;
         $scope.timelineLoading = false;
