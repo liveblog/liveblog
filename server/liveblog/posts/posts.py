@@ -69,6 +69,7 @@ class PostsService(PackageService):
     def get_item_update_data(self, item, links, delete):
         doc = {LINKED_IN_PACKAGES: links}
         if not item.get('cid'):
+            doc['blog'] = item.get('blog')
             set_cid_on_blogs(doc)
         if delete:
             doc['deleted'] = 'on'
