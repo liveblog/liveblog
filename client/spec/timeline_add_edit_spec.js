@@ -13,25 +13,23 @@ function randomString(maxLen) {
 
 describe('timeline add to top and edit', function() {
     beforeEach(openUrl('/#/liveblog'));
-    // NOTE: Commented because it fails everytime on test servers (not on demo server)
-    // It comes from an issue with superdesk + elasticsearch
-    // it('can add item to top of the timeline', function() {
-    //     openBlog(0);
-    //     var randomText = randomString(10);
-    //     //type the random text
-    //     element(by.css('[class="st-required st-text-block"]')).sendKeys(randomText);
-    //     //click the publish button
-    //     element(by.css('[ng-click="publish()"]')).click();
-    //     browser.waitForAngular();
-    //     //go and check the timeline
-    //     element.all(by.repeater('post in posts')).then(function(posts) {
-    //         var textElement = posts[0].element(by.css('span[medium-editable]'));
-    //         //first element should have the new entered value
-    //         textElement.getText().then(function(text) {
-    //             expect(text).toEqual(randomText);
-    //         });
-    //     });
-    // });
+    it('can add item to top of the timeline', function() {
+        openBlog(0);
+        var randomText = randomString(10);
+        //type the random text
+        element(by.css('[class="st-required st-text-block"]')).sendKeys(randomText);
+        //click the publish button
+        element(by.css('[ng-click="publish()"]')).click();
+        browser.waitForAngular();
+        //go and check the timeline
+        element.all(by.repeater('post in posts')).then(function(posts) {
+            var textElement = posts[0].element(by.css('span[medium-editable]'));
+            //first element should have the new entered value
+            textElement.getText().then(function(text) {
+                expect(text).toEqual(randomText);
+            });
+        });
+    });
     it('can edit an item on the timeline', function() {
         openBlog(2);
         var randomText = randomString(10);

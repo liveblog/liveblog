@@ -12,7 +12,10 @@
             <i class="svg-icon-settings"></i>
         </button>
     </div>
-    <button class="btn btn-info pull-right" type="button" translate ng-click="toggleBlogState()">{{ toggleStateText }}</button>
+    <button class="btn btn-info pull-right" type="button" translate ng-click="toggleBlogState()">
+        <span ng-if="isBlogOpened()">Archive Blog</span>
+        <span ng-if="!isBlogOpened()">Activate Blog</span>
+    </button>
 </div>
 
 <section class="main-section blogedit">
@@ -24,9 +27,9 @@
 
         <!-- editor column -->
         <div class="column column-editor">
-            <span ng-show="!disableInterfaceSwitch">
+            <span ng-show="isBlogOpened()">
                 <header>
-                    <button class="btn btn-info pull-right" ng-click="create()" translate ng-disabled="disableInterfaceSwitch">New</button>
+                    <button class="btn btn-info pull-right" ng-click="resetEditor()" translate>Reset</button>
                 </header>
                 <div class="content">
                     <div class="editor-holder">
@@ -35,12 +38,12 @@
                         </div>
                     </div>
                     <div class="actions">
-                        <button class="btn" ng-disabled="!post" translate>Save as draft</button>
+                        <button class="btn" ng-click="saveAsDraft()" translate>Save as draft</button>
                         <button class="btn btn-info" ng-click="publish()" translate>Publish</button>
                     </div>
                 </div>
             </span>
-            <span ng-show="disableInterfaceSwitch">
+            <span ng-show="!isBlogOpened()">
                 <div class="alert alert-danger margin15px" role="alert">
                     <span><strong translate>This blog is closed!</strong></span><br />
                     <span translate >No posts allowed on closed blogs. Reopen the blogs in order to make any changes</span>
