@@ -14,12 +14,38 @@ define([
     'use strict';
 
     PostsService.$inject = [
-        'api'
+        'api',
+        '$q',
+        'userList'
     ];
-    function PostsService(api) {
+    function PostsService(api, $q, userList) {
         return {
-            getPostsForBlog: function(blog, posts_criteria) {
-                return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog._id}).query(posts_criteria);
+            getPosts: function(blog, posts_criteria) {
+                var posts = [];
+                var defer = $q.defer();
+
+                api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog._id})
+                    .query(posts_criteria)
+                    .then(function(data) {
+                        data._items.forEach(function(post) {
+                            // update the post structure
+                            angular.extend(post, {
+                                // add a `multiple_items` field. Can be false or a positive integer.
+                                multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
+                                // add a `mainItem` field containing the first item
+                                mainItem: post.groups[1].refs[0]
+                            });
+                            // retrieve user information and add it to the post
+                            (function(post) {
+                                userList.getUser(post.original_creator).then(function(user) {
+                                    post.original_creator_name = user.display_name;
+                                });
+                            })(post);
+                            posts.push(post);
+                        });
+                        defer.resolve(posts);
+                    });
+                return defer.promise;
             }
         };
     }

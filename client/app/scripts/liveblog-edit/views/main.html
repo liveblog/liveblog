@@ -91,7 +91,7 @@
                         </fieldset>
                     </form>
                 </div>
-                <div ng-if="isTimeline" ng-controller="TimelineController" class="column-timeline">
+<!--                 <div ng-if="isTimeline" ng-controller="TimelineController" class="column-timeline">
                     <div class="loading-indicator" ng-show="timelineLoading"><span translate>loading</span></div>
                     <div ng-if="isPostsEmpty()" class="alert alert-info" role="alert">
                         <span><strong translate>There are no posts yet for this blog!</strong></span>
@@ -99,7 +99,7 @@
                     <ul class="posts" lr-infinite-scroll="loadMore" set-timeline-height>
                         <lb-timeline-item ng-repeat="post in posts" post="post" remove="removeFromPosts(post)"></lb-timeline-item>
                     </ul>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

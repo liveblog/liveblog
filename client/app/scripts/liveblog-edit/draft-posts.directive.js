@@ -22,11 +22,13 @@ define([
     ];
     function DraftPostsDirective(api, postsService) {
         function DraftPostsController($scope, $element) {
-            postsService.getPostsForBlog($scope.blog).then(function(data) {
-                $scope.posts = data._items;
-                // $scope.posts.forEach(function(post) {
-                //     console.log(typeof(post.post_status));
-                // });
+            postsService.getPosts($scope.blog).then(function (data) {
+                $scope.posts = data;
+            });
+            angular.extend($scope, {
+                openDraftInEditor: function(draft) {
+                    // TODO
+                }
             });
         }
         return {
@@ -34,16 +36,7 @@ define([
             scope: { // isolated scope
                 blog: '='
             },
-            template: [
-                '<div>',
-                '    <ul>',
-                '        <li ng-repeat="post in posts">',
-                '            {{ post.post_status }}',
-                '        </li>',
-                '    <ul>',
-                // '    <pre>{{ posts | json }}</pre>',
-                '</div>'
-            ].join(''),
+            templateUrl: 'scripts/liveblog-edit/views/draft-posts-list.html',
             controller: DraftPostsController
         };
     }

@@ -1,0 +1,20 @@
+@import 'variables.less';
+
+.column-draft-posts {
+    > header {
+        background-color: white;
+        color: @gray;
+        font-size: 2em;
+        line-height: 2em;
+    }
+    .draft-posts {
+        &__post {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 10px;
+            &:hover {
+                background-color: #E6EDF0;
+                cursor: pointer;
+            }
+        }
+    }
+}

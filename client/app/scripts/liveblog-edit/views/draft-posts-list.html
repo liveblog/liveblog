@@ -1,0 +1,10 @@
+<div class="draft-posts">
+    <ul>
+        <li ng-repeat="post in posts" class="draft-posts__post" ng-click="openDraftInEditor(post)">
+            <div>
+                <strong>{{ post.original_creator_name }}</strong> | <time>{{ post._updated | reldate }}</time>
+            </div>
+            <article ng-bind="post.mainItem.item.text"></article>
+        </li>
+    <ul>
+</div>
