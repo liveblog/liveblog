@@ -11,36 +11,37 @@
 define([
     'angular',
     'lodash',
-    './module'
+    './module',
+    './posts.service'
 ], function(angular, _) {
     'use strict';
 
-    DraftPostsController.$inject = [
-        '$scope',
-        'api'
+    DraftPostsDirective.$inject = [
+        'api',
+        'postsService'
     ];
-    function DraftPostsController($scope, api) {
-        // api.posts.query().then(function(data) {
-        //     console.log(data);
-        // });
-        angular.extend($scope, {
-            // TODO Give a blog id
-            posts: api.posts.query()
-        });
-    }
-
-    function DraftPostsDirective() {
+    function DraftPostsDirective(api, postsService) {
+        function DraftPostsController($scope, $element) {
+            postsService.getPostsForBlog($scope.blog).then(function(data) {
+                $scope.posts = data._items;
+                // $scope.posts.forEach(function(post) {
+                //     console.log(typeof(post.post_status));
+                // });
+            });
+        }
         return {
             restrict: 'E',
+            scope: { // isolated scope
+                blog: '='
+            },
             template: [
                 '<div>',
                 '    <ul>',
-                '        <pre>{{ posts | json }}</pre>',
-                '        <pre>{{ posts._items | json }}</pre>',
-                '        <li ng-repeat="post in posts._items">',
-                '            {{ post.post_id }}',
+                '        <li ng-repeat="post in posts">',
+                '            {{ post.post_status }}',
                 '        </li>',
                 '    <ul>',
+                // '    <pre>{{ posts | json }}</pre>',
                 '</div>'
             ].join(''),
             controller: DraftPostsController

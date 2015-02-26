@@ -35,7 +35,9 @@ define([
                 var posts = data._items;
                 // keep only opened posts
                 posts = posts.filter(function(post) {
-                    return post.post_status === 'open';
+                    // check if undefined in order to support old model without this field.
+                    // (before the Draft-Posts Feature)
+                    return typeof(post.post_status) === 'undefined' || post.post_status === 'open';
                 });
                 for (var j = 0, post = {}; j < posts.length; j ++) {
                     //build the new post system
