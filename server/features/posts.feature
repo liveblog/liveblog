@@ -106,7 +106,7 @@ Feature: Post operations
 		Given empty "items"
 		Given "blogs"
 		"""
-		[{"title": "test_blog1"}]
+		[{"title": "test_blog1", "cid": "1"}]
 		"""
         When we post to "items"
         """
@@ -185,7 +185,6 @@ Feature: Post operations
         }
         """
 
-        
 	@auth
     Scenario: Delete post
         Given empty "posts"
@@ -219,75 +218,6 @@ Feature: Post operations
         """
         When we delete latest
         Then we get deleted response
-        
-
-	@auth
-    Scenario: Full scenario to prove cid is working 
-		Given empty "posts"
-		Given empty "items"
-		Given "blogs"
-		"""
-		[{"title": "test_blog1", "cid": 2}]
-		"""
-        When we post to "items"
-        """
-        [{"text": "test", "blog": "#blogs._id#"}]
-        """
-        When we post to "/posts" with success
-        """
-        [{"headline": "testPost", "blog": "#blogs._id#"}]
-        """
-        And we patch latest
-        """
-        {
-            "groups": [
-                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
-                {
-                    "id": "main",
-                    "refs": [
-                        {
-                            "residRef": "#items._id#"
-                        }
-                    ],
-                    "role": "main"
-                }
-            ]
-        }
-        """
-        Then we get existing resource
-        """
-        {
-            "groups": [
-                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
-                {
-                    "id": "main",
-                    "refs": [
-                        {
-                            "residRef": "#items._id#"
-                        }
-                    ],
-                    "role": "main"
-                }
-            ],
-            "type": "composite",
-            "blog": "#blogs._id#"
-        }
-        """
-        When we get "/items"
-        Then we get list with 1 items
-	    """
-	    {"_items": [{"text": "test", "blog": "#blogs._id#", "cid": 1}]}
-	    """
-	    When we patch "/items/#items._id#"
-	    """
-        {"text": "this is a test item to check cid"}
-        """
-        Then we get updated response
-        When we get "/items"        
-        Then we get list with 1 items
-	    """
-	    {"_items": [{"text": "this is a test item to check cid", "blog": "#blogs._id#", "cid": 2}]}
-	    """
         
 	@auth
     Scenario: Delete item from post i.e. update post
