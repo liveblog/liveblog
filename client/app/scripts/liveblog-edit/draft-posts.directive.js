@@ -22,19 +22,32 @@ define([
     ];
     function DraftPostsDirective(api, postsService) {
         function DraftPostsController($scope, $element) {
-            postsService.getPosts($scope.blog).then(function (data) {
-                $scope.posts = data;
+            // initialize list
+            postsService.getDrafts($scope.blog._id).then(function (posts) {
+                $scope.posts = posts;
+            });
+            // update list when needed
+            $scope.$on('lb.posts.updated', function(e, data) {
+                var posts = _.values(data)[0];
+                $scope.posts = posts;
             });
             angular.extend($scope, {
                 openDraftInEditor: function(draft) {
-                    // TODO
+                    $scope.editor.reinitialize();
+                    var items = draft.groups[1].refs;
+                    items.forEach(function(item) {
+                        item = item.item;
+                        var data = _.extend({text: item.text}, item.meta);
+                        $scope.editor.createBlock(item.item_type, data);
+                    });
                 }
             });
         }
         return {
             restrict: 'E',
             scope: { // isolated scope
-                blog: '='
+                blog: '=',
+                editor: '='
             },
             templateUrl: 'scripts/liveblog-edit/views/draft-posts-list.html',
             controller: DraftPostsController

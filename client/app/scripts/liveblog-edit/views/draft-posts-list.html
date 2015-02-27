@@ -4,7 +4,9 @@
             <div>
                 <strong>{{ post.original_creator_name }}</strong> | <time>{{ post._updated | reldate }}</time>
             </div>
-            <article ng-bind="post.mainItem.item.text"></article>
+            <article lb-bind-html html-content="{{ post.mainItem.item.text }}"></article>
+            <div ng-if="post.multiple_items">and {{ post.multiple_items - 1 }} other items</div>
+            <div>{{ post.post_status }}</div>
         </li>
     <ul>
 </div>

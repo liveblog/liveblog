@@ -16,36 +16,117 @@ define([
     PostsService.$inject = [
         'api',
         '$q',
-        'userList'
+        'userList',
+        '$rootScope'
     ];
-    function PostsService(api, $q, userList) {
-        return {
-            getPosts: function(blog, posts_criteria) {
-                var posts = [];
-                var defer = $q.defer();
+    function PostsService(api, $q, userList, $rootScope) {
+        var drafts = {};
+        var posts = {};
 
-                api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog._id})
-                    .query(posts_criteria)
-                    .then(function(data) {
-                        data._items.forEach(function(post) {
-                            // update the post structure
-                            angular.extend(post, {
-                                // add a `multiple_items` field. Can be false or a positive integer.
-                                multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
-                                // add a `mainItem` field containing the first item
-                                mainItem: post.groups[1].refs[0]
-                            });
-                            // retrieve user information and add it to the post
-                            (function(post) {
-                                userList.getUser(post.original_creator).then(function(user) {
-                                    post.original_creator_name = user.display_name;
-                                });
-                            })(post);
-                            posts.push(post);
-                        });
-                        defer.resolve(posts);
+        function getPosts(blog_id, posts_criteria) {
+            // TODO: support posts_criteria in cache
+            // If we've already cached it, return that one.
+            // But return a promise version so it's consistent across invocations
+            if (angular.isDefined(posts[blog_id])) {
+                return $q.when(posts[blog_id]);
+            }
+            posts[blog_id] = [];
+            return retrievePosts(blog_id, posts_criteria).then(function(data) {
+                posts[blog_id] = data;
+                return posts[blog_id];
+            });
+        }
+        function getDraft(blog_id, posts_criteria) {
+            // TODO: support posts_criteria in cache
+            if (angular.isDefined(drafts[blog_id])) {
+                return $q.when(drafts[blog_id]);
+            }
+            drafts[blog_id] = [];
+            return retrievePosts(blog_id, posts_criteria).then(function(data) {
+                // TODO: add the filter in the query
+                drafts[blog_id] = data.filter(function(post) {
+                    return post.post_status === 'draft';
+                });
+                return drafts[blog_id];
+            });
+        }
+        function savePost(blog_id, items, post_status) {
+            post_status = post_status || 'open';
+            var dfds = [];
+            // save every items
+            _.each(items, function(item) {
+                dfds.push(api.items.save(item));
+            });
+            var post = {
+                blog: blog_id,
+                post_status: post_status,
+                groups: [
+                    {
+                        id: 'root',
+                        refs: [{idRef: 'main'}],
+                        role: 'grpRole:NEP'
+                    }, {
+                        id: 'main',
+                        refs: [],
+                        role: 'grpRole:Main'
+                    }
+                ]
+            };
+            return $q.all(dfds).then(function(items) {
+                // update the post reference (links with items)
+                _.each(items, function(item) {
+                    post.groups[1].refs.push({residRef: item._id});
+                });
+                // save the post
+                return api.posts.save(post).then(function (post) {
+                    // refresh local lists after it was saved
+                    // if (post_status === 'draft') {
+                    //     drafts[blog_id].push(post);
+                    // } else {
+                    //     posts[blog_id].push(post);
+                    // }
+                    // FIXME: `post` should contains items, then this following operation would be useless.
+                    drafts = {};
+                    posts = {};
+                    // broadcast an event when updated
+                    $q.all([getPosts(blog_id), getDraft(blog_id)]).then(function() {
+                        $rootScope.$broadcast('lb.posts.updated', drafts);
                     });
-                return defer.promise;
+                });
+            });
+        }
+        function retrievePosts(blog_id, posts_criteria) {
+            return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
+                .query(posts_criteria)
+                .then(function(data) {
+                    var posts = [];
+                    data._items.forEach(function(post) {
+                        // update the post structure
+                        angular.extend(post, {
+                            // add a `multiple_items` field. Can be false or a positive integer.
+                            // FIXME: left like that to support other feature, but this need to be in camelcase
+                            multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
+                            // add a `mainItem` field containing the first item
+                            mainItem: post.groups[1].refs[0]
+                        });
+                        // retrieve user information and add it to the post
+                        (function(post) {
+                            userList.getUser(post.original_creator).then(function(user) {
+                                post.original_creator_name = user.display_name;
+                            });
+                        })(post);
+                        posts.push(post);
+                    });
+                    return posts;
+                });
+        }
+        return {
+            drafts: drafts,
+            getPosts: getPosts,
+            getDrafts: getDraft,
+            savePost: savePost,
+            saveDraft: function(blog_id, items, post_status) {
+                return savePost(blog_id, items, 'draft');
             }
         };
     }
