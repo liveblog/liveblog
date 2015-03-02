@@ -25,17 +25,17 @@ define([
         upload, config, $rootScope, embedService, postsService) {
 
         var current_blog_id = $route.current.params._id;
+        var current_post;
 
+        // return the list of items from the editor
         function getItemsFromEditor() {
-            var items = [];
-            _.each($scope.editor.get(), function(block) {
-                items.push({
+            return _.map($scope.editor.get(), function(block) {
+                return {
                     text: block.text,
                     meta: block.meta,
                     item_type: block.type
-                });
+                };
             });
-            return items;
         }
 
         // define the $scope
@@ -56,6 +56,17 @@ define([
             // remove and clean every items from the editor
             resetEditor: function() {
                 $scope.editor.reinitialize();
+                current_post = null;
+            },
+            openDraftPost: function (draft_post) {
+                $scope.resetEditor();
+                current_post = draft_post;
+                var items = current_post.groups[1].refs;
+                items.forEach(function(item) {
+                    item = item.item;
+                    var data = _.extend({text: item.text}, item.meta);
+                    $scope.editor.createBlock(item.item_type, data);
+                });
             },
             saveAsDraft: function() {
                 notify.info(gettext('Saving draft'));

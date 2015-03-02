@@ -53,6 +53,7 @@ define([
             function DraftPostsDirective(api, postsService) {
                 function DraftPostsController($scope, $element) {
                     var mv = this;
+                    mv.selectDraftPost = $scope.onDraftPostSeleted;
                     // initialize list
                     postsService.getDrafts($scope.blog._id).then(function (posts) {
                         mv.posts = posts;
@@ -62,21 +63,12 @@ define([
                         var posts = _.values(data)[0];
                         mv.posts = posts;
                     });
-                    mv.openDraftInEditor = function(draft) {
-                        $scope.editor.reinitialize();
-                        var items = draft.groups[1].refs;
-                        items.forEach(function(item) {
-                            item = item.item;
-                            var data = _.extend({text: item.text}, item.meta);
-                            $scope.editor.createBlock(item.item_type, data);
-                        });
-                    };
                 }
                 return {
                     restrict: 'E',
                     scope: { // isolated scope
                         blog: '=',
-                        editor: '='
+                        onDraftPostSeleted: '='
                     },
                     templateUrl: 'scripts/liveblog-edit/views/draft-posts-list.html',
                     controller: DraftPostsController,

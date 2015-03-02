@@ -1,6 +1,6 @@
 <div class="draft-posts">
     <ul>
-        <li ng-repeat="post in draftPosts.posts" class="draft-posts__post" ng-click="draftPosts.openDraftInEditor(post)">
+        <li ng-repeat="post in draftPosts.posts" class="draft-posts__post" ng-click="draftPosts.selectDraftPost(post)">
             <div>
                 <strong>{{ post.original_creator_name }}</strong> | <time>{{ post._updated | reldate }}</time>
             </div>
