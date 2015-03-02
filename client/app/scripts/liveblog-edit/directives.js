@@ -52,26 +52,25 @@ define([
         .directive('draftPosts', ['api', 'postsService',
             function DraftPostsDirective(api, postsService) {
                 function DraftPostsController($scope, $element) {
+                    var mv = this;
                     // initialize list
                     postsService.getDrafts($scope.blog._id).then(function (posts) {
-                        $scope.posts = posts;
+                        mv.posts = posts;
                     });
                     // update list when needed
                     $scope.$on('lb.posts.updated', function(e, data) {
                         var posts = _.values(data)[0];
-                        $scope.posts = posts;
+                        mv.posts = posts;
                     });
-                    angular.extend($scope, {
-                        openDraftInEditor: function(draft) {
-                            $scope.editor.reinitialize();
-                            var items = draft.groups[1].refs;
-                            items.forEach(function(item) {
-                                item = item.item;
-                                var data = _.extend({text: item.text}, item.meta);
-                                $scope.editor.createBlock(item.item_type, data);
-                            });
-                        }
-                    });
+                    mv.openDraftInEditor = function(draft) {
+                        $scope.editor.reinitialize();
+                        var items = draft.groups[1].refs;
+                        items.forEach(function(item) {
+                            item = item.item;
+                            var data = _.extend({text: item.text}, item.meta);
+                            $scope.editor.createBlock(item.item_type, data);
+                        });
+                    };
                 }
                 return {
                     restrict: 'E',
@@ -80,7 +79,8 @@ define([
                         editor: '='
                     },
                     templateUrl: 'scripts/liveblog-edit/views/draft-posts-list.html',
-                    controller: DraftPostsController
+                    controller: DraftPostsController,
+                    controllerAs: 'draftPosts'
                 };
             }
         ]);
