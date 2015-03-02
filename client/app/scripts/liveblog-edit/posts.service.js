@@ -20,35 +20,37 @@ define([
         '$rootScope'
     ];
     function PostsService(api, $q, userList, $rootScope) {
-        var drafts = {};
-        var posts = {};
+        var cache = {
+            drafts: {},
+            posts: {}
+        };
 
         function getPosts(blog_id, posts_criteria) {
             // TODO: support posts_criteria in cache
             // If we've already cached it, return that one.
             // But return a promise version so it's consistent across invocations
-            if (angular.isDefined(posts[blog_id])) {
-                return $q.when(posts[blog_id]);
+            if (angular.isDefined(cache.posts[blog_id])) {
+                return $q.when(cache.posts[blog_id]);
             }
-            posts[blog_id] = [];
+            cache.posts[blog_id] = [];
             return retrievePosts(blog_id, posts_criteria).then(function(data) {
-                posts[blog_id] = data;
-                return posts[blog_id];
+                cache.posts[blog_id] = data;
+                return cache.posts[blog_id];
             });
         }
 
-        function getDraft(blog_id, posts_criteria) {
+        function getDrafts(blog_id, posts_criteria) {
             // TODO: support posts_criteria in cache
-            if (angular.isDefined(drafts[blog_id])) {
-                return $q.when(drafts[blog_id]);
+            if (angular.isDefined(cache.drafts[blog_id])) {
+                return $q.when(cache.drafts[blog_id]);
             }
-            drafts[blog_id] = [];
+            cache.drafts[blog_id] = [];
             return retrievePosts(blog_id, posts_criteria).then(function(data) {
                 // TODO: add the filter in the query
-                drafts[blog_id] = data.filter(function(post) {
+                cache.drafts[blog_id] = data.filter(function(post) {
                     return post.post_status === 'draft';
                 });
-                return drafts[blog_id];
+                return cache.drafts[blog_id];
             });
         }
 
@@ -97,11 +99,11 @@ define([
                     //     posts[blog_id].push(post);
                     // }
                     // FIXME: `post` should contains items, then this following operation would be useless.
-                    drafts = {};
-                    posts = {};
+                    cache.drafts = {};
+                    cache.posts = {};
                     // broadcast an event when updated
-                    $q.all([getPosts(blog_id), getDraft(blog_id)]).then(function() {
-                        $rootScope.$broadcast('lb.posts.updated', drafts);
+                    $q.all([getPosts(blog_id), getDrafts(blog_id)]).then(function() {
+                        $rootScope.$broadcast('lb.posts.updated', cache.drafts);
                     });
                 });
             });
@@ -139,13 +141,13 @@ define([
                 if (angular.isDefined(blog_id)) {
                     // find a remove from cache
                     var index, cached;
-                    index = drafts[blog_id].indexOf(post);
+                    index = cache.drafts[blog_id].indexOf(post);
                     if (index > -1) {
-                        cached = drafts[blog_id];
+                        cached = cache.drafts[blog_id];
                     } else {
-                        index = posts[blog_id].indexOf(post);
+                        index = cache.posts[blog_id].indexOf(post);
                         if (index > -1) {
-                            cached = posts[blog_id];
+                            cached = cache.posts[blog_id];
                         }
                     }
                     // remove
@@ -155,9 +157,8 @@ define([
         }
 
         return {
-            drafts: drafts,
             getPosts: getPosts,
-            getDrafts: getDraft,
+            getDrafts: getDrafts,
             savePost: savePost,
             saveDraft: function(blog_id, post, items, post_status) {
                 return savePost(blog_id, post, items, 'draft');
