@@ -20,37 +20,43 @@ define([
         '$rootScope'
     ];
     function PostsService(api, $q, userList, $rootScope) {
-        var cache = {
-            drafts: {},
-            posts: {}
-        };
+
+        function retrievePosts(blog_id, posts_criteria) {
+            return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
+                .query(posts_criteria)
+                .then(function(data) {
+                    var posts = [];
+                    data._items.forEach(function(post) {
+                        // update the post structure
+                        angular.extend(post, {
+                            // add a `multiple_items` field. Can be false or a positive integer.
+                            // FIXME: left like that to support other feature, but this need to be in camelcase
+                            multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
+                            // add a `mainItem` field containing the first item
+                            mainItem: post.groups[1].refs[0]
+                        });
+                        // retrieve user information and add it to the post
+                        (function(post) {
+                            userList.getUser(post.original_creator).then(function(user) {
+                                post.original_creator_name = user.display_name;
+                            });
+                        })(post);
+                        posts.push(post);
+                    });
+                    return posts;
+                });
+        }
 
         function getPosts(blog_id, posts_criteria) {
-            // TODO: support posts_criteria in cache
-            // If we've already cached it, return that one.
-            // But return a promise version so it's consistent across invocations
-            if (angular.isDefined(cache.posts[blog_id])) {
-                return $q.when(cache.posts[blog_id]);
-            }
-            cache.posts[blog_id] = [];
-            return retrievePosts(blog_id, posts_criteria).then(function(data) {
-                cache.posts[blog_id] = data;
-                return cache.posts[blog_id];
-            });
+            return retrievePosts(blog_id, posts_criteria);
         }
 
         function getDrafts(blog_id, posts_criteria) {
-            // TODO: support posts_criteria in cache
-            if (angular.isDefined(cache.drafts[blog_id])) {
-                return $q.when(cache.drafts[blog_id]);
-            }
-            cache.drafts[blog_id] = [];
             return retrievePosts(blog_id, posts_criteria).then(function(data) {
-                // TODO: add the filter in the query
-                cache.drafts[blog_id] = data.filter(function(post) {
+                // TODO: filter in the query
+                return data.filter(function(post) {
                     return post.post_status === 'draft';
                 });
-                return cache.drafts[blog_id];
             });
         }
 
@@ -92,67 +98,17 @@ define([
                     };
                 }
                 return operation().then(function (post) {
-                    // refresh local lists after it was saved
-                    // if (post_status === 'draft') {
-                    //     drafts[blog_id].push(post);
-                    // } else {
-                    //     posts[blog_id].push(post);
-                    // }
-                    // FIXME: `post` should contains items, then this following operation would be useless.
-                    cache.drafts = {};
-                    cache.posts = {};
-                    // broadcast an event when updated
-                    $q.all([getPosts(blog_id), getDrafts(blog_id)]).then(function() {
-                        $rootScope.$broadcast('lb.posts.updated', cache.drafts);
-                    });
+                    $rootScope.$broadcast('lb.posts.updated');
+                    // post here doesn't contain the items...
+                    $rootScope.$emit('lb.posts.saved', post);
                 });
             });
         }
 
-        function retrievePosts(blog_id, posts_criteria) {
-            return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
-                .query(posts_criteria)
-                .then(function(data) {
-                    var posts = [];
-                    data._items.forEach(function(post) {
-                        // update the post structure
-                        angular.extend(post, {
-                            // add a `multiple_items` field. Can be false or a positive integer.
-                            // FIXME: left like that to support other feature, but this need to be in camelcase
-                            multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
-                            // add a `mainItem` field containing the first item
-                            mainItem: post.groups[1].refs[0]
-                        });
-                        // retrieve user information and add it to the post
-                        (function(post) {
-                            userList.getUser(post.original_creator).then(function(user) {
-                                post.original_creator_name = user.display_name;
-                            });
-                        })(post);
-                        posts.push(post);
-                    });
-                    return posts;
-                });
-        }
-
         function removePost(post) {
-            var blog_id = post.blog;
             return api.posts.remove(post).then(function() {
-                if (angular.isDefined(blog_id)) {
-                    // find a remove from cache
-                    var index, cached;
-                    index = cache.drafts[blog_id].indexOf(post);
-                    if (index > -1) {
-                        cached = cache.drafts[blog_id];
-                    } else {
-                        index = cache.posts[blog_id].indexOf(post);
-                        if (index > -1) {
-                            cached = cache.posts[blog_id];
-                        }
-                    }
-                    // remove
-                    cached.splice(index, 1);
-                }
+                $rootScope.$broadcast('lb.posts.updated');
+                $rootScope.$broadcast('lb.posts.removed', post);
             });
         }
 

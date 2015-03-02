@@ -55,15 +55,15 @@ define([
                     var mv = this;
                     mv.selectDraftPost = $scope.onDraftPostSeleted;
                     mv.removeDraftPost = postsService.remove;
+                    function updateList() {
+                        postsService.getDrafts($scope.blog._id).then(function (posts) {
+                            mv.posts = posts;
+                        });
+                    }
                     // initialize list
-                    postsService.getDrafts($scope.blog._id).then(function (posts) {
-                        mv.posts = posts;
-                    });
+                    updateList();
                     // update list when needed
-                    $scope.$on('lb.posts.updated', function(e, data) {
-                        var posts = _.values(data)[0];
-                        mv.posts = posts;
-                    });
+                    $scope.$on('lb.posts.updated', updateList);
                 }
                 return {
                     restrict: 'E',
