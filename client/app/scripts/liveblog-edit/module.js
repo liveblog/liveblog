@@ -86,6 +86,7 @@ define([
                     $scope.resetEditor();
                     // broadcast an event to say a new post was saved
                     // TODO: can be removed with the new postsService
+                    // when it will be used in the timeline
                     $rootScope.$broadcast('lb.editor.postsaved', post);
                 }, function() {
                     notify.pop();

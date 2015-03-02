@@ -137,7 +137,7 @@ define([
             var blog_id = post.blog;
             return api.posts.remove(post).then(function() {
                 if (angular.isDefined(blog_id)) {
-                    // remove from cache
+                    // find a remove from cache
                     var index, cached;
                     index = drafts[blog_id].indexOf(post);
                     if (index > -1) {
