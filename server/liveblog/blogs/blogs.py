@@ -71,7 +71,7 @@ def set_cid_on_blogs(item):
     return cid
 
 
-def get_last_cid(item):
+def update_last_cid(item):
     key = 'blog_cid' + str(item.get('_id'))
     cid = update_key(key, flag=False)
     if cid:
@@ -95,7 +95,7 @@ class BlogService(ArchiveService):
 
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
-        get_last_cid(doc)
+        update_last_cid(doc)
         return doc
 
     def on_created(self, docs):
