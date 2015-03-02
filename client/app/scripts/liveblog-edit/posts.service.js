@@ -48,12 +48,17 @@ define([
         }
 
         function getPosts(blog_id, posts_criteria) {
-            return retrievePosts(blog_id, posts_criteria);
+            return retrievePosts(blog_id, posts_criteria).then(function(data) {
+                // FIXME: filter in the query
+                return data.filter(function(post) {
+                    return typeof(post.post_status) === 'undefined' || post.post_status === 'open';
+                });
+            });
         }
 
         function getDrafts(blog_id, posts_criteria) {
             return retrievePosts(blog_id, posts_criteria).then(function(data) {
-                // TODO: filter in the query
+                // FIXME: filter in the query
                 return data.filter(function(post) {
                     return post.post_status === 'draft';
                 });
