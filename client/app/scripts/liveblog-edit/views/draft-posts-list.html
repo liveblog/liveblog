@@ -15,5 +15,6 @@
             <div ng-if="post.multiple_items">and {{ post.multiple_items - 1 }} other items</div>
             <div>{{ post.post_status }}</div>
         </li>
+        <li ng-hide="draftPosts.posts.length">No draft</li>
     <ul>
 </div>
