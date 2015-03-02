@@ -33,7 +33,7 @@ Feature: Items operations
     Scenario: Update item
     	Given "blogs"
 		"""
-		[{"title": "test_blog1", "cid": "0"}]
+		[{"title": "test_blog1"}]
 		"""
        When we post to "items"
         """
