@@ -54,6 +54,7 @@ define([
                 function DraftPostsController($scope, $element) {
                     var mv = this;
                     mv.selectDraftPost = $scope.onDraftPostSeleted;
+                    mv.removeDraftPost = postsService.remove;
                     // initialize list
                     postsService.getDrafts($scope.blog._id).then(function (posts) {
                         mv.posts = posts;
@@ -75,7 +76,17 @@ define([
                     controllerAs: 'draftPosts'
                 };
             }
-        ]);
+        ])
+        .directive('stopEvent', function () {
+            return {
+                restrict: 'A',
+                link: function (scope, element, attr) {
+                    element.bind(attr.stopEvent, function (e) {
+                        e.stopPropagation();
+                    });
+                }
+            };
+        });
 });
 
 // EOF

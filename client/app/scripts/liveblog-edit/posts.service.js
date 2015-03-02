@@ -133,6 +133,27 @@ define([
                 });
         }
 
+        function removePost(post) {
+            var blog_id = post.blog;
+            return api.posts.remove(post).then(function() {
+                if (angular.isDefined(blog_id)) {
+                    // remove from cache
+                    var index, cached;
+                    index = drafts[blog_id].indexOf(post);
+                    if (index > -1) {
+                        cached = drafts[blog_id];
+                    } else {
+                        index = posts[blog_id].indexOf(post);
+                        if (index > -1) {
+                            cached = posts[blog_id];
+                        }
+                    }
+                    // remove
+                    cached.splice(index, 1);
+                }
+            });
+        }
+
         return {
             drafts: drafts,
             getPosts: getPosts,
@@ -140,7 +161,8 @@ define([
             savePost: savePost,
             saveDraft: function(blog_id, post, items, post_status) {
                 return savePost(blog_id, post, items, 'draft');
-            }
+            },
+            remove: removePost
         };
     }
 

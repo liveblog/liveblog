@@ -18,5 +18,21 @@
                 cursor: pointer;
             }
         }
+        &__actions-more {
+            .dropdown-toggle {
+                background-image: url("../../images/timeline-more.png");
+                width: 40px;
+                height: 47px;
+                cursor: pointer;
+                position: absolute;
+                left: -20px;
+                bottom: -32px;
+            }
+            .dropdown-menu:before { // remove the top arrow
+                // border: none !important;
+                // content: "" !important;
+                background: none;
+            }
+        }
     }
 }
