@@ -66,7 +66,7 @@ class PostsService(PackageService):
         super().on_created(docs)
         push_notification('posts', created=1)
 
-    def get_item_update_data(self, item, links, delete):
+    def get_item_update_data(self, item, links, delete=True):
         doc = {LINKED_IN_PACKAGES: links}
         if not item.get('cid'):
             doc['blog'] = item.get('blog')
