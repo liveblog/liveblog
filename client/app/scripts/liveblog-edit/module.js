@@ -37,7 +37,6 @@ define([
                 };
             });
         }
-
         // define the $scope
         angular.extend($scope, {
             blog: blog,
@@ -56,12 +55,12 @@ define([
             // remove and clean every items from the editor
             resetEditor: function() {
                 $scope.editor.reinitialize();
-                current_post = null;
+                current_post = undefined;
             },
             openDraftPost: function (draft_post) {
                 $scope.resetEditor();
                 current_post = draft_post;
-                var items = current_post.groups[1].refs;
+                var items = draft_post.groups[1].refs;
                 items.forEach(function(item) {
                     item = item.item;
                     var data = _.extend({text: item.text}, item.meta);
@@ -70,7 +69,7 @@ define([
             },
             saveAsDraft: function() {
                 notify.info(gettext('Saving draft'));
-                postsService.saveDraft(current_blog_id, getItemsFromEditor()).then(function(post) {
+                postsService.saveDraft(current_blog_id, current_post, getItemsFromEditor()).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Draft saved'));
                     $scope.resetEditor();
@@ -81,7 +80,7 @@ define([
             },
             publish: function() {
                 notify.info(gettext('Saving post'));
-                postsService.savePost(current_blog_id, getItemsFromEditor()).then(function(post) {
+                postsService.savePost(current_blog_id, current_post, getItemsFromEditor()).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
                     $scope.resetEditor();

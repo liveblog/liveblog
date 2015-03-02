@@ -32,7 +32,7 @@ define([
                     var old_left = parseInt(element.css('left'), 10);
                     var to_be_moved = angular.element(document.querySelectorAll(scope.slideableMove));
                     var panel_width = element.width();
-                    function toggleSlide(new_value, old_value) {
+                    function toggleSlide() {
                         if (scope.slideable) {
                             element.show();
                             to_be_moved.css({

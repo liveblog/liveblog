@@ -36,6 +36,7 @@ define([
                 return posts[blog_id];
             });
         }
+
         function getDraft(blog_id, posts_criteria) {
             // TODO: support posts_criteria in cache
             if (angular.isDefined(drafts[blog_id])) {
@@ -50,35 +51,45 @@ define([
                 return drafts[blog_id];
             });
         }
-        function savePost(blog_id, items, post_status) {
+
+        function savePost(blog_id, post_to_update, items, post_status) {
             post_status = post_status || 'open';
             var dfds = [];
             // save every items
             _.each(items, function(item) {
                 dfds.push(api.items.save(item));
             });
-            var post = {
-                blog: blog_id,
-                post_status: post_status,
-                groups: [
-                    {
-                        id: 'root',
-                        refs: [{idRef: 'main'}],
-                        role: 'grpRole:NEP'
-                    }, {
-                        id: 'main',
-                        refs: [],
-                        role: 'grpRole:Main'
-                    }
-                ]
-            };
             return $q.all(dfds).then(function(items) {
+                var post = {
+                    blog: blog_id,
+                    post_status: post_status,
+                    groups: [
+                        {
+                            id: 'root',
+                            refs: [{idRef: 'main'}],
+                            role: 'grpRole:NEP'
+                        }, {
+                            id: 'main',
+                            refs: [],
+                            role: 'grpRole:Main'
+                        }
+                    ]
+                };
                 // update the post reference (links with items)
                 _.each(items, function(item) {
                     post.groups[1].refs.push({residRef: item._id});
                 });
-                // save the post
-                return api.posts.save(post).then(function (post) {
+                var operation;
+                if (angular.isDefined(post_to_update)) {
+                    operation = function updatePost() {
+                        return api.posts.save(post_to_update, post);
+                    };
+                } else {
+                    operation = function createPost() {
+                        return api.posts.save(post);
+                    };
+                }
+                return operation().then(function (post) {
                     // refresh local lists after it was saved
                     // if (post_status === 'draft') {
                     //     drafts[blog_id].push(post);
@@ -95,6 +106,7 @@ define([
                 });
             });
         }
+
         function retrievePosts(blog_id, posts_criteria) {
             return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
                 .query(posts_criteria)
@@ -120,13 +132,14 @@ define([
                     return posts;
                 });
         }
+
         return {
             drafts: drafts,
             getPosts: getPosts,
             getDrafts: getDraft,
             savePost: savePost,
-            saveDraft: function(blog_id, items, post_status) {
-                return savePost(blog_id, items, 'draft');
+            saveDraft: function(blog_id, post, items, post_status) {
+                return savePost(blog_id, post, items, 'draft');
             }
         };
     }
