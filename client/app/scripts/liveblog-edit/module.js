@@ -101,8 +101,7 @@ define([
                     notify.error(gettext('Something went wrong. Please try again later'));
                 });
             },
-            // FIXME: to be changed to 'closed'
-            draftPanelState: 'open',
+            draftPanelState: 'closed',
             toggleDraftPanel: function() {
                 var newStateValue = $scope.draftPanelState === 'open' ? 'closed': 'open';
                 $scope.draftPanelState = newStateValue;

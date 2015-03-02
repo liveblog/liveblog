@@ -33,7 +33,7 @@
          slideable-move=".columns-holder">
         <header>Drafts</header>
         <div class="content">
-            <draft-posts blog="blog" on-draft-post-seleted="openDraftPost"></draft-posts>
+            <draft-posts blog="blog" on-draft-post-seleted="openDraftPost" ng-if="draftPanelState === 'open'"></draft-posts>
         </div>
     </div>
 
