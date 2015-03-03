@@ -1,9 +1,5 @@
 'use strict';
 
-exports.login = login;
-exports.open = openUrl;
-exports.openBlog = openBlog;
-
 // construct url from uri and base url
 exports.constructUrl = function(base, uri) {
     return base.replace(/\/$/, '') + uri;
@@ -47,3 +43,17 @@ function openBlog(index) {
     index = index || 0;
     element(by.repeater('blog in blogs._items').row(index).column('blog.title')).click();
 }
+
+function randomString(maxLen) {
+    var text = '';
+    var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    for (var i = 0; i < maxLen; i ++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return text;
+}
+
+exports.login = login;
+exports.open = openUrl;
+exports.openBlog = openBlog;
+exports.randomString = randomString;

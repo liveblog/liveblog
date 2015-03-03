@@ -1,15 +1,7 @@
 'use strict';
 var openUrl = require('./helpers/utils').open;
 var openBlog = require('./helpers/utils').openBlog;
-
-function randomString(maxLen) {
-    var text = '';
-    var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-    for (var i = 0; i < maxLen; i ++) {
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
-    }
-    return text;
-}
+var randomString = require('./helpers/utils').randomString;
 
 describe('timeline add to top and edit', function() {
     beforeEach(openUrl('/#/liveblog'));
