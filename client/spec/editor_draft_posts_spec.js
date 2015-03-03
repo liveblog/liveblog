@@ -24,10 +24,10 @@ describe('Draft Posts', function() {
         return data;
     }
 
-    function checkDraft(row_expected, data_expected) {
+    function checkDraftInDraftList(row_expected, data_expected) {
         expect(element(by.repeater('post in draftPosts.posts').row(row_expected))
             .element(by.tagName('article')).getText()
-        ).toEqual(data_expected.body);
+        ).toContain(data_expected);
     }
 
     function openDraftBar() {
@@ -39,15 +39,15 @@ describe('Draft Posts', function() {
         expect(element(by.css('.st-text-block')).getText()).toEqual('');
     }
 
-    it('can create drafts and respect the items order', function() {
+    it('can create drafts and respect the order', function() {
         openBlog(0);
         var draft1 = createDraft();
         var draft2 = createDraft();
         // open drafts bar
         openDraftBar();
         // check
-        checkDraft(0, draft2);
-        checkDraft(1, draft1);
+        checkDraftInDraftList(0, draft2.quote);
+        checkDraftInDraftList(1, draft1.quote);
     });
 
     it('can open a draft in the editor', function() {
@@ -57,7 +57,7 @@ describe('Draft Posts', function() {
         // open drafts bar
         openDraftBar();
         element(by.repeater('post in draftPosts.posts').row(0)).click();
-        expect(element(by.css('[class="st-required st-text-block"]')).getText()).toEqual(draft.body);
+        expect(element(by.css('.st-text-block')).getText()).toEqual(draft.body);
     });
 
 });
