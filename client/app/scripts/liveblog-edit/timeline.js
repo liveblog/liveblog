@@ -1,7 +1,8 @@
 /*jshint nonew: false */
 define([
-    'angular'
-], function(angular) {
+    'angular',
+    'moment'
+], function(angular, moment) {
     'use strict';
     TimelineController.$inject = ['api', '$scope', '$rootScope', 'notify', 'gettext',
                                 '$route', '$q', '$cacheFactory', 'userList', 'itemsService'];
@@ -10,8 +11,43 @@ define([
         var blog = {
             _id: $route.current.params._id
         };
+
         $scope.$on('posts', function() {
-            console.log('posts');
+            var filter = [
+                {range: {
+                    _updated: {
+                            gte: moment.utc().format()
+                        }
+                    }
+                }
+            ];
+            return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', blog).query({
+                source: {
+                    query: {filtered: {filter: {
+                        and: filter
+                    }}},
+                    sort: [{versioncreated: 'asc'}]
+                }
+            }).then(function(data) {
+                var totalNewPosts = 0,
+                    totalDeletedPosts = 0,
+                    index = -1;
+                angular.forEach(data._items, function(post) {
+                    if (post.deleted) {
+                        totalDeletedPosts++;
+                        index = _.findIndex($scope.posts, {_id: post._id});
+                        if (index !== -1) {
+                            $scope.posts.splice(index, 1);
+                        } else {
+                            console.warn('no index found with _id:', post._id);
+                        }
+                    } else {
+                        totalNewPosts++;
+                        $scope.posts.unshift(makePost(post));
+                    }
+                });
+                $scope.totalPosts += totalNewPosts - totalDeletedPosts;
+            });
         });
         $scope.posts = [];
         $scope.totalPosts = 0;
@@ -21,15 +57,44 @@ define([
         };
         $scope.postsCriteria = {
             max_results: 10,
-            page: 1
+            page: 1,
+            source: {
+                query: {filtered: {filter: {
+                    and:[
+                        {range: {
+                            _updated: {
+                                    lt: '2015-03-02T14:28:57+0000'
+                                }
+                            }
+                        }
+                    ]
+                }}},
+                sort: [{versioncreated: 'desc'}]
+            }
         };
-        function callbackCreator (i) {
-            return function(user) {
-                $scope.posts[i].original_creator_name = user.display_name;
-                if (user.picture_url) {
-                    $scope.posts[i].picture_url = user.picture_url;
+        function makePost(post) {
+            post.show_all = false;
+            post.multiple_items = post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false;
+            if (!post.multiple_items) {
+                post.items = [];
+                post.items.push(post.groups[1].refs[0]);
+            }
+            itemsService.clearExtraItems(post._id);
+            for (var i = 0, ref; i < post.groups[1].refs.length; i ++) {
+                ref = post.groups[1].refs[i];
+                if (i === 0) {
+                    post.mainItem = ref;
+                    continue;
                 }
-            };
+                itemsService.addExtraItem(post._id, ref);
+            }
+            userList.getUser(post.original_creator).then(function(user) {
+                post.original_creator_name = user.display_name;
+                if (user.picture_url) {
+                    post.picture_url = user.picture_url;
+                }
+            });
+            return post;
         }
         $scope.getPosts = function() {
             $scope.timelineLoading = true;
@@ -42,32 +107,10 @@ define([
                     // (before the Draft-Posts Feature)
                     return typeof(post.post_status) === 'undefined' || post.post_status === 'open';
                 });
-                for (var j = 0, post = {}; j < posts.length; j ++) {
-                    //build the new post system
-                    post = posts[j];
-                    post.show_all = false;
-                    post.multiple_items = post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false;
-                    if (!post.multiple_items) {
-                        post.items = [];
-                        post.items.push(post.groups[1].refs[0]);
-                    }
-                    itemsService.clearExtraItems(post._id);
-                    for (var i = 0, ref; i < post.groups[1].refs.length; i ++) {
-                        ref = post.groups[1].refs[i];
-                        if (i === 0) {
-                            post.mainItem = ref;
-                            continue;
-                        }
-                        itemsService.addExtraItem(post._id, ref);
-                    }
-                    $scope.posts.push(post);
-                }
-                //add original creator name and prepare for image
-
-                for (var k = (($scope.postsCriteria.page - 1) * $scope.postsCriteria.max_results); k < $scope.posts.length; k ++) {
-                    var callback = callbackCreator(k);
-                    userList.getUser($scope.posts[k].original_creator).then(callback);
-                }
+                //$scope.posts = _.map(data._items, function(post) {
+                angular.forEach(posts, function(post) {
+                    $scope.posts.push(makePost(post));
+                });
                 $scope.timelineLoading = false;
             }, function(reason) {
                 notify.error(gettext('Could not load posts... please try again later'));
