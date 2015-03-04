@@ -12,6 +12,11 @@
         left: 0; top:0; bottom: 0;
         width: 48px;
         background: #a1a1a1;
+        button {
+            width: 48px;
+            border:0;
+            border-bottom:1px solid @grayLight;
+        }
     }
 
     .columns-holder {
@@ -41,6 +46,13 @@
                 padding: 20px;
             }
         }
+    }
+
+    .column-draft-posts {
+        left: 48px;
+        width: 300px;
+        .box-shadow(3px 0 0 @grayLight);
+        z-index: 2;
     }
 
     .column-editor {

@@ -266,7 +266,7 @@ define([
                     };
                 },
                 loadData: function(data) {
-                    this.$('.quote-input').text(SirTrevor.toHTML(data.text, this.type));
+                    this.$('.quote-input').text(data.quote);
                     this.$('.js-cite-input').text(data.credit);
                 },
                 isEmpty: function() {
@@ -396,9 +396,14 @@ define([
             });
 
             // Add toHTML to existing Text Block.
-            SirTrevor.Blocks.Text.prototype.toHTML = function() {
-                return this.getTextBlock().html();
+            SirTrevor.Blocks.Text.prototype.toHTML = function(html) {
+                if (this.$el) {
+                    return this.getTextBlock().html();
+                } else {
+                    return html;
+                }
             };
+
             SirTrevor.Blocks.Text.prototype.onContentPasted = _.debounce(function(event) {
                 // Content pasted. Delegate to the drop parse method
                 var input = $(event.target).closest('[contenteditable]'),

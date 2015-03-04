@@ -21,10 +21,23 @@
 <section class="main-section blogedit">
 
     <!-- left sidebar -->
-    <div class="side-menu"></div>
+    <div class="side-menu">
+        <button class="navbtn" ng-click="toggleDraftPanel()" ng-class="{'active': draftPanelState === 'open'}">
+            <i class="icon-archive" alt="draft posts"></i>
+        </button>
+    </div>
+
+    <!-- draft posts column -->
+    <div class="column column-draft-posts"
+         slideable="draftPanelState === 'open'"
+         slideable-move=".columns-holder">
+        <header>Drafts</header>
+        <div class="content">
+            <draft-posts blog="blog" on-draft-post-seleted="openPostInEditor" ng-if="draftPanelState === 'open'"></draft-posts>
+        </div>
+    </div>
 
     <div class="columns-holder">
-
         <!-- editor column -->
         <div class="column column-editor">
             <span ng-show="isBlogOpened()">

@@ -19,44 +19,24 @@ define([
 
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext', '$route',
-        'upload', 'config', '$rootScope', 'embedService'
+        'upload', 'config', '$rootScope', 'embedService', 'postsService'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext, $route,
-        upload, config, $rootScope, embedService) {
+        upload, config, $rootScope, embedService, postsService) {
 
-        function savePost() {
-            var dfds = [];
-            // save every items
-            _.each($scope.editor.get(), function(block) {
-                dfds.push(api.items.save({
+        var current_blog_id = $route.current.params._id;
+        var current_post;
+
+        // return the list of items from the editor
+        function getItemsFromEditor() {
+            return _.map($scope.editor.get(), function(block) {
+                return {
                     text: block.text,
+                    meta: block.meta,
                     item_type: block.type
-                }));
-            });
-            var post = {
-                blog: $route.current.params._id,
-                groups: [
-                    {
-                        id: 'root',
-                        refs: [{idRef: 'main'}],
-                        role: 'grpRole:NEP'
-                    }, {
-                        id: 'main',
-                        refs: [],
-                        role: 'grpRole:Main'
-                    }
-                ]
-            };
-            return $q.all(dfds).then(function(items) {
-                // update the post reference (links with items)
-                _.each(items, function(item) {
-                    post.groups[1].refs.push({residRef: item._id});
-                });
-                // save the post
-                return api.posts.save(post);
+                };
             });
         }
-
         // define the $scope
         angular.extend($scope, {
             blog: blog,
@@ -75,17 +55,38 @@ define([
             // remove and clean every items from the editor
             resetEditor: function() {
                 $scope.editor.reinitialize();
+                current_post = undefined;
+            },
+            openPostInEditor: function (post) {
+                $scope.resetEditor();
+                current_post = post;
+                var items = post.groups[1].refs;
+                items.forEach(function(item) {
+                    item = item.item;
+                    var data = _.extend({text: item.text}, item.meta);
+                    $scope.editor.createBlock(item.item_type, data);
+                });
             },
             saveAsDraft: function() {
-                // TODO
+                notify.info(gettext('Saving draft'));
+                postsService.saveDraft(current_blog_id, current_post, getItemsFromEditor()).then(function(post) {
+                    notify.pop();
+                    notify.info(gettext('Draft saved'));
+                    $scope.resetEditor();
+                }, function() {
+                    notify.pop();
+                    notify.error(gettext('Something went wrong. Please try again later'));
+                });
             },
             publish: function() {
                 notify.info(gettext('Saving post'));
-                savePost().then(function(post) {
+                postsService.savePost(current_blog_id, current_post, getItemsFromEditor()).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
                     $scope.resetEditor();
                     // broadcast an event to say a new post was saved
+                    // TODO: can be removed with the new postsService
+                    // when it will be used in the timeline
                     $rootScope.$broadcast('lb.editor.postsaved', post);
                 }, function() {
                     notify.pop();
@@ -100,6 +101,11 @@ define([
                 }, function(response) {
                     notify.error(gettext('Something went wrong. Please try again later'));
                 });
+            },
+            draftPanelState: 'closed',
+            toggleDraftPanel: function() {
+                var newStateValue = $scope.draftPanelState === 'open' ? 'closed': 'open';
+                $scope.draftPanelState = newStateValue;
             },
             stParams: {
                 coverMaxWidth: 447,
@@ -151,7 +157,6 @@ define([
                     notify.error(gettext('Blog was not found, sorry.'), 5000);
                     $location.path('/liveblog');
                 }
-
                 return response;
             });
     }
@@ -187,13 +192,15 @@ define([
             onEditorRender: function() {
                 var editor = this;
                 // when a new block is added, remove empty blocks
-                SirTrevor.EventBus.on('block:create:new', function(new_block) {
+                function removeEmptyBlockExceptTheBlock(new_block) {
                     _.each(editor.blocks, function(block) {
                         if (block !== new_block && block.isEmpty()) {
                             editor.removeBlock(block.blockID);
                         }
                     });
-                });
+                }
+                SirTrevor.EventBus.on('block:create:existing', removeEmptyBlockExceptTheBlock);
+                SirTrevor.EventBus.on('block:create:new', removeEmptyBlockExceptTheBlock);
             },
             blockTypes: ['Text', 'Image', 'Embed', 'Quote'],
             // render a default block when the editor is loaded

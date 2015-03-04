@@ -1,4 +1,6 @@
 var openUrl = require('./helpers/utils').open;
+var openBlog = require('./helpers/utils').openBlog;
+
 describe('editor embed:', function() {
     'use strict';
 
@@ -19,10 +21,5 @@ describe('editor embed:', function() {
         browser.wait(function() {return iframe.isPresent();});
         expect(iframe.isPresent()).toBe(true);
     });
-
-    function openBlog(index) {
-        index = index || 0;
-        element(by.repeater('blog in blogs._items').row(index).column('blog.title')).click();
-    }
 
 });

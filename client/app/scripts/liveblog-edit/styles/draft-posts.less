@@ -1,0 +1,44 @@
+@import 'variables.less';
+
+.column-draft-posts {
+    > header {
+        background-color: white;
+        color: @gray;
+        font-size: 2em;
+        line-height: 2em;
+    }
+    .draft-posts {
+        overflow-y: auto;
+        height: 100%;
+        &__post {
+            border-bottom: 1px solid #e0e0e0;
+            padding: 10px;
+            &:hover {
+                background-color: #E6EDF0;
+                cursor: pointer;
+            }
+        }
+        &__actions-more {
+            .dropdown-toggle {
+                background-image: url("../../images/timeline-more.png");
+                width: 40px;
+                height: 47px;
+                cursor: pointer;
+                position: absolute;
+                left: -20px;
+                bottom: -32px;
+            }
+            .dropdown-menu:before { // remove the top arrow
+                background: none;
+            }
+        }
+        &__items-number {
+            text-align: right;
+            color: @gray;
+        }
+        &__empty {
+            padding: 20px;
+            color: @gray;
+        }
+    }
+}
