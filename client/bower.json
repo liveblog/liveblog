@@ -16,7 +16,7 @@
   "dependencies": {
     "superdesk": "https://github.com/liveblog/superdesk.git",
     "Eventable": "https://github.com/nistormihai/eventable.git",
-    "ng-sir-trevor": "~1.0.0",
+    "ng-sir-trevor": "~2.0.0",
     "angular-embed": "^2.0.0",
     "lrInfiniteScroll": "~1.0.0"
   },
