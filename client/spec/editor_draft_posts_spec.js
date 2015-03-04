@@ -13,13 +13,13 @@ describe('Draft Posts', function() {
             quote: randomString(10),
             author: randomString(10)
         };
-        element(by.css('.st-text-block')).sendKeys(data.body);
+        element(by.css('.editor .st-text-block')).sendKeys(data.body);
         // click on the "+" bar
         element(by.css('.st-block-controls__top')).click();
         // click on the quote button
         element(by.css('[data-type="quote"]')).click();
-        element(by.css('.quote-input')).sendKeys(data.quote);
-        element(by.css('.js-cite-input')).sendKeys(data.author);
+        element(by.css('.editor .quote-input')).sendKeys(data.quote);
+        element(by.css('.editor .js-cite-input')).sendKeys(data.author);
         element(by.css('[ng-click="saveAsDraft()"]')).click();
         return data;
     }
@@ -36,15 +36,14 @@ describe('Draft Posts', function() {
 
     function resetEditor() {
         element(by.css('[ng-click="resetEditor()"]')).click();
-        expect(element(by.css('.st-text-block')).getText()).toEqual('');
+        expect(element(by.css('.editor .st-text-block')).getText()).toEqual('');
     }
 
     it('can create drafts and respect the order', function() {
         openBlog(0);
+        openDraftBar();
         var draft1 = createDraft();
         var draft2 = createDraft();
-        // open drafts bar
-        openDraftBar();
         // check
         checkDraftInDraftList(0, draft2.quote);
         checkDraftInDraftList(1, draft1.quote);
@@ -52,12 +51,11 @@ describe('Draft Posts', function() {
 
     it('can open a draft in the editor', function() {
         openBlog(0);
+        openDraftBar();
         var draft = createDraft();
         resetEditor();
-        // open drafts bar
-        openDraftBar();
         element(by.repeater('post in draftPosts.posts').row(0)).click();
-        expect(element(by.css('.st-text-block')).getText()).toEqual(draft.body);
+        expect(element(by.css('.editor .st-text-block')).getText()).toEqual(draft.body);
     });
 
 });
