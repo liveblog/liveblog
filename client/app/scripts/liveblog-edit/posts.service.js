@@ -33,7 +33,8 @@ define([
                             // FIXME: left like that to support other feature, but this need to be in camelcase
                             multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
                             // add a `mainItem` field containing the first item
-                            mainItem: post.groups[1].refs[0]
+                            mainItem: post.groups[1].refs[0],
+                            items: post.groups[1].refs
                         });
                         // retrieve user information and add it to the post
                         (function(post) {
@@ -72,6 +73,7 @@ define([
             _.each(items, function(item) {
                 dfds.push(api.items.save(item));
             });
+            // save the post
             return $q.all(dfds).then(function(items) {
                 var post = {
                     blog: blog_id,
@@ -102,10 +104,12 @@ define([
                         return api.posts.save(post);
                     };
                 }
+                // return the post saved
                 return operation().then(function (post) {
                     $rootScope.$broadcast('lb.posts.updated');
                     // post here doesn't contain the items...
                     $rootScope.$emit('lb.posts.saved', post);
+                    return post;
                 });
             });
         }
