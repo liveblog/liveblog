@@ -143,6 +143,18 @@ define([
         return service;
     }])
     .controller('TimelineController', TimelineController)
+    .directive('rollshow', [function() {
+        return {
+            link: function(scope, elem, attrs) {
+                elem.parent().on('mouseover', function() {
+                    elem.show();
+                });
+                elem.parent().on('mouseout', function() {
+                    elem.hide();
+                });
+            }
+        };
+    }])
     .directive('lbTimelineItem', ['api', 'notify', 'gettext', 'asset', 'itemsService', function(api, notify, gettext, asset, itemsService) {
         return {
             scope: {
@@ -173,7 +185,6 @@ define([
                         }
                     }
                 };
-
                 //only text items are collapsable
                 if (scope.post.type === 'text') {
                     if (scope.post.text.length > 200) {
@@ -185,24 +196,52 @@ define([
             }
         };
     }])
-    .directive('rollshow', [function() {
-        return {
-            link: function(scope, elem, attrs) {
-                elem.parent().on('mouseover', function() {
-                    elem.show();
-                });
-                elem.parent().on('mouseout', function() {
-                    elem.hide();
-                });
-            }
-        };
-    }])
-    .directive('itemActions', ['api', 'notify', 'gettext', 'asset', 'itemsService', 'modal',
-        function(api, notify, gettext, asset, itemsService, modal) {
+
+    .directive('postActions', ['api', 'notify', 'gettext', 'itemsService', 'modal',
+        function(api, notify, gettext, itemsService, modal) {
         return {
             restrict: 'E',
             replace: true,
-            templateUrl: 'scripts/liveblog-edit/views/timeline-item-actions.html',
+            scope: {
+                post: '=',
+                removeFront: '&remove'
+            },
+            templateUrl: 'scripts/liveblog-edit/views/timeline-post-actions.html',
+            link: function(scope, elem, attrs) {
+                scope.removePost = function() {
+                    var remItems = scope.post.groups[1].refs;
+                    confirm().then(function() {
+                        api.posts.remove(scope.post).then(function(message) {
+                            notify.pop();
+                            notify.info(gettext('Post removed'));
+                            scope.removeFront({post: {post: scope.post}});
+                            for (var i = 0, item; i < remItems.length; i ++) {
+                                item = remItems[i];
+                                itemsService.removeItem(item.item);
+                            }
+                        }, function() {
+                            notify.pop();
+                            notify.error(gettext('Something went wrong'));
+                        });
+                    });
+                    function confirm() {
+                        return modal.confirm(gettext('Are you sure you want to delete the post?'));
+                    }
+                };
+            }
+        };
+    }])
+.directive('itemRemove', ['api', 'notify', 'gettext', 'itemsService', 'modal',
+        function(api, notify, gettext, itemsService, modal) {
+        return {
+            restrict: 'E',
+            replace: true,
+            scope: {
+                post: '=',
+                item: '=',
+                removeFront: '&remove'
+            },
+            templateUrl: 'scripts/liveblog-edit/views/timeline-item-remove.html',
             link: function(scope, elem, attrs) {
                 scope.removeItem = function(item, index) {
                     confirm().then(function() {
@@ -211,7 +250,7 @@ define([
                             api.posts.remove(scope.post).then(function(message) {
                                 notify.pop();
                                 notify.info(gettext('Post removed'));
-                                scope.remove({post:scope.post});
+                                scope.removeFront({post: {post:scope.post}});
                                 itemsService.removeItem(item.item);
                             }, function() {
                                 notify.pop();
