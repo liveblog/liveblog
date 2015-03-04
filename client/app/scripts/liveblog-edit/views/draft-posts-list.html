@@ -12,7 +12,11 @@
                 <strong>{{ post.original_creator_name }}</strong> | <time>{{ post._updated | reldate }}</time>
             </div>
             <article lb-bind-html html-content="{{ post.mainItem.item.text }}"></article>
-            <div ng-if="post.multiple_items">and {{ post.multiple_items - 1 }} other items</div>
+            <div  ng-pluralize class="draft-posts__items-number" ng-if="post.multiple_items" count="post.multiple_items - 1"
+                when="{
+                    'one': 'and one more item.',
+                    'other': 'and {} more items.'}">
+            </div>
         </li>
         <li class="draft-posts__empty" ng-hide="draftPosts.posts.length">
             <p>You don't have any draft yet.</p>
