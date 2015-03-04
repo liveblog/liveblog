@@ -57,10 +57,10 @@ define([
                 $scope.editor.reinitialize();
                 current_post = undefined;
             },
-            openDraftPost: function (draft_post) {
+            openPostInEditor: function (post) {
                 $scope.resetEditor();
-                current_post = draft_post;
-                var items = draft_post.groups[1].refs;
+                current_post = post;
+                var items = post.groups[1].refs;
                 items.forEach(function(item) {
                     item = item.item;
                     var data = _.extend({text: item.text}, item.meta);
