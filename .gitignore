@@ -3,12 +3,14 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
+*.sublime-*
 
 # C extensions
 *.so
 
 # Distribution / packaging
 .Python
+src/
 env/
 build/
 develop-eggs/
@@ -54,3 +56,4 @@ docs/_build/
 
 # PyBuilder
 target/
+celerybeatschedule.db
