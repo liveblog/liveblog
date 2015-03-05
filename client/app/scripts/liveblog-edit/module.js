@@ -25,16 +25,19 @@ define([
         upload, config, $rootScope, embedService) {
 
         function savePost() {
+            // loged blog.
+            var blog = $route.current.params._id;
             var dfds = [];
             // save every items
             _.each($scope.editor.get(), function(block) {
                 dfds.push(api.items.save({
+                    blog: blog,
                     text: block.text,
                     item_type: block.type
                 }));
             });
             var post = {
-                blog: $route.current.params._id,
+                blog: blog,
                 groups: [
                     {
                         id: 'root',
@@ -85,8 +88,6 @@ define([
                     notify.pop();
                     notify.info(gettext('Post saved'));
                     $scope.resetEditor();
-                    // broadcast an event to say a new post was saved
-                    $rootScope.$broadcast('lb.editor.postsaved', post);
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));

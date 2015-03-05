@@ -16,7 +16,7 @@ define([
             var filter = [
                 {range: {
                     _updated: {
-                            gte: moment.utc().format()
+                            gte: $scope.lastUpdated
                         }
                     }
                 }
@@ -29,6 +29,7 @@ define([
                     sort: [{versioncreated: 'asc'}]
                 }
             }).then(function(data) {
+                $scope.lastUpdated = moment.utc().format();
                 var totalNewPosts = 0,
                     totalDeletedPosts = 0,
                     index = -1;
@@ -59,16 +60,6 @@ define([
             max_results: 10,
             page: 1,
             source: {
-                query: {filtered: {filter: {
-                    and:[
-                        {range: {
-                            _updated: {
-                                    lt: '2015-03-02T14:28:57+0000'
-                                }
-                            }
-                        }
-                    ]
-                }}},
                 sort: [{versioncreated: 'desc'}]
             }
         };
@@ -99,6 +90,7 @@ define([
         $scope.getPosts = function() {
             $scope.timelineLoading = true;
             api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', blog).query($scope.postsCriteria).then(function(data) {
+                $scope.lastUpdated = moment.utc().format();
                 $scope.totalPosts = data._meta.total;
                 //$scope.posts = _.map(data._items, function(post) {
                 angular.forEach(data._items, function(post) {
@@ -129,8 +121,6 @@ define([
             $scope.postsCriteria.page = 1;
             $scope.getPosts();
         });
-        // refresh the posts list when the user add a new post
-        $rootScope.$on('lb.editor.postsaved', $scope.getPosts);
     }
 
     var app = angular.module('liveblog.timeline', ['superdesk.users', 'liveblog.edit', 'lrInfiniteScroll'])
