@@ -15,6 +15,42 @@ Feature: Post operations
         When we post to "/posts" with success
         """
         {
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                        	"headline": "test post with text",
+                            "residRef": "#items._id#",
+                            "slugline": "awesome post"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ],
+            "guid": "tag:example.com,0000:newsml_BRE9A605"
+        }
+        """
+        And we get "/posts"
+        Then we get list with 1 items
+
+
+	@auth
+    Scenario: Retrieve posts from blog
+		Given empty "posts"
+		Given empty "items"
+		Given "blogs"
+		"""
+		[{"title": "test_blog1"}]
+		"""
+        When we post to "items"
+        """
+        [{"text": "test", "blog": "#blogs._id#"}]
+        """
+        When we post to "/posts" with success
+        """
+        {
         	"blog": "#blogs._id#",
             "groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
@@ -24,15 +60,15 @@ Feature: Post operations
                         {
                             "headline": "test post with text",
                             "residRef": "#items._id#",
-                            "slugline": "awesome post"
+                            "slugline": "awesome article"
                         }
                     ],
-                    "role": "grpRole:Main"
+                    "role": "main"
                 }
             ]
         }
         """
-        And we get "/posts"
+        And we get "/blogs/#blogs._id#/posts"
         Then we get list with 1 items
         """
         {
@@ -46,7 +82,7 @@ Feature: Post operations
                                 {
                                     "headline": "test post with text",
                                     "residRef": "#items._id#",
-                                    "slugline": "awesome post",
+                                    "slugline": "awesome article",
                                      "item": {
 										"text": "test",
 										"particular_type": "item",
@@ -54,38 +90,14 @@ Feature: Post operations
 									}
                                 }
                             ],
-                            "role": "grpRole:Main"
+                            "role": "main"
                         }
                     ],
                     "blog": "#blogs._id#"
                 }
             ]
         }
-        """
-
-	@auth
-    Scenario: Retrieve posts from blogs
-        Given empty "posts"
-        Given "blogs"
-		"""
-		[{"title": "test_blog1"}]
-		"""
-        When we post to "blogs"
-	    """
-	    [{"title": "testBlog", "language": "fr"}]
-	    """
-        When we post to "posts"
-        """
-        [{"headline": "test post for an open blog", "blog": "#blogs._id#"}]
-        """
-        And we get "/blogs/#blogs._id#/posts"
-		Then we get list with 1 items
-	     When we post to "posts"
-        """
-        [{"headline": "test post 2", "blog": "#blogs._id#"}]
-        """
-		And we get "/blogs/#blogs._id#/posts"
-		Then we get list with 2 items
+        """       
 
         
 	@auth
@@ -173,15 +185,23 @@ Feature: Post operations
         }
         """
 
-        
 	@auth
-    Scenario: Delete post
-        Given empty "posts"
+    Scenario: Full scenario to prove cid is working 
+		Given empty "posts"
+		Given empty "items"
+		Given "blogs"
+		"""
+		[{"title": "test_blog1", "cid": 1}]
+		"""
         When we post to "items"
         """
-        [{"text": "test item", "blog": "#blogs._id#"}]
+        [{"text": "test", "blog": "#blogs._id#"}]
         """
         When we post to "/posts" with success
+        """
+        [{"headline": "testPost", "blog": "#blogs._id#"}]
+        """
+        And we patch latest
         """
         {
             "groups": [
@@ -190,8 +210,75 @@ Feature: Post operations
                     "id": "main",
                     "refs": [
                         {
+                            "residRef": "#items._id#"
+                        }
+                    ],
+                    "role": "main"
+                }
+            ]
+        }
+        """
+        Then we get existing resource
+        """
+        {
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "#items._id#"
+                        }
+                    ],
+                    "role": "main"
+                }
+            ],
+            "type": "composite",
+            "blog": "#blogs._id#"
+        }
+        """
+        When we get "/items"
+        Then we get list with 1 items
+	    """
+	    {"_items": [{"text": "test", "blog": "#blogs._id#", "cid": 1}]}
+	    """
+	    When we patch "/items/#items._id#"
+	    """
+        {"text": "this is a test item to check cid"}
+        """
+        Then we get updated response
+        When we get "/items"        
+        Then we get list with 1 items
+	    """
+	    {"_items": [{"text": "this is a test item to check cid", "blog": "#blogs._id#", "cid": 2}]}
+	    """
+	    When we delete "/items/#items._id#"
+	    Then we get deleted response
+
+
+	@auth
+    Scenario: Delete post
+        Given empty "posts"
+        Given "blogs"
+		"""
+		[{"title": "test_blog1"}]
+		"""
+        When we post to "items"
+        """
+        [{"text": "test item", "blog": "#blogs._id#"}]
+        """
+        When we post to "/posts" with success
+        """
+        {
+        	"blog": "#blogs._id#",
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
                             "headline": "test post with text",
-                            "residRef": "#posts._id#",
+                            "residRef": "#items._id#",
                             "slugline": "awesome article"
                         }
                     ],
@@ -215,7 +302,6 @@ Feature: Post operations
         """
         [{"text": "test", "blog": "#blogs._id#"}]
         """
-        When we upload a file "bike.jpg" to "archive_media"
         When we post to "/posts" with success
         """
         {
@@ -228,10 +314,6 @@ Feature: Post operations
                         {
                             "residRef": "#items._id#",
                             "slugline": "awesome article"
-                        },
-                        {
-                            "residRef": "#archive_media._id#",
-                            "slugline": "awesome picture"
                         }
                     ],
                     "role": "main"
@@ -248,11 +330,6 @@ Feature: Post operations
                 {
                     "id": "main",
                     "refs": [
-                        {
-                            "headline": "test post with text",
-                            "residRef": "#items._id#",
-                            "slugline": "awesome article"
-                        }
                     ],
                     "role": "main"
                 }
@@ -267,11 +344,6 @@ Feature: Post operations
                 {
                     "id": "main",
                     "refs": [
-                        {
-                            "headline": "test post with text",
-                            "residRef": "#items._id#",
-                            "slugline": "awesome article"
-                        }
                     ],
                     "role": "main"
                 }
@@ -280,3 +352,8 @@ Feature: Post operations
             "blog": "#blogs._id#"
         }
         """
+		When we get "/items"
+		Then we get list with 1 items
+	    """
+	    {"_items": [{"text": "test", "deleted": "on"}]}
+	    """

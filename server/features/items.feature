@@ -35,11 +35,11 @@ Feature: Items operations
 		"""
 		[{"title": "test_blog1"}]
 		"""
-        Given "items"
+       When we post to "items"
         """
-        [{"text": "testItem", "blog": "#blogs._id#"}]
-        """
-        When we patch given
+        [{"text": "test item for an open blog", "blog": "#blogs._id#"}]
+        """  
+        When we patch latest
         """
         {"text": "this is a test item"}
         """
