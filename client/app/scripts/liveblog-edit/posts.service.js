@@ -69,19 +69,28 @@ define([
         function savePost(blog_id, post_to_update, items, post_status) {
             post_status = post_status || 'open';
             var dfds = [];
-            // TODO: useful ?
-            if (angular.isDefined(items) && items.length > 0) {
-                if (_.difference(_.keys(items[0]), ['residRef', 'item']).length === 0) {
-                    items = _.map(items, function(item) {
-                        return item.item;
-                    });
+            if (items && items.length > 0) {
+                // prepare the list of items if needed
+                if (angular.isDefined(items) && items.length > 0) {
+                    if (_.difference(_.keys(items[0]), ['residRef', 'item']).length === 0) {
+                        items = _.map(items, function(item) {
+                            return item.item;
+                        });
+                    }
                 }
+                // save every items
+                _.each(items, function(item) {
+                    // because it fails when item has a `_id` field without `_links`
+                    if (angular.isDefined(item, '_id')) {
+                        item = {
+                            text: item.text,
+                            meta: item.meta,
+                            item_type: item.type
+                        };
+                    }
+                    dfds.push(api.items.save(item));
+                });
             }
-            // save every items
-            // FIXME: fails when item has a `_id` field
-            _.each(items, function(item) {
-                dfds.push(api.items.save(item));
-            });
             // save the post
             return $q.all(dfds).then(function(items) {
                 var post = {
@@ -106,7 +115,6 @@ define([
                 var operation;
                 if (angular.isDefined(post_to_update)) {
                     operation = function updatePost() {
-                        // TODO: update operation can be smarter and reuse unchanged items
                         return api.posts.save(post_to_update, post);
                     };
                 } else {
@@ -118,7 +126,7 @@ define([
                 return operation().then(function (post) {
                     $rootScope.$broadcast('lb.posts.updated');
                     // post here doesn't contain the items...
-                    $rootScope.$emit('lb.posts.saved', post);
+                    $rootScope.$broadcast('lb.posts.saved', post);
                     return post;
                 });
             });
