@@ -4,50 +4,14 @@ define([
 ], function(angular) {
     'use strict';
     TimelineController.$inject = ['api', '$scope', '$rootScope', 'notify', 'gettext',
-                                '$route', '$q', '$cacheFactory', 'userList', 'itemsService'];
+                                '$route', '$q', '$cacheFactory', 'userList', 'itemsService', 'postsService'];
     function TimelineController(api, $scope, $rootScope, notify, gettext,
-                                 $route, $q, $cacheFactory, userList, itemsService) {
-        var blog = {
-            _id: $route.current.params._id
-        };
-        $scope.posts = [];
-        $scope.totalPosts = 0;
-        $scope.timelineLoading = false;
-        $scope.isPostsEmpty = function() {
-            return $scope.posts.length === 0 && !$scope.timelineLoading;
-        };
-        $scope.postsCriteria = {
-            max_results: 10,
-            page: 1
-        };
-        function callbackCreator (i) {
-            return function(user) {
-                $scope.posts[i].original_creator_name = user.display_name;
-                if (user.picture_url) {
-                    $scope.posts[i].picture_url = user.picture_url;
-                }
-            };
-        }
-        $scope.getPosts = function() {
-            $scope.timelineLoading = true;
-            api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', blog).query($scope.postsCriteria).then(function(data) {
-                $scope.totalPosts = data._meta.total;
-                var posts = data._items;
-                // keep only opened posts
-                posts = posts.filter(function(post) {
-                    // check if undefined in order to support old model without this field.
-                    // (before the Draft-Posts Feature)
-                    return typeof(post.post_status) === 'undefined' || post.post_status === 'open';
-                });
-                for (var j = 0, post = {}; j < posts.length; j ++) {
-                    //build the new post system
-                    post = posts[j];
+                                 $route, $q, $cacheFactory, userList, itemsService, postsService) {
+
+        function retrievePosts() {
+            postsService.getPosts($route.current.params._id, $scope.postsCriteria).then(function(posts) {
+                posts.forEach(function(post) {
                     post.show_all = false;
-                    post.multiple_items = post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false;
-                    if (!post.multiple_items) {
-                        post.items = [];
-                        post.items.push(post.groups[1].refs[0]);
-                    }
                     itemsService.clearExtraItems(post._id);
                     for (var i = 0, ref; i < post.groups[1].refs.length; i ++) {
                         ref = post.groups[1].refs[i];
@@ -57,41 +21,47 @@ define([
                         }
                         itemsService.addExtraItem(post._id, ref);
                     }
-                    $scope.posts.push(post);
-                }
-                //add original creator name and prepare for image
-
-                for (var k = (($scope.postsCriteria.page - 1) * $scope.postsCriteria.max_results); k < $scope.posts.length; k ++) {
-                    var callback = callbackCreator(k);
-                    userList.getUser($scope.posts[k].original_creator).then(callback);
-                }
+                });
+                $scope.posts = $scope.posts.concat(posts);
                 $scope.timelineLoading = false;
             }, function(reason) {
                 notify.error(gettext('Could not load posts... please try again later'));
                 $scope.timelineLoading = false;
             });
-        };
-        $scope.loadMore = function() {
+        }
+
+        function retrieveOneMorePageOfPosts() {
             //check if we still have posts to load
             if ($scope.totalPosts > ($scope.postsCriteria.page  * $scope.postsCriteria.max_results)) {
                 $scope.postsCriteria.page ++;
-                $scope.getPosts();
-            } else {
-                return;
+                retrievePosts();
             }
-        };
-        //remove the item from the list as a stopgap until update works
-        $scope.removeFromPosts = function(post) {
-            $scope.posts.splice($scope.posts.indexOf(post), 1);
-        };
-        // refresh the posts list when the user arrives on the timeline
-        $scope.$watch('isTimeline', function() {
-            //set paging back to number 1
-            $scope.postsCriteria.page = 1;
-            $scope.getPosts();
+        }
+
+        // set the $scope
+        angular.extend($scope, {
+            posts: [],
+            timelineLoading: false,
+            postsCriteria: {
+                max_results: 10,
+                page: 1
+            },
+            loadMore: retrieveOneMorePageOfPosts,
+            isPostsEmpty: function() {
+                return $scope.posts.length === 0 && !$scope.timelineLoading;
+            },
+            removeFromPosts: postsService.remove
         });
+        // load posts
+        retrievePosts();
         // refresh the posts list when the user add a new post
-        $rootScope.$on('lb.editor.postsaved', $scope.getPosts);
+        $rootScope.$on('lb.posts.updated', function() {
+            // TODO: When the Post's POST reponse contains the items, we
+            // will be able to use the event's parameter to update the list.
+            // Before that, we reset the list and load it again
+            $scope.posts = [];
+            retrievePosts();
+        });
     }
 
     var app = angular.module('liveblog.timeline', ['superdesk.users', 'liveblog.edit', 'lrInfiniteScroll'])
