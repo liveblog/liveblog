@@ -12,16 +12,15 @@
                     <span class="dropdown" dropdown >
                         <div class="timeline-actions-more dropdown-toggle" dropdown-toggle></div>
                         <ul class="dropdown-menu" id="timeline-dropdown">
-                            <li><a href="#" onclick="return false;"><i class="icon-edit"></i><span translate>Edit</span></a></li>
-                            <li><a ng-click="askRemovePost(post);" style="cursor: pointer"><i class="icon-remove"></i><span translate>Remove post</span></a></li>
-                            <li><a href="#" onclick="return false;"><i class="icon-align-justify"></i><span translate>Another action</span></a></li>
+                            <li><a ng-click="onEditClick(post)"><i class="icon-edit"></i><span translate>Edit</span></a></li>
+                            <li><a ng-click="askRemovePost(post)"><i class="icon-remove"></i><span translate>Remove post</span></a></li>
                         </ul>
                     </span> 
                 </div>
             </div>
 
             <div ng-if="post.multiple_items" style="padding: 10px 0px">
-                <div ng-if="!post.show_all"  style="cursor: pointer; display: block;" title="Click to show all items" ng-click="toggleMultipleItems()">
+                <div ng-if="!post.show_all"  style="display: block;" title="Click to show all items" ng-click="toggleMultipleItems()">
                     <div lb-bind-html html-content="{{ post.mainItem.item.text }}" style="display: block"></div>
                 </div>
                 <div ng-if="post.show_all">
@@ -30,7 +29,7 @@
                             <div lb-bind-html html-content="{{ item.item.text }}" style="width: calc(100% - 40px)" class="timeline-simple-item" ng-class="{'timeline-even-item': !$first}"
                            html-location="medium-editable" lb-simple-edit se-item="item.item"></div>
                            <div rollshow class="timeline-item-remove">
-                                <a ng-click="askRemoveItem(item, post)" style="cursor: pointer"><i class="icon-remove"></i></a>
+                                <a ng-click="askRemoveItem(item, post)"><i class="icon-remove"></i></a>
                             </div>
 
                          </li>
@@ -43,7 +42,7 @@
                         <div lb-bind-html html-content="{{ item.item.text }}" class="timeline-simple-item" style="width: calc(100% - 40px)"  ng-class-even="'timeline-even-item'"
                        html-location="medium-editable" lb-simple-edit se-item="item.item"></div>
                        <div rollshow class="timeline-item-remove">
-                            <a ng-click="askRemoveItem(item, post)" style="cursor: pointer"><i class="icon-remove"></i></a>
+                            <a ng-click="askRemoveItem(item, post)"><i class="icon-remove"></i></a>
                         </div>
 
                      </li>

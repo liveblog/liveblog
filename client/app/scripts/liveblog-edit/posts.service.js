@@ -85,7 +85,7 @@ define([
                         item = {
                             text: item.text,
                             meta: item.meta,
-                            item_type: item.type
+                            item_type: item.item_type
                         };
                     }
                     dfds.push(api.items.save(item));

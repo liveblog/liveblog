@@ -3,10 +3,10 @@ define([
     'angular'
 ], function(angular) {
     'use strict';
-    TimelineController.$inject = ['api', '$scope', '$rootScope', 'notify', 'gettext',
-                                '$route', '$q', '$cacheFactory', 'userList', 'itemsService', 'postsService'];
-    function TimelineController(api, $scope, $rootScope, notify, gettext,
-                                 $route, $q, $cacheFactory, userList, itemsService, postsService) {
+    TimelineController.$inject = ['$scope', '$rootScope', 'notify', 'gettext',
+                                '$route', '$q', '$cacheFactory', 'userList', 'postsService'];
+    function TimelineController($scope, $rootScope, notify, gettext,
+                                 $route, $q, $cacheFactory, userList, postsService) {
 
         function retrievePosts() {
             postsService.getPosts($route.current.params._id, $scope.postsCriteria).then(function(posts) {
@@ -71,11 +71,6 @@ define([
             backend: {rel: 'items'}
         });
     }])
-    // FIXME: to be removed
-    .factory('itemsService', ['api', '$q', 'notify', 'gettext', function(api, $q, notify, gettext) {
-        var service = {};
-        return service;
-    }])
     .controller('TimelineController', TimelineController)
     .directive('rollshow', [function() {
         return {
@@ -94,7 +89,8 @@ define([
         function(api, notify, gettext, asset, postsService, modal) {
             return {
                 scope: {
-                    post: '='
+                    post: '=',
+                    onEditClick: '='
                 },
                 replace: true,
                 restrict: 'E',
@@ -103,6 +99,7 @@ define([
                     scope.toggleMultipleItems = function() {
                         scope.post.show_all = !scope.post.show_all;
                     };
+
                     scope.removePost = function(post) {
                         api.posts.remove(scope.post).then(function(message) {
                             notify.pop();
