@@ -85,8 +85,8 @@ define([
         };
     }])
     .directive('lbTimelinePost', [
-        'api', 'notify', 'gettext', 'asset', 'postsService', 'modal',
-        function(api, notify, gettext, asset, postsService, modal) {
+        'notify', 'gettext', 'asset', 'postsService', 'modal',
+        function(notify, gettext, asset, postsService, modal) {
             return {
                 scope: {
                     post: '=',
@@ -101,10 +101,9 @@ define([
                     };
 
                     scope.removePost = function(post) {
-                        api.posts.remove(scope.post).then(function(message) {
+                        postsService.remove(post).then(function(message) {
                             notify.pop();
                             notify.info(gettext('Post removed'));
-                            postsService.remove(post);
                         }, function() {
                             notify.pop();
                             notify.error(gettext('Something went wrong'));
