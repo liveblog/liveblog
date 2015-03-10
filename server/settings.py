@@ -114,7 +114,8 @@ INSTALLED_APPS = [
 
     'liveblog.blogs',
     'liveblog.posts',
-    'liveblog.items'
+    'liveblog.items',
+    'liveblog.languages'
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
