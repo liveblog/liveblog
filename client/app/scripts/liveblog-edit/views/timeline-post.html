@@ -4,15 +4,23 @@
             <figure class="avatar">
                 <img class="ng-isolate-scope" data-src="post.picture_url" sd-user-avatar="" style="display: none;">
             </figure>
-        </div> 
+        </div>
         <div style="margin-left:45px">
             <div>
                 <strong>{{ post.original_creator_name }}</strong> | <time>{{ post._updated | reldate }}</time>
-                <post-actions post=post remove="remove(post)"></post-actions>
+                <div rollshow class="timeline-post-actions">
+                    <span class="dropdown" dropdown >
+                        <div class="timeline-actions-more dropdown-toggle" dropdown-toggle></div>
+                        <ul class="dropdown-menu" id="timeline-dropdown">
+                            <li><a ng-click="onEditClick(post)"><i class="icon-edit"></i><span translate>Edit</span></a></li>
+                            <li><a ng-click="askRemovePost(post)"><i class="icon-remove"></i><span translate>Remove post</span></a></li>
+                        </ul>
+                    </span> 
+                </div>
             </div>
-            
+
             <div ng-if="post.multiple_items" style="padding: 10px 0px">
-                <div ng-if="!post.show_all"  style="cursor: pointer; display: block;" title="Click to show all items" ng-click="toggleMultipleItems()">
+                <div ng-if="!post.show_all"  style="display: block;" title="Click to show all items" ng-click="toggleMultipleItems()">
                     <div lb-bind-html html-content="{{ post.mainItem.item.text }}" style="display: block"></div>
                 </div>
                 <div ng-if="post.show_all">
@@ -20,7 +28,10 @@
                          <li ng-repeat="item in post.items">
                             <div lb-bind-html html-content="{{ item.item.text }}" style="width: calc(100% - 40px)" class="timeline-simple-item" ng-class="{'timeline-even-item': !$first}"
                            html-location="medium-editable" lb-simple-edit se-item="item.item"></div>
-                           <item-remove item=item post=post remove="remove(post)"></item-remove>
+                           <div rollshow class="timeline-item-remove">
+                                <a ng-click="askRemoveItem(item, post)"><i class="icon-remove"></i></a>
+                            </div>
+
                          </li>
                      </ul>
                 </div>
@@ -30,7 +41,10 @@
                      <li ng-repeat="item in post.items">
                         <div lb-bind-html html-content="{{ item.item.text }}" class="timeline-simple-item" style="width: calc(100% - 40px)"  ng-class-even="'timeline-even-item'"
                        html-location="medium-editable" lb-simple-edit se-item="item.item"></div>
-                       <item-remove item=item post=post remove="remove(post)"></item-remove>
+                       <div rollshow class="timeline-item-remove">
+                            <a ng-click="askRemoveItem(item, post)"><i class="icon-remove"></i></a>
+                        </div>
+
                      </li>
                  </ul>
             </div>

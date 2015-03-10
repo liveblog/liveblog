@@ -69,10 +69,28 @@ define([
         function savePost(blog_id, post_to_update, items, post_status) {
             post_status = post_status || 'open';
             var dfds = [];
-            // save every items
-            _.each(items, function(item) {
-                dfds.push(api.items.save(item));
-            });
+            if (items && items.length > 0) {
+                // prepare the list of items if needed
+                if (angular.isDefined(items) && items.length > 0) {
+                    if (_.difference(_.keys(items[0]), ['residRef', 'item']).length === 0) {
+                        items = _.map(items, function(item) {
+                            return item.item;
+                        });
+                    }
+                }
+                // save every items
+                _.each(items, function(item) {
+                    // because it fails when item has a `_id` field without `_links`
+                    if (angular.isDefined(item, '_id')) {
+                        item = {
+                            text: item.text,
+                            meta: item.meta,
+                            item_type: item.item_type
+                        };
+                    }
+                    dfds.push(api.items.save(item));
+                });
+            }
             // save the post
             return $q.all(dfds).then(function(items) {
                 var post = {
@@ -108,7 +126,7 @@ define([
                 return operation().then(function (post) {
                     $rootScope.$broadcast('lb.posts.updated');
                     // post here doesn't contain the items...
-                    $rootScope.$emit('lb.posts.saved', post);
+                    $rootScope.$broadcast('lb.posts.saved', post);
                     return post;
                 });
             });

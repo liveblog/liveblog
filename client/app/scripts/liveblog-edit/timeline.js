@@ -3,25 +3,13 @@ define([
     'angular'
 ], function(angular) {
     'use strict';
-    TimelineController.$inject = ['api', '$scope', '$rootScope', 'notify', 'gettext',
-                                '$route', '$q', '$cacheFactory', 'userList', 'itemsService', 'postsService'];
-    function TimelineController(api, $scope, $rootScope, notify, gettext,
-                                 $route, $q, $cacheFactory, userList, itemsService, postsService) {
+    TimelineController.$inject = ['$scope', '$rootScope', 'notify', 'gettext',
+                                '$route', '$q', '$cacheFactory', 'userList', 'postsService'];
+    function TimelineController($scope, $rootScope, notify, gettext,
+                                 $route, $q, $cacheFactory, userList, postsService) {
 
         function retrievePosts() {
             postsService.getPosts($route.current.params._id, $scope.postsCriteria).then(function(posts) {
-                posts.forEach(function(post) {
-                    post.show_all = false;
-                    itemsService.clearExtraItems(post._id);
-                    for (var i = 0, ref; i < post.groups[1].refs.length; i ++) {
-                        ref = post.groups[1].refs[i];
-                        if (i === 0) {
-                            post.mainItem = ref;
-                            continue;
-                        }
-                        itemsService.addExtraItem(post._id, ref);
-                    }
-                });
                 $scope.posts = $scope.posts.concat(posts);
                 $scope.timelineLoading = false;
             }, function(reason) {
@@ -83,40 +71,6 @@ define([
             backend: {rel: 'items'}
         });
     }])
-    .factory('itemsService', ['api', '$q', 'notify', 'gettext', function(api, $q, notify, gettext) {
-        var service = {};
-        service.posts = [];
-        service.removeItem = function(item) {
-            var deferred = $q.defer();
-            item._links = {
-                self: {
-                    href: ''
-                }
-            };
-            item._links.self.href = '/items/' + item._id;
-            api.items.remove(item).then(function() {
-                deferred.resolve('removing done');
-            }, function() {
-                deferred.reject('something went wrong');
-            });
-            return deferred.promise;
-        };
-        service.clearExtraItems = function(post_id) {
-            if (this.posts[post_id]) {
-                this.posts[post_id] = [];
-            }
-        };
-        service.addExtraItem = function(post_id, item) {
-            if (!this.posts[post_id]) {
-                this.posts[post_id] = [];
-            }
-            this.posts[post_id].push(item);
-        };
-        service.getExtraItems = function(post_id) {
-            return this.posts[post_id];
-        };
-        return service;
-    }])
     .controller('TimelineController', TimelineController)
     .directive('rollshow', [function() {
         return {
@@ -130,141 +84,67 @@ define([
             }
         };
     }])
-    .directive('lbTimelineItem', ['api', 'notify', 'gettext', 'asset', 'itemsService', function(api, notify, gettext, asset, itemsService) {
-        return {
-            scope: {
-                post: '=',
-                remove: '&'
-            },
-            replace: true,
-            restrict: 'E',
-            templateUrl: 'scripts/liveblog-edit/views/timeline-item.html',
-            link: function(scope, elem, attrs) {
-                scope.shortText = '';
-                scope.isCollapsed = false;
-                scope.needCollaped = false;
-                scope.toggleCollapsed = function() {
-                    scope.isCollapsed = !scope.isCollapsed;
-                };
-                scope.toggleMultipleItems = function() {
-                    scope.post.show_all = !scope.post.show_all;
-                    if (scope.post.show_all) {
-                        //create the items array
-                        if (!scope.post.items) {
-                            scope.post.items = [];
-                            scope.post.items.push(scope.post.mainItem);
-                            var extraItems = itemsService.getExtraItems(scope.post._id);
-                            for (var j = 0; j < extraItems.length; j++) {
-                                scope.post.items.push(extraItems[j]);
-                            }
-                        }
-                    }
-                };
-                //only text items are collapsable
-                if (scope.post.type === 'text') {
-                    if (scope.post.text.length > 200) {
-                        scope.shortText = scope.post.text.substr(0, 200) + ' ...';
-                        scope.isCollapsed = true;
-                        scope.needCollapsed = true;
-                    }
-                }
-            }
-        };
-    }])
+    .directive('lbTimelinePost', [
+        'notify', 'gettext', 'asset', 'postsService', 'modal',
+        function(notify, gettext, asset, postsService, modal) {
+            return {
+                scope: {
+                    post: '=',
+                    onEditClick: '='
+                },
+                replace: true,
+                restrict: 'E',
+                templateUrl: 'scripts/liveblog-edit/views/timeline-post.html',
+                link: function(scope, elem, attrs) {
+                    scope.toggleMultipleItems = function() {
+                        scope.post.show_all = !scope.post.show_all;
+                    };
 
-    .directive('postActions', ['api', 'notify', 'gettext', 'itemsService', 'modal',
-        function(api, notify, gettext, itemsService, modal) {
-        return {
-            restrict: 'E',
-            replace: true,
-            scope: {
-                post: '=',
-                removeFront: '&remove'
-            },
-            templateUrl: 'scripts/liveblog-edit/views/timeline-post-actions.html',
-            link: function(scope, elem, attrs) {
-                scope.removePost = function() {
-                    var remItems = scope.post.groups[1].refs;
-                    confirm().then(function() {
-                        api.posts.remove(scope.post).then(function(message) {
+                    scope.removePost = function(post) {
+                        postsService.remove(post).then(function(message) {
                             notify.pop();
                             notify.info(gettext('Post removed'));
-                            scope.removeFront({post: {post: scope.post}});
-                            for (var i = 0, item; i < remItems.length; i ++) {
-                                item = remItems[i];
-                                itemsService.removeItem(item.item);
-                            }
                         }, function() {
                             notify.pop();
                             notify.error(gettext('Something went wrong'));
                         });
-                    });
-                    function confirm() {
-                        return modal.confirm(gettext('Are you sure you want to delete the post?'));
-                    }
-                };
-            }
-        };
-    }])
-.directive('itemRemove', ['api', 'notify', 'gettext', 'itemsService', 'modal',
-        function(api, notify, gettext, itemsService, modal) {
-        return {
-            restrict: 'E',
-            replace: true,
-            scope: {
-                post: '=',
-                item: '=',
-                removeFront: '&remove'
-            },
-            templateUrl: 'scripts/liveblog-edit/views/timeline-item-remove.html',
-            link: function(scope, elem, attrs) {
-                scope.removeItem = function(item, index) {
-                    confirm().then(function() {
-                        if (scope.post.items.length === 1) {
-                            //remove the whole post
-                            api.posts.remove(scope.post).then(function(message) {
-                                notify.pop();
-                                notify.info(gettext('Post removed'));
-                                scope.removeFront({post: {post:scope.post}});
-                                itemsService.removeItem(item.item);
-                            }, function() {
-                                notify.pop();
-                                notify.error(gettext('Something went wrong'));
-                            });
+                    };
 
-                        } else {
-                            //update the post
-                            //creating the update for items
-                            var update = {
-                                groups: []
-                            };
-                            update.groups = scope.post.groups;
-                            scope.post.items.splice(index, 1);
-                            update.groups[1].refs = scope.post.items;
-                            //update the post
-                            api.posts.save(scope.post, update).then(function(message) {
-                                //reconsider if the post still have multiple items
-                                scope.post.multiple_items = scope.post.items.length > 1 ? scope.post.items.length : false;
-                                //if it the item removed was the first item in the list update main Item
-                                if (index === 0) {
-                                    scope.post.mainItem = scope.post.items[0];
-                                }
-                                itemsService.removeItem(item.item);
-                                notify.pop();
-                                notify.info(gettext('Item removed'));
-                            }, function(erro) {
-                                notify.pop();
-                                notify.error(gettext('Something went wrong'));
+                    scope.askRemovePost = function(post) {
+                        modal.confirm(gettext('Are you sure you want to delete the post?'))
+                            .then(function() {
+                                scope.removePost(post);
                             });
-                        }
-                    });
-                    function confirm() {
-                        return modal.confirm(gettext('Are you sure you want to delete the item?'));
-                    }
-                };
-            }
-        };
-    }])
+                    };
+
+                    scope.askRemoveItem = function(item, post) {
+                        modal.confirm(gettext('Are you sure you want to delete the item?'))
+                            .then(function() {
+                                if (scope.post.items.length === 1) {
+                                    scope.removePost(post);
+                                } else {
+                                    //update the post
+                                    //creating the update for items
+                                    var items = angular.copy(scope.post.items);
+                                    var index = scope.post.items.indexOf(item);
+                                    items.splice(index, 1);
+                                    //update the post
+                                    postsService.savePost(scope.post.blog, scope.post, items)
+                                        .then(function(message) {
+                                            notify.pop();
+                                            notify.info(gettext('Item removed'));
+                                        }, function(erro) {
+                                            notify.pop();
+                                            notify.error(gettext('Something went wrong'));
+                                        });
+                                }
+                            }
+                        );
+                    };
+                }
+            };
+        }
+    ])
     .directive('lbBindHtml', [function() {
         return {
             restrict: 'A',
