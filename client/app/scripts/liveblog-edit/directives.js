@@ -55,7 +55,6 @@ define([
                 function DraftPostsController($scope) {
                     var mv = this;
                     mv.selectDraftPost = $scope.onDraftPostSeleted;
-                    mv.removeDraftPost = postsService.remove;
                     function updateList() {
                         postsService.getDrafts($scope.blog._id).then(function (posts) {
                             mv.posts = posts;
