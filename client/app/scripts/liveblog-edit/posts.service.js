@@ -67,7 +67,7 @@ define([
         }
 
         function savePost(blog_id, post_to_update, items, post_status) {
-            post_status = post_status || post_to_update.post_status || 'open';
+            post_status = post_status || _.result(post_to_update, 'post_status') || 'open';
             var dfds = [];
             if (items && items.length > 0) {
                 // prepare the list of items if needed

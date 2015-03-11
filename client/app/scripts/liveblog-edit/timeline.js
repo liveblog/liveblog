@@ -72,18 +72,6 @@ define([
         });
     }])
     .controller('TimelineController', TimelineController)
-    .directive('rollshow', [function() {
-        return {
-            link: function(scope, elem, attrs) {
-                elem.parent().on('mouseover', function() {
-                    elem.show();
-                });
-                elem.parent().on('mouseout', function() {
-                    elem.hide();
-                });
-            }
-        };
-    }])
     .directive('setTimelineHeight', ['$window', function($window) {
         return {
             restrict: 'A',
