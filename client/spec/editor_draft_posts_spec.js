@@ -35,8 +35,12 @@ describe('Draft Posts', function() {
     }
 
     function resetEditor() {
-        element(by.css('[ng-click="resetEditor()"]')).click();
-        expect(element(by.css('.editor .st-text-block')).getText()).toEqual('');
+        element(by.css('[ng-click="resetEditor()"]')).click().then(function() {
+            browser.wait(function() {
+                return element(by.css('.editor .st-text-block')).isPresent();
+            });
+            expect(element(by.css('.editor .st-text-block')).getText()).toEqual('');
+        });
     }
 
     it('can create drafts and respect the order', function() {
@@ -49,13 +53,25 @@ describe('Draft Posts', function() {
         checkDraftInDraftList(1, draft1.quote);
     });
 
-    it('can open a draft in the editor', function() {
+    it('can open a draft in the editor and publish it', function() {
         openBlog(0);
         openDraftBar();
         var draft = createDraft();
         resetEditor();
-        element(by.repeater('post in draftPosts.posts').row(0)).click();
-        expect(element(by.css('.editor .st-text-block')).getText()).toEqual(draft.body);
+        browser.waitForAngular();
+        element(by.repeater('post in draftPosts.posts').row(0)).click().then(function() {
+            browser.wait(function() {
+                return element(by.css('.editor .st-text-block')).isPresent();
+            });
+            expect(element(by.css('.editor .st-text-block')).getText()).toEqual(draft.body);
+            // and publish it
+            element(by.css('[ng-click="publish()"]')).click().then(function() {
+                expect(element(by.repeater('post in posts').row(0)).isPresent()).toBe(true);
+            });
+            expect(element.all(by.repeater('post in draftPosts.posts')).count())
+                .toBe(0);
+        });
+
     });
 
 });
