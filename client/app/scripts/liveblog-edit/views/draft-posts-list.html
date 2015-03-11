@@ -1,23 +1,11 @@
 <div class="draft-posts">
     <ul>
-        <li ng-repeat="post in draftPosts.posts" class="draft-posts__post" ng-click="draftPosts.selectDraftPost(post)">
-            <span class="dropdown draft-posts__actions-more pull-right" dropdown stop-event="click">
-                <div class="dropdown-toggle" dropdown-toggle></div>
-                <ul class="dropdown-menu">
-                    <li><a ng-click="draftPosts.selectDraftPost(post)"><i class="icon-edit"></i><span translate>Edit</span></a></li>
-                    <li><a ng-click="draftPosts.removeDraftPost(post)"><i class="icon-remove"></i><span translate>Remove</span></a></li>
-                </ul>
-            </span>
-            <div>
-                <strong>{{ post.original_creator_name }}</strong> | <time>{{ post._updated | reldate }}</time>
-            </div>
-            <article lb-bind-html html-content="{{ post.mainItem.item.text }}"></article>
-            <div  ng-pluralize class="draft-posts__items-number" ng-if="post.multiple_items" count="post.multiple_items - 1"
-                when="{
-                    'one': 'and one more item.',
-                    'other': 'and {} more items.'}">
-            </div>
-        </li>
+        <lb-post
+          ng-repeat="post in draftPosts.posts"
+          post="post"
+          on-edit-click="draftPosts.selectDraftPost"
+          allow-quick-edit="false">
+        </lb-post>
         <li class="draft-posts__empty" ng-hide="draftPosts.posts.length">
             <p>You don't have any draft yet.</p>
             <p>To create one, start to compose your post and click on the "SAVE AS DRAFT" button.
