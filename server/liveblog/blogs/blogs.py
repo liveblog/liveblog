@@ -21,6 +21,7 @@ class BlogsResource(Resource):
         'title': metadata_schema['headline'],
         'description': metadata_schema['description'],
         'language': Resource.rel('languages', True),
+        'theme': Resource.rel('themes', True),
         'settings': {'type': 'dict'},
         'original_creator': metadata_schema['original_creator'],
         'version_creator': metadata_schema['version_creator'],

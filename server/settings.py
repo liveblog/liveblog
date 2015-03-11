@@ -115,7 +115,8 @@ INSTALLED_APPS = [
     'liveblog.blogs',
     'liveblog.posts',
     'liveblog.items',
-    'liveblog.languages'
+    'liveblog.languages',
+    'liveblog.themes'
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
@@ -128,6 +129,21 @@ AMAZON_ACCESS_KEY_ID = env('AMAZON_ACCESS_KEY_ID', '')
 AMAZON_SECRET_ACCESS_KEY = env('AMAZON_SECRET_ACCESS_KEY', '')
 AMAZON_REGION = env('AMAZON_REGION', '')
 
+SUPPORTED_LANGUAGES = {
+    'languages': {
+        'en': 'english',
+        'fr': 'french',
+        'de': 'deutsch'
+    }
+}
+
+SUPPORTED_THEMES = {
+    'themes': {
+        'no_theme': 'none',
+        'ocean': 'blue',
+        'forest': 'green'
+    }
+}
 
 RENDITIONS = {
     'picture': {
