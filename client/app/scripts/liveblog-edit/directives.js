@@ -51,7 +51,8 @@ define([
         })
         .directive('draftPosts', ['api', 'postsService',
             function DraftPostsDirective(api, postsService) {
-                function DraftPostsController($scope, $element) {
+                DraftPostsController.$inject = ['$scope'];
+                function DraftPostsController($scope) {
                     var mv = this;
                     mv.selectDraftPost = $scope.onDraftPostSeleted;
                     mv.removeDraftPost = postsService.remove;
