@@ -55,6 +55,8 @@ define([
                     return posts;
                 });
         }
+
+        // get the items based on the blog and criteria ro retrieve them.
         function retrieveItems(blog_id, items_criteria) {
             return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/items', {_id: blog_id})
                 .query(items_criteria)
@@ -62,6 +64,10 @@ define([
                     return data._items;
                 });
         }
+
+        // update the last index with the new one from the blog.
+        // keeps track of where the latest changes in items and posts,
+        // this is reflected into the blog on the `_updated` field.
         function updateLastIndex(blog) {
             if (lastIndex[0] !== blog._updated) {
                 lastIndex.unshift(blog._updated);
@@ -74,6 +80,7 @@ define([
             }, 500);
         }
 
+        // generate a criteria for updateing posts and items.
         function updateCriteria(blog_id) {
             var filter = [
                 {range: {
@@ -92,6 +99,9 @@ define([
             };
             return criteria;
         }
+
+        // update the latest changes in items
+        // it will not detect newly added items in post.
         function updateItems(blog_id) {
             var indexItem;
             retrieveItems(blog_id, updateCriteria(blog_id)).then(function(items) {
@@ -110,6 +120,9 @@ define([
                 removeLastIndex();
             });
         }
+
+        // update changes in posts
+        // it will add/remove new items in post.
         function updatePosts(blog_id) {
             var indexNewPost, currentPost, indexOldItem;
             retrievePosts(blog_id, updateCriteria(blog_id)).then(function(data) {
@@ -152,7 +165,7 @@ define([
             });
         }
 
-        function getPosts(blog_id, posts_criteria) {
+        function fetchPosts(blog_id, posts_criteria) {
             return retrievePosts(blog_id, posts_criteria).then(function(data) {
                 // FIXME: filter in the query
                 angular.forEach(data, function(post) {
@@ -241,7 +254,7 @@ define([
         return {
             posts: posts,
             postsInfo: postsInfo,
-            getPosts: getPosts,
+            fetchPosts: fetchPosts,
             updateLastIndex: updateLastIndex,
             updatePosts: updatePosts,
             updateItems: updateItems,

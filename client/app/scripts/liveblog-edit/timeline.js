@@ -11,7 +11,7 @@ define([
                                  blogService) {
 
         function retrievePosts() {
-            postsService.getPosts($route.current.params._id, $scope.postsCriteria).then(function() {
+            postsService.fetchPosts($route.current.params._id, $scope.postsCriteria).then(function() {
                 $scope.timelineLoading = false;
             }, function(reason) {
                 notify.error(gettext('Could not load posts... please try again later'));
