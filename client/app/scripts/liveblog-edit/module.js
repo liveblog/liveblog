@@ -46,8 +46,8 @@ define([
             if (are_all_blocks_empty) {
                 callback();
             } else {
-                msg = msg || 'You have content in the editor. You will lose it if you continue without saving it before.';
-                modal.confirm(gettext(msg)).then(callback);
+                msg = msg || gettext('You have content in the editor. You will lose it if you continue without saving it before.');
+                modal.confirm(msg).then(callback);
             }
         }
 
