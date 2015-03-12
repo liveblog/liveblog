@@ -9,23 +9,32 @@
  */
 
 define([
-    'angular'
-], function(angular) {
+    'angular',
+    'lodash'
+], function(angular, _) {
     'use strict';
 
     PostsService.$inject = [
         'api',
         '$q',
         'userList',
-        '$rootScope'
+        '$rootScope',
+        '$cacheFactory'
     ];
-    function PostsService(api, $q, userList, $rootScope) {
+    function PostsService(api, $q, userList, $rootScope, $cacheFactory) {
+        var posts = [],
+            postsInfo = {},
+            lastIndex = [],
+            totalPosts;
 
         function retrievePosts(blog_id, posts_criteria) {
             return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
                 .query(posts_criteria)
                 .then(function(data) {
                     var posts = [];
+                    if(data._meta.page == 1) {
+                        postsInfo.total = data._meta.total;
+                    }
                     data._items.forEach(function(post) {
                         // update the post structure
                         angular.extend(post, {
@@ -47,12 +56,110 @@ define([
                     return posts;
                 });
         }
+        function retrieveItems(blog_id, items_criteria) {
+            return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/items', {_id: blog_id})
+                .query(items_criteria)
+                .then(function(data) {
+                    return data._items;
+                });            
+        }
+        function updateLastIndex(blog) {
+            if(lastIndex[0] !== blog._updated) {
+                lastIndex.unshift(blog._updated);
+            }
+        }
+
+        function removeLastIndex() {
+            _.debounce(function(){
+                lastIndex.pop();
+            }, 500);
+        }
+
+        function updateCriteria(blog_id) {
+            var filter = [
+                {range: {
+                    _updated: {
+                            gt: lastIndex[lastIndex.length-1]
+                        }
+                    }
+                }
+            ], updateCriteria = {
+                source: {
+                    query: {filtered: {filter: {
+                        and: filter
+                    }}},
+                    sort: [{versioncreated: 'asc'}]
+                }
+            };
+            return updateCriteria;            
+        }
+        function updateItems(blog_id) {
+            var indexItem;
+            retrieveItems(blog_id, updateCriteria(blog_id)).then(function(items) {
+                angular.forEach(items, function(item) {
+                    angular.forEach(posts, function(post) {
+                        indexItem = _.findIndex(post.items, {residRef: item._id});
+                        if(indexItem !== -1) {
+                            if(item.deleted) {
+                                post.items.splice(indexItem, 1);   
+                            } else {
+                                angular.extend(post.items[indexItem].item, item);
+                            }
+                        }
+                    });
+                });
+                removeLastIndex();
+            });
+        }
+        function updatePosts(blog_id) {
+            var indexOldPost, indexNewPost, currentPost, indexOldItem, indexNewItem;
+            retrievePosts(blog_id, updateCriteria(blog_id)).then(function(data) {
+                angular.forEach(data, function(post, indexOldPost) {
+                    indexNewPost = _.findIndex(posts, {_id: post._id});
+                    if (indexNewPost !== -1) {
+                        if(post.deleted) {
+                            // remove the post from posts
+                            posts.splice(indexNewPost, 1);
+                            postsInfo.total--;
+                        } else {
+                            currentPost = posts[indexNewPost];
+                            angular.forEach(post.items, function(item, indexNewItem){
+                                indexOldItem = _.findIndex(currentPost.items, {residRef: item._id});
+                                if(indexOldItem !== -1 ) {
+                                    // delete item if property deleted is on.
+                                    if(item.deleted) {
+                                        // remove post if the deleted item is single.
+                                        if(currentPost.items.length === 1) {
+                                            posts.splice(indexNewPost, 1);
+                                        } else {
+                                            currentPost.items.splice(indexOldItem, 1);
+                                        }
+                                    } else {
+                                        // update the item now.
+                                        angular.extend(currentPost.items[indexOldItem].item, item);
+                                    }
+                                } else {
+                                    // add new item in the proper position.
+                                    currentPost.items.splice(indexNewItem, 0, item);
+                                }
+                            });                            
+                        }
+                    } else {
+                        postsInfo.total++;
+                        posts.unshift(post);
+                    }
+                });
+                removeLastIndex();           
+            });
+        }
 
         function getPosts(blog_id, posts_criteria) {
             return retrievePosts(blog_id, posts_criteria).then(function(data) {
                 // FIXME: filter in the query
-                return data.filter(function(post) {
-                    return typeof(post.post_status) === 'undefined' || post.post_status === 'open';
+                angular.forEach(data, function(post) {
+                    if(typeof(post.post_status) === 'undefined' || post.post_status === 'open') {
+                        posts.push(post);
+                    }
                 });
             });
         }
@@ -83,6 +190,7 @@ define([
                     // because it fails when item has a `_id` field without `_links`
                     if (angular.isDefined(item, '_id')) {
                         item = {
+                            blog: blog_id,
                             text: item.text,
                             meta: item.meta,
                             item_type: item.item_type
@@ -115,7 +223,10 @@ define([
                 var operation;
                 if (angular.isDefined(post_to_update)) {
                     operation = function updatePost() {
-                        return api.posts.save(post_to_update, post);
+                        return api.posts.save(post_to_update, post).then(function(post){
+                            blogService.save(blog_id,{});
+                            return post;
+                        });
                     };
                 } else {
                     operation = function createPost() {
@@ -123,24 +234,21 @@ define([
                     };
                 }
                 // return the post saved
-                return operation().then(function (post) {
-                    $rootScope.$broadcast('lb.posts.updated');
-                    // post here doesn't contain the items...
-                    $rootScope.$broadcast('lb.posts.saved', post);
-                    return post;
-                });
+                return operation();
             });
         }
 
         function removePost(post) {
-            return api.posts.remove(post).then(function() {
-                $rootScope.$broadcast('lb.posts.updated');
-                $rootScope.$broadcast('lb.posts.removed', post);
-            });
+            return api.posts.remove(post);
         }
 
         return {
+            posts: posts,
+            postsInfo: postsInfo,
             getPosts: getPosts,
+            updateLastIndex: updateLastIndex,           
+            updatePosts: updatePosts,
+            updateItems: updateItems,
             getDrafts: getDrafts,
             savePost: savePost,
             saveDraft: function(blog_id, post, items, post_status) {

@@ -19,10 +19,11 @@ define([
 
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext', '$route',
-        'upload', 'config', '$rootScope', 'embedService', 'postsService', 'modal'
+        'upload', 'config', '$rootScope', 'embedService', 'postsService', 'modal',
+        'blogService'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext, $route,
-        upload, config, $rootScope, embedService, postsService, modal) {
+        upload, config, $rootScope, embedService, postsService, modal, blogService) {
 
         var current_blog_id = $route.current.params._id;
         var current_post;
@@ -102,6 +103,8 @@ define([
             publish: function() {
                 notify.info(gettext('Saving post'));
                 postsService.savePost(current_blog_id, current_post, getItemsFromEditor(), 'open').then(function(post) {
+                    // @TODO: remove this when it will be done in server.
+                    blogService.save(current_blog_id, {});
                     notify.pop();
                     notify.info(gettext('Post saved'));
                     cleanEditor();
@@ -166,9 +169,10 @@ define([
     /**
      * Resolve a blog by route id and redirect to /liveblog if such blog does not exist
      */
-    BlogResolver.$inject = ['api', '$route', '$location', 'notify', 'gettext'];
-    function BlogResolver(api, $route, $location, notify, gettext) {
-        return api('blogs').getById($route.current.params._id)
+    BlogResolver.$inject = ['api', '$route', '$location', 'notify', 'gettext', 'blogService'];
+    function BlogResolver(api, $route, $location, notify, gettext, blogService) {
+
+        return blogService.update($route.current.params._id)
             .then(null, function(response) {
                 if (response.status === 404) {
                     notify.error(gettext('Blog was not found, sorry.'), 5000);
