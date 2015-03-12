@@ -4,13 +4,14 @@ define([
 ], function(angular) {
     'use strict';
     TimelineController.$inject = ['$scope', '$rootScope', 'notify', 'gettext',
-                                '$route', '$q', '$cacheFactory', 'userList', 'postsService'];
+                                '$route', '$q', '$cacheFactory', 'userList', 'postsService',
+                                'blogService'];
     function TimelineController($scope, $rootScope, notify, gettext,
-                                 $route, $q, $cacheFactory, userList, postsService) {
+                                 $route, $q, $cacheFactory, userList, postsService,
+                                 blogService) {
 
         function retrievePosts() {
-            postsService.getPosts($route.current.params._id, $scope.postsCriteria).then(function(posts) {
-                $scope.posts = $scope.posts.concat(posts);
+            postsService.getPosts($route.current.params._id, $scope.postsCriteria).then(function() {
                 $scope.timelineLoading = false;
             }, function(reason) {
                 notify.error(gettext('Could not load posts... please try again later'));
@@ -25,7 +26,15 @@ define([
                 retrievePosts();
             }
         }
-
+        $scope.$on('posts', function(){
+            postsService.updatePosts($route.current.params._id);
+        });
+        $scope.$on('items', function(){
+            postsService.updateItems($route.current.params._id);
+        });
+        $scope.$on('blogs', function(){
+            blogService.update($route.current.params._id);
+        });
         // set the $scope
         angular.extend($scope, {
             posts: [],
@@ -40,16 +49,10 @@ define([
             },
             removeFromPosts: postsService.remove
         });
+        $scope.postsInfo = postsService.postsInfo;
+        $scope.posts = postsService.posts;
         // load posts
         retrievePosts();
-        // refresh the posts list when the user add a new post
-        $rootScope.$on('lb.posts.updated', function() {
-            // TODO: When the Post's POST reponse contains the items, we
-            // will be able to use the event's parameter to update the list.
-            // Before that, we reset the list and load it again
-            $scope.posts = [];
-            retrievePosts();
-        });
     }
 
     var app = angular.module('liveblog.timeline', ['superdesk.users', 'liveblog.edit', 'lrInfiniteScroll'])
@@ -72,6 +75,100 @@ define([
         });
     }])
     .controller('TimelineController', TimelineController)
+    .directive('rollshow', [function() {
+        return {
+            link: function(scope, elem, attrs) {
+                elem.parent().on('mouseover', function() {
+                    elem.show();
+                });
+                elem.parent().on('mouseout', function() {
+                    elem.hide();
+                });
+            }
+        };
+    }])
+    .directive('lbTimelinePost', [
+        'notify', 'gettext', 'asset', 'postsService', 'modal', 'blogService',
+        function(notify, gettext, asset, postsService, modal, blogService) {
+            return {
+                scope: {
+                    post: '=',
+                    onEditClick: '='
+                },
+                replace: true,
+                restrict: 'E',
+                templateUrl: 'scripts/liveblog-edit/views/timeline-post.html',
+                link: function(scope, elem, attrs) {
+                    scope.toggleMultipleItems = function() {
+                        scope.post.show_all = !scope.post.show_all;
+                    };
+
+                    scope.removePost = function(post) {
+                        postsService.remove(post).then(function(message) {
+                            // @TODO: remove this when it will be done in server.
+                            blogService.save(scope.post.blog, {});                            
+                            notify.pop();
+                            notify.info(gettext('Post removed'));
+                        }, function() {
+                            notify.pop();
+                            notify.error(gettext('Something went wrong'));
+                        });
+                    };
+
+                    scope.askRemovePost = function(post) {
+                        modal.confirm(gettext('Are you sure you want to delete the post?'))
+                            .then(function() {
+                                scope.removePost(post);
+                            });
+                    };
+
+                    scope.askRemoveItem = function(item, post) {
+                        modal.confirm(gettext('Are you sure you want to delete the item?'))
+                            .then(function() {
+                                if (scope.post.items.length === 1) {
+                                    scope.removePost(post);
+                                } else {
+                                    //update the post
+                                    //creating the update for items
+                                    var items = angular.copy(scope.post.items);
+                                    var index = scope.post.items.indexOf(item);
+                                    items.splice(index, 1);
+                                    //update the post
+                                    postsService.savePost(scope.post.blog, scope.post, items)
+                                        .then(function(message) {
+                                            // @TODO: remove this when it will be done in server.                                            
+                                            blogService.save(scope.post.blog, {});
+                                            notify.pop();
+                                            notify.info(gettext('Item removed'));
+                                        }, function(erro) {
+                                            notify.pop();
+                                            notify.error(gettext('Something went wrong'));
+                                        });
+                                }
+                            }
+                        );
+                    };
+                }
+            };
+        }
+    ])
+    .directive('lbBindHtml', [function() {
+        return {
+            restrict: 'A',
+            priority: 2,
+            link: function(scope, elem, attrs) {
+                attrs.$observe('htmlContent', function() {
+                    if (attrs.htmlLocation) {
+                        //need to inject the html in a specific element
+                        elem.find('[' + attrs.htmlLocation + ']').html(attrs.htmlContent);
+                    } else {
+                        //inject streaght in the elem
+                        elem.html(attrs.htmlContent);
+                    }
+                });
+            }
+        };
+    }])
     .directive('setTimelineHeight', ['$window', function($window) {
         var offset = 40; // 20px padding top and bottom
         var w = angular.element($window);

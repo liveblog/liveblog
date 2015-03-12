@@ -12,7 +12,8 @@ define([
     'angular',
     'lodash',
     './module',
-    './posts.service'
+    './posts.service',
+    './blog.service'
 ], function(angular, _) {
     'use strict';
 
