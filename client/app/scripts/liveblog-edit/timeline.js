@@ -26,13 +26,13 @@ define([
                 retrievePosts();
             }
         }
-        $scope.$on('posts', function(){
+        $scope.$on('posts', function() {
             postsService.updatePosts($route.current.params._id);
         });
-        $scope.$on('items', function(){
+        $scope.$on('items', function() {
             postsService.updateItems($route.current.params._id);
         });
-        $scope.$on('blogs', function(){
+        $scope.$on('blogs', function() {
             blogService.update($route.current.params._id);
         });
         // set the $scope
@@ -106,7 +106,7 @@ define([
                     scope.removePost = function(post) {
                         postsService.remove(post).then(function(message) {
                             // @TODO: remove this when it will be done in server.
-                            blogService.save(scope.post.blog, {});                            
+                            blogService.save(scope.post.blog, {});
                             notify.pop();
                             notify.info(gettext('Post removed'));
                         }, function() {
@@ -136,7 +136,7 @@ define([
                                     //update the post
                                     postsService.savePost(scope.post.blog, scope.post, items)
                                         .then(function(message) {
-                                            // @TODO: remove this when it will be done in server.                                            
+                                            // @TODO: remove this when it will be done in server.
                                             blogService.save(scope.post.blog, {});
                                             notify.pop();
                                             notify.info(gettext('Item removed'));
