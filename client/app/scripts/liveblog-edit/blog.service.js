@@ -15,13 +15,13 @@ define([
 
     angular.module('liveblog.blog', [])
         .service('blogService', ['api', 'postsService', '$cacheFactory',
-            function(api, postsService, $cacheFactory){
+            function(api, postsService, $cacheFactory) {
                 var blogsCache = $cacheFactory('blog');
 
                 function update(_id, cache) {
                     return api.blogs.getById(_id, cache).then(function(data) {
                         blogsCache.put(_id, data);
-                        postsService.updateLastIndex(data);                    
+                        postsService.updateLastIndex(data);
                         return blogsCache.get(_id);
                     });
                 }
@@ -37,8 +37,8 @@ define([
                 return {
                     get: get,
                     update: update,
-                    save: save        
-                }
+                    save: save
+                };
             }]);
 });
 
