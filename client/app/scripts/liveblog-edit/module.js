@@ -101,7 +101,7 @@ define([
             },
             publish: function() {
                 notify.info(gettext('Saving post'));
-                postsService.savePost(current_blog_id, current_post, getItemsFromEditor()).then(function(post) {
+                postsService.savePost(current_blog_id, current_post, getItemsFromEditor(), 'open').then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
                     cleanEditor();
