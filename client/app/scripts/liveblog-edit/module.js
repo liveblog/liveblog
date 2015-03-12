@@ -19,10 +19,10 @@ define([
 
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext', '$route',
-        'upload', 'config', '$rootScope', 'embedService', 'postsService'
+        'upload', 'config', '$rootScope', 'embedService', 'postsService', 'modal'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext, $route,
-        upload, config, $rootScope, embedService, postsService) {
+        upload, config, $rootScope, embedService, postsService, modal) {
 
         var current_blog_id = $route.current.params._id;
         var current_post;
@@ -37,6 +37,26 @@ define([
                 };
             });
         }
+
+        // ask in a modalbox if the user is sure to want to overwrite editor.
+        // call the callback if user say yes or if editor is empty
+        function doOrAskBeforeIfEditorIsNotEmpty(callback, msg) {
+            // TODO: check if post is saved before asking
+            var are_all_blocks_empty = _.all($scope.editor.blocks, function(block) {return block.isEmpty();});
+            if (are_all_blocks_empty) {
+                callback();
+            } else {
+                msg = msg || gettext('You have content in the editor. You will lose it if you continue without saving it before.');
+                modal.confirm(msg).then(callback);
+            }
+        }
+
+        // remove and clean every items from the editor
+        function cleanEditor() {
+            $scope.editor.reinitialize();
+            current_post = undefined;
+        }
+
         // define the $scope
         angular.extend($scope, {
             blog: blog,
@@ -52,27 +72,28 @@ define([
                     $scope.blog = newBlog;
                 });
             },
-            // remove and clean every items from the editor
-            resetEditor: function() {
-                $scope.editor.reinitialize();
-                current_post = undefined;
+            askAndResetEditor: function() {
+                doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
             },
             openPostInEditor: function (post) {
-                $scope.resetEditor();
-                current_post = post;
-                var items = post.groups[1].refs;
-                items.forEach(function(item) {
-                    item = item.item;
-                    var data = _.extend({text: item.text}, item.meta);
-                    $scope.editor.createBlock(item.item_type, data);
-                });
+                function fillEditor(post) {
+                    cleanEditor();
+                    current_post = post;
+                    var items = post.groups[1].refs;
+                    items.forEach(function(item) {
+                        item = item.item;
+                        var data = _.extend({text: item.text}, item.meta);
+                        $scope.editor.createBlock(item.item_type, data);
+                    });
+                }
+                doOrAskBeforeIfEditorIsNotEmpty(fillEditor.bind(null, post));
             },
             saveAsDraft: function() {
                 notify.info(gettext('Saving draft'));
                 postsService.saveDraft(current_blog_id, current_post, getItemsFromEditor()).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Draft saved'));
-                    $scope.resetEditor();
+                    cleanEditor();
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
@@ -83,7 +104,7 @@ define([
                 postsService.savePost(current_blog_id, current_post, getItemsFromEditor()).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
-                    $scope.resetEditor();
+                    cleanEditor();
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));

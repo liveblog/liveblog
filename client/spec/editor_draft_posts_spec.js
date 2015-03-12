@@ -35,7 +35,7 @@ describe('Draft Posts', function() {
     }
 
     function resetEditor() {
-        element(by.css('[ng-click="resetEditor()"]')).click().then(function() {
+        element(by.css('[ng-click="askAndResetEditor()"]')).click().then(function() {
             browser.wait(function() {
                 return element(by.css('.editor .st-text-block')).isPresent();
             });
