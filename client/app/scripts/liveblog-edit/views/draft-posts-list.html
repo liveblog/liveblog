@@ -1,7 +1,7 @@
 <div class="draft-posts">
     <ul>
         <lb-post
-          ng-repeat="post in draftPosts.posts"
+          ng-repeat="post in draftPosts.posts track by post._id"
           post="post"
           on-edit-click="draftPosts.selectDraftPost"
           allow-quick-edit="false">
