@@ -73,18 +73,18 @@ define([
     }])
     .controller('TimelineController', TimelineController)
     .directive('setTimelineHeight', ['$window', function($window) {
+        var offset = 40; // 20px padding top and bottom
+        var w = angular.element($window);
         return {
             restrict: 'A',
             link: function(scope, elem, attrs) {
-                var w = angular.element($window);
-                scope.getWindowHeight = function () {
-                    return w.height();
+                var updateElementHeight = function () {
+                    elem.css('height', w.height() - elem.offset().top - offset);
                 };
-                scope.$watch(scope.getWindowHeight, function (newHeight) {
-                    elem.height(newHeight - 220);
-                });
-                w.bind('resize', function() {
-                    scope.$apply();
+                updateElementHeight();
+                w.on('resize', updateElementHeight);
+                elem.on('$destroy', function cleanupOnDestroy() {
+                    w.off('resize', updateElementHeight);
                 });
             }
         };

@@ -14,6 +14,7 @@
 
         $scope.changeState = function(state) {
             $scope.activeState = state;
+            fetchBlogs();
         };
 
         $scope.modalActive = false;
@@ -63,7 +64,6 @@
                     sort: '[("versioncreated", -1)]',
                     q: $scope.activeState.code
                 };
-
             if (params.q) {
                 // create a dsl query (for elastic search)
                 // see: http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/combining-filters.html
@@ -87,22 +87,24 @@
                     'bool': {'should': should}
                 });
             }
-
             if (params.page) {
                 criteria.page = parseInt(params.page, 10);
             }
-
             return criteria;
         }
 
-        function fetchBlogs(criteria) {
-            api.blogs.query(criteria)
-                .then(function(blogs) {
-                    $scope.blogs = blogs;
-                });
+        function fetchBlogs() {
+            api.blogs.query(getCriteria()).then(function(blogs) {
+                $scope.blogs = blogs;
+            });
         }
 
-        $scope.$watch(getCriteria, fetchBlogs, true);
+        // initialize blogs list
+        fetchBlogs();
+        // fetch when maxResults is updated from the searchbar-directive
+        $scope.$watch('maxResults', fetchBlogs);
+        // fetch when criteria are updated from url (searchbar-directive)
+        $scope.$on('$routeUpdate', fetchBlogs);
     }
 
     var app = angular.module('liveblog.bloglist', []);

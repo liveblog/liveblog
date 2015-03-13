@@ -97,7 +97,7 @@
                         <span><strong translate>There are no posts yet for this blog!</strong></span>
                     </div>
                     <ul class="posts" lr-infinite-scroll="loadMore" set-timeline-height>
-                        <lb-post ng-repeat="post in posts" post="post" on-edit-click="openPostInEditor" allow-quick-edit="true"></lb-timeline-post>
+                        <lb-post ng-repeat="post in posts track by post._id" post="post" on-edit-click="openPostInEditor" allow-quick-edit="true"></lb-timeline-post>
                     </ul>
                 </div>
             </div>
