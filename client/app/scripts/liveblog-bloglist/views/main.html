@@ -7,7 +7,7 @@
         <div class="navbtn dropdown" dropdown>
             <button class="dropdown-toggle" dropdown-toggle>{{ activeState.text }} <b class="caret"></b></button>
             <ul class="dropdown-menu">
-                <li ng-repeat="state in states"><button ng-click="changeState(state)" translate>{{ state.text }}</button></li>
+                <li ng-repeat="state in states"><button ng-click="changeState(state)" translate>{{ ::state.text }}</button></li>
             </ul>
         </div>
     </div>
@@ -36,13 +36,13 @@
         <!-- LIST VIEW -->
         <table class="row-list table table-striped" ng-if="!gridview">
             <tbody>
-                <tr ng-repeat="blog in blogs._items" ng-click="edit(blog)">
+                <tr ng-repeat="blog in blogs._items track by blog._id" ng-click="edit(blog)">
                     <td class="content">
-                        <h3>{{ blog.title }} <small>by {{ blog.original_creator | username }}</small></h3>
-                        <div class="description">{{ blog.description }}</div>
+                        <h3>{{ ::blog.title }} <small>by {{ ::blog.original_creator | username }}</small></h3>
+                        <div class="description">{{ ::blog.description }}</div>
                         <div class="time visible-phone">
-                            {{ 'Created' | translate}} {{ blog._created | reldate }},
-                            {{ 'updated' | translate }} {{ blog._updated | reldate }}.
+                            {{ ::'Created' | translate}} {{ ::blog._created | reldate }},
+                            {{ ::'updated' | translate }} {{ ::blog._updated | reldate }}.
                         </div>
                     </td>
                 </tr>
@@ -50,18 +50,18 @@
         </table>
         <!-- GRID VIEW -->
         <ul class="card-list" ng-if="gridview">
-            <li ng-repeat="blog in blogs._items" ng-click="edit(blog)">
+            <li ng-repeat="blog in blogs._items track by blog._id" ng-click="edit(blog)">
                 <!--<div class="close" ng-click="remove(blog)"><i class="icon-close-small"></i></div>-->
                 <div class="content">
-                    <span class="time">{{ 'Last udpated' | translate }}: <time>{{ blog._updated | reldate }}</time></span>
-                    <h3>{{ blog.title }}</h3>
-                    <div class="description">{{ blog.description }}</div>
+                    <span class="time">{{ ::'Last udpated' | translate }}: <time>{{ ::blog._updated | reldate }}</time></span>
+                    <h3>{{ ::blog.title }}</h3>
+                    <div class="description">{{ ::blog.description }}</div>
                 </div>
                 <div class="footer">
                     <dl>
-                        <dt>{{ 'Blog owner' | translate }}:</dt>
-                        <dd>{{ blog.original_creator | username }}</dd>
-                        <dt>{{ 'Created' | translate}}:</dt>
+                        <dt>{{ ::'Blog owner' | translate }}:</dt>
+                        <dd>{{ ::blog.original_creator | username }}</dd>
+                        <dt>{{ ::'Created' | translate}}:</dt>
                         <dd sd-reldate ng-model="blog._created"></dd>
                     </dl>
                 </div>

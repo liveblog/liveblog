@@ -7,7 +7,7 @@
         </div>
         <div style="margin-left:45px">
             <div class="post-item__header">
-                <strong>{{ post.original_creator_name }}</strong> | <time>{{ post._updated | reldate }}</time>
+                <strong>{{ ::post.original_creator_name }}</strong> | <time>{{ post._updated | reldate }}</time>
                 <div rollshow class="timeline-post-actions">
                     <span class="dropdown" dropdown >
                         <div class="timeline-actions-more dropdown-toggle" dropdown-toggle></div>
@@ -18,15 +18,14 @@
                     </span> 
                 </div>
             </div>
-
             <div ng-if="post.multiple_items" style="padding: 10px 0px">
                 <div ng-if="!post.show_all"  style="display: block;" title="Click to show all items" ng-click="toggleMultipleItems()">
                     <div lb-bind-html html-content="{{ post.mainItem.item.text }}" style="display: block"></div>
                 </div>
                 <div ng-if="post.show_all">
                      <ul>
-                         <li ng-repeat="item in post.items">
-                            <div lb-bind-html html-content="{{ item.item.text }}" style="width: calc(100% - 40px)" class="timeline-simple-item" ng-class="{'timeline-even-item': !$first}"
+                         <li ng-repeat="item in post.items track by item.item._id">
+                            <div lb-bind-html html-content="{{ ::item.item.text }}" style="width: calc(100% - 40px)" class="timeline-simple-item" ng-class="{'timeline-even-item': !$first}"
                            html-location="medium-editable" lb-simple-edit="allowQuickEdit" se-item="item.item"></div>
                            <div rollshow class="timeline-item-remove">
                                 <a ng-click="askRemoveItem(item, post)"><i class="icon-remove"></i></a>
@@ -38,13 +37,12 @@
             </div>
             <div ng-if="!post.multiple_items" style="padding: 10px 0px">
                 <ul>
-                     <li ng-repeat="item in post.items">
-                        <div lb-bind-html html-content="{{ item.item.text }}" class="timeline-simple-item" style="width: calc(100% - 40px)"  ng-class-even="'timeline-even-item'"
+                     <li ng-repeat="item in post.items track by item.item._id">
+                        <div lb-bind-html html-content="{{ ::item.item.text }}" class="timeline-simple-item" style="width: calc(100% - 40px)"  ng-class-even="'timeline-even-item'"
                        html-location="medium-editable" lb-simple-edit="allowQuickEdit" se-item="item.item"></div>
                        <div rollshow class="timeline-item-remove">
                             <a ng-click="askRemoveItem(item, post)"><i class="icon-remove"></i></a>
                         </div>
-
                      </li>
                  </ul>
             </div>
@@ -53,7 +51,7 @@
     <div class="timeline-expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && !post.show_all">
         <div class="timeline-expander-multiple-items">
             <div class="timeline-expander-multiple-items-roundel">
-                <div class="timeline-expander-multiple-items-roundel-text">{{ post.multiple_items }}</div>
+                <div class="timeline-expander-multiple-items-roundel-text">{{ ::post.multiple_items }}</div>
             </div>
             <div translate class="timeline-expander-multiple-items-roundel-label">ITEMS</div>
         </div>
