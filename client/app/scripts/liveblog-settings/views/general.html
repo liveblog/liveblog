@@ -1,0 +1,32 @@
+<div sd-settings-view ng-init="generalTab = true">
+
+    <div class="split-content">
+        <ul class="nav nav-tabs">
+            <li ng-class="{active: generalTab}">
+                <button ng-click="generalTab = true" translate>General</button>
+            </li>
+            <li ng-class="{active: !generalTab}">
+                <button ng-click="generalTab = false" translate>Other</button>
+            </li>
+        </ul>
+        
+        <div class="content user-roles">
+            <div ng-if="generalTab">
+                <fieldset>
+                    <div class="control-group">
+                        <label class="control-label" translate>Language</label>
+                        <select name="language" class="config-small-input" ng-options="language.ID as language.name for language in languages"></select>
+                    </div>
+                    <div class="control-group">
+                        <label class="control-label" translate>Theme</label>
+                        <select class="config-small-input" ng-options="theme.ID as theme.name for theme in themes"></select>
+                    </div>
+                </fieldset>
+            </div>
+            <div ng-if="!generalTab">
+                Other Settings
+            </div>
+        </div>
+    </div>
+    
+</div>
