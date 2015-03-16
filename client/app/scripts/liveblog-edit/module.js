@@ -18,10 +18,10 @@ define([
     'use strict';
 
     BlogEditController.$inject = [
-        'api', '$q', '$scope', 'blog', 'notify', 'gettext', '$route',
+        'api', '$q', '$scope', 'blog', 'notify', 'gettext',
         'upload', 'config', '$rootScope', 'embedService', 'postsService', 'modal'
     ];
-    function BlogEditController(api, $q, $scope, blog, notify, gettext, $route,
+    function BlogEditController(api, $q, $scope, blog, notify, gettext,
         upload, config, $rootScope, embedService, postsService, modal) {
 
         var current_post;
@@ -89,7 +89,7 @@ define([
             },
             saveAsDraft: function() {
                 notify.info(gettext('Saving draft'));
-                postsService.saveDraft(blog.id, current_post, getItemsFromEditor()).then(function(post) {
+                postsService.saveDraft(blog._id, current_post, getItemsFromEditor()).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Draft saved'));
                     cleanEditor();
@@ -100,7 +100,7 @@ define([
             },
             publish: function() {
                 notify.info(gettext('Saving post'));
-                postsService.savePost(blog.id, current_post, getItemsFromEditor(), 'open').then(function(post) {
+                postsService.savePost(blog._id, current_post, getItemsFromEditor(), 'open').then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
                     cleanEditor();
@@ -162,8 +162,8 @@ define([
         });
     }
 
-    BlogSettingsController.$inject = ['$route', 'blog'];
-    function BlogSettingsController($route, blog) {
+    BlogSettingsController.$inject = ['blog'];
+    function BlogSettingsController(blog) {
         angular.extend(this, {
             blog: blog
         });
