@@ -218,10 +218,12 @@ define([
             return {
                 link: function(scope, elem, attrs) {
                     elem.parent().on('mouseover', function() {
-                        elem.show();
+                        //elem.show();
+                        elem.addClass('hover');
                     });
                     elem.parent().on('mouseout', function() {
-                        elem.hide();
+                        //elem.hide();
+                        elem.removeClass('hover');
                     });
                 }
             };
