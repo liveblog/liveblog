@@ -24,7 +24,6 @@ define([
     function BlogEditController(api, $q, $scope, blog, notify, gettext, $route,
         upload, config, $rootScope, embedService, postsService, modal) {
 
-        var current_blog_id = $route.current.params._id;
         var current_post;
 
         // return the list of items from the editor
@@ -90,7 +89,7 @@ define([
             },
             saveAsDraft: function() {
                 notify.info(gettext('Saving draft'));
-                postsService.saveDraft(current_blog_id, current_post, getItemsFromEditor()).then(function(post) {
+                postsService.saveDraft(blog.id, current_post, getItemsFromEditor()).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Draft saved'));
                     cleanEditor();
@@ -101,7 +100,7 @@ define([
             },
             publish: function() {
                 notify.info(gettext('Saving post'));
-                postsService.savePost(current_blog_id, current_post, getItemsFromEditor(), 'open').then(function(post) {
+                postsService.savePost(blog.id, current_post, getItemsFromEditor(), 'open').then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
                     cleanEditor();
@@ -163,6 +162,13 @@ define([
         });
     }
 
+    BlogSettingsController.$inject = ['$route', 'blog'];
+    function BlogSettingsController($route, blog) {
+        angular.extend(this, {
+            blog: blog
+        });
+    }
+
     /**
      * Resolve a blog by route id and redirect to /liveblog if such blog does not exist
      */
@@ -184,6 +190,12 @@ define([
             label: gettext('Blog Edit'),
             controller: BlogEditController,
             templateUrl: 'scripts/liveblog-edit/views/main.html',
+            resolve: {blog: BlogResolver}
+        }).activity('/liveblog/settings/:_id', {
+            label: gettext('Blog Settings'),
+            controller: BlogSettingsController,
+            controllerAs: 'settings',
+            templateUrl: 'scripts/liveblog-edit/views/settings.html',
             resolve: {blog: BlogResolver}
         });
     }]).config(['apiProvider', function(apiProvider) {
