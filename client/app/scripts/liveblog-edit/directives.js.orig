@@ -214,6 +214,20 @@ define([
                 }
             };
         })
+<<<<<<< HEAD
+=======
+        .directive('rollshow', [function() {
+            return {
+                link: function(scope, elem, attrs) {
+                    elem.parent().on('mouseover', function() {
+                        elem.show();
+                    });
+                    elem.parent().on('mouseout', function() {
+                        elem.hide();
+                    });
+                }
+            };
+        }])
         .directive('selectAllOnClick', [function() {
             return {
                 link: function(scope, elem, attrs) {
@@ -224,6 +238,7 @@ define([
                 }
             };
         }])
+>>>>>>> Blog's settings: embed code
         .directive('lbBindHtml', [function() {
             return {
                 restrict: 'A',
