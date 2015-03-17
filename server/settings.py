@@ -101,22 +101,20 @@ INSTALLED_APPS = [
     'superdesk.comments',
     'superdesk.storage.amazon.import_from_amazon',
 
-
     'apps.archive',
     'apps.preferences',
     'apps.desks',
     'apps.stages',
     'apps.groups',
-    'apps.prepopulate',
     'apps.packages',
     'apps.privilege',
-
 
     'liveblog.blogs',
     'liveblog.posts',
     'liveblog.items',
     'liveblog.languages',
-    'liveblog.themes'
+    'liveblog.themes',
+    'liveblog.prepopulate'
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']

@@ -16,5 +16,29 @@
     "data": {
         "name": "Editor"
     }
+},
+{
+    "resource": "languages",
+    "id_name": "-id user admin-",
+    "data": {
+        "language_code": "de",
+        "language_name": "Deutch"
+    }
+},
+{
+    "resource": "languages",
+    "id_name": "-id user admin-",
+    "data": {
+        "language_code": "en",
+        "language_name": "English"
+    }
+},
+{
+    "resource": "languages",
+    "id_name": "-id user admin-",
+    "data": {
+        "language_code": "fr",
+        "language_name": "Français"
+    }
 }
 ]
