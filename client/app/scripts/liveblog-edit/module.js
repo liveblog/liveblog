@@ -162,10 +162,18 @@ define([
         });
     }
 
-    BlogSettingsController.$inject = ['blog'];
-    function BlogSettingsController(blog) {
-        angular.extend(this, {
-            blog: blog
+    BlogSettingsController.$inject = ['blog', 'api'];
+    function BlogSettingsController(blog, api) {
+        var vm = this;
+        // set scope
+        angular.extend(vm, {
+            blog: blog,
+            blogSettings: {},
+            languages: [] // loaded after
+        });
+        // load languages
+        api('languages').query().then(function(data) {
+            vm.languages = data._items;
         });
     }
 

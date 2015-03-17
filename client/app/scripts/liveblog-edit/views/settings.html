@@ -36,11 +36,12 @@
                             <div class="form-group">
                                 <label for="inputLanguage" class="control-label">Language</label>
                                 <div class="form-input">
-                                    <select class="form-control">
+                                    <select ng-model="settings.blogSettings.language" class="form-control">
                                         <option>--- Default ---</option>
-                                        <option>Deutch</option>
-                                        <option>English</option>
-                                        <option>Français</option>
+                                        <option
+                                          ng-repeat="language in settings.languages"
+                                          ng-selected="{{settings.blogSettings.language == language}}"
+                                          value="{{ language.language_code }}">{{ language.language_name }}</option>
                                     </select>
                                 </div>
                             </div>
@@ -49,9 +50,9 @@
                                 <div class="form-input">
                                     <select class="form-control">
                                         <option>--- Default ---</option>
-                                        <option>1</option>
-                                        <option>2</option>
-                                        <option>3</option>
+                                        <option>theme 1</option>
+                                        <option>theme 2</option>
+                                        <option>theme 3</option>
                                     </select>
                                 </div>
                             </div>
