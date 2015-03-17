@@ -18,7 +18,18 @@
 }
 .post-item-holder {
     display:block;
-    padding: 20px 20px 0px 20px; 
+    padding: 20px 20px 0px 20px;
+    .post-item-content {
+        margin-left: 45px;
+        .post-item__header {
+            .name {
+                font-weight: 600;
+            }
+        }
+        .post-item-list {
+            padding: 10px 0px;
+        }
+    }
 }
 .post-item-figure {
     float: left;
@@ -30,7 +41,7 @@
     display: table-cell;
 }
 .table-row {
-    display: table-row
+    display: table-row;
 }
 .simple-edit-holder {
     display: block;
@@ -113,14 +124,30 @@
     border-top: 1px solid #ebebeb;
 }
 .timeline-simple-item {
-    padding: 10px 0px 10px 0px;
+    padding: 10px 40px 10px 0px;
     display: inline-block;
 }
 .timeline-post-actions, .timeline-item-remove {
     padding-top:9px;
     margin-right:10px;
     float: right;
-    display: none;
+    display: block;
+}
+.timeline-post-actions {
+    .timeline-actions-more {
+        opacity: 0.3;
+    }
+    &.hover {
+        .timeline-actions-more {
+            opacity: 1;
+       }
+    }
+}
+.timeline-item-remove {
+    opacity: 0.15;
+    &.hover {
+        opacity: 1;
+    }
 }
 .loading-indicator {
     position: absolute;
