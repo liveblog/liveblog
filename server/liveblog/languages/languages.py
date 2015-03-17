@@ -10,11 +10,14 @@ class LanguagesResource(Resource):
         'language_code': {
             'type': 'string',
             'allowed': SUPPORTED_LANGUAGES['languages']
+        },
+        'language_name': {
+            'type': 'string'
         }
     }
 
     datasource = {
-        'default_sort': [('_updated', -1)]
+        'default_sort': [('language_name', 1)]
     }
 
     RESOURCE_METHODS = ['GET', 'POST']
