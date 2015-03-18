@@ -15,7 +15,8 @@ import superdesk.tests as tests
 from behave import given, when, then  # @UnresolvedImport
 from flask import json
 from eve.methods.common import parse
-from superdesk import default_user_preferences, get_resource_service, utc
+from superdesk import default_user_preferences, get_resource_service, utc,\
+    default_global_preferences
 from superdesk.utc import utcnow
 from eve.io.mongo import MongoJSONEncoder
 from base64 import b64encode
@@ -982,6 +983,12 @@ def then_we_get_notifications(context):
 def get_default_prefs(context):
     response_data = json.loads(context.response.get_data())
     assert_equal(response_data['user_preferences'], default_user_preferences)
+
+
+@then('we get blog preferences')
+def get_default_blog_prefs(context):
+    response_data = json.loads(context.response.get_data())
+    assert_equal(response_data['global_settings'], default_global_preferences)
 
 
 @when('we spike "{item_id}"')
