@@ -10,6 +10,9 @@ class LanguagesResource(Resource):
         'language_code': {
             'type': 'string',
             'allowed': SUPPORTED_LANGUAGES['languages']
+        },
+        'name': {
+            'type': 'string'
         }
     }
 
