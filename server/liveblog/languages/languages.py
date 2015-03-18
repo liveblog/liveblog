@@ -11,7 +11,7 @@ class LanguagesResource(Resource):
             'type': 'string',
             'allowed': SUPPORTED_LANGUAGES['languages']
         },
-        'language_name': {
+        'name': {
             'type': 'string'
         }
     }

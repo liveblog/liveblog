@@ -7,6 +7,7 @@ from eve.utils import ParsedRequest
 from liveblog.common import get_user, update_dates_for
 from apps.content import metadata_schema
 from apps.archive.common import generate_guid, GUID_TAG
+from superdesk import get_resource_service
 
 
 class BlogsResource(Resource):
@@ -35,6 +36,9 @@ class BlogsResource(Resource):
             'type': 'string',
             'allowed': ['blog'],
             'default': 'blog'
+        },
+        'blog_preferences': {
+            'type': 'dict'
         }
     }
 
@@ -48,6 +52,7 @@ class BlogService(BaseService):
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
             doc['guid'] = generate_guid(type=GUID_TAG)
+        get_resource_service('blog_preferences').set_blog_initial_prefs(doc)
 
     def get(self, req, lookup):
         if req is None:

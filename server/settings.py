@@ -114,6 +114,8 @@ INSTALLED_APPS = [
     'liveblog.items',
     'liveblog.languages',
     'liveblog.themes',
+    'liveblog.global_preferences',
+    'liveblog.liveblog_preferences',
     'liveblog.prepopulate'
 ]
 
