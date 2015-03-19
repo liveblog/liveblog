@@ -16,6 +16,11 @@
             width: 48px;
             border:0;
             border-bottom:1px solid @grayLight;
+            padding: 0;
+            &.active,
+            &:hover {
+                background: #b8b8b8;
+            }
         }
     }
 
@@ -65,8 +70,7 @@
     .column-timeline {
         right: 0;
         left: 540px;
-        background: #f0f0f0;
-        border-left: 3px solid #c3c3c3;
+        background: #f0f0f0;       
         header {
             background: #fff;
         }
