@@ -214,20 +214,6 @@ define([
                 }
             };
         })
-        .directive('rollshow', [function() {
-            return {
-                link: function(scope, elem, attrs) {
-                    elem.parent().on('mouseover', function() {
-                        //elem.show();
-                        elem.addClass('hover');
-                    });
-                    elem.parent().on('mouseout', function() {
-                        //elem.hide();
-                        elem.removeClass('hover');
-                    });
-                }
-            };
-        }])
         .directive('lbBindHtml', [function() {
             return {
                 restrict: 'A',
