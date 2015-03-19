@@ -1,4 +1,5 @@
 @import 'variables.less';
+@import 'mixins.less';
 
 .column-draft-posts {
     > header {
@@ -11,147 +12,23 @@
     .draft-posts {
         overflow-y: auto;
         height: 100%;
-        &__post {
-            border-bottom: 1px solid #e0e0e0;
-            padding: 10px;
-            &:hover {
-                background-color: #E6EDF0;
-                cursor: pointer;
+        .lb-post {
+            &__holder {
+                padding: 14px 10px 0 12px;
+                border-bottom: 1px solid #DBDBDB;
             }
-        }
-        &__actions-more {
-            .dropdown-toggle {
-                background-image: url("../../images/timeline-more.png");
-                width: 40px;
-                height: 47px;
-                cursor: pointer;
-                position: absolute;
-                left: -20px;
-                bottom: -32px;
-            }
-            .dropdown-menu:before { // remove the top arrow
-                background: none;
-            }
-        }
-        &__items-number {
-            text-align: right;
-            color: @gray;
-        }
-        &__empty {
-            padding: 20px;
-            color: @gray;
-        }
-        .post-item-holder {
-            padding: 14px 10px 0 12px;
-            border-bottom: 1px solid #DBDBDB;
-            position: relative;
-            .post-item-figure {
+            &__content {margin-left: 0;}
+            &__figure { // smaller figure
                 margin-right: 0;
                 .avatar {
                     width: 24px;
                     height: 24px;
                 }
             }
-            .post-item-content {
-                margin-left: 0px;
-                .post-item__header {
-                    font-size: 12px;
-                    .name {
-                        font-weight: 600;
-                    }
+            &__expander {
+                &-multiple-items {
+                    background-color: @navbar-default-bg;
                 }
-                #timeline-dropdown.dropdown-menu {
-                    left: -172px!important;
-                }
-                .post-item-list {
-                    padding: 16px 0px;
-                    li {
-                        position: relative;
-                        .timeline-simple-item {
-                            padding: 10px 10px 10px 0;
-                            width: 100% !important;
-                            box-sizing: border-box;
-                            -moz-box-sizing: border-box;
-                            -webkit-box-sizing: border-box;
-                        }
-                        &:first-child {
-                            .timeline-simple-item {
-                                padding: 0 10px 10px 0;
-                            }
-                            .timeline-item-remove {
-                                padding: 0;
-                            }
-                        }
-                    }
-                }
-
-                // fix for video embeds  
-                iframe {
-                    width: 95%;
-                    height: 95%;
-                }             
-            }
-        }
-        .timeline-expander-holder {
-            background-color: #f8f8f8;
-            position: relative;
-            .timeline-expander-multiple-items {
-                background-color: #f8f8f8;
-                position: absolute;
-                float: none;
-                right: 20px;
-                font-size: 11px;
-                font-weight: 600;
-                width: 65px;
-                &-roundel {
-                    position: relative;
-                    &-text {
-                        margin: 0;
-                        top: 0;
-                        bottom: 0;
-                        left: 0;
-                        right: 0;
-                        line-height: 1;
-                    }
-                }
-            }
-            .timeline-collapser-multiple-items {
-                position: absolute;
-                top: -.6em;
-                width: 22px;
-                height: 15px;
-                background-image: url(../../images/draft-collapse.png);
-                right: 60px;
-                float: none;
-            }
-        }
-        .timeline-post-actions {
-            display: block;
-            float: none;
-            position: absolute;
-            top: 18px;
-            right: 16px;
-            margin-right: 0;
-            .timeline-actions-more {
-                opacity: 0.3;
-                width: 34px;
-            }
-            &.hover {
-                .timeline-actions-more {
-                    opacity: 1;
-                }
-            }
-        }
-        .timeline-item-remove {
-            display: block;
-            opacity: 0.15;
-            margin-right: 0;
-            float: none;
-            position: absolute;
-            top: 0;
-            right: -2px;
-            &.hover {
-                opacity: 1;
             }
         }
     }
@@ -164,10 +41,8 @@
 .big-icon-archive { 
     background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMjhweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjggMjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI4IDI0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxyZWN0IHg9Ii0xNzAiIHk9Ii0yMCIgZGlzcGxheT0ibm9uZSIgZmlsbD0iI0ZGMDAwMCIgd2lkdGg9IjIyMyIgaGVpZ2h0PSIyMDAiLz4NCjxnPg0KCTxwYXRoIGQ9Ik0yMSw0SDd2N2gxNFY0eiBNMTcsOGgtNlY3aDZWOHoiLz4NCgk8cGF0aCBkPSJNMjEsMTJIN3Y3aDE0VjEyeiBNMTcsMTZoLTZ2LTFoNlYxNnoiLz4NCgk8cGF0aCBkPSJNMjMsMUg1QzQuNDQ3LDEsNCwxLjQ0Nyw0LDJ2MTljMCwwLjU1MywwLjQ0NywxLDEsMWgxOGMwLjU1MywwLDEtMC40NDcsMS0xVjJDMjQsMS40NDcsMjMuNTUzLDEsMjMsMXogTTIyLDR2MTZoLTFIN0g2VjQNCgkJVjNoMTZWNHoiLz4NCjwvZz4NCjxyZWN0IHg9IjciIHk9IjIyIiB3aWR0aD0iNCIgaGVpZ2h0PSIxIi8+DQo8cmVjdCB4PSIxNyIgeT0iMjIiIHdpZHRoPSI0IiBoZWlnaHQ9IjEiLz4NCjwvc3ZnPg0K);
     background-position: 3px 0;
+    .active & {
+        background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMjhweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjggMjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI4IDI0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxyZWN0IHg9Ii0xNzAiIHk9Ii0yMCIgZGlzcGxheT0ibm9uZSIgZmlsbD0iI0ZGMDAwMCIgd2lkdGg9IjIyMyIgaGVpZ2h0PSIyMDAiLz4NCjxnPg0KCTxwYXRoIGZpbGw9IiMwMDdGQjMiIGQ9Ik0yMSw0SDd2N2gxNFY0eiBNMTcsOGgtNlY3aDZWOHoiLz4NCgk8cGF0aCBmaWxsPSIjMDA3RkIzIiBkPSJNMjEsMTJIN3Y3aDE0VjEyeiBNMTcsMTZoLTZ2LTFoNlYxNnoiLz4NCgk8cGF0aCBmaWxsPSIjMDA3RkIzIiBkPSJNMjMsMUg1QzQuNDQ3LDEsNCwxLjQ0Nyw0LDJ2MTljMCwwLjU1MywwLjQ0NywxLDEsMWgxOGMwLjU1MywwLDEtMC40NDcsMS0xVjJDMjQsMS40NDcsMjMuNTUzLDEsMjMsMXoNCgkJIE0yMiw0djE2aC0xSDdINlY0VjNoMTZWNHoiLz4NCjwvZz4NCjxyZWN0IHg9IjciIHk9IjIyIiBmaWxsPSIjMDA3RkIzIiB3aWR0aD0iNCIgaGVpZ2h0PSIxIi8+DQo8cmVjdCB4PSIxNyIgeT0iMjIiIGZpbGw9IiMwMDdGQjMiIHdpZHRoPSI0IiBoZWlnaHQ9IjEiLz4NCjwvc3ZnPg0K);
+        background-position: 3px 0;
     }
-    .active {
-        .big-icon-archive { 
-            background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMjhweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjggMjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI4IDI0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxyZWN0IHg9Ii0xNzAiIHk9Ii0yMCIgZGlzcGxheT0ibm9uZSIgZmlsbD0iI0ZGMDAwMCIgd2lkdGg9IjIyMyIgaGVpZ2h0PSIyMDAiLz4NCjxnPg0KCTxwYXRoIGZpbGw9IiMwMDdGQjMiIGQ9Ik0yMSw0SDd2N2gxNFY0eiBNMTcsOGgtNlY3aDZWOHoiLz4NCgk8cGF0aCBmaWxsPSIjMDA3RkIzIiBkPSJNMjEsMTJIN3Y3aDE0VjEyeiBNMTcsMTZoLTZ2LTFoNlYxNnoiLz4NCgk8cGF0aCBmaWxsPSIjMDA3RkIzIiBkPSJNMjMsMUg1QzQuNDQ3LDEsNCwxLjQ0Nyw0LDJ2MTljMCwwLjU1MywwLjQ0NywxLDEsMWgxOGMwLjU1MywwLDEtMC40NDcsMS0xVjJDMjQsMS40NDcsMjMuNTUzLDEsMjMsMXoNCgkJIE0yMiw0djE2aC0xSDdINlY0VjNoMTZWNHoiLz4NCjwvZz4NCjxyZWN0IHg9IjciIHk9IjIyIiBmaWxsPSIjMDA3RkIzIiB3aWR0aD0iNCIgaGVpZ2h0PSIxIi8+DQo8cmVjdCB4PSIxNyIgeT0iMjIiIGZpbGw9IiMwMDdGQjMiIHdpZHRoPSI0IiBoZWlnaHQ9IjEiLz4NCjwvc3ZnPg0K);
-            background-position: 3px 0;
-        }
-    }
+}
