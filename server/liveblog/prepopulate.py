@@ -14,6 +14,7 @@ import superdesk
 import os
 import json
 
+
 def prepopulate_data(file_name, default_user):
     placeholders = {}
     users = {default_user['username']: default_user['password']}
@@ -44,7 +45,6 @@ class AppPrepopulateCommand(superdesk.Command):
     option_list = [
         superdesk.Option('--file', '-f', dest='prepopulate_file', default='app_prepopulate_data.json')
     ]
-
 
     def run(self, prepopulate_file):
         prepopulate_data(prepopulate_file, get_default_user())
