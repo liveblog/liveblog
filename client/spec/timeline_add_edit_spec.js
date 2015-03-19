@@ -27,9 +27,9 @@ describe('timeline add to top and edit', function() {
         var randomText = randomString(10);
         //go and check the timeline
         element.all(by.repeater('post in posts')).then(function(posts) {
-            posts[0].isElementPresent(by.css('.timeline-expander-holder')).then(function(present) {
+            posts[0].isElementPresent(by.css('.lb-post__expander-holder')).then(function(present) {
                 if (present) {
-                    posts[0].element(by.css('.timeline-expander-holder')).click();
+                    posts[0].element(by.css('.lb-post__expander-holder')).click();
                 }
             });
             var textElement = posts[0].element(by.css('span[medium-editable]'));
@@ -46,9 +46,9 @@ describe('timeline add to top and edit', function() {
                 openBlog(2);
                 //go and check the timeline
                 element.all(by.repeater('post in posts')).then(function(posts) {
-                    posts[0].isElementPresent(by.css('.timeline-expander-holder')).then(function(present) {
+                    posts[0].isElementPresent(by.css('.lb-post__expander-holder')).then(function(present) {
                         if (present) {
-                            posts[0].element(by.css('.timeline-expander-holder')).click();
+                            posts[0].element(by.css('.lb-post__expander-holder')).click();
                         }
                     });
                     var textElement = posts[0].element(by.css('span[medium-editable]'));

@@ -60,7 +60,6 @@ describe('Draft Posts', function() {
         resetEditor();
         browser.waitForAngular();
         var first_post = element(by.repeater('post in draftPosts.posts').row(0));
-        browser.actions().mouseMove(first_post.element(by.css('.post-item__header'))).perform();
         first_post.element(by.css('[dropdown-toggle]')).click();
         first_post.element(by.css('[ng-click="onEditClick(post)"]')).click();
         browser.wait(function() {
