@@ -21,7 +21,6 @@ define([
                 function update(_id, cache) {
                     return api.blogs.getById(_id, cache).then(function(data) {
                         blogsCache.put(_id, data);
-                        postsService.updateLastIndex(data);
                         return blogsCache.get(_id);
                     });
                 }

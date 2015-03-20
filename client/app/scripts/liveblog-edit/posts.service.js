@@ -10,8 +10,9 @@
 
 define([
     'angular',
+    'moment',
     'lodash'
-], function(angular, _) {
+], function(angular, moment, _) {
     'use strict';
 
     PostsService.$inject = [
@@ -22,7 +23,6 @@ define([
         '$cacheFactory'
     ];
     function PostsService(api, $q, userList, $rootScope, $cacheFactory) {
-        var lastIndex = [];
 
         function retrievePosts(blog_id, posts_criteria) {
             return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
@@ -52,37 +52,64 @@ define([
                 .query(items_criteria);
         }
 
-        // update the last index with the new one from the blog.
-        // keeps track of where the latest changes in items and posts,
-        // this is reflected into the blog on the `_updated` field.
-        function updateLastIndex(blog) {
-            if (lastIndex[0] !== blog._updated) {
-                lastIndex.unshift(blog._updated);
+        // get the last updated time from a list based on the format function.
+        function lastUpdated(items, format) {
+            switch (items.length) {
+                case 0:
+                    return moment();
+                    break;
+                case 1:
+                    return format(items[0]);
+                    break;
+                default:
+                    return _.reduce(items, function(memo, item) {
+                            memo = format(memo);
+                            item = format(item);
+                            return (item.diff(memo) > 0) ? item: memo;
+                        });
+
             }
         }
 
-        function removeLastIndex() {
-            _.debounce(function() {
-                lastIndex.pop();
-            }, 500);
-        }
-
-        // generate a criteria for updateing posts and items.
-        function updateCriteria(blog_id, type) {
-            var filter = [], criteria;
-            filter.push({range: {
+        // generate a criteria for updateing items.
+        function updateItemsCriteria(blog_id, posts) {
+            var momentLast = lastUpdated(posts, function(post) {
+                    return (post.items)?
+                        (lastUpdated(post.items, function(item) {
+                            return (item.item._updated)? moment(item.item._updated) : item;
+                        })) : post;
+                }),
+                filter = [
+                {range: {
                     _updated: {
-                            gt: lastIndex[lastIndex.length - 1]
+                            gt: momentLast.utc().format()
                         }
                     }
-                });
-            if (type) {
-                filter.push({term: {
+                }], criteria = {
+                    source: {
+                        query: {filtered: {filter: {
+                            and: filter
+                        }}}
+                    }
+            };
+            return criteria;
+        }
+
+        // generate a criteria for updateing posts.
+        function updatePostCriteria(blog_id, posts, type) {
+            var momentLast = lastUpdated(posts, function(post) {
+                return (post._updated)? moment(post._updated) : post;
+            }), filter = [
+                {range: {
+                    _updated: {
+                            gt: momentLast.utc().format()
+                        }
+                    }
+                }, {term: {
                         post_status: type
                         }
-                    });
-            };
-            criteria = {
+                    }
+            ], criteria = {
                     source: {
                         query: {filtered: {filter: {
                             and: filter
@@ -96,7 +123,7 @@ define([
         // it will not detect newly added items in post.
         function updateItems(blog_id, posts, postsInfo) {
             var indexItem;
-            retrieveItems(blog_id, updateCriteria(blog_id)).then(function(data) {
+            retrieveItems(blog_id, updateItemsCriteria(blog_id, posts)).then(function(data) {
                 angular.forEach(data._items, function(item) {
                     angular.forEach(posts, function(post, indexPost) {
                         indexItem = _.findIndex(post.items, {residRef: item._id});
@@ -113,7 +140,6 @@ define([
                         }
                     });
                 });
-                removeLastIndex();
             });
         }
 
@@ -121,7 +147,7 @@ define([
         // it will add/remove new items in post.
         function updatePosts(blog_id, type, posts, postsInfo) {
             var indexNewPost, currentPost, indexOldItem;
-            retrievePosts(blog_id, updateCriteria(blog_id, type)).then(function(data) {
+            retrievePosts(blog_id, updatePostCriteria(blog_id, posts, type)).then(function(data) {
                 angular.forEach(data._items, function(post) {
                     indexNewPost = _.findIndex(posts, {_id: post._id});
                     if (indexNewPost !== -1) {
@@ -157,7 +183,6 @@ define([
                         posts.push(post);
                     }
                 });
-                removeLastIndex();
             });
         }
 
@@ -244,7 +269,6 @@ define([
             fetchDrafts: function(blog_id, posts, postsInfo) {
                 return fetchPosts(blog_id, 'draft', {} , posts, postsInfo);
             },
-            updateLastIndex: updateLastIndex,
             updatePosts: updatePosts,
             updateItems: updateItems,
             savePost: savePost,
