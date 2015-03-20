@@ -11,8 +11,9 @@
 
 import superdesk
 from superdesk import get_backend
-from apps.preferences import PreferencesResource, PreferencesService
 from eve.utils import ParsedRequest
+from apps.packages.resource import PackageResource
+from apps.packages import PackageService
 
 
 _preferences_key = 'global_preferences'
@@ -20,52 +21,33 @@ _general_preferences_key = 'global_settings'
 
 
 def init_app(app):
-    endpoint_name = 'global_preferences'
+    endpoint_name = _preferences_key
     service = GlobalPreferencesService(endpoint_name, backend=get_backend())
     GlobalPreferencesResource(endpoint_name, app=app, service=service)
-
     superdesk.intrinsic_privilege(resource_name=endpoint_name, method=['PATCH'])
 
 
-class GlobalPreferencesResource(PreferencesResource):
+class GlobalPreferencesResource(PackageResource):
     datasource = {
         'default_sort': [('_updated', -1)],
         'projection': {
             _general_preferences_key: 1
         }
     }
-    schema = PreferencesResource.schema
-    schema.update(schema)
-    schema.update({
+    schema = {
         _general_preferences_key: {'type': 'dict', 'required': True}
-    })
-
+    }
     resource_methods = ['GET', 'POST']
     item_methods = ['GET', 'PATCH']
 
-    superdesk.register_default_global_preference('languages:set', {
-        'type': 'string',
-        'lang': 'en',
-        'label': 'Blog language set page'
-    })
-    superdesk.register_default_global_preference('themes:set', {
-        'type': 'string',
-        'theme': '',
-        'label': 'Blog themes set page'
-    })
 
-
-class GlobalPreferencesService(PreferencesService):
-
-    def set_global_initial_prefs(self, blog_doc):
-        if _general_preferences_key not in blog_doc:
-            orig_blog_prefs = blog_doc.get(_preferences_key, {})
-            available = dict(superdesk.default_global_preferences)
-            available.update(orig_blog_prefs)
-            blog_doc[_general_preferences_key] = available
-        return blog_doc
+class GlobalPreferencesService(PackageService):
+    def get_global_prefs(self):
+        return {'language': 'en', 'theme': 'theme1'}
 
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
-        return self.backend.get('global_preferences', req=req, lookup=lookup)
+        return self.backend.get(_preferences_key, req=req, lookup=lookup)
+
+# EOF

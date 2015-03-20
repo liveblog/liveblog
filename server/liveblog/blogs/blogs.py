@@ -52,7 +52,7 @@ class BlogService(BaseService):
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
             doc['guid'] = generate_guid(type=GUID_TAG)
-        get_resource_service('blog_preferences').set_blog_initial_prefs(doc)
+            doc['blog_preferences'] = get_resource_service('global_preferences').get_global_prefs()
 
     def get(self, req, lookup):
         if req is None:
