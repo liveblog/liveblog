@@ -8,11 +8,23 @@
 # AUTHORS and LICENSE files distributed with this source code, or
 # at https://www.sourcefabric.org/superdesk/license
 
-from apps.prepopulate.app_prepopulate import get_default_user, set_logged_user, apply_placeholders
+from apps.prepopulate.app_prepopulate import get_default_user, set_logged_user, apply_placeholders, \
+    PrepopulateResource
 from superdesk import get_resource_service
+from superdesk.services import BaseService
+from superdesk.tests import drop_elastic, drop_mongo
 import superdesk
 import os
 import json
+import superdesk
+
+
+def init_app(app):
+    if superdesk.app.config.get('SUPERDESK_TESTING', False):
+        endpoint_name = 'prepopulate'
+        service = PrepopulateService(endpoint_name, backend=superdesk.get_backend())
+        PrepopulateResource(endpoint_name, app=app, service=service)
+        superdesk.intrinsic_privilege(resource_name=endpoint_name, method=['POST'])
 
 
 def prepopulate_data(file_name, default_user):
@@ -38,6 +50,19 @@ def prepopulate_data(file_name, default_user):
                     placeholders[id_name] = str(ids[0])
             except Exception as e:
                 print('Exception:', e)
+
+
+class PrepopulateService(BaseService):
+    def create(self, docs, **kwargs):
+        for doc in docs:
+            if doc.get('remove_first'):
+                drop_elastic(superdesk.app)
+                drop_mongo(superdesk.app)
+            user = get_resource_service('users').find_one(username=get_default_user()['username'], req=None)
+            if not user:
+                get_resource_service('users').post([get_default_user()])
+            prepopulate_data(doc.get('profile') + '.json', get_default_user())
+        return ['OK']
 
 
 class AppPrepopulateCommand(superdesk.Command):
