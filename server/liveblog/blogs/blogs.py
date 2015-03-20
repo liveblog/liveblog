@@ -9,6 +9,7 @@ from apps.content import metadata_schema
 from apps.archive.common import generate_guid, GUID_TAG
 from superdesk.celery_app import update_key
 
+from superdesk.resource import Resource
 
 class BlogsVersionsResource(ArchiveVersionsResource):
     """

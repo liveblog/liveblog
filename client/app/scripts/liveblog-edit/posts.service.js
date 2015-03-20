@@ -22,18 +22,12 @@ define([
         '$cacheFactory'
     ];
     function PostsService(api, $q, userList, $rootScope, $cacheFactory) {
-        var posts = [],
-            postsInfo = {},
-            lastIndex = [];
+        var lastIndex = [];
 
         function retrievePosts(blog_id, posts_criteria) {
             return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
                 .query(posts_criteria)
                 .then(function(data) {
-                    var posts = [];
-                    if (data._meta.page === 1) {
-                        postsInfo.total = data._meta.total;
-                    }
                     data._items.forEach(function(post) {
                         // update the post structure
                         angular.extend(post, {
@@ -44,25 +38,18 @@ define([
                             mainItem: post.groups[1].refs[0],
                             items: post.groups[1].refs
                         });
-                        // retrieve user information and add it to the post
-                        (function(post) {
-                            userList.getUser(post.original_creator).then(function(user) {
-                                post.original_creator_name = user.display_name;
-                            });
-                        })(post);
-                        posts.push(post);
+                        userList.getUser(post.original_creator).then(function(user) {
+                            post.original_creator_name = user.display_name;
+                        });
                     });
-                    return posts;
+                    return data;
                 });
         }
 
         // get the items based on the blog and criteria ro retrieve them.
         function retrieveItems(blog_id, items_criteria) {
             return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/items', {_id: blog_id})
-                .query(items_criteria)
-                .then(function(data) {
-                    return data._items;
-                });
+                .query(items_criteria);
         }
 
         // update the last index with the new one from the blog.
@@ -81,36 +68,45 @@ define([
         }
 
         // generate a criteria for updateing posts and items.
-        function updateCriteria(blog_id) {
-            var filter = [
-                {range: {
+        function updateCriteria(blog_id, type) {
+            var filter = [], criteria;
+            filter.push({range: {
                     _updated: {
                             gt: lastIndex[lastIndex.length - 1]
                         }
                     }
-                }
-            ], criteria = {
-                source: {
-                    query: {filtered: {filter: {
-                        and: filter
-                    }}},
-                    sort: [{versioncreated: 'asc'}]
-                }
+                });
+            if (type) {
+                filter.push({term: {
+                        post_status: type
+                        }
+                    });
+            };
+            criteria = {
+                    source: {
+                        query: {filtered: {filter: {
+                            and: filter
+                        }}}
+                    }
             };
             return criteria;
         }
 
         // update the latest changes in items
         // it will not detect newly added items in post.
-        function updateItems(blog_id) {
+        function updateItems(blog_id, posts, postsInfo) {
             var indexItem;
-            retrieveItems(blog_id, updateCriteria(blog_id)).then(function(items) {
-                angular.forEach(items, function(item) {
-                    angular.forEach(posts, function(post) {
+            retrieveItems(blog_id, updateCriteria(blog_id)).then(function(data) {
+                angular.forEach(data._items, function(item) {
+                    angular.forEach(posts, function(post, indexPost) {
                         indexItem = _.findIndex(post.items, {residRef: item._id});
                         if (indexItem !== -1) {
                             if (item.deleted) {
                                 post.items.splice(indexItem, 1);
+                                if (post.items.length === 0) {
+                                    posts.splice(indexPost, 1);
+                                    postsInfo.total--;
+                                }
                             } else {
                                 angular.extend(post.items[indexItem].item, item);
                             }
@@ -123,10 +119,10 @@ define([
 
         // update changes in posts
         // it will add/remove new items in post.
-        function updatePosts(blog_id) {
+        function updatePosts(blog_id, type, posts, postsInfo) {
             var indexNewPost, currentPost, indexOldItem;
-            retrievePosts(blog_id, updateCriteria(blog_id)).then(function(data) {
-                angular.forEach(data, function(post) {
+            retrievePosts(blog_id, updateCriteria(blog_id, type)).then(function(data) {
+                angular.forEach(data._items, function(post) {
                     indexNewPost = _.findIndex(posts, {_id: post._id});
                     if (indexNewPost !== -1) {
                         if (post.deleted) {
@@ -136,10 +132,10 @@ define([
                         } else {
                             currentPost = posts[indexNewPost];
                             angular.forEach(post.items, function(item, indexNewItem) {
-                                indexOldItem = _.findIndex(currentPost.items, {residRef: item._id});
+                                indexOldItem = _.findIndex(currentPost.items, {residRef: item.item._id});
                                 if (indexOldItem !== -1) {
                                     // delete item if property deleted is on.
-                                    if (item.deleted) {
+                                    if (item.item.deleted) {
                                         // remove post if the deleted item is single.
                                         if (currentPost.items.length === 1) {
                                             posts.splice(indexNewPost, 1);
@@ -158,30 +154,20 @@ define([
                         }
                     } else {
                         postsInfo.total++;
-                        posts.unshift(post);
+                        posts.push(post);
                     }
                 });
                 removeLastIndex();
             });
         }
 
-        function fetchPosts(blog_id, posts_criteria) {
+        function fetchPosts(blog_id, status, posts_criteria, posts, postsInfo) {
+            posts_criteria.source = {
+                query: {filtered: {filter: {and: [{term: {post_status: status}}]}}}
+            };
             return retrievePosts(blog_id, posts_criteria).then(function(data) {
-                // FIXME: filter in the query
-                angular.forEach(data, function(post) {
-                    if (typeof(post.post_status) === 'undefined' || post.post_status === 'open') {
-                        posts.push(post);
-                    }
-                });
-            });
-        }
-
-        function getDrafts(blog_id, posts_criteria) {
-            return retrievePosts(blog_id, posts_criteria).then(function(data) {
-                // FIXME: filter in the query
-                return data.filter(function(post) {
-                    return post.post_status === 'draft';
-                });
+                posts.push.apply(posts, data._items);
+                postsInfo.total = data._meta.total;
             });
         }
 
@@ -248,17 +234,19 @@ define([
         }
 
         function removePost(post) {
-            return api.posts.remove(post);
+            return savePost(post.blog, post, []).then(function() {
+                api.posts.remove(post);
+            });
         }
 
         return {
-            posts: posts,
-            postsInfo: postsInfo,
             fetchPosts: fetchPosts,
+            fetchDrafts: function(blog_id, posts, postsInfo) {
+                return fetchPosts(blog_id, 'draft', {} , posts, postsInfo);
+            },
             updateLastIndex: updateLastIndex,
             updatePosts: updatePosts,
             updateItems: updateItems,
-            getDrafts: getDrafts,
             savePost: savePost,
             saveDraft: function(blog_id, post, items, post_status) {
                 return savePost(blog_id, post, items, 'draft');

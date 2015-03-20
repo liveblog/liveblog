@@ -11,7 +11,14 @@ define([
                                  blogService) {
 
         function retrievePosts() {
-            postsService.fetchPosts($route.current.params._id, $scope.postsCriteria).then(function() {
+            $scope.timelineLoading = true;
+            postsService.fetchPosts(
+                $route.current.params._id,
+                'open',
+                $scope.postsCriteria,
+                $scope.posts,
+                $scope.postsInfo
+            ).then(function(data) {
                 $scope.timelineLoading = false;
             }, function(reason) {
                 notify.error(gettext('Could not load posts... please try again later'));
@@ -27,10 +34,10 @@ define([
             }
         }
         $scope.$on('posts', function() {
-            postsService.updatePosts($route.current.params._id);
+            postsService.updatePosts($route.current.params._id, 'open', $scope.posts, $scope.postsInfo);
         });
         $scope.$on('items', function() {
-            postsService.updateItems($route.current.params._id);
+            postsService.updateItems($route.current.params._id, $scope.posts, $scope.postsInfo);
         });
         $scope.$on('blogs', function() {
             blogService.update($route.current.params._id);
@@ -38,6 +45,7 @@ define([
         // set the $scope
         angular.extend($scope, {
             posts: [],
+            postsInfo: {},
             timelineLoading: false,
             postsCriteria: {
                 max_results: 10,
@@ -49,8 +57,6 @@ define([
             },
             removeFromPosts: postsService.remove
         });
-        $scope.postsInfo = postsService.postsInfo;
-        $scope.posts = postsService.posts;
         // load posts
         retrievePosts();
     }
