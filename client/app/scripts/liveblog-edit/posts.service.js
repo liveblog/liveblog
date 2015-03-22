@@ -56,7 +56,9 @@ define([
         function lastUpdated(items, format) {
             switch (items.length) {
                 case 0:
-                    return moment();
+                    // when we start we don't have any items,
+                    // so starting point is now less 5 minutes.
+                    return moment().subtract(5, 'minutes');
                     break;
                 case 1:
                     return format(items[0]);

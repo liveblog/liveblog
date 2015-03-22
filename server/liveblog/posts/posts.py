@@ -66,6 +66,10 @@ class PostsService(PackageService):
         super().on_created(docs)
         push_notification('posts', created=1)
 
+    def on_updated(self, updates, original):
+        super().on_updated(updates, original)
+        push_notification('posts', updated=1)
+
     def get_item_update_data(self, item, links, delete=True):
         doc = {LINKED_IN_PACKAGES: links}
         if not item.get('cid'):
