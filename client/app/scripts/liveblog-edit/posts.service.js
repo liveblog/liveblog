@@ -59,10 +59,8 @@ define([
                     // when we start we don't have any items,
                     // so starting point is now less 5 minutes.
                     return moment().subtract(5, 'minutes');
-                    break;
                 case 1:
                     return format(items[0]);
-                    break;
                 default:
                     return _.reduce(items, function(memo, item) {
                             memo = format(memo);
@@ -181,8 +179,10 @@ define([
                             });
                         }
                     } else {
-                        postsInfo.total++;
-                        posts.push(post);
+                        if (!post.deleted) {
+                            postsInfo.total++;
+                            posts.push(post);
+                        }
                     }
                 });
             });
@@ -190,7 +190,7 @@ define([
 
         function fetchPosts(blog_id, status, posts_criteria, posts, postsInfo) {
             posts_criteria.source = {
-                query: {filtered: {filter: {and: [{term: {post_status: status}}]}}}
+                query: {filtered: {filter: {and: [{term: {post_status: status}}, {not: {term: {deleted: 'on'}}}]}}}
             };
             return retrievePosts(blog_id, posts_criteria).then(function(data) {
                 posts.push.apply(posts, data._items);
@@ -198,8 +198,9 @@ define([
             });
         }
 
-        function savePost(blog_id, post_to_update, items, post_status) {
-            post_status = post_status || _.result(post_to_update, 'post_status') || 'open';
+        function savePost(blog_id, post_to_update, items, post) {
+            post = post || {};
+            post.post_status = post.post_status || _.result(post_to_update, 'post_status') || 'open';
             var dfds = [];
             if (items && items.length > 0) {
                 // prepare the list of items if needed
@@ -226,9 +227,8 @@ define([
             }
             // save the post
             return $q.all(dfds).then(function(items) {
-                var post = {
+                angular.extend(post, {
                     blog: blog_id,
-                    post_status: post_status,
                     groups: [
                         {
                             id: 'root',
@@ -240,7 +240,7 @@ define([
                             role: 'grpRole:Main'
                         }
                     ]
-                };
+                });
                 // update the post reference (links with items)
                 _.each(items, function(item) {
                     post.groups[1].refs.push({residRef: item._id});
@@ -248,7 +248,13 @@ define([
                 var operation;
                 if (angular.isDefined(post_to_update)) {
                     operation = function updatePost() {
-                        return api.posts.save(post_to_update, post);
+                        if ((post_to_update.post_status === 'draft') && (post.post_status === 'open')) {
+                            return api.posts.save(post_to_update, {deleted: 'on'}).then(function() {
+                                api.posts.save(post);
+                            });
+                        } else {
+                            return api.posts.save(post_to_update, post);
+                        }
                     };
                 } else {
                     operation = function createPost() {
@@ -261,9 +267,9 @@ define([
         }
 
         function removePost(post) {
-            return savePost(post.blog, post, []).then(function() {
-                api.posts.remove(post);
-            });
+            //var deleted =  {_deleted: moment().utc().format()};
+            var deleted = {deleted: 'on'};
+            return savePost(post.blog, post, [], deleted);
         }
 
         return {
@@ -274,8 +280,8 @@ define([
             updatePosts: updatePosts,
             updateItems: updateItems,
             savePost: savePost,
-            saveDraft: function(blog_id, post, items, post_status) {
-                return savePost(blog_id, post, items, 'draft');
+            saveDraft: function(blog_id, post, items) {
+                return savePost(blog_id, post, items, {post_status: 'draft'});
             },
             remove: removePost
         };

@@ -11,6 +11,7 @@ from superdesk.celery_app import update_key
 
 from superdesk.resource import Resource
 
+
 class BlogsVersionsResource(ArchiveVersionsResource):
     """
     Resource class for versions of archive_media

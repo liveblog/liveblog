@@ -53,6 +53,9 @@ class ItemsResource(ArchiveResource):
         'meta': {
             'type': 'dict'
         },
+        'deleted': {
+            'type': 'string'
+        },
         'cid': {
             'type': 'integer'
         }

@@ -51,6 +51,9 @@ class PostsResource(PackageResource):
             'allowed': ['open', 'draft'],
             'default': 'open'
         },
+        'deleted': {
+            'type': 'string'
+        },
     })
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
 

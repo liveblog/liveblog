@@ -111,8 +111,6 @@ define([
 
                     scope.removePost = function(post) {
                         postsService.remove(post).then(function(message) {
-                            // @TODO: remove this when it will be done in server.
-                            blogService.save(scope.post.blog, {});
                             notify.pop();
                             notify.info(gettext('Post removed'));
                         }, function() {
@@ -142,8 +140,6 @@ define([
                                     //update the post
                                     postsService.savePost(scope.post.blog, scope.post, items)
                                         .then(function(message) {
-                                            // @TODO: remove this when it will be done in server.
-                                            blogService.save(scope.post.blog, {});
                                             notify.pop();
                                             notify.info(gettext('Item removed'));
                                         }, function(erro) {
