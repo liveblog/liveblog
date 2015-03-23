@@ -11,7 +11,6 @@
 
 import superdesk
 from superdesk import get_backend, get_resource_service
-from eve.utils import ParsedRequest
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 
@@ -43,10 +42,5 @@ class GlobalPreferencesService(BaseService):
     def get_global_prefs(self):
         res = get_resource_service(_preferences_key).get(req=None, lookup={})
         return dict([v['key'], v['value']] for v in res)
-
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        return self.backend.get(_preferences_key, req=req, lookup=lookup)
 
 # EOF
