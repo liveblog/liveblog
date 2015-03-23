@@ -1,9 +1,9 @@
 #!/bin/bash
 
 (
-	docker ps >/dev/null && which docker-compose
+    docker --version && docker ps >/dev/null && docker-compose --version
 ) || (
-	echo "Depended executable not found. Check the message above" && exit 1
+    echo "Depended executable not found. Check the message above" && exit 1
 ) &&
 
 cd $(dirname "$0")/../docker &&
