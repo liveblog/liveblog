@@ -18,11 +18,9 @@ define([
     PostsService.$inject = [
         'api',
         '$q',
-        'userList',
-        '$rootScope',
-        '$cacheFactory'
+        'userList'
     ];
-    function PostsService(api, $q, userList, $rootScope, $cacheFactory) {
+    function PostsService(api, $q, userList) {
 
         function retrievePosts(blog_id, posts_criteria) {
             return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})

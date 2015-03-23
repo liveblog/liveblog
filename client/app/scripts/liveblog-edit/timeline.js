@@ -4,10 +4,10 @@ define([
 ], function(angular) {
     'use strict';
     TimelineController.$inject = ['$scope', '$rootScope', 'notify', 'gettext',
-                                '$route', '$q', '$cacheFactory', 'userList', 'postsService',
+                                '$route', '$q', 'userList', 'postsService',
                                 'blogService'];
     function TimelineController($scope, $rootScope, notify, gettext,
-                                 $route, $q, $cacheFactory, userList, postsService,
+                                 $route, $q, userList, postsService,
                                  blogService) {
 
         function retrievePosts() {
@@ -81,96 +81,6 @@ define([
         });
     }])
     .controller('TimelineController', TimelineController)
-    .directive('rollshow', [function() {
-        return {
-            link: function(scope, elem, attrs) {
-                elem.parent().on('mouseover', function() {
-                    elem.show();
-                });
-                elem.parent().on('mouseout', function() {
-                    elem.hide();
-                });
-            }
-        };
-    }])
-    .directive('lbTimelinePost', [
-        'notify', 'gettext', 'asset', 'postsService', 'modal', 'blogService',
-        function(notify, gettext, asset, postsService, modal, blogService) {
-            return {
-                scope: {
-                    post: '=',
-                    onEditClick: '='
-                },
-                replace: true,
-                restrict: 'E',
-                templateUrl: 'scripts/liveblog-edit/views/timeline-post.html',
-                link: function(scope, elem, attrs) {
-                    scope.toggleMultipleItems = function() {
-                        scope.post.show_all = !scope.post.show_all;
-                    };
-
-                    scope.removePost = function(post) {
-                        postsService.remove(post).then(function(message) {
-                            notify.pop();
-                            notify.info(gettext('Post removed'));
-                        }, function() {
-                            notify.pop();
-                            notify.error(gettext('Something went wrong'));
-                        });
-                    };
-
-                    scope.askRemovePost = function(post) {
-                        modal.confirm(gettext('Are you sure you want to delete the post?'))
-                            .then(function() {
-                                scope.removePost(post);
-                            });
-                    };
-
-                    scope.askRemoveItem = function(item, post) {
-                        modal.confirm(gettext('Are you sure you want to delete the item?'))
-                            .then(function() {
-                                if (scope.post.items.length === 1) {
-                                    scope.removePost(post);
-                                } else {
-                                    //update the post
-                                    //creating the update for items
-                                    var items = angular.copy(scope.post.items);
-                                    var index = scope.post.items.indexOf(item);
-                                    items.splice(index, 1);
-                                    //update the post
-                                    postsService.savePost(scope.post.blog, scope.post, items)
-                                        .then(function(message) {
-                                            notify.pop();
-                                            notify.info(gettext('Item removed'));
-                                        }, function(erro) {
-                                            notify.pop();
-                                            notify.error(gettext('Something went wrong'));
-                                        });
-                                }
-                            }
-                        );
-                    };
-                }
-            };
-        }
-    ])
-    .directive('lbBindHtml', [function() {
-        return {
-            restrict: 'A',
-            priority: 2,
-            link: function(scope, elem, attrs) {
-                attrs.$observe('htmlContent', function() {
-                    if (attrs.htmlLocation) {
-                        //need to inject the html in a specific element
-                        elem.find('[' + attrs.htmlLocation + ']').html(attrs.htmlContent);
-                    } else {
-                        //inject streaght in the elem
-                        elem.html(attrs.htmlContent);
-                    }
-                });
-            }
-        };
-    }])
     .directive('setTimelineHeight', ['$window', function($window) {
         var offset = 40; // 20px padding top and bottom
         var w = angular.element($window);
