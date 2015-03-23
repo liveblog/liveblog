@@ -23,16 +23,15 @@ Feature: Settings operations
         """
         When we patch given
         """
-        {"blog_preferences": {"themes:set": {"theme": "railscast"}}}
+        {"blog_preferences": {"theme": "railscast"}}
         """
         When we get "/blogs/#blogs._id#"
+        Then we get blog preferences
         Then we get existing resource
         """
         {
             "blog_preferences": {
-                "themes:set": {
-                    "theme": "railscast"
-                }
+                "theme": "railscast"
             }
         }
         """
