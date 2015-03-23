@@ -984,11 +984,12 @@ def get_default_prefs(context):
     assert_equal(response_data['user_preferences'], default_user_preferences)
 
 
-@then('we get blog preferences')
+@then('we get default blog preferences')
 def get_default_blog_prefs(context):
     response_data = json.loads(context.response.get_data())
     assert 'blog_preferences' in response_data
-    assert len(response_data['blog_preferences'].items()) > 0
+    default_settings = get_resource_service('global_preferences').get_global_prefs()
+    assert response_data['blog_preferences'] == default_settings
 
 
 @when('we spike "{item_id}"')

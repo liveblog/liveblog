@@ -10,7 +10,7 @@
 
 
 import superdesk
-from superdesk import get_backend
+from superdesk import get_backend, get_resource_service
 from eve.utils import ParsedRequest
 from superdesk.resource import Resource
 from superdesk.services import BaseService
@@ -22,29 +22,31 @@ def init_app(app):
     endpoint_name = _preferences_key
     service = GlobalPreferencesService(endpoint_name, backend=get_backend())
     GlobalPreferencesResource(endpoint_name, app=app, service=service)
-    superdesk.intrinsic_privilege(resource_name=endpoint_name, method=['PATCH'])
+
+superdesk.privilege(name='global_preferences', label='Global Settings Management',
+                    description='User can blobal settings.')
 
 
 class GlobalPreferencesResource(Resource):
     datasource = {
-        'source': _preferences_key,
-        'default_sort': [('_updated', -1)]
+        'source': _preferences_key
     }
     schema = {
-        'key': {'type': 'str', 'required': True},
-        'value': {'type': 'str', 'required': True}
+        'key': {'type': 'string', 'required': True, 'unique': True},
+        'value': {'type': 'string'}
     }
-    resource_methods = ['GET', 'POST']
-    item_methods = ['GET', 'PATCH']
+    privileges = {'GET': 'global_preferences', 'POST': 'global_preferences',
+                  'PATCH': 'global_preferences', 'DELETE': 'global_preferences'}
 
 
 class GlobalPreferencesService(BaseService):
     def get_global_prefs(self):
-        return {'language': 'en', 'theme': 'theme1'}
+        res = get_resource_service(_preferences_key).get(req=None, lookup={})
+        return dict([v['key'], v['value']] for v in res)
 
     def get(self, req, lookup):
         if req is None:
-            req = ParsedRequest() 
+            req = ParsedRequest()
         return self.backend.get(_preferences_key, req=req, lookup=lookup)
 
 # EOF
