@@ -12,12 +12,10 @@
 import superdesk
 from superdesk import get_backend
 from eve.utils import ParsedRequest
-from apps.packages.resource import PackageResource
-from apps.packages import PackageService
-
+from superdesk.resource import Resource
+from superdesk.services import BaseService
 
 _preferences_key = 'global_preferences'
-_general_preferences_key = 'global_settings'
 
 
 def init_app(app):
@@ -27,27 +25,26 @@ def init_app(app):
     superdesk.intrinsic_privilege(resource_name=endpoint_name, method=['PATCH'])
 
 
-class GlobalPreferencesResource(PackageResource):
+class GlobalPreferencesResource(Resource):
     datasource = {
-        'default_sort': [('_updated', -1)],
-        'projection': {
-            _general_preferences_key: 1
-        }
+        'source': _preferences_key,
+        'default_sort': [('_updated', -1)]
     }
     schema = {
-        _general_preferences_key: {'type': 'dict', 'required': True}
+        'key': {'type': 'str', 'required': True},
+        'value': {'type': 'str', 'required': True}
     }
     resource_methods = ['GET', 'POST']
     item_methods = ['GET', 'PATCH']
 
 
-class GlobalPreferencesService(PackageService):
+class GlobalPreferencesService(BaseService):
     def get_global_prefs(self):
         return {'language': 'en', 'theme': 'theme1'}
 
     def get(self, req, lookup):
         if req is None:
-            req = ParsedRequest()
+            req = ParsedRequest() 
         return self.backend.get(_preferences_key, req=req, lookup=lookup)
 
 # EOF

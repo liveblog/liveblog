@@ -18,6 +18,13 @@
     }
 },
 {
+    "resource": "global_preferences",
+    "data": {
+        "key": "language",
+        "value": "fr"
+    }
+},
+{
     "resource": "languages",
     "id_name": "-id user admin-",
     "data": {
