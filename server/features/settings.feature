@@ -31,17 +31,28 @@ Feature: Settings operations
         Then we get deleted response
 
     @auth
-    Scenario: Get the preferences
+    Scenario: The blog preference takes the global preferences
+        Given empty "global_preferences"
         When we post to "/global_preferences"
         """
-        {"key": "language", "value": "fr"}
+        [{"key": "language", "value": "fr"}, {"key": "theme", "value": "theme1"}]
         """
         Given "blogs"
         """
         [{"title": "abc"}]
         """
         When we get "/blogs/#blogs._id#"
+        Then we get existing resource
+        """
+        {
+            "blog_preferences": {
+                "language": "fr",
+                "theme": "theme1"
+            }
+        }
+        """
         Then we get default blog preferences
+
 
     @auth
     Scenario: Update theme preferences for a specific blog
