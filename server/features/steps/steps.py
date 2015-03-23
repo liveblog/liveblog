@@ -984,13 +984,6 @@ def get_default_prefs(context):
     assert_equal(response_data['user_preferences'], default_user_preferences)
 
 
-@then('we get default blog preferences')
-def get_default_blog_prefs(context):
-    response_data = json.loads(context.response.get_data())
-    assert 'blog_preferences' in response_data
-    assert len(response_data['blog_preferences'].items()) > 0
-
-
 @when('we spike "{item_id}"')
 def step_impl_when_spike_url(context, item_id):
     res = get_res('/archive/' + item_id, context)

@@ -51,7 +51,6 @@ Feature: Settings operations
             }
         }
         """
-        Then we get default blog preferences
 
 
     @auth
