@@ -1,13 +1,13 @@
 Feature: Post operations
 
-	@auth
+    @auth
     Scenario: Create posts
         Given empty "posts"
         Given empty "items"
          Given "blogs"
-		"""
-		[{"title": "TEST_BLOG"}]
-		"""
+        """
+        [{"title": "TEST_BLOG"}]
+        """
         When we post to "items" with success
         """
         [{"text": "test", "blog": "#blogs._id#"}]
@@ -21,7 +21,7 @@ Feature: Post operations
                     "id": "main",
                     "refs": [
                         {
-                        	"headline": "test post with text",
+                            "headline": "test post with text",
                             "residRef": "#items._id#",
                             "slugline": "awesome post"
                         }
@@ -36,14 +36,14 @@ Feature: Post operations
         Then we get list with 1 items
 
 
-	@auth
+    @auth
     Scenario: Retrieve posts from blog
-		Given empty "posts"
-		Given empty "items"
-		Given "blogs"
-		"""
-		[{"title": "test_blog1"}]
-		"""
+        Given empty "posts"
+        Given empty "items"
+        Given "blogs"
+        """
+        [{"title": "test_blog1"}]
+        """
         When we post to "items"
         """
         [{"text": "test", "blog": "#blogs._id#"}]
@@ -51,7 +51,7 @@ Feature: Post operations
         When we post to "/posts" with success
         """
         {
-        	"blog": "#blogs._id#",
+            "blog": "#blogs._id#",
             "groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
@@ -84,10 +84,10 @@ Feature: Post operations
                                     "residRef": "#items._id#",
                                     "slugline": "awesome article",
                                      "item": {
-										"text": "test",
-										"particular_type": "item",
-										"type": "text"
-									}
+                                        "text": "test",
+                                        "particular_type": "item",
+                                        "type": "text"
+                                    }
                                 }
                             ],
                             "role": "main"
@@ -97,17 +97,17 @@ Feature: Post operations
                 }
             ]
         }
-        """       
+        """
 
         
-	@auth
+    @auth
     Scenario: Patch created post
-		Given empty "posts"
-		Given empty "items"
-		Given "blogs"
-		"""
-		[{"title": "test_blog1"}]
-		"""
+        Given empty "posts"
+        Given empty "items"
+        Given "blogs"
+        """
+        [{"title": "test_blog1"}]
+        """
         When we post to "items"
         """
         [{"text": "test", "blog": "#blogs._id#"}]
@@ -116,7 +116,7 @@ Feature: Post operations
         When we post to "/posts" with success
         """
         {
-        	"blog": "#blogs._id#",
+            "blog": "#blogs._id#",
             "groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
@@ -136,7 +136,7 @@ Feature: Post operations
         And we patch latest
         """
         {
-        	"blog": "#blogs._id#",
+            "blog": "#blogs._id#",
             "groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
@@ -185,14 +185,14 @@ Feature: Post operations
         }
         """
 
-	@auth
+    @auth
     Scenario: Full scenario to prove cid is working 
-		Given empty "posts"
-		Given empty "items"
-		Given "blogs"
-		"""
-		[{"title": "test_blog1", "cid": 1}]
-		"""
+        Given empty "posts"
+        Given empty "items"
+        Given "blogs"
+        """
+        [{"title": "test_blog1", "cid": 1}]
+        """
         When we post to "items"
         """
         [{"text": "test", "blog": "#blogs._id#"}]
@@ -239,30 +239,30 @@ Feature: Post operations
         """
         When we get "/items"
         Then we get list with 1 items
-	    """
-	    {"_items": [{"text": "test", "blog": "#blogs._id#", "cid": 1}]}
-	    """
-	    When we patch "/items/#items._id#"
-	    """
+        """
+        {"_items": [{"text": "test", "blog": "#blogs._id#", "cid": 1}]}
+        """
+        When we patch "/items/#items._id#"
+        """
         {"text": "this is a test item to check cid"}
         """
         Then we get updated response
         When we get "/items"        
         Then we get list with 1 items
-	    """
-	    {"_items": [{"text": "this is a test item to check cid", "blog": "#blogs._id#", "cid": 2}]}
-	    """
-	    When we delete "/items/#items._id#"
-	    Then we get deleted response
+        """
+        {"_items": [{"text": "this is a test item to check cid", "blog": "#blogs._id#", "cid": 2}]}
+        """
+        When we delete "/items/#items._id#"
+        Then we get deleted response
 
 
-	@auth
+    @auth
     Scenario: Delete post
         Given empty "posts"
         Given "blogs"
-		"""
-		[{"title": "test_blog1"}]
-		"""
+        """
+        [{"title": "test_blog1"}]
+        """
         When we post to "items"
         """
         [{"text": "test item", "blog": "#blogs._id#"}]
@@ -270,7 +270,7 @@ Feature: Post operations
         When we post to "/posts" with success
         """
         {
-        	"blog": "#blogs._id#",
+            "blog": "#blogs._id#",
             "groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
@@ -290,14 +290,14 @@ Feature: Post operations
         When we delete latest
         Then we get deleted response
         
-	@auth
+    @auth
     Scenario: Delete item from post i.e. update post
-		Given empty "posts"
-		Given empty "items"
-		Given "blogs"
-		"""
-		[{"title": "test_blog3"}]
-		"""
+        Given empty "posts"
+        Given empty "items"
+        Given "blogs"
+        """
+        [{"title": "test_blog3"}]
+        """
         When we post to "items"
         """
         [{"text": "test", "blog": "#blogs._id#"}]
@@ -305,7 +305,7 @@ Feature: Post operations
         When we post to "/posts" with success
         """
         {
-        	"blog": "#blogs._id#",
+            "blog": "#blogs._id#",
             "groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
@@ -324,7 +324,7 @@ Feature: Post operations
         And we patch latest
         """
         {
-        	"blog": "#blogs._id#",
+            "blog": "#blogs._id#",
             "groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
@@ -352,8 +352,8 @@ Feature: Post operations
             "blog": "#blogs._id#"
         }
         """
-		When we get "/items"
-		Then we get list with 1 items
-	    """
-	    {"_items": [{"text": "test", "deleted": "on"}]}
-	    """
+        When we get "/items"
+        Then we get list with 1 items
+        """
+        {"_items": [{"text": "test", "deleted": "on"}]}
+        """
