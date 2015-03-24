@@ -29,7 +29,7 @@
     "id_name": "-id user admin-",
     "data": {
         "language_code": "de",
-        "language_name": "Deutch"
+        "name": "Deutch"
     }
 },
 {
@@ -37,7 +37,7 @@
     "id_name": "-id user admin-",
     "data": {
         "language_code": "en",
-        "language_name": "English"
+        "name": "English"
     }
 },
 {
@@ -45,7 +45,7 @@
     "id_name": "-id user admin-",
     "data": {
         "language_code": "fr",
-        "language_name": "Français"
+        "name": "Français"
     }
 }
 ]
