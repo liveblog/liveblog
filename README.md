@@ -3,25 +3,31 @@ Liveblog  https://liveblog.sd-test.sourcefabric.org
 
 [![Build Status](https://travis-ci.org/superdesk/liveblog.svg?branch=master)](https://travis-ci.org/superdesk/liveblog)
 
-## 1. Download the project
+### Installation
 
-```
-git clone git@github.com:superdesk/liveblog.git
-```
+Use [docker-compose](http://fig.sh "") and the config from `docker` folder or build docker images manually from `Dockerfile`'s from `client` and `server` folders accordingly.
 
-## 2. Run the server
-```
-cd liveblog/server
-fig build
-fig up
-fig run api python3 manage.py users:create -u admin -p admin -e "admin@example.com" --admin=true
+##### install docker
+
+```sh
+$ sudo apt-get install docker.io
 ```
 
-## 3. Launch the client
+and make sure you can run [docker without sudo](http://askubuntu.com/questions/477551/how-can-i-use-docker-without-sudo).
+
+##### create python virtualenv
+
+```sh
+$ sudo apt-get install python-virtualenv
+$ virtualenv env
 ```
-cd liveblog/client
-npm install -g bower grunt-cli
-npm install
-bower install
-grunt server --server=http://localhost:5000/api
+
+##### install docker compose and run app
+
+```sh
+$ . env/bin/activate
+$ pip install -r docker/requirements.txt
+$ ./scripts/docker-local-demo.sh
 ```
+
+For manual installation just follow the steps described both [client](./client/Dockerfile) and [server](./server/Dockerfile) Dockerfiles.
