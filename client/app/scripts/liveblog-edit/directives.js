@@ -214,7 +214,7 @@ define([
                 }
             };
         })
-        .directive('selectAllOnClick', [function() {
+        .directive('selectTextOnClick', [function() {
             return {
                 link: function(scope, elem, attrs) {
                     elem.bind('click', function() {

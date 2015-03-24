@@ -169,7 +169,7 @@ define([
         angular.extend(vm, {
             blog: blog,
             blogSettings: {},
-            languages: [] // loaded after
+            languages: []
         });
         // load languages
         api('languages').query().then(function(data) {
