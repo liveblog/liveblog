@@ -108,6 +108,7 @@ INSTALLED_APPS = [
     'apps.stages',
     'apps.groups',
     'apps.prepopulate',
+    'apps.legal_archive',
     'apps.packages',
     'apps.privilege',
 

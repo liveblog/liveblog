@@ -1,11 +1,12 @@
 from bson.objectid import ObjectId
 from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
-from superdesk.resource import Resource
 from superdesk.utc import utcnow
+from superdesk.resource import Resource
 
 from liveblog.common import get_user, update_dates_for
 from apps.archive.archive import ArchiveResource, ArchiveService, ArchiveVersionsResource, ArchiveVersionsService
+from liveblog.blogs.blogs import set_cid_on_blogs
 
 
 class ItemsVersionsResource(ArchiveVersionsResource):
@@ -51,6 +52,12 @@ class ItemsResource(ArchiveResource):
         },
         'meta': {
             'type': 'dict'
+        },
+        'deleted': {
+            'type': 'string'
+        },
+        'cid': {
+            'type': 'integer'
         }
     })
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
@@ -60,25 +67,34 @@ class ItemsService(ArchiveService):
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
-        return self.backend.get('items', req=req, lookup=lookup)
+        docs = super().get(req, lookup)
+        return(docs)
 
     def on_create(self, docs):
+        super().on_create(docs)
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
 
     def on_created(self, docs):
+        super().on_created(docs)
         push_notification('items', created=1)
 
     def on_update(self, updates, original):
+        super().on_update(updates, original)
         user = get_user()
         updates['versioncreated'] = utcnow()
         updates['version_creator'] = str(user.get('_id'))
+        set_cid_on_blogs(original)
+        cid = original['cid']
+        updates['cid'] = cid
 
     def on_updated(self, updates, original):
+        super().on_updated(updates, original)
         push_notification('items', updated=1)
 
     def on_deleted(self, doc):
+        super().on_deleted(doc)
         push_notification('items', deleted=1)
 
 
