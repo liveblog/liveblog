@@ -36,11 +36,10 @@
                             <div class="form-group">
                                 <label for="inputLanguage" class="control-label">Language</label>
                                 <div class="form-input">
-                                    <select ng-model="settings.blogSettings.language" class="form-control">
-                                        <option>--- Default ---</option>
+                                    <select ng-model="settings.blog.blog_preferences.language" class="form-control">
                                         <option
                                           ng-repeat="language in settings.languages"
-                                          ng-selected="{{settings.blogSettings.language == language}}"
+                                          ng-selected="{{ settings.blog.blog_preferences.language == language.language_code }}"
                                           value="{{ language.language_code }}">{{ language.name }}</option>
                                     </select>
                                 </div>
@@ -48,11 +47,11 @@
                             <div class="form-group">
                                 <label for="inputTheme" class="control-label">Theme</label>
                                 <div class="form-input">
-                                    <select class="form-control">
-                                        <option>--- Default ---</option>
-                                        <option>theme 1</option>
-                                        <option>theme 2</option>
-                                        <option>theme 3</option>
+                                     <select ng-model="settings.blog.blog_preferences.theme" class="form-control">
+                                        <option
+                                          ng-repeat="theme in settings.themes"
+                                          ng-selected="{{ settings.blog.blog_preferences.theme == theme.language_code }}"
+                                          value="{{ theme.language_code }}">{{ theme.name }}</option>
                                     </select>
                                 </div>
                             </div>

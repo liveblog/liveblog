@@ -173,12 +173,16 @@ define([
         // set scope
         angular.extend(vm, {
             blog: blog,
-            blogSettings: {},
-            languages: []
+            languages: [],
+            themes: [],
         });
         // load languages
         api('languages').query().then(function(data) {
             vm.languages = data._items;
+        });
+        // load themes
+        api('themes').query().then(function(data) {
+            vm.themes = data._items;
         });
     }
 
