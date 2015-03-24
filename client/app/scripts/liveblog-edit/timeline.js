@@ -4,13 +4,21 @@ define([
 ], function(angular) {
     'use strict';
     TimelineController.$inject = ['$scope', '$rootScope', 'notify', 'gettext',
-                                '$route', '$q', '$cacheFactory', 'userList', 'postsService'];
+                                '$route', '$q', 'userList', 'postsService',
+                                'blogService'];
     function TimelineController($scope, $rootScope, notify, gettext,
-                                 $route, $q, $cacheFactory, userList, postsService) {
+                                 $route, $q, userList, postsService,
+                                 blogService) {
 
         function retrievePosts() {
-            postsService.getPosts($route.current.params._id, $scope.postsCriteria).then(function(posts) {
-                $scope.posts = $scope.posts.concat(posts);
+            $scope.timelineLoading = true;
+            postsService.fetchPosts(
+                $route.current.params._id,
+                'open',
+                $scope.postsCriteria,
+                $scope.posts,
+                $scope.postsInfo
+            ).then(function(data) {
                 $scope.timelineLoading = false;
             }, function(reason) {
                 notify.error(gettext('Could not load posts... please try again later'));
@@ -25,10 +33,19 @@ define([
                 retrievePosts();
             }
         }
-
+        $scope.$on('posts', function() {
+            postsService.updatePosts($route.current.params._id, 'open', $scope.posts, $scope.postsInfo);
+        });
+        $scope.$on('items', function() {
+            postsService.updateItems($route.current.params._id, $scope.posts, $scope.postsInfo);
+        });
+        $scope.$on('blogs', function() {
+            blogService.update($route.current.params._id);
+        });
         // set the $scope
         angular.extend($scope, {
             posts: [],
+            postsInfo: {},
             timelineLoading: false,
             postsCriteria: {
                 max_results: 10,
@@ -42,14 +59,6 @@ define([
         });
         // load posts
         retrievePosts();
-        // refresh the posts list when the user add a new post
-        $rootScope.$on('lb.posts.updated', function() {
-            // TODO: When the Post's POST reponse contains the items, we
-            // will be able to use the event's parameter to update the list.
-            // Before that, we reset the list and load it again
-            $scope.posts = [];
-            retrievePosts();
-        });
     }
 
     var app = angular.module('liveblog.timeline', ['superdesk.users', 'liveblog.edit', 'lrInfiniteScroll'])

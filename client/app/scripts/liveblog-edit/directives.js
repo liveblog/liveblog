@@ -12,7 +12,8 @@ define([
     'angular',
     'lodash',
     './module',
-    './posts.service'
+    './posts.service',
+    './blog.service'
 ], function(angular, _) {
     'use strict';
 
@@ -54,16 +55,24 @@ define([
                 DraftPostsController.$inject = ['$scope'];
                 function DraftPostsController($scope) {
                     var mv = this;
+                    mv.posts = [];
+                    mv.postsInfo = {};
                     mv.selectDraftPost = $scope.onDraftPostSeleted;
                     function updateList() {
-                        postsService.getDrafts($scope.blog._id).then(function (posts) {
-                            mv.posts = posts;
-                        });
+                        postsService.fetchDrafts(
+                            $scope.blog._id,
+                            mv.posts,
+                            mv.postsInfo
+                        );
                     }
+                    $scope.$on('posts', function() {
+                        postsService.updatePosts($scope.blog._id, 'draft', mv.posts, mv.postsInfo);
+                    });
+                    $scope.$on('items', function() {
+                        postsService.updateItems($scope.blog._id, mv.posts, mv.postsInfo);
+                    });
                     // initialize list
                     updateList();
-                    // update list when needed
-                    $scope.$on('lb.posts.updated', updateList);
                 }
                 return {
                     restrict: 'E',
