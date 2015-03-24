@@ -108,6 +108,7 @@ INSTALLED_APPS = [
     'apps.groups',
     'apps.packages',
     'apps.privilege',
+    'apps.legal_archive',
 
     'liveblog.blogs',
     'liveblog.posts',
