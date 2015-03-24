@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """Liveblog Manager"""
 
 import superdesk
@@ -9,3 +11,5 @@ manager = Manager(app)
 
 if __name__ == '__main__':
     manager.run(superdesk.COMMANDS)
+
+# EOF

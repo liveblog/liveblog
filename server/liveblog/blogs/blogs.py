@@ -3,12 +3,11 @@ from superdesk.utc import utcnow
 from eve.utils import ParsedRequest
 from apps.archive.archive import ArchiveResource, ArchiveService
 from apps.archive.archive import ArchiveVersionsService, ArchiveVersionsResource
-
 from liveblog.common import get_user, update_dates_for
 from apps.content import metadata_schema
 from apps.archive.common import generate_guid, GUID_TAG
+from superdesk import get_resource_service
 from superdesk.celery_app import update_key
-
 from superdesk.resource import Resource
 
 
@@ -57,6 +56,9 @@ class BlogsResource(ArchiveResource):
             'allowed': ['blog'],
             'default': 'blog'
         },
+        'blog_preferences': {
+            'type': 'dict'
+        },
         'cid': {
             'type': 'integer'
         }
@@ -89,6 +91,7 @@ class BlogService(ArchiveService):
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
             doc['guid'] = generate_guid(type=GUID_TAG)
+            doc['blog_preferences'] = get_resource_service('global_preferences').get_global_prefs()
 
     def get(self, req, lookup):
         if req is None:

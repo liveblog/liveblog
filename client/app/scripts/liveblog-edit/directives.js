@@ -223,6 +223,16 @@ define([
                 }
             };
         })
+        .directive('selectTextOnClick', [function() {
+            return {
+                link: function(scope, elem, attrs) {
+                    elem.bind('click', function() {
+                        elem.focus();
+                        elem.select();
+                    });
+                }
+            };
+        }])
         .directive('lbBindHtml', [function() {
             return {
                 restrict: 'A',
@@ -238,6 +248,11 @@ define([
                         }
                     });
                 }
+            };
+        }]).directive('lbBlogSettings', [function() {
+            return {
+                restrict: 'E',
+                templateUrl: 'scripts/liveblog-edit/views/settings.html'
             };
         }]);
 });

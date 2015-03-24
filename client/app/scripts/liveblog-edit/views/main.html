@@ -1,16 +1,14 @@
 <div class="subnav">
-
     <div class="button-stack left-stack" >
         <a class="navbtn homebtn" href="/#/liveblog">
             <i class="icon-th-large"></i>
         </a>
     </div>
-
     <h3 class="page-nav-title">{{ blog.title }}</h3>
     <div class="button-stack right-stack">
-        <button class="navbtn">
+        <a class="navbtn" ng-href="#/liveblog/settings/{{::blog._id}}">
             <i class="svg-icon-settings"></i>
-        </button>
+        </a>
     </div>
     <button class="btn btn-info pull-right" type="button" translate ng-click="toggleBlogState()">
         <span ng-if="isBlogOpened()">Archive Blog</span>

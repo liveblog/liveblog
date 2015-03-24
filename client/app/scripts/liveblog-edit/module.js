@@ -18,14 +18,13 @@ define([
     'use strict';
 
     BlogEditController.$inject = [
-        'api', '$q', '$scope', 'blog', 'notify', 'gettext', '$route',
+        'api', '$q', '$scope', 'blog', 'notify', 'gettext',
         'upload', 'config', '$rootScope', 'embedService', 'postsService', 'modal',
         'blogService'
     ];
-    function BlogEditController(api, $q, $scope, blog, notify, gettext, $route,
+    function BlogEditController(api, $q, $scope, blog, notify, gettext,
         upload, config, $rootScope, embedService, postsService, modal, blogService) {
 
-        var current_blog_id = $route.current.params._id;
         var current_post;
 
         // return the list of items from the editor
@@ -91,7 +90,7 @@ define([
             },
             saveAsDraft: function() {
                 notify.info(gettext('Saving draft'));
-                postsService.saveDraft(current_blog_id, current_post, getItemsFromEditor()).then(function(post) {
+                postsService.saveDraft(blog._id, current_post, getItemsFromEditor()).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Draft saved'));
                     cleanEditor();
@@ -102,7 +101,7 @@ define([
             },
             publish: function() {
                 notify.info(gettext('Saving post'));
-                postsService.savePost(current_blog_id,
+                postsService.savePost(blog._id,
                     current_post,
                     getItemsFromEditor(),
                     {post_status: 'open'}
@@ -168,6 +167,21 @@ define([
         });
     }
 
+    BlogSettingsController.$inject = ['blog', 'api'];
+    function BlogSettingsController(blog, api) {
+        var vm = this;
+        // set scope
+        angular.extend(vm, {
+            blog: blog,
+            blogSettings: {},
+            languages: []
+        });
+        // load languages
+        api('languages').query().then(function(data) {
+            vm.languages = data._items;
+        });
+    }
+
     /**
      * Resolve a blog by route id and redirect to /liveblog if such blog does not exist
      */
@@ -190,6 +204,12 @@ define([
             label: gettext('Blog Edit'),
             controller: BlogEditController,
             templateUrl: 'scripts/liveblog-edit/views/main.html',
+            resolve: {blog: BlogResolver}
+        }).activity('/liveblog/settings/:_id', {
+            label: gettext('Blog Settings'),
+            controller: BlogSettingsController,
+            controllerAs: 'settings',
+            templateUrl: 'scripts/liveblog-edit/views/settings.html',
             resolve: {blog: BlogResolver}
         });
     }]).config(['apiProvider', function(apiProvider) {
