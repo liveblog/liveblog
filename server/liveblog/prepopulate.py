@@ -8,7 +8,7 @@
 # AUTHORS and LICENSE files distributed with this source code, or
 # at https://www.sourcefabric.org/superdesk/license
 
-from apps.prepopulate.app_prepopulate import get_default_user, set_logged_user, apply_placeholders, \
+from apps.prepopulate.app_prepopulate import set_logged_user, get_default_user, apply_placeholders, \
     PrepopulateResource
 from superdesk import get_resource_service
 from superdesk.services import BaseService
@@ -16,7 +16,6 @@ from superdesk.tests import drop_elastic, drop_mongo
 import superdesk
 import os
 import json
-import superdesk
 
 
 def init_app(app):
@@ -25,6 +24,12 @@ def init_app(app):
         service = PrepopulateService(endpoint_name, backend=superdesk.get_backend())
         PrepopulateResource(endpoint_name, app=app, service=service)
         superdesk.intrinsic_privilege(resource_name=endpoint_name, method=['POST'])
+
+
+def get_admin_user():
+    user = {'username': 'admin', 'password': 'admin', 'is_active': True, 'needs_activation': False,
+            'first_name': 'first name', 'last_name': 'last name'}
+    return user
 
 
 def prepopulate_data(file_name, default_user):
@@ -72,7 +77,7 @@ class AppPrepopulateCommand(superdesk.Command):
     ]
 
     def run(self, prepopulate_file):
-        prepopulate_data(prepopulate_file, get_default_user())
+        prepopulate_data(prepopulate_file, get_admin_user())
 
 superdesk.command('app:prepopulate', AppPrepopulateCommand())
 
