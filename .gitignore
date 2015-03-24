@@ -12,6 +12,7 @@ __pycache__/
 .Python
 src/
 env/
+.env
 data/
 build/
 develop-eggs/
