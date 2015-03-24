@@ -44,7 +44,7 @@ backend:
    - MAIL_PASSWORD
    - SENTRY_DSN
    - SUPERDESK_URL=http://localhost:5000/api
-   - SUPERDESK_CLIENT_URL=http://localhost
+   - SUPERDESK_CLIENT_URL=http://localhost:5000
    - SUPERDESK_TESTING=True
   volumes:
    - .:/opt/superdesk
