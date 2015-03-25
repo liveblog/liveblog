@@ -24,6 +24,8 @@
         margin-right:5px;
         float: right;
         display: block;
+        position: relative;
+        z-index: 1;
         ul {
             position: relative;
         }
@@ -45,14 +47,16 @@
                     white-space: nowrap;
                     color: black;
                     z-index:-1;
+                    background-color: white;
+                    padding: 0 3px;
                 }
                 &:hover {
                     > i {
                         opacity: 1;
                     }
                     > span {
-                        z-index:1;
-                        opacity: .8;
+                        z-index: 1;
+                        opacity: 1;
                     }
                 }
             }

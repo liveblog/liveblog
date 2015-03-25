@@ -60,7 +60,6 @@ describe('Draft Posts', function() {
         resetEditor();
         browser.waitForAngular();
         var first_post = element(by.repeater('post in draftPosts.posts').row(0));
-        first_post.element(by.css('[dropdown-toggle]')).click();
         first_post.element(by.css('[ng-click="onEditClick(post)"]')).click();
         browser.wait(function() {
             return element(by.css('.editor .st-text-block')).isPresent();
