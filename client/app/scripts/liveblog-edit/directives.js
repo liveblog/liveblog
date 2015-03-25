@@ -120,31 +120,6 @@ define([
                                     scope.removePost(post);
                                 });
                         };
-
-                        scope.askRemoveItem = function(item, post) {
-                            modal.confirm(gettext('Are you sure you want to delete the item?'))
-                                .then(function() {
-                                    if (scope.post.items.length === 1) {
-                                        scope.removePost(post);
-                                    } else {
-                                        //update the post
-                                        //creating the update for items
-                                        var items = angular.copy(scope.post.items);
-                                        var index = scope.post.items.indexOf(item);
-                                        items.splice(index, 1);
-                                        //update the post
-                                        postsService.savePost(scope.post.blog, scope.post, items)
-                                            .then(function(message) {
-                                                notify.pop();
-                                                notify.info(gettext('Item removed'));
-                                            }, function(erro) {
-                                                notify.pop();
-                                                notify.error(gettext('Something went wrong'));
-                                            });
-                                    }
-                                }
-                            );
-                        };
                     }
                 };
             }

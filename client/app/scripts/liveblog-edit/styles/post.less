@@ -1,3 +1,6 @@
+@import 'mixins.less';
+@import 'variables.less';
+
 .lb-post {
     &__holder {
         display:block;
@@ -18,27 +21,40 @@
         margin-right:15px;
     }
     &__actions {
-        padding-top:9px;
         margin-right:5px;
         float: right;
         display: block;
-        .dropdown-toggle {
-            background-image: url('../../images/timeline-more.png');
-            width: 40px;
-            height: 47px;
-            cursor: pointer;
-            position: absolute;
-            left: -20px;
-            bottom: -20px;
-            opacity: 0.3;
-            &:hover {opacity: 1;}
+        ul {
+            position: relative;
         }
-        .dropdown-menu {
-            left: -162px!important;
-            &:before {
-                background-image: none!important;
-                border: none !important;
-                content: ''!important;
+        li {
+            display: inline-block;
+            a {
+                padding: 2px;
+                > i {
+                    .transition(opacity .25s linear);
+                    opacity: .3;
+                }
+                > span {
+                    .transition(opacity .15s linear);
+                    text-align: right;
+                    position: absolute;
+                    top: -14px;
+                    opacity: 0;
+                    right: 0;
+                    white-space: nowrap;
+                    color: black;
+                    z-index:-1;
+                }
+                &:hover {
+                    > i {
+                        opacity: 1;
+                    }
+                    > span {
+                        z-index:1;
+                        opacity: .8;
+                    }
+                }
             }
         }
     }
@@ -105,16 +121,5 @@
         &--even {
             border-top: 1px solid #ebebeb;
         }
-    }
-    &__remove-item {
-        position: absolute;
-        top: 9px;
-        right: -2px;
-        opacity: 0.15;
-        display: block;
-        &:hover {
-            opacity: 1;
-        }
-        
     }
 }
