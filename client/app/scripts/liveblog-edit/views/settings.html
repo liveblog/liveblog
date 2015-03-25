@@ -38,7 +38,7 @@
                                 <div class="form-input">
                                     <select ng-model="settings.blog.blog_preferences.language" class="form-control">
                                         <option
-                                          ng-repeat="language in settings.languages"
+                                          ng-repeat="language in settings.availableLanguages"
                                           ng-selected="{{ settings.blog.blog_preferences.language == language.language_code }}"
                                           value="{{ language.language_code }}">{{ language.name }}</option>
                                     </select>
@@ -49,7 +49,7 @@
                                 <div class="form-input">
                                      <select ng-model="settings.blog.blog_preferences.theme" class="form-control">
                                         <option
-                                          ng-repeat="theme in settings.themes"
+                                          ng-repeat="theme in settings.availableThemes"
                                           ng-selected="{{ settings.blog.blog_preferences.theme == theme.language_code }}"
                                           value="{{ theme.language_code }}">{{ theme.name }}</option>
                                     </select>

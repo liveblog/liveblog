@@ -170,19 +170,19 @@ define([
     BlogSettingsController.$inject = ['blog', 'api'];
     function BlogSettingsController(blog, api) {
         var vm = this;
-        // set scope
+        // set view's model
         angular.extend(vm, {
             blog: blog,
-            languages: [],
-            themes: [],
+            availableLanguages: [],
+            availableThemes: []
         });
-        // load languages
+        // load available languages
         api('languages').query().then(function(data) {
-            vm.languages = data._items;
+            vm.availableLanguages = data._items;
         });
-        // load themes
+        // load available themes
         api('themes').query().then(function(data) {
-            vm.themes = data._items;
+            vm.availableThemes = data._items;
         });
     }
 
