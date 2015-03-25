@@ -6,7 +6,7 @@
     </div>
     <h3 class="page-nav-title">{{ settings.blog.title }}</h3>
     <div class="button-stack right-stack">
-        <a class="navbtn" ng-href="#/liveblog/edit/{{ ::settings.blog._id }}">
+        <a class="navbtn" ng-click="settings.close()">
             <i class="svg-icon-settings"></i>
         </a>
     </div>
@@ -16,8 +16,9 @@
     <div class="settings-page">
         <div class="subnav">
             <h3 class="page-nav-title">Settings</h3>
-            <button class="btn btn-info pull-right" type="button" translate>Save</button>
-            <button class="btn btn-default pull-right" type="button" translate>Cancel</button>
+            <button ng-click="settings.save()"  class="btn btn-info pull-right"    type="button" translate ng-disabled="settings.isSaved">Save</button>
+            <button ng-click="settings.reset()" class="btn btn-default pull-right" type="button" translate>Reset to default</button>
+            <button ng-click="settings.close()" class="btn btn-default pull-right" type="button" translate>Cancel</button>
         </div>
         <div class="tabbable outer">
             <ul class="nav-tabs nav-stacked">
@@ -36,10 +37,10 @@
                             <div class="form-group">
                                 <label for="inputLanguage" class="control-label">Language</label>
                                 <div class="form-input">
-                                    <select ng-model="settings.blog.blog_preferences.language" class="form-control">
+                                    <select ng-model="settings.blogPreferences.language" class="form-control">
                                         <option
                                           ng-repeat="language in settings.availableLanguages"
-                                          ng-selected="{{ settings.blog.blog_preferences.language == language.language_code }}"
+                                          ng-selected="{{ settings.blogPreferences.language == language.language_code }}"
                                           value="{{ language.language_code }}">{{ language.name }}</option>
                                     </select>
                                 </div>
@@ -47,10 +48,10 @@
                             <div class="form-group">
                                 <label for="inputTheme" class="control-label">Theme</label>
                                 <div class="form-input">
-                                     <select ng-model="settings.blog.blog_preferences.theme" class="form-control">
+                                     <select ng-model="settings.blogPreferences.theme" class="form-control">
                                         <option
                                           ng-repeat="theme in settings.availableThemes"
-                                          ng-selected="{{ settings.blog.blog_preferences.theme == theme.language_code }}"
+                                          ng-selected="{{ settings.blogPreferences.theme == theme.language_code }}"
                                           value="{{ theme.language_code }}">{{ theme.name }}</option>
                                     </select>
                                 </div>

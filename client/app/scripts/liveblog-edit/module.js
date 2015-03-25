@@ -167,14 +167,39 @@ define([
         });
     }
 
-    BlogSettingsController.$inject = ['blog', 'api'];
-    function BlogSettingsController(blog, api) {
-        var vm = this;
+    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify'];
+    function BlogSettingsController($scope, blog, api, blogService, $location, notify) {
         // set view's model
+        var vm = this;
         angular.extend(vm, {
             blog: blog,
+            blogPreferences: angular.copy(blog.blog_preferences),
             availableLanguages: [],
-            availableThemes: []
+            availableThemes: [],
+            isSaved: true,
+            save: function() {
+                // save on backend and clsoe
+                notify.info(gettext('saving blog settings'));
+                blogService.save(vm.blog._id, {blog_preferences: vm.blogPreferences}).then(function(blog) {
+                    vm.isSaved = true;
+                    vm.blog = blog;
+                    notify.pop();
+                    notify.info(gettext('blog settings saved'));
+                    vm.close();
+                });
+            },
+            reset: function() {
+                // reset vm.blogPreferences's values with the ones from global_preferences (backend)
+                api('global_preferences').query().then(function(global_preferences) {
+                    global_preferences._items.forEach(function(item) {
+                        vm.blogPreferences[item.key] = item.value;
+                    });
+                });
+            },
+            close: function() {
+                // return to blog edit page
+                $location.path('/liveblog/edit/' + vm.blog._id);
+            }
         });
         // load available languages
         api('languages').query().then(function(data) {
@@ -184,6 +209,10 @@ define([
         api('themes').query().then(function(data) {
             vm.availableThemes = data._items;
         });
+        // watch if the user selected preferences have changed, in order to update the `isSaved` variable
+        $scope.$watch(angular.bind(this, function () {return this.blogPreferences;}), function(new_value) {
+            vm.isSaved = _.isEqual(vm.blogPreferences, vm.blog.blog_preferences);
+        }, true);
     }
 
     /**
