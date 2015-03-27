@@ -181,12 +181,6 @@ define([
                 }
             }
         });
-        // FIXME: find a better way to follow input changes. Used to update the isCurrentPostUnsaved status.
-        $interval(function() {
-            if (!$rootScope.$$phase) {
-                $rootScope.$apply();
-            }
-        }, 500);
     }
 
     BlogSettingsController.$inject = ['blog', 'api'];
