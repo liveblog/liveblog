@@ -66,6 +66,7 @@ require.config({
 
         'bootstrap': ['jquery'],
         'jquery-ui': ['jquery'],
+        'bootstrap/tooltip': ['jquery'],
         'bootstrap/modal': ['jquery'],
         'bootstrap/dropdown': ['jquery'],
         'bootstrap-daterange': ['jquery', 'moment'],
