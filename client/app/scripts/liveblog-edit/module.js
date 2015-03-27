@@ -20,18 +20,16 @@ define([
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext',
         'upload', 'config', '$rootScope', 'embedService', 'postsService', 'modal',
-        'blogService'
+        'blogService', '$interval'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext,
-        upload, config, $rootScope, embedService, postsService, modal, blogService) {
-
-        var current_post;
+        upload, config, $rootScope, embedService, postsService, modal, blogService, $interval) {
 
         // return the list of items from the editor
         function getItemsFromEditor() {
             return _.map($scope.editor.get(), function(block) {
                 return {
-                    text: block.text,
+                    text: block.text.replace(/(^<div>)|(<\/div>$)/g, '').replace(/(<br>$)/g, ''),
                     meta: block.meta,
                     item_type: block.type
                 };
@@ -41,9 +39,8 @@ define([
         // ask in a modalbox if the user is sure to want to overwrite editor.
         // call the callback if user say yes or if editor is empty
         function doOrAskBeforeIfEditorIsNotEmpty(callback, msg) {
-            // TODO: check if post is saved before asking
             var are_all_blocks_empty = _.all($scope.editor.blocks, function(block) {return block.isEmpty();});
-            if (are_all_blocks_empty) {
+            if (are_all_blocks_empty || !$scope.isCurrentPostUnsaved()) {
                 callback();
             } else {
                 msg = msg || gettext('You have content in the editor. You will lose it if you continue without saving it before.');
@@ -54,13 +51,14 @@ define([
         // remove and clean every items from the editor
         function cleanEditor() {
             $scope.editor.reinitialize();
-            current_post = undefined;
+            $scope.currentPost = undefined;
         }
 
         // define the $scope
         angular.extend($scope, {
             blog: blog,
             oldBlog: _.create(blog),
+            currentPost: undefined,
             updateBlog: function(blog) {
                 if (_.isEmpty(blog)) {
                     return;
@@ -78,7 +76,7 @@ define([
             openPostInEditor: function (post) {
                 function fillEditor(post) {
                     cleanEditor();
-                    current_post = post;
+                    $scope.currentPost = post;
                     var items = post.groups[1].refs;
                     items.forEach(function(item) {
                         item = item.item;
@@ -90,7 +88,7 @@ define([
             },
             saveAsDraft: function() {
                 notify.info(gettext('Saving draft'));
-                postsService.saveDraft(blog._id, current_post, getItemsFromEditor()).then(function(post) {
+                postsService.saveDraft(blog._id, $scope.currentPost, getItemsFromEditor()).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Draft saved'));
                     cleanEditor();
@@ -102,7 +100,7 @@ define([
             publish: function() {
                 notify.info(gettext('Saving post'));
                 postsService.savePost(blog._id,
-                    current_post,
+                    $scope.currentPost,
                     getItemsFromEditor(),
                     {post_status: 'open'}
                 ).then(function(post) {
@@ -163,8 +161,32 @@ define([
             },
             isBlogOpened: function() {
                 return $scope.blog.blog_status === 'open';
+            },
+            isCurrentPostPublished: function() {
+                return angular.isDefined($scope.currentPost) && $scope.currentPost.post_status === 'open';
+            },
+            isCurrentPostUnsaved: function() {
+                if (angular.isDefined($scope.currentPost)) {
+                    return _.any(getItemsFromEditor(), function (item, item_index) {
+                        return _.any(_.keys(item), function (key) {
+                            if (!angular.isDefined($scope.currentPost.items[item_index])) {
+                                return true;
+                            } else {
+                                return !_.isEqual(item[key], $scope.currentPost.items[item_index].item[key]);
+                            }
+                        });
+                    });
+                } else {
+                    return true;
+                }
             }
         });
+        // FIXME: find a better way to follow input changes. Used to update the isCurrentPostUnsaved status.
+        $interval(function() {
+            if (!$rootScope.$$phase) {
+                $rootScope.$apply();
+            }
+        }, 500);
     }
 
     BlogSettingsController.$inject = ['blog', 'api'];
