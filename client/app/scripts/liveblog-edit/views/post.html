@@ -9,13 +9,10 @@
             <div class="lb-post__header">
                 <span class="name">{{ ::post.original_creator_name }}</span> | <time>{{ post._updated | reldate }}</time>
                 <div class="lb-post__actions">
-                    <span class="dropdown" dropdown>
-                        <div class="dropdown-toggle" dropdown-toggle></div>
-                        <ul class="dropdown-menu">
-                            <li><a ng-click="onEditClick(post)"><i class="icon-edit"></i><span translate>Edit</span></a></li>
-                            <li><a ng-click="askRemovePost(post)"><i class="icon-remove"></i><span translate>Remove post</span></a></li>
-                        </ul>
-                    </span> 
+                    <ul>
+                        <li><a ng-click="onEditClick(post)"><i class="icon-edit"></i><span translate>Edit</span></a></li>
+                        <li><a ng-click="askRemovePost(post)"><i class="icon-remove"></i><span translate>Remove post</span></a></li>
+                    </ul>
                 </div>
             </div>
             <div ng-if="post.multiple_items" class="lb-post__list">
@@ -27,10 +24,6 @@
                          <li ng-repeat="item in post.items track by item.item._id">
                             <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item" ng-class="{'lb-post__item--even': !$first}"
                            html-location="medium-editable" lb-simple-edit="allowQuickEdit" se-item="item.item"></div>
-                           <div class="lb-post__remove-item">
-                                <a ng-click="askRemoveItem(item, post)"><i class="icon-remove"></i></a>
-                            </div>
-
                          </li>
                      </ul>
                 </div>
@@ -40,9 +33,6 @@
                     <li ng-repeat="item in post.items track by item.item._id">
                         <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item" ng-class-even="'lb-post__item--even'"
                        html-location="medium-editable" lb-simple-edit="allowQuickEdit" se-item="item.item"></div>
-                       <div class="lb-post__remove-item">
-                            <a ng-click="askRemoveItem(item, post)"><i class="icon-remove"></i></a>
-                        </div>
                      </li>
                  </ul>
             </div>
