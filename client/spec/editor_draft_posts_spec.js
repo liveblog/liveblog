@@ -43,6 +43,15 @@ describe('Draft Posts', function() {
         });
     }
 
+    it('can open drafts panel from url', function() {
+        openBlog(0);
+        browser.getCurrentUrl().then(function(url) {
+            browser.get(url + '?drafts=open').then(function() {
+                expect(element(by.css('.draft-posts')).isPresent()).toBe(true);
+            });
+        });
+    });
+
     it('can create drafts and respect the order', function() {
         openBlog(0);
         openDraftBar();

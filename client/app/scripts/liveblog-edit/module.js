@@ -20,10 +20,10 @@ define([
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext',
         'upload', 'config', '$rootScope', 'embedService', 'postsService', 'modal',
-        'blogService'
+        'blogService', '$route', '$routeParams'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext,
-        upload, config, $rootScope, embedService, postsService, modal, blogService) {
+        upload, config, $rootScope, embedService, postsService, modal, blogService, $route, $routeParams) {
 
         var current_post;
 
@@ -123,10 +123,15 @@ define([
                     notify.error(gettext('Something went wrong. Please try again later'));
                 });
             },
-            draftPanelState: 'closed',
+            // retrieve draft panel status from url
+            draftPanelState: $routeParams.drafts === 'open'? 'open' : 'closed',
             toggleDraftPanel: function() {
+                // reverse status
                 var newStateValue = $scope.draftPanelState === 'open' ? 'closed': 'open';
+                // update new status
                 $scope.draftPanelState = newStateValue;
+                // update url for deeplinking
+                $route.updateParams({drafts: newStateValue === 'open' ? 'open' : undefined});
             },
             stParams: {
                 coverMaxWidth: 447,
