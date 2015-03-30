@@ -235,11 +235,13 @@ define([
     app.config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/liveblog/edit/:_id', {
             label: gettext('Blog Edit'),
+            auth: true,
             controller: BlogEditController,
             templateUrl: 'scripts/liveblog-edit/views/main.html',
             resolve: {blog: BlogResolver}
         }).activity('/liveblog/settings/:_id', {
             label: gettext('Blog Settings'),
+            auth: true,
             controller: BlogSettingsController,
             controllerAs: 'settings',
             templateUrl: 'scripts/liveblog-edit/views/settings.html',
