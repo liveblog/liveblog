@@ -144,7 +144,7 @@ Feature: Post operations
                     "refs": [
                         {
                             "headline": "test post with pic",
-                            "residRef": "#archive_media._id#",
+                            "residRef": "#archive._id#",
                             "slugline": "awesome picture"
                         },
                         {
