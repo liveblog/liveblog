@@ -59,30 +59,11 @@ class BlogsResource(ArchiveResource):
         },
         'blog_preferences': {
             'type': 'dict'
-        },
-        'cid': {
-            'type': 'integer'
         }
     }
 
     item_methods = ['GET', 'PATCH', 'PUT', 'DELETE']
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
-
-
-def set_cid_on_blogs(item):
-    key = 'blog_cid' + str(item.get('blog'))
-    cid = update_key(key, flag=True)
-    if cid:
-        item['cid'] = cid
-    return cid
-
-
-def update_last_cid(item):
-    key = 'blog_cid' + str(item.get('_id'))
-    cid = update_key(key, flag=False)
-    if cid:
-        item['cid'] = cid
-    return cid
 
 
 class BlogService(ArchiveService):
@@ -102,7 +83,6 @@ class BlogService(ArchiveService):
 
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
-        update_last_cid(doc)
         return doc
 
     def on_created(self, docs):

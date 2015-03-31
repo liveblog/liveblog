@@ -6,7 +6,6 @@ from superdesk import get_resource_service
 from apps.archive import ArchiveVersionsResource
 from apps.archive.archive import PackageService, ArchiveResource, ArchiveService
 from superdesk.services import BaseService
-from liveblog.blogs.blogs import set_cid_on_blogs
 from apps.content import LINKED_IN_PACKAGES
 
 
@@ -79,7 +78,6 @@ class PostsService(ArchiveService):
         doc = {LINKED_IN_PACKAGES: links}
         if not item.get('cid'):
             doc['blog'] = item.get('blog')
-            set_cid_on_blogs(doc)
         if delete:
             doc['deleted'] = 'on'
         return doc

@@ -240,7 +240,7 @@ Feature: Post operations
         When we get "/items"
         Then we get list with 1 items
 	    """
-	    {"_items": [{"text": "test", "blog": "#blogs._id#", "cid": 1}]}
+	    {"_items": [{"text": "test", "blog": "#blogs._id#"}]}
 	    """
 	    When we patch "/items/#items._id#"
 	    """
@@ -250,7 +250,7 @@ Feature: Post operations
         When we get "/items"        
         Then we get list with 1 items
 	    """
-	    {"_items": [{"text": "this is a test item to check cid", "blog": "#blogs._id#", "cid": 2}]}
+	    {"_items": [{"text": "this is a test item to check cid", "blog": "#blogs._id#"}]}
 	    """
 	    When we delete "/items/#items._id#"
 	    Then we get deleted response
