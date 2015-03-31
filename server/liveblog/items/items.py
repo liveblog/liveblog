@@ -5,7 +5,8 @@ from superdesk.utc import utcnow
 from superdesk.resource import Resource
 
 from liveblog.common import get_user, update_dates_for
-from apps.archive.archive import ArchiveResource, ArchiveService, ArchiveVersionsResource, ArchiveVersionsService
+from apps.archive.archive import ArchiveResource, ArchiveService, ArchiveVersionsResource
+from superdesk.services import BaseService
 from liveblog.blogs.blogs import set_cid_on_blogs
 
 
@@ -19,7 +20,7 @@ class ItemsVersionsResource(ArchiveVersionsResource):
     }
 
 
-class ItemsVersionsService(ArchiveVersionsService):
+class ItemsVersionsService(BaseService):
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()

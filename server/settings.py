@@ -106,7 +106,6 @@ INSTALLED_APPS = [
     'apps.desks',
     'apps.stages',
     'apps.groups',
-    'apps.packages',
     'apps.privilege',
     'apps.legal_archive',
 

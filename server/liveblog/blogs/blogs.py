@@ -2,7 +2,8 @@ from superdesk.notification import push_notification
 from superdesk.utc import utcnow
 from eve.utils import ParsedRequest
 from apps.archive.archive import ArchiveResource, ArchiveService
-from apps.archive.archive import ArchiveVersionsService, ArchiveVersionsResource
+from superdesk.services import BaseService
+from apps.archive.archive import ArchiveVersionsResource
 from liveblog.common import get_user, update_dates_for
 from apps.content import metadata_schema
 from apps.archive.common import generate_guid, GUID_TAG
@@ -22,7 +23,7 @@ class BlogsVersionsResource(ArchiveVersionsResource):
     }
 
 
-class BlogsVersionsService(ArchiveVersionsService):
+class BlogsVersionsService(BaseService):
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()

@@ -2,10 +2,10 @@ from bson.objectid import ObjectId
 from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas
-from apps.packages import PackageService
-from apps.packages.resource import PackageResource
 from superdesk import get_resource_service
-from apps.archive.archive import ArchiveVersionsService, ArchiveVersionsResource
+from apps.archive import ArchiveVersionsResource
+from apps.archive.archive import PackageService, ArchiveResource
+from superdesk.services import BaseService
 from liveblog.blogs.blogs import set_cid_on_blogs
 from apps.content import LINKED_IN_PACKAGES
 
@@ -21,14 +21,14 @@ class PostsVersionsResource(ArchiveVersionsResource):
     }
 
 
-class PostsVersionsService(ArchiveVersionsService):
+class PostsVersionsService(BaseService):
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
         return self.backend.get('archive_versions', req=req, lookup=lookup)
 
 
-class PostsResource(PackageResource):
+class PostsResource(ArchiveResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
@@ -38,7 +38,7 @@ class PostsResource(PackageResource):
     item_methods = ['GET', 'PATCH', 'DELETE']
 
     schema = {}
-    schema.update(PackageResource.schema)
+    schema.update(ArchiveResource.schema)
     schema.update({
         'blog': Resource.rel('blogs', True),
         'particular_type': {
@@ -58,7 +58,7 @@ class PostsResource(PackageResource):
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
 
 
-class PostsService(PackageService):
+class PostsService(BaseService):
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
@@ -99,7 +99,7 @@ class BlogPostsResource(Resource):
     privileges = {'GET': 'blogs'}
 
 
-class BlogPostsService(PackageService):
+class BlogPostsService(BaseService):
     custom_hateoas = {'self': {'title': 'Posts', 'href': '/{location}/{_id}'}}
 
     def get(self, req, lookup):
