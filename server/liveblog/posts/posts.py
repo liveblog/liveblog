@@ -4,7 +4,7 @@ from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas
 from superdesk import get_resource_service
 from apps.archive import ArchiveVersionsResource
-from apps.archive.archive import PackageService, ArchiveResource
+from apps.archive.archive import PackageService, ArchiveResource, ArchiveService
 from superdesk.services import BaseService
 from liveblog.blogs.blogs import set_cid_on_blogs
 from apps.content import LINKED_IN_PACKAGES
@@ -58,7 +58,7 @@ class PostsResource(ArchiveResource):
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
 
 
-class PostsService(BaseService):
+class PostsService(ArchiveService):
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
@@ -99,7 +99,7 @@ class BlogPostsResource(Resource):
     privileges = {'GET': 'blogs'}
 
 
-class BlogPostsService(BaseService):
+class BlogPostsService(ArchiveService):
     custom_hateoas = {'self': {'title': 'Posts', 'href': '/{location}/{_id}'}}
 
     def get(self, req, lookup):
