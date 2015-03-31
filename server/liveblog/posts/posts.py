@@ -64,6 +64,11 @@ class PostsService(ArchiveService):
         docs = super().get(req, lookup)
         return docs
 
+    def on_create(self, docs):
+        for doc in docs:
+            doc['type'] = 'composite'
+        super().on_create(docs)
+
     def on_created(self, docs):
         super().on_created(docs)
         push_notification('posts', created=1)
