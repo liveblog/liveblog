@@ -108,6 +108,7 @@ INSTALLED_APPS = [
     'apps.groups',
     'apps.privilege',
     'apps.legal_archive',
+    'apps.prepopulate',
 
     'liveblog.blogs',
     'liveblog.posts',
@@ -115,7 +116,6 @@ INSTALLED_APPS = [
     'liveblog.languages',
     'liveblog.themes',
     'liveblog.global_preferences',
-    'liveblog.prepopulate'
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
