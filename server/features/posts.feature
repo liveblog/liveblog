@@ -355,5 +355,5 @@ Feature: Post operations
 		When we get "/items"
 		Then we get list with 1 items
 	    """
-	    {"_items": [{"text": "test", "deleted": "on"}]}
+	    {"_items": [{"text": "test", "linked_in_packages": []}]}
 	    """
