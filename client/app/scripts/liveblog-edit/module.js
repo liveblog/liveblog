@@ -134,7 +134,7 @@ define([
                 $route.updateParams({drafts: newStateValue === 'open' ? 'open' : undefined});
             },
             stParams: {
-                coverMaxWidth: 447,
+                coverMaxWidth: 350,
                 embedService: embedService,
                 // provide an uploader to the editor for media (custom sir-trevor image block uses it)
                 uploader: function(file, success_callback, error_callback) {
