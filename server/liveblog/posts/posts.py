@@ -111,7 +111,7 @@ class BlogPostsService(ArchiveService):
         docs = super().get(req, lookup)
         for doc in docs:
             build_custom_hateoas(self.custom_hateoas, doc, location='posts')
-            for assoc in self._get_associations(doc):
+            for assoc in self.packageService._get_associations(doc):
                 if assoc.get('residRef'):
                     item = get_resource_service('archive').find_one(req=None, _id=assoc['residRef'])
                     assoc['item'] = item

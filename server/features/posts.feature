@@ -112,7 +112,7 @@ Feature: Post operations
         """
         [{"text": "test", "blog": "#blogs._id#"}]
         """
-        When we upload a file "bike.jpg" to "archive_media"
+        When we upload a file "bike.jpg" to "archive"
         When we post to "/posts" with success
         """
         {
