@@ -44,17 +44,10 @@ describe('blogs', function() {
         });
         function searchBlogs(search) {
             element(by.css('[ng-click="flags.extended = !flags.extended"]')).click();
-            element(by.model('search')).clear().sendKeys(search.search);
+            element(by.model('q')).clear().sendKeys(search.search);
             var currentUrl;
             browser.getCurrentUrl().then(function(url) {
                 currentUrl = url;
-            }
-            ).then(function() {
-                browser.wait(function() {
-                    return browser.getCurrentUrl().then(function (url) {
-                        return url !== currentUrl;
-                    });
-                }, waitTime);
             }
             ).then(function () {
                 expectBlogsLength(search.blogs.length);
