@@ -112,7 +112,7 @@ Feature: Post operations
         """
         [{"text": "test", "blog": "#blogs._id#"}]
         """
-        When we upload a file "bike.jpg" to "archive_media"
+        When we upload a file "bike.jpg" to "archive"
         When we post to "/posts" with success
         """
         {
@@ -144,7 +144,7 @@ Feature: Post operations
                     "refs": [
                         {
                             "headline": "test post with pic",
-                            "residRef": "#archive_media._id#",
+                            "residRef": "#archive._id#",
                             "slugline": "awesome picture"
                         },
                         {
@@ -168,7 +168,7 @@ Feature: Post operations
                     "refs": [
                         {
                             "headline": "test post with pic",
-                            "residRef": "#archive_media._id#",
+                            "residRef": "#archive._id#",
                             "slugline": "awesome picture"
                         },
                         {
@@ -240,7 +240,7 @@ Feature: Post operations
         When we get "/items"
         Then we get list with 1 items
 	    """
-	    {"_items": [{"text": "test", "blog": "#blogs._id#", "cid": 1}]}
+	    {"_items": [{"text": "test", "blog": "#blogs._id#"}]}
 	    """
 	    When we patch "/items/#items._id#"
 	    """
@@ -250,7 +250,7 @@ Feature: Post operations
         When we get "/items"        
         Then we get list with 1 items
 	    """
-	    {"_items": [{"text": "this is a test item to check cid", "blog": "#blogs._id#", "cid": 2}]}
+	    {"_items": [{"text": "this is a test item to check cid", "blog": "#blogs._id#"}]}
 	    """
 	    When we delete "/items/#items._id#"
 	    Then we get deleted response
@@ -355,5 +355,5 @@ Feature: Post operations
 		When we get "/items"
 		Then we get list with 1 items
 	    """
-	    {"_items": [{"text": "test", "deleted": "on"}]}
+	    {"_items": [{"text": "test", "linked_in_packages": []}]}
 	    """

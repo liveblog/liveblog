@@ -6,7 +6,7 @@ var rootDir = path.resolve(__dirname, '..');
 describe('editor image upload:', function() {
     'use strict';
 
-    beforeEach(openUrl('/#/liveblog'));
+    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
 
     it('upload an image and show it in the editor', function() {
         openBlog(0);

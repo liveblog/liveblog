@@ -2,11 +2,10 @@ from bson.objectid import ObjectId
 from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas
-from apps.packages import PackageService
-from apps.packages.resource import PackageResource
 from superdesk import get_resource_service
-from apps.archive.archive import ArchiveVersionsService, ArchiveVersionsResource
-from liveblog.blogs.blogs import set_cid_on_blogs
+from apps.archive import ArchiveVersionsResource
+from apps.archive.archive import ArchiveResource, ArchiveService
+from superdesk.services import BaseService
 from apps.content import LINKED_IN_PACKAGES
 
 
@@ -21,14 +20,14 @@ class PostsVersionsResource(ArchiveVersionsResource):
     }
 
 
-class PostsVersionsService(ArchiveVersionsService):
+class PostsVersionsService(BaseService):
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
         return self.backend.get('archive_versions', req=req, lookup=lookup)
 
 
-class PostsResource(PackageResource):
+class PostsResource(ArchiveResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
@@ -38,7 +37,7 @@ class PostsResource(PackageResource):
     item_methods = ['GET', 'PATCH', 'DELETE']
 
     schema = {}
-    schema.update(PackageResource.schema)
+    schema.update(ArchiveResource.schema)
     schema.update({
         'blog': Resource.rel('blogs', True),
         'particular_type': {
@@ -58,12 +57,17 @@ class PostsResource(PackageResource):
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
 
 
-class PostsService(PackageService):
+class PostsService(ArchiveService):
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
         docs = super().get(req, lookup)
         return docs
+
+    def on_create(self, docs):
+        for doc in docs:
+            doc['type'] = 'composite'
+        super().on_create(docs)
 
     def on_created(self, docs):
         super().on_created(docs)
@@ -77,7 +81,6 @@ class PostsService(PackageService):
         doc = {LINKED_IN_PACKAGES: links}
         if not item.get('cid'):
             doc['blog'] = item.get('blog')
-            set_cid_on_blogs(doc)
         if delete:
             doc['deleted'] = 'on'
         return doc
@@ -99,7 +102,7 @@ class BlogPostsResource(Resource):
     privileges = {'GET': 'blogs'}
 
 
-class BlogPostsService(PackageService):
+class BlogPostsService(ArchiveService):
     custom_hateoas = {'self': {'title': 'Posts', 'href': '/{location}/{_id}'}}
 
     def get(self, req, lookup):
@@ -109,7 +112,7 @@ class BlogPostsService(PackageService):
         docs = super().get(req, lookup)
         for doc in docs:
             build_custom_hateoas(self.custom_hateoas, doc, location='posts')
-            for assoc in self._get_associations(doc):
+            for assoc in self.packageService._get_associations(doc):
                 if assoc.get('residRef'):
                     item = get_resource_service('archive').find_one(req=None, _id=assoc['residRef'])
                     assoc['item'] = item

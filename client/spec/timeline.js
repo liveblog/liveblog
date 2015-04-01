@@ -35,7 +35,7 @@ var posts = [
     openBlog = require('./helpers/utils').openBlog;
 
 describe('timeline', function() {
-    beforeEach(openUrl('/#/liveblog'));
+    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
     it('can get items on the timeline', function() {
         openBlog(0);
         //go and check the timeline

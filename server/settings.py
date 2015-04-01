@@ -53,7 +53,7 @@ X_DOMAINS = '*'
 X_MAX_AGE = 24 * 3600
 X_HEADERS = ['Content-Type', 'Authorization', 'If-Match']
 
-
+MONGO_ENABLE_MULTI_DBS = False
 MONGO_DBNAME = env('MONGO_DBNAME', 'liveblog')
 if env('MONGOLAB_URI'):
     MONGO_URI = env('MONGOLAB_URI')
@@ -106,9 +106,9 @@ INSTALLED_APPS = [
     'apps.desks',
     'apps.stages',
     'apps.groups',
-    'apps.packages',
     'apps.privilege',
     'apps.legal_archive',
+    'apps.prepopulate',
 
     'liveblog.blogs',
     'liveblog.posts',
@@ -116,7 +116,6 @@ INSTALLED_APPS = [
     'liveblog.languages',
     'liveblog.themes',
     'liveblog.global_preferences',
-    'liveblog.prepopulate'
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
@@ -217,3 +216,6 @@ MAX_SEARCH_DEPTH = -1
 MAX_VALUE_OF_INGEST_SEQUENCE = 9999
 
 DAYS_TO_KEEP = int(env('INGEST_ARTICLES_TTL', '2'))
+
+WS_HOST = env('WSHOST', '0.0.0.0')
+WS_PORT = env('WSPORT', '5100')
