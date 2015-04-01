@@ -20,7 +20,7 @@ from superdesk.utc import utcnow
 from eve.io.mongo import MongoJSONEncoder
 from base64 import b64encode
 
-from wooper.general import fail_and_print_body, apply_path,\
+from wooper.general import fail_and_print_body, apply_path, \
     parse_json_response
 from wooper.expect import (
     expect_status, expect_status_in,
@@ -34,6 +34,8 @@ from urllib.parse import urlparse
 from os.path import basename
 from superdesk.tests import test_user, get_prefixed_url, set_placeholder
 from re import findall
+from eve.utils import ParsedRequest
+import shutil
 
 external_url = 'http://thumbs.dreamstime.com/z/digital-nature-10485007.jpg'
 
@@ -79,6 +81,11 @@ def json_match(context_data, response_data):
 def get_fixture_path(fixture):
     abspath = os.path.abspath(os.path.dirname(__file__))
     return os.path.join(abspath, 'fixtures', fixture)
+
+
+def get_macro_path(macro):
+    abspath = os.path.abspath("macros")
+    return os.path.join(abspath, macro)
 
 
 def get_self_href(resource, context):
@@ -255,21 +262,47 @@ def step_impl_when_auth(context):
         context.user = item['user']
 
 
+@given('we create a new macro "{macro_name}"')
+def step_create_new_macro(context, macro_name):
+    src = get_fixture_path(macro_name)
+    dst = get_macro_path(macro_name)
+    shutil.copyfile(src, dst)
+
+
 @when('we fetch from "{provider_name}" ingest "{guid}"')
 def step_impl_fetch_from_provider_ingest(context, provider_name, guid):
     with context.app.test_request_context(context.app.config['URL_PREFIX']):
-        provider = get_resource_service('ingest_providers').find_one(name=provider_name, req=None)
-        provider_service = context.provider_services[provider.get('type')]
-        provider_service.provider = provider
+        fetch_from_provider(context, provider_name, guid)
 
-        if provider.get('type') == 'aap':
-            items = provider_service.parse_file(guid, provider)
-        else:
-            items = provider_service.fetch_ingest(guid)
 
-        for item in items:
-            item['versioncreated'] = utcnow()
-        context.ingest_items(items, provider)
+@when('we fetch from "{provider_name}" ingest "{guid}" using routing_scheme')
+def step_impl_fetch_from_provider_ingest_using_routing(context, provider_name, guid):
+    with context.app.test_request_context(context.app.config['URL_PREFIX']):
+        _id = apply_placeholders(context, context.text)
+        routing_scheme = get_resource_service('routing_schemes').find_one(_id=_id, req=None)
+        fetch_from_provider(context, provider_name, guid, routing_scheme)
+
+
+def fetch_from_provider(context, provider_name, guid, routing_scheme=None):
+    provider = get_resource_service('ingest_providers').find_one(name=provider_name, req=None)
+    provider['routing_scheme'] = routing_scheme
+    provider_service = context.provider_services[provider.get('type')]
+    provider_service.provider = provider
+
+    if provider.get('type') == 'aap' or provider.get('type') == 'teletype':
+        items = provider_service.parse_file(guid, provider)
+    else:
+        items = provider_service.fetch_ingest(guid)
+
+    for item in items:
+        item['versioncreated'] = utcnow()
+        item['expiry'] = utcnow() + timedelta(minutes=20)
+
+    failed = context.ingest_items(items, provider, rule_set=provider.get('rule_set'),
+                                  routing_scheme=provider.get('routing_scheme'))
+    assert len(failed) == 0, failed
+    for item in items:
+        set_placeholder(context, '{}.{}'.format(provider_name, item['guid']), item['_id'])
 
 
 @when('we post to "{url}"')
@@ -288,6 +321,20 @@ def step_impl_when_post_url(context, url):
         context.outbox = outbox
 
 
+def get_response_etag(response):
+    return json.loads(response.get_data())['_etag']
+
+
+@when('we save etag')
+def step_when_we_save_etag(context):
+    context.etag = get_response_etag(context.response)
+
+
+@then('we get same etag')
+def step_then_we_get_same_etag(context):
+    assert context.etag == get_response_etag(context.response), 'etags not matching'
+
+
 def store_placeholder(context, url):
     if context.response.status_code in (200, 201):
         item = json.loads(context.response.get_data())
@@ -299,6 +346,8 @@ def store_placeholder(context, url):
 def step_impl_when_post_url_with_success(context, url):
     with context.app.mail.record_messages() as outbox:
         data = apply_placeholders(context, context.text)
+        url = apply_placeholders(context, url)
+        print(url)
         context.response = context.client.post(get_prefixed_url(context.app, url),
                                                data=data, headers=context.headers)
         assert_ok(context.response)
@@ -329,6 +378,13 @@ def when_we_get_url(context, url):
     headers = unique_headers(headers, context.headers)
     url = apply_placeholders(context, url)
     context.response = context.client.get(get_prefixed_url(context.app, url), headers=headers)
+
+
+@when('we get dictionary "{dictionary_id}"')
+def when_we_get_dictionary(context, dictionary_id):
+    dictionary_id = apply_placeholders(context, dictionary_id)
+    url = '/dictionaries/' + dictionary_id + '?projection={"content": 1}'
+    return when_we_get_url(context, url)
 
 
 @then('we get latest')
@@ -414,6 +470,21 @@ def step_impl_when_patch_without_assert(context):
     context.response = context.client.patch(href, data=data2, headers=headers)
 
 
+@when('we patch routing scheme "{url}"')
+def step_impl_when_patch_routing_scheme(context, url):
+    with context.app.mail.record_messages() as outbox:
+        url = apply_placeholders(context, url)
+        res = get_res(url, context)
+        href = get_self_href(res, context)
+        headers = if_match(context, res.get('_etag'))
+        data = json.loads(apply_placeholders(context, context.text))
+        res.get('rules', []).append(data)
+        context.response = context.client.patch(get_prefixed_url(context.app, href),
+                                                data=json.dumps({'rules': res.get('rules', [])}),
+                                                headers=headers)
+        context.outbox = outbox
+
+
 @when('we patch given')
 def step_impl_when_patch(context):
     with context.app.mail.record_messages() as outbox:
@@ -442,24 +513,46 @@ def step_impl_when_restore_version(context, version):
 
 @when('we upload a file "{filename}" to "{dest}"')
 def step_impl_when_upload_image(context, filename, dest):
-    upload_file(context, dest, filename)
+    upload_file(context, dest, filename, 'media')
 
 
 @when('we upload a binary file with cropping')
 def step_impl_when_upload_with_crop(context):
     data = {'CropTop': '0', 'CropLeft': '0', 'CropBottom': '333', 'CropRight': '333'}
-    upload_file(context, '/upload', 'bike.jpg', crop_data=data)
+    upload_file(context, '/upload', 'bike.jpg', 'media', data)
 
 
-def upload_file(context, dest, filename, crop_data=None):
+@when('upload a file "{file_name}" to "{destination}" with "{guid}"')
+def step_impl_when_upload_image_with_guid(context, file_name, destination, guid):
+    upload_file(context, destination, file_name, 'media', {'guid': guid})
+
+
+@when('we upload a new dictionary with success')
+def when_upload_dictionary(context):
+    data = json.loads(apply_placeholders(context, context.text))
+    upload_file(context, '/dictionary_upload', 'test_dict.txt', 'dictionary_file', data)
+    assert_ok(context.response)
+
+
+@when('we upload to an existing dictionary with success')
+def when_upload_patch_dictionary(context):
+    data = json.loads(apply_placeholders(context, context.text))
+    url = apply_placeholders(context, '/dictionary_upload/#dictionary_upload._id#')
+    etag = apply_placeholders(context, '#dictionary_upload._etag#')
+    upload_file(context, url, 'test_dict2.txt', 'dictionary_file', data, 'patch', [('If-Match', etag)])
+    assert_ok(context.response)
+
+
+def upload_file(context, dest, filename, file_field, extra_data=None, method='post', user_headers=[]):
     with open(get_fixture_path(filename), 'rb') as f:
-        data = {'media': f}
-        if crop_data:
-            data.update(crop_data)
+        data = {file_field: f}
+        if extra_data:
+            data.update(extra_data)
         headers = [('Content-Type', 'multipart/form-data')]
+        headers.extend(user_headers)
         headers = unique_headers(headers, context.headers)
         url = get_prefixed_url(context.app, dest)
-        context.response = context.client.post(url, data=data, headers=headers)
+        context.response = getattr(context.client, method)(url, data=data, headers=headers)
         assert_ok(context.response)
         store_placeholder(context, url)
 
@@ -511,7 +604,7 @@ def step_impl_then_get_list(context, total_count):
     data = get_json_data(context.response)
     int_count = int(total_count.replace('+', ''))
     if '+' in total_count:
-        assert int_count <= data['_meta']['total']
+        assert int_count <= data['_meta']['total'], '%d items is not enough' % data['_meta']['total']
     else:
         assert int_count == data['_meta']['total'], 'got %d' % (data['_meta']['total'])
     if int_count == 0 or not context.text:
@@ -687,30 +780,6 @@ def step_impl_then_get_rendition_with_mimetype(context, name, mimetype):
     we_can_fetch_a_file(context, desc['href'], mimetype)
 
 
-def import_rendition(context, rendition_name=None):
-    rv = parse_json_response(context.response)
-    headers = [('Content-Type', 'multipart/form-data')]
-    headers = unique_headers(headers, context.headers)
-    context._id = rv['_id']
-    context.renditions = rv['renditions']
-    data = {'media_archive_guid': rv['_id'], 'href': external_url}
-    if rendition_name:
-        data['rendition_name'] = rendition_name
-    context.response = context.client.post(get_prefixed_url(context.app, '/archive_media/import_media'),
-                                           data=data, headers=headers)
-    assert_200(context.response)
-
-
-@when('we import rendition from url')
-def import_rendition_from_url(context):
-    import_rendition(context)
-
-
-@when('we import thumbnail rendition from url')
-def import_thumbnail_rendition_from_url(context):
-    import_rendition(context, 'thumbnail')
-
-
 @when('we get updated media from archive')
 def get_updated_media_from_archive(context):
     url = 'archive/%s' % context._id
@@ -739,11 +808,6 @@ def check_thumbnail_rendition(context):
 def check_rendition(context, rendition_name):
     rv = parse_json_response(context.response)
     assert rv['renditions'][rendition_name] != context.renditions[rendition_name], rv['renditions']
-
-
-@then('we get archive ingest result')
-def step_impl_then_get_archive_ingest_result(context):
-    assert_200(context.response)
 
 
 @then('we get "{key}"')
@@ -895,6 +959,37 @@ def we_post_to_reset_password(context):
         context.token = token
 
 
+@then('we can check if token is valid')
+def we_can_check_token_is_valid(context):
+    data = {'token': context.token}
+    headers = [('Content-Type', 'multipart/form-data')]
+    headers = unique_headers(headers, context.headers)
+    context.response = context.client.post(get_prefixed_url(context.app, '/reset_user_password'),
+                                           data=data, headers=headers)
+    expect_status_in(context.response, (200, 201))
+
+
+@then('we update token to be expired')
+def we_update_token_to_expired(context):
+    with context.app.test_request_context(context.app.config['URL_PREFIX']):
+        expiry = utc.utcnow() - timedelta(days=2)
+        reset_request = get_resource_service('reset_user_password').find_one(req=None, token=context.token)
+        reset_request['expire_time'] = expiry
+        id = reset_request.pop('_id')
+        get_resource_service('reset_user_password').patch(id, reset_request)
+
+
+@then('token is invalid')
+def check_token_invalid(context):
+    data = {'token': context.token}
+    headers = [('Content-Type', 'multipart/form-data')]
+    headers = unique_headers(headers, context.headers)
+    context.response = context.client.post(get_prefixed_url(context.app, '/reset_user_password'),
+                                           data=data, headers=headers)
+    print(context.response.get_data())
+    expect_status_in(context.response, (403, 401))
+
+
 @when('we post to reset_password we do not get email with token')
 def we_post_to_reset_password_it_fails(context):
     data = {'email': 'foo@bar.org'}
@@ -921,7 +1016,7 @@ def we_fail_to_reset_password_for_user(context):
     step_impl_then_get_error(context, 403)
 
 
-@when('we reset password for user')
+@then('we reset password for user')
 def we_reset_password_for_user(context):
     start_reset_password_for_user(context)
     expect_status_in(context.response, (200, 201))
@@ -986,6 +1081,17 @@ def get_default_prefs(context):
 
 @when('we spike "{item_id}"')
 def step_impl_when_spike_url(context, item_id):
+    res = get_res('/archive/' + item_id, context)
+    headers = if_match(context, res.get('_etag'))
+
+    context.response = context.client.patch(get_prefixed_url(context.app, '/archive/spike/' + item_id),
+                                            data='{"state": "spiked"}', headers=headers)
+
+
+@when('we spike fetched item')
+def step_impl_when_spike_fetched_item(context):
+    data = json.loads(apply_placeholders(context, context.text))
+    item_id = data["_id"]
     res = get_res('/archive/' + item_id, context)
     headers = if_match(context, res.get('_etag'))
 
@@ -1137,9 +1243,11 @@ def step_set_limit(context):
     context.app.settings['MAX_SEARCH_DEPTH'] = 1
 
 
-@then('we get email')
+@then('we get emails')
 def step_we_get_email(context):
-    assert check_if_email_sent(context, context.text)
+    data = json.loads(context.text)
+    for email in data:
+        assert check_if_email_sent(context, email['body'])
 
 
 @then('we get no email')
@@ -1168,14 +1276,24 @@ def then_we_get_activity(context):
             set_placeholder(context, 'USERS_ID', item['user'])
 
 
-@given('we login as user "{username}" with password "{password}"')
-def when_we_login_as_user(context, username, password):
-    user = {'username': username, 'password': password, 'is_active': True, 'needs_activation': False}
+def login_as(context, username, password):
+    user = {'username': username, 'password': password, 'is_active': True,
+            'is_enabled': True, 'needs_activation': False}
 
     if context.text:
         user.update(json.loads(context.text))
 
     tests.setup_auth_user(context, user)
+
+
+@given('we login as user "{username}" with password "{password}"')
+def given_we_login_as_user(context, username, password):
+    login_as(context, username, password)
+
+
+@when('we login as user "{username}" with password "{password}"')
+def when_we_login_as_user(context, username, password):
+    login_as(context, username, password)
 
 
 def is_user_resource(resource):
@@ -1202,3 +1320,122 @@ def when_we_get_invisible_stages_for_user(context, no_of_stages):
     with context.app.test_request_context(context.app.config['URL_PREFIX']):
         stages = get_resource_service('users').get_invisible_stages(data['user'])
         assert len(stages) == int(no_of_stages)
+
+
+@then('we get "{field_name}" populated')
+def then_field_is_populated(context, field_name):
+    resp = parse_json_response(context.response)
+    assert resp[field_name].get('user', None) is not None, 'item is not populated'
+
+
+@when('we publish "{item_id}"')
+def step_impl_when_publish_url(context, item_id):
+    item_id = apply_placeholders(context, item_id)
+    res = get_res('/archive/' + item_id, context)
+    headers = if_match(context, res.get('_etag'))
+
+    context.response = context.client.patch(get_prefixed_url(context.app, '/archive/publish/' + item_id),
+                                            data='{"state": "published"}', headers=headers)
+
+
+@then('the ingest item is routed based on routing scheme and rule "{rule_name}"')
+def then_ingest_item_is_routed_based_on_routing_scheme(context, rule_name):
+    with context.app.test_request_context(context.app.config['URL_PREFIX']):
+        validate_routed_item(context, rule_name, True)
+
+
+@then('the ingest item is routed and transformed based on routing scheme and rule "{rule_name}"')
+def then_ingest_item_is_routed_transformed_based_on_routing_scheme(context, rule_name):
+    with context.app.test_request_context(context.app.config['URL_PREFIX']):
+        validate_routed_item(context, rule_name, True, True)
+
+
+@then('the ingest item is not routed based on routing scheme and rule "{rule_name}"')
+def then_ingest_item_is_not_routed_based_on_routing_scheme(context, rule_name):
+    with context.app.test_request_context(context.app.config['URL_PREFIX']):
+        validate_routed_item(context, rule_name, False)
+
+
+def validate_routed_item(context, rule_name, is_routed, is_transformed=False):
+    data = json.loads(apply_placeholders(context, context.text))
+
+    def validate_rule(action, state):
+        for destination in rule.get('actions', {}).get(action, []):
+            query = {
+                'and': [
+                    {'term': {'ingest_id': str(data['ingest'])}},
+                    {'term': {'task.desk': str(destination['desk'])}},
+                    {'term': {'task.stage': str(destination['stage'])}},
+                    {'term': {'state': state}}
+                ]
+            }
+            item = get_archive_items(query)
+
+            if is_routed:
+                assert len(item) > 0, 'No routed items found for criteria: ' + str(query)
+                assert item[0]['ingest_id'] == data['ingest']
+                assert item[0]['task']['desk'] == str(destination['desk'])
+                assert item[0]['task']['stage'] == str(destination['stage'])
+                assert item[0]['state'] == state
+
+                if is_transformed:
+                    assert item[0]['abstract'] == 'Abstract has been updated'
+
+                assert_items_in_package(item[0], state,
+                                        str(destination['desk']), str(destination['stage']))
+            else:
+                assert len(item) == 0
+
+    scheme = get_resource_service('routing_schemes').find_one(_id=data['routing_scheme'], req=None)
+    rule = next((rule for rule in scheme['rules'] if rule['name'].lower() == rule_name.lower()), {})
+    validate_rule('fetch', 'routed')
+    validate_rule('publish', 'published')
+
+
+@when('we schedule the routing scheme "{scheme_id}"')
+def when_we_schedule_the_routing_scheme(context, scheme_id):
+    with context.app.test_request_context(context.app.config['URL_PREFIX']):
+        scheme_id = apply_placeholders(context, scheme_id)
+        url = apply_placeholders(context, 'routing_schemes/%s' % scheme_id)
+        res = get_res(url, context)
+        href = get_self_href(res, context)
+        headers = if_match(context, res.get('_etag'))
+        rule = res.get('rules')[0]
+        day_of_week = get_resource_service('routing_schemes').day_of_week
+        rule['schedule'] = {
+            'day_of_week': [day_of_week[(datetime.now() + timedelta(days=1)).weekday()],
+                            day_of_week[(datetime.now() + timedelta(days=2)).weekday()]],
+            'hour_of_day_from': '1600',
+            'hour_of_day_to': '2000'
+        }
+        rule = res.get('rules')[1]
+        rule['schedule'] = {
+            'day_of_week': [day_of_week[datetime.now().weekday()]]
+        }
+
+        context.response = context.client.patch(get_prefixed_url(context.app, href),
+                                                data=json.dumps({'rules': res.get('rules', [])}),
+                                                headers=headers)
+        assert_200(context.response)
+
+
+def get_archive_items(query):
+    req = ParsedRequest()
+    req.max_results = 100
+    req.args = {'filter': json.dumps(query)}
+    return list(get_resource_service('archive').get(lookup=None, req=req))
+
+
+def assert_items_in_package(item, state, desk, stage):
+    if item.get('groups'):
+        terms = [{'term': {'_id': ref.get('residRef')}}
+                 for ref in [ref for group in item.get('groups', [])
+                             for ref in group.get('refs', []) if 'residRef' in ref]]
+
+        query = {'or': terms}
+        items = get_archive_items(query)
+        assert len(items) == len(terms)
+        for item in items:
+            assert item.get('state') == state
+            assert item.get('task', {}).get('desk') == desk
+            assert item.get('task', {}).get('stage') == stage

@@ -4,7 +4,6 @@ var lodash = require('lodash');
 
 describe('blogs', function() {
     'use strict';
-    var waitTime = 2 * 1000;
     var blogs = [
         {title: 'title: end To end three', description: 'description: end to end three', username: 'first name last name'},
         {title: 'title: end to end two', description: 'description: end to end two', username: 'first name last name'},
@@ -21,7 +20,7 @@ describe('blogs', function() {
         username: 'first name last name'
     };
 
-    beforeEach(openUrl('/#/liveblog'));
+    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
 
     describe('blogs list:', function() {
 
@@ -44,17 +43,10 @@ describe('blogs', function() {
         });
         function searchBlogs(search) {
             element(by.css('[ng-click="flags.extended = !flags.extended"]')).click();
-            element(by.model('search')).clear().sendKeys(search.search);
+            element(by.model('q')).clear().sendKeys(search.search);
             var currentUrl;
             browser.getCurrentUrl().then(function(url) {
                 currentUrl = url;
-            }
-            ).then(function() {
-                browser.wait(function() {
-                    return browser.getCurrentUrl().then(function (url) {
-                        return url !== currentUrl;
-                    });
-                }, waitTime);
             }
             ).then(function () {
                 expectBlogsLength(search.blogs.length);

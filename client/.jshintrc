@@ -18,6 +18,7 @@
   "strict": true,
   "trailing": true,
   "globals": {
+    "JSON": false,
     "$": false,
     "_": false,
     "angular": false,
