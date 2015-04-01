@@ -61,5 +61,4 @@ describe('Blog settings', function() {
         expectSelectedLanguageIs(DEFAULT_LANGUAGE);
     });
 
-
 });
