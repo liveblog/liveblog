@@ -1,8 +1,9 @@
 'use strict';
 
-var ScreenShotReporter = require('protractor-screenshot-reporter');
+//var ScreenShotReporter = require('protractor-screenshot-reporter');
 
 exports.config = {
+    allScriptsTimeout: 30000,
     baseUrl: 'http://localhost:9090',
     params: {
         baseBackendUrl: 'http://localhost:5000/api',
@@ -16,16 +17,17 @@ exports.config = {
             args: ['--no-sandbox']
         }
     },
-    allScriptsTimeout: 21000,
+    directConnect: true,
     framework: 'jasmine',
     jasmineNodeOpts: {
         showColors: true,
         isVerbose: true,
         includeStackTrace: true,
-        defaultTimeoutInterval: 30000
+        defaultTimeoutInterval: 120000
     },
     /* global jasmine */
     onPrepare: function() {
+        /*
         jasmine.getEnv().addReporter(new ScreenShotReporter({
             baseDirectory: './screenshots',
             pathBuilder:
@@ -34,6 +36,7 @@ exports.config = {
                 },
             takeScreenShotsOnlyForFailedSpecs: true
         }));
+        */
         require('jasmine-reporters');
         jasmine.getEnv().addReporter(
             new jasmine.JUnitXmlReporter('e2e-test-results', true, true)

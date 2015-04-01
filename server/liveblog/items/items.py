@@ -5,8 +5,8 @@ from superdesk.utc import utcnow
 from superdesk.resource import Resource
 
 from liveblog.common import get_user, update_dates_for
-from apps.archive.archive import ArchiveResource, ArchiveService, ArchiveVersionsResource, ArchiveVersionsService
-from liveblog.blogs.blogs import set_cid_on_blogs
+from apps.archive.archive import ArchiveResource, ArchiveService, ArchiveVersionsResource
+from superdesk.services import BaseService
 
 
 class ItemsVersionsResource(ArchiveVersionsResource):
@@ -19,7 +19,7 @@ class ItemsVersionsResource(ArchiveVersionsResource):
     }
 
 
-class ItemsVersionsService(ArchiveVersionsService):
+class ItemsVersionsService(BaseService):
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
@@ -55,9 +55,6 @@ class ItemsResource(ArchiveResource):
         },
         'deleted': {
             'type': 'string'
-        },
-        'cid': {
-            'type': 'integer'
         }
     })
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
@@ -85,9 +82,6 @@ class ItemsService(ArchiveService):
         user = get_user()
         updates['versioncreated'] = utcnow()
         updates['version_creator'] = str(user.get('_id'))
-        set_cid_on_blogs(original)
-        cid = original['cid']
-        updates['cid'] = cid
 
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
