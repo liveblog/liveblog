@@ -6,7 +6,7 @@ describe('editor embed:', function() {
 
     var youtube_url = 'https://www.youtube.com/watch?v=Ksd-a9lIIDc';
 
-    beforeEach(openUrl('/#/liveblog'));
+    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
 
     it('add a youtube iframe in the editor', function() {
         openBlog(0);

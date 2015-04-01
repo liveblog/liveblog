@@ -1,5 +1,6 @@
 var tests = [];
 var APP_SPEC_REG_EXP = /^\/base\/app\/scripts\/(.*)\.js$/;
+var paths = {superdesk: 'bower_components/superdesk/client/app/scripts/'};
 
 for (var file in window.__karma__.files) {
     if (window.__karma__.files.hasOwnProperty(file)) {
@@ -13,8 +14,7 @@ for (var file in window.__karma__.files) {
         }
     }
 }
-var paths = {superdesk: 'bower_components/superdesk/client/app/scripts/'};
-// we have to put here files tested without requirejs
+
 // core
 tests.push('superdesk/mocks');
 tests.push('superdesk/api/api');
@@ -31,6 +31,10 @@ tests.push('superdesk/services/preferencesService');
 tests.push('superdesk/features/features');
 tests.push('superdesk/services/asset');
 tests.push('superdesk/privileges/privileges');
+tests.push('superdesk/notification/notification');
+tests.push('superdesk/itemList/itemList');
+tests.push('superdesk/ui/ui');
+
 tests.push('superdesk/beta/beta');
 tests.push('superdesk/services/storage');
 
@@ -41,8 +45,13 @@ tests.push('superdesk-authoring/comments/comments');
 tests.push('superdesk-authoring/workqueue/workqueue');
 tests.push('superdesk-authoring/metadata/metadata');
 tests.push('superdesk-authoring/versioning/versions');
+tests.push('superdesk-authoring/packages/packages');
+tests.push('superdesk-authoring/editor/find-replace');
+tests.push('superdesk-authoring/multiedit/multiedit');
+tests.push('superdesk-authoring/macros/macros');
 tests.push('superdesk-workspace/content/content');
-tests.push('superdesk-desks/module');
+tests.push('superdesk-packaging/packaging');
+tests.push('superdesk-desks/desks');
 tests.push('superdesk-groups/groups');
 tests.push('superdesk-search/search');
 
@@ -58,12 +67,12 @@ tests.push('superdesk-dashboard/workspace-tasks/tasks');
 
 tests.push('superdesk-archive/module');
 
-tests.push('liveblog-dashboard/module');
 // libs
 tests.push('bower_components/ment.io/dist/mentio');
 tests.push('angular-gettext');
 tests.push('angular-ui');
 tests.push('angular-route');
+tests.push('moment');
 
 requirejs.config({
     baseUrl: '/base/app/scripts',
@@ -87,7 +96,6 @@ requirejs.config({
         'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
         'angular-ui': 'bower_components/angular-bootstrap/ui-bootstrap',
         'moment-timezone': 'bower_components/moment-timezone/moment-timezone',
-
         'superdesk': paths.superdesk + 'superdesk',
         'superdesk-settings': paths.superdesk + 'superdesk-settings',
         'superdesk-dashboard': paths.superdesk + 'superdesk-dashboard',
@@ -98,7 +106,9 @@ requirejs.config({
         'superdesk-workspace': paths.superdesk + 'superdesk-workspace',
         'superdesk-groups': paths.superdesk + 'superdesk-groups',
         'superdesk-search': paths.superdesk + 'superdesk-search',
-        'superdesk-scratchpad': paths.superdesk + 'superdesk-scratchpad'
+        'superdesk-scratchpad': paths.superdesk + 'superdesk-scratchpad',
+        'superdesk-packaging': paths.superdesk + 'superdesk-packaging'
+
     },
 
     shim: {
