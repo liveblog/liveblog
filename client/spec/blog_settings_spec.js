@@ -7,7 +7,7 @@ describe('Blog settings', function() {
     var DEFAULT_LANGUAGE = 'en';
     var NEW_LANGUAGE = 'fr';
 
-    beforeEach(openUrl('/#/liveblog'));
+    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
 
     function openSettings() {
         // click on the settings button
