@@ -12,7 +12,7 @@ function resetApp(callback) {
         uri: '/prepopulate',
         method: 'POST',
         json: {
-            'profile': 'app_prepopulate_data'
+            'profile': 'test'
         }
     }, function(e, r, j) {
         pp.token = null;
