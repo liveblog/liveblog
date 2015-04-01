@@ -8,7 +8,6 @@ describe('editor embed:', function() {
 
     beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
 
-
     it('add a youtube iframe in the editor', function() {
         openBlog(0);
         // click on the "+" bar
