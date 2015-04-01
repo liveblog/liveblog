@@ -4,7 +4,6 @@ var lodash = require('lodash');
 
 describe('blogs', function() {
     'use strict';
-    var waitTime = 2 * 1000;
     var blogs = [
         {title: 'title: end To end three', description: 'description: end to end three', username: 'first name last name'},
         {title: 'title: end to end two', description: 'description: end to end two', username: 'first name last name'},
