@@ -5,7 +5,7 @@ var randomString = require('./helpers/utils').randomString;
 describe('Draft Posts', function() {
     'use strict';
 
-    beforeEach(openUrl('/#/liveblog'));
+    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
 
     function createDraft(body) {
         var data = {
