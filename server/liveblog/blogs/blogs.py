@@ -8,7 +8,6 @@ from liveblog.common import get_user, update_dates_for
 from apps.content import metadata_schema
 from apps.archive.common import generate_guid, GUID_TAG
 from superdesk import get_resource_service
-from superdesk.celery_app import update_key
 from superdesk.resource import Resource
 
 

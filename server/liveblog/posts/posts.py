@@ -4,7 +4,7 @@ from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas
 from superdesk import get_resource_service
 from apps.archive import ArchiveVersionsResource
-from apps.archive.archive import PackageService, ArchiveResource, ArchiveService
+from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
 from apps.content import LINKED_IN_PACKAGES
 
