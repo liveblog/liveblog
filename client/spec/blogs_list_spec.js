@@ -21,7 +21,7 @@ describe('blogs', function() {
         username: 'first name last name'
     };
 
-    beforeEach(openUrl('/#/liveblog'));
+    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
 
     describe('blogs list:', function() {
 
