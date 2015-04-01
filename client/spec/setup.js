@@ -1,24 +1,26 @@
 'use strict';
 
-/*global beforeEach, afterEach */
+/* global beforeEach */
 
 var getToken = require('./helpers/auth').getToken;
 var resetApp = require('./helpers/fixtures').resetApp;
+var waitForSuperdesk = require('./helpers/utils').waitForSuperdesk;
+require('./helpers/waitReady.js');
 
 // runs before every spec
 beforeEach(function(done) {
+    require('./helpers/waitReady.js');
+    browser.driver.manage().window().setSize(1280, 800);
     getToken(function() {
         resetApp(function() {
-            browser.driver.getCurrentUrl().then(function(url) {
-                if (url.indexOf('data:') !== 0) {
-                    browser.executeScript('sessionStorage.clear();localStorage.clear();');
-                    browser.waitForAngular();
-                }
-                done();
-            });
+            browser.driver.get(browser.baseUrl)
+                .then(clearStorage)
+                .then(waitForSuperdesk)
+                .then(done);
         });
     });
 });
 
-// runs after every spec
-afterEach(function() {});
+function clearStorage() {
+    return browser.driver.executeScript('sessionStorage.clear();localStorage.clear();');
+}
