@@ -25,12 +25,18 @@ define([
                 $scope.timelineLoading = false;
             });
         }
-
         function retrieveOneMorePageOfPosts() {
             //check if we still have posts to load
-            if ($scope.totalPosts > ($scope.postsCriteria.page  * $scope.postsCriteria.max_results)) {
-                $scope.postsCriteria.page ++;
-                retrievePosts();
+            if ($scope.postsInfo.total > $scope.posts.length) {
+                $scope.timelineLoading = true;
+                postsService.
+                smartNextPage($route.current.params._id, 'open', $scope.posts, $scope.postsInfo, $scope.postsCriteria.max_results).
+                then(function() {
+                    $scope.timelineLoading = false;
+                }, function() {
+                    $scope.timelineLoading = false;
+                    notify.error(gettext('Could not load posts... please try again later'));
+                });
             }
         }
         $scope.$on('posts', function() {
@@ -41,6 +47,14 @@ define([
         });
         $scope.$on('blogs', function() {
             blogService.update($route.current.params._id);
+        });
+        //watch when the number of items show decrease and load more
+        $scope.$watch(function($scope) {
+            return $scope.posts.length < $scope.postsCriteria.max_results;
+        }, function(val) {
+            if (val) {
+                retrieveOneMorePageOfPosts();
+            }
         });
         // set the $scope
         angular.extend($scope, {
