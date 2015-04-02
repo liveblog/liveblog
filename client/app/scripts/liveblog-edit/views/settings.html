@@ -37,22 +37,20 @@
                             <div class="form-group">
                                 <label for="inputLanguage" class="control-label">Language</label>
                                 <div class="form-input">
-                                    <select ng-model="settings.blogPreferences.language" class="form-control">
-                                        <option
-                                          ng-repeat="language in settings.availableLanguages"
-                                          ng-selected="{{ settings.blogPreferences.language == language.language_code }}"
-                                          value="{{ language.language_code }}">{{ language.name }}</option>
+                                    <select
+                                      ng-model="settings.blogPreferences.language"
+                                      ng-options="language.language_code as language.name for language in settings.availableLanguages"
+                                      class="form-control">
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="inputTheme" class="control-label">Theme</label>
                                 <div class="form-input">
-                                     <select ng-model="settings.blogPreferences.theme" class="form-control">
-                                        <option
-                                          ng-repeat="theme in settings.availableThemes"
-                                          ng-selected="{{ settings.blogPreferences.theme == theme.language_code }}"
-                                          value="{{ theme.language_code }}">{{ theme.name }}</option>
+                                    <select
+                                      ng-model="settings.blogPreferences.theme"
+                                      ng-options="theme as theme.name for theme in settings.availableThemes track by theme"
+                                      class="form-control">
                                     </select>
                                 </div>
                             </div>

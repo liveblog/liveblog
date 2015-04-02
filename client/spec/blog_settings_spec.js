@@ -4,8 +4,8 @@ var openBlog = require('./helpers/utils').openBlog;
 describe('Blog settings', function() {
     'use strict';
 
-    var DEFAULT_LANGUAGE = 'en';
-    var NEW_LANGUAGE = 'fr';
+    var DEFAULT_LANGUAGE = 'english';
+    var NEW_LANGUAGE = 'french';
 
     beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
 
@@ -15,7 +15,7 @@ describe('Blog settings', function() {
     }
 
     function expectSelectedLanguageIs(language) {
-        expect(element(by.model('settings.blogPreferences.language')).getAttribute('value')).toEqual(language);
+        expect(element(by.model('settings.blogPreferences.language')).$('option:checked').getText()).toEqual(language);
     }
 
     function setLanguage(language) {
