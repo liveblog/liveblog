@@ -117,6 +117,40 @@ define([
             return criteria;
         }
 
+        // generate criteria for paginating
+        function updatePaginationCriteria(posts, type, max_results) {
+            var lastPost = posts[posts.length - 1],
+                momentLast = moment(lastPost._created),
+                filter = [
+                {range: {
+                    _created: {
+                            lt: momentLast.utc().format()
+                        }
+                    }
+                },
+                {
+                    term: {
+                        post_status: type
+                    }
+                },
+                {
+                    not: {
+                        term: {
+                            deleted: 'on'
+                        }
+                    }
+                }
+            ], criteria = {
+                    max_results: max_results,
+                    source: {
+                        query: {filtered: {filter: {
+                            and: filter
+                        }}}
+                    }
+            };
+            return criteria;
+        }
+
         // update the latest changes in items
         // it will not detect newly added items in post.
         function updateItems(blog_id, posts, postsInfo) {
@@ -139,6 +173,20 @@ define([
                     });
                 });
             });
+        }
+
+        //pagination support for auto-update
+        function smartNextPage(blog_id, type, posts, postsInfo, max_results) {
+            var deferred = $q.defer();
+            retrievePosts(blog_id, updatePaginationCriteria(posts, type, max_results)).then(function(data) {
+                angular.forEach(data._items, function(post) {
+                    posts.push(post);
+                });
+                deferred.resolve();
+            }, function() {
+                deferred.reject();
+            });
+            return deferred.promise;
         }
 
         // update changes in posts
@@ -276,6 +324,7 @@ define([
                 return fetchPosts(blog_id, 'draft', {} , posts, postsInfo);
             },
             updatePosts: updatePosts,
+            smartNextPage: smartNextPage,
             updateItems: updateItems,
             savePost: savePost,
             saveDraft: function(blog_id, post, items) {

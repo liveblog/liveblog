@@ -20,10 +20,10 @@ define([
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext',
         'upload', 'config', '$rootScope', 'embedService', 'postsService', 'modal',
-        'blogService', '$interval'
+        'blogService', '$route', '$routeParams'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext,
-        upload, config, $rootScope, embedService, postsService, modal, blogService, $interval) {
+        upload, config, $rootScope, embedService, postsService, modal, blogService, $route, $routeParams) {
 
         // return the list of items from the editor
         function getItemsFromEditor() {
@@ -121,13 +121,18 @@ define([
                     notify.error(gettext('Something went wrong. Please try again later'));
                 });
             },
-            draftPanelState: 'closed',
+            // retrieve draft panel status from url
+            draftPanelState: $routeParams.drafts === 'open'? 'open' : 'closed',
             toggleDraftPanel: function() {
+                // reverse status
                 var newStateValue = $scope.draftPanelState === 'open' ? 'closed': 'open';
+                // update new status
                 $scope.draftPanelState = newStateValue;
+                // update url for deeplinking
+                $route.updateParams({drafts: newStateValue === 'open' ? 'open' : undefined});
             },
             stParams: {
-                coverMaxWidth: 447,
+                coverMaxWidth: 350,
                 embedService: embedService,
                 // provide an uploader to the editor for media (custom sir-trevor image block uses it)
                 uploader: function(file, success_callback, error_callback) {

@@ -10,12 +10,16 @@
         padding: 10px 14px !important;
     }
     .draft-posts {
+        overflow-x: hidden;
         overflow-y: auto;
         height: 100%;
         .lb-post {
             &__holder {
                 padding: 14px 10px 0 12px;
                 border-bottom: 1px solid #DBDBDB;
+            }
+            &__item {
+                margin-right: 10px;
             }
             &__content {margin-left: 0;}
             &__figure { // smaller figure
@@ -28,6 +32,20 @@
             &__expander {
                 &-multiple-items {
                     background-color: @sd-background;
+                }
+            }
+            .cover-preview {
+                width: 250px !important;
+                height: 250px !important;
+                background-size: cover;
+            }
+            .embed-preview {
+                .fb-post {
+                    left: -12px;
+                }
+                iframe {
+                    width: 100%;
+                    height: 33%;
                 }
             }
         }

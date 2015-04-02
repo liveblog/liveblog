@@ -10,8 +10,8 @@
                 <span class="name">{{ ::post.original_creator_name }}</span> | <time>{{ post._updated | reldate }}</time>
                 <div class="lb-post__actions">
                     <ul>
-                        <li><a ng-click="onEditClick(post)"><i class="icon-edit"></i><span translate>Edit</span></a></li>
-                        <li><a ng-click="askRemovePost(post)"><i class="icon-remove"></i><span translate>Remove post</span></a></li>
+                        <li><a ng-click="onEditClick(post)" tooltip-placement="bottom" tooltip="{{ 'Edit' | translate }}"><i class="icon-pencil"></i></a></li>
+                        <li><a ng-click="askRemovePost(post)" tooltip-placement="bottom" tooltip="{{ 'Remove' | translate }}"><i class="icon-remove"></i></a></li>
                     </ul>
                 </div>
             </div>
