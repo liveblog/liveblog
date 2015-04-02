@@ -16,9 +16,11 @@
   "dependencies": {
     "superdesk": "https://github.com/liveblog/superdesk.git",
     "Eventable": "https://github.com/nistormihai/eventable.git",
+    "embed": "https://github.com/nistormihai/plugin-liveblog-embed-server.git#feature/liveblog3",
     "ng-sir-trevor": "~2.0.0",
     "angular-embed": "^2.0.0",
     "lrInfiniteScroll": "~1.0.0"
+
   },
   "resolutions": {
     "angular": "1.3.9",
