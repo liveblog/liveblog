@@ -49,8 +49,11 @@
                         </div>
                     </div>
                     <div class="actions">
-                        <button class="btn" ng-click="saveAsDraft()" translate>Save as draft</button>
-                        <button class="btn btn-info" ng-click="publish()" translate>Publish</button>
+                        <button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished()" translate>Save draft</button>
+                        <button class="btn btn-info" ng-click="publish()" ng-switch="isCurrentPostPublished()">
+                            <span ng-switch-when="true"  translate>Update</span>
+                            <span ng-switch-when="false" translate>Publish</span>
+                        </button>
                     </div>
                 </div>
             </span>
