@@ -1,4 +1,3 @@
-
 module.exports = {
-    html: '<%= appDir %>/index.html'
+    html: ['<%= appDir %>/index.html', '<%= appDir %>/embed.html']
 };

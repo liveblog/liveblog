@@ -1,4 +1,3 @@
-
 module.exports = {
-    html: '<%= distDir %>/index.html'
+    html: ['<%= distDir %>/index.html', '<%= distDir %>/embed.html']
 };
