@@ -188,19 +188,52 @@ define([
         });
     }
 
-    BlogSettingsController.$inject = ['blog', 'api'];
-    function BlogSettingsController(blog, api) {
+    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify'];
+    function BlogSettingsController($scope, blog, api, blogService, $location, notify) {
+        // set view's model
         var vm = this;
-        // set scope
         angular.extend(vm, {
             blog: blog,
-            blogSettings: {},
-            languages: []
+            blogPreferences: angular.copy(blog.blog_preferences),
+            availableLanguages: [],
+            availableThemes: [],
+            isSaved: true,
+            save: function() {
+                // save on backend and clsoe
+                notify.info(gettext('saving blog settings'));
+                blogService.save(vm.blog._id, {blog_preferences: vm.blogPreferences}).then(function(blog) {
+                    vm.isSaved = true;
+                    vm.blog = blog;
+                    notify.pop();
+                    notify.info(gettext('blog settings saved'));
+                    vm.close();
+                });
+            },
+            reset: function() {
+                // reset vm.blogPreferences's values with the ones from global_preferences (backend)
+                api('global_preferences').query().then(function(global_preferences) {
+                    global_preferences._items.forEach(function(item) {
+                        vm.blogPreferences[item.key] = item.value;
+                    });
+                });
+            },
+            close: function() {
+                // return to blog edit page
+                $location.path('/liveblog/edit/' + vm.blog._id);
+            }
         });
-        // load languages
+        // load available languages
         api('languages').query().then(function(data) {
-            vm.languages = data._items;
+            vm.availableLanguages = data._items;
         });
+        // load available themes
+        api('themes').query().then(function(data) {
+            vm.availableThemes = data._items;
+        });
+        // watch if the user selected preferences have changed, in order to update the `isSaved` variable
+        $scope.$watch(angular.bind(this, function () {return this.blogPreferences;}), function(new_value) {
+            vm.isSaved = _.isEqual(vm.blogPreferences, vm.blog.blog_preferences);
+        }, true);
     }
 
     /**
@@ -219,15 +252,17 @@ define([
             });
     }
 
-    var app = angular.module('liveblog.edit', ['SirTrevor', 'SirTrevorBlocks', 'angular-embed', 'angular-embed.handlers']);
+    var app = angular.module('liveblog.edit', ['SirTrevor', 'SirTrevorBlocks', 'angular-embed', 'angular-embed.handlers', 'ngRoute']);
     app.config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/liveblog/edit/:_id', {
             label: gettext('Blog Edit'),
+            auth: true,
             controller: BlogEditController,
             templateUrl: 'scripts/liveblog-edit/views/main.html',
             resolve: {blog: BlogResolver}
         }).activity('/liveblog/settings/:_id', {
             label: gettext('Blog Settings'),
+            auth: true,
             controller: BlogSettingsController,
             controllerAs: 'settings',
             templateUrl: 'scripts/liveblog-edit/views/settings.html',

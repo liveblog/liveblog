@@ -6,7 +6,7 @@
     </div>
     <h3 class="page-nav-title">{{ settings.blog.title }}</h3>
     <div class="button-stack right-stack">
-        <a class="navbtn" ng-href="#/liveblog/edit/{{ ::settings.blog._id }}">
+        <a class="navbtn" ng-click="settings.close()">
             <i class="svg-icon-settings"></i>
         </a>
     </div>
@@ -16,8 +16,9 @@
     <div class="settings-page">
         <div class="subnav">
             <h3 class="page-nav-title">Settings</h3>
-            <button class="btn btn-info pull-right" type="button" translate>Save</button>
-            <button class="btn btn-default pull-right" type="button" translate>Cancel</button>
+            <button ng-click="settings.save()"  class="btn btn-info pull-right"    type="button" translate ng-disabled="settings.isSaved">Save</button>
+            <button ng-click="settings.reset()" class="btn btn-default pull-right" type="button" translate>Reset to default</button>
+            <button ng-click="settings.close()" class="btn btn-default pull-right" type="button" translate>Cancel</button>
         </div>
         <div class="tabbable outer">
             <ul class="nav-tabs nav-stacked">
@@ -36,23 +37,20 @@
                             <div class="form-group">
                                 <label for="inputLanguage" class="control-label">Language</label>
                                 <div class="form-input">
-                                    <select ng-model="settings.blogSettings.language" class="form-control">
-                                        <option>--- Default ---</option>
-                                        <option
-                                          ng-repeat="language in settings.languages"
-                                          ng-selected="{{settings.blogSettings.language == language}}"
-                                          value="{{ language.language_code }}">{{ language.language_name }}</option>
+                                    <select
+                                      ng-model="settings.blogPreferences.language"
+                                      ng-options="language.language_code as language.name for language in settings.availableLanguages"
+                                      class="form-control">
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <label for="inputTheme" class="control-label">Theme</label>
                                 <div class="form-input">
-                                    <select class="form-control">
-                                        <option>--- Default ---</option>
-                                        <option>theme 1</option>
-                                        <option>theme 2</option>
-                                        <option>theme 3</option>
+                                    <select
+                                      ng-model="settings.blogPreferences.theme"
+                                      ng-options="theme as theme.name for theme in settings.availableThemes track by theme"
+                                      class="form-control">
                                     </select>
                                 </div>
                             </div>

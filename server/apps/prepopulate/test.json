@@ -10,6 +10,37 @@
     }
 },
 {
+    "resource": "global_preferences",
+    "data": {
+        "key": "language",
+        "value": "en"
+    }
+},
+{
+    "resource": "languages",
+    "id_name": "-id user admin-",
+    "data": {
+        "language_code": "de",
+        "name": "Deutch"
+    }
+},
+{
+    "resource": "languages",
+    "id_name": "-id user admin-",
+    "data": {
+        "language_code": "en",
+        "name": "English"
+    }
+},
+{
+    "resource": "languages",
+    "id_name": "-id user admin-",
+    "data": {
+        "language_code": "fr",
+        "name": "Français"
+    }
+},
+{
     "resource": "blogs",
     "data": {
         "title": "title: end to end One",
