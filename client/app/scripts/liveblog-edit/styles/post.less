@@ -32,30 +32,14 @@
         li {
             display: inline-block;
             a {
-                padding: 2px;
+                padding: 5px 8px;
                 > i {
                     .transition(opacity .25s linear);
                     opacity: .3;
                 }
-                > span {
-                    .transition(opacity .15s linear);
-                    text-align: right;
-                    position: absolute;
-                    top: -14px;
-                    opacity: 0;
-                    right: 0;
-                    white-space: nowrap;
-                    color: black;
-                    z-index:-1;
-                    background-color: white;
-                    padding: 0 3px;
-                }
                 &:hover {
+                    background-color: #F0F0F0;
                     > i {
-                        opacity: 1;
-                    }
-                    > span {
-                        z-index: 1;
                         opacity: 1;
                     }
                 }
