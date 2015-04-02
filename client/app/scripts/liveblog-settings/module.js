@@ -1,55 +1,55 @@
 (function() {
     'use strict';
-    SettingsService.$inject = ['api', '$q'];
-    function SettingsService(api, $q) {
-        var service = {};
-        service.getLanguages = function() {
-            var languages = [
-                {ID: 'en', name: 'english'},
-                {ID: 'fr', name: 'french'},
-                {ID: 'de', name: 'deutsch'}
-            ];
-            
-            var deferred = $q.defer();
-            // api.languages.query({}).then(function(data) {
-            //     deferred.resolve(data);
-            // }, function(message) {
-            //     deferred.reject(message)
-            // });
-            deferred.resolve(languages);
-            return deferred.promise;
-        }
-
-        service.getThemes = function() {
-            var themes = {
-                'no_theme': 'none',
-                'ocean': 'blue',
-                'forest': 'green'
-            };
-            var deferred = $q.defer();
-            // api.themes.query({}).then(function(data) {
-            //     deferred.resolve(data);
-            // }, function(message) {
-            //     deferred.reject(message)
-            // });
-            deferred.resolve(themes);
-            return deferred.promise;
-        }
-
-        return service;
-    };
-    LiveblogSettingsController.$inject = ['$scope', 'settingsService'];
-    function LiveblogSettingsController($scope, settingsService) {
-        settingsService.getLanguages().then(function(data) {
-            $scope.languages = data;
+    LiveblogSettingsController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q'];
+    function LiveblogSettingsController($scope, api, $location, notify, gettext, $q) {
+        //prep the settings
+        $scope.liveblogSettings = {'language': {}, 'theme': {}};
+        $scope.settingsLoading = true;
+        api.languages.query().then(function(data) {
+            $scope.languages = [];
+            _.map(data._items, function(language) {
+                $scope.languages.push(language);
+            });
         });
-        settingsService.getThemes().then(function(data) {
-            $scope.themes = data;
+        api.themes.query().then(function(data) {
+            $scope.themes = [];
+            _.map(data._items, function(theme) {
+                $scope.themes.push(theme);
+            });
         });
-        console.log('$scope ', $scope);
-    };
+        $scope.settingsLoading = true;
+        api.global_preferences.query().then(function(data) {
+            _.map(data._items, function(setting) {
+                $scope.liveblogSettings[setting.key] = setting;
+            });
+            $scope.settingsLoading = false;
+        });
+
+        $scope.saveSettings = function() {
+            notify.pop();
+            notify.info(gettext('Saving settings'));
+            var patch = {}, reqArr = [];
+            _.map($scope.liveblogSettings, function(item, key) {
+                patch = {
+                    key: key,
+                    value: item.value
+                };
+                reqArr.push(api('global_preferences').save(item, patch));
+            });
+            $q.all(reqArr).then(function() {
+                notify.pop();
+                notify.info(gettext('Settings saved'));
+            }, function() {
+                notify.pop();
+                notify.error(gettext('Saving settings failed. Please try again later'));
+            });
+        };
+        $scope.close = function() {
+            //return to blog list page
+            $location.path('/liveblog/');
+        };
+    }
     var liveblogSettingsModule = angular.module('liveblog.settings', [])
-    .service('settingsService', SettingsService)
     .config(['superdeskProvider', function(superdesk) {
         superdesk
             .activity('/settings/liveblog', {
@@ -57,7 +57,7 @@
                 controller: LiveblogSettingsController,
                 templateUrl: 'scripts/liveblog-settings/views/general.html',
                 category: superdesk.MENU_SETTINGS
-            })
+            });
     }])
     .config(['apiProvider', function(apiProvider) {
         apiProvider.api('themes', {
@@ -67,6 +67,10 @@
         apiProvider.api('languages', {
             type: 'http',
             backend: {rel: 'languages'}
+        });
+        apiProvider.api('global_preferences', {
+            type: 'http',
+            backend: {rel: 'global_preferences'}
         });
     }]);
     return liveblogSettingsModule;

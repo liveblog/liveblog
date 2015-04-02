@@ -1,32 +1,25 @@
-<div sd-settings-view ng-init="generalTab = true">
-
+<div sd-settings-view class="general-settings">
     <div class="split-content">
-        <ul class="nav nav-tabs">
-            <li ng-class="{active: generalTab}">
-                <button ng-click="generalTab = true" translate>General</button>
-            </li>
-            <li ng-class="{active: !generalTab}">
-                <button ng-click="generalTab = false" translate>Other</button>
-            </li>
-        </ul>
-        
-        <div class="content user-roles">
-            <div ng-if="generalTab">
-                <fieldset>
-                    <div class="control-group">
-                        <label class="control-label" translate>Language</label>
-                        <select name="language" class="config-small-input" ng-options="language.ID as language.name for language in languages"></select>
+        <div style="margin:10px">
+            <button ng-click="saveSettings()" class="btn btn-info pull-right" type="button" translate ng-disabled="!setForm.$dirty">Save</button>
+            <button ng-click="close()" class="btn btn-default pull-right" type="button" translate>Cancel</button>
+        </div>
+        <div class="content">   
+            <div class="loading-indicator" ng-show="settingsLoading"><span translate>loading</span></div>
+            <form class="form-horizontal" name="setForm">
+                <div class="form-group">
+                    <label for="inputLanguage" class="control-label">Language</label>
+                    <div class="form-input">
+                        <select name="inputLanguage" class="row-td" ng-options="language.language_code as language.name for language in languages" ng-model="liveblogSettings.language.value" class="form-control"></select>
                     </div>
-                    <div class="control-group">
-                        <label class="control-label" translate>Theme</label>
-                        <select class="config-small-input" ng-options="theme.ID as theme.name for theme in themes"></select>
+                </div>
+                <div class="form-group">
+                    <label for="inputTheme" class="control-label">Theme</label>
+                    <div class="form-input">
+                        <select ng-options="theme.name as theme.name for theme in themes" ng-model="liveblogSettings.theme.value" class="form-control"></select>
                     </div>
-                </fieldset>
-            </div>
-            <div ng-if="!generalTab">
-                Other Settings
-            </div>
+                </div>
+            </form>
         </div>
     </div>
-    
 </div>
