@@ -38,11 +38,11 @@ We need the blog to know how to render the title and description of a blog for s
 Also additional we need the blog_preferences before we render the hole embed.
 
 A Blog object has the following attributes:
-+ links (object) - A eve standard link object with urls to parent, self, collection.
-+ id (string) - Identificator.
-+ etag (string) - A standar impleneation of [etag](http://en.wikipedia.org/wiki/HTTP_ETag)
-+ created (date) - An ISO8601 date when the blog was created ( mongodb ).
-+ updated (date) - An ISO8601 date when the blog was last updated ( mongodb ).
++ _id (string) - Identificator.
++ _etag (string) - A standar impleneation of [etag](http://en.wikipedia.org/wiki/HTTP_ETag)
++ _created (date) - An ISO8601 date when the blog was created ( mongodb ).
++ _updated (date) - An ISO8601 date when the blog was last updated ( mongodb ).
++ _version- That
 + blog_preferences (object) - An object with preferences details.
 + blog_status - An option between 'open' or 'close'.
 + original_creator (string) - Id of the user who created the blog.
