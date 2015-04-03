@@ -4,18 +4,11 @@
     function LiveblogSettingsController($scope, api, $location, notify, gettext, $q) {
         //prep the settings
         $scope.liveblogSettings = {'language': {}, 'theme': {}};
-        $scope.settingsLoading = true;
         api.languages.query().then(function(data) {
-            $scope.languages = [];
-            _.map(data._items, function(language) {
-                $scope.languages.push(language);
-            });
+            $scope.languages = data._items;
         });
         api.themes.query().then(function(data) {
-            $scope.themes = [];
-            _.map(data._items, function(theme) {
-                $scope.themes.push(theme);
-            });
+            $scope.themes = data._items;
         });
         $scope.settingsLoading = true;
         api.global_preferences.query().then(function(data) {
