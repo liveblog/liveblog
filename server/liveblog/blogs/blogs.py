@@ -9,6 +9,9 @@ from apps.content import metadata_schema
 from apps.archive.common import generate_guid, GUID_TAG
 from superdesk import get_resource_service
 from superdesk.resource import Resource
+from apps.users.users import UsersResource
+from apps.users.services import UsersService
+from bson.objectid import ObjectId
 
 
 class BlogsVersionsResource(ArchiveVersionsResource):
@@ -97,3 +100,4 @@ class BlogService(ArchiveService):
 
     def on_deleted(self, doc):
         push_notification('blogs', deleted=1)
+
