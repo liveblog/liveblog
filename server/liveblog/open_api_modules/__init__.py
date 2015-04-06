@@ -1,7 +1,7 @@
 import superdesk
 from liveblog.open_api_modules.open_modules import OpenBlogsResource, OpenBlogsService,\
-    OpenPostsService, OpenPostsResource, OpenItemsResource, OpenItemsService
-
+    OpenPostsService, OpenPostsResource, OpenUsersResource, OpenUsersService, OpenBlogPostsService,\
+    OpenBlogPostsResource
 
 def init_app(app):
     endpoint_name = 'client_blogs'
@@ -11,7 +11,12 @@ def init_app(app):
     endpoint_name = 'client_posts'
     service = OpenPostsService(endpoint_name, backend=superdesk.get_backend())
     OpenPostsResource(endpoint_name, app=app, service=service)
+    
+    endpoint_name = 'client_blog_posts'
+    service = OpenBlogPostsService(endpoint_name, backend=superdesk.get_backend())
+    OpenBlogPostsResource(endpoint_name, app=app, service=service)
 
-    endpoint_name = 'client_items'
-    service = OpenItemsService(endpoint_name, backend=superdesk.get_backend())
-    OpenItemsResource(endpoint_name, app=app, service=service)
+    endpoint_name = 'client_users'
+    service = OpenUsersService(endpoint_name, backend=superdesk.get_backend())
+    OpenUsersResource(endpoint_name, app=app, service=service)
+
