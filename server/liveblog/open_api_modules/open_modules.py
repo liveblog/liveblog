@@ -3,9 +3,8 @@ from eve.utils import ParsedRequest
 from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, BlogPostsResource
 from apps.users.users import UsersResource
 from apps.users.services import UsersService
-from superdesk.resource import Resource, build_custom_hateoas
-from superdesk import get_resource_service
 from bson.objectid import ObjectId
+import json
 
 
 class OpenUsersResource(UsersResource):
@@ -93,7 +92,20 @@ class OpenBlogPostsResource(BlogPostsResource):
     
 class OpenBlogPostsService(BlogPostsService):
     def get(self, req, lookup):
-        return super().get(req, lookup)
+        if req is None:
+            req = ParsedRequest()
+        x = req.args.get('q')
+        if x.startswith('status'):
+            x = {'post_status':'open'}
+            query = {'query': {'filtered': {'filter': {'term': x}}}}
+            req = self.init_req(query)
+        docs = super().get(req, lookup)
+        return docs
+
+    def init_req(self, elastic_query):
+        parsed_request = ParsedRequest()
+        parsed_request.args = {"source": json.dumps(elastic_query)}
+        return parsed_request
 
 
 class BlogUsersResource(UsersResource):

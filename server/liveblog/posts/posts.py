@@ -51,7 +51,7 @@ class PostsResource(ArchiveResource):
             'default': 'open'
         },
         'deleted': {
-            'type': 'string'
+            'type': 'boolean'
         },
     })
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}

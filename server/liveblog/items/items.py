@@ -54,7 +54,7 @@ class ItemsResource(ArchiveResource):
             'type': 'dict'
         },
         'deleted': {
-            'type': 'string'
+            'type': 'boolean'
         }
     })
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
