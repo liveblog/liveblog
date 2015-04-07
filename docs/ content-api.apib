@@ -1,5 +1,5 @@
 FORMAT: 1A
-HOST: http://liveblog.sd-test.sourcefabric.org/api
+HOST: http://liveblog.sd-test.sourcefabric.org/api/client_
 
 # liveblog-embed
 
@@ -72,7 +72,7 @@ A Blog object has the following attributes:
                 }
 
 
-## Posts [/blogs/{blog}/posts?data_field={date_field}&since={since}&&until={until}&deleted={deleted}&status={status}&limit={limit}]
+## Posts [/blogs/{blog}/posts?cid.since={cid_since}&cid.until={cid_until}&order.since={order_since}&order.until={order_until}&since={since}&&until={until}&deleted={deleted}&status={status}&limit={limit}]
 We need the posts from a blog to render the timeline.
 This request should be splited in three actions parts based on the functionality
 a) first page
@@ -96,11 +96,14 @@ A Posts and Items list:
 + Parameters
     + blog (required, string) identification of the blog
     + limit (optional, number, `25`) The max. number of posts to be retrieved.
-    + since (optional, date) see point b) and c)
-    + until (optional, date) see point b) and c)
-    + date_field (optional, string, `_updated`) blog date field where the since and until range will be applied.
+    + since (optional, date) Date rage since for _created field, should be exclusive range.
+    + until (optional, date) Date rage until for _created field should be exclusive range.
     + deleted (optional, boolean, `false`) when is false it should contain only posts without the filed deleted.
     + status (optional, string, `open`) filter based on status of the post.
+    + cid_since (optional, number) see point a) b) and c)
+    + cid_until (optional, number) see point a) b) and c)
+    + order_until (optional, float) see pont a) b) and c)
+    + order_since (optional, float ) see point a) b) and c)
 
 ### View a Posts [GET]
 + Response 200 (application/json)
@@ -203,7 +206,7 @@ We need the users from a blog to render to be rendered on a post/item.
 
 
 ## Users [/blogs/{blog}/users?date_field={date_field}&since={since}&until={until}]
-We need the users from a blog to render to be rendered on a post/item.
+We need the users from a blog to be rendered on a post/item.
 * experimental get all the users for that blog and render them from that collection.
 * collection get updates if user list or users are changed via de range date field for _updated.
 
