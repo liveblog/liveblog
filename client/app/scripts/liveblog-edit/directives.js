@@ -163,32 +163,33 @@ define([
                     scope: {
                         post: '=',
                         onEditClick: '=',
-                        allowQuickEdit: '='
+                        allowQuickEdit: '=',
+                        allowUnpublish: '='
                     },
                     replace: true,
                     restrict: 'E',
                     templateUrl: 'scripts/liveblog-edit/views/post.html',
                     link: function(scope, elem, attrs) {
-                        scope.toggleMultipleItems = function() {
-                            scope.post.show_all = !scope.post.show_all;
-                        };
-
-                        scope.removePost = function(post) {
-                            postsService.remove(post).then(function(message) {
-                                notify.pop();
-                                notify.info(gettext('Post removed'));
-                            }, function() {
-                                notify.pop();
-                                notify.error(gettext('Something went wrong'));
-                            });
-                        };
-
-                        scope.askRemovePost = function(post) {
-                            modal.confirm(gettext('Are you sure you want to delete the post?'))
-                                .then(function() {
-                                    scope.removePost(post);
+                        angular.extend(scope, {
+                            toggleMultipleItems: function() {
+                                scope.post.show_all = !scope.post.show_all;
+                            },
+                            removePost: function(post) {
+                                postsService.remove(post).then(function(message) {
+                                    notify.pop();
+                                    notify.info(gettext('Post removed'));
+                                }, function() {
+                                    notify.pop();
+                                    notify.error(gettext('Something went wrong'));
                                 });
-                        };
+                            },
+                            askRemovePost: function(post) {
+                                modal.confirm(gettext('Are you sure you want to delete the post?'))
+                                    .then(function() {
+                                        scope.removePost(post);
+                                    });
+                            }
+                        });
                     }
                 };
             }

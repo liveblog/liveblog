@@ -12,6 +12,7 @@
                     <ul>
                         <li><a ng-click="onEditClick(post)" tooltip-placement="bottom" tooltip="{{ 'Edit' | translate }}"><i class="icon-pencil"></i></a></li>
                         <li><a ng-click="askRemovePost(post)" tooltip-placement="bottom" tooltip="{{ 'Remove' | translate }}"><i class="icon-remove"></i></a></li>
+                        <li ng-if="allowUnpublish"><a ng-click="unpublishPost(post)" tooltip-placement="bottom" tooltip="{{ 'Unpublish and save in draft' | translate }}"><i class="glyphicon glyphicon-eye-close"></i></a></li>
                     </ul>
                 </div>
             </div>
