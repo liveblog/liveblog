@@ -23,6 +23,16 @@ describe('timeline add to top and edit', function() {
         });
     });
     it('can edit an item on the timeline', function() {
+        var randomText = randomString(10);
+        openBlog(2);
+        element(by.repeater('post in posts').row(0))
+            .element(by.css('[ng-click="onEditClick(post)"]')).click();
+        element(by.css('.editor .st-text-block')).clear().sendKeys(randomText);
+        element(by.css('[ng-click="publish()"]')).click();
+        browser.waitForAngular();
+        expect(element(by.repeater('post in posts').row(0)).element(by.css('.lb-post__item')).getText()).toBe(randomText);
+    });
+    it('can edit an item on the timeline (quick edit mode)', function() {
         openBlog(2);
         var randomText = randomString(10);
         //go and check the timeline
