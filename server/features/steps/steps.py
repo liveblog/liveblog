@@ -201,6 +201,24 @@ def step_impl_given_(context, resource):
         setattr(context, resource, items[-1])
 
 
+@given('lb "{resource}"')
+def step_impl_given_lb_(context, resource):
+    data = apply_placeholders(context, context.text)
+    with context.app.test_request_context(context.app.config['URL_PREFIX']):
+        if not is_post_resource(resource):
+            get_resource_service(resource).delete_action()
+
+        items = [parse(item, resource) for item in json.loads(data)]
+        if is_user_resource(resource):
+            for item in items:
+                item.setdefault('needs_activation', False)
+
+        get_resource_service(resource).post(items)
+        context.data = items
+        context.resource = resource
+        setattr(context, resource, items[-1])
+
+
 @given('the "{resource}"')
 def step_impl_given_the(context, resource):
     with context.app.test_request_context(context.app.config['URL_PREFIX']):
@@ -1298,6 +1316,10 @@ def when_we_login_as_user(context, username, password):
 
 def is_user_resource(resource):
     return resource in ('users', '/users')
+
+
+def is_post_resource(resource):
+        return resource in ('posts', '/posts')
 
 
 @then('we get {no_of_stages} invisible stages')

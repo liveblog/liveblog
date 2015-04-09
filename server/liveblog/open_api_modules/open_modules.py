@@ -5,6 +5,8 @@ from apps.users.users import UsersResource
 from apps.users.services import UsersService
 from bson.objectid import ObjectId
 import json
+from apps.archive.common import item_url
+from werkzeug import ImmutableMultiDict
 
 
 class OpenUsersResource(UsersResource):
@@ -16,18 +18,17 @@ class OpenUsersResource(UsersResource):
     public_item_methods = ['GET']
     item_methods = ['GET']
     resource_methods = ['GET']
- 
+
     schema = {}
     schema.update(UsersResource.schema)
- 
- 
+
+
 class OpenUsersService(UsersService):
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
         docs = super().get(req, lookup)
         return docs
-
 
 
 class OpenBlogsResource(BlogsResource):
@@ -81,7 +82,6 @@ class OpenBlogPostsResource(BlogPostsResource):
     schema = PostsResource.schema
     datasource = {
         'source': 'archive',
-        'elastic_filter': {'term': {'particular_type': 'post'}},
         'default_sort': [('_updated', -1)]
     }
     public_methods = ['GET']
@@ -89,18 +89,47 @@ class OpenBlogPostsResource(BlogPostsResource):
     item_methods = ['GET']
     resource_methods = ['GET']
     privileges = {'GET': 'blogs'}
-    
+    item_url = item_url
+
+
 class OpenBlogPostsService(BlogPostsService):
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
-        x = req.args.get('q')
-        if x.startswith('status'):
-            x = {'post_status':'open'}
-            query = {'query': {'filtered': {'filter': {'term': x}}}}
+        if req.args == ImmutableMultiDict([]):
+            query = {'query': {'filtered': {'filter': {'term': {'particular_type': 'post'}}}}}
             req = self.init_req(query)
+        else:
+            if req.args.get('limit'):
+                limit = self.get_limit(req)
+                query = {'query': {'filtered': {'filter': {'term': limit}}}}
+                req = self.init_req(query)
+            else:
+                if req.args.get('status'):
+                    state = self.get_status(req)
+                    query = {'query': {'filtered': {'filter': {'term': state}}}}
+                    req = self.init_req(query)
         docs = super().get(req, lookup)
         return docs
+
+    def get_limit(self, req):
+        args = getattr(req, 'args', {})
+        if args['limit']:
+            x = args['limit']
+            if x:
+                y = {'max_results': x}
+        return y
+
+    def get_status(self, req):
+        args = getattr(req, 'args', {})
+        if args['status']:
+            x = args['status']
+            if x == 'open':
+                y = {'post_status': x}
+            else:
+                if x == 'draft':
+                    y = {'post_status': x}
+        return y
 
     def init_req(self, elastic_query):
         parsed_request = ParsedRequest()
