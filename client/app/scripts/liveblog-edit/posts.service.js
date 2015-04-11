@@ -182,6 +182,9 @@ define([
         // }
 
         function getLatestUpdateDate(posts) {
+            if (!angular.isDefined(posts) || posts.length < 1) {
+                return;
+            }
             var latest_date, date;
             posts.forEach(function (post) {
                 date = moment(post._updated);

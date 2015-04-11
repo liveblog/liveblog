@@ -57,32 +57,36 @@ define([
                 function LbPostsListCtrl($scope) {
                     var vm = this;
 
-                    function fetchPosts() {
+                    function fetchPage() {
+                        // stop if the limit is reached
                         if (angular.isDefined(vm.postsMeta.total) && vm.postsMeta.total <= vm.posts.length) {
                             return false;
                         }
+                        // Find the next page containing new posts
+                        var page = 1;
+                        while (vm.pagination.limit * page <= vm.posts.length) {
+                            page++;
+                        }
+                        // active loading
                         vm.isLoading = true;
+                        // retrieve a page of posts
                         postsService
-                            .fetchPosts(vm.blogId, {status: vm.status}, vm.pagination.limit, vm.pagination.page)
+                            .fetchPosts(vm.blogId, {status: vm.status}, vm.pagination.limit, page)
                             .then(function(posts) {
                                 vm.isLoading = false;
                                 posts._items.forEach(function(post) {
-                                    vm.posts.push(post);
+                                    // add only if not already present
+                                    if (getPostIndex(post._id) === -1) {
+                                        vm.posts.push(post);
+                                    }
                                 });
                                 angular.extend(vm, {
-                                    // posts: posts._items,
                                     postsMeta: {total: posts._meta.total}
                                 });
                             }, function(reason) {
                                 notify.error(gettext('Could not load posts... please try again later'));
                                 vm.isLoading = false;
                             });
-                    }
-
-                    function fetchOneMorePageOfPosts() {
-                        // try to load around 10 more posts
-                        vm.pagination.page += 1;
-                        fetchPosts();
                     }
 
                     function getPostIndex(post_id) {
@@ -95,19 +99,19 @@ define([
                         posts: [],
                         postsMeta: {},
                         // pagination.limit is the initial amount of posts when loaded for the first time
-                        pagination: {limit: 15, page: 1},
+                        pagination: {limit: 15},
                         blogId: $scope.lbPostsBlogId,
                         status: $scope.lbPostsStatus,
                         emptyMessage: $scope.lbPostsEmptyMessage,
                         allowQuickEdit: $scope.lbPostsAllowQuickEdit,
                         onPostSelected: $scope.lbPostsOnPostSelected,
-                        retrieveOneMorePageOfPosts: fetchOneMorePageOfPosts,
+                        fetchPage: fetchPage,
                         isPostsEmpty: function() {
                             return vm.posts.length < 1 && !vm.isLoading;
                         }
                     });
                     // init posts list and metadata from database
-                    fetchPosts();
+                    fetchPage();
                     // // bind events sent from backend and do the appropriated operation (a,b,c,d)
                     $scope.$on('posts', function(e, event_params) {
                         if (event_params.deleted) {
