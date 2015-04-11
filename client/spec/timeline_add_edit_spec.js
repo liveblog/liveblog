@@ -14,7 +14,7 @@ describe('timeline add to top and edit', function() {
         element(by.css('[ng-click="publish()"]')).click();
         browser.waitForAngular();
         //go and check the timeline
-        element.all(by.repeater('post in posts')).then(function(posts) {
+        element(by.css('.column-timeline')).all(by.repeater('post in posts')).then(function(posts) {
             var textElement = posts[0].element(by.css('span[medium-editable]'));
             //first element should have the new entered value
             textElement.getText().then(function(text) {
@@ -26,7 +26,7 @@ describe('timeline add to top and edit', function() {
         openBlog(2);
         var randomText = randomString(10);
         //go and check the timeline
-        element.all(by.repeater('post in posts')).then(function(posts) {
+        element(by.css('.column-timeline')).all(by.repeater('post in posts')).then(function(posts) {
             posts[0].isElementPresent(by.css('.lb-post__expander-holder')).then(function(present) {
                 if (present) {
                     posts[0].element(by.css('.lb-post__expander-holder')).click();
@@ -45,7 +45,7 @@ describe('timeline add to top and edit', function() {
                 //open first blog
                 openBlog(2);
                 //go and check the timeline
-                element.all(by.repeater('post in posts')).then(function(posts) {
+                element(by.css('.column-timeline')).all(by.repeater('post in posts')).then(function(posts) {
                     posts[0].isElementPresent(by.css('.lb-post__expander-holder')).then(function(present) {
                         if (present) {
                             posts[0].element(by.css('.lb-post__expander-holder')).click();
