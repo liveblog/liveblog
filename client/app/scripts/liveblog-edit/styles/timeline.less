@@ -4,9 +4,10 @@
 // timeline
 .column-timeline {
     border: 0px;
-    .posts {
-        height: 100%;
+    .timeline-posts-list {
         overflow-y: scroll;
+    }
+    .posts {
         padding: 20px;
         > li {
             background-color: white;
@@ -15,25 +16,24 @@
             border-bottom: 1px solid #DADADA;
         }
     }
-}
+    .table-cell {
+        display: table-cell;
+    }
+    .table-row {
+        display: table-row;
+    }
 
-.table-cell {
-    display: table-cell;
-}
-.table-row {
-    display: table-row;
-}
-
-.loading-indicator {
-    position: absolute;
-    top: 0;
-    left: 50%;
-    padding: 5px 10px;
-    border-radius: 0 0 3px 3px;
-    border: 1px solid #52b1cc;
-    font-size: 12px;
-    font-weight: 700;
-    color: #3599b6;
-    background: #eff7fa;
-    z-index: 1;
+    .loading-indicator {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        padding: 5px 10px;
+        border-radius: 0 0 3px 3px;
+        border: 1px solid #52b1cc;
+        font-size: 12px;
+        font-weight: 700;
+        color: #3599b6;
+        background: #eff7fa;
+        z-index: 1;
+    }
 }

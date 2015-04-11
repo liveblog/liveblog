@@ -12,13 +12,12 @@ define([
         });
     }])
     .directive('setTimelineHeight', ['$window', function($window) {
-        var offset = 40; // 20px padding top and bottom
         var w = angular.element($window);
         return {
             restrict: 'A',
             link: function(scope, elem, attrs) {
                 var updateElementHeight = function () {
-                    elem.css('height', w.height() - elem.offset().top - offset);
+                    elem.css('height', w.height() - elem.offset().top);
                 };
                 updateElementHeight();
                 w.on('resize', updateElementHeight);
