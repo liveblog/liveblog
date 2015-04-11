@@ -19,11 +19,11 @@ define([
 
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext',
-        'upload', 'config', '$rootScope', 'embedService', 'postsService', 'modal',
+        'upload', 'config', 'embedService', 'postsService', 'modal',
         'blogService', '$route', '$routeParams'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext,
-        upload, config, $rootScope, embedService, postsService, modal, blogService, $route, $routeParams) {
+        upload, config, embedService, postsService, modal, blogService, $route, $routeParams) {
 
         // return the list of items from the editor
         function getItemsFromEditor() {
