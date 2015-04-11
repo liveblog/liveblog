@@ -144,7 +144,8 @@ define([
                         html.find('.cover-preview').css({
                             'background-image': 'url(' + data.thumbnail_url + ')',
                             width: cover_width,
-                            height: cover_height
+                            height: cover_height,
+                            'background-size': 'cover'
                         });
                         html.find('.cover-preview-handler').removeClass('hidden');
                     }
