@@ -33,6 +33,7 @@
         <div class="content">
             <div class="draft-posts" ng-if="draftPanelState === 'open'">
                 <lb-posts-list
+                  lb-posts-instance="blogEdit.draftPostsInstance"
                   lb-posts-blog-id="blog._id"
                   lb-posts-status="draft"
                   lb-posts-empty-message="<p>You don't have any draft yet.</p><p>To create one, start to compose your post and click on the &#34;SAVE AS DRAFT&#34; button. You will be able to re-open it later in the editor.</p>"
@@ -104,6 +105,8 @@
                 <div ng-if="isTimeline">
                     <div
                       class="timeline-posts-list"
+                      lb-posts-instance="blogEdit.timelineInstance"
+                      lr-infinite-scroll="fetchNewTimelinePage"
                       set-timeline-height
                       lb-posts-list
                       lb-posts-blog-id="blog._id"

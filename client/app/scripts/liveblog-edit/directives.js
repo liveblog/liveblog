@@ -51,8 +51,8 @@ define([
             };
         })
         .directive('lbPostsList', [
-            'postsService', 'notify',
-            function(postsService, notify) {
+            'postsService', 'notify', '$q',
+            function(postsService, notify, $q) {
 
                 function LbPostsListCtrl($scope) {
                     var vm = this;
@@ -70,18 +70,16 @@ define([
                         // active loading
                         vm.isLoading = true;
                         // retrieve a page of posts
-                        postsService
+                        return postsService
                             .fetchPosts(vm.blogId, {status: vm.status}, vm.pagination.limit, page)
                             .then(function(posts) {
                                 vm.isLoading = false;
+                                vm.postsMeta.total = posts._meta.total;
                                 posts._items.forEach(function(post) {
                                     // add only if not already present
                                     if (getPostIndex(post._id) === -1) {
                                         vm.posts.push(post);
                                     }
-                                });
-                                angular.extend(vm, {
-                                    postsMeta: {total: posts._meta.total}
                                 });
                             }, function(reason) {
                                 notify.error(gettext('Could not load posts... please try again later'));
@@ -110,40 +108,42 @@ define([
                             return vm.posts.length < 1 && !vm.isLoading;
                         }
                     });
+                    $scope.lbPostsInstance = vm;
                     // init posts list and metadata from database
-                    fetchPage();
-                    // // bind events sent from backend and do the appropriated operation (a,b,c,d)
-                    $scope.$on('posts', function(e, event_params) {
-                        if (event_params.deleted) {
-                            var post_index = getPostIndex(event_params.post_id);
-                            if (post_index > -1) {
-                                // a) removed
-                                vm.posts.splice(post_index, 1);
-                            }
-                        } else {
-                            // retrieve lastest updates from database
-                            var latest_update = postsService.getLatestUpdateDate(vm.posts);
-                            postsService.fetchPosts(vm.blogId, {
-                                updatedAfter: latest_update
-                            }).then(function(posts) {
-                                posts._items.forEach(function(post_updated) {
-                                    if (post_updated.post_status === vm.status) {
-                                        if (getPostIndex(post_updated._id) > -1) {
-                                            // b) updated
-                                            vm.posts[getPostIndex(post_updated._id)] = post_updated;
+                    $q.when(fetchPage()).then(function () {
+                        // bind events sent from backend and do the appropriated operation (a,b,c,d)
+                        $scope.$on('posts', function(e, event_params) {
+                            if (event_params.deleted) {
+                                var post_index = getPostIndex(event_params.post_id);
+                                if (post_index > -1) {
+                                    // a) removed
+                                    vm.posts.splice(post_index, 1);
+                                }
+                            } else {
+                                // retrieve lastest updates from database
+                                var latest_update = postsService.getLatestUpdateDate(vm.posts);
+                                postsService.fetchPosts(vm.blogId, {
+                                    updatedAfter: latest_update
+                                }).then(function(posts) {
+                                    posts._items.forEach(function(post_updated) {
+                                        if (post_updated.post_status === vm.status) {
+                                            if (getPostIndex(post_updated._id) > -1) {
+                                                // b) updated
+                                                vm.posts[getPostIndex(post_updated._id)] = post_updated;
+                                            } else {
+                                                // c) added
+                                                vm.posts.push(post_updated);
+                                            }
                                         } else {
-                                            // c) added
-                                            vm.posts.push(post_updated);
+                                            // d) status changed, then we remove
+                                            if (getPostIndex(post_updated._id) > -1) {
+                                                vm.posts.splice(getPostIndex(post_updated._id), 1);
+                                            }
                                         }
-                                    } else {
-                                        // d) status changed, then we remove
-                                        if (getPostIndex(post_updated._id) > -1) {
-                                            vm.posts.splice(getPostIndex(post_updated._id), 1);
-                                        }
-                                    }
+                                    });
                                 });
-                            });
-                        }
+                            }
+                        });
                     });
                 }
                 return {
@@ -152,7 +152,8 @@ define([
                         lbPostsStatus: '@',
                         lbPostsEmptyMessage: '@',
                         lbPostsAllowQuickEdit: '=',
-                        lbPostsOnPostSelected: '='
+                        lbPostsOnPostSelected: '=',
+                        lbPostsInstance: '='
                     },
                     restrict: 'EA',
                     templateUrl: 'scripts/liveblog-edit/views/posts.html',

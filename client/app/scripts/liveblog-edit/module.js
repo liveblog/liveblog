@@ -53,6 +53,7 @@ define([
             $scope.editor.reinitialize();
             $scope.currentPost = undefined;
         }
+        var vm = this;
 
         // define the $scope
         angular.extend($scope, {
@@ -164,6 +165,9 @@ define([
                     });
                 }
             },
+            fetchNewTimelinePage: function() {
+                vm.timelineInstance.fetchPage();
+            },
             isBlogOpened: function() {
                 return $scope.blog.blog_status === 'open';
             },
@@ -258,6 +262,7 @@ define([
             label: gettext('Blog Edit'),
             auth: true,
             controller: BlogEditController,
+            controllerAs: 'blogEdit',
             templateUrl: 'scripts/liveblog-edit/views/main.html',
             resolve: {blog: BlogResolver}
         }).activity('/liveblog/settings/:_id', {
