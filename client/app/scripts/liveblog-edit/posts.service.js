@@ -127,34 +127,30 @@ define([
             }
             // save the post
             return $q.all(dfds).then(function(items) {
-                angular.extend(post, {
-                    blog: blog_id,
-                    groups: [
-                        {
-                            id: 'root',
-                            refs: [{idRef: 'main'}],
-                            role: 'grpRole:NEP'
-                        }, {
-                            id: 'main',
-                            refs: [],
-                            role: 'grpRole:Main'
-                        }
-                    ]
-                });
-                // update the post reference (links with items)
-                _.each(items, function(item) {
-                    post.groups[1].refs.push({residRef: item._id});
-                });
+                if (dfds.length > 0) {
+                    angular.extend(post, {
+                        blog: blog_id,
+                        groups: [
+                            {
+                                id: 'root',
+                                refs: [{idRef: 'main'}],
+                                role: 'grpRole:NEP'
+                            }, {
+                                id: 'main',
+                                refs: [],
+                                role: 'grpRole:Main'
+                            }
+                        ]
+                    });
+                    // update the post reference (links with items)
+                    _.each(items, function(item) {
+                        post.groups[1].refs.push({residRef: item._id});
+                    });
+                }
                 var operation;
                 if (angular.isDefined(post_to_update)) {
                     operation = function updatePost() {
-                        if ((post_to_update.post_status === 'draft') && (post.post_status === 'open')) {
-                            return api.posts.save(post_to_update, {deleted: true}).then(function() {
-                                api.posts.save(post);
-                            });
-                        } else {
-                            return api.posts.save(post_to_update, post);
-                        }
+                        return api.posts.save(post_to_update, post);
                     };
                 } else {
                     operation = function createPost() {

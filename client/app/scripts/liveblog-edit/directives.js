@@ -188,6 +188,15 @@ define([
                                     .then(function() {
                                         scope.removePost(post);
                                     });
+                            },
+                            unpublishPost: function(post) {
+                                postsService.saveDraft(post.blog, post).then(function(post) {
+                                    notify.pop();
+                                    notify.info(gettext('Post saved as draft'));
+                                }, function() {
+                                    notify.pop();
+                                    notify.error(gettext('Something went wrong. Please try again later'));
+                                });
                             }
                         });
                     }
