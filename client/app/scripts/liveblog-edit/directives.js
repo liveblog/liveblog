@@ -54,6 +54,7 @@ define([
             'postsService', 'notify', '$q',
             function(postsService, notify, $q) {
 
+                LbPostsListCtrl.$inject = ['$scope'];
                 function LbPostsListCtrl($scope) {
                     var vm = this;
 
