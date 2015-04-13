@@ -22,30 +22,14 @@ define([
     ];
     function PostsService(api, $q, userList) {
 
-        function retrievePosts(blog_id, posts_criteria) {
-            return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
-                .query(posts_criteria)
-                .then(function(data) {
-                    data._items.forEach(function(post) {
-                        // update the post structure
-                        angular.extend(post, {
-                            // add a `multiple_items` field. Can be false or a positive integer.
-                            // FIXME: left like that to support other feature, but this need to be in camelcase
-                            multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
-                            // add a `mainItem` field containing the first item
-                            mainItem: post.groups[1].refs[0],
-                            items: post.groups[1].refs
-                        });
-                        // complete Post With User Information
-                        userList.getUser(post.original_creator).then(function(user) {
-                            post.original_creator_name = user.display_name;
-                        });
-                    });
-                    return data;
-                });
-        }
-
-        function fetchPosts(blog_id, filters, max_results, page) {
+        /**
+         * Fetch a page of posts
+         * @param {string} blog_id - The id of the blog
+         * @param {object} filters - (available: {boolean} 'status', {string} 'updatedAfter')
+         * @param {integer} max_results - maximum number of results per page
+         * @param {integer} page - page index
+         */
+        function getPosts(blog_id, filters, max_results, page) {
             filters       = filters     || {};
             page          = page        || 1;
             max_results   = max_results || 15;
@@ -71,6 +55,29 @@ define([
                 });
             }
             return retrievePosts(blog_id, posts_criteria);
+        }
+
+        function retrievePosts(blog_id, posts_criteria) {
+            return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
+                .query(posts_criteria)
+                .then(function(data) {
+                    data._items.forEach(function(post) {
+                        // update the post structure
+                        angular.extend(post, {
+                            // add a `multiple_items` field. Can be false or a positive integer.
+                            // FIXME: left like that to support other feature, but this need to be in camelcase
+                            multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
+                            // add a `mainItem` field containing the first item
+                            mainItem: post.groups[1].refs[0],
+                            items: post.groups[1].refs
+                        });
+                        // complete Post With User Information
+                        userList.getUser(post.original_creator).then(function(user) {
+                            post.original_creator_name = user.display_name;
+                        });
+                    });
+                    return data;
+                });
         }
 
         function getLatestUpdateDate(posts) {
@@ -165,9 +172,8 @@ define([
         }
 
         return {
-            fetchPosts: fetchPosts,
+            getPosts: getPosts,
             getLatestUpdateDate: getLatestUpdateDate,
-            // updateItems: updateItems,
             savePost: savePost,
             saveDraft: function(blog_id, post, items) {
                 return savePost(blog_id, post, items, {post_status: 'draft'});

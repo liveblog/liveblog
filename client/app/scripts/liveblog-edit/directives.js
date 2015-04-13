@@ -71,7 +71,7 @@ define([
                         vm.isLoading = true;
                         // retrieve a page of posts
                         return postsService
-                            .fetchPosts(vm.blogId, {status: vm.status}, vm.pagination.limit, page)
+                            .getPosts(vm.blogId, {status: vm.status}, vm.pagination.limit, page)
                             .then(function(posts) {
                                 vm.isLoading = false;
                                 vm.postsMeta.total = posts._meta.total;
@@ -122,7 +122,7 @@ define([
                             } else {
                                 // retrieve lastest updates from database
                                 var latest_update = postsService.getLatestUpdateDate(vm.posts);
-                                postsService.fetchPosts(vm.blogId, {
+                                postsService.getPosts(vm.blogId, {
                                     updatedAfter: latest_update
                                 }).then(function(posts) {
                                     posts._items.forEach(function(post_updated) {
