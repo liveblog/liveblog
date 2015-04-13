@@ -5,19 +5,19 @@ var openUrl = require('./helpers/utils').open,
 describe('timeline deletions', function() {
     beforeEach(openUrl('/#/liveblog'));
     it('can delete items on the timeline', function() {
-        openBlog(0);
+        openBlog(2);
         element.all(by.repeater('post in posts')).then(function(posts) {
             //this post should be single item post
-            posts[2].getText().then(function(txt) {
-                posts[2].element(by.css('.timeline-simple-item')).click();
-                posts[2].element(by.css('[ng-click="askRemoveItem(item, post)"]')).click();
+            posts[0].getText().then(function(txt) {
+                posts[0].element(by.css('.timeline-simple-item')).click();
+                posts[0].element(by.css('[ng-click="askRemoveItem(item, post)"]')).click();
                 confirmRemoval();
-                compareTexts(txt, 2);
+                compareTexts(txt, 0);
             });
         });
     });
     it('can delete posts on the timeline', function() {
-        openBlog(0);
+        openBlog(2);
         element.all(by.repeater('post in posts')).then(function(posts) {
             //this post should be a multiple item one
             posts[1].getText().then(function(txt) {
