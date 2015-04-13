@@ -31,8 +31,7 @@ describe('timeline add to top and edit', function() {
         element(by.css('[ng-click="publish()"]')).click();
         browser.waitForAngular();
         expect(element(by.repeater('post in postsList.posts').row(0))
-            .element(by.repeater('item in post.items').row(0))
-            .element(by.css('.lb-post__item')).getText()).toBe(randomText);
+            .element(by.css('.lb-post__list')).getText()).toBe(randomText);
     });
     it('can edit an item on the timeline (quick edit mode)', function() {
         openBlog(2);
