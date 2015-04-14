@@ -74,7 +74,9 @@
     "id_name": "-id post one item two-"
 },
 {
-    "resource": "client_posts",
+    "resource": "posts",
+    "id_name": "-id post one-",
+    "headline": "test-post1",
     "data": {
         "blog": "-id blog one-",
         "groups": [{
@@ -86,12 +88,12 @@
             }, {
                 "id": "main",
                 "refs": [{
-                    "residRef": "-id post two item one-"
+                    "residRef": "-id post one item one-"
                 }, {
-                    "residRef": "-id post two item two-"
+                    "residRef": "-id post one item two-"
                 }],
                 "role": "grpRole:Main"
             }]
     }
-},
+}
 ]

@@ -153,6 +153,7 @@ def patch_current_user(context, data):
 
 
 def apply_placeholders(context, text):
+    print('context: ', context.text)
     placeholders = getattr(context, 'placeholders', {})
     for placeholder in findall('#([^#]+)#', text):
         if placeholder not in placeholders:
@@ -395,6 +396,15 @@ def when_we_get_url(context, url):
             headers.append((key, val))
     headers = unique_headers(headers, context.headers)
     url = apply_placeholders(context, url)
+    context.response = context.client.get(get_prefixed_url(context.app, url), headers=headers)
+
+
+@when('we get the "{resource}" by "{id_name}"')
+def when_we_get_the_resouce_by_name(context, resource, id_name):
+    id_name = apply_placeholders(context, id_name)
+    headers = []
+    url = resource+'/'+id_name
+    headers = unique_headers(headers, context.headers)
     context.response = context.client.get(get_prefixed_url(context.app, url), headers=headers)
 
 

@@ -79,4 +79,12 @@ Feature: Open modules operations
 
 	Scenario: posts from prepopulate
         When we get "/client_posts"
-        Then we get list with 0 items
+        Then we get list with 1 items
+
+        
+	Scenario: abc
+        When we get the "/blogs" by "-id blog one-"
+        Then we get existing resource
+        """
+        {"title": "test-blog1"}
+        """
