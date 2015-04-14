@@ -75,7 +75,7 @@
     "resource": "client_posts",
     "data": {
         "blog": "-id blog one-",
-        "guid": "post-1"
+        "guid": "post-1",
         "groups": [{
                 "id": "root",
                 "refs": [{
