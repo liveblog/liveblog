@@ -7,6 +7,7 @@
       ng-repeat="post in postsList.posts | orderBy: '-_created' track by post._id"
       post="post"
       on-edit-click="postsList.onPostSelected"
+      allow-unpublish="postsList.allowUnpublish"
       allow-quick-edit="postsList.allowQuickEdit">
     </lb-post>
 </ul>

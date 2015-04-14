@@ -96,6 +96,7 @@ define([
                         status: $scope.lbPostsStatus,
                         emptyMessage: $scope.lbPostsEmptyMessage,
                         allowQuickEdit: $scope.lbPostsAllowQuickEdit,
+                        allowUnpublish: $scope.lbPostsAllowUnpublish,
                         onPostSelected: $scope.lbPostsOnPostSelected,
                         fetchPage: fetchPage,
                         isPostsEmpty: function() {
@@ -146,6 +147,7 @@ define([
                         lbPostsStatus: '@',
                         lbPostsEmptyMessage: '@',
                         lbPostsAllowQuickEdit: '=',
+                        lbPostsAllowUnpublish: '=',
                         lbPostsOnPostSelected: '=',
                         lbPostsInstance: '='
                     },
