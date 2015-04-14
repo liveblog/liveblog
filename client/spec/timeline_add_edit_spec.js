@@ -48,7 +48,6 @@ describe('timeline add to top and edit', function() {
             textElement.sendKeys(randomText);
             //click the save button
             posts[0].element(by.css('[ng-click="updateMedium()"]')).click();
-
             //get the new edited text
             textElement.getText().then(function(editedText) {
                 //click on back to liveblog list
@@ -70,5 +69,26 @@ describe('timeline add to top and edit', function() {
                 });
             });
         });
+    });
+    it('can unpublish a post', function() {
+
+        function getFirstPost(column) {
+            return element(by.css('.column-' + column))
+                .element(by.repeater('post in posts').row(0));
+        }
+
+        openBlog(2);
+        // open draft posts panel
+        element(by.css('[ng-click="toggleDraftPanel()"]')).click();
+        getFirstPost('timeline')
+            .element(by.css('.lb-post__list'))
+            .getText().then(function(firstTimelinePostContent) {
+                getFirstPost('timeline')
+                    .element(by.css('[ng-click="unpublishPost(post)"]')).click().then(function () {
+                        expect(getFirstPost('timeline').element(by.css('.lb-post__list')).getText()).toNotBe(firstTimelinePostContent);
+                        expect(getFirstPost('draft-posts').element(by.css('.lb-post__list')).getText()).toBe(firstTimelinePostContent);
+                    });
+            });
+
     });
 });
