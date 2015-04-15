@@ -1,0 +1,26 @@
+'use strict';
+var openUrl = require('./helpers/utils').open,
+    openBlog = require('./helpers/utils').openBlog;
+
+describe('timeline deletions', function() {
+    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
+    it('can delete posts on the timeline', function() {
+        openBlog(2);
+        element.all(by.repeater('post in posts')).then(function(posts) {
+            posts[0].element(by.css('[ng-click="askRemovePost(post)"]')).click();
+            confirmRemoval();
+            compare(posts.length);
+        });
+    });
+});
+function compare(oldLength) {
+    element.all(by.repeater('post in posts')).then(function(newPosts) {
+        expect(oldLength).not.toEqual(newPosts.length);
+    });
+}
+function confirmRemoval() {
+    browser.wait(function() {
+        return element(by.css('.modal-footer.ng-scope')).isDisplayed();
+    });
+    element(by.css('button[ng-click="ok()"')).sendKeys(protractor.Key.ENTER);
+}
