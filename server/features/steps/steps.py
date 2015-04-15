@@ -153,7 +153,6 @@ def patch_current_user(context, data):
 
 
 def apply_placeholders(context, text):
-    print('context: ', context.text)
     placeholders = getattr(context, 'placeholders', {})
     for placeholder in findall('#([^#]+)#', text):
         if placeholder not in placeholders:
@@ -189,24 +188,6 @@ def step_impl_given_(context, resource):
     data = apply_placeholders(context, context.text)
     with context.app.test_request_context(context.app.config['URL_PREFIX']):
         if not is_user_resource(resource):
-            get_resource_service(resource).delete_action()
-
-        items = [parse(item, resource) for item in json.loads(data)]
-        if is_user_resource(resource):
-            for item in items:
-                item.setdefault('needs_activation', False)
-
-        get_resource_service(resource).post(items)
-        context.data = items
-        context.resource = resource
-        setattr(context, resource, items[-1])
-
-
-@given('lb "{resource}"')
-def step_impl_given_lb_(context, resource):
-    data = apply_placeholders(context, context.text)
-    with context.app.test_request_context(context.app.config['URL_PREFIX']):
-        if not is_post_resource(resource):
             get_resource_service(resource).delete_action()
 
         items = [parse(item, resource) for item in json.loads(data)]
@@ -396,15 +377,6 @@ def when_we_get_url(context, url):
             headers.append((key, val))
     headers = unique_headers(headers, context.headers)
     url = apply_placeholders(context, url)
-    context.response = context.client.get(get_prefixed_url(context.app, url), headers=headers)
-
-
-@when('we get the "{resource}" by "{id_name}"')
-def when_we_get_the_resouce_by_name(context, resource, id_name):
-    id_name = apply_placeholders(context, id_name)
-    headers = []
-    url = resource+'/'+id_name
-    headers = unique_headers(headers, context.headers)
     context.response = context.client.get(get_prefixed_url(context.app, url), headers=headers)
 
 
@@ -1326,10 +1298,6 @@ def when_we_login_as_user(context, username, password):
 
 def is_user_resource(resource):
     return resource in ('users', '/users')
-
-
-def is_post_resource(resource):
-        return resource in ('posts', '/posts')
 
 
 @then('we get {no_of_stages} invisible stages')

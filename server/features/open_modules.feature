@@ -1,12 +1,12 @@
 Feature: Open modules operations
 
     Scenario: List empty client_blogs
-        Given empty "client_blogs"
+        Given empty "blogs"
         When we get "/client_blogs"
         Then we get list with 0 items
 
 	Scenario: List blogs without needing auth
-        Given "client_blogs"
+        Given "blogs"
         """
         [{"title": "testBlog"}]
         """
@@ -17,12 +17,12 @@ Feature: Open modules operations
 	    """
 
 	Scenario: List empty client_posts
-        Given empty "client_posts"
+        Given empty "posts"
         When we get "/client_posts"
         Then we get list with 0 items
 
 	Scenario: List posts without needing auth
-        Given "client_posts"
+        Given "posts"
         """
         [{"headline": "testPost"}]
         """
@@ -32,7 +32,7 @@ Feature: Open modules operations
         {"_items": [{"headline": "testPost"}]}
 	    """
 
-	Scenario: List a single client_blog or a single client_post
+	Scenario: List a single client_blog
        	Given "blogs"
         """
         [{"guid": "blog-1", "title": "test_blog"}]
@@ -42,49 +42,39 @@ Feature: Open modules operations
         """
         {"title": "test_blog"}
         """
-        Given lb "posts"
+
+	Scenario: List a single client_post
+        Given "posts"
         """
         [{"guid": "post-1", "headline": "test_post"}]
         """
-        When we get "/client_posts/post-1"
+        When we get "/client_posts/#posts._id#"
         Then we get existing resource
         """
-        {"post_status": "open", "guid": "post-1"}
+        {"post_status": "open", "guid": "post-1", "headline": "test_post"}
         """
         
 	Scenario: List post for client_blogs depending on_the_request
-		Given "blogs"
+        When we post to "/prepopulate"
         """
-        [{"title": "bl1", "guid": "blog-1"}]
+        {"profile": "app_prepopulate_data_test"}
         """
-        Given lb "posts"
+        Then we get new resource
         """
-        [{"guid": "post-1", "blog": "#blogs._id#", "post_status": "draft"}]
+        {"_status": "OK"}
         """
-        When we get "/client_posts/post-1"
-        Then we get existing resource
+        When we find for "client_blogs" the id as "b1" by "{"title": "blog-test-1"}"
+        Then we get list with 1 items
         """
-        {"post_status": "draft", "blog": "#blogs._id#"}
+        {"_items": [{"title": "blog-test-1"}]}
         """
-		When we get "/client_blogs/#blogs._id#/posts?status=draft"
-		Then we get list with 1 items
+        When we get "/client_blogs/#b1#/posts?status=open"
+       	Then we get list with 1 items
         """
-        {"_items": [{"guid": "post-1"}]}
+        {"_items": [{"post_status": "open", "blog": "#b1#"}]}
 	    """
-	    When we get "/client_blogs/#blogs._id#/posts?status=open"
-		Then we get list with 0 items
+	    When we get "/client_blogs/#b1#/posts?status=draft"
+	    Then we get list with 0 items
         """
         {"_items": [{}]}
 	    """
-
-	Scenario: posts from prepopulate
-        When we get "/client_posts"
-        Then we get list with 1 items
-
-        
-	Scenario: abc
-        When we get the "/blogs" by "-id blog one-"
-        Then we get existing resource
-        """
-        {"title": "test-blog1"}
-        """

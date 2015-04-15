@@ -8,5 +8,53 @@
         "user_type": "administrator",
         "email": "a@a_other.com"
     }
+},
+{
+    "resource": "blogs",
+    "data": {
+        "title": "blog-test-1",
+        "versioncreated" : "2014-02-03T19:34:00+0000",
+        "description": "description: my test blog"
+    },
+    "id_name": "-id blog one-"
+},
+{
+    "resource": "items",
+    "data": {
+        "text": "text post one: end to end item One",
+        "item_type": "text"
+    },
+    "id_name": "-id post one item one-"
+},
+{
+    "resource": "items",
+    "data": {
+        "text": "text post one: end to end item two",
+        "item_type": "text"
+    },
+    "id_name": "-id post one item two-"
+},
+{
+    "resource": "posts",
+    "id_name": "-id post one-",
+    "headline": "test-post1",
+    "data": {
+        "blog": "-id blog one-",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-id post one item one-"
+                }, {
+                    "residRef": "-id post one item two-"
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
 }
 ]
