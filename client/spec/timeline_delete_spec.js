@@ -5,7 +5,7 @@ var openUrl = require('./helpers/utils').open,
 describe('timeline deletions', function() {
     beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
     it('can delete posts on the timeline', function() {
-        openBlog(0);
+        openBlog(2);
         element.all(by.repeater('post in posts')).then(function(posts) {
             posts[0].element(by.css('[ng-click="askRemovePost(post)"]')).click();
             confirmRemoval();
