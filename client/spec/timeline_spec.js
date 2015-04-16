@@ -37,7 +37,7 @@ var posts = [
 describe('timeline', function() {
     beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
     it('can get items on the timeline', function() {
-        openBlog(0);
+        openBlog(2);
         //go and check the timeline
        element.all(by.repeater('post in posts')).then(function(marks) {
             var postsLength = posts.length;
@@ -49,8 +49,8 @@ describe('timeline', function() {
     });
 
     function expectPost(post, mark) {
-        expect(mark.element(by.css('strong')).getText()).toBe(post.username);
-        expect(mark.element(by.css('span[medium-editable]')).getText()).toBe(post.text);
+        expect(mark.element(by.binding('post.original_creator_name')).getText()).toBe(post.username);
+        expect(mark.element(by.css('[html-content="' + post.text + '"]')).getText()).toBe(post.text);
     }
 
     function expectPostLength(len) {
