@@ -31,7 +31,17 @@
          slideable-move=".columns-holder">
         <header>Drafts</header>
         <div class="content">
-            <draft-posts blog="blog" on-draft-post-seleted="openPostInEditor" ng-if="draftPanelState === 'open'"></draft-posts>
+            <div class="draft-posts" ng-if="draftPanelState === 'open'">
+                <lb-posts-list
+                  lb-posts-instance="blogEdit.draftPostsInstance"
+                  lb-posts-blog-id="blog._id"
+                  lb-posts-status="draft"
+                  lb-posts-empty-message="<p>You don't have any draft yet.</p><p>To create one, start to compose your post and click on the &#34;SAVE AS DRAFT&#34; button. You will be able to re-open it later in the editor.</p>"
+                  lb-posts-allow-quick-edit="false"
+                  lb-posts-on-post-selected="openPostInEditor"
+                >
+                </lb-posts-list>
+            </div>
         </div>
     </div>
 
@@ -92,17 +102,22 @@
                         </fieldset>
                     </form>
                 </div>
-                <div ng-if="isTimeline" ng-controller="TimelineController" class="column-timeline">
-                    <div class="loading-indicator" ng-show="timelineLoading"><span translate>loading</span></div>
-                    <div ng-if="isPostsEmpty()" class="alert alert-info" role="alert">
-                        <span><strong translate>There are no posts yet for this blog!</strong></span>
+                <div ng-if="isTimeline">
+                    <div
+                      class="timeline-posts-list"
+                      lb-posts-instance="blogEdit.timelineInstance"
+                      lr-infinite-scroll="fetchNewTimelinePage"
+                      set-timeline-height
+                      lb-posts-list
+                      lb-posts-blog-id="blog._id"
+                      lb-posts-status="open"
+                      lb-posts-empty-message="There are no posts yet for this blog! "
+                      lb-posts-allow-quick-edit="true"
+                      lb-posts-on-post-selected="openPostInEditor"
+                    >
                     </div>
-                    <ul class="posts" lr-infinite-scroll="loadMore" set-timeline-height>
-                        <lb-post ng-repeat="post in posts| orderBy:'-firstcreated' track by post._id" post="post" on-edit-click="openPostInEditor" allow-quick-edit="true"></lb-timeline-post>
-                    </ul>
                 </div>
             </div>
         </div>
     </div>
 </section>
-

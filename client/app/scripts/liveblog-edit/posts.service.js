@@ -22,6 +22,41 @@ define([
     ];
     function PostsService(api, $q, userList) {
 
+        /**
+         * Fetch a page of posts
+         * @param {string} blog_id - The id of the blog
+         * @param {object} filters - (available: {boolean} 'status', {string} 'updatedAfter')
+         * @param {integer} max_results - maximum number of results per page
+         * @param {integer} page - page index
+         */
+        function getPosts(blog_id, filters, max_results, page) {
+            filters       = filters     || {};
+            page          = page        || 1;
+            max_results   = max_results || 15;
+            var posts_criteria = {
+                source: {
+                    query: {filtered: {filter: {and: [{not: {term: {deleted: true}}}]}}}
+                },
+                page: page,
+                max_results: max_results
+            };
+            // filters.status
+            if (angular.isDefined(filters.status)) {
+                posts_criteria.source.query.filtered.filter.and.push({term: {post_status: filters.status}});
+            }
+            // filters.updatedAfter
+            if (angular.isDefined(filters.updatedAfter)) {
+                posts_criteria.source.query.filtered.filter.and.push({
+                    range: {
+                        _updated: {
+                            gt: filters.updatedAfter
+                        }
+                    }
+                });
+            }
+            return retrievePosts(blog_id, posts_criteria);
+        }
+
         function retrievePosts(blog_id, posts_criteria) {
             return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
                 .query(posts_criteria)
@@ -36,6 +71,7 @@ define([
                             mainItem: post.groups[1].refs[0],
                             items: post.groups[1].refs
                         });
+                        // complete Post With User Information
                         userList.getUser(post.original_creator).then(function(user) {
                             post.original_creator_name = user.display_name;
                         });
@@ -44,204 +80,22 @@ define([
                 });
         }
 
-        // get the items based on the blog and criteria ro retrieve them.
-        function retrieveItems(blog_id, items_criteria) {
-            return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/items', {_id: blog_id})
-                .query(items_criteria);
-        }
-
-        // get the last updated time from a list based on the format function.
-        function lastUpdated(items, format) {
-            switch (items.length) {
-                case 0:
-                    // when we start we don't have any items,
-                    // so starting point is now less 5 minutes.
-                    return moment().subtract(5, 'minutes');
-                case 1:
-                    return format(items[0]);
-                default:
-                    return _.reduce(items, function(memo, item) {
-                            memo = format(memo);
-                            item = format(item);
-                            return (item.diff(memo) > 0) ? item: memo;
-                        });
-
+        function getLatestUpdateDate(posts) {
+            if (!angular.isDefined(posts) || posts.length < 1) {
+                return;
             }
-        }
-
-        // generate a criteria for updateing items.
-        function updateItemsCriteria(blog_id, posts) {
-            var momentLast = lastUpdated(posts, function(post) {
-                    return (post.items)?
-                        (lastUpdated(post.items, function(item) {
-                            return (item.item._updated)? moment(item.item._updated) : item;
-                        })) : post;
-                }),
-                filter = [
-                {range: {
-                    _updated: {
-                            gt: momentLast.utc().format()
-                        }
+            var latest_date, date;
+            posts.forEach(function (post) {
+                date = moment(post._updated);
+                if (angular.isDefined(latest_date)) {
+                    if (latest_date.diff(date) < 0) {
+                        latest_date = date;
                     }
-                }], criteria = {
-                    source: {
-                        query: {filtered: {filter: {
-                            and: filter
-                        }}}
-                    }
-            };
-            return criteria;
-        }
-
-        // generate a criteria for updateing posts.
-        function updatePostCriteria(blog_id, posts, type) {
-            var momentLast = lastUpdated(posts, function(post) {
-                return (post._updated)? moment(post._updated) : post;
-            }), filter = [
-                {range: {
-                    _updated: {
-                            gt: momentLast.utc().format()
-                        }
-                    }
-                }, {term: {
-                        post_status: type
-                        }
-                    }
-            ], criteria = {
-                    source: {
-                        query: {filtered: {filter: {
-                            and: filter
-                        }}}
-                    }
-            };
-            return criteria;
-        }
-
-        // generate criteria for paginating
-        function updatePaginationCriteria(posts, type, max_results) {
-            var lastPost = posts[posts.length - 1],
-                momentLast = moment(lastPost._created),
-                filter = [
-                {range: {
-                    _created: {
-                            lt: momentLast.utc().format()
-                        }
-                    }
-                },
-                {
-                    term: {
-                        post_status: type
-                    }
-                },
-                {
-                    not: {
-                        term: {
-                            deleted: 'on'
-                        }
-                    }
+                } else {
+                    latest_date = date;
                 }
-            ], criteria = {
-                    max_results: max_results,
-                    source: {
-                        query: {filtered: {filter: {
-                            and: filter
-                        }}}
-                    }
-            };
-            return criteria;
-        }
-
-        // update the latest changes in items
-        // it will not detect newly added items in post.
-        function updateItems(blog_id, posts, postsInfo) {
-            var indexItem;
-            retrieveItems(blog_id, updateItemsCriteria(blog_id, posts)).then(function(data) {
-                angular.forEach(data._items, function(item) {
-                    angular.forEach(posts, function(post, indexPost) {
-                        indexItem = _.findIndex(post.items, {residRef: item._id});
-                        if (indexItem !== -1) {
-                            if (item.deleted) {
-                                post.items.splice(indexItem, 1);
-                                if (post.items.length === 0) {
-                                    posts.splice(indexPost, 1);
-                                    postsInfo.total--;
-                                }
-                            } else {
-                                angular.extend(post.items[indexItem].item, item);
-                            }
-                        }
-                    });
-                });
             });
-        }
-
-        //pagination support for auto-update
-        function smartNextPage(blog_id, type, posts, postsInfo, max_results) {
-            var deferred = $q.defer();
-            retrievePosts(blog_id, updatePaginationCriteria(posts, type, max_results)).then(function(data) {
-                angular.forEach(data._items, function(post) {
-                    posts.push(post);
-                });
-                deferred.resolve();
-            }, function() {
-                deferred.reject();
-            });
-            return deferred.promise;
-        }
-
-        // update changes in posts
-        // it will add/remove new items in post.
-        function updatePosts(blog_id, type, posts, postsInfo) {
-            var indexNewPost, currentPost, indexOldItem;
-            retrievePosts(blog_id, updatePostCriteria(blog_id, posts, type)).then(function(data) {
-                angular.forEach(data._items, function(post) {
-                    indexNewPost = _.findIndex(posts, {_id: post._id});
-                    if (indexNewPost !== -1) {
-                        if (post.deleted) {
-                            // remove the post from posts
-                            posts.splice(indexNewPost, 1);
-                            postsInfo.total--;
-                        } else {
-                            currentPost = posts[indexNewPost];
-                            angular.forEach(post.items, function(item, indexNewItem) {
-                                indexOldItem = _.findIndex(currentPost.items, {residRef: item.item._id});
-                                if (indexOldItem !== -1) {
-                                    // delete item if property deleted is on.
-                                    if (item.item.deleted) {
-                                        // remove post if the deleted item is single.
-                                        if (currentPost.items.length === 1) {
-                                            posts.splice(indexNewPost, 1);
-                                        } else {
-                                            currentPost.items.splice(indexOldItem, 1);
-                                        }
-                                    } else {
-                                        // update the item now.
-                                        angular.extend(currentPost.items[indexOldItem].item, item);
-                                    }
-                                } else {
-                                    // add new item in the proper position.
-                                    currentPost.items.splice(indexNewItem, 0, item);
-                                }
-                            });
-                        }
-                    } else {
-                        if (!post.deleted) {
-                            postsInfo.total++;
-                            posts.push(post);
-                        }
-                    }
-                });
-            });
-        }
-
-        function fetchPosts(blog_id, status, posts_criteria, posts, postsInfo) {
-            posts_criteria.source = {
-                query: {filtered: {filter: {and: [{term: {post_status: status}}, {not: {term: {deleted: 'on'}}}]}}}
-            };
-            return retrievePosts(blog_id, posts_criteria).then(function(data) {
-                posts.push.apply(posts, data._items);
-                postsInfo.total = data._meta.total;
-            });
+            return latest_date.utc().format();
         }
 
         function savePost(blog_id, post_to_update, items, post) {
@@ -295,7 +149,7 @@ define([
                 if (angular.isDefined(post_to_update)) {
                     operation = function updatePost() {
                         if ((post_to_update.post_status === 'draft') && (post.post_status === 'open')) {
-                            return api.posts.save(post_to_update, {deleted: 'on'}).then(function() {
+                            return api.posts.save(post_to_update, {deleted: true}).then(function() {
                                 api.posts.save(post);
                             });
                         } else {
@@ -313,19 +167,13 @@ define([
         }
 
         function removePost(post) {
-            //var deleted =  {_deleted: moment().utc().format()};
-            var deleted = {deleted: 'on'};
+            var deleted = {deleted: true};
             return savePost(post.blog, post, [], deleted);
         }
 
         return {
-            fetchPosts: fetchPosts,
-            fetchDrafts: function(blog_id, posts, postsInfo) {
-                return fetchPosts(blog_id, 'draft', {} , posts, postsInfo);
-            },
-            updatePosts: updatePosts,
-            smartNextPage: smartNextPage,
-            updateItems: updateItems,
+            getPosts: getPosts,
+            getLatestUpdateDate: getLatestUpdateDate,
             savePost: savePost,
             saveDraft: function(blog_id, post, items) {
                 return savePost(blog_id, post, items, {post_status: 'draft'});
