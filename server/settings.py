@@ -116,7 +116,9 @@ INSTALLED_APPS = [
     'liveblog.languages',
     'liveblog.themes',
     'liveblog.global_preferences',
+    'liveblog.open_api_modules',
 ]
+
 
 RESOURCE_METHODS = ['GET', 'POST']
 ITEM_METHODS = ['GET', 'PATCH', 'PUT', 'DELETE']

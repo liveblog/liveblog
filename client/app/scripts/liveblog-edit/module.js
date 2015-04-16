@@ -18,12 +18,15 @@ define([
     'use strict';
 
     BlogEditController.$inject = [
-        'api', '$q', '$scope', 'blog', 'notify', 'gettext',
+        'session', 'api', '$q', '$scope', 'blog', 'notify', 'gettext',
         'upload', 'config', '$rootScope', 'embedService', 'postsService', 'modal',
         'blogService', '$route', '$routeParams'
     ];
-    function BlogEditController(api, $q, $scope, blog, notify, gettext,
+    function BlogEditController(session, api, $q, $scope, blog, notify, gettext,
         upload, config, $rootScope, embedService, postsService, modal, blogService, $route, $routeParams) {
+
+        // @TODO: remove this when open API is done.
+        localStorage.setItem('liveblog', '{"id":"' + blog._id + '","auth":"' + session.token + '"}');
 
         // return the list of items from the editor
         function getItemsFromEditor() {

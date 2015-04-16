@@ -7,6 +7,7 @@ from apps.archive import ArchiveVersionsResource
 from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
 from apps.content import LINKED_IN_PACKAGES
+from apps.archive.common import item_url
 
 
 class PostsVersionsResource(ArchiveVersionsResource):
@@ -35,6 +36,7 @@ class PostsResource(ArchiveResource):
     }
 
     item_methods = ['GET', 'PATCH', 'DELETE']
+    item_url = item_url
 
     schema = {}
     schema.update(ArchiveResource.schema)
@@ -51,8 +53,8 @@ class PostsResource(ArchiveResource):
             'default': 'open'
         },
         'deleted': {
-            'type': 'string'
-        },
+            'type': 'boolean'
+        }
     })
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
 
