@@ -59,10 +59,6 @@ define([
                     var vm = this;
 
                     function fetchPage() {
-                        // stop if the limit is reached
-                        if (angular.isDefined(vm.postsMeta.total) && vm.postsMeta.total <= vm.posts.length) {
-                            return false;
-                        }
                         // Find the next page containing new posts
                         var page = 1;
                         while (vm.pagination.limit * page <= vm.posts.length) {
@@ -112,7 +108,7 @@ define([
                     $scope.lbPostsInstance = vm;
                     // init posts list and metadata from database
                     $q.when(fetchPage()).then(function () {
-                        // bind events sent from backend and do the appropriated operation (a,b,c,d)
+                        // auto-update: bind events sent from backend and do the appropriated operation (a,b,c,d)
                         $scope.$on('posts', function(e, event_params) {
                             if (event_params.deleted) {
                                 var post_index = getPostIndex(event_params.post_id);
