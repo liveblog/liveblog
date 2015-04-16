@@ -31,7 +31,7 @@ class PostsResource(ArchiveResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('_updated', -1)]
+        'default_sort': [('firstcreated', -1)]
     }
 
     item_methods = ['GET', 'PATCH', 'DELETE']
@@ -99,7 +99,7 @@ class BlogPostsResource(Resource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('_updated', -1)]
+        'default_sort': [('firstcreated', -1)]
     }
     resource_methods = ['GET']
     privileges = {'GET': 'blogs'}
