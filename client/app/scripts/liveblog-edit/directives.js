@@ -60,10 +60,7 @@ define([
 
                     function fetchPage() {
                         // Find the next page containing new posts
-                        var page = 1;
-                        while (vm.pagination.limit * page <= vm.posts.length) {
-                            page++;
-                        }
+                        var page = Math.ceil(vm.posts.length / vm.pagination.limit) + 1;
                         // active loading
                         vm.isLoading = true;
                         // retrieve a page of posts
