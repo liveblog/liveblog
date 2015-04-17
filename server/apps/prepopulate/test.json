@@ -17,6 +17,13 @@
     }
 },
 {
+    "resource": "global_preferences",
+    "data": {
+        "key": "theme",
+        "value": "ocean"
+    }
+},
+{
     "resource": "languages",
     "id_name": "-id user admin-",
     "data": {
@@ -30,6 +37,20 @@
     "data": {
         "language_code": "en",
         "name": "English"
+    }
+},
+{
+    "resource": "themes",
+    "id_name": "-id user admin-",
+    "data": {
+        "name": "forest"
+    }
+},
+{
+    "resource": "themes",
+    "id_name": "-id user admin-",
+    "data": {
+        "name": "ocean"
     }
 },
 {
