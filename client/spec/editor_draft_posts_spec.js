@@ -25,7 +25,7 @@ describe('Draft Posts', function() {
     }
 
     function checkDraftInDraftList(row_expected, data_expected) {
-        expect(element(by.repeater('post in draftPosts.posts').row(row_expected))
+        expect(element(by.css('.column-draft-posts')).element(by.repeater('post in postsList.posts').row(row_expected))
             .element(by.css('[html-content]')).getText()
         ).toContain(data_expected);
     }
@@ -68,7 +68,7 @@ describe('Draft Posts', function() {
         var draft = createDraft();
         resetEditor();
         browser.waitForAngular();
-        var first_post = element(by.repeater('post in draftPosts.posts').row(0));
+        var first_post = element(by.css('.column-draft-posts')).element(by.repeater('post in postsList.posts').row(0));
         first_post.element(by.css('[ng-click="onEditClick(post)"]')).click();
         browser.wait(function() {
             return element(by.css('.editor .st-text-block')).isPresent();
@@ -76,8 +76,10 @@ describe('Draft Posts', function() {
         expect(element(by.css('.editor .st-text-block')).getText()).toEqual(draft.body);
         // and publish it
         element(by.css('[ng-click="publish()"]')).click().then(function() {
-            expect(element(by.repeater('post in posts').row(0)).isPresent()).toBe(true);
-            expect(element.all(by.repeater('post in draftPosts.posts')).count())
+            // timeline
+            expect(element(by.css('.column-timeline')).element(by.repeater('post in posts').row(0)).isPresent()).toBe(true);
+            // draft posts
+            expect(element(by.css('.column-draft-posts')).all(by.repeater('post in postsList.posts')).count())
                 .toBe(0);
         });
     });

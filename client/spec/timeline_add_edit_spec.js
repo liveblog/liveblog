@@ -14,7 +14,7 @@ describe('timeline add to top and edit', function() {
         element(by.css('[ng-click="publish()"]')).click();
         browser.waitForAngular();
         //go and check the timeline
-        element.all(by.repeater('post in posts')).then(function(posts) {
+        element(by.css('.column-timeline')).all(by.repeater('post in posts')).then(function(posts) {
             var textElement = posts[0].element(by.css('span[medium-editable]'));
             //first element should have the new entered value
             textElement.getText().then(function(text) {
@@ -23,10 +23,32 @@ describe('timeline add to top and edit', function() {
         });
     });
     it('can edit an item on the timeline', function() {
+
+        function getFirstPostText() {
+            return element(by.repeater('post in postsList.posts').row(0))
+                .element(by.css('.lb-post__list')).getText();
+        }
+
+        var randomText = randomString(10);
+        openBlog(2);
+        element(by.repeater('post in posts').row(0))
+            .element(by.css('[ng-click="onEditClick(post)"]')).click();
+        element(by.css('.editor .st-text-block')).clear().sendKeys(randomText);
+        element(by.css('[ng-click="publish()"]')).click();
+        browser.waitForAngular();
+        getFirstPostText().then(function (old_text) {
+                // wait a change in the post
+                browser.wait(function() {
+                    return getFirstPostText() !== old_text;
+                });
+                expect(getFirstPostText()).toBe(randomText);
+            });
+    });
+    it('can edit an item on the timeline (quick edit mode)', function() {
         openBlog(2);
         var randomText = randomString(10);
         //go and check the timeline
-        element.all(by.repeater('post in posts')).then(function(posts) {
+        element(by.css('.column-timeline')).all(by.repeater('post in posts')).then(function(posts) {
             posts[0].isElementPresent(by.css('.lb-post__expander-holder')).then(function(present) {
                 if (present) {
                     posts[0].element(by.css('.lb-post__expander-holder')).click();
@@ -37,7 +59,6 @@ describe('timeline add to top and edit', function() {
             textElement.sendKeys(randomText);
             //click the save button
             posts[0].element(by.css('[ng-click="updateMedium()"]')).click();
-
             //get the new edited text
             textElement.getText().then(function(editedText) {
                 //click on back to liveblog list
@@ -45,7 +66,7 @@ describe('timeline add to top and edit', function() {
                 //open first blog
                 openBlog(2);
                 //go and check the timeline
-                element.all(by.repeater('post in posts')).then(function(posts) {
+                element(by.css('.column-timeline')).all(by.repeater('post in posts')).then(function(posts) {
                     posts[0].isElementPresent(by.css('.lb-post__expander-holder')).then(function(present) {
                         if (present) {
                             posts[0].element(by.css('.lb-post__expander-holder')).click();
@@ -59,5 +80,26 @@ describe('timeline add to top and edit', function() {
                 });
             });
         });
+    });
+    it('can unpublish a post', function() {
+
+        function getFirstPost(column) {
+            return element(by.css('.column-' + column))
+                .element(by.repeater('post in posts').row(0));
+        }
+
+        openBlog(2);
+        // open draft posts panel
+        element(by.css('[ng-click="toggleDraftPanel()"]')).click();
+        getFirstPost('timeline')
+            .element(by.css('.lb-post__list'))
+            .getText().then(function(firstTimelinePostContent) {
+                getFirstPost('timeline')
+                    .element(by.css('[ng-click="unpublishPost(post)"]')).click().then(function () {
+                        expect(getFirstPost('timeline').element(by.css('.lb-post__list')).getText()).toNotBe(firstTimelinePostContent);
+                        expect(getFirstPost('draft-posts').element(by.css('.lb-post__list')).getText()).toBe(firstTimelinePostContent);
+                    });
+            });
+
     });
 });

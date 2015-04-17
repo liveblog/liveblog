@@ -50,40 +50,111 @@ define([
                 }
             };
         })
-        .directive('draftPosts', ['api', 'postsService',
-            function DraftPostsDirective(api, postsService) {
-                DraftPostsController.$inject = ['$scope'];
-                function DraftPostsController($scope) {
-                    var mv = this;
-                    mv.posts = [];
-                    mv.postsInfo = {};
-                    mv.selectDraftPost = $scope.onDraftPostSeleted;
-                    function updateList() {
-                        postsService.fetchDrafts(
-                            $scope.blog._id,
-                            mv.posts,
-                            mv.postsInfo
-                        );
+        .directive('lbPostsList', [
+            'postsService', 'notify', '$q',
+            function(postsService, notify, $q) {
+
+                LbPostsListCtrl.$inject = ['$scope'];
+                function LbPostsListCtrl($scope) {
+                    var vm = this;
+
+                    function fetchPage() {
+                        // Find the next page containing new posts
+                        var page = Math.floor(vm.posts.length / vm.pagination.limit) + 1;
+                        // active loading
+                        vm.isLoading = true;
+                        // retrieve a page of posts
+                        return postsService
+                            .getPosts(vm.blogId, {status: vm.status}, vm.pagination.limit, page)
+                            .then(function(posts) {
+                                vm.isLoading = false;
+                                vm.postsMeta.total = posts._meta.total;
+                                posts._items.forEach(function(post) {
+                                    // add only if not already present
+                                    if (getPostIndex(post._id) === -1) {
+                                        vm.posts.push(post);
+                                    }
+                                });
+                            }, function(reason) {
+                                notify.error(gettext('Could not load posts... please try again later'));
+                                vm.isLoading = false;
+                            });
                     }
-                    $scope.$on('posts', function() {
-                        postsService.updatePosts($scope.blog._id, 'draft', mv.posts, mv.postsInfo);
+
+                    function getPostIndex(post_id) {
+                        return _.findIndex(vm.posts, function(post) {
+                            return post._id === post_id;
+                        });
+                    }
+
+                    angular.extend(vm, {
+                        posts: [],
+                        postsMeta: {},
+                        // pagination.limit is the initial amount of posts when loaded for the first time
+                        pagination: {limit: 15},
+                        blogId: $scope.lbPostsBlogId,
+                        status: $scope.lbPostsStatus,
+                        emptyMessage: $scope.lbPostsEmptyMessage,
+                        allowQuickEdit: $scope.lbPostsAllowQuickEdit,
+                        allowUnpublish: $scope.lbPostsAllowUnpublish,
+                        onPostSelected: $scope.lbPostsOnPostSelected,
+                        fetchPage: fetchPage,
+                        isPostsEmpty: function() {
+                            return vm.posts.length < 1 && !vm.isLoading;
+                        }
                     });
-                    $scope.$on('items', function() {
-                        postsService.updateItems($scope.blog._id, mv.posts, mv.postsInfo);
+                    $scope.lbPostsInstance = vm;
+                    // init posts list and metadata from database
+                    $q.when(fetchPage()).then(function () {
+                        // auto-update: bind events sent from backend and do the appropriated operation (a,b,c,d)
+                        $scope.$on('posts', function(e, event_params) {
+                            if (event_params.deleted) {
+                                var post_index = getPostIndex(event_params.post_id);
+                                if (post_index > -1) {
+                                    // a) removed
+                                    vm.posts.splice(post_index, 1);
+                                }
+                            } else {
+                                // retrieve lastest updates from database
+                                var latest_update = postsService.getLatestUpdateDate(vm.posts);
+                                postsService.getPosts(vm.blogId, {
+                                    updatedAfter: latest_update
+                                }).then(function(posts) {
+                                    posts._items.forEach(function(post_updated) {
+                                        if (post_updated.post_status === vm.status) {
+                                            if (getPostIndex(post_updated._id) > -1) {
+                                                // b) updated
+                                                vm.posts[getPostIndex(post_updated._id)] = post_updated;
+                                            } else {
+                                                // c) added
+                                                vm.posts.push(post_updated);
+                                            }
+                                        } else {
+                                            // d) status changed, then we remove
+                                            if (getPostIndex(post_updated._id) > -1) {
+                                                vm.posts.splice(getPostIndex(post_updated._id), 1);
+                                            }
+                                        }
+                                    });
+                                });
+                            }
+                        });
                     });
-                    // initialize list
-                    updateList();
                 }
                 return {
-                    restrict: 'E',
-                    replace: true,
-                    scope: { // isolated scope
-                        blog: '=',
-                        onDraftPostSeleted: '='
+                    scope: {
+                        lbPostsBlogId: '=',
+                        lbPostsStatus: '@',
+                        lbPostsEmptyMessage: '@',
+                        lbPostsAllowQuickEdit: '=',
+                        lbPostsAllowUnpublish: '=',
+                        lbPostsOnPostSelected: '=',
+                        lbPostsInstance: '='
                     },
-                    templateUrl: 'scripts/liveblog-edit/views/draft-posts-list.html',
-                    controller: DraftPostsController,
-                    controllerAs: 'draftPosts'
+                    restrict: 'EA',
+                    templateUrl: 'scripts/liveblog-edit/views/posts.html',
+                    controllerAs: 'postsList',
+                    controller: LbPostsListCtrl
                 };
             }
         ])
@@ -94,32 +165,42 @@ define([
                     scope: {
                         post: '=',
                         onEditClick: '=',
-                        allowQuickEdit: '='
+                        allowQuickEdit: '=',
+                        allowUnpublish: '='
                     },
                     replace: true,
                     restrict: 'E',
                     templateUrl: 'scripts/liveblog-edit/views/post.html',
                     link: function(scope, elem, attrs) {
-                        scope.toggleMultipleItems = function() {
-                            scope.post.show_all = !scope.post.show_all;
-                        };
-
-                        scope.removePost = function(post) {
-                            postsService.remove(post).then(function(message) {
-                                notify.pop();
-                                notify.info(gettext('Post removed'));
-                            }, function() {
-                                notify.pop();
-                                notify.error(gettext('Something went wrong'));
-                            });
-                        };
-
-                        scope.askRemovePost = function(post) {
-                            modal.confirm(gettext('Are you sure you want to delete the post?'))
-                                .then(function() {
-                                    scope.removePost(post);
+                        angular.extend(scope, {
+                            toggleMultipleItems: function() {
+                                scope.post.show_all = !scope.post.show_all;
+                            },
+                            removePost: function(post) {
+                                postsService.remove(post).then(function(message) {
+                                    notify.pop();
+                                    notify.info(gettext('Post removed'));
+                                }, function() {
+                                    notify.pop();
+                                    notify.error(gettext('Something went wrong'));
                                 });
-                        };
+                            },
+                            askRemovePost: function(post) {
+                                modal.confirm(gettext('Are you sure you want to delete the post?'))
+                                    .then(function() {
+                                        scope.removePost(post);
+                                    });
+                            },
+                            unpublishPost: function(post) {
+                                postsService.saveDraft(post.blog, post).then(function(post) {
+                                    notify.pop();
+                                    notify.info(gettext('Post saved as draft'));
+                                }, function() {
+                                    notify.pop();
+                                    notify.error(gettext('Something went wrong. Please try again later'));
+                                });
+                            }
+                        });
                     }
                 };
             }

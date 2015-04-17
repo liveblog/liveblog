@@ -70,13 +70,14 @@
     "data": {
         "title": "title: end to end closed",
         "description": "description: end to end closed",
-        "versioncreated" : "2014-02-03T19:37:00+0000",
+        "firstcreated" : "2014-02-03T19:37:00+0000",
         "blog_status": "closed"
     }
 },
 {
     "resource": "items",
     "data": {
+        "firstcreated": "2013-11-11T11:11:11+00:00",
         "text": "text post one: end to end item One",
         "item_type": "text"
     },
@@ -85,6 +86,7 @@
 {
     "resource": "items",
     "data": {
+        "firstcreated": "2013-11-11T11:11:12+00:00",
         "text": "text post one: end to end item two",
         "item_type": "text"
     },
@@ -93,6 +95,7 @@
 {
     "resource": "items",
     "data": {
+        "firstcreated": "2013-11-11T11:11:13+00:00",
         "text": "text post one: End to End item three",
         "item_type": "text"
     },
@@ -101,6 +104,7 @@
 {
     "resource": "posts",
     "data": {
+        "firstcreated": "2013-11-11T11:11:14+00:00",
         "blog": "-id blog one-",
         "groups": [{
                 "id": "root",
@@ -124,6 +128,7 @@
 {
     "resource": "items",
     "data": {
+        "firstcreated": "2013-11-11T11:11:15+00:00",
         "text": "text post two: end to end item onE",
         "item_type": "text"
     },
@@ -132,6 +137,7 @@
 {
     "resource": "items",
     "data": {
+        "firstcreated": "2013-11-11T11:11:16+00:00",
         "text": "text post two: end to end item two",
         "item_type": "text"
     },
@@ -140,6 +146,7 @@
 {
     "resource": "posts",
     "data": {
+        "firstcreated": "2013-11-11T11:11:17+00:00",
         "blog": "-id blog one-",
         "groups": [{
                 "id": "root",
@@ -161,6 +168,7 @@
 {
     "resource": "items",
     "data": {
+        "firstcreated": "2013-11-11T11:11:18+00:00",
         "text": "text post three: end to end item one",
         "item_type": "text"
     },
@@ -169,6 +177,7 @@
 {
     "resource": "posts",
     "data": {
+        "firstcreated": "2013-11-11T11:11:19+00:00",
         "blog": "-id blog one-",
         "groups": [{
                 "id": "root",

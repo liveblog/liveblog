@@ -31,7 +31,7 @@ class PostsResource(ArchiveResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('_updated', -1)]
+        'default_sort': [('firstcreated', -1)]
     }
 
     item_methods = ['GET', 'PATCH', 'DELETE']
@@ -51,7 +51,7 @@ class PostsResource(ArchiveResource):
             'default': 'open'
         },
         'deleted': {
-            'type': 'string'
+            'type': 'boolean'
         },
     })
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
@@ -71,23 +71,26 @@ class PostsService(ArchiveService):
 
     def on_created(self, docs):
         super().on_created(docs)
-        push_notification('posts', created=1)
+        push_notification('posts', created=True)
 
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
-        push_notification('posts', updated=1)
+        if updates.get('deleted', False):
+            push_notification('posts', deleted=True, post_id=original.get('_id'))
+        else:
+            push_notification('posts', updated=True)
 
     def get_item_update_data(self, item, links, delete=True):
         doc = {LINKED_IN_PACKAGES: links}
         if not item.get('cid'):
             doc['blog'] = item.get('blog')
         if delete:
-            doc['deleted'] = 'on'
+            doc['deleted'] = True
         return doc
 
     def on_deleted(self, doc):
         super().on_deleted(doc)
-        push_notification('posts', deleted=1)
+        push_notification('posts', deleted=True)
 
 
 class BlogPostsResource(Resource):
@@ -96,7 +99,7 @@ class BlogPostsResource(Resource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('_updated', -1)]
+        'default_sort': [('firstcreated', -1)]
     }
     resource_methods = ['GET']
     privileges = {'GET': 'blogs'}
