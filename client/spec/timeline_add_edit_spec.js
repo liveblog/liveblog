@@ -23,6 +23,12 @@ describe('timeline add to top and edit', function() {
         });
     });
     it('can edit an item on the timeline', function() {
+
+        function getFirstPostText() {
+            return element(by.repeater('post in postsList.posts').row(0))
+                .element(by.css('.lb-post__list')).getText();
+        }
+
         var randomText = randomString(10);
         openBlog(2);
         element(by.repeater('post in posts').row(0))
@@ -30,8 +36,13 @@ describe('timeline add to top and edit', function() {
         element(by.css('.editor .st-text-block')).clear().sendKeys(randomText);
         element(by.css('[ng-click="publish()"]')).click();
         browser.waitForAngular();
-        expect(element(by.repeater('post in postsList.posts').row(0))
-            .element(by.css('.lb-post__list')).getText()).toBe(randomText);
+        getFirstPostText().then(function (old_text) {
+                // wait a change in the post
+                browser.wait(function() {
+                    return getFirstPostText() !== old_text;
+                });
+                expect(getFirstPostText()).toBe(randomText);
+            });
     });
     it('can edit an item on the timeline (quick edit mode)', function() {
         openBlog(2);
