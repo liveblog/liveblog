@@ -17,6 +17,13 @@
     }
 },
 {
+    "resource": "global_preferences",
+    "data": {
+        "key": "theme",
+        "value": "ocean"
+    }
+},
+{
     "resource": "languages",
     "id_name": "-id user admin-",
     "data": {
@@ -30,6 +37,20 @@
     "data": {
         "language_code": "en",
         "name": "English"
+    }
+},
+{
+    "resource": "themes",
+    "id_name": "-id user admin-",
+    "data": {
+        "name": "forest"
+    }
+},
+{
+    "resource": "themes",
+    "id_name": "-id user admin-",
+    "data": {
+        "name": "ocean"
     }
 },
 {
@@ -267,6 +288,38 @@
     "id_name": "-id post twelve item one-"
 },
 {
+    "resource": "items",
+    "data": {
+        "text": "text post thirteen: end to end item one",
+        "item_type": "text"
+    },
+    "id_name": "-id post thirteen item one-"
+},
+{
+    "resource": "items",
+    "data": {
+        "text": "text post fourteen: end to end item one",
+        "item_type": "text"
+    },
+    "id_name": "-id post fourteen item one-"
+},
+{
+    "resource": "items",
+    "data": {
+        "text": "text post fifteen: end to end item one",
+        "item_type": "text"
+    },
+    "id_name": "-id post fifteen item one-"
+},
+{
+    "resource": "items",
+    "data": {
+        "text": "text post sixteen: end to end item one",
+        "item_type": "text"
+    },
+    "id_name": "-id post sixteen item one-"
+},
+{
     "resource": "posts",
     "data": {
         "blog": "-id blog one-",
@@ -432,6 +485,84 @@
                 "id": "main",
                 "refs": [{
                     "residRef": "-id post twelve item one-"
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
+},
+{
+    "resource": "posts",
+    "data": {
+        "blog": "-id blog one-",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-id post thirteen item one-"
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
+},
+{
+    "resource": "posts",
+    "data": {
+        "blog": "-id blog one-",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-id post fourteen item one-"
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
+}
+,
+{
+    "resource": "posts",
+    "data": {
+        "blog": "-id blog one-",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-id post fifteen item one-"
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
+}
+,
+{
+    "resource": "posts",
+    "data": {
+        "blog": "-id blog one-",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-id post sixteen item one-"
                 }],
                 "role": "grpRole:Main"
             }]
