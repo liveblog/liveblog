@@ -84,7 +84,8 @@
         "title": "title: end To end three",
         "versioncreated" : "2014-02-03T19:36:00+0000",
         "description": "description: end to end three"
-    }
+    },
+    "id_name": "-id blog three-"
 },
 {
     "resource": "blogs",
@@ -320,9 +321,33 @@
     "id_name": "-id post sixteen item one-"
 },
 {
+    "resource": "items",
+    "data": {
+        "text": "text post seventeen: end to end item one",
+        "item_type": "text"
+    },
+    "id_name": "-id post seventeen item one-"
+},
+{
+    "resource": "items",
+    "data": {
+        "text": "text post eighteen: end to end item one",
+        "item_type": "text"
+    },
+    "id_name": "-id post eighteen item one-"
+},
+{
+    "resource": "items",
+    "data": {
+        "text": "text post nineteen: end to end item one",
+        "item_type": "text"
+    },
+    "id_name": "-id post nineteen item one-"
+},
+{
     "resource": "posts",
     "data": {
-        "blog": "-id blog one-",
+        "blog": "-id blog three-",
         "groups": [{
                 "id": "root",
                 "refs": [{
@@ -341,7 +366,7 @@
 {
     "resource": "posts",
     "data": {
-        "blog": "-id blog one-",
+        "blog": "-id blog three-",
         "groups": [{
                 "id": "root",
                 "refs": [{
@@ -360,7 +385,7 @@
 {
     "resource": "posts",
     "data": {
-        "blog": "-id blog one-",
+        "blog": "-id blog three-",
         "groups": [{
                 "id": "root",
                 "refs": [{
@@ -379,7 +404,7 @@
 {
     "resource": "posts",
     "data": {
-        "blog": "-id blog one-",
+        "blog": "-id blog three-",
         "groups": [{
                 "id": "root",
                 "refs": [{
@@ -398,7 +423,7 @@
 {
     "resource": "posts",
     "data": {
-        "blog": "-id blog one-",
+        "blog": "-id blog three-",
         "groups": [{
                 "id": "root",
                 "refs": [{
@@ -417,7 +442,7 @@
 {
     "resource": "posts",
     "data": {
-        "blog": "-id blog one-",
+        "blog": "-id blog three-",
         "groups": [{
                 "id": "root",
                 "refs": [{
@@ -436,7 +461,7 @@
 {
     "resource": "posts",
     "data": {
-        "blog": "-id blog one-",
+        "blog": "-id blog three-",
         "groups": [{
                 "id": "root",
                 "refs": [{
@@ -455,7 +480,7 @@
 {
     "resource": "posts",
     "data": {
-        "blog": "-id blog one-",
+        "blog": "-id blog three-",
         "groups": [{
                 "id": "root",
                 "refs": [{
@@ -474,7 +499,7 @@
 {
     "resource": "posts",
     "data": {
-        "blog": "-id blog one-",
+        "blog": "-id blog three-",
         "groups": [{
                 "id": "root",
                 "refs": [{
@@ -493,7 +518,7 @@
 {
     "resource": "posts",
     "data": {
-        "blog": "-id blog one-",
+        "blog": "-id blog three-",
         "groups": [{
                 "id": "root",
                 "refs": [{
@@ -512,7 +537,7 @@
 {
     "resource": "posts",
     "data": {
-        "blog": "-id blog one-",
+        "blog": "-id blog three-",
         "groups": [{
                 "id": "root",
                 "refs": [{
@@ -527,12 +552,11 @@
                 "role": "grpRole:Main"
             }]
     }
-}
-,
+},
 {
     "resource": "posts",
     "data": {
-        "blog": "-id blog one-",
+        "blog": "-id blog three-",
         "groups": [{
                 "id": "root",
                 "refs": [{
@@ -547,12 +571,11 @@
                 "role": "grpRole:Main"
             }]
     }
-}
-,
+},
 {
     "resource": "posts",
     "data": {
-        "blog": "-id blog one-",
+        "blog": "-id blog three-",
         "groups": [{
                 "id": "root",
                 "refs": [{
@@ -567,4 +590,62 @@
                 "role": "grpRole:Main"
             }]
     }
-}]
+},
+{
+    "resource": "posts",
+    "data": {
+        "blog": "-id blog three-",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-id post seventeen item one-"
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
+},
+{
+    "resource": "posts",
+    "data": {
+        "blog": "-id blog three-",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-id post eighteen item one-"
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
+},
+{
+    "resource": "posts",
+    "data": {
+        "blog": "-id blog three-",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-id post nineteen item one-"
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
+}
+]
