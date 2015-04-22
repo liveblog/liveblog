@@ -77,12 +77,14 @@ define([
             openPostInEditor: function (post) {
                 function fillEditor(post) {
                     cleanEditor();
-                    $scope.currentPost = post;
+                    $scope.currentPost = angular.copy(post);
                     var items = post.groups[1].refs;
                     items.forEach(function(item) {
                         item = item.item;
-                        var data = _.extend({text: item.text}, item.meta);
-                        $scope.editor.createBlock(item.item_type, data);
+                        if (angular.isDefined(item)) {
+                            var data = _.extend({text: item.text}, item.meta);
+                            $scope.editor.createBlock(item.item_type, data);
+                        }
                     });
                 }
                 doOrAskBeforeIfEditorIsNotEmpty(fillEditor.bind(null, post));
