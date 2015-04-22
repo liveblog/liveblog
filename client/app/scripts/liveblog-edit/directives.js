@@ -194,7 +194,7 @@ define([
                                     });
                             },
                             unpublishPost: function(post) {
-                                // don't save the original post coming for the posts list, because it needs 
+                                // don't save the original post coming for the posts list, because it needs
                                 // to conserve its original update date in the posts list directive
                                 // in order to retrieve updates from this date (if latest)
                                 post = angular.copy(post);
