@@ -4,7 +4,7 @@
 </div>
 <ul class="posts" lr-infinite-scroll="postsList.fetchPage">
     <lb-post
-      ng-repeat="post in postsList.posts | orderBy: '-_created' track by post._id"
+      ng-repeat="post in postsList.posts | orderBy: postsList.orderBy track by post._id"
       post="post"
       on-edit-click="postsList.onPostSelected"
       allow-unpublish="postsList.allowUnpublish"

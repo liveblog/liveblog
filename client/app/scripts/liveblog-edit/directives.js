@@ -95,6 +95,7 @@ define([
                         blogId: $scope.lbPostsBlogId,
                         status: $scope.lbPostsStatus,
                         emptyMessage: $scope.lbPostsEmptyMessage,
+                        orderBy: $scope.lbPostsOrderBy || '-_created',
                         allowQuickEdit: $scope.lbPostsAllowQuickEdit,
                         allowUnpublish: $scope.lbPostsAllowUnpublish,
                         onPostSelected: $scope.lbPostsOnPostSelected,
@@ -145,6 +146,7 @@ define([
                     scope: {
                         lbPostsBlogId: '=',
                         lbPostsStatus: '@',
+                        lbPostsOrderBy: '@',
                         lbPostsEmptyMessage: '@',
                         lbPostsAllowQuickEdit: '=',
                         lbPostsAllowUnpublish: '=',
