@@ -95,6 +95,7 @@ define([
                         blogId: $scope.lbPostsBlogId,
                         status: $scope.lbPostsStatus,
                         emptyMessage: $scope.lbPostsEmptyMessage,
+                        orderBy: $scope.lbPostsOrderBy || '-_created',
                         allowQuickEdit: $scope.lbPostsAllowQuickEdit,
                         allowUnpublish: $scope.lbPostsAllowUnpublish,
                         onPostSelected: $scope.lbPostsOnPostSelected,
@@ -145,6 +146,7 @@ define([
                     scope: {
                         lbPostsBlogId: '=',
                         lbPostsStatus: '@',
+                        lbPostsOrderBy: '@',
                         lbPostsEmptyMessage: '@',
                         lbPostsAllowQuickEdit: '=',
                         lbPostsAllowUnpublish: '=',
@@ -192,6 +194,11 @@ define([
                                     });
                             },
                             unpublishPost: function(post) {
+                                // don't save the original post coming for the posts list, because it needs
+                                // to conserve its original update date in the posts list directive
+                                // in order to retrieve updates from this date (if latest)
+                                post = angular.copy(post);
+                                // save the post as draft
                                 postsService.saveDraft(post.blog, post).then(function(post) {
                                     notify.pop();
                                     notify.info(gettext('Post saved as draft'));

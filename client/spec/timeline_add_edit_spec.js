@@ -88,18 +88,25 @@ describe('timeline add to top and edit', function() {
                 .element(by.repeater('post in posts').row(0));
         }
 
+        // unpublish the first post of the timeline and
+        // check if it appears on the top of the draft posts list
+        function unpublishAndTest() {
+            getFirstPost('timeline')
+                .element(by.css('.lb-post__list'))
+                .getText().then(function(firstTimelinePostContent) {
+                    getFirstPost('timeline')
+                        .element(by.css('[ng-click="unpublishPost(post)"]')).click().then(function () {
+                            expect(getFirstPost('timeline').element(by.css('.lb-post__list')).getText()).toNotBe(firstTimelinePostContent);
+                            expect(getFirstPost('draft-posts').element(by.css('.lb-post__list')).getText()).toBe(firstTimelinePostContent);
+                        });
+                });
+        }
+
         openBlog(2);
         // open draft posts panel
         element(by.css('[ng-click="toggleDraftPanel()"]')).click();
-        getFirstPost('timeline')
-            .element(by.css('.lb-post__list'))
-            .getText().then(function(firstTimelinePostContent) {
-                getFirstPost('timeline')
-                    .element(by.css('[ng-click="unpublishPost(post)"]')).click().then(function () {
-                        expect(getFirstPost('timeline').element(by.css('.lb-post__list')).getText()).toNotBe(firstTimelinePostContent);
-                        expect(getFirstPost('draft-posts').element(by.css('.lb-post__list')).getText()).toBe(firstTimelinePostContent);
-                    });
-            });
-
+        unpublishAndTest();
+        // twice to ensure the order
+        unpublishAndTest();
     });
 });
