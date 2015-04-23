@@ -49,7 +49,7 @@
                                 <div class="form-input">
                                     <select
                                       ng-model="settings.blogPreferences.theme"
-                                      ng-options="theme as theme.name for theme in settings.availableThemes track by theme"
+                                      ng-options="theme.name as theme.name + ' ' for theme in settings.availableThemes"
                                       class="form-control">
                                     </select>
                                 </div>
