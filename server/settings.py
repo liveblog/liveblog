@@ -116,6 +116,7 @@ INSTALLED_APPS = [
     'liveblog.languages',
     'liveblog.themes',
     'liveblog.global_preferences',
+    'liveblog.client_modules',
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
