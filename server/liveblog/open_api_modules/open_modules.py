@@ -100,24 +100,24 @@ class OpenBlogPostsService(BlogPostsService):
             query = {'query': {'filtered': {'filter': {'term': {'particular_type': 'post'}}}}}
             req = self.init_req(query)
         else:
-            if req.args.get('limit'):
-                limit = self.get_limit(req)
-                query = {'query': {'filtered': {'filter': {'term': limit}}}}
+            if req.args.get('status'):
+                state = self.get_status(req)
+                query = {'query': {'filtered': {'filter': {'term': state}}}}
                 req = self.init_req(query)
             else:
-                if req.args.get('status'):
-                    state = self.get_status(req)
-                    query = {'query': {'filtered': {'filter': {'term': state}}}}
+                if req.args.get('deleted'):
+                    delete = self.get_deleted(req)
+                    query = {'query': {'filtered': {'filter': {'term': delete}}}}
                     req = self.init_req(query)
         docs = super().get(req, lookup)
         return docs
 
-    def get_limit(self, req):
+    def get_deleted(self, req):
         args = getattr(req, 'args', {})
-        if args['limit']:
-            x = args['limit']
+        if args['deleted']:
+            x = args['deleted']
             if x:
-                y = {'max_results': x}
+                y = {'deleted': x}
         return y
 
     def get_status(self, req):

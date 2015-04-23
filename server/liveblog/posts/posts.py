@@ -60,6 +60,7 @@ class PostsResource(ArchiveResource):
 
 
 class PostsService(ArchiveService):
+
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
@@ -84,7 +85,7 @@ class PostsService(ArchiveService):
         if not item.get('cid'):
             doc['blog'] = item.get('blog')
         if delete:
-            doc['deleted'] = 'on'
+            doc['deleted'] = True
         return doc
 
     def on_deleted(self, doc):
