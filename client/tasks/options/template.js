@@ -29,7 +29,8 @@ module.exports = function(grunt) {
     }
 
     var files = {
-        '<%= distDir %>/index.html': '<%= appDir %>/index.html'
+        '<%= distDir %>/index.html': '<%= appDir %>/index.html',
+        '<%= distDir %>/embed.html': '<%= appDir %>/embed.html'
     };
 
     return {
