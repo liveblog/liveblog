@@ -16,6 +16,7 @@
   "dependencies": {
     "superdesk": "https://github.com/liveblog/superdesk.git#1.0.2",
     "Eventable": "https://github.com/nistormihai/eventable.git",
+    "embed": "https://github.com/nistormihai/plugin-liveblog-embed-server.git#feature/liveblog3",
     "ng-sir-trevor": "~2.0.0",
     "angular-embed": "^2.0.0",
     "lrInfiniteScroll": "~1.0.0"
