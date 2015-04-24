@@ -179,7 +179,7 @@ define([
                                 scope.post.show_all = !scope.post.show_all;
                             },
                             removePost: function(post) {
-                                postsService.remove(post).then(function(message) {
+                                postsService.remove(angular.copy(post)).then(function(message) {
                                     notify.pop();
                                     notify.info(gettext('Post removed'));
                                 }, function() {
