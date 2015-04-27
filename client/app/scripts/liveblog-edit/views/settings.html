@@ -12,7 +12,7 @@
     </div>
 </div>
 
-<div class="blog-settings-view">
+<div class="blog-settings-view" ng-init="settings.generalTab = true">
     <div class="settings-page">
         <div class="subnav">
             <h3 class="page-nav-title">Settings</h3>
@@ -22,13 +22,16 @@
         </div>
         <div class="tabbable outer">
             <ul class="nav-tabs nav-stacked">
-                <li>
-                    <a ng-href="">General</a>
+                <li ng-class="{active: settings.generalTab}">
+                    <a ng-href="" ng-click="settings.generalTab = true">General</a>
+                </li>
+                <li ng-class="{active: !settings.generalTab}" data="blog-settings-users">
+                    <a ng-href="" ng-click="settings.generalTab = false">Users</a>
                 </li>
             </ul>
             <div>
                 <!-- GENERAL -->
-                <div class="tab-content outer">
+                <div class="tab-content outer" ng-if="settings.generalTab">
                     <div class="header">
                         <h2 translate>General</h2>
                     </div>
@@ -58,6 +61,36 @@
                                 <label for="inputEmbedCode" class="control-label">Embed code</label>
                                 <div class="form-input">
                                     <textarea class="form-control" readonly="readonly" select-text-on-click>Embed code</textarea>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <!-- Users -->
+                <div class="tab-content outer" ng-if="!settings.generalTab">
+                    <div class="header">
+                        <h2 translate>Users</h2>
+                    </div>
+                     <div class="content">
+                        <form class="form-horizontal" name="blog-creator">
+                            <div class="form-group">
+                                <label for="inputLanguage" class="control-label">Image</label>
+                                <div class="form-input profile-pic">
+                                     <figure class="avatar">
+                                        <img sd-user-avatar data-src="settings.original_creator.user.picture_url">
+                                    </figure>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputTheme" class="control-label">Full Name</label>
+                                <div class="form-input" data="original-creator-display-name">
+                                   {{ settings.original_creator.display_name }}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="inputEmbedCode" class="control-label">Username</label>
+                                <div class="form-input" data="original-creator-username">
+                                    {{ settings.original_creator.username }}
                                 </div>
                             </div>
                         </form>

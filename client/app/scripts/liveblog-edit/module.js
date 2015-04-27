@@ -236,6 +236,9 @@ define([
         api('themes').query().then(function(data) {
             vm.availableThemes = data._items;
         });
+        api('users').getById(blog.original_creator).then(function(data) {
+            vm.original_creator = data;
+        });
         // watch if the user selected preferences have changed, in order to update the `isSaved` variable
         $scope.$watch(angular.bind(this, function () {return this.blogPreferences;}), function(new_value) {
             vm.isSaved = _.isEqual(vm.blogPreferences, vm.blog.blog_preferences);
