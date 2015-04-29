@@ -40,6 +40,18 @@ define([
                 page: page,
                 max_results: max_results
             };
+            // filters.sort
+            if (angular.isDefined(filters.sort)) {
+                // this converts the format '-_created' to the elasticsearch one
+                var order = 'asc';
+                if (filters.sort.charAt(0) === '-') {
+                    filters.sort = filters.sort.slice(1);
+                    order = 'desc';
+                }
+                var sort = {};
+                sort[filters.sort] = {order: order, missing: '_last', unmapped_type: 'long'};
+                posts_criteria.source.sort = [sort];
+            }
             // filters.status
             if (angular.isDefined(filters.status)) {
                 posts_criteria.source.query.filtered.filter.and.push({term: {post_status: filters.status}});

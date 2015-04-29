@@ -8,6 +8,8 @@ from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
 from apps.content import LINKED_IN_PACKAGES
 
+DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
+
 
 class PostsVersionsResource(ArchiveVersionsResource):
     """
@@ -31,7 +33,7 @@ class PostsResource(ArchiveResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('firstcreated', -1)]
+        'default_sort': DEFAULT_POSTS_ORDER
     }
 
     item_methods = ['GET', 'PATCH', 'DELETE']
@@ -53,6 +55,10 @@ class PostsResource(ArchiveResource):
         'deleted': {
             'type': 'boolean'
         },
+        'order': {
+            'type': 'number',
+            'default': 0
+        }
     })
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
 
@@ -64,14 +70,35 @@ class PostsService(ArchiveService):
         docs = super().get(req, lookup)
         return docs
 
+    def get_last_order_sequence(self):
+        req = ParsedRequest()
+        req.args = {}
+        last = get_resource_service('posts').get(req=req, lookup={}).first()
+        if last:
+            return last['order']
+        else:
+            return -1
+
     def on_create(self, docs):
+        try:
+            last_order = self.get_last_order_sequence()
+        except Exception:
+            last_order = 0
         for doc in docs:
             doc['type'] = 'composite'
+            if doc.get('order') == 0:
+                last_order += 1
+                doc['order'] = last_order
         super().on_create(docs)
 
     def on_created(self, docs):
         super().on_created(docs)
         push_notification('posts', created=True)
+
+    def on_update(self, updates, original):
+        if not updates.get('post_status') == 'open' and original.get('post_status') == 'draft':
+            updates['order'] = self.get_last_order_sequence() + 1
+        super().on_update(updates, original)
 
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
@@ -99,7 +126,7 @@ class BlogPostsResource(Resource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('firstcreated', -1)]
+        'default_sort': DEFAULT_POSTS_ORDER
     }
     resource_methods = ['GET']
     privileges = {'GET': 'blogs'}

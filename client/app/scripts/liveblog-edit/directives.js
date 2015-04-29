@@ -65,7 +65,7 @@ define([
                         vm.isLoading = true;
                         // retrieve a page of posts
                         return postsService
-                            .getPosts(vm.blogId, {status: vm.status}, vm.pagination.limit, page)
+                            .getPosts(vm.blogId, {status: vm.status, sort: vm.orderBy}, vm.pagination.limit, page)
                             .then(function(posts) {
                                 vm.isLoading = false;
                                 vm.postsMeta.total = posts._meta.total;
@@ -95,7 +95,7 @@ define([
                         blogId: $scope.lbPostsBlogId,
                         status: $scope.lbPostsStatus,
                         emptyMessage: $scope.lbPostsEmptyMessage,
-                        orderBy: $scope.lbPostsOrderBy || '-_created',
+                        orderBy: $scope.lbPostsOrderBy || '-order',
                         allowQuickEdit: $scope.lbPostsAllowQuickEdit,
                         allowUnpublish: $scope.lbPostsAllowUnpublish,
                         onPostSelected: $scope.lbPostsOnPostSelected,
@@ -119,7 +119,8 @@ define([
                                 // retrieve lastest updates from database
                                 var latest_update = postsService.getLatestUpdateDate(vm.posts);
                                 postsService.getPosts(vm.blogId, {
-                                    updatedAfter: latest_update
+                                    updatedAfter: latest_update,
+                                    sort: vm.orderBy
                                 }).then(function(posts) {
                                     posts._items.forEach(function(post_updated) {
                                         if (post_updated.post_status === vm.status) {
