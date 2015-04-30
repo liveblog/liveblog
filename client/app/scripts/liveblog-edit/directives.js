@@ -156,8 +156,10 @@ define([
                                 moves: function (el, container, handle) {
                                     // disable drag and drop when the click comes from a contenteditable element
                                     return !angular.isDefined(angular.element(handle).attr('contenteditable'));
-                                }
-                            }).on('drop', function (el) {
+                                },
+                                direction: 'vertical'
+                            })
+                            .on('drop', function (el) {
                                 var position = posts_list.find('li.lb-post').index(el);
                                 var order, before, after;
                                 if (position > -1) {
