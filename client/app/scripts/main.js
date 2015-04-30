@@ -31,7 +31,10 @@ define('main', [
 
         apps.unshift(superdesk.name);
         superdesk.constant('config', config);
-
+        // liveblog list must be the default page
+        superdesk.config(['$routeProvider', function($routeProvider) {
+            $routeProvider.when('/', {redirectTo: '/liveblog'});
+        }]);
         // load apps & bootstrap
         var body = angular.element('body');
         body.ready(function() {
