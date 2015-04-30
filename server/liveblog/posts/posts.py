@@ -7,6 +7,9 @@ from apps.archive import ArchiveVersionsResource
 from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
 from apps.content import LINKED_IN_PACKAGES
+from superdesk.celery_app import update_key
+
+DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
 
 class PostsVersionsResource(ArchiveVersionsResource):
@@ -31,7 +34,7 @@ class PostsResource(ArchiveResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('firstcreated', -1)]
+        'default_sort': DEFAULT_POSTS_ORDER
     }
 
     item_methods = ['GET', 'PATCH', 'DELETE']
@@ -53,6 +56,10 @@ class PostsResource(ArchiveResource):
         'deleted': {
             'type': 'boolean'
         },
+        'order': {
+            'type': 'number',
+            'default': 0
+        }
     })
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
 
@@ -64,14 +71,23 @@ class PostsService(ArchiveService):
         docs = super().get(req, lookup)
         return docs
 
+    def get_next_order_sequence(self):
+        return update_key('post_order_sequence', True)
+
     def on_create(self, docs):
         for doc in docs:
             doc['type'] = 'composite'
+            doc['order'] = self.get_next_order_sequence()
         super().on_create(docs)
 
     def on_created(self, docs):
         super().on_created(docs)
         push_notification('posts', created=True)
+
+    def on_update(self, updates, original):
+        if not updates.get('post_status') == 'open' and original.get('post_status') == 'draft':
+            updates['order'] = self.get_next_order_sequence()
+        super().on_update(updates, original)
 
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
@@ -99,7 +115,7 @@ class BlogPostsResource(Resource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('firstcreated', -1)]
+        'default_sort': DEFAULT_POSTS_ORDER
     }
     resource_methods = ['GET']
     privileges = {'GET': 'blogs'}

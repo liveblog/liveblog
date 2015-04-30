@@ -11,10 +11,11 @@
 define([
     'angular',
     'lodash',
+    'dragula',
     './module',
     './posts.service',
     './blog.service'
-], function(angular, _) {
+], function(angular, _, dragula) {
     'use strict';
 
     // * SLIDEABLE
@@ -51,8 +52,8 @@ define([
             };
         })
         .directive('lbPostsList', [
-            'postsService', 'notify', '$q',
-            function(postsService, notify, $q) {
+            'postsService', 'notify', '$q', '$timeout',
+            function(postsService, notify, $q, $timeout) {
 
                 LbPostsListCtrl.$inject = ['$scope'];
                 function LbPostsListCtrl($scope) {
@@ -65,7 +66,7 @@ define([
                         vm.isLoading = true;
                         // retrieve a page of posts
                         return postsService
-                            .getPosts(vm.blogId, {status: vm.status}, vm.pagination.limit, page)
+                            .getPosts(vm.blogId, {status: vm.status, sort: vm.orderBy}, vm.pagination.limit, page)
                             .then(function(posts) {
                                 vm.isLoading = false;
                                 vm.postsMeta.total = posts._meta.total;
@@ -95,11 +96,14 @@ define([
                         blogId: $scope.lbPostsBlogId,
                         status: $scope.lbPostsStatus,
                         emptyMessage: $scope.lbPostsEmptyMessage,
-                        orderBy: $scope.lbPostsOrderBy || '-_created',
+                        orderBy: $scope.lbPostsOrderBy || '-order',
                         allowQuickEdit: $scope.lbPostsAllowQuickEdit,
                         allowUnpublish: $scope.lbPostsAllowUnpublish,
                         onPostSelected: $scope.lbPostsOnPostSelected,
                         fetchPage: fetchPage,
+                        updatePostOrder: function(post, order) {
+                            postsService.savePost(post.blog, post, undefined, {order: order});
+                        },
                         isPostsEmpty: function() {
                             return vm.posts.length < 1 && !vm.isLoading;
                         }
@@ -119,7 +123,8 @@ define([
                                 // retrieve lastest updates from database
                                 var latest_update = postsService.getLatestUpdateDate(vm.posts);
                                 postsService.getPosts(vm.blogId, {
-                                    updatedAfter: latest_update
+                                    updatedAfter: latest_update,
+                                    sort: vm.orderBy
                                 }).then(function(posts) {
                                     posts._items.forEach(function(post_updated) {
                                         if (post_updated.post_status === vm.status) {
@@ -142,6 +147,31 @@ define([
                         });
                     });
                 }
+                function link ($scope, $element, $attrs, $ctrl) {
+                    $timeout(function() {
+                        var posts_list = $element.find('.posts');
+                        dragula([posts_list.get(0)])
+                            .on('drop', function (el) {
+                                var position = posts_list.find('li.lb-post').index(el);
+                                var order, before, after;
+                                if (position > -1) {
+                                    before = angular.element(posts_list.find('li.lb-post').get(position - 1)).scope().post.order;
+                                }
+                                if (position < posts_list.find('li.lb-post').length - 1) {
+                                    after = angular.element(posts_list.find('li.lb-post').get(position + 1)).scope().post.order;
+                                }
+                                if (position === 0) {
+                                    order = after + 1;
+                                } else if (!angular.isDefined(after)) {
+                                    order = before - 1;
+                                } else {
+                                    order = after + (before - after) / 2;
+                                }
+                                var post = angular.element(posts_list.find('li.lb-post').get(position)).scope().post;
+                                $ctrl.updatePostOrder(post, order);
+                            });
+                    });
+                }
                 return {
                     scope: {
                         lbPostsBlogId: '=',
@@ -156,7 +186,8 @@ define([
                     restrict: 'EA',
                     templateUrl: 'scripts/liveblog-edit/views/posts.html',
                     controllerAs: 'postsList',
-                    controller: LbPostsListCtrl
+                    controller: LbPostsListCtrl,
+                    link: link
                 };
             }
         ])

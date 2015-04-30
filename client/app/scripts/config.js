@@ -9,6 +9,7 @@ require.config({
         moment: 'bower_components/momentjs/moment',
         bower_components: 'bower_components/',
         underscore: 'bower_components/underscore/underscore-min',
+        dragula: 'bower_components/dragula.js/dist/dragula.min',
 
         'angular-ui': 'bower_components/angular-bootstrap/ui-bootstrap',
         'angular-resource': 'bower_components/angular-resource/angular-resource',
