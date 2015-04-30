@@ -101,6 +101,9 @@ define([
                         allowUnpublish: $scope.lbPostsAllowUnpublish,
                         onPostSelected: $scope.lbPostsOnPostSelected,
                         fetchPage: fetchPage,
+                        updatePostOrder: function(post, order) {
+                            postsService.savePost(post.blog, post, undefined, {order: order});
+                        },
                         isPostsEmpty: function() {
                             return vm.posts.length < 1 && !vm.isLoading;
                         }
@@ -144,7 +147,7 @@ define([
                         });
                     });
                 }
-                function link ($scope, $element, $attrs) {
+                function link ($scope, $element, $attrs, $ctrl) {
                     $timeout(function() {
                         var posts_list = $element.find('.posts');
                         dragula([posts_list.get(0)])
@@ -165,7 +168,7 @@ define([
                                     order = after + (before - after) / 2;
                                 }
                                 var post = angular.element(posts_list.find('li.lb-post').get(position)).scope().post;
-                                postsService.savePost(post.blog, post, undefined, {order: order});
+                                $ctrl.updatePostOrder(post, order);
                             });
                     });
                 }
