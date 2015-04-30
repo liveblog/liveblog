@@ -99,6 +99,7 @@ define([
                         orderBy: $scope.lbPostsOrderBy || '-order',
                         allowQuickEdit: $scope.lbPostsAllowQuickEdit,
                         allowUnpublish: $scope.lbPostsAllowUnpublish,
+                        allowReordering: $scope.lbPostsAllowReordering,
                         onPostSelected: $scope.lbPostsOnPostSelected,
                         fetchPage: fetchPage,
                         updatePostOrder: function(post, order) {
@@ -148,33 +149,35 @@ define([
                     });
                 }
                 function link ($scope, $element, $attrs, $ctrl) {
-                    $timeout(function() {
-                        var posts_list = $element.find('.posts');
-                        dragula([posts_list.get(0)], {
-                            moves: function (el, container, handle) {
-                                // disable drag and drop when the click comes from a contenteditable element
-                                return !angular.element(handle).hasAttr('contenteditable');
-                            }
-                        }).on('drop', function (el) {
-                            var position = posts_list.find('li.lb-post').index(el);
-                            var order, before, after;
-                            if (position > -1) {
-                                before = angular.element(posts_list.find('li.lb-post').get(position - 1)).scope().post.order;
-                            }
-                            if (position < posts_list.find('li.lb-post').length - 1) {
-                                after = angular.element(posts_list.find('li.lb-post').get(position + 1)).scope().post.order;
-                            }
-                            if (position === 0) {
-                                order = after + 1;
-                            } else if (!angular.isDefined(after)) {
-                                order = before - 1;
-                            } else {
-                                order = after + (before - after) / 2;
-                            }
-                            var post = angular.element(posts_list.find('li.lb-post').get(position)).scope().post;
-                            $ctrl.updatePostOrder(post, order);
+                    if ($ctrl.allowReordering) {
+                        $timeout(function() {
+                            var posts_list = $element.find('.posts');
+                            dragula([posts_list.get(0)], {
+                                moves: function (el, container, handle) {
+                                    // disable drag and drop when the click comes from a contenteditable element
+                                    return !angular.isDefined(angular.element(handle).attr('contenteditable'));
+                                }
+                            }).on('drop', function (el) {
+                                var position = posts_list.find('li.lb-post').index(el);
+                                var order, before, after;
+                                if (position > -1) {
+                                    before = angular.element(posts_list.find('li.lb-post').get(position - 1)).scope().post.order;
+                                }
+                                if (position < posts_list.find('li.lb-post').length - 1) {
+                                    after = angular.element(posts_list.find('li.lb-post').get(position + 1)).scope().post.order;
+                                }
+                                if (position === 0) {
+                                    order = after + 1;
+                                } else if (!angular.isDefined(after)) {
+                                    order = before - 1;
+                                } else {
+                                    order = after + (before - after) / 2;
+                                }
+                                var post = angular.element(posts_list.find('li.lb-post').get(position)).scope().post;
+                                $ctrl.updatePostOrder(post, order);
+                            });
                         });
-                    });
+                    }
                 }
                 return {
                     scope: {
@@ -184,6 +187,7 @@ define([
                         lbPostsEmptyMessage: '@',
                         lbPostsAllowQuickEdit: '=',
                         lbPostsAllowUnpublish: '=',
+                        lbPostsAllowReordering: '=',
                         lbPostsOnPostSelected: '=',
                         lbPostsInstance: '='
                     },
