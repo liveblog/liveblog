@@ -77,8 +77,7 @@ class PostsService(ArchiveService):
     def on_create(self, docs):
         for doc in docs:
             doc['type'] = 'composite'
-            if doc.get('order') == 0:
-                doc['order'] = self.get_next_order_sequence()
+            doc['order'] = self.get_next_order_sequence()
         super().on_create(docs)
 
     def on_created(self, docs):
