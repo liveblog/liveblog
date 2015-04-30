@@ -39,15 +39,15 @@
             </div>
         </div>
     </div>
-    <div class="lb-post__expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && !post.show_all">
+    <a class="lb-post__expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && !post.show_all">
         <div class="lb-post__expander-multiple-items">
             <div class="lb-post__expander-multiple-items-roundel">
                 <div class="lb-post__expander-multiple-items-roundel-text">{{ post.multiple_items }}</div>
             </div>
             <div translate class="lb-post__expander-multiple-items-roundel-label">ITEMS</div>
         </div>
-    </div>
-    <div class="lb-post__expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && post.show_all">
+    </a>
+    <a class="lb-post__expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && post.show_all">
         <div class="lb-post__collapser-multiple-items"></div>
-    </div>
+    </a>
 </li>
