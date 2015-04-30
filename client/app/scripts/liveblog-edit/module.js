@@ -194,8 +194,8 @@ define([
         });
     }
 
-    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify'];
-    function BlogSettingsController($scope, blog, api, blogService, $location, notify) {
+    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify', 'gettext'];
+    function BlogSettingsController($scope, blog, api, blogService, $location, notify, gettext) {
         // set view's model
         var vm = this;
         angular.extend(vm, {
