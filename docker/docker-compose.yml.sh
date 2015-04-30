@@ -1,6 +1,6 @@
 cat <<EOF
 mongodb:
-  image: library/mongodb
+  image: library/mongo
   volumes:
    - ../data/mongodb:/data/db
 
