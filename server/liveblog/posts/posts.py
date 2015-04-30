@@ -85,7 +85,8 @@ class PostsService(ArchiveService):
         push_notification('posts', created=True)
 
     def on_update(self, updates, original):
-        if not updates.get('post_status') == 'open' and original.get('post_status') == 'draft':
+        # put the published item from drafts at the top of the timeline
+        if updates.get('post_status') == 'open' and original.get('post_status') == 'draft':
             updates['order'] = self.get_next_order_sequence()
         super().on_update(updates, original)
 
