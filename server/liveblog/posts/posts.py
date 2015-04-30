@@ -7,6 +7,7 @@ from apps.archive import ArchiveVersionsResource
 from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
 from apps.content import LINKED_IN_PACKAGES
+from superdesk.celery_app import update_key
 
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
@@ -70,25 +71,14 @@ class PostsService(ArchiveService):
         docs = super().get(req, lookup)
         return docs
 
-    def get_last_order_sequence(self):
-        req = ParsedRequest()
-        req.args = {}
-        last = get_resource_service('posts').get(req=req, lookup={}).first()
-        if last:
-            return last['order']
-        else:
-            return -1
+    def get_next_order_sequence(self):
+        return update_key('post_order_sequence', True)
 
     def on_create(self, docs):
-        try:
-            last_order = self.get_last_order_sequence()
-        except Exception:
-            last_order = 0
         for doc in docs:
             doc['type'] = 'composite'
             if doc.get('order') == 0:
-                last_order += 1
-                doc['order'] = last_order
+                doc['order'] = self.get_next_order_sequence()
         super().on_create(docs)
 
     def on_created(self, docs):
@@ -97,7 +87,7 @@ class PostsService(ArchiveService):
 
     def on_update(self, updates, original):
         if not updates.get('post_status') == 'open' and original.get('post_status') == 'draft':
-            updates['order'] = self.get_last_order_sequence() + 1
+            updates['order'] = self.get_next_order_sequence()
         super().on_update(updates, original)
 
     def on_updated(self, updates, original):
