@@ -60,5 +60,17 @@ describe('Blog settings', function() {
         openSettings();
         expectSelectedLanguageIs(DEFAULT_LANGUAGE);
     });
+    it('shows original creator full name and username', function() {
+        openBlog(0);
+        openSettings();
+        element(by.css('[data="blog-settings-users"]')).click();
+        //expect original creator name
+        element(by.css('[data="original-creator-display-name"]')).getText().then(function(text) {
+            expect(text).toEqual('first name last name');
+        });
+        element(by.css('[data="original-creator-username"]')).getText().then(function(text) {
+            expect(text).toEqual('test_user');
+        });
+    });
 
 });

@@ -194,8 +194,8 @@ define([
         });
     }
 
-    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify'];
-    function BlogSettingsController($scope, blog, api, blogService, $location, notify) {
+    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify', 'gettext'];
+    function BlogSettingsController($scope, blog, api, blogService, $location, notify, gettext) {
         // set view's model
         var vm = this;
         angular.extend(vm, {
@@ -235,6 +235,9 @@ define([
         // load available themes
         api('themes').query().then(function(data) {
             vm.availableThemes = data._items;
+        });
+        api('users').getById(blog.original_creator).then(function(data) {
+            vm.original_creator = data;
         });
         // watch if the user selected preferences have changed, in order to update the `isSaved` variable
         $scope.$watch(angular.bind(this, function () {return this.blogPreferences;}), function(new_value) {
