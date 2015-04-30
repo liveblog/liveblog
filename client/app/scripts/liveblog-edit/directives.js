@@ -99,6 +99,7 @@ define([
                         orderBy: $scope.lbPostsOrderBy || '-order',
                         allowQuickEdit: $scope.lbPostsAllowQuickEdit,
                         allowUnpublish: $scope.lbPostsAllowUnpublish,
+                        allowReordering: $scope.lbPostsAllowReordering,
                         onPostSelected: $scope.lbPostsOnPostSelected,
                         fetchPage: fetchPage,
                         updatePostOrder: function(post, order) {
@@ -148,9 +149,16 @@ define([
                     });
                 }
                 function link ($scope, $element, $attrs, $ctrl) {
-                    $timeout(function() {
-                        var posts_list = $element.find('.posts');
-                        dragula([posts_list.get(0)])
+                    if ($ctrl.allowReordering) {
+                        $timeout(function() {
+                            var posts_list = $element.find('.posts');
+                            dragula([posts_list.get(0)], {
+                                moves: function (el, container, handle) {
+                                    // disable drag and drop when the click comes from a contenteditable element
+                                    return !angular.isDefined(angular.element(handle).attr('contenteditable'));
+                                },
+                                direction: 'vertical'
+                            })
                             .on('drop', function (el) {
                                 var position = posts_list.find('li.lb-post').index(el);
                                 var order, before, after;
@@ -170,7 +178,8 @@ define([
                                 var post = angular.element(posts_list.find('li.lb-post').get(position)).scope().post;
                                 $ctrl.updatePostOrder(post, order);
                             });
-                    });
+                        });
+                    }
                 }
                 return {
                     scope: {
@@ -180,6 +189,7 @@ define([
                         lbPostsEmptyMessage: '@',
                         lbPostsAllowQuickEdit: '=',
                         lbPostsAllowUnpublish: '=',
+                        lbPostsAllowReordering: '=',
                         lbPostsOnPostSelected: '=',
                         lbPostsInstance: '='
                     },
