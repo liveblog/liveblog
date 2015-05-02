@@ -31,11 +31,11 @@ var posts = [
             text: 'text post one: End to End item three'
         }]
     ],
-    openUrl = require('./helpers/utils').open,
+    login = require('./helpers/utils').login,
     openBlog = require('./helpers/utils').openBlog;
 
 describe('timeline', function() {
-    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
+    beforeEach(function(done) {login().then(done);});
     it('can show items on the timeline', function() {
         openBlog(2);
         //go and check the timeline

@@ -1,8 +1,8 @@
 'use strict';
-var openUrl = require('./helpers/utils').open,
+var login = require('./helpers/utils').login,
     openBlog = require('./helpers/utils').openBlog;
 describe('timeline pagination', function() {
-    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
+    beforeEach(function(done) {login().then(done);});
     it('can scroll to last item and load more', function() {
         openBlog(0);
         var postsNo = element.all(by.repeater('post in posts')).count(),

@@ -1,4 +1,4 @@
-var openUrl = require('./helpers/utils').open;
+var login = require('./helpers/utils').login;
 
 describe('General settings', function() {
     'use strict';
@@ -8,7 +8,7 @@ describe('General settings', function() {
         DEFAULT_THEME = 'ocean',
         NEW_THEME = 'forest';
 
-    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
+    beforeEach(function(done) {login().then(done);});
 
     function expectSelected(model, value) {
         expect(element(by.model(model)).$('option:checked').getText()).toEqual(value);

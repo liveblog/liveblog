@@ -1,4 +1,4 @@
-var openUrl = require('./helpers/utils').open;
+var login = require('./helpers/utils').login;
 var openBlog = require('./helpers/utils').openBlog;
 var lodash = require('lodash');
 
@@ -20,7 +20,7 @@ describe('blogs', function() {
         username: 'first name last name'
     };
 
-    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
+    beforeEach(function(done) {login().then(done);});
 
     describe('blogs list:', function() {
 

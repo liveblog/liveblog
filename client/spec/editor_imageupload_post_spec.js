@@ -1,12 +1,12 @@
 var path = require('path');
-var openUrl = require('./helpers/utils').open;
+var login = require('./helpers/utils').login;
 var openBlog = require('./helpers/utils').openBlog;
 var rootDir = path.resolve(__dirname, '..');
 
 describe('editor image upload:', function() {
     'use strict';
 
-    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
+    beforeEach(function(done) {login().then(done);});
 
     it('upload an image and show it in the editor', function() {
         openBlog(0);
