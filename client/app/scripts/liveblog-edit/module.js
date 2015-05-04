@@ -209,7 +209,8 @@ define([
             save: function() {
                 // save on backend and clsoe
                 notify.info(gettext('saving blog settings'));
-                blogService.save(vm.blog._id, {blog_preferences: vm.blogPreferences, original_creator: vm.original_creator._id}).then(function(blog) {
+                blogService.save(vm.blog._id, {blog_preferences: vm.blogPreferences, original_creator: vm.original_creator._id})
+                .then(function(blog) {
                     vm.isSaved = true;
                     vm.blog = blog;
                     notify.pop();
@@ -253,9 +254,11 @@ define([
         buildOwner(blog.original_creator);
         // watch if the user selected preferences have changed, in order to update the `isSaved` variable
         $scope.$watch(angular.bind(this, function () {return [this.blogPreferences, this.original_creator];}), function(new_value) {
-            vm.isSaved = _.isEqual(vm.blogPreferences, vm.blog.blog_preferences) && (!vm.original_creator._id || _.isEqual(vm.original_creator._id, vm.blog.original_creator));
+            vm.isSaved = _.isEqual(vm.blogPreferences, vm.blog.blog_preferences) &&
+            (!vm.original_creator._id || _.isEqual(vm.original_creator._id, vm.blog.original_creator));
             //refresh owner data is owner changed
-            if(vm.original_creator._id && (!_.isEqual(vm.original_creator._id, vm.blog.original_creator) || !_.isEqual(vm.original_creator._id, vm.lastOwnerId))) {
+            if (vm.original_creator._id &&
+            (!_.isEqual(vm.original_creator._id, vm.blog.original_creator) || !_.isEqual(vm.original_creator._id, vm.lastOwnerId))) {
                 buildOwner(vm.original_creator._id);
             }
         }, true);
