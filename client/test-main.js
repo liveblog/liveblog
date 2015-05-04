@@ -60,8 +60,6 @@ tests.push('superdesk-users/profile');
 tests.push('superdesk-users/activity/activity');
 tests.push('superdesk-users/import/import');
 
-tests.push('liveblog-dashboard/module');
-
 tests.push('superdesk-dashboard/module');
 tests.push('superdesk-dashboard/workspace-tasks/tasks');
 
