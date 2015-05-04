@@ -1,9 +1,9 @@
 'use strict';
-var openUrl = require('./helpers/utils').open,
+var login = require('./helpers/utils').login,
     openBlog = require('./helpers/utils').openBlog;
 
 describe('timeline deletions', function() {
-    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
+    beforeEach(function(done) {login().then(done);});
     it('can delete posts on the timeline', function() {
         openBlog(2);
         element.all(by.repeater('post in posts')).then(function(posts) {

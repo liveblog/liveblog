@@ -55,8 +55,6 @@ docker-compose up -d &&
 	# run backend behavior tests:
 	docker-compose run backend ./scripts/fig_wrapper.sh behave --junit --junit-directory ./results-behave/  --format progress2 --logging-level ERROR ;
 
-	# run frontend unit tests:
-	docker-compose run frontend bash -c "grunt bamboo && mv test-results.xml ./unit-test-results/" ;
 	true
 ) &&
 

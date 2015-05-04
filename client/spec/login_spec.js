@@ -19,7 +19,7 @@ describe('login', function() {
 
     it('user can log in', function() {
         modal.login('admin', 'admin');
-        expect(browser.getCurrentUrl()).toBe(ptor.baseUrl + '/#/workspace');
+        expect(browser.getCurrentUrl()).toBe(ptor.baseUrl + '/#/liveblog');
         element(by.css('button.current-user')).click();
         expect(element(by.css('.user-info .displayname')).getText()).toBe('admin');
     });
@@ -39,7 +39,7 @@ describe('login', function() {
     it('unknown user can\'t log in', function() {
         modal.login('foo', 'bar');
         expect(modal.btn.isPresent()).toBe(true);
-        expect(browser.getCurrentUrl()).not.toBe(ptor.baseUrl + '/#/workspace');
+        expect(browser.getCurrentUrl()).not.toBe(ptor.baseUrl + '/#/liveblog');
         expect(modal.error.isPresent()).toBe(true);
     });
 

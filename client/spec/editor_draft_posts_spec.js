@@ -1,11 +1,11 @@
-var openUrl = require('./helpers/utils').open;
+var login = require('./helpers/utils').login;
 var openBlog = require('./helpers/utils').openBlog;
 var randomString = require('./helpers/utils').randomString;
 
 describe('Draft Posts', function() {
     'use strict';
 
-    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
+    beforeEach(function(done) {login().then(done);});
 
     function createDraft(body) {
         var data = {

@@ -1,10 +1,10 @@
 'use strict';
-var openUrl = require('./helpers/utils').open;
+var login = require('./helpers/utils').login;
 var openBlog = require('./helpers/utils').openBlog;
 var randomString = require('./helpers/utils').randomString;
 
 describe('timeline add to top and edit', function() {
-    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
+    beforeEach(function(done) {login().then(done);});
     it('can add item to top of the timeline', function() {
         openBlog(0);
         var randomText = randomString(10);

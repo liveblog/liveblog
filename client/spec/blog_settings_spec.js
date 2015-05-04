@@ -1,4 +1,4 @@
-var openUrl = require('./helpers/utils').open;
+var login = require('./helpers/utils').login;
 var openBlog = require('./helpers/utils').openBlog;
 
 describe('Blog settings', function() {
@@ -7,7 +7,7 @@ describe('Blog settings', function() {
     var DEFAULT_LANGUAGE = 'english';
     var NEW_LANGUAGE = 'french';
 
-    beforeEach(function(done) {openUrl('/#/liveblog').then(done);});
+    beforeEach(function(done) {login().then(done);});
 
     function openSettings() {
         // click on the settings button
