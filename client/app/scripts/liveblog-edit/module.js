@@ -229,6 +229,12 @@ define([
             close: function() {
                 // return to blog edit page
                 $location.path('/liveblog/edit/' + vm.blog._id);
+            },
+            buildOwner: function(userID) {
+                api('users').getById(userID).then(function(data) {
+                    vm.original_creator = data;
+                    vm.lastOwnerId = userID;
+                });
             }
         });
         // load available languages
@@ -245,22 +251,11 @@ define([
         api('users').query().then(function(data) {
             vm.avUsers = data._items;
         });
-        function buildOwner(userID) {
-            api('users').getById(userID).then(function(data) {
-                vm.original_creator = data;
-                vm.lastOwnerId = userID;
-            });
-        }
-        buildOwner(blog.original_creator);
+        vm.buildOwner(blog.original_creator);
         // watch if the user selected preferences have changed, in order to update the `isSaved` variable
         $scope.$watch(angular.bind(this, function () {return [this.blogPreferences, this.original_creator];}), function(new_value) {
             vm.isSaved = _.isEqual(vm.blogPreferences, vm.blog.blog_preferences) &&
             (!vm.original_creator._id || _.isEqual(vm.original_creator._id, vm.blog.original_creator));
-            //refresh owner data is owner changed
-            if (vm.original_creator._id &&
-            (!_.isEqual(vm.original_creator._id, vm.blog.original_creator) || !_.isEqual(vm.original_creator._id, vm.lastOwnerId))) {
-                buildOwner(vm.original_creator._id);
-            }
         }, true);
     }
 

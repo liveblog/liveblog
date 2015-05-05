@@ -99,7 +99,7 @@
                                     <select
                                       ng-model="settings.original_creator._id"
                                       ng-options="user._id as user.username for user in settings.avUsers"
-                                      class="form-control">
+                                      class="form-control" ng-change="settings.buildOwner(settings.original_creator._id);">
                                     </select>
                                 </div>
                             </div>
