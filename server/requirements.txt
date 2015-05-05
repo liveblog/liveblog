@@ -41,4 +41,4 @@ wooper==0.4.1
 git+git://github.com/superdesk/eve@20e42d4#egg=Eve==0.6-dev
 git+git://github.com/amagdas/tinys3@list-buckets#egg=tinys3
 -e hg+http://bitbucket.org/haypo/hachoir3/#egg=hachoir3
-git+git://github.com/liveblog/superdesk@1.0.5#egg=Superdesk-Server
+git+git://github.com/liveblog/superdesk@1.0.6#egg=Superdesk-Server
