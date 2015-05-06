@@ -246,7 +246,7 @@ define([
         _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
         var compiled = _.template(_.trim(document.getElementById('liveblog-embed-template').innerHTML));
         /*globals config */
-        vm.embedCode = compiled({'user': 'mustache', 'rest': config.server.url, 'frontend': window.location.origin, id: vm.blog._id});
+        vm.embedCode = compiled({'rest': config.server.url, 'frontend': window.location.origin, id: vm.blog._id});
     }
 
     /**
