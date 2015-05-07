@@ -12,7 +12,6 @@ module.exports = {
     },
     code: {
         options: {livereload: true},
-        tasks: ['hint'],
         files: ['<%= appDir %>/scripts/**/*.js']
     },
     assets: {
