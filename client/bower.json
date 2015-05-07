@@ -14,7 +14,7 @@
     "tests"
   ],
   "dependencies": {
-    "superdesk": "https://github.com/liveblog/superdesk.git#1.0.5",
+    "superdesk": "https://github.com/liveblog/superdesk.git#1.0.6",
     "Eventable": "https://github.com/nistormihai/eventable.git",
     "embed": "https://github.com/nistormihai/plugin-liveblog-embed-server.git#e0e606ef21",
     "ng-sir-trevor": "~2.0.0",
