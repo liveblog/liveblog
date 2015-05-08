@@ -243,6 +243,10 @@ define([
         $scope.$watch(angular.bind(this, function () {return this.blogPreferences;}), function(new_value) {
             vm.isSaved = _.isEqual(vm.blogPreferences, vm.blog.blog_preferences);
         }, true);
+        _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
+        var compiled = _.template(_.trim(angular.element('#liveblog-embed-template').html()));
+        /*globals config */
+        vm.embedCode = compiled({'rest': config.server.url, 'frontend': window.location.origin, id: vm.blog._id});
     }
 
     /**
