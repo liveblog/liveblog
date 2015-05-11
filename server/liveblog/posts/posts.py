@@ -8,6 +8,7 @@ from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
 from apps.content import LINKED_IN_PACKAGES
 from superdesk.celery_app import update_key
+import flask
 
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
@@ -59,6 +60,9 @@ class PostsResource(ArchiveResource):
         'order': {
             'type': 'number',
             'default': 0
+        },
+        'visible': {
+            'type': 'boolean'
         }
     })
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
@@ -129,8 +133,13 @@ class BlogPostsService(ArchiveService):
         if lookup.get('blog_id'):
             lookup['blog'] = ObjectId(lookup['blog_id'])
             del lookup['blog_id']
+        logged_in_user = getattr(flask.g, 'user', None)
         docs = super().get(req, lookup)
         for doc in docs:
+            user_id = logged_in_user.get('_id')
+            creator_id = ObjectId(doc.get('original_creator'))
+            if creator_id == user_id and doc['post_status'] == 'draft':
+                doc['visible'] = True
             build_custom_hateoas(self.custom_hateoas, doc, location='posts')
             for assoc in self.packageService._get_associations(doc):
                 if assoc.get('residRef'):
