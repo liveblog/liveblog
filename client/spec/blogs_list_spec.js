@@ -66,7 +66,6 @@ describe('blogs', function() {
         });
 
         it('can list archived blogs', function() {
-            element(by.binding('activeState.text')).click();
             element(by.repeater('state in states').row(1).column('state.text')).click();
             var blogsLength = archived.length;
             expectBlogsLength(blogsLength);
@@ -102,26 +101,23 @@ describe('blogs', function() {
         it('should archive a blog', function() {
             //open first blog
             openBlog(0);
-            element(by.buttonText('ARCHIVE BLOG')).click();
+            element(by.buttonText('Archive Blog')).click();
             //click on back to liveblog list
             element(by.css('[class="icon-th-large"]')).click();
             //go to archive blogs
-            element(by.binding('activeState.text')).click();
             element(by.repeater('state in states').row(1).column('state.text')).click();
             //expect the first blog to be the one we archived (blog[0])
             expect(blogs[0], 0);
         });
         it('should activate a blog', function() {
             //go to archive blogs
-            element(by.binding('activeState.text')).click();
             element(by.repeater('state in states').row(1).column('state.text')).click();
             //open first blog
             openBlog(0);
-            element(by.buttonText('ACTIVATE BLOG')).click();
+            element(by.buttonText('Activate Blog')).click();
             //click on back to liveblog list
             element(by.css('[class="icon-th-large"]')).click();
             //click to go to active blogs
-            element(by.binding('activeState.text')).click();
             element(by.repeater('state in states').row(0).column('state.text')).click();
             //expect the first blog to be the one we activated (blog[0])
             expect(blogs[0], 0);
@@ -135,7 +131,7 @@ describe('blogs', function() {
             browser.wait(element(by.model('newBlog.title')).isDisplayed);
             element(by.model('newBlog.title')).sendKeys(newBlog.title);
             element(by.model('newBlog.description')).sendKeys(newBlog.description);
-            element(by.buttonText('CREATE')).click();
+            element(by.buttonText('Create')).click();
             expectBlog(newBlog);
         });
     });
