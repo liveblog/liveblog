@@ -1,0 +1,7 @@
+.lb-timeline h1 small {
+    display: block;
+}
+
+.lb-timeline > ul {
+    margin-top: 20px;
+}

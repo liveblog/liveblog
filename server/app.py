@@ -108,6 +108,12 @@ def get_app(config=None):
         prefix = app.api_prefix or None
         app.register_blueprint(blueprint, url_prefix=prefix)
 
+    # embed feature
+    from liveblog.embed import embed_bp
+    from liveblog.embed import embed_assets
+    app.register_blueprint(embed_bp)
+    embed_assets.init_app(app)
+
     # we can only put mapping when all resources are registered
     app.data.elastic.put_mapping(app)
 
