@@ -202,12 +202,15 @@ define([
             blog: blog,
             blogPreferences: angular.copy(blog.blog_preferences),
             availableLanguages: [],
+            original_creator: {},
+            lastOwnerId: false,
             availableThemes: [],
             isSaved: true,
             save: function() {
                 // save on backend and clsoe
                 notify.info(gettext('saving blog settings'));
-                blogService.save(vm.blog._id, {blog_preferences: vm.blogPreferences}).then(function(blog) {
+                blogService.save(vm.blog._id, {blog_preferences: vm.blogPreferences, original_creator: vm.original_creator._id})
+                .then(function(blog) {
                     vm.isSaved = true;
                     vm.blog = blog;
                     notify.pop();
@@ -226,6 +229,12 @@ define([
             close: function() {
                 // return to blog edit page
                 $location.path('/liveblog/edit/' + vm.blog._id);
+            },
+            buildOwner: function(userID) {
+                api('users').getById(userID).then(function(data) {
+                    vm.original_creator = data;
+                    vm.lastOwnerId = userID;
+                });
             }
         });
         // load available languages
@@ -239,9 +248,14 @@ define([
         api('users').getById(blog.original_creator).then(function(data) {
             vm.original_creator = data;
         });
+        api('users').query().then(function(data) {
+            vm.avUsers = data._items;
+        });
+        vm.buildOwner(blog.original_creator);
         // watch if the user selected preferences have changed, in order to update the `isSaved` variable
-        $scope.$watch(angular.bind(this, function () {return this.blogPreferences;}), function(new_value) {
-            vm.isSaved = _.isEqual(vm.blogPreferences, vm.blog.blog_preferences);
+        $scope.$watch(angular.bind(this, function () {return [this.blogPreferences, this.original_creator];}), function(new_value) {
+            vm.isSaved = _.isEqual(vm.blogPreferences, vm.blog.blog_preferences) &&
+            (!vm.original_creator._id || _.isEqual(vm.original_creator._id, vm.blog.original_creator));
         }, true);
         _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
         var compiled = _.template(_.trim(angular.element('#liveblog-embed-template').html()));
