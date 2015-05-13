@@ -24,28 +24,97 @@
             }
         });
 
-        function fetchPage() {
-            vm.page = Math.floor(vm.posts.length / vm.max_results) + 1;
-            var filters = filters || {};
+        /**
+         * Represent a page of posts
+         */
+        function Page(posts) {
+            return {
+                posts: posts || [],
+                addPost: function(post) {this.posts.push(post);}
+            };
+        }
+
+        /**
+         * Manage the pages and their posts
+         */
+        function PagesManager(pages) {
+            return {
+                pages: pages || [],
+                addPage: function(page) {
+                    this.pages.push(page);
+                    vm.posts = vm.posts.concat(page.posts);
+                },
+                addPost: function(post) {
+                    vm.posts.push(post);
+                },
+                removePost: function(post_to_remove) {
+                    var page, post;
+                    for (var i = 0; i < this.pages.length; i++) {
+                        page = this.pages[i];
+                        for (var j = 0; j < page.posts.length; j++) {
+                            post = page.posts[j];
+                            if (post._id === post_to_remove._id) {
+                                console.log(post);
+                                // should update all the next pages
+                            }
+                        }
+                    }
+                }
+            };
+        }
+
+        function getPost(post_id) {
+            for (var i = 0; i < vm.posts.length; i++) {
+                if (vm.posts[i]._id === post_id) {
+                    return vm.posts[i];
+                }
+            }
+        }
+
+        function retrievePage(page) {
+            // request parameters
             var posts_criteria = {
                 source: {
                     query: {filtered: {filter: {and: [{not: {term: {deleted: true}}}]}}}
                 },
-                page: vm.page,
+                page: page,
                 max_results: vm.max_results
             };
-            return Posts.get(posts_criteria).$promise.then(function(posts) {
+            return Posts.get(posts_criteria).$promise;
+        }
+
+        /**
+         * Fetch a page of posts and add this page to the pages manager.
+         * @param {interger} page_index - the page index
+         * @param {object} page_obj - an instance of Page. If undefined, it will be create.
+         */
+        function fetchPage(page_index, page_obj) {
+            page_index = page_index || Math.floor(vm.posts.length / vm.max_results) + 1;
+            page_obj = page_obj || Page();
+            retrievePage(page_index).then(function(posts) {
+                // update posts meta data
+                vm.posts_meta = posts._meta;
+                // add posts if doesn't exist
                 posts._items.forEach(function(post) {
-                    if (vm.posts.indexOf(post) < 0) {
-                        vm.posts.push(post);
+                    if (getPost(post._id) === undefined && page_obj.posts.length < vm.max_results) {
+                        page_obj.addPost(post);
                     }
                 });
-                vm.posts_meta = posts._meta;
+                // if not latest page
+                if (posts._meta.total >= posts._meta.max_results * posts._meta.page) {
+                    // if page not full, redo this operation to fill this page with the next one
+                    if (page_obj.posts.length < vm.max_results) {
+                        return fetchPage(page_index + 1, page_obj);
+                    }
+                }
+                vm.pagesManager.addPage(page_obj);
             });
         }
 
-        function retrieveUpdate() {
+        function retrieveUpdate(force_sync) {
+            force_sync = force_sync === true;
             function getLatestUpdateDate(posts) {
+                // TODO: check also the date from updated post, they are not always put in vm.posts
                 if (!angular.isDefined(posts) || posts.length < 1) {
                     return;
                 }
@@ -62,32 +131,46 @@
                 });
                 return latest_date.utc().format();
             }
-            var updated_after = getLatestUpdateDate(vm.posts);
             var posts_criteria = {
                 blogId: blog_id,
                 source: {
                     query: {filtered: {filter: {and: [
-                        {not: {term: {deleted: true}}},
-                        {range: {_updated: {gt: updated_after}}}
+                        {range: {_updated: {gt: getLatestUpdateDate(vm.posts)}}}
                     ]}}}
                 }
             };
             Posts.get(posts_criteria).$promise.then(function(posts) {
-                posts._items.forEach(function(post) {
-                    if (vm.posts.indexOf(post) < 0) {
-                        vm.posts.push(post);
-                    }
-                });
+                // save updates meta data
+                vm.updates_available = posts._meta.total;
+                // process the sync operation
+                if (force_sync || vm.auto_update) {
+                    console.log('sync', vm.pagesManager);
+                    posts._items.forEach(function(post) {
+                        if (getPost(post._id)) {
+                            // post already in the list
+                            if (post.deleted) {
+                                // post deleted
+                                vm.pagesManager.removePost(post);
+                                console.log('deleted', post);
+                            }
+                        } else {
+                            // post doesn't exist in the list
+                            if (!post.deleted) {
+                                vm.pagesManager.addPost(post);
+                                console.log('added', post);
+                            } else {
+                                vm.pagesManager.removePost(post);
+                                console.log('deleted', post);
+                            }
+                        }
+
+                    });
+                }
             });
         }
 
-        var update_interval;
-        function setAutoUpdateInterval() {
-            if (vm.auto_update) {
-                update_interval = $interval(retrieveUpdate, 2000);
-            } else {
-                $interval.cancel(update_interval);
-            }
+        function toggleAutoUpdate() {
+            vm.auto_update = !vm.auto_update;
         }
 
         // define vm
@@ -97,10 +180,11 @@
             max_results: 5,
             blog: {},
             posts: [],
+            pagesManager: PagesManager(),
             posts_meta: {},
+            updates_available: 0,
             fetchPage: fetchPage,
-            retrieveUpdate: retrieveUpdate,
-            toggleAutoUpdate: setAutoUpdateInterval
+            retrieveUpdate: retrieveUpdate
         });
         // retrieve blog information
         Blogs.get().$promise.then(function(blog) {
@@ -108,8 +192,8 @@
         });
         // retrieve first page of posts
         fetchPage();
-        // auto update
-        setAutoUpdateInterval();
+        // retrieve update periodically
+        $interval(retrieveUpdate, 2000);
     }
 
     angular.module('liveblog-embed', ['ngResource', 'ngSanitize'])

@@ -20,15 +20,20 @@
                     <span class="badge">[[ timeline.posts_meta.total ]] posts</span>
                 </small>
             </h1>
-            <a  ng-click="timeline.retrieveUpdate()"
-                class="btn btn-info">Update</a>
+            <a  ng-click="timeline.retrieveUpdate(true)"
+                class="btn btn-info">Update <span class="badge">[[ timeline.updates_available ]]</span></a>
             <label>
-                <input type="checkbox" ng-model="timeline.auto_update" ng-change="timeline.toggleAutoUpdate()"> Auto update
+                <input type="checkbox" ng-model="timeline.auto_update"> Auto update
             </label>
             <ul class="list-group">
                 <li lb-post ng-repeat="post in timeline.posts | orderBy: '-order' track by post._id" class="lb-post list-group-item">
-                    <span class="badge debug">#[[ post.order ]]<br/>[[ post._updated ]]</span>
-                    <div lb-item ng-repeat="item in post.items track by item._id" ng-bind-html="item.text" class="lb-item"></div>
+                    <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
+                        <div ng-bind-html="item.text"></div>
+                    </div>
+                    <div class="debug">
+                        <!-- <pre>[[ post | json ]]</pre> -->
+                        <span>#[[ $index + 1 ]] | order: #[[ post.order ]] | post_status: [[ post.post_status ]] | updated: [[ post._updated ]] | deleted: [[ post.deleted ]]</span>
+                    </div>
                 </li>
             </ul>
             <div class="text-center">

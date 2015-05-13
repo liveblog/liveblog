@@ -5,3 +5,30 @@
 .lb-timeline > ul {
     margin-top: 20px;
 }
+
+.lb-timeline > ul > li:nth-child(5n) {
+    border-bottom: 2px solid red;
+}
+.lb-timeline > ul > li:nth-child(5n):after {
+    content: "end of page";
+    font-size: 0.8em;
+    color: red;
+    background-color: white;
+    padding:0 2px;
+    position: absolute;
+    z-index: 2;
+}
+
+.lb-timeline > ul > li .lb-item {
+    background-color: rgba(188, 212, 215, 0.28);
+    padding: 10px;
+    margin: 5px;
+}
+
+.lb-timeline > ul > li .debug {
+    opacity: .5;
+    font-size: .8em;
+}
+.lb-timeline > ul > li .debug:hover {
+    opacity: 1;
+}
