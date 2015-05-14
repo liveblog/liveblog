@@ -19,12 +19,14 @@
     z-index: 2;
 }
 
-.lb-post.ng-enter {
-    opacity: 0;
+.lb-post.ng-enter, .lb-post.ng-leave {
     -webkit-transition:1s linear all;
     -moz-transition:1s linear all;
 }
-.lb-post.ng-enter.ng-enter-active {
+.lb-post.ng-enter, .lb-post.ng-leave.ng-leave-active {
+    opacity: 0;
+}
+.lb-post.ng-enter.ng-enter-active, .lb-post.ng-leave  {
     opacity: 1;
 }
 
