@@ -25,8 +25,8 @@ bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates'
 superdesk.blueprint(bp)
 
 
-@bp.route('/embed')
-def embed():
-    return render_template('embed.html', blog_id='55476b246844990065ad3c9c', api_host=request.url_root)
+@bp.route('/embed/<blog_id>')
+def embed(blog_id):
+    return render_template('embed.html', blog_id=blog_id, api_host=request.url_root)
 
 # EOF
