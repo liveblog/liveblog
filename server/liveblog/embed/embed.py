@@ -18,7 +18,7 @@ assets = Environment(app)
 js_files = [
     'embed_liveblog/scripts/liveblog-embed/main.js'
 ]
-js = Bundle(*js_files, output='gen/packed.js')
+js = Bundle(*js_files, output='gen/lb-embed.js')
 assets.register('js_embed', js)
 
 bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates', static_folder='assets')

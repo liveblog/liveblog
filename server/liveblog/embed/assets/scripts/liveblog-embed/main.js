@@ -42,40 +42,86 @@
                 pages: pages || [],
                 addPage: function(page) {
                     this.pages.push(page);
-                    vm.posts = vm.posts.concat(page.posts);
                 },
-                addPost: function(post) {
-                    vm.posts.push(post);
+                createPagesWithPosts: function(posts) {
+                    var that = this;
+                    that.pages = [];
+                    // respect the order
+                    // TODO: allow other field for ordering
+                    posts.sort(function(a, b) {return a.order < b.order;});
+                    var page;
+                    posts.forEach(function(post, index) {
+                        if (index % vm.max_results === 0) {
+                            page = new Page();
+                        }
+                        page.addPost(post);
+                        if (page.posts.length === vm.max_results) {
+                            that.addPage(page);
+                            page = undefined;
+                        }
+                    });
+                    if (angular.isDefined(page)) {
+                        that.addPage(page);
+                    }
                 },
-                removePost: function(post_to_remove) {
-                    var page, post;
-                    for (var i = 0; i < this.pages.length; i++) {
-                        page = this.pages[i];
-                        for (var j = 0; j < page.posts.length; j++) {
-                            post = page.posts[j];
-                            if (post._id === post_to_remove._id) {
-                                console.log(post);
-                                // should update all the next pages
+                refreshPage: function(page_index) {
+                    var that = this;
+                    retrievePage(page_index).then(function(posts) {
+                        that.pages[page_index].posts = posts._items;
+                    });
+                },
+                refreshPageFrom: function(page_index) {
+                    for (page_index; page_index < this.pages.length; page_index++) {
+                        this.refreshPage(page_index);
+                    }
+                },
+                getPostPageIndexes: function(post_to_find){
+                    var page;
+                    for (var page_index = 0; page_index < this.pages.length; page_index++) {
+                        page = this.pages[page_index];
+                        for (var post_index = 0; post_index < page.posts.length; post_index++) {
+                            if (page.posts[post_index]._id === post_to_find._id) {
+                                return [page_index, post_index];
                             }
                         }
                     }
+                },
+                allPosts: function () {
+                    var posts = this.pages.map(function(page) {
+                        return page.posts.map(function(post) {
+                            return post;
+                        });
+                    });
+                    var merged = [];
+                    return merged.concat.apply(merged, posts);
+                },
+                addPost: function(post) {
+                    var posts = this.allPosts();
+                    posts.push(post);
+                    this.createPagesWithPosts(posts);
+                },
+                removePost: function(post_to_remove) {
+                    var indexes = this.getPostPageIndexes(post_to_remove);
+                    if (angular.isDefined(post_to_remove)) {
+                        var page_index = indexes[0];
+                        var post_index = indexes[1];
+                        this.pages[page_index].posts.splice(post_index, 1);
+                    }
+                },
+                count: function() {
+                    return this.pages.reduce(function(previous_value, current_value) {
+                        return previous_value + current_value.posts.length;
+                    }, 0);
                 }
             };
-        }
-
-        function getPost(post_id) {
-            for (var i = 0; i < vm.posts.length; i++) {
-                if (vm.posts[i]._id === post_id) {
-                    return vm.posts[i];
-                }
-            }
         }
 
         function retrievePage(page) {
             // request parameters
             var posts_criteria = {
                 source: {
-                    query: {filtered: {filter: {and: [{not: {term: {deleted: true}}}]}}}
+                    query: {filtered: {filter: {and: [{not: {term: {deleted: true}}}]}}},
+                    "sort":[{"order":{"order":"desc","missing":"_last","unmapped_type":"long"}}]
                 },
                 page: page,
                 max_results: vm.max_results
@@ -89,14 +135,27 @@
          * @param {object} page_obj - an instance of Page. If undefined, it will be create.
          */
         function fetchPage(page_index, page_obj) {
-            page_index = page_index || Math.floor(vm.posts.length / vm.max_results) + 1;
-            page_obj = page_obj || Page();
+            if (vm.pagesManager.count() > 0) {
+                retrieveUpdate().then(function(updates) {
+                    updates._items.forEach(function(post) {
+                        if (post.deleted) {
+                            // a post was removed. Better to update all the pages after the deleted post.
+                            var page_index = vm.pagesManager.getPostPageIndexes(post);
+                            if (angular.isDefined(page_index)) {
+                                vm.pagesManager.refreshPageFrom(page_index[0]);
+                            }
+                        }
+                    });
+                });
+            }
+            page_index = page_index || Math.floor(vm.pagesManager.count() / vm.max_results) + 1;
+            page_obj = page_obj || new Page();
             retrievePage(page_index).then(function(posts) {
                 // update posts meta data
                 vm.posts_meta = posts._meta;
                 // add posts if doesn't exist
                 posts._items.forEach(function(post) {
-                    if (getPost(post._id) === undefined && page_obj.posts.length < vm.max_results) {
+                    if (!angular.isDefined(vm.pagesManager.getPostPageIndexes(post)) && page_obj.posts.length < vm.max_results) {
                         page_obj.addPost(post);
                     }
                 });
@@ -112,9 +171,9 @@
         }
 
         function retrieveUpdate(force_sync) {
-            force_sync = force_sync === true;
+
             function getLatestUpdateDate(posts) {
-                // TODO: check also the date from updated post, they are not always put in vm.posts
+                // TODO: check also the date from updated post, they are not always put in `posts`
                 if (!angular.isDefined(posts) || posts.length < 1) {
                     return;
                 }
@@ -131,43 +190,45 @@
                 });
                 return latest_date.utc().format();
             }
+
+            function applyUpdates(updates) {
+                updates.forEach(function(post) {
+                    if (angular.isDefined(vm.pagesManager.getPostPageIndexes(post))) {
+                        // post already in the list
+                        if (post.deleted) {
+                            // post deleted
+                            vm.pagesManager.removePost(post);
+                        }
+                    } else {
+                        // post doesn't exist in the list
+                        if (!post.deleted) {
+                            vm.pagesManager.addPost(post);
+                        }
+                    }
+
+                });
+            }
+
             var posts_criteria = {
                 blogId: blog_id,
                 source: {
                     query: {filtered: {filter: {and: [
-                        {range: {_updated: {gt: getLatestUpdateDate(vm.posts)}}}
+                        {range: {_updated: {gt: getLatestUpdateDate(vm.pagesManager.allPosts())}}}
                     ]}}}
                 }
             };
-            Posts.get(posts_criteria).$promise.then(function(posts) {
+            return Posts.get(posts_criteria).$promise.then(function(posts) {
                 // save updates meta data
                 vm.updates_available = posts._meta.total;
                 // process the sync operation
+                force_sync = force_sync === true;
                 if (force_sync || vm.auto_update) {
-                    console.log('sync', vm.pagesManager);
-                    posts._items.forEach(function(post) {
-                        if (getPost(post._id)) {
-                            // post already in the list
-                            if (post.deleted) {
-                                // post deleted
-                                vm.pagesManager.removePost(post);
-                                console.log('deleted', post);
-                            }
-                        } else {
-                            // post doesn't exist in the list
-                            if (!post.deleted) {
-                                vm.pagesManager.addPost(post);
-                                console.log('added', post);
-                            } else {
-                                vm.pagesManager.removePost(post);
-                                console.log('deleted', post);
-                            }
-                        }
-
-                    });
+                    applyUpdates(posts._items);
                 }
+                return posts;
             });
         }
+
 
         function toggleAutoUpdate() {
             vm.auto_update = !vm.auto_update;
@@ -180,7 +241,7 @@
             max_results: 5,
             blog: {},
             posts: [],
-            pagesManager: PagesManager(),
+            pagesManager: new PagesManager(),
             posts_meta: {},
             updates_available: 0,
             fetchPage: fetchPage,
@@ -196,7 +257,7 @@
         $interval(retrieveUpdate, 2000);
     }
 
-    angular.module('liveblog-embed', ['ngResource', 'ngSanitize'])
+    angular.module('liveblog-embed', ['ngResource', 'ngSanitize' ,'ngAnimate'])
         .controller('timelineCtrl', TimelineCtrl)
         .config(['$interpolateProvider', function($interpolateProvider) {
             // change the template tag symbols

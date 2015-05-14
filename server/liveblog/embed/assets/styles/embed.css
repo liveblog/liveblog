@@ -10,13 +10,22 @@
     border-bottom: 2px solid red;
 }
 .lb-timeline > ul > li:nth-child(5n):after {
-    content: "end of page";
+    content: "end of page (5 posts)";
     font-size: 0.8em;
     color: red;
     background-color: white;
     padding:0 2px;
     position: absolute;
     z-index: 2;
+}
+
+.lb-post.ng-enter {
+    opacity: 0;
+    -webkit-transition:1s linear all;
+    -moz-transition:1s linear all;
+}
+.lb-post.ng-enter.ng-enter-active {
+    opacity: 1;
 }
 
 .lb-timeline > ul > li .lb-item {
