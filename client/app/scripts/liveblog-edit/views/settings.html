@@ -16,7 +16,7 @@
     <div class="settings-page">
         <div class="subnav">
             <h3 class="page-nav-title">Settings</h3>
-            <button ng-click="settings.save()"  class="btn btn-info pull-right"    type="button" translate ng-disabled="settings.isSaved">Save</button>
+            <button ng-click="settings.save()"  class="btn btn-info pull-right"    type="button" translate ng-disabled="!settings.generalSettingsForm.$dirty">Save</button>
             <button ng-click="settings.reset()" class="btn btn-default pull-right" type="button" translate>Reset to default</button>
             <button ng-click="settings.close()" class="btn btn-default pull-right" type="button" translate>Cancel</button>
         </div>
@@ -36,9 +36,30 @@
                         <h2 translate>General</h2>
                     </div>
                     <div class="content">
-                        <form class="form-horizontal">
+                        <form class="form-horizontal" name="settings.generalSettingsForm">
                             <div class="form-group">
-                                <label for="inputLanguage" class="control-label">Language</label>
+                                <label for="inputTitle" class="control-label" transle>Blog Title</label>
+                                <div class="form-input">
+                                    <input
+                                        name="inputTitle"
+                                        ng-model="settings.newBlog.title"
+                                        class="form-control"
+                                    />
+                                </div>
+                            </div>                        
+                            <div class="form-group">
+                                <label for="inputDescription" class="control-label" transle>Blog Description</label>
+                                <div class="form-input">
+                                    <textarea
+                                        name="inputDescription"
+                                        ng-model="settings.newBlog.description"
+                                        class="form-control"
+                                    ></textarea>
+                                </div>
+                            </div>                        
+
+                            <div class="form-group">
+                                <label for="inputLanguage" class="control-label" transle>Language</label>
                                 <div class="form-input">
                                     <select
                                       ng-model="settings.blogPreferences.language"
@@ -48,7 +69,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="inputTheme" class="control-label">Theme</label>
+                                <label for="inputTheme" class="control-label" transle>Theme</label>
                                 <div class="form-input">
                                     <select
                                       ng-model="settings.blogPreferences.theme"
@@ -58,7 +79,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="inputEmbedCode" class="control-label">Embed code</label>
+                                <label for="inputEmbedCode" class="control-label" transle>Embed code</label>
                                 <div class="form-input">
                                     <textarea class="form-control" readonly="readonly" select-text-on-click>Embed code</textarea>
                                 </div>

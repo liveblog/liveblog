@@ -58,19 +58,7 @@ define([
         // define the $scope
         angular.extend($scope, {
             blog: blog,
-            oldBlog: _.create(blog),
             currentPost: undefined,
-            updateBlog: function(blog) {
-                if (_.isEmpty(blog)) {
-                    return;
-                }
-                notify.info(gettext('saving..'));
-                api.blogs.save($scope.blog, blog).then(function(newBlog) {
-                    notify.pop();
-                    notify.success(gettext('blog saved.'));
-                    $scope.blog = newBlog;
-                });
-            },
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
             },
@@ -200,6 +188,7 @@ define([
         var vm = this;
         angular.extend(vm, {
             blog: blog,
+            newBlog: _.create(blog),
             blogPreferences: angular.copy(blog.blog_preferences),
             availableLanguages: [],
             availableThemes: [],
@@ -207,13 +196,17 @@ define([
             save: function() {
                 // save on backend and clsoe
                 notify.info(gettext('saving blog settings'));
-                blogService.save(vm.blog._id, {blog_preferences: vm.blogPreferences}).then(function(blog) {
+                var changedBlog = {blog_preferences: vm.blogPreferences};
+                    angular.forEach(vm.newBlog, function(value, key) {
+                        changedBlog[key] = value;
+                    });
+                blogService.save(vm.blog._id, changedBlog).then(function(blog) {
                     vm.isSaved = true;
                     vm.blog = blog;
                     notify.pop();
                     notify.info(gettext('blog settings saved'));
                     vm.close();
-                });
+                }) ;
             },
             reset: function() {
                 // reset vm.blogPreferences's values with the ones from global_preferences (backend)
@@ -239,10 +232,6 @@ define([
         api('users').getById(blog.original_creator).then(function(data) {
             vm.original_creator = data;
         });
-        // watch if the user selected preferences have changed, in order to update the `isSaved` variable
-        $scope.$watch(angular.bind(this, function () {return this.blogPreferences;}), function(new_value) {
-            vm.isSaved = _.isEqual(vm.blogPreferences, vm.blog.blog_preferences);
-        }, true);
     }
 
     /**
