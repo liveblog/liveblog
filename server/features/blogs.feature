@@ -93,5 +93,28 @@ Feature: Blog operations
         And we delete latest
         Then we get deleted response
 
-
-	
+	@auth
+    Scenario: Partial word search for blogs
+        Given "blogs"
+        """
+        [
+         {"title": "my blog", "description": "this is my blog", "blog_status": "open"},
+         {"title": "my little blg"},
+         {"title": "your blog", "description": "this is the second blog", "blog_status": "open"}, 
+         {"title": "blog three", "blog_status": "closed"}
+        ]
+        """
+        
+        When we get "/blogs?q=*my*"
+        Then we get list with 2 items
+	    """
+	    {"_items": [{"title": "my blog", "description": "this is my blog", "blog_status": "open"},
+	    				{"title": "my little blg"}]}
+	    """
+	    When we get "/blogs?q=*blog*"
+        Then we get list with 3 items
+	    """
+	    {"_items": [{"title": "my blog", "description": "this is my blog", "blog_status": "open"},
+	    				{"title": "your blog", "description": "this is the second blog", "blog_status": "open"},
+	    				{"title": "blog three", "blog_status": "closed"}]}
+	    """

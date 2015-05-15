@@ -9,6 +9,7 @@ from apps.content import metadata_schema
 from apps.archive.common import generate_guid, GUID_TAG
 from superdesk import get_resource_service
 from superdesk.resource import Resource
+import json
 
 
 class BlogsVersionsResource(ArchiveVersionsResource):
@@ -74,9 +75,26 @@ class BlogService(ArchiveService):
             doc['guid'] = generate_guid(type=GUID_TAG)
             doc['blog_preferences'] = get_resource_service('global_preferences').get_global_prefs()
 
+    def init_req(self, elastic_query):
+        parsed_request = ParsedRequest()
+        parsed_request.args = {"source": json.dumps(elastic_query)}
+        return parsed_request
+
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
+        if req.args.get('q'):
+            parameter = req.args.get('q')
+            query = {
+                'query': {
+                    'query_string': {
+                        'query': '*' + parameter + '*',
+                        'fields': ['title', 'description']
+                    }
+                }
+            }
+
+            req = self.init_req(query)
         docs = super().get(req, lookup)
         return docs
 
