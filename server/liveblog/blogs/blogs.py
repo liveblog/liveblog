@@ -84,11 +84,11 @@ class BlogService(ArchiveService):
         if req is None:
             req = ParsedRequest()
         if req.args.get('q'):
-            params = req.args.get('q')
+            parameter = req.args.get('q')
             query = {
                 'query': {
                     'query_string': {
-                        'query': '*' + params + '*',
+                        'query': '*' + parameter + '*',
                         'fields': ['title', 'description']
                     }
                 }
