@@ -155,7 +155,8 @@ define([
                             dragula([posts_list.get(0)], {
                                 moves: function (el, container, handle) {
                                     // disable drag and drop when the click comes from a contenteditable element
-                                    return !angular.isDefined(angular.element(handle).attr('contenteditable'));
+                                    return !angular.isDefined(angular.element(handle).parents().attr('contenteditable')) &&
+                                    !angular.isDefined(angular.element(handle).attr('contenteditable'));
                                 },
                                 direction: 'vertical'
                             })
