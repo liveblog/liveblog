@@ -1,8 +1,8 @@
 (function(angular) {
     'use strict';
 
-    TimelineCtrl.$inject = ['$resource', '$interval', '$scope'];
-    function TimelineCtrl($resource, $interval, $scope) {
+    TimelineCtrl.$inject = ['$resource', '$interval', '$q'];
+    function TimelineCtrl($resource, $interval, $q) {
 
         var vm = this;
         var blog_id = window.LB_BLOG_ID;
@@ -170,26 +170,26 @@
             });
         }
 
-        function retrieveUpdate(force_sync) {
-
-            function getLatestUpdateDate(posts) {
-                // TODO: check also the date from updated post, they are not always put in `posts`
-                if (!angular.isDefined(posts) || posts.length < 1) {
-                    return;
-                }
-                var latest_date, date;
-                posts.forEach(function (post) {
-                    date = moment(post._updated);
-                    if (angular.isDefined(latest_date)) {
-                        if (latest_date.diff(date) < 0) {
-                            latest_date = date;
-                        }
-                    } else {
-                        latest_date = date;
-                    }
-                });
-                return latest_date.utc().format();
+        function computeLatestUpdateDate(posts) {
+            // TODO: check also the date from updated post, they are not always put in `posts`
+            if (!angular.isDefined(posts) || posts.length < 1) {
+                return;
             }
+            var date;
+            posts.forEach(function (post) {
+                date = moment(post._updated);
+                if (angular.isDefined(vm.latest_update_date)) {
+                    if (vm.latest_update_date.diff(date) < 0) {
+                        vm.latest_update_date = date;
+                    }
+                } else {
+                    vm.latest_update_date = date;
+                }
+            });
+            return vm.latest_update_date.utc().format();
+        }
+
+        function retrieveUpdate(force_sync) {
 
             function applyUpdates(updates) {
                 updates.forEach(function(post) {
@@ -205,15 +205,14 @@
                             vm.pagesManager.addPost(post);
                         }
                     }
-
                 });
+                vm.updates_available = 0;
             }
-
             var posts_criteria = {
                 blogId: blog_id,
                 source: {
                     query: {filtered: {filter: {and: [
-                        {range: {_updated: {gt: getLatestUpdateDate(vm.pagesManager.allPosts())}}}
+                        {range: {_updated: {gt: computeLatestUpdateDate(vm.pagesManager.allPosts())}}}
                     ]}}}
                 }
             };
@@ -224,6 +223,7 @@
                 force_sync = force_sync === true;
                 if (force_sync || vm.auto_update) {
                     applyUpdates(posts._items);
+                    computeLatestUpdateDate(posts._items);
                 }
                 return posts;
             });
@@ -244,6 +244,7 @@
             pagesManager: new PagesManager(),
             posts_meta: {},
             updates_available: 0,
+            latest_update_date: undefined,
             fetchPage: fetchPage,
             retrieveUpdate: retrieveUpdate
         });
@@ -251,10 +252,15 @@
         Blogs.get().$promise.then(function(blog) {
             vm.blog = blog;
         });
+        // retrieve updates before first page to compute the latest update date
+        retrieveUpdate().then(function(posts){
+            computeLatestUpdateDate(posts._items);
         // retrieve first page of posts
-        fetchPage();
-        // retrieve update periodically
-        $interval(retrieveUpdate, 2000);
+        }).then(fetchPage)
+        .then(function() {
+            // retrieve update periodically
+            $interval(retrieveUpdate, 2000);
+        });
     }
 
     angular.module('liveblog-embed', ['ngResource', 'ngSanitize' ,'ngAnimate'])
