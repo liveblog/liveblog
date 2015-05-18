@@ -12,7 +12,7 @@ describe('blogs', function() {
         {title: 'title: end to end closed', description: 'description: end to end closed', username: 'first name last name'}
     ], searchs = [
         {blogs: [0, 1, 2], search: 'title'},
-        {blogs: [2], search: 'One'},
+        {blogs: [0], search: 'thre'},
         {blogs: [0, 1, 2], search: 'to'}
     ], newBlog = {
         title: 'new blog title',

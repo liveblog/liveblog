@@ -62,30 +62,17 @@
                     max_results: $scope.maxResults,
                     embedded: {'original_creator': 1},
                     sort: '[("versioncreated", -1)]',
-                    q: $scope.activeState.code
+                    source: {
+                        query: {filtered: {filter: {term: {blog_status: $scope.activeState.code}}}}
+                    }
                 };
             if (params.q) {
-                // create a dsl query (for elastic search)
-                // see: http://www.elasticsearch.org/guide/en/elasticsearch/guide/current/combining-filters.html
-                var should = [];
-                var terms_to_search = params.q.toLowerCase().split(' ');
-                // fields we want to check
-                ['description', 'title'].forEach(function(search_in) {
-                    var must = [];
-                    // terms we want to search
-                    terms_to_search.forEach(function(term) {
-                        var t = {};
-                        t[search_in] = term;
-                        must.push({term: t});
-                    });
-                    should.push({
-                        'bool': {'must': must}
-                    });
-                });
-                // add a `filter` attribute to filter from the given keywords
-                criteria.filter = JSON.stringify({
-                    'bool': {'should': should}
-                });
+                criteria.source.query.filtered.query = {
+                    query_string: {
+                        query: '*' + params.q + '*',
+                        fields: ['title', 'description']
+                    }
+                };
             }
             if (params.page) {
                 criteria.page = parseInt(params.page, 10);
