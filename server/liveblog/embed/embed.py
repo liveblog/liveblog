@@ -16,7 +16,9 @@ from flask.ext.assets import Environment, Bundle
 # assets with Flask-assets
 assets = Environment(app)
 js_files = [
-    'embed_liveblog/scripts/liveblog-embed/main.js'
+    'embed_liveblog/scripts/liveblog-embed/main.js',
+    'embed_liveblog/scripts/liveblog-embed/resources.service.js',
+    'embed_liveblog/scripts/liveblog-embed/pages-manager.service.js'
 ]
 js = Bundle(*js_files, output='gen/lb-embed.js')
 assets.register('js_embed', js)

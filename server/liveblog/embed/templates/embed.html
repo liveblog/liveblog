@@ -17,7 +17,7 @@
                 [[ timeline.blog.title ]]
                 <small>
                     [[ timeline.blog.description ]]
-                    <span class="badge">[[ timeline.posts_meta.total ]] posts</span>
+                    <span class="badge">[[ timeline.pagesManager.meta.total ]] posts</span>
                 </small>
             </h1>
             <a  ng-click="timeline.retrieveUpdate(true)"
@@ -37,7 +37,7 @@
                 </li>
             </ul>
             <div class="text-center">
-                <a  ng-click="timeline.fetchPage()"
+                <a  ng-click="timeline.pagesManager.fetchPage()"
                     class="btn btn-default">Load more posts</a>
             </div>
         </div>

@@ -79,7 +79,7 @@ class ClientBlogPostsResource(BlogPostsResource):
     schema = PostsResource.schema
     datasource = {
         'source': 'archive',
-        'elastic_filter': {'and': [{'term': {'post_status': 'open'}}, {'term': {'particular_type': 'post'}}]},
+        'elastic_filter': {'and': [{'term': {'particular_type': 'post'}}]},
         'default_sort': [('order', -1)]
     }
     public_methods = ['GET']
