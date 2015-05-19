@@ -386,3 +386,6 @@ Feature: Post operations
         When we get "/blogs/#blogs._id#/posts"
         Then we get list with 2 items
         """
+        {"_items": [{"headline": "first post", "blog": "#blogs._id#", "post_status": "open"},
+        			   {"headline": "second post", "blog": "#blogs._id#", "post_status": "open"}]}
+        """
