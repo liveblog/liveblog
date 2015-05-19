@@ -8,6 +8,7 @@ from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
 from apps.content import LINKED_IN_PACKAGES
 from superdesk.celery_app import update_key
+import flask
 
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
@@ -28,6 +29,19 @@ class PostsVersionsService(BaseService):
         if req is None:
             req = ParsedRequest()
         return self.backend.get('archive_versions', req=req, lookup=lookup)
+
+
+def private_draft_filter():
+    """Filter out users private drafts.
+    As private we treat items where user is creator
+    """
+    user = getattr(flask.g, 'user', None)
+    if user:
+        private_filter = {'should': [
+            {'term': {'post_status': 'open'}},
+            {'term': {'original_creator': str(user['_id'])}},
+        ]}
+    return {'bool': private_filter}
 
 
 class PostsResource(ArchiveResource):
@@ -115,6 +129,7 @@ class BlogPostsResource(Resource):
     schema = PostsResource.schema
     datasource = {
         'source': 'archive',
+        'elastic_filter_callback': private_draft_filter,
         'elastic_filter': {'term': {'particular_type': 'post'}},
         'default_sort': DEFAULT_POSTS_ORDER
     }
