@@ -203,7 +203,6 @@ define([
             blogPreferences: angular.copy(blog.blog_preferences),
             availableLanguages: [],
             original_creator: {},
-            lastOwnerId: false,
             availableThemes: [],
             isSaved: true,
             save: function() {
@@ -232,8 +231,8 @@ define([
             },
             buildOwner: function(userID) {
                 api('users').getById(userID).then(function(data) {
-                    vm.original_creator = data;
-                    vm.lastOwnerId = userID;
+                    vm.temp_chosen = vm.original_creator = data;
+
                 });
             }
         });
