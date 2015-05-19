@@ -52,8 +52,8 @@ define([
             };
         })
         .directive('lbPostsList', [
-            'postsService', 'notify', '$q', '$timeout',
-            function(postsService, notify, $q, $timeout) {
+            'postsService', 'notify', '$q', '$timeout', 'session',
+            function(postsService, notify, $q, $timeout, session) {
 
                 LbPostsListCtrl.$inject = ['$scope'];
                 function LbPostsListCtrl($scope) {
@@ -114,11 +114,27 @@ define([
                     $q.when(fetchPage()).then(function () {
                         // auto-update: bind events sent from backend and do the appropriated operation (a,b,c,d)
                         $scope.$on('posts', function(e, event_params) {
+                            var post_index = getPostIndex(event_params.post_id);
                             if (event_params.deleted) {
-                                var post_index = getPostIndex(event_params.post_id);
                                 if (post_index > -1) {
-                                    // a) removed
+                                    // a.1) removed
                                     vm.posts.splice(post_index, 1);
+                                }
+                            } else if (event_params.drafted) {
+                                if (vm.status === 'draft') {
+                                    if (post_index < 0) {
+                                        console.log(event_params.author_id, session);
+                                        if (event_params.author_id === session.identity._id) {
+                                            postsService.retrievePost(event_params.post_id).then(function(data) {
+                                                console.log('up', data);
+                                                vm.posts.push(data);
+                                            });
+                                        }
+                                    }
+                                } else {
+                                    if (post_index > -1) {
+                                        vm.posts.splice(post_index, 1);
+                                    }
                                 }
                             } else {
                                 // retrieve lastest updates from database

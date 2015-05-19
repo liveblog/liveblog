@@ -13,6 +13,19 @@ import flask
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
 
+def private_draft_filter():
+    """Filter out users private drafts.
+    As private we treat items where user is creator
+    """
+    user = getattr(flask.g, 'user', None)
+    if user:
+        private_filter = {'should': [
+            {'term': {'post_status': 'open'}},
+            {'term': {'original_creator': str(user['_id'])}},
+        ]}
+    return {'bool': private_filter}
+
+
 class PostsVersionsResource(ArchiveVersionsResource):
     """
     Resource class for versions of archive_media
@@ -31,22 +44,10 @@ class PostsVersionsService(BaseService):
         return self.backend.get('archive_versions', req=req, lookup=lookup)
 
 
-def private_draft_filter():
-    """Filter out users private drafts.
-    As private we treat items where user is creator
-    """
-    user = getattr(flask.g, 'user', None)
-    if user:
-        private_filter = {'should': [
-            {'term': {'post_status': 'open'}},
-            {'term': {'original_creator': str(user['_id'])}},
-        ]}
-    return {'bool': private_filter}
-
-
 class PostsResource(ArchiveResource):
     datasource = {
         'source': 'archive',
+        'elastic_filter_callback': private_draft_filter,
         'elastic_filter': {'term': {'particular_type': 'post'}},
         'default_sort': DEFAULT_POSTS_ORDER
     }
@@ -79,11 +80,16 @@ class PostsResource(ArchiveResource):
 
 
 class PostsService(ArchiveService):
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        docs = super().get(req, lookup)
-        return docs
+    def find_one(self, req, **lookup):
+        doc = super().find_one(req, **lookup)
+        try:
+            for assoc in self.packageService._get_associations(doc):
+                if assoc.get('residRef'):
+                    item = get_resource_service('archive').find_one(req=None, _id=assoc['residRef'])
+                    assoc['item'] = item
+        except Exception:
+            pass
+        return doc
 
     def get_next_order_sequence(self):
         return update_key('post_order_sequence', True)
@@ -108,6 +114,9 @@ class PostsService(ArchiveService):
         super().on_updated(updates, original)
         if updates.get('deleted', False):
             push_notification('posts', deleted=True, post_id=original.get('_id'))
+        elif updates.get('post_status') == 'draft':
+            push_notification('posts', drafted=True, post_id=original.get('_id'),
+                              author_id=original.get('original_creator'))
         else:
             push_notification('posts', updated=True)
 

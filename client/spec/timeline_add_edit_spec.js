@@ -81,7 +81,7 @@ describe('timeline add to top and edit', function() {
             });
         });
     });
-    it('can unpublish a post', function() {
+    it('can unpublish your own post', function() {
 
         function getFirstPost(column) {
             return element(by.css('.column-' + column))
@@ -102,7 +102,17 @@ describe('timeline add to top and edit', function() {
                 });
         }
 
+        function publishPost() {
+            var randomText = randomString(10);
+            //type the random text
+            element(by.css('[class="st-required st-text-block"]')).sendKeys(randomText);
+            //click the publish button
+            element(by.css('[ng-click="publish()"]')).click();
+        }
+
         openBlog(2);
+        publishPost();
+        publishPost();
         // open draft posts panel
         element(by.css('[ng-click="toggleDraftPanel()"]')).click();
         unpublishAndTest();
