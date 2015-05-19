@@ -96,6 +96,7 @@ class PostsService(ArchiveService):
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
         try:
+            # include items in the response
             for assoc in self.packageService._get_associations(doc):
                 if assoc.get('residRef'):
                     item = get_resource_service('archive').find_one(req=None, _id=assoc['residRef'])
