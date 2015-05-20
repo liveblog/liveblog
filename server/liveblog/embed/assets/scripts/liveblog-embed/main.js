@@ -7,15 +7,10 @@
         var vm = this;
 
         function retrieveUpdate(force_sync) {
-            return vm.pagesManager.retrieveUpdate().then(function(posts) {
+            force_sync = vm.auto_update || force_sync === true;
+            return vm.pagesManager.retrieveUpdate(force_sync).then(function(posts) {
                 // save updates meta data
                 vm.updates_available = posts._meta.total;
-                // process the sync operation
-                force_sync = force_sync === true;
-                if (force_sync || vm.auto_update) {
-                    vm.pagesManager.applyUpdates(posts._items);
-                }
-                return posts;
             });
         }
 
@@ -31,12 +26,8 @@
         blogs.get().$promise.then(function(blog) {
             vm.blog = blog;
         });
-        // retrieve updates just to know the latest date
-        vm.pagesManager.retrieveUpdate().then(function(updates) {
-            vm.pagesManager.updateLatestDates(updates._items);
-        })
         // retrieve first page
-        .then(vm.pagesManager.fetchNewPage)
+        vm.pagesManager.fetchNewPage()
         // retrieve updates periodically
         .then(function() {
             $interval(retrieveUpdate, 2000);
