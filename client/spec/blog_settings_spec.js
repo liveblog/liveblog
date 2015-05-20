@@ -1,7 +1,6 @@
 var utils = require('./helpers/utils'),
     login = utils.login,
     expectBlog = utils.expectBlog,
-    expectBlogsLength = utils.expectBlogsLength,
     openBlog = utils.openBlog;
 
 describe('Blog settings', function() {
@@ -40,7 +39,7 @@ describe('Blog settings', function() {
         inputDescription.sendKeys(blog.description);
         element(by.css('[ng-click="settings.save()"]')).click();
         element(by.css('[href="/#/liveblog"]')).click();
-        expectBlog(blog)
+        expectBlog(blog);
     });
 
     it('shows the default language selected', function() {

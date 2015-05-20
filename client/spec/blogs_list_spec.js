@@ -4,8 +4,6 @@ var utils = require('./helpers/utils'),
     expectBlogsLength = utils.expectBlogsLength,
     openBlog = utils.openBlog;
 
-var lodash = require('lodash');
-
 describe('blogs', function() {
     'use strict';
     var blogs = [
