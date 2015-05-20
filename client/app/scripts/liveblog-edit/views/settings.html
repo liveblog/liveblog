@@ -25,7 +25,7 @@
                 <li ng-class="{active: settings.generalTab}">
                     <a ng-href="" ng-click="settings.generalTab = true">General</a>
                 </li>
-                <li ng-class="{active: !settings.generalTab}" data="blog-settings-users">
+                <li ng-class="{active: !settings.generalTab}" data="blog-settings-team">
                     <a ng-href="" ng-click="settings.generalTab = false">Team</a>
                 </li>
             </ul>
@@ -77,8 +77,8 @@
                                 <h3 translate>Owner</h3>
                             </div>
                             <div class="subsettings-content">
-                                <div style="display: inline-block; width: 300px">
-                                    <div class="inline-content" style="padding-right:20px">
+                                <div class="inline-content first-block">
+                                    <div class="inline-content padded-right">
                                         <div class="form-input profile-pic">
                                              <figure class="avatar">
                                                 <img data-src="settings.original_creator.user.picture_url">
@@ -94,7 +94,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div style="display: inline">
+                                <div class="inline-content">
                                     <div class="inline-content">
                                         <button class="btn btn-info" type="button" translate ng-click="settings.open = !settings.open">Change Owner</button>
                                     </div>
