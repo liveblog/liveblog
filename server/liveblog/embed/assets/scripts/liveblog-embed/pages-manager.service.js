@@ -8,7 +8,7 @@
 
             var self = this;
 
-            function retrievePage(page) {
+            function retrievePage(page, max_results) {
 
                 // request parameters
                 var posts_criteria = {
@@ -17,7 +17,7 @@
                         sort: [{order: {order: 'desc', missing:'_last', unmapped_type: 'long'}}]
                     },
                     page: page,
-                    max_results: self.max_results
+                    max_results: max_results || self.max_results
                 };
                 return postsService.get(posts_criteria).$promise.then(function(posts) {
                     // update posts meta data
@@ -27,20 +27,10 @@
             }
 
             /**
-             * Fetch a page of posts and add this page to the pages manager.
-             * @param {interger} page_index - the page index
+             * Fetch a new page of posts and add this page to the pages manager.
              */
-            function fetchPage(page_index) {
-                // resync
-                return self.reloadPageFrom(0)
-                // load the new page
-                .finally(function () {
-                    page_index = page_index || Math.floor(self.count() / self.max_results) + 1;
-                    return retrievePage(page_index).then(function(posts) {
-                        // add post to the manager
-                        self.addPost(posts._items);
-                    });
-                });
+            function fetchNewPage() {
+                return self.reloadPagesFrom(0, self.pages.length + 1);
             }
 
             function retrieveUpdate() {
@@ -128,7 +118,6 @@
 
             /**
              * Add the given page to the Page Manager
-             * and update the latest updated date
              */
             function addPage(page) {
                 self.pages.push(page);
@@ -162,31 +151,22 @@
                  */
                 latest_updated_date: undefined,
                 /**
-                 * Fetch a new page of posts and add this page to the pages manager.
+                 * Fetch a new page of posts
                  */
-                fetchPage: fetchPage,
+                fetchNewPage: fetchNewPage,
                 /**
                  * Return the latest available updates
                  */
                 retrieveUpdate: retrieveUpdate,
                 applyUpdates: applyUpdates,
                 /**
-                 * Resynchronize the content of the given page
-                 */
-                reloadPage: function(page_index) {
-                    return retrievePage(page_index + 1).then(function(posts) {
-                        self.pages[page_index].posts = posts._items;
-                    });
-                },
-                /**
                  * Resynchronize the content of the given page and the following ones
                  */
-                reloadPageFrom: function(page_index) {
-                    var promises = [];
-                    for (page_index; page_index < self.pages.length; page_index++) {
-                        promises.push(self.reloadPage(page_index));
-                    }
-                    return $q.all(promises);
+                reloadPagesFrom: function(page_index, to) {
+                    to = to || self.pages.length;
+                    return retrievePage(1, to * self.max_results).then(function(posts) {
+                        createPagesWithPosts(posts._items);
+                    });
                 },
                 getPostPageIndexes: function(post_to_find){
                     var page;

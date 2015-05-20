@@ -36,7 +36,7 @@
             vm.pagesManager.updateLatestDates(updates._items);
         })
         // retrieve first page
-        .then(vm.pagesManager.fetchPage)
+        .then(vm.pagesManager.fetchNewPage)
         // retrieve updates periodically
         .then(function() {
             $interval(retrieveUpdate, 2000);
