@@ -73,7 +73,7 @@
                     </div>
                      <div class="content">
                         <div class="settings-subsection">
-                            <div style="color: #666; font-weight: 400; border-bottom: 1px solid #e0e0e0;">
+                            <div class="subsettings-header">
                                 <h3 translate>Owner</h3>
                             </div>
                             <div class="subsettings-content">
@@ -104,10 +104,10 @@
                                                 <div>
                                                     <form>
                                                         <label for="assignee-search" translate>Chose new owner</label>
-                                                        <input type="text" name="assignee-search" ng-model="settings.search" class="input-large searchbox">
+                                                        <input type="text" name="assignee-search" ng-model="settings.search">
                                                     </form>
                                                     <div class="search-result">
-                                                        <ul class="users-list-embed" style="max-height: 136px; overflow: auto;">
+                                                        <ul class="users-list-embed">
                                                             <li ng-repeat="user in settings.avUsers | filter:settings.search" ng-click="settings.temp_chosen = user" ng-class="{'active': settings.temp_chosen._id === user._id}">
                                                                 <figure class="avatar small"><img data-src="user.picture_url"></figure>
                                                                 <div class="name">{{user.display_name}}</div>
@@ -118,7 +118,7 @@
                                             </div>
                                             <div class="footer">
                                                 <span class="clear pull-left" ng-click="settings.search = null" ng-show="settings.search" translate>Clear</span>
-                                                <button class="btn btn-info pull-right" ng-click="settings.buildOwner(settings.temp_chosen._id); settings.open = false; $event.stopPropagation();" ng-disabled="!settings.temp_chosen" translate>Assign</button>
+                                                <button class="btn btn-info pull-right" ng-click="settings.buildOwner(settings.temp_chosen._id); settings.open = false; $event.stopPropagation();" ng-disabled="!settings.temp_chosen" translate>Select</button>
                                                 <button class="btn pull-right" ng-click="settings.open = false;  $event.stopPropagation();" translate>Cancel</button>
                                             </div>
                                         </div>
