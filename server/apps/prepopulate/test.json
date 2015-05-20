@@ -25,7 +25,7 @@
 },
 {
     "resource": "languages",
-    "id_name": "-id user admin-",
+    "id_name": "-id language de-",
     "data": {
         "language_code": "de",
         "name": "Deutch"
@@ -33,7 +33,7 @@
 },
 {
     "resource": "languages",
-    "id_name": "-id user admin-",
+    "id_name": "-id language en-",
     "data": {
         "language_code": "en",
         "name": "English"
@@ -41,21 +41,21 @@
 },
 {
     "resource": "themes",
-    "id_name": "-id user admin-",
+    "id_name": "-id theme forest-",
     "data": {
         "name": "forest"
     }
 },
 {
     "resource": "themes",
-    "id_name": "-id user admin-",
+    "id_name": "-id theme ocean-",
     "data": {
         "name": "ocean"
     }
 },
 {
     "resource": "languages",
-    "id_name": "-id user admin-",
+    "id_name": "-id language fr-",
     "data": {
         "language_code": "fr",
         "name": "Français"
