@@ -194,8 +194,8 @@ define([
         });
     }
 
-    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify', 'gettext'];
-    function BlogSettingsController($scope, blog, api, blogService, $location, notify, gettext) {
+    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify', 'gettext', 'config'];
+    function BlogSettingsController($scope, blog, api, blogService, $location, notify, gettext, config) {
         // set view's model
         var vm = this;
         angular.extend(vm, {
@@ -206,6 +206,7 @@ define([
             lastOwnerId: false,
             availableThemes: [],
             isSaved: true,
+            iframe_url: config.server.url.replace('/api', '/embed/' + blog._id),
             save: function() {
                 // save on backend and clsoe
                 notify.info(gettext('saving blog settings'));
@@ -257,10 +258,6 @@ define([
             vm.isSaved = _.isEqual(vm.blogPreferences, vm.blog.blog_preferences) &&
             (!vm.original_creator._id || _.isEqual(vm.original_creator._id, vm.blog.original_creator));
         }, true);
-        _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
-        var compiled = _.template(_.trim(angular.element('#liveblog-embed-template').html()));
-        /*globals config */
-        vm.embedCode = compiled({'rest': config.server.url, 'frontend': window.location.origin, id: vm.blog._id});
     }
 
     /**

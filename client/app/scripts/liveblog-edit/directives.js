@@ -353,11 +353,6 @@ define([
                     });
                 }
             };
-        }]).directive('lbBlogSettings', [function() {
-            return {
-                restrict: 'E',
-                templateUrl: 'scripts/liveblog-edit/views/settings.html'
-            };
         }]);
 });
 
