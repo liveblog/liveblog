@@ -101,7 +101,7 @@ describe('blogs', function() {
         it('should archive a blog', function() {
             //open first blog
             openBlog(0);
-            element(by.buttonText('Archive Blog')).click();
+            element(by.buttonText('ARCHIVE BLOG')).click();
             //click on back to liveblog list
             element(by.css('[class="icon-th-large"]')).click();
             //go to archive blogs
@@ -114,7 +114,7 @@ describe('blogs', function() {
             element(by.repeater('state in states').row(1).column('state.text')).click();
             //open first blog
             openBlog(0);
-            element(by.buttonText('Activate Blog')).click();
+            element(by.buttonText('ACTIVATE BLOG')).click();
             //click on back to liveblog list
             element(by.css('[class="icon-th-large"]')).click();
             //click to go to active blogs
@@ -131,7 +131,7 @@ describe('blogs', function() {
             browser.wait(element(by.model('newBlog.title')).isDisplayed);
             element(by.model('newBlog.title')).sendKeys(newBlog.title);
             element(by.model('newBlog.description')).sendKeys(newBlog.description);
-            element(by.buttonText('Create')).click();
+            element(by.buttonText('CREATE')).click();
             expectBlog(newBlog);
         });
     });
