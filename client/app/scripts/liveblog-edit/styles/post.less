@@ -3,9 +3,10 @@
 
 .lb-post {
     &__holder {
-        display:block;
+        display:block;        
+        padding: 20px 20px 8px 20px;
         background-color: white;
-        padding: 20px 20px 0px 20px;
+        .border-radius(3px);
     }
     &__content {margin-left: 45px;}
     &__header {
@@ -49,11 +50,12 @@
     }
     &__expander {
         &-holder {
-            height: 1px;
-            background-color: #ebebeb;
+            height: 25px;
+            border-top: 1px solid #ebebeb;
             text-align: center;
-            margin-bottom:15px;
             display: block;
+            background-color: white;
+            .border-radius(0 0 3px 3px);
         }
         &-single-item {
             position: relative;
@@ -84,23 +86,30 @@
         }
         &-multiple-items-roundel-text {
             position: absolute;
-            margin-left: 6px; top: -2px;
-            color: #f6f6f6
+            top: -2px;
+            left: 0;
+            width: 26px;
+            text-align: center;
+            color: #f6f6f6;
+            font-size: 11px;
+            font-weight: 600;
         }
         &-multiple-items-roundel-label {
             color: #ababab;
             position: absolute;
             margin-top: -2px;
-            display: inline-block
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 600;
         }
     }
     &__collapser-multiple-items {
         position: relative;
         top: -0.5em;
-        width: 21px;
-        height: 14px;
+        width: 22px;
+        height: 15px;
         background-image: url('../../images/timeline-collapse.png');
-        right: 80px;
+        right: 86px;
         float: right;
     }
     &__item {
