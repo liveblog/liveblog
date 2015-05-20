@@ -92,5 +92,14 @@ describe('Blog settings', function() {
             expect(text).toEqual('test_user');
         });
     });
-
+    it('changes blog ownership', function() {
+        openBlog(0);
+        openSettings();
+        element(by.css('[data="blog-settings-users"]')).click();
+        element(by.model('settings.original_creator._id')).sendKeys('admin');
+        element(by.css('[ng-click="settings.save()"]')).click();
+        openSettings();
+        element(by.css('[data="blog-settings-users"]')).click();
+        expect(element(by.model('settings.original_creator._id')).$('option:checked').getText()).toEqual('admin');
+    });
 });
