@@ -20,11 +20,10 @@ js_files = [
     'embed_liveblog/scripts/liveblog-embed/resources.service.js',
     'embed_liveblog/scripts/liveblog-embed/pages-manager.service.js'
 ]
-js = Bundle(*js_files, output='gen/lb-embed.js')
+js = Bundle(*js_files, output='gen/lb-embed.js', filters="jsmin")
 assets.register('js_embed', js)
-
+# blueprint for flask
 bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates', static_folder='assets')
-superdesk.blueprint(bp)
 
 
 @bp.route('/embed/<blog_id>')

@@ -38,6 +38,7 @@ python3-ldap==0.9.5.4
 behave==1.2.5
 wooper==0.4.1
 Flask-Assets==0.10
+jsmin==2.1.1
 
 git+git://github.com/superdesk/eve@20e42d4#egg=Eve==0.6-dev
 git+git://github.com/amagdas/tinys3@list-buckets#egg=tinys3

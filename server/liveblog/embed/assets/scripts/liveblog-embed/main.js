@@ -44,10 +44,10 @@
     }
 
     angular.module('liveblog-embed', ['ngResource', 'ngSanitize' ,'ngAnimate'])
-        .controller('timelineCtrl', TimelineCtrl)
         .config(['$interpolateProvider', function($interpolateProvider) {
             // change the template tag symbols
             $interpolateProvider.startSymbol('[[').endSymbol(']]');
-        }]);
+        }])
+        .controller('timelineCtrl', TimelineCtrl);
 
 })(angular);
