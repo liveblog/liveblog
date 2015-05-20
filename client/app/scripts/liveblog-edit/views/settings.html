@@ -108,7 +108,7 @@
                                                     </form>
                                                     <div class="search-result">
                                                         <ul class="users-list-embed">
-                                                            <li ng-repeat="user in settings.avUsers | filter:settings.search" ng-click="settings.temp_chosen = user" ng-class="{'active': settings.temp_chosen._id === user._id}">
+                                                            <li ng-repeat="user in settings.avUsers | filter:settings.search" ng-click="settings.temp_selected_owner = user" ng-class="{'active': settings.temp_selected_owner._id === user._id}">
                                                                 <figure class="avatar small"><img data-src="user.picture_url"></figure>
                                                                 <div class="name">{{user.display_name}}</div>
                                                             </li>
@@ -118,7 +118,7 @@
                                             </div>
                                             <div class="footer">
                                                 <span class="clear pull-left" ng-click="settings.search = null" ng-show="settings.search" translate>Clear</span>
-                                                <button class="btn btn-info pull-right" ng-click="settings.buildOwner(settings.temp_chosen._id); settings.open = false; $event.stopPropagation();" ng-disabled="!settings.temp_chosen" translate>Select</button>
+                                                <button class="btn btn-info pull-right" ng-click="settings.buildOwner(settings.temp_selected_owner._id); settings.open = false; $event.stopPropagation();" ng-disabled="!settings.temp_selected_owner" translate>Select</button>
                                                 <button class="btn pull-right" ng-click="settings.open = false;  $event.stopPropagation();" translate>Cancel</button>
                                             </div>
                                         </div>

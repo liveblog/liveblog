@@ -231,8 +231,9 @@ define([
             },
             buildOwner: function(userID) {
                 api('users').getById(userID).then(function(data) {
-                    vm.temp_chosen = vm.original_creator = data;
-
+                    //temp_selected_owner is used handle the selection of users in the change owner autocomplete box
+                    //without automatically changing the owner that is displayed
+                    vm.temp_selected_owner = vm.original_creator = data;
                 });
             }
         });
