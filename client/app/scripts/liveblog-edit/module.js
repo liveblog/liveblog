@@ -195,6 +195,14 @@ define([
             lastOwnerId: false,
             availableThemes: [],
             isSaved: true,
+            forms: {},
+            tab: false,
+            changeTab: function(tab) {
+                if (vm.tab) {
+                    vm.forms.$dirty = vm.forms.$dirty || vm.forms[vm.tab].$dirty;
+                }
+                vm.tab = tab;
+            },
             save: function() {
                 // save on backend and clsoe
                 notify.info(gettext('saving blog settings'));
