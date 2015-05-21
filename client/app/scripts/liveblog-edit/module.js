@@ -203,7 +203,6 @@ define([
             blogPreferences: angular.copy(blog.blog_preferences),
             availableLanguages: [],
             original_creator: {},
-            lastOwnerId: false,
             availableThemes: [],
             isSaved: true,
             save: function() {
@@ -232,8 +231,9 @@ define([
             },
             buildOwner: function(userID) {
                 api('users').getById(userID).then(function(data) {
-                    vm.original_creator = data;
-                    vm.lastOwnerId = userID;
+                    //temp_selected_owner is used handle the selection of users in the change owner autocomplete box
+                    //without automatically changing the owner that is displayed
+                    vm.temp_selected_owner = vm.original_creator = data;
                 });
             }
         });
