@@ -21,7 +21,7 @@ describe('timeline add to top and edit', function() {
         var randomText = publishPost();
         //go and check the timeline
         element(by.css('.column-timeline')).all(by.repeater('post in posts')).then(function(posts) {
-            var textElement = posts[0].element(by.css('span[medium-editable]'));
+            var textElement = posts[0].element(by.css('div[medium-editable]'));
             //first element should have the new entered value
             textElement.getText().then(function(text) {
                 expect(text).toEqual(randomText);
@@ -62,7 +62,7 @@ describe('timeline add to top and edit', function() {
                     posts[0].element(by.css('.lb-post__expander-holder')).click();
                 }
             });
-            var textElement = posts[0].element(by.css('span[medium-editable]'));
+            var textElement = posts[0].element(by.css('div[medium-editable]'));
             //add some text
             textElement.sendKeys(randomText);
             //click the save button
@@ -80,7 +80,7 @@ describe('timeline add to top and edit', function() {
                             posts[0].element(by.css('.lb-post__expander-holder')).click();
                         }
                     });
-                    var textElement = posts[0].element(by.css('span[medium-editable]'));
+                    var textElement = posts[0].element(by.css('div[medium-editable]'));
                     textElement.getText().then(function(text) {
                         //first element should have the new edited value
                         expect(text).toEqual(editedText);
