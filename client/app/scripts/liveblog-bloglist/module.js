@@ -184,7 +184,7 @@
                 progressWidth: '='
             },
             link: function(scope, elem) {
-
+                //@TODO: remove this unecesary method after fix from Petr Jasek
                 var updateScope = _.throttle(function(c) {
                     scope.$apply(function() {
                         scope.cords = c;
@@ -208,6 +208,7 @@
                                 return;
                             }
                             elem.append(img);
+                            //@TODO: remove this unecesary calls after fix from Petr Jasek
                             updateScope({});
                             updateScope({});
                             scope.progressWidth = 0;
