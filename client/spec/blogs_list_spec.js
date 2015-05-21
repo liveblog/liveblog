@@ -1,6 +1,8 @@
-var login = require('./helpers/utils').login;
-var openBlog = require('./helpers/utils').openBlog;
-var lodash = require('lodash');
+var utils = require('./helpers/utils'),
+    login = utils.login,
+    expectBlog = utils.expectBlog,
+    expectBlogsLength = utils.expectBlogsLength,
+    openBlog = utils.openBlog;
 
 describe('blogs', function() {
     'use strict';
@@ -75,28 +77,6 @@ describe('blogs', function() {
         });
     });
 
-    describe('change title and description for blog', function() {
-        it('should modify title and description for blog', function() {
-            var blog = lodash.clone(blogs[0]);
-            //open first blog
-            openBlog(0);
-            element(by.buttonText('Blog details')).click();
-            //modifying the title
-            blog.title = 'ABC';
-            var inputTitle = element(by.model('oldBlog.title'));
-            inputTitle.clear();
-            inputTitle.sendKeys('ABC');
-            //modifying the description
-            blog.description = 'test description ABC';
-            var inputDescription = element(by.model('oldBlog.description'));
-            inputDescription.clear();
-            inputDescription.sendKeys('test description ABC');
-            //click back to liveblog list
-            element(by.css('[class="icon-th-large"]')).click();
-            expectBlog(blog);
-        });
-    });
-
     describe('archive and activate a blog', function() {
         it('should archive a blog', function() {
             //open first blog
@@ -136,18 +116,4 @@ describe('blogs', function() {
         });
     });
 
-    function expectBlogsLength(len) {
-        expect(element.all(by.repeater('blog in blogs._items')).count()).toEqual(len);
-    }
-    function expectBlog(blog, index) {
-        index = index || 0;
-        expect(element(by.repeater('blog in blogs._items').row(index).column('blog.title')).getText()).toBe(blog.title);
-        expect(element(by.repeater('blog in blogs._items').row(index).column('blog.description')).getText()).toBe(blog.description);
-        expect(element(
-            by.repeater('blog in blogs._items')
-                .row(index)
-                .column('blog.original_creator | username'))
-                .getText())
-        .toBe(blog.username);
-    }
 });

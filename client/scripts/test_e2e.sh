@@ -11,9 +11,9 @@ for arg; do
 done
 
 # prepare server
-# grunt build --server='${baseUrl}'
-# grunt connect:build &
-# sleep 1
+grunt build --server=${backendUrl}
+grunt connect:build &
+sleep 1
 
 # run tests
 ./node_modules/protractor/bin/webdriver-manager update

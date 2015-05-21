@@ -12,33 +12,54 @@
     </div>
 </div>
 
-<div class="blog-settings-view" ng-init="settings.generalTab = true">
+<div class="blog-settings-view" ng-init="settings.changeTab('general')">
     <div class="settings-page">
         <div class="subnav">
             <h3 class="page-nav-title">Settings</h3>
-            <button ng-click="settings.save()"  class="btn btn-info pull-right"    type="button" translate ng-disabled="settings.isSaved">Save</button>
+            <button ng-click="settings.save()"  class="btn btn-info pull-right"    type="button" translate ng-disabled="!(settings.forms.$dirty || settings.forms[settings.tab].$dirty)">Save</button>
             <button ng-click="settings.reset()" class="btn btn-default pull-right" type="button" translate>Reset to default</button>
             <button ng-click="settings.close()" class="btn btn-default pull-right" type="button" translate>Cancel</button>
         </div>
         <div class="tabbable outer">
             <ul class="nav-tabs nav-stacked">
-                <li ng-class="{active: settings.generalTab}">
-                    <a ng-href="" ng-click="settings.generalTab = true">General</a>
+                <li ng-class="{active: (settings.tab === 'general')}">
+                    <a ng-href="" ng-click="settings.changeTab('general')">General</a>
                 </li>
-                <li ng-class="{active: !settings.generalTab}" data="blog-settings-users">
-                    <a ng-href="" ng-click="settings.generalTab = false">Users</a>
+                <li ng-class="{active: (settings.tab === 'users')}" data="blog-settings-users">
+                    <a ng-href="" ng-click="settings.changeTab('users')" translate>Users</a>
                 </li>
             </ul>
             <div>
                 <!-- GENERAL -->
-                <div class="tab-content outer" ng-if="settings.generalTab">
+                <div class="tab-content outer" ng-if="(settings.tab === 'general')">
                     <div class="header">
                         <h2 translate>General</h2>
                     </div>
                     <div class="content">
-                        <form class="form-horizontal">
+                        <form class="form-horizontal" name="settings.forms.general">
                             <div class="form-group">
-                                <label for="inputLanguage" class="control-label">Language</label>
+                                <label for="inputTitle" class="control-label" transle>Blog Title</label>
+                                <div class="form-input">
+                                    <input
+                                        name="inputTitle"
+                                        ng-model="settings.newBlog.title"
+                                        class="form-control"
+                                    />
+                                </div>
+                            </div>                        
+                            <div class="form-group">
+                                <label for="inputDescription" class="control-label" transle>Blog Description</label>
+                                <div class="form-input">
+                                    <textarea
+                                        name="inputDescription"
+                                        ng-model="settings.newBlog.description"
+                                        class="form-control"
+                                    ></textarea>
+                                </div>
+                            </div>                        
+
+                            <div class="form-group">
+                                <label for="inputLanguage" class="control-label" transle>Language</label>
                                 <div class="form-input">
                                     <select
                                       ng-model="settings.blogPreferences.language"
@@ -48,7 +69,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="inputTheme" class="control-label">Theme</label>
+                                <label for="inputTheme" class="control-label" transle>Theme</label>
                                 <div class="form-input">
                                     <select
                                       ng-model="settings.blogPreferences.theme"
@@ -58,7 +79,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="inputEmbedCode" class="control-label">Embed code</label>
+                                <label for="inputEmbedCode" class="control-label" transle>Embed code</label>
                                 <div class="form-input">
                                     <textarea class="form-control" readonly="readonly" select-text-on-click>{{settings.embedCode}}</textarea>
                                 </div>
@@ -67,12 +88,12 @@
                     </div>
                 </div>
                 <!-- Users -->
-                <div class="tab-content outer" ng-if="!settings.generalTab">
+                <div class="tab-content outer" ng-if="(settings.tab === 'users')">
                     <div class="header">
                         <h2 translate>Users</h2>
                     </div>
                      <div class="content">
-                        <form class="form-horizontal" name="blog-creator">
+                        <form class="form-horizontal" name="settings.forms.users">
                             <div class="form-group">
                                 <label for="inputLanguage" class="control-label">Image</label>
                                 <div class="form-input profile-pic">
