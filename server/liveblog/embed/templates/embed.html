@@ -22,9 +22,9 @@
                 </small>
             </h1>
             <a  ng-click="timeline.retrieveUpdate(true)"
-                class="btn btn-info">Update <span class="badge">[[ timeline.updates_available ]]</span></a>
+                class="btn btn-info">Update <span class="badge">[[ timeline.updatesAvailable ]]</span></a>
             <label>
-                <input type="checkbox" ng-model="timeline.auto_update"> Auto update
+                <input type="checkbox" ng-model="timeline.autoUpdate"> Auto update
             </label>
             <ul class="list-group">
                 <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item">

@@ -22,7 +22,7 @@
             /**
              * Retrieve the given page of post from the api
              * @param {integer} page - The page index to retrieve (start from 1)
-             * @param {integer} [max_results=self.max_results] - The maximum number of results to retrieve
+             * @param {integer} [max_results=self.maxResults] - The maximum number of results to retrieve
              * @returns {promise}
              */
             function retrievePage(page, max_results) {
@@ -33,7 +33,7 @@
                         sort: [{order: {order: 'desc', missing:'_last', unmapped_type: 'long'}}]
                     },
                     page: page,
-                    max_results: max_results || self.max_results
+                    max_results: max_results || self.maxResults
                 };
                 return postsService.get(posts_criteria).$promise.then(function(data) {
                     // update posts meta data (used to know the total number of posts and pages)
@@ -66,9 +66,8 @@
              */
             function retrieveUpdate(should_apply_updates) {
                 should_apply_updates = should_apply_updates === true;
-                var date = self.latest_updated_date ? self.latest_updated_date.utc().format() : undefined;
+                var date = self.latestUpdatedDate ? self.latestUpdatedDate.utc().format() : undefined;
                 var posts_criteria = {
-                    blogId: window.LB_BLOG_ID,
                     page: 1,
                     source: {
                         sort: [{_updated: {order: 'desc'}}],
@@ -150,12 +149,12 @@
                 var date;
                 posts.forEach(function(post) {
                     date = moment(post._updated);
-                    if (angular.isDefined(self.latest_updated_date)) {
-                        if (self.latest_updated_date.diff(date) < 0) {
-                            self.latest_updated_date = date;
+                    if (angular.isDefined(self.latestUpdatedDate)) {
+                        if (self.latestUpdatedDate.diff(date) < 0) {
+                            self.latestUpdatedDate = date;
                         }
                     } else {
-                        self.latest_updated_date = date;
+                        self.latestUpdatedDate = date;
                     }
                 });
             }
@@ -172,11 +171,11 @@
                 posts.sort(function(a, b) {return a.order < b.order;});
                 var page;
                 posts.forEach(function(post, index) {
-                    if (index % self.max_results === 0) {
+                    if (index % self.maxResults === 0) {
                         page = new Page();
                     }
                     page.addPost(post);
-                    if (page.posts.length === self.max_results) {
+                    if (page.posts.length === self.maxResults) {
                         addPage(page);
                         page = undefined;
                     }
@@ -189,12 +188,12 @@
             /**
              * Resynchronize the content of the given page and the following ones
              * @param {interger} page_index - index of the first page
-             * @param {interger} [to=self.pages.length] - latest wanted page
+             * @param {interger} [to_page=self.pages.length] - latest wanted page
              * @returns {promise}
              */
-            function reloadPagesFrom(page_index, to) {
-                to = to || self.pages.length;
-                return retrievePage(1, to * self.max_results).then(function(posts) {
+            function reloadPagesFrom(page_index, to_page) {
+                to_page = to_page || self.pages.length;
+                return retrievePage(1, to_page * self.maxResults).then(function(posts) {
                     createPagesWithPosts(posts._items);
                 });
             }
@@ -202,7 +201,7 @@
             /**
              * Returns the page index and the post index of the given post in the local pages
              * @param {Post} post_to_find - post to find in the pages
-             * @returns {array} - [page_index, post_index]
+             * @returns {array|undefined} - [page_index, post_index]
              */
             function getPostPageIndexes(post_to_find){
                 var page;
@@ -281,11 +280,11 @@
                 /**
                  * Number of results per page
                  */
-                max_results: max_results,
+                maxResults: max_results,
                 /**
                  * Latest updated date. Used for retrieving updates since this date.
                  */
-                latest_updated_date: undefined,
+                latestUpdatedDate: undefined,
                 /**
                  * Fetch a new page of posts
                  */
