@@ -180,38 +180,19 @@
         return {
             scope: {
                 src: '=',
-                cords: '=',
                 progressWidth: '='
             },
             link: function(scope, elem) {
-                //@TODO: remove this unecesary method after fix from Petr Jasek
-                var updateScope = _.throttle(function(c) {
-                    scope.$apply(function() {
-                        scope.cords = c;
-                    });
-                }, 300);
-
                 scope.$watch('src', function(src) {
                     elem.empty();
                     if (src) {
                         var img = new Image();
                         img.onload = function() {
                             scope.progressWidth = 80;
-                            if (this.width < 200 || this.height < 200) {
-                                scope.$apply(function() {
-                                    notify.pop();
-                                    notify.error(gettext('Sorry, but picture must be at least 200x200 pixels big.'));
-                                    scope.src = null;
-                                    scope.progressWidth = 0;
-                                });
-
-                                return;
-                            }
                             elem.append(img);
-                            //@TODO: remove this unecesary calls after fix from Petr Jasek
-                            updateScope({});
-                            updateScope({});
-                            scope.progressWidth = 0;
+                            scope.$apply(function() {
+                                scope.progressWidth = 0;
+                            });
                         };
                         img.src = src;
                     }

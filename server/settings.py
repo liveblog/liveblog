@@ -153,7 +153,7 @@ RENDITIONS = {
     },
     'avatar': {
         'thumbnail': {'width': 60, 'height': 60},
-        'viewImage': {'width': 200, 'height': 200},
+        'viewImage': {'width': 1024, 'height': 768},
     }
 }
 
