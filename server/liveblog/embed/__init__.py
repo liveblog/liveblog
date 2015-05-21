@@ -10,9 +10,8 @@
 
 """Embed module"""
 
-from .embed import bp as embed_bp
-from .embed import assets as embed_assets
+from .embed import bp as embed_blueprint
 
-__all__ = ['embed_assets', 'embed_bp']
+__all__ = ['embed_blueprint']
 
 # EOF

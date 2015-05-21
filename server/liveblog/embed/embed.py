@@ -10,24 +10,8 @@
 
 """Embed module"""
 import superdesk
-from flask import render_template, request, current_app as app
-from flask.ext.assets import Environment, Bundle
+from flask import render_template, request
 
-# assets with Flask-assets
-assets = Environment(app)
-js_files = [
-    'embed_liveblog/scripts/liveblog-embed/main.js',
-    'embed_liveblog/scripts/liveblog-embed/resources.service.js',
-    'embed_liveblog/scripts/liveblog-embed/pages-manager.service.js'
-]
-css_files = [
-    'embed_liveblog/styles/embed.css'
-]
-js = Bundle(*js_files, output='gen/lb-embed.js', filters="jsmin")
-css = Bundle(*css_files, output='gen/lb-embed.css')
-assets.register('js_embed', js)
-assets.register('css_embed', css)
-# blueprint for flask
 bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates', static_folder='assets')
 
 

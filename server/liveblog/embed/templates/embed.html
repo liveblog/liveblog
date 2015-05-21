@@ -5,7 +5,10 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        {% assets "css_embed" %}
+        {% assets
+            "embed_liveblog/styles/embed.css",
+            output="gen/lb-embed.css"
+        %}
             <link rel="stylesheet" href="{{ ASSET_URL }}">
         {% endassets %}
         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
@@ -54,7 +57,12 @@
             window.LB_API_HOST = '{{ api_host }}';
         </script>
 
-        {% assets "js_embed" %}
+        {% assets
+            "embed_liveblog/scripts/liveblog-embed/main.js",
+            "embed_liveblog/scripts/liveblog-embed/resources.service.js",
+            "embed_liveblog/scripts/liveblog-embed/pages-manager.service.js",
+            output="gen/lb-embed.js", filters="jsmin"
+        %}
             <script type="text/javascript" src="{{ ASSET_URL }}"></script>
         {% endassets %}
 

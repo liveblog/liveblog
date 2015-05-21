@@ -26,6 +26,8 @@ from superdesk.storage.desk_media_storage import SuperdeskGridFSMediaStorage
 from superdesk.validator import SuperdeskValidator
 from raven.contrib.flask import Sentry
 from superdesk.errors import SuperdeskError, SuperdeskApiError
+from liveblog.embed import embed_blueprint
+from flask.ext.assets import Environment
 
 
 logger = logging.getLogger('superdesk')
@@ -109,10 +111,9 @@ def get_app(config=None):
         app.register_blueprint(blueprint, url_prefix=prefix)
 
     # embed feature
-    from liveblog.embed import embed_bp
-    from liveblog.embed import embed_assets
-    app.register_blueprint(embed_bp)
-    embed_assets.init_app(app)
+    app.register_blueprint(embed_blueprint)
+    # flask assets
+    Environment(app)
 
     # we can only put mapping when all resources are registered
     app.data.elastic.put_mapping(app)
