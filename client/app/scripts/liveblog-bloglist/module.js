@@ -1,8 +1,8 @@
 (function() {
     'use strict';
 
-    BlogListController.$inject = ['$scope', '$location', 'api', 'gettext'];
-    function BlogListController($scope, $location, api, gettext) {
+    BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload'];
+    function BlogListController($scope, $location, api, gettext, upload) {
         $scope.maxResults = 25;
 
         $scope.states = [
@@ -20,6 +20,8 @@
         $scope.modalActive = false;
 
         function clearCreateBlogForm() {
+            $scope.preview = {};
+            $scope.progress = {width: 0};
             $scope.newBlog = {
                 title: '',
                 description: ''
@@ -36,16 +38,63 @@
             $scope.newBlogModalActive = true;
         };
 
-        $scope.createBlog = function() {
-            api.blogs.save({title: $scope.newBlog.title, description: $scope.newBlog.description})
+        $scope.makeBlog = function(blog) {
+            return api.blogs.save(blog)
                 .then(function(message) {
                     clearCreateBlogForm();
                     $scope.newBlogModalActive = false;
                     fetchBlogs(getCriteria());
                 }, function(error) {
                     //error handler
-                    $scope.newBlogError = 'Something went wrong. Please try again later';
+                    $scope.newBlogError = gettext('Something went wrong. Please try again later');
                 });
+        };
+
+        $scope.createBlog = function() {
+            if (angular.equals({}, $scope.preview)) {
+               $scope.makeBlog({
+                    title: $scope.newBlog.title,
+                    description: $scope.newBlog.description
+                });
+            } else {
+                $scope.upload($scope.preview).then(function() {
+                   $scope.makeBlog({
+                        title: $scope.newBlog.title,
+                        description: $scope.newBlog.description,
+                        picture_url: $scope.newBlog.picture_url,
+                        picture: $scope.newBlog.picture
+                   });
+                });
+            }
+        };
+
+        $scope.upload = function(config) {
+            var form = {};
+            if (config.img) {
+                form.media = config.img;
+            } else if (config.url) {
+                form.URL = config.url;
+            } else {
+                return;
+            }
+            // return a promise of upload which will call the success/error callback
+            return api.upload.getUrl().then(function(url) {
+                return upload.start({
+                    method: 'POST',
+                    url: url,
+                    data: form
+                })
+                .then(function(response) {
+                    if (response.data._status === 'ERR'){
+                        return;
+                    }
+                    var picture_url = response.data.renditions.viewImage.href;
+                    $scope.newBlog.picture_url = picture_url;
+                    $scope.newBlog.picture = response.data._id;
+                }, null, function(progress) {
+                    $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
+                });
+            });
         };
 
         $scope.remove = function(blog) {
@@ -113,6 +162,29 @@
         return function getUsername(user) {
             return user ? user.display_name || user.username : null;
         };
-    }])
-    ;
+    }]);
+    app.directive('sdPlainImage', ['notify', function(notify) {
+        return {
+            scope: {
+                src: '=',
+                progressWidth: '='
+            },
+            link: function(scope, elem) {
+                scope.$watch('src', function(src) {
+                    elem.empty();
+                    if (src) {
+                        var img = new Image();
+                        img.onload = function() {
+                            scope.progressWidth = 80;
+                            elem.append(img);
+                            scope.$apply(function() {
+                                scope.progressWidth = 0;
+                            });
+                        };
+                        img.src = src;
+                    }
+                });
+            }
+        };
+    }]);
 })();
