@@ -14,7 +14,8 @@
 {
     "resource": "roles",
     "data": {
-        "name": "Editor"
+        "name": "Editor",
+        "id_name": "-id Editor role-"
     }
 },
 {

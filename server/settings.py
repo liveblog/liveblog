@@ -220,3 +220,6 @@ DAYS_TO_KEEP = int(env('INGEST_ARTICLES_TTL', '2'))
 
 WS_HOST = env('WSHOST', '0.0.0.0')
 WS_PORT = env('WSPORT', '5100')
+
+# Defines default value for Source to be set for manually created articles
+DEFAULT_SOURCE_VALUE_FOR_MANUAL_ARTICLES = env('DEFAULT_SOURCE_VALUE_FOR_MANUAL_ARTICLES', 'Liveblog')
