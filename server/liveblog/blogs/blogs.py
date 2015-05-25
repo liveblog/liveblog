@@ -9,6 +9,36 @@ from apps.content import metadata_schema
 from apps.archive.common import generate_guid, GUID_TAG
 from superdesk import get_resource_service
 from superdesk.resource import Resource
+from bson.objectid import ObjectId
+
+blogs_schema = {
+    'guid': metadata_schema['guid'],
+    'title': metadata_schema['headline'],
+    'description': metadata_schema['description'],
+    'language': Resource.rel('languages', True),
+    'theme': Resource.rel('themes', True),
+    'settings': {'type': 'dict'},
+    'picture_url': {
+        'type': 'string',
+    },
+    'picture': Resource.rel('upload', True),
+    'original_creator': metadata_schema['original_creator'],
+    'version_creator': metadata_schema['version_creator'],
+    'versioncreated': metadata_schema['versioncreated'],
+    'blog_status': {
+        'type': 'string',
+        'allowed': ['open', 'closed'],
+        'default': 'open'
+    },
+    'particular_type': {
+        'type': 'string',
+        'allowed': ['blog'],
+        'default': 'blog'
+    },
+    'blog_preferences': {
+        'type': 'dict'
+    }
+}
 
 
 class BlogsVersionsResource(ArchiveVersionsResource):
@@ -36,37 +66,10 @@ class BlogsResource(ArchiveResource):
         'default_sort': [('_updated', -1)]
     }
 
-    schema = {
-        'guid': metadata_schema['guid'],
-        'title': metadata_schema['headline'],
-        'description': metadata_schema['description'],
-        'language': Resource.rel('languages', True),
-        'theme': Resource.rel('themes', True),
-        'settings': {'type': 'dict'},
-        'picture_url': {
-            'type': 'string',
-        },
-        'picture': Resource.rel('upload', True),
-        'original_creator': metadata_schema['original_creator'],
-        'version_creator': metadata_schema['version_creator'],
-        'versioncreated': metadata_schema['versioncreated'],
-        'blog_status': {
-            'type': 'string',
-            'allowed': ['open', 'closed'],
-            'default': 'open'
-        },
-        'particular_type': {
-            'type': 'string',
-            'allowed': ['blog'],
-            'default': 'blog'
-        },
-        'blog_preferences': {
-            'type': 'dict'
-        }
-    }
-
     item_methods = ['GET', 'PATCH', 'PUT', 'DELETE']
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
+
+    schema = blogs_schema
 
 
 class BlogService(ArchiveService):
@@ -101,3 +104,23 @@ class BlogService(ArchiveService):
 
     def on_deleted(self, doc):
         push_notification('blogs', deleted=1)
+
+
+class UserBlogsResource(Resource):
+    url = 'users/<regex("[a-f0-9]{24}"):user_id>/blogs'
+    schema = blogs_schema
+    datasource = {
+        'source': 'archive',
+        'elastic_filter': {'term': {'particular_type': 'blog'}},
+        'default_sort': [('title', 1)]
+    }
+
+    resource_methods = ['GET']
+
+
+class UserBlogsService(BaseService):
+    def get(self, req, lookup):
+        if lookup.get('user_id'):
+            lookup['members.user'] = ObjectId(lookup['user_id'])
+            del lookup['user_id']
+        return super().get(req, lookup)
