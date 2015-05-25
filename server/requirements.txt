@@ -3,4 +3,4 @@
 -e hg+http://bitbucket.org/haypo/hachoir3/#egg=hachoir3
 git+git://github.com/amagdas/tinys3@list-buckets#egg=tinys3
 git+git://github.com/superdesk/eve@f88946#egg=Eve==0.6-dev
-git+git://github.com/liveblog/superdesk@1.0.7#egg=Superdesk-Server
+git+git://github.com/liveblog/superdesk@3ac036108d5bae986a6f6639dfc3e3b2559b6e7b#egg=Superdesk-Server
