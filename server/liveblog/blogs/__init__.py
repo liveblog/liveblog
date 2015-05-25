@@ -1,6 +1,7 @@
 
 import superdesk
-from liveblog.blogs.blogs import BlogService, BlogsResource, BlogsVersionsService, BlogsVersionsResource
+from liveblog.blogs.blogs import BlogService, BlogsResource, BlogsVersionsService,\
+    BlogsVersionsResource, UserBlogsResource, UserBlogsService
 from superdesk import get_backend
 
 
@@ -8,6 +9,10 @@ def init_app(app):
     endpoint_name = 'blogs'
     service = BlogService(endpoint_name, backend=superdesk.get_backend())
     BlogsResource(endpoint_name, app=app, service=service)
+
+    endpoint_name = 'user_blogs'
+    service = UserBlogsService(endpoint_name, backend=superdesk.get_backend())
+    UserBlogsResource(endpoint_name, app=app, service=service)
 
     endpoint_name = 'blogs_versions'
     service = BlogsVersionsService(endpoint_name, backend=get_backend())
