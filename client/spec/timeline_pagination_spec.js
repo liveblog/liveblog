@@ -1,6 +1,6 @@
 'use strict';
-var login = require('./helpers/utils').login,
-    openBlog = require('./helpers/utils').openBlog;
+var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login,
+    openBlog = require('./helpers/utils.js').openBlog;
 describe('timeline pagination', function() {
     beforeEach(function(done) {login().then(done);});
     it('can scroll to last item and load more', function() {

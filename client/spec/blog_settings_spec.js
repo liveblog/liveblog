@@ -1,7 +1,7 @@
-var utils = require('./helpers/utils'),
+var utils = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils'),
     login = utils.login,
-    expectBlog = utils.expectBlog,
-    openBlog = utils.openBlog;
+    expectBlog = require('./helpers/utils').expectBlog,
+    openBlog = require('./helpers/utils').openBlog;
 
 describe('Blog settings', function() {
     'use strict';

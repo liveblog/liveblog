@@ -13,6 +13,9 @@ var files = [
         dest: '<%= distDir %>/styles/css/liveblog.css',
         src: '<%= appDir %>/styles/less/liveblog.less'
     }, {
+        dest: '<%= distDir %>/styles/css/lb-bootstrap.css',
+        src: '<%= appDir %>/styles/less/lb-bootstrap.less'
+    }, {
         expand: true,
         dest: '<%= tmpDir %>/',
         cwd: '<%= appDir %>/scripts/',
