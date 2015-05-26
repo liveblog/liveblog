@@ -4,24 +4,31 @@ var openBlog = require('./helpers/utils').openBlog;
 var randomString = require('./helpers/utils').randomString;
 
 describe('timeline add to top and edit', function() {
-    beforeEach(function(done) {login().then(done);});
-    it('can add item to top of the timeline', function() {
-        openBlog(0);
+
+    function publishPost() {
         var randomText = randomString(10);
         //type the random text
         element(by.css('[class="st-required st-text-block"]')).sendKeys(randomText);
         //click the publish button
         element(by.css('[ng-click="publish()"]')).click();
-        browser.waitForAngular();
+        return randomText;
+    }
+
+    beforeEach(function(done) {login().then(done);});
+
+    it('can add item to top of the timeline', function() {
+        openBlog(0);
+        var randomText = publishPost();
         //go and check the timeline
         element(by.css('.column-timeline')).all(by.repeater('post in posts')).then(function(posts) {
-            var textElement = posts[0].element(by.css('span[medium-editable]'));
+            var textElement = posts[0].element(by.css('div[medium-editable]'));
             //first element should have the new entered value
             textElement.getText().then(function(text) {
                 expect(text).toEqual(randomText);
             });
         });
     });
+
     it('can edit an item on the timeline', function() {
 
         function getFirstPostText() {
@@ -44,6 +51,7 @@ describe('timeline add to top and edit', function() {
                 expect(getFirstPostText()).toBe(randomText);
             });
     });
+
     it('can edit an item on the timeline (quick edit mode)', function() {
         openBlog(2);
         var randomText = randomString(10);
@@ -54,7 +62,7 @@ describe('timeline add to top and edit', function() {
                     posts[0].element(by.css('.lb-post__expander-holder')).click();
                 }
             });
-            var textElement = posts[0].element(by.css('span[medium-editable]'));
+            var textElement = posts[0].element(by.css('div[medium-editable]'));
             //add some text
             textElement.sendKeys(randomText);
             //click the save button
@@ -72,7 +80,7 @@ describe('timeline add to top and edit', function() {
                             posts[0].element(by.css('.lb-post__expander-holder')).click();
                         }
                     });
-                    var textElement = posts[0].element(by.css('span[medium-editable]'));
+                    var textElement = posts[0].element(by.css('div[medium-editable]'));
                     textElement.getText().then(function(text) {
                         //first element should have the new edited value
                         expect(text).toEqual(editedText);
@@ -81,7 +89,8 @@ describe('timeline add to top and edit', function() {
             });
         });
     });
-    it('can unpublish a post', function() {
+
+    it('can unpublish your own post', function() {
 
         function getFirstPost(column) {
             return element(by.css('.column-' + column))
@@ -103,6 +112,8 @@ describe('timeline add to top and edit', function() {
         }
 
         openBlog(2);
+        publishPost();
+        publishPost();
         // open draft posts panel
         element(by.css('[ng-click="toggleDraftPanel()"]')).click();
         unpublishAndTest();
