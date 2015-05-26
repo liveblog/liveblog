@@ -170,6 +170,11 @@ function expectBlog(blog, index) {
             .getText())
     .toBe(blog.username);
 }
+var blogs = [
+    {title: 'title: end To end three', description: 'description: end to end three', username: 'first name last name'},
+    {title: 'title: end to end two', description: 'description: end to end two', username: 'first name last name'},
+    {title: 'title: end to end One', description: 'description: end to end one', username: 'first name last name'}
+];
 
 exports.login = login;
 exports.open = openUrl;
@@ -177,3 +182,4 @@ exports.openBlog = openBlog;
 exports.expectBlog = expectBlog;
 exports.expectBlogsLength = expectBlogsLength;
 exports.randomString = randomString;
+exports.blogs = blogs;
