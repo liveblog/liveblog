@@ -38,7 +38,7 @@
                     <div class="content">
                         <form class="form-horizontal" name="settings.forms.general">
                             <div class="form-group">
-                                <label for="inputTitle" class="control-label" transle>Blog Status</label>
+                                <label for="inputTitle" class="control-label" translate>Blog Status</label>
                                 <div class="form-input top-pad">
                                     <span class="blog-status">{{ settings.blog_switch ? 'Active' : 'Archived' | translate }}</span>
                                     <span tooltip="{{ settings.blog_switch ? 'Archive Blog' : 'Activate Blog' | translate }}" tooltip-placement="right">
@@ -47,7 +47,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="inputTitle" class="control-label" transle>Blog Title</label>
+                                <label for="inputTitle" class="control-label" translate>Blog Title</label>
                                 <div class="form-input">
                                     <input
                                         name="inputTitle"
@@ -57,7 +57,7 @@
                                 </div>
                             </div>                        
                             <div class="form-group">
-                                <label for="inputDescription" class="control-label" transle>Blog Description</label>
+                                <label for="inputDescription" class="control-label" translate>Blog Description</label>
                                 <div class="form-input">
                                     <textarea
                                         name="inputDescription"
@@ -78,7 +78,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="inputTheme" class="control-label" transle>Theme</label>
+                                <label for="inputTheme" class="control-label" translate>Theme</label>
                                 <div class="form-input">
                                     <select
                                       ng-model="settings.blogPreferences.theme"
@@ -88,7 +88,7 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <label for="inputEmbedCode" class="control-label" transle>Embed code</label>
+                                <label for="inputEmbedCode" class="control-label" translate>Embed code</label>
                                 <div class="form-input">
                                     <textarea class="form-control" readonly="readonly" select-text-on-click>{{settings.embedCode}}</textarea>
                                 </div>
