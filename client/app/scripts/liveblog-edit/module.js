@@ -254,11 +254,6 @@ define([
             vm.avUsers = data._items;
         });
         vm.buildOwner(blog.original_creator);
-        // watch if the user selected preferences have changed, in order to update the `isSaved` variable
-        $scope.$watch(angular.bind(this, function () {return [this.blogPreferences, this.original_creator];}), function(new_value) {
-            vm.isSaved = _.isEqual(vm.blogPreferences, vm.blog.blog_preferences) &&
-            (!vm.original_creator._id || _.isEqual(vm.original_creator._id, vm.blog.original_creator));
-        }, true);
         _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
         var compiled = _.template(_.trim(angular.element('#liveblog-embed-template').html()));
         /*globals config */
