@@ -16,17 +16,17 @@
     <div class="settings-page">
         <div class="subnav">
             <h3 class="page-nav-title">Settings</h3>
-            <button ng-click="settings.save()"  class="btn btn-info pull-right"    type="button" translate ng-disabled="!(settings.forms.$dirty || settings.forms[settings.tab].$dirty)">Save</button>
+            <button ng-click="settings.save()"  class="btn btn-info pull-right" type="button" translate ng-disabled="!(settings.forms.$dirty || settings.forms[settings.tab].$dirty)">Save</button>
             <button ng-click="settings.reset()" class="btn btn-default pull-right" type="button" translate>Reset to default</button>
             <button ng-click="settings.close()" class="btn btn-default pull-right" type="button" translate>Cancel</button>
         </div>
         <div class="tabbable outer">
             <ul class="nav-tabs nav-stacked">
                 <li ng-class="{active: (settings.tab === 'general')}">
-                    <a ng-href="" ng-click="settings.changeTab('general')">General</a>
+                    <a ng-href="" ng-click="settings.changeTab('general')" translate>General</a>
                 </li>
-                <li ng-class="{active: (settings.tab === 'users')}" data="blog-settings-users">
-                    <a ng-href="" ng-click="settings.changeTab('users')" translate>Users</a>
+                <li ng-class="{active: (settings.tab === 'team')}" data="blog-settings-team">
+                    <a ng-href="" ng-click="settings.changeTab('team')" translate>Team</a>
                 </li>
             </ul>
             <div>
@@ -59,7 +59,7 @@
                             </div>                        
 
                             <div class="form-group">
-                                <label for="inputLanguage" class="control-label" transle>Language</label>
+                                <label for="inputLanguage" class="control-label" translate>Language</label>
                                 <div class="form-input">
                                     <select
                                       ng-model="settings.blogPreferences.language"
@@ -88,43 +88,67 @@
                     </div>
                 </div>
                 <!-- Users -->
-                <div class="tab-content outer" ng-if="(settings.tab === 'users')">
+                <div class="tab-content outer" ng-if="(settings.tab === 'team')">
                     <div class="header">
-                        <h2 translate>Users</h2>
+                        <h2 translate>Team</h2>
                     </div>
                      <div class="content">
-                        <form class="form-horizontal" name="settings.forms.users">
-                            <div class="form-group">
-                                <label for="inputLanguage" class="control-label">Image</label>
-                                <div class="form-input profile-pic">
-                                     <figure class="avatar">
-                                        <img sd-user-avatar data-src="settings.original_creator.user.picture_url">
-                                    </figure>
-                                </div>
+                        <div class="settings-subsection">
+                            <div class="subsettings-header">
+                                <h3 translate>Owner</h3>
                             </div>
-                            <div class="form-group">
-                                <label for="inputTheme" class="control-label">Full Name</label>
-                                <div class="form-input" data="original-creator-display-name">
-                                   {{ settings.original_creator.display_name }}
+                            <form class="form-horizontal" name="settings.forms.team">
+                                <div class="subsettings-content">
+                                    <div class="inline-content first-block">
+                                        <div class="inline-content padded-right">
+                                            <div class="form-input profile-pic">
+                                                 <figure class="avatar">
+                                                    <img data-src="settings.original_creator.user.picture_url">
+                                                </figure>
+                                            </div>
+                                        </div>
+                                        <div class="inline-content">
+                                            <div class="form-input" data="original-creator-display-name">
+                                               <strong>{{ settings.original_creator.display_name }}</strong>
+                                            </div>
+                                            <div class="form-input" data="original-creator-username">
+                                                {{ settings.original_creator.username }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="inline-content">
+                                        <div class="inline-content">
+                                            <button class="btn btn-info" type="button" translate ng-click="settings.open = !settings.open">Change Owner</button>
+                                        </div>
+                                        <div class="inline-content">
+                                            <div class="dropdown-content" ng-show="settings.open" ng-click=" $event.stopPropagation();">
+                                                <div class="user-select">
+                                                    <div>
+                                                        <form>
+                                                            <label for="assignee-search" translate>Chose new owner</label>
+                                                            <input type="text" name="assignee-search" ng-model="settings.search">
+                                                        </form>
+                                                        <div class="search-result">
+                                                            <ul class="users-list-embed">
+                                                                <li ng-repeat="user in settings.avUsers | filter:settings.search" ng-click="settings.temp_selected_owner = user" ng-class="{'active': settings.temp_selected_owner._id === user._id}">
+                                                                    <figure class="avatar small"><img data-src="user.picture_url"></figure>
+                                                                    <div class="name">{{user.display_name}}</div>
+                                                                </li>
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="footer">
+                                                    <span class="clear pull-left" ng-click="settings.search = null" ng-show="settings.search" translate>Clear</span>
+                                                    <button class="btn btn-info pull-right" ng-click="settings.buildOwner(settings.temp_selected_owner._id); settings.open = false; $event.stopPropagation(); settings.forms.team.$setDirty();" ng-disabled="!settings.temp_selected_owner" translate>Select</button>
+                                                    <button class="btn pull-right" ng-click="settings.open = false;  $event.stopPropagation();" translate>Cancel</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="inputEmbedCode" class="control-label">Username</label>
-                                <div class="form-input" data="original-creator-username">
-                                    {{ settings.original_creator.username }}
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="changeOwner" class="control-label">Change owner</label>
-                                <div class="form-input">
-                                    <select
-                                      ng-model="settings.original_creator._id"
-                                      ng-options="user._id as user.username for user in settings.avUsers"
-                                      class="form-control" ng-change="settings.buildOwner(settings.original_creator._id);">
-                                    </select>
-                                </div>
-                            </div>
-                        </form>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
