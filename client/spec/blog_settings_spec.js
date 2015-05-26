@@ -1,5 +1,7 @@
-var login = require('./helpers/utils').login;
-var openBlog = require('./helpers/utils').openBlog;
+var utils = require('./helpers/utils'),
+    login = utils.login,
+    expectBlog = utils.expectBlog,
+    openBlog = utils.openBlog;
 
 describe('Blog settings', function() {
     'use strict';
@@ -21,6 +23,24 @@ describe('Blog settings', function() {
     function setLanguage(language) {
         element(by.model('settings.blogPreferences.language')).sendKeys(language);
     }
+    it('should modify title and description for blog', function() {
+        var blog = {username: 'first name last name'};
+        openBlog(0);
+        openSettings();
+        //modifying the title
+        blog.title = 'ABC';
+        var inputTitle = element(by.model('settings.newBlog.title'));
+        inputTitle.clear();
+        inputTitle.sendKeys(blog.title);
+        //modifying the description
+        blog.description = 'test description ABC';
+        var inputDescription = element(by.model('settings.newBlog.description'));
+        inputDescription.clear();
+        inputDescription.sendKeys(blog.description);
+        element(by.css('[ng-click="settings.save()"]')).click();
+        element(by.css('[href="/#/liveblog"]')).click();
+        expectBlog(blog);
+    });
 
     it('shows the default language selected', function() {
         openBlog(0);
