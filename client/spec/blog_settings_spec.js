@@ -92,7 +92,7 @@ describe('Blog settings', function() {
             expect(text).toEqual('test_user');
         });
     });
-    iit('changes blog ownership', function() {
+    it('changes blog ownership', function() {
         openBlog(0);
         openSettings();
         element(by.css('[data="blog-settings-team"]')).click();
