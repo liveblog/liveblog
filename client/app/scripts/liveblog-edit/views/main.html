@@ -79,33 +79,16 @@
         </div>
 
         <!-- timeline column -->
-        <div class="column column-timeline" ng-init="isTimeline = true">
+        <div class="column column-timeline">
             <header>
                 <ul class="nav nav-tabs">
-                    <li ng-class="{active: isTimeline}" ng-click="isTimeline = true">
+                    <li class="active">
                         <button translate>Timeline</button>
-                    </li>
-                    <li ng-class="{active: !isTimeline}" ng-click="isTimeline = false">
-                        <button translate>Blog details</button>
                     </li>
                 </ul>
             </header>
             <div class="content">
-                <div ng-if="!isTimeline" class="inner-padding">
-                    <form ng-submit="updateBlog(oldBlog)" name="blogForm" class="flat">
-                        <fieldset>
-                            <div class="field">
-                                <label translate>Blog title</label>
-                                <input type="text" name="title" ng-model="oldBlog.title" ng-blur="updateBlog(oldBlog)">
-                            </div>
-                            <div class="field">
-                                <label translate>Blog description</label>
-                                <textarea name="description" ng-model="oldBlog.description" ng-blur="updateBlog(oldBlog)"></textarea>
-                            </div>
-                        </fieldset>
-                    </form>
-                </div>
-                <div ng-if="isTimeline">
+                <div>
                     <div
                       class="timeline-posts-list"
                       lb-posts-instance="blogEdit.timelineInstance"

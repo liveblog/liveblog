@@ -58,19 +58,7 @@ define([
         // define the $scope
         angular.extend($scope, {
             blog: blog,
-            oldBlog: _.create(blog),
             currentPost: undefined,
-            updateBlog: function(blog) {
-                if (_.isEmpty(blog)) {
-                    return;
-                }
-                notify.info(gettext('saving..'));
-                api.blogs.save($scope.blog, blog).then(function(newBlog) {
-                    notify.pop();
-                    notify.success(gettext('blog saved.'));
-                    $scope.blog = newBlog;
-                });
-            },
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
             },
@@ -200,24 +188,37 @@ define([
         var vm = this;
         angular.extend(vm, {
             blog: blog,
+            newBlog: _.create(blog),
             blogPreferences: angular.copy(blog.blog_preferences),
             availableLanguages: [],
             original_creator: {},
-            lastOwnerId: false,
             availableThemes: [],
             isSaved: true,
+            forms: {},
+            tab: false,
+            changeTab: function(tab) {
+                if (vm.tab) {
+                    vm.forms.$dirty = vm.forms.$dirty || vm.forms[vm.tab].$dirty;
+                }
+                vm.tab = tab;
+            },
             iframe_url: config.server.url.replace('/api', '/embed/' + blog._id),
             save: function() {
                 // save on backend and clsoe
                 notify.info(gettext('saving blog settings'));
-                blogService.save(vm.blog._id, {blog_preferences: vm.blogPreferences, original_creator: vm.original_creator._id})
-                .then(function(blog) {
+                var changedBlog = {
+                        blog_preferences: vm.blogPreferences,
+                        original_creator: vm.original_creator._id};
+                    angular.forEach(vm.newBlog, function(value, key) {
+                        changedBlog[key] = value;
+                    });
+                blogService.save(vm.blog._id, changedBlog).then(function(blog) {
                     vm.isSaved = true;
                     vm.blog = blog;
                     notify.pop();
                     notify.info(gettext('blog settings saved'));
                     vm.close();
-                });
+                }) ;
             },
             reset: function() {
                 // reset vm.blogPreferences's values with the ones from global_preferences (backend)
@@ -233,8 +234,9 @@ define([
             },
             buildOwner: function(userID) {
                 api('users').getById(userID).then(function(data) {
-                    vm.original_creator = data;
-                    vm.lastOwnerId = userID;
+                    //temp_selected_owner is used handle the selection of users in the change owner autocomplete box
+                    //without automatically changing the owner that is displayed
+                    vm.temp_selected_owner = vm.original_creator = data;
                 });
             }
         });
@@ -253,11 +255,6 @@ define([
             vm.avUsers = data._items;
         });
         vm.buildOwner(blog.original_creator);
-        // watch if the user selected preferences have changed, in order to update the `isSaved` variable
-        $scope.$watch(angular.bind(this, function () {return [this.blogPreferences, this.original_creator];}), function(new_value) {
-            vm.isSaved = _.isEqual(vm.blogPreferences, vm.blog.blog_preferences) &&
-            (!vm.original_creator._id || _.isEqual(vm.original_creator._id, vm.blog.original_creator));
-        }, true);
     }
 
     /**

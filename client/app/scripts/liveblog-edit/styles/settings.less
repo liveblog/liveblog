@@ -25,14 +25,73 @@
                     padding: @PADDING/2 0;
                     .control-label {
                         text-align: left;
+                        font-size: 11px;
+                        text-transform: uppercase;
+                        color: #808080;
                     }
                     .form-input {
                         width: 50%;
                         float: left;
-                        select {margin: 0;} // overwrite bootstrap
+                        select {margin: 0; height: auto;} // overwrite bootstrap
+                        input {
+                            box-sizing: border-box;                            
+                            border-radius: 2px;
+                            padding: 4px 6px;
+                            height: auto;
+                            font-size: 12px;
+                            color: #000;
+                            box-shadow: none;
+                            &:focus {
+                                box-shadow: 0 0 5px 0 #d0d0d0!important;
+                                border-color: #b8b8b8!important;
+                                outline: 0!important;
+                            }
+                        }
                     }
                 }
             }
         }
+    }
+    .dropdown-content {
+        background-color: #fff;
+        border: 1px solid #c6c6c6;
+        border-radius: 3px;
+        box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+        left: 45px;
+        padding: 10px;
+        top: -16px;
+        width: 290px;
+        z-index: 1;
+    }
+    .footer {
+        background: none repeat scroll 0 0 #f8f8f8;
+        border-radius: 0 0 5px 5px;
+        border-top: 1px solid #e8e8e8;
+        margin: 3px -10px -10px;
+        padding: 10px;
+        height: 30px;
+    }
+    .subsettings-content {
+        margin-top: 25px;
+        .inline-content {
+            display: inline-block;
+            vertical-align: top;
+        }
+    }
+    .first-block {
+            width: 300px;
+    }
+    .padded-right {
+        padding-right: 20px;
+    }
+    .subsettings-header {
+            color: #666;
+            font-weight: 400;
+            border-bottom: 1px solid #e0e0e0;
+        }
+    .users-list-embed {
+        max-height:136px;
+        overflow: auto;
+        margin-top: 3px;
     }
 }

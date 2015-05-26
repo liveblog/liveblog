@@ -52,8 +52,8 @@ define([
             };
         })
         .directive('lbPostsList', [
-            'postsService', 'notify', '$q', '$timeout',
-            function(postsService, notify, $q, $timeout) {
+            'postsService', 'notify', '$q', '$timeout', 'session',
+            function(postsService, notify, $q, $timeout, session) {
 
                 LbPostsListCtrl.$inject = ['$scope'];
                 function LbPostsListCtrl($scope) {
@@ -112,13 +112,29 @@ define([
                     $scope.lbPostsInstance = vm;
                     // init posts list and metadata from database
                     $q.when(fetchPage()).then(function () {
-                        // auto-update: bind events sent from backend and do the appropriated operation (a,b,c,d)
+                        // auto-update: bind events sent from backend and do the appropriated operation (a,b,c,d,e)
                         $scope.$on('posts', function(e, event_params) {
+                            var post_index = getPostIndex(event_params.post_id);
                             if (event_params.deleted) {
-                                var post_index = getPostIndex(event_params.post_id);
                                 if (post_index > -1) {
                                     // a) removed
                                     vm.posts.splice(post_index, 1);
+                                }
+                            } else if (event_params.drafted) {
+                                if (vm.status === 'draft') {
+                                    if (post_index < 0) {
+                                        if (event_params.author_id === session.identity._id) {
+                                            // b.1) new draft from the user
+                                            postsService.retrievePost(event_params.post_id).then(function(data) {
+                                                vm.posts.push(data);
+                                            });
+                                        }
+                                    }
+                                } else {
+                                    if (post_index > -1) {
+                                        // b.2) post was set as draft, we remove it
+                                        vm.posts.splice(post_index, 1);
+                                    }
                                 }
                             } else {
                                 // retrieve lastest updates from database
@@ -130,14 +146,14 @@ define([
                                     posts._items.forEach(function(post_updated) {
                                         if (post_updated.post_status === vm.status) {
                                             if (getPostIndex(post_updated._id) > -1) {
-                                                // b) updated
+                                                // c) updated
                                                 vm.posts[getPostIndex(post_updated._id)] = post_updated;
                                             } else {
-                                                // c) added
+                                                // d) added
                                                 vm.posts.push(post_updated);
                                             }
                                         } else {
-                                            // d) status changed, then we remove
+                                            // e) status changed, then we remove
                                             if (getPostIndex(post_updated._id) > -1) {
                                                 vm.posts.splice(getPostIndex(post_updated._id), 1);
                                             }
@@ -155,7 +171,8 @@ define([
                             dragula([posts_list.get(0)], {
                                 moves: function (el, container, handle) {
                                     // disable drag and drop when the click comes from a contenteditable element
-                                    return !angular.isDefined(angular.element(handle).attr('contenteditable'));
+                                    return !angular.isDefined(angular.element(handle).parents().attr('contenteditable')) &&
+                                    !angular.isDefined(angular.element(handle).attr('contenteditable'));
                                 },
                                 direction: 'vertical'
                             })

@@ -155,7 +155,25 @@ function randomString(maxLen) {
     return text;
 }
 
+function expectBlogsLength(len) {
+    expect(element.all(by.repeater('blog in blogs._items')).count()).toEqual(len);
+}
+
+function expectBlog(blog, index) {
+    index = index || 0;
+    expect(element(by.repeater('blog in blogs._items').row(index).column('blog.title')).getText()).toBe(blog.title);
+    expect(element(by.repeater('blog in blogs._items').row(index).column('blog.description')).getText()).toBe(blog.description);
+    expect(element(
+        by.repeater('blog in blogs._items')
+            .row(index)
+            .column('blog.original_creator | username'))
+            .getText())
+    .toBe(blog.username);
+}
+
 exports.login = login;
 exports.open = openUrl;
 exports.openBlog = openBlog;
+exports.expectBlog = expectBlog;
+exports.expectBlogsLength = expectBlogsLength;
 exports.randomString = randomString;
