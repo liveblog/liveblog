@@ -29,7 +29,8 @@ module.exports = {
         options: {
             paths: ['<%= appDir %>/styles/less', '<%= appDir %>/scripts/bower_components/superdesk/client/app/styles/less'],
             compress: false,
-            cleancss: true
+            cleancss: true,
+            relativeUrls: true
         },
         files: files
     },
