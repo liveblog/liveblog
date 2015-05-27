@@ -2,15 +2,11 @@ var utils = require('../app/scripts/bower_components/superdesk/client/spec/helpe
     login = utils.login,
     expectBlog = require('./helpers/utils.js').expectBlog,
     expectBlogsLength = require('./helpers/utils.js').expectBlogsLength,
-    openBlog = require('./helpers/utils.js').openBlog;
+    blogs = require('./helpers/utils.js').blogs;
 
 describe('blogs', function() {
     'use strict';
-    var blogs = [
-        {title: 'title: end To end three', description: 'description: end to end three', username: 'first name last name'},
-        {title: 'title: end to end two', description: 'description: end to end two', username: 'first name last name'},
-        {title: 'title: end to end One', description: 'description: end to end one', username: 'first name last name'}
-    ], archived = [
+    var archived = [
         {title: 'title: end to end closed', description: 'description: end to end closed', username: 'first name last name'}
     ], searchs = [
         {blogs: [0, 1, 2], search: 'title'},
@@ -74,33 +70,6 @@ describe('blogs', function() {
             for (var i = 0; i < blogsLength; i++) {
                 expectBlog(archived[i], i);
             }
-        });
-    });
-
-    describe('archive and activate a blog', function() {
-        it('should archive a blog', function() {
-            //open first blog
-            openBlog(0);
-            element(by.buttonText('ARCHIVE BLOG')).click();
-            //click on back to liveblog list
-            element(by.css('[class="icon-th-large"]')).click();
-            //go to archive blogs
-            element(by.repeater('state in states').row(1).column('state.text')).click();
-            //expect the first blog to be the one we archived (blog[0])
-            expect(blogs[0], 0);
-        });
-        it('should activate a blog', function() {
-            //go to archive blogs
-            element(by.repeater('state in states').row(1).column('state.text')).click();
-            //open first blog
-            openBlog(0);
-            element(by.buttonText('ACTIVATE BLOG')).click();
-            //click on back to liveblog list
-            element(by.css('[class="icon-th-large"]')).click();
-            //click to go to active blogs
-            element(by.repeater('state in states').row(0).column('state.text')).click();
-            //expect the first blog to be the one we activated (blog[0])
-            expect(blogs[0], 0);
         });
     });
 

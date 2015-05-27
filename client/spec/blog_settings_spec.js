@@ -1,7 +1,8 @@
 var utils = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils'),
     login = utils.login,
     expectBlog = require('./helpers/utils').expectBlog,
-    openBlog = require('./helpers/utils').openBlog;
+    openBlog = require('./helpers/utils').openBlog,
+    blogs = require('./helpers/utils').blogs;
 
 describe('Blog settings', function() {
     'use strict';
@@ -83,7 +84,7 @@ describe('Blog settings', function() {
     it('shows original creator full name and username', function() {
         openBlog(0);
         openSettings();
-        element(by.css('[data="blog-settings-users"]')).click();
+        element(by.css('[data="blog-settings-team"]')).click();
         //expect original creator name
         element(by.css('[data="original-creator-display-name"]')).getText().then(function(text) {
             expect(text).toEqual('first name last name');
@@ -95,11 +96,45 @@ describe('Blog settings', function() {
     it('changes blog ownership', function() {
         openBlog(0);
         openSettings();
-        element(by.css('[data="blog-settings-users"]')).click();
-        element(by.model('settings.original_creator._id')).sendKeys('admin');
+        element(by.css('[data="blog-settings-team"]')).click();
+        element(by.buttonText('CHANGE OWNER')).click();
+        element(by.repeater('user in settings.avUsers').row(1).column('user.display_name')).click();
+        element(by.buttonText('SELECT')).click();
         element(by.css('[ng-click="settings.save()"]')).click();
+
         openSettings();
-        element(by.css('[data="blog-settings-users"]')).click();
-        expect(element(by.model('settings.original_creator._id')).$('option:checked').getText()).toEqual('admin');
+        element(by.css('[data="blog-settings-team"]')).click();
+        element(by.css('[data="original-creator-username"]')).getText().then(function(text) {
+            expect(text).toEqual('admin');
+        });
+    });
+    it('should archive a blog', function() {
+        //open first blog
+        openBlog(0);
+        openSettings();
+        element(by.css('[data-blog-status-switch]')).click();
+        element(by.css('[ng-click="settings.save()"]')).click();
+        //click on back to liveblog list
+        element(by.css('[class="icon-th-large"]')).click();
+        //go to archive blogs
+        element(by.repeater('state in states').row(1).column('state.text')).click();
+        //expect the first blog to be the one we archived (blog[0])
+        expect(blogs[0], 0);
+    });
+    it('should activate a blog', function() {
+        //go to archive blogs
+        element(by.repeater('state in states').row(1).column('state.text')).click();
+        //open first blog
+        openBlog(0);
+        openSettings();
+        element(by.css('[data-blog-status-switch]')).click();
+        element(by.css('[ng-click="settings.save()"]')).click();
+        //click on back to liveblog list
+        element(by.css('[class="icon-th-large"]')).click();
+        //go to archive blogs
+        //click to go to active blogs
+        element(by.repeater('state in states').row(0).column('state.text')).click();
+        //expect the first blog to be the one we activated (blog[0])
+        expect(blogs[0], 0);
     });
 });

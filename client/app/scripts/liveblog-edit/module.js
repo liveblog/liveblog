@@ -103,15 +103,6 @@ define([
                     notify.error(gettext('Something went wrong. Please try again later'));
                 });
             },
-            toggleBlogState: function() {
-                var newStateValue = $scope.blog.blog_status === 'open' ? 'closed': 'open';
-                api.blogs.save($scope.blog, {'blog_status': newStateValue})
-                .then(function() {
-                    $scope.blog.blog_status = newStateValue;
-                }, function(response) {
-                    notify.error(gettext('Something went wrong. Please try again later'));
-                });
-            },
             // retrieve draft panel status from url
             draftPanelState: $routeParams.drafts === 'open'? 'open' : 'closed',
             toggleDraftPanel: function() {
@@ -192,7 +183,6 @@ define([
             blogPreferences: angular.copy(blog.blog_preferences),
             availableLanguages: [],
             original_creator: {},
-            lastOwnerId: false,
             availableThemes: [],
             isSaved: true,
             forms: {},
@@ -208,7 +198,8 @@ define([
                 notify.info(gettext('saving blog settings'));
                 var changedBlog = {
                         blog_preferences: vm.blogPreferences,
-                        original_creator: vm.original_creator._id};
+                        original_creator: vm.original_creator._id,
+                        blog_status: vm.blog_switch === true? 'open': 'closed'};
                     angular.forEach(vm.newBlog, function(value, key) {
                         changedBlog[key] = value;
                     });
@@ -234,8 +225,9 @@ define([
             },
             buildOwner: function(userID) {
                 api('users').getById(userID).then(function(data) {
-                    vm.original_creator = data;
-                    vm.lastOwnerId = userID;
+                    //temp_selected_owner is used handle the selection of users in the change owner autocomplete box
+                    //without automatically changing the owner that is displayed
+                    vm.temp_selected_owner = vm.original_creator = data;
                 });
             }
         });
@@ -254,15 +246,12 @@ define([
             vm.avUsers = data._items;
         });
         vm.buildOwner(blog.original_creator);
-        // watch if the user selected preferences have changed, in order to update the `isSaved` variable
-        $scope.$watch(angular.bind(this, function () {return [this.blogPreferences, this.original_creator];}), function(new_value) {
-            vm.isSaved = _.isEqual(vm.blogPreferences, vm.blog.blog_preferences) &&
-            (!vm.original_creator._id || _.isEqual(vm.original_creator._id, vm.blog.original_creator));
-        }, true);
         _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
         var compiled = _.template(_.trim(angular.element('#liveblog-embed-template').html()));
         /*globals config */
         vm.embedCode = compiled({'rest': config.server.url, 'frontend': window.location.origin, id: vm.blog._id});
+        vm.changeTab('general');
+        vm.blog_switch = vm.newBlog.blog_status === 'open'? true: false;
     }
 
     /**
