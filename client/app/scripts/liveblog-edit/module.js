@@ -58,6 +58,7 @@ define([
         // define the $scope
         angular.extend($scope, {
             blog: blog,
+            onEditPage: true,
             currentPost: undefined,
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
@@ -173,8 +174,8 @@ define([
         });
     }
 
-    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify', 'gettext'];
-    function BlogSettingsController($scope, blog, api, blogService, $location, notify, gettext) {
+    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify', 'gettext', 'modal', '$q'];
+    function BlogSettingsController($scope, blog, api, blogService, $location, notify, gettext, modal, $q) {
         // set view's model
         var vm = this;
         angular.extend(vm, {
@@ -189,12 +190,28 @@ define([
             tab: false,
             changeTab: function(tab) {
                 if (vm.tab) {
-                    vm.forms.$dirty = vm.forms.$dirty || vm.forms[vm.tab].$dirty;
+                    vm.forms.dirty = vm.forms.dirty || vm.forms[vm.tab].$dirty;
                 }
                 vm.tab = tab;
             },
+            setFormsPristine: function() {
+                if (vm.forms.dirty) {
+                    vm.forms.dirty = false;
+                }
+                angular.forEach(vm.forms, function(value, key) {
+                    if (vm.forms[key] && vm.forms[key].$dirty) {
+                        vm.forms[key].$setPristine();
+                    }
+                });
+            },
+            saveAndClose: function() {
+                vm.save().then(function() {
+                    vm.close();
+                });
+            },
             save: function() {
-                // save on backend and clsoe
+                // save on backend
+                var deferred = $q.defer();
                 notify.info(gettext('saving blog settings'));
                 var changedBlog = {
                         blog_preferences: vm.blogPreferences,
@@ -208,8 +225,10 @@ define([
                     vm.blog = blog;
                     notify.pop();
                     notify.info(gettext('blog settings saved'));
-                    vm.close();
-                }) ;
+                    vm.setFormsPristine();
+                    deferred.resolve();
+                });
+                return deferred.promise;
             },
             reset: function() {
                 // reset vm.blogPreferences's values with the ones from global_preferences (backend)
@@ -230,6 +249,7 @@ define([
                     vm.temp_selected_owner = vm.original_creator = data;
                 });
             }
+
         });
         // load available languages
         api('languages').query().then(function(data) {
@@ -246,6 +266,34 @@ define([
             vm.avUsers = data._items;
         });
         vm.buildOwner(blog.original_creator);
+
+        //check if form is dirty before leaving the page
+        var deregisterPreventer = $scope.$on('$locationChangeStart', function (event, next, current) {
+            event.preventDefault();
+            //check if one of the forms is dirty
+            var dirty = false;
+            if (vm.forms.dirty) {
+                dirty = true;
+            } else {
+                angular.forEach(vm.forms, function(value, key) {
+                    if (vm.forms[key] && vm.forms[key].$dirty) {
+                        dirty = true;
+                        return;
+                    }
+                });
+            }
+            if (dirty) {
+                modal.confirm(gettext('You have unsaved settings. Are you sure you want to leave the page?')).then(function() {
+                    goToNextPage(next);
+                });
+            } else {
+                goToNextPage(next);
+            }
+        });
+        var goToNextPage = function(url) {
+            $location.path($location.url(url).hash());
+            deregisterPreventer();
+        };
         _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
         var compiled = _.template(_.trim(angular.element('#liveblog-embed-template').html()));
         /*globals config */
