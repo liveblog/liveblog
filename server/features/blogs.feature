@@ -20,7 +20,7 @@ Feature: Blog operations
 	    {"_items": [{"title": "title One", "description": "description", "blog_status": "open", "original_creator": {"username": "test_user"}}]}
 	    """
     
-	@auth
+    @auth
     Scenario: Update blog
         Given "blogs"
         """
