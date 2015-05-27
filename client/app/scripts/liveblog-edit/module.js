@@ -250,6 +250,8 @@ define([
         var compiled = _.template(_.trim(angular.element('#liveblog-embed-template').html()));
         /*globals config */
         vm.embedCode = compiled({'rest': config.server.url, 'frontend': window.location.origin, id: vm.blog._id});
+        vm.changeTab('general');
+        vm.blog_switch = vm.newBlog.blog_status === 'open'? true: false;
     }
 
     /**
