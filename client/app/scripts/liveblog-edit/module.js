@@ -58,7 +58,6 @@ define([
         // define the $scope
         angular.extend($scope, {
             blog: blog,
-            onEditPage: true,
             currentPost: undefined,
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
