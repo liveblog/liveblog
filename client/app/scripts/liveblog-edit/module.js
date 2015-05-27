@@ -103,15 +103,6 @@ define([
                     notify.error(gettext('Something went wrong. Please try again later'));
                 });
             },
-            toggleBlogState: function() {
-                var newStateValue = $scope.blog.blog_status === 'open' ? 'closed': 'open';
-                api.blogs.save($scope.blog, {'blog_status': newStateValue})
-                .then(function() {
-                    $scope.blog.blog_status = newStateValue;
-                }, function(response) {
-                    notify.error(gettext('Something went wrong. Please try again later'));
-                });
-            },
             // retrieve draft panel status from url
             draftPanelState: $routeParams.drafts === 'open'? 'open' : 'closed',
             toggleDraftPanel: function() {
@@ -207,7 +198,8 @@ define([
                 notify.info(gettext('saving blog settings'));
                 var changedBlog = {
                         blog_preferences: vm.blogPreferences,
-                        original_creator: vm.original_creator._id};
+                        original_creator: vm.original_creator._id,
+                        blog_status: vm.blog_switch === true? 'open': 'closed'};
                     angular.forEach(vm.newBlog, function(value, key) {
                         changedBlog[key] = value;
                     });
@@ -258,6 +250,8 @@ define([
         var compiled = _.template(_.trim(angular.element('#liveblog-embed-template').html()));
         /*globals config */
         vm.embedCode = compiled({'rest': config.server.url, 'frontend': window.location.origin, id: vm.blog._id});
+        vm.changeTab('general');
+        vm.blog_switch = vm.newBlog.blog_status === 'open'? true: false;
     }
 
     /**

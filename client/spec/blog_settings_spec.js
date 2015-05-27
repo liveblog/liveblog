@@ -1,7 +1,8 @@
 var utils = require('./helpers/utils'),
     login = utils.login,
     expectBlog = utils.expectBlog,
-    openBlog = utils.openBlog;
+    openBlog = utils.openBlog,
+    blogs = utils.blogs;
 
 describe('Blog settings', function() {
     'use strict';
@@ -106,5 +107,34 @@ describe('Blog settings', function() {
         element(by.css('[data="original-creator-username"]')).getText().then(function(text) {
             expect(text).toEqual('admin');
         });
+    });
+    it('should archive a blog', function() {
+        //open first blog
+        openBlog(0);
+        openSettings();
+        element(by.css('[data-blog-status-switch]')).click();
+        element(by.css('[ng-click="settings.save()"]')).click();
+        //click on back to liveblog list
+        element(by.css('[class="icon-th-large"]')).click();
+        //go to archive blogs
+        element(by.repeater('state in states').row(1).column('state.text')).click();
+        //expect the first blog to be the one we archived (blog[0])
+        expect(blogs[0], 0);
+    });
+    it('should activate a blog', function() {
+        //go to archive blogs
+        element(by.repeater('state in states').row(1).column('state.text')).click();
+        //open first blog
+        openBlog(0);
+        openSettings();
+        element(by.css('[data-blog-status-switch]')).click();
+        element(by.css('[ng-click="settings.save()"]')).click();
+        //click on back to liveblog list
+        element(by.css('[class="icon-th-large"]')).click();
+        //go to archive blogs
+        //click to go to active blogs
+        element(by.repeater('state in states').row(0).column('state.text')).click();
+        //expect the first blog to be the one we activated (blog[0])
+        expect(blogs[0], 0);
     });
 });
