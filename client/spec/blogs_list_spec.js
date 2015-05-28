@@ -1,8 +1,8 @@
-var utils = require('./helpers/utils'),
+var utils = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js'),
     login = utils.login,
-    expectBlog = utils.expectBlog,
-    expectBlogsLength = utils.expectBlogsLength,
-    blogs = utils.blogs;
+    expectBlog = require('./helpers/utils.js').expectBlog,
+    expectBlogsLength = require('./helpers/utils.js').expectBlogsLength,
+    blogs = require('./helpers/utils.js').blogs;
 
 describe('blogs', function() {
     'use strict';

@@ -3,7 +3,15 @@
   "version": "3.0.0",
   "homepage": "https://github.com/superdesk/liveblog-client",
   "authors": [
-    "Nistor Mihai <Mihai.Nistor@sourcefabric.org>"
+    "Anca Farcas <mailto:anca.farcas@sourcefabric.org>",
+    "Darko Tomic <mailto:darko.tomic@sourcefabric.org>",
+    "Edouard Richard <mailto:edouard.richard@sourcefabric.org>",
+    "Ioan Pocol <mailto:ioan.pocol@sourcefabric.org>",
+    "Nikola Nikolić <mailto:nikola.nikolic@sourcefabric.org>",
+    "Nistor Mihai <Mihai.Nistor@sourcefabric.org>",
+    "Petr Jasek <mailto:petr.jasek@sourcefabric.org>",
+    "Vlad Nicoara <mailto:vlad.nicoara@sourcefabric.org>",
+    "Yauhen Kirylau <mailto:yauhen.kirylau@sourcefabric.org>"
   ],
   "license": "MIT",
   "ignore": [
@@ -14,7 +22,7 @@
     "tests"
   ],
   "dependencies": {
-    "superdesk": "https://github.com/liveblog/superdesk.git#1.0.6",
+    "superdesk": "https://github.com/liveblog/superdesk.git#1.0.9",
     "Eventable": "https://github.com/nistormihai/eventable.git",
     "embed": "https://github.com/nistormihai/plugin-liveblog-embed-server.git#993d4540ad",
     "ng-sir-trevor": "~2.0.0",

@@ -1,4 +1,4 @@
-var Login = require('./helpers/pages').login;
+var Login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/pages').login;
 
 var ptor = browser;
 

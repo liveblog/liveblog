@@ -1,4 +1,4 @@
-var login = require('./helpers/utils').login;
+var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login;
 
 describe('General settings', function() {
     'use strict';

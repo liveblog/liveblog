@@ -31,8 +31,8 @@ var posts = [
             text: 'text post one: End to End item three'
         }]
     ],
-    login = require('./helpers/utils').login,
-    openBlog = require('./helpers/utils').openBlog;
+    login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login,
+    openBlog = require('./helpers/utils.js').openBlog;
 
 describe('timeline', function() {
     beforeEach(function(done) {login().then(done);});

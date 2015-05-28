@@ -1,6 +1,6 @@
-var login = require('./helpers/utils').login;
-var openBlog = require('./helpers/utils').openBlog;
-var randomString = require('./helpers/utils').randomString;
+var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login;
+var openBlog = require('./helpers/utils.js').openBlog;
+var randomString = require('./helpers/utils.js').randomString;
 
 describe('Draft Posts', function() {
     'use strict';

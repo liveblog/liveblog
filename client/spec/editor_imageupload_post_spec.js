@@ -1,6 +1,6 @@
 var path = require('path');
-var login = require('./helpers/utils').login;
-var openBlog = require('./helpers/utils').openBlog;
+var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login;
+var openBlog = require('./helpers/utils.js').openBlog;
 var rootDir = path.resolve(__dirname, '..');
 
 describe('editor image upload:', function() {
