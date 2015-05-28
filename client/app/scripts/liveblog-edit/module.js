@@ -173,8 +173,10 @@ define([
         });
     }
 
-    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify', 'gettext', 'modal', '$q'];
-    function BlogSettingsController($scope, blog, api, blogService, $location, notify, gettext, modal, $q) {
+    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
+        'gettext', 'config', 'modal', '$q'];
+    function BlogSettingsController($scope, blog, api, blogService, $location, notify,
+        gettext, config, modal, $q) {
         // set view's model
         var vm = this;
         angular.extend(vm, {
@@ -193,6 +195,7 @@ define([
                 }
                 vm.tab = tab;
             },
+            iframe_url: config.server.url.replace('/api', '/embed/' + blog._id),
             setFormsPristine: function() {
                 if (vm.forms.dirty) {
                     vm.forms.dirty = false;
@@ -265,7 +268,6 @@ define([
             vm.avUsers = data._items;
         });
         vm.buildOwner(blog.original_creator);
-
         //check if form is dirty before leaving the page
         var deregisterPreventer = $scope.$on('$locationChangeStart', function (event, next, current) {
             event.preventDefault();
@@ -293,10 +295,6 @@ define([
             $location.path($location.url(url).hash());
             deregisterPreventer();
         };
-        _.templateSettings.interpolate = /{{([\s\S]+?)}}/g;
-        var compiled = _.template(_.trim(angular.element('#liveblog-embed-template').html()));
-        /*globals config */
-        vm.embedCode = compiled({'rest': config.server.url, 'frontend': window.location.origin, id: vm.blog._id});
         vm.changeTab('general');
         vm.blog_switch = vm.newBlog.blog_status === 'open'? true: false;
     }

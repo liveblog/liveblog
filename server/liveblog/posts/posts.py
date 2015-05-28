@@ -69,7 +69,8 @@ class PostsResource(ArchiveResource):
             'default': 'open'
         },
         'deleted': {
-            'type': 'boolean'
+            'type': 'boolean',
+            'default': False
         },
         'order': {
             'type': 'number',

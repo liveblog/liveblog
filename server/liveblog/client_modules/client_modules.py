@@ -55,7 +55,7 @@ class ClientPostsResource(PostsResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('_updated', -1)]
+        'default_sort': [('order', -1)]
     }
     public_methods = ['GET']
     public_item_methods = ['GET']
@@ -80,7 +80,7 @@ class ClientBlogPostsResource(BlogPostsResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('_updated', -1)]
+        'default_sort': [('order', -1)]
     }
     public_methods = ['GET']
     public_item_methods = ['GET']

@@ -1,3 +1,6 @@
+Flask-Assets==0.10
+jsmin==2.1.1
+
 # hachoir3 and eve come from SD requirements
 # They are added here because they are retrieved from git and hg protocols. (This is not possible with setuptool)
 -e hg+http://bitbucket.org/haypo/hachoir3/#egg=hachoir3
