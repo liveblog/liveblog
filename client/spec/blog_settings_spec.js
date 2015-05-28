@@ -38,7 +38,7 @@ describe('Blog settings', function() {
         var inputDescription = element(by.model('settings.newBlog.description'));
         inputDescription.clear();
         inputDescription.sendKeys(blog.description);
-        element(by.css('[ng-click="settings.save()"]')).click();
+        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
         element(by.css('[href="/#/liveblog"]')).click();
         expectBlog(blog);
     });
@@ -54,7 +54,7 @@ describe('Blog settings', function() {
         openSettings();
         setLanguage(NEW_LANGUAGE);
         // save
-        element(by.css('[ng-click="settings.save()"]')).click();
+        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
         openSettings();
         expectSelectedLanguageIs(NEW_LANGUAGE);
     });
@@ -64,7 +64,7 @@ describe('Blog settings', function() {
         openSettings();
         setLanguage(NEW_LANGUAGE);
         // save a new value
-        element(by.css('[ng-click="settings.save()"]')).click();
+        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
         openSettings();
         expectSelectedLanguageIs(NEW_LANGUAGE);
         // reset
@@ -78,6 +78,10 @@ describe('Blog settings', function() {
         setLanguage(NEW_LANGUAGE);
         // cancel
         element(by.css('[ng-click="settings.close()"]')).click();
+        browser.wait(function() {
+            return element(by.css('.modal-footer.ng-scope')).isDisplayed();
+        });
+        element(by.css('button[ng-click="ok()"')).sendKeys(protractor.Key.ENTER);
         openSettings();
         expectSelectedLanguageIs(DEFAULT_LANGUAGE);
     });
@@ -100,7 +104,7 @@ describe('Blog settings', function() {
         element(by.buttonText('CHANGE OWNER')).click();
         element(by.repeater('user in settings.avUsers').row(1).column('user.display_name')).click();
         element(by.buttonText('SELECT')).click();
-        element(by.css('[ng-click="settings.save()"]')).click();
+        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
 
         openSettings();
         element(by.css('[data="blog-settings-team"]')).click();
@@ -113,7 +117,7 @@ describe('Blog settings', function() {
         openBlog(0);
         openSettings();
         element(by.css('[data-blog-status-switch]')).click();
-        element(by.css('[ng-click="settings.save()"]')).click();
+        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
         //click on back to liveblog list
         element(by.css('[class="icon-th-large"]')).click();
         //go to archive blogs
@@ -128,7 +132,7 @@ describe('Blog settings', function() {
         openBlog(0);
         openSettings();
         element(by.css('[data-blog-status-switch]')).click();
-        element(by.css('[ng-click="settings.save()"]')).click();
+        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
         //click on back to liveblog list
         element(by.css('[class="icon-th-large"]')).click();
         //go to archive blogs
