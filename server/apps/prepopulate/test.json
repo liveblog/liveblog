@@ -6,7 +6,8 @@
         "last_name": "last name",
         "password": "admin",
         "user_type": "administrator",
-        "email": "a@a_other.com"
+        "email": "a@a_other.com",
+	"sign_off": "abc"
     }
 },
 {
