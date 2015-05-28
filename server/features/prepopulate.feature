@@ -52,7 +52,7 @@ Feature: Prepopulate
 
         When we post to "/users"
         """
-        {"username": "foo", "password": "barbar", "email": "foo@bar.com"}
+        {"username": "foo", "password": "barbar", "email": "foo@bar.com", "sign_off": "abc"}
         """
         Then we get new resource
         """
