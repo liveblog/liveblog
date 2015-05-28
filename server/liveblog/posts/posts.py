@@ -44,19 +44,6 @@ class PostsVersionsService(BaseService):
         return self.backend.get('archive_versions', req=req, lookup=lookup)
 
 
-def private_draft_filter():
-    """Filter out users private drafts.
-    As private we treat items where user is creator
-    """
-    user = getattr(flask.g, 'user', None)
-    if user:
-        private_filter = {'should': [
-            {'term': {'post_status': 'open'}},
-            {'term': {'original_creator': str(user['_id'])}},
-        ]}
-    return {'bool': private_filter}
-
-
 class PostsResource(ArchiveResource):
     datasource = {
         'source': 'archive',

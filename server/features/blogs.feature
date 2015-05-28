@@ -20,7 +20,7 @@ Feature: Blog operations
 	    {"_items": [{"title": "title One", "description": "description", "blog_status": "open", "original_creator": {"username": "test_user"}}]}
 	    """
     
-	@auth
+    @auth
     Scenario: Update blog
         Given "blogs"
         """
@@ -79,7 +79,7 @@ Feature: Blog operations
                     {"title": "title Two", "description": "one", "blog_status": "open"} 
 	               ]}
 	    """
-	    
+
    	@auth
 	Scenario: Delete blog
 		Given "blogs"
@@ -93,5 +93,28 @@ Feature: Blog operations
         And we delete latest
         Then we get deleted response
 
-
-	
+		@auth
+        Scenario: Adding blogs with or without members
+        Given empty "users"
+        When we post to "users"
+            """
+            {"username": "foo_user", "email": "foo@bar.com", "is_active": true, "sign_off": "abc"}
+            """
+        When we find for "users" the id as "user_foo" by "{"username": "foo_user"}"
+        Given "blogs"
+        """
+        [
+         {"title": "foo blog", "description": "blog with one member", "blog_status": "open", "members": [{"user": "#user_foo#"}]}, 
+         {"title": "bar blog", "description": "blog without members", "blog_status": "open"}
+        ]
+        """
+        When we get "/blogs"
+        Then we get list with 2 items
+            """
+            {"_items": [{"title": "bar blog"},{"title": "foo blog", "members": [{"user": "#user_foo#"}]}]}
+            """
+                When we get "/users/#user_foo#/blogs"
+                Then we get list with 1 items
+            """
+            {"_items": [{"title": "foo blog", "members": [{"user": "#user_foo#"}]}]}
+            """

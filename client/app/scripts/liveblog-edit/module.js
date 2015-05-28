@@ -103,15 +103,6 @@ define([
                     notify.error(gettext('Something went wrong. Please try again later'));
                 });
             },
-            toggleBlogState: function() {
-                var newStateValue = $scope.blog.blog_status === 'open' ? 'closed': 'open';
-                api.blogs.save($scope.blog, {'blog_status': newStateValue})
-                .then(function() {
-                    $scope.blog.blog_status = newStateValue;
-                }, function(response) {
-                    notify.error(gettext('Something went wrong. Please try again later'));
-                });
-            },
             // retrieve draft panel status from url
             draftPanelState: $routeParams.drafts === 'open'? 'open' : 'closed',
             toggleDraftPanel: function() {
@@ -182,8 +173,10 @@ define([
         });
     }
 
-    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify', 'gettext', 'config'];
-    function BlogSettingsController($scope, blog, api, blogService, $location, notify, gettext, config) {
+    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
+        'gettext', 'config', 'modal', '$q'];
+    function BlogSettingsController($scope, blog, api, blogService, $location, notify,
+        gettext, config, modal, $q) {
         // set view's model
         var vm = this;
         angular.extend(vm, {
@@ -198,17 +191,34 @@ define([
             tab: false,
             changeTab: function(tab) {
                 if (vm.tab) {
-                    vm.forms.$dirty = vm.forms.$dirty || vm.forms[vm.tab].$dirty;
+                    vm.forms.dirty = vm.forms.dirty || vm.forms[vm.tab].$dirty;
                 }
                 vm.tab = tab;
             },
             iframe_url: config.server.url.replace('/api', '/embed/' + blog._id),
+            setFormsPristine: function() {
+                if (vm.forms.dirty) {
+                    vm.forms.dirty = false;
+                }
+                angular.forEach(vm.forms, function(value, key) {
+                    if (vm.forms[key] && vm.forms[key].$dirty) {
+                        vm.forms[key].$setPristine();
+                    }
+                });
+            },
+            saveAndClose: function() {
+                vm.save().then(function() {
+                    vm.close();
+                });
+            },
             save: function() {
-                // save on backend and clsoe
+                // save on backend
+                var deferred = $q.defer();
                 notify.info(gettext('saving blog settings'));
                 var changedBlog = {
                         blog_preferences: vm.blogPreferences,
-                        original_creator: vm.original_creator._id};
+                        original_creator: vm.original_creator._id,
+                        blog_status: vm.blog_switch === true? 'open': 'closed'};
                     angular.forEach(vm.newBlog, function(value, key) {
                         changedBlog[key] = value;
                     });
@@ -217,8 +227,10 @@ define([
                     vm.blog = blog;
                     notify.pop();
                     notify.info(gettext('blog settings saved'));
-                    vm.close();
-                }) ;
+                    vm.setFormsPristine();
+                    deferred.resolve();
+                });
+                return deferred.promise;
             },
             reset: function() {
                 // reset vm.blogPreferences's values with the ones from global_preferences (backend)
@@ -239,6 +251,7 @@ define([
                     vm.temp_selected_owner = vm.original_creator = data;
                 });
             }
+
         });
         // load available languages
         api('languages').query().then(function(data) {
@@ -255,6 +268,35 @@ define([
             vm.avUsers = data._items;
         });
         vm.buildOwner(blog.original_creator);
+        //check if form is dirty before leaving the page
+        var deregisterPreventer = $scope.$on('$locationChangeStart', function (event, next, current) {
+            event.preventDefault();
+            //check if one of the forms is dirty
+            var dirty = false;
+            if (vm.forms.dirty) {
+                dirty = true;
+            } else {
+                angular.forEach(vm.forms, function(value, key) {
+                    if (vm.forms[key] && vm.forms[key].$dirty) {
+                        dirty = true;
+                        return;
+                    }
+                });
+            }
+            if (dirty) {
+                modal.confirm(gettext('You have unsaved settings. Are you sure you want to leave the page?')).then(function() {
+                    goToNextPage(next);
+                });
+            } else {
+                goToNextPage(next);
+            }
+        });
+        var goToNextPage = function(url) {
+            $location.path($location.url(url).hash());
+            deregisterPreventer();
+        };
+        vm.changeTab('general');
+        vm.blog_switch = vm.newBlog.blog_status === 'open'? true: false;
     }
 
     /**

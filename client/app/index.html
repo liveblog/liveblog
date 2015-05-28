@@ -8,16 +8,16 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
     <!-- Superdesk styles -->
-    <link rel="stylesheet" href="scripts/bower_components/superdesk/client/bower/styles/css/bootstrap.css">
     <link rel="stylesheet" href="scripts/bower_components/superdesk/client/bower/styles/css/app.css">
 
     <!-- Liveblog specific styles -->
+    <link rel="stylesheet" href="styles/css/lb-bootstrap.css">
     <link rel="stylesheet" href="styles/css/liveblog.css">
     <link rel="stylesheet" href="styles/css/app.css">
-    <link rel="stylesheet" href="styles/css/sir-trevor-icons.css" type="text/css" media="screen" title="no title" charset="utf-8">    
-    <link rel="stylesheet" href="styles/css/sir-trevor.css" type="text/css" media="screen" title="no title" charset="utf-8">    
 
     <!-- Dependecy specific styles -->
+    <link rel="stylesheet" href="styles/css/sir-trevor-icons.css" type="text/css" media="screen" title="no title" charset="utf-8">
+    <link rel="stylesheet" href="styles/css/sir-trevor.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <link rel="stylesheet" href="scripts/bower_components/jcrop/css/jquery.Jcrop.css">
     <link rel="stylesheet" href="scripts/bower_components/dragula.js/dist/dragula.min.css">
     <link rel="stylesheet" href="scripts/bower_components/sir-trevor-js/sir-trevor.css" type="text/css" media="screen" title="no title" charset="utf-8">
@@ -42,14 +42,15 @@
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/editor/editor.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/features/features.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/services/asset.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/privileges/privileges.js"></script>    
+    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/list/list.js"></script>
+    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/keyboard/keyboard.js"></script>
+    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/privileges/privileges.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/notification/notification.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-search/search.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/itemList/itemList.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/menu/menu.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/menu/notifications/notifications.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-search/search.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-desks/desks.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/authoring.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/widgets/widgets.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/comments/comments.js"></script>
@@ -99,6 +100,7 @@
             'liveblog.settings',
             'superdesk.users',
             'superdesk.scratchpad',
+            'superdesk.list',
             'superdesk.notification',
             'superdesk.users.import',
             'superdesk.users.profile',

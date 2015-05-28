@@ -13,6 +13,9 @@ var files = [
         dest: '<%= distDir %>/styles/css/liveblog.css',
         src: '<%= appDir %>/styles/less/liveblog.less'
     }, {
+        dest: '<%= distDir %>/styles/css/lb-bootstrap.css',
+        src: '<%= appDir %>/styles/less/lb-bootstrap.less'
+    }, {
         expand: true,
         dest: '<%= tmpDir %>/',
         cwd: '<%= appDir %>/scripts/',
@@ -26,7 +29,8 @@ module.exports = {
         options: {
             paths: ['<%= appDir %>/styles/less', '<%= appDir %>/scripts/bower_components/superdesk/client/app/styles/less'],
             compress: false,
-            cleancss: true
+            cleancss: true,
+            relativeUrls: true
         },
         files: files
     },
