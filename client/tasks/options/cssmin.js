@@ -1,7 +1,14 @@
-
 module.exports = {
-    combine: {
-        dest: '<%= distDir %>/styles/css/app.css',
-        src: '<%= tmpDir %>/**/*.css'
+    target: {
+        files: [
+            {
+                dest: '<%= distDir %>/styles/css/sd-app.css',
+                src: ['<%= tmpDir %>/superdesk*/**/*.css']
+            },
+            {
+                dest: '<%= distDir %>/styles/css/app.css',
+                src: ['<%= tmpDir %>/liveblog*/**/*.css']
+            }
+        ]
     }
 };
