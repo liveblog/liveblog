@@ -35,6 +35,15 @@ blogs_schema = {
         'allowed': ['blog'],
         'default': 'blog'
     },
+    'members': {
+        'type': 'list',
+        'schema': {
+            'type': 'dict',
+            'schema': {
+                'user': Resource.rel('users', True)
+            }
+        }
+    },
     'blog_preferences': {
         'type': 'dict'
     }

@@ -8,7 +8,8 @@
         "last_name": "last name",
         "password": "admin",
         "user_type": "administrator",
-        "email": "a@a.com"
+        "email": "a@a.com",
+	"sign_off": "abc"
     }
 },
 {
