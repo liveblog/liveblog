@@ -48,6 +48,9 @@
         <!-- GRID VIEW -->
         <ul class="card-list" ng-if="gridview">
             <li ng-repeat="blog in blogs._items track by blog._id" ng-click="edit(blog)">
+                <figure class="media">
+                    <img ng-if="blog.picture" src="{{blog.picture_url}}">
+                </figure>            
                 <!--<div class="close" ng-click="remove(blog)"><i class="icon-close-small"></i></div>-->
                 <div class="content">
                     <span class="time">{{ ::'Last udpated' | translate }}: <time>{{ ::blog._updated | reldate }}</time></span>

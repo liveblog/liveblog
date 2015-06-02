@@ -114,6 +114,19 @@ describe('blogs', function() {
             element(by.buttonText('CREATE')).click();
             expectBlog(newBlog);
         });
+        it('should add blog with a image', function() {
+            var path = require('path');
+            element(by.css('[ng-click="openNewBlog();"]')).click();
+            //after the add new blog model is displayed
+            browser.wait(element(by.model('newBlog.title')).isDisplayed);
+            element(by.model('newBlog.title')).sendKeys(newBlog.title);
+            element(by.model('newBlog.description')).sendKeys(newBlog.description);
+            var fileToUpload = './upload/-busstop-jpg-1600-900.jpg',
+                absolutePath = path.resolve(__dirname, fileToUpload);
+            element(by.css('input[type="file"]')).sendKeys(absolutePath);
+            element(by.buttonText('CREATE')).click();
+            expectBlog(newBlog);
+        });
     });
 
 });
