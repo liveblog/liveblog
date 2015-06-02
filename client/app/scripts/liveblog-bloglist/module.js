@@ -51,10 +51,15 @@
         };
 
         $scope.createBlog = function() {
+            var members = _.map($scope.deskMembers, function(obj) {
+                return {user: obj._id};
+            });
+            console.log('members is ', members);
             if (angular.equals({}, $scope.preview)) {
                $scope.makeBlog({
                     title: $scope.newBlog.title,
-                    description: $scope.newBlog.description
+                    description: $scope.newBlog.description,
+                    members: members
                 });
             } else {
                 $scope.upload($scope.preview).then(function() {
@@ -212,5 +217,136 @@
                 }
             }
         };
-    });
+    })
+    .directive('lbUserSelectList', ['$filter', 'api', function($filter, api) {
+            return {
+                scope: {
+                    exclude: '=',
+                    onchoose: '&'
+                },
+                templateUrl: 'scripts/bower_components/superdesk/client/app/scripts/superdesk-desks/views/user-select.html',
+                ///home/vlad/work/liveblog/client/app/scripts/bower_components/superdesk/client/app/scripts/superdesk-desks/views/user-select.html
+                link: function(scope, elem, attrs) {
+
+                    var ARROW_UP = 38, ARROW_DOWN = 40, ENTER = 13;
+
+                    scope.selected = null;
+                    scope.search = null;
+                    scope.users = {};
+                    scope.exclude = [];
+
+                    console.log('_ is ', _);
+
+                    var _refresh = function() {
+                        scope.users = {};
+                        return api('users').query({where: JSON.stringify({
+                            '$or': [
+                                {username: {'$regex': scope.search, '$options': '-i'}},
+                                {first_name: {'$regex': scope.search, '$options': '-i'}},
+                                {last_name: {'$regex': scope.search, '$options': '-i'}},
+                                {email: {'$regex': scope.search, '$options': '-i'}}
+                            ]
+                        })})
+                        .then(function(result) {
+                            scope.users = result;
+                            console.log(scope.users = result, scope.exclude);
+                            scope.users._items = _.filter(scope.users._items, function(item) {
+                                //return _.findIndex(scope.exclude, {_id: item._id}) === -1;
+                                var ret = scope.exclude.indexOf({_id: item._id}) === -1;
+                                console.log('ret is ', ret);
+                                return scope.exclude.indexOf({_id: item._id}) === -1;
+                            });
+                            scope.selected = null;
+                        });
+                    };
+                    var refresh = _.debounce(_refresh, 1000);
+
+                    scope.$watch('search', function() {
+                        if (scope.search) {
+                            refresh();
+                        }
+                    });
+
+                    function getSelectedIndex() {
+                        if (scope.selected) {
+                            return _.findIndex(scope.users._items, scope.selected);
+                        } else {
+                            return -1;
+                        }
+                    }
+
+                    function previous() {
+                        var selectedIndex = getSelectedIndex();
+                        if (selectedIndex > 0) {
+                            scope.select(scope.users._items[_.max([0, selectedIndex - 1])]);
+                        }
+                    }
+
+                    function next() {
+                        var selectedIndex = getSelectedIndex();
+                        scope.select(scope.users._items[_.min([scope.users._items.length - 1, selectedIndex + 1])]);
+                    }
+
+                    elem.bind('keydown keypress', function(event) {
+                        scope.$apply(function() {
+                            switch (event.which) {
+                                case ARROW_UP:
+                                    event.preventDefault();
+                                    previous();
+                                    break;
+                                case ARROW_DOWN:
+                                    event.preventDefault();
+                                    next();
+                                    break;
+                                case ENTER:
+                                    event.preventDefault();
+                                    if (getSelectedIndex() >= 0) {
+                                        scope.choose(scope.selected);
+                                    }
+                                    break;
+                            }
+                        });
+                    });
+
+                    scope.choose = function(user) {
+                        scope.onchoose({user: user});
+                        scope.search = null;
+                    };
+
+                    scope.select = function(user) {
+                        scope.selected = user;
+                    };
+                }
+            };
+        }])
+        .directive('lbBlogeditPeople', ['gettext', 'WizardHandler', 'desks',  '$rootScope',
+            function(gettext, WizardHandler, desks, $rootScope) {
+            return {
+                link: function(scope, elem, attrs) {
+
+                    scope.search = null;
+                    $rootScope.deskMembers = [];
+                    scope.message = null;
+
+                    scope.add = function(user) {
+                        $rootScope.deskMembers.push(user);
+                    };
+
+                    scope.remove = function(user) {
+
+                        console.log('deskMembers index', $rootScope.deskMembers.indexOf(user));
+                        //_.remove(scope.deskMembers, user);
+                        var index = $rootScope.deskMembers.indexOf(user)
+                        $rootScope.deskMembers.splice(index, 1);
+                    };
+
+                    scope.save = function() {
+                        var members = _.map(scope.deskMembers, function(obj) {
+                            return {user: obj._id};
+                        });
+                    };
+                }
+            };
+        }])
+;
 })();
