@@ -33,6 +33,7 @@
 @sd-blue: 				#5ea9c8;
 @sd-blue-text: 			#3599b6;
 @sd-hover:				#eff7fa;
+@sd-keyword:            #216278;
 
 
 @todo-color : 			#b70000;
@@ -168,13 +169,15 @@
 
 // Tablists and Tabpanes
 // -------------------------
-@tablist-width : 48px;
-@tablist-background:  #a1a1a1;
+@tablist-width :            48px;
+@tablist-background:        #a1a1a1;
 
-@tabpane-background:  #f5f5f5;
-@tabpane-border:      #7c7c7c;
-@tabpane-width:       330px;
-@tabcontent-padding:  15px;
+@tabpane-background:        #f5f5f5;
+@tabpane-border:            #7c7c7c;
+@tabpane-width:             330px;
+@tabpane-extended-width:    460px;
+@tabcontent-padding:        15px;
+@article-tabpane-padding:   10px;
 
 
 
@@ -190,3 +193,29 @@
 
 //Layout 
 @bottom-view-padding: @scratchpad-closed;
+
+// Article edit screen
+@authoring-opened-articles: 30px;
+
+//Layout
+@bottom-view-padding: @scratchpad-closed + @authoring-opened-articles + 20px;
+
+//Archive
+@archive-sidebar-width: 300px;
+@archive-sidebar-bg: #ededed;
+
+//State colors
+@state-color-default: rgb(140, 140, 140);
+@state-color-blue: rgb(93, 155, 192);
+@state-color-green: rgb(94, 141, 50);
+@state-color-yellow: rgb(209, 187, 3);
+@state-color-orange: rgb(218, 138, 51);
+@state-color-navy: rgb(0, 0, 128);
+@state-color-red: rgb(206, 69, 51);
+
+//Search
+@generic-searchbar: 320px;
+
+//Box shadows
+@block-shadow-depth-1: 0px 1px 2px 0 rgba(0, 0, 0, 0.12);
+@block-shadow-depth-2: 0px 1px 4px 0 rgba(0, 0, 0, 0.2);

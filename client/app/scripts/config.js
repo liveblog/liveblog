@@ -11,7 +11,7 @@ require.config({
         underscore: 'bower_components/underscore/underscore-min',
         dragula: 'bower_components/dragula.js/dist/dragula.min',
 
-        'angular-ui': 'bower_components/angular-bootstrap/ui-bootstrap',
+        'angular-ui': 'bower_components/angular-bootstrap/ui-bootstrap-tpls',
         'angular-resource': 'bower_components/angular-resource/angular-resource',
         'angular-route': 'bower_components/angular-route/angular-route',
         'angular-gettext': 'bower_components/angular-gettext/dist/angular-gettext',
@@ -22,20 +22,17 @@ require.config({
         'angular-embed': 'bower_components/angular-embed/dist/angular-embed',
         'angular-embedly': 'bower_components/angular-embedly/em-minified/angular-embedly.min',
 
-        'moment-timezone': 'bower_components/moment-timezone/builds/moment-timezone-with-data-2010-2020',
-
-        'jquery-ui': 'bower_components/jquery-ui/jquery-ui',
-        'eventable': 'bower_components/Eventable/eventable',
-        'sir-trevor': 'bower_components/sir-trevor-js/sir-trevor.min',
-        'ng-sir-trevor': 'bower_components/ng-sir-trevor/dist/ng-sir-trevor',
-
-        'bootstrap-daterange': 'bower_components/bootstrap-daterangepicker/daterangepicker',
-        'raven-js': 'bower_components/raven-js/dist/raven',
         'superdesk': 'bower_components/superdesk/client/app/scripts/superdesk',
         'superdesk-settings': 'bower_components/superdesk/client/app/scripts/superdesk-settings',
         'superdesk-dashboard': 'bower_components/superdesk/client/app/scripts/superdesk-dashboard',
-        'superdesk-users': 'bower_components/superdesk/client/app/scripts/superdesk-users',
-        'superdesk-scratchpad': 'bower_components/superdesk/client/app/scripts/superdesk-scratchpad'
+
+        'moment-timezone': 'bower_components/moment-timezone/builds/moment-timezone-with-data-2010-2020',
+
+        'raven-js': 'bower_components/raven-js/dist/raven',
+        'jquery-ui': 'bower_components/jquery-ui/jquery-ui',
+        'eventable': 'bower_components/Eventable/eventable',
+        'sir-trevor': 'bower_components/sir-trevor-js/sir-trevor.min',
+        'ng-sir-trevor': 'bower_components/ng-sir-trevor/dist/ng-sir-trevor'
     },
     shim: {
         jquery: {exports: 'jQuery'},
@@ -59,7 +56,7 @@ require.config({
         'angular-gettext': ['angular'],
         'angular-mocks': ['angular'],
         'angular-file-upload': ['angular', 'angular-file-upload-shim'],
-        'bootstrap_ui': ['angular'],
+
         'translations': ['angular-gettext'],
         'angular-ui': ['angular', 'bootstrap'],
         'angular-slider': ['angular'],
@@ -67,10 +64,6 @@ require.config({
 
         'bootstrap': ['jquery'],
         'jquery-ui': ['jquery'],
-        'bootstrap/tooltip': ['jquery'],
-        'bootstrap/modal': ['jquery'],
-        'bootstrap/dropdown': ['jquery'],
-        'bootstrap-daterange': ['jquery', 'moment'],
         'bower_components/jcrop/js/jquery.Jcrop': ['jquery']
     }
 });

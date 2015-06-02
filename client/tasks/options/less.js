@@ -21,6 +21,13 @@ var files = [
         cwd: '<%= appDir %>/scripts/',
         src: ['liveblog-*/**/*.less'],
         ext: '.css'
+    },
+    {
+        expand: true,
+        dest: '<%= tmpDir %>/',
+        cwd: '<%= appDir %>/scripts/bower_components/superdesk/client/app/scripts',
+        src: ['superdesk/**/*.less', 'superdesk-*/**/*.less'],
+        ext: '.css'
     }
 ];
 

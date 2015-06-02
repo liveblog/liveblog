@@ -315,7 +315,14 @@ define([
             });
     }
 
-    var app = angular.module('liveblog.edit', ['SirTrevor', 'SirTrevorBlocks', 'angular-embed', 'angular-embed.handlers', 'ngRoute']);
+    var app = angular.module('liveblog.edit', [
+        'SirTrevor',
+        'SirTrevorBlocks',
+        'angular-embed',
+        'angular-embed.handlers',
+        'ngRoute',
+        'superdesk.services.modal'
+    ]);
     app.config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/liveblog/edit/:_id', {
             label: gettext('Blog Edit'),
