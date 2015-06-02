@@ -120,7 +120,21 @@
                     </div>                    
                 </fieldset>
             </div>
-
+            <div lb-blogedit-people>
+                <div lb-user-select-list data-exclude="deskMembers" data-onchoose="add(user)"></div>
+                <div class="content">
+                    <p ng-if="message">{{ message }}</p>
+                    <div class="member-list clearfix">
+                        <ul>
+                            <li ng-repeat="user in deskMembers" ng-class="{'inactive' : !user.is_enabled || !user.is_active}">
+                                <i class="icon-close-small" ng-click="remove(user)">x</i>
+                                <figure class="avatar"><img sd-user-avatar data-src="user.picture_url"></figure>
+                                <div class="name">{{user.display_name}}</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
             <div class="modal-footer"> 
                 <span class="error">{{newBlogError}}</span> 
                 <button type="button" class="btn btn-default" ng-click="cancelCreate()" translate>Cancel</button>
