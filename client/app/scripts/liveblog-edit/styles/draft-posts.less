@@ -20,9 +20,6 @@
                 border-bottom: 1px solid #DBDBDB;
                 .border-radius(0);
             }
-            &__item {
-                margin-right: 10px;
-            }
             &__content {margin-left: 0;}
             &__figure { // smaller figure
                 margin-right: 0;
@@ -39,6 +36,7 @@
                 &-holder {
                     background-color: transparent;
                     border-top: none;
+                    height: 15px;
                 }
             }
             &__collapser-multiple-items {
@@ -57,6 +55,12 @@
                     height: 33%;
                 }
             }
+            &__editable {
+                border: none;
+                &:hover {
+                    border: none;
+                }
+            }
         }
     }
 }
@@ -65,7 +69,7 @@
 .blogedit {
     .big-icon-archive {
         height: 28px;
-        background-position: 3px 0;
+        background-position: 0 0;
     }
     .icon-archive {
         background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCIgdmlld0JveD0iMCAwIDE2IDE2IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxNiAxNiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPHBhdGggZD0iTTIgMXYxM2gydjFoM3YtMWgzdjFoM3YtMWgyVjFIMnogTTEzIDEySDRWM2g5VjEyeiIvPgoJPHBhdGggZD0iTTEyIDRINXYzaDdWNHogTTExIDZINlY1aDVWNnoiLz4KCTxwYXRoIGQ9Ik0xMiA4SDV2M2g3Vjh6IE0xMSAxMEg2VjloNVYxMHoiLz4KPC9nPgo8L3N2Zz4K);

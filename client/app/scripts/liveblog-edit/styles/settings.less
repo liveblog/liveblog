@@ -1,13 +1,15 @@
 @SUBNAV_HEIGHT: 48px;
 @PADDING: 20px;
 .settings-disabled {
-    opacity: 0.3;
+    .navbtn {
+        opacity: 0.3;
+    }
 }
 .blog-settings-view {
     .settings-page {
         top: @SUBNAV_HEIGHT*3;
         > .subnav {
-            top: @SUBNAV_HEIGHT*2;
+            top: @SUBNAV_HEIGHT*2 + 1;
             background-color: #eaeaea;
         }
         .tab-content {

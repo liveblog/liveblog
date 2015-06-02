@@ -9,12 +9,28 @@
 	background: #e0e0e0;
 }
 
-.subnav {
-    box-shadow: 0px 1px 0px rgba(11, 10, 10, 0.11) inset, 0px 1px 3px rgba(0, 0, 0, 0.07);
-}
-
-.button-stack.active {
-    background-color: #eaeaea;
+.button-stack {
+    &.right-stack {
+        .navbtn {
+            line-height: 46px;
+        }
+    }
+    &.active {
+        background-color: #eaeaea;
+        &.right-stack {
+            border-left: 1px solid #d1d1d1 !important;
+            height: 49px !important;
+            .navbtn {
+                border-left: none !important;
+                &:hover {
+                    background-color: transparent;
+                }
+            }
+        }
+    }
+    .nav-tabs {
+        margin-left: 20px;
+    }
 }
 
 .homebtn {
