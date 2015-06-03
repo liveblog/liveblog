@@ -1,70 +1,41 @@
 <!doctype html>
 <html ng-app="liveblog-embed">
     <head>
-        <title>Embed</title>
+        <title>{{ blog.title }}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-        {% assets
-            "embed_liveblog/styles/embed.css",
-            output="gen/lb-embed.css"
-        %}
-            <link rel="stylesheet" href="{{ ASSET_URL }}">
-        {% endassets %}
-        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
 
+        {% for style in blog.blog_preferences.theme.styles %}
+            <link rel="stylesheet" href="{{ style }}">{% endfor %}
     </head>
+
     <body>
 
-        <div ng-controller="timelineCtrl as timeline" class="lb-timeline">
-            <h1>
-                [[ timeline.blog.title ]]
-                <small>
-                    [[ timeline.blog.description ]]
-                    <span class="badge">[[ timeline.pagesManager.meta.total ]] posts</span>
-                </small>
-            </h1>
-            <a  ng-click="timeline.retrieveUpdate(true)"
-                class="btn btn-info">Update <span class="badge">[[ timeline.updatesAvailable ]]</span></a>
-            <label>
-                <input type="checkbox" ng-model="timeline.autoUpdate"> Auto update
-            </label>
-            <ul class="list-group">
-                <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item">
-                    <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
-                        <div ng-bind-html="item.text"></div>
-                    </div>
-                    <div class="debug">
-                        <!-- <pre>[[ post | json ]]</pre> -->
-                        <span>#[[ $index + 1 ]] | order: #[[ post.order ]] | post_status: [[ post.post_status ]] | updated: [[ post._updated ]] | deleted: [[ post.deleted ]]</span>
-                    </div>
-                </li>
-            </ul>
-            <div class="text-center">
-                <a  ng-click="timeline.pagesManager.fetchNewPage()"
-                    class="btn btn-default">Load more posts</a>
-            </div>
-        </div>
+        <lb-template></lb-template>
 
-        <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
-        <script src="//code.angularjs.org/1.3.14/angular-resource.js"></script>
-        <script src="//code.angularjs.org/1.3.14/angular-sanitize.js"></script>
-        <script src="//code.angularjs.org/1.3.14/angular-animate.js"></script>
-        <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
+        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
+        <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular-resource.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
 
         <script type="text/javascript">
-            window.LB_BLOG_ID = '{{ blog_id }}';
+            window.LB_BLOG_ID = '{{ blog._id }}';
             window.LB_API_HOST = '{{ api_host }}';
+            window.LB_BLOG_PREFERENCES = {{ blog.blog_preferences | tojson }};
+            angular.module('liveblog-embed', ['ngResource', window.LB_BLOG_PREFERENCES.theme.themeModule]);
         </script>
 
         {% assets
-            "embed_liveblog/scripts/liveblog-embed/main.js",
             "embed_liveblog/scripts/liveblog-embed/resources.service.js",
             "embed_liveblog/scripts/liveblog-embed/pages-manager.service.js",
             output="gen/lb-embed.js", filters="jsmin"
         %}
             <script type="text/javascript" src="{{ ASSET_URL }}"></script>
         {% endassets %}
+
+        {% for script in blog.blog_preferences.theme.scripts %}
+            <script type="text/javascript" src="{{ script }}"></script>
+        {% endfor %}
 
     </body>
 </html>

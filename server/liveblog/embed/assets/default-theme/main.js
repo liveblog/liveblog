@@ -30,15 +30,17 @@
         vm.pagesManager.fetchNewPage()
         // retrieve updates periodically
         .then(function() {
-            $interval(retrieveUpdate, 2000);
+            $interval(retrieveUpdate, 10000);
         });
     }
 
-    angular.module('liveblog-embed', ['ngResource', 'ngSanitize' ,'ngAnimate'])
-        .config(['$interpolateProvider', function($interpolateProvider) {
-            // change the template tag symbols to allow flask template tags
-            $interpolateProvider.startSymbol('[[').endSymbol(']]');
-        }])
-        .controller('timelineCtrl', TimelineCtrl);
+    angular.module('liveblog.default-theme', ['liveblog-embed', 'ngSanitize' ,'ngAnimate'])
+        .directive('lbTemplate', function() {
+            return {
+                controller: TimelineCtrl,
+                controllerAs: 'timeline',
+                templateUrl: '/assets/default-theme/default-theme-template.html'
+            };
+        });
 
 })(angular);

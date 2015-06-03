@@ -11,12 +11,27 @@
 """Embed module"""
 import superdesk
 from flask import render_template, request
+from superdesk import get_resource_service
 
 bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates', static_folder='assets')
 
 
 @bp.route('/embed/<blog_id>')
 def embed(blog_id):
-    return render_template('embed.html', blog_id=blog_id, api_host=request.url_root)
+    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    blog['blog_preferences']['theme'] = {
+        'template': 'default-theme/default-theme-template.html',
+        'themeModule': 'liveblog.default-theme',
+        'styles': [
+            '/assets/default-theme/styles/embed.css',
+            '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css'
+        ],
+        'scripts': [
+            '//code.angularjs.org/1.3.14/angular-sanitize.js',
+            '//code.angularjs.org/1.3.14/angular-animate.js',
+            '/assets/default-theme/main.js'
+        ]
+    }
+    return render_template('embed.html', blog=blog, api_host=request.url_root)
 
 # EOF
