@@ -52,7 +52,6 @@
                     <div ng-if="blog.picture" if-background-image="{{blog.picture_url}}"></div>
                 </figure>            
                 <div class="content">
-                    <span class="time">{{ ::'Last udpated' | translate }}: <time>{{ ::blog._updated | reldate }}</time></span>
                     <h3>{{ ::blog.title }}</h3>
                     <div class="description">{{ ::blog.description }}</div>
                 </div>
@@ -62,6 +61,8 @@
                         <dd>{{ ::blog.original_creator | username }}</dd>
                         <dt>{{ ::'Created' | translate}}:</dt>
                         <dd sd-reldate ng-model="blog._created"></dd>
+                        <dt>{{ ::'Last udpated' | translate }}:</dt>
+                        <dd><time>{{ ::blog._updated | reldate }}</time></dd>
                     </dl>
                 </div>
             </li>

@@ -40,11 +40,9 @@
 				border: 1px solid #d4d4d4;
 				background-color: white;
 				margin: 0 0 20px 20px;
-				padding: 20px;
+				padding: 10px;
 				cursor: pointer;
 				width: 260px;
-				height: 300px;
-				padding: 0;
 				.border-box();
 				float: left;
 				.close {
@@ -53,15 +51,23 @@
 					top: 10px;
 				}
                 .media {
-                    width: 248px;
-                    height: 150px;
-                    padding: 5px;
+                    max-width: 100%;
+                    height: 140px;                    
+                    .border-box();
+                    background: #f8f8f8 url('../../images/blog-default-img.png') no-repeat center center;
+                    div {
+                    	width: 238px;
+                    	height: 140px;
+                    	background-position: center center;
+                    	background-size: cover;
+                    }
                 }
 				.content {
 					height: 70px;
 					.border-box();
-					padding: 20px;
+					padding: 0;
 					overflow: hidden;
+					margin: 10px 0 0;
 					.time {
 						font-size: 13px;
 						font-style: italic;
@@ -69,33 +75,48 @@
 					}
 					h3 {
 						color: @sd-blue;
-						padding: 5px 0;
+						padding: 0 0 5px 0;
 						max-height: 54px;
-						overflow: hidden;
+						font-size: 16px;
+						line-height: 20px;
+						white-space: nowrap;
+  						overflow: hidden;
+  						text-overflow: ellipsis;
 					}
 					.description {
-						max-height: 70px;
+						max-height: 30px;
+						font-size: 12px;
+						line-height: 15px;
+						color: @gray;
 						overflow: hidden;
+						word-break: break-all;					
 					}
 				}
 
 				.footer {
 					height: 65px;
 					border-top: 1px solid #ebebeb;
-					padding: 12px 20px;
+					padding: 10px 10px 5px 10px;
+					margin: 0 -10px;
 					.border-box();
 					dl {
 						margin: 0;
-						font-size: 13px;
+						font-size: 11px;
 						dt {
 							.text-light();
 							clear: both;
 							float: left;
-							color: #bcbcbc;
+							color: #b4b4b4;
+							font-weight: 400;
+							line-height: 16px;
+							min-width: 82px;
+							text-transform: uppercase;
 						}
 						dd {
 							.text-light();
 							float: left;
+							font-weight: 400;
+							line-height: 16px;
 						}
 					}
 				};
