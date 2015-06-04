@@ -101,14 +101,15 @@ Feature: Blog operations
             {"username": "foo_user", "email": "foo@bar.com", "is_active": true, "sign_off": "abc"}
             """
         When we find for "users" the id as "user_foo" by "{"username": "foo_user"}"
-        Given "blogs"
+        Given empty "blogs"
+        When we post to "/blogs"
         """
         [
          {"title": "foo blog", "description": "blog with one member", "blog_status": "open", "members": [{"user": "#user_foo#"}]}, 
          {"title": "bar blog", "description": "blog without members", "blog_status": "open"}
         ]
         """
-        When we get "/blogs"
+        And we get "/blogs"
         Then we get list with 2 items
             """
             {"_items": [{"title": "bar blog"},{"title": "foo blog", "members": [{"user": "#user_foo#"}]}]}
@@ -117,4 +118,27 @@ Feature: Blog operations
                 Then we get list with 1 items
             """
             {"_items": [{"title": "foo blog", "members": [{"user": "#user_foo#"}]}]}
+            """
+
+	@auth
+    @notification
+    Scenario: Create new blog and get notification
+        Given empty "users"
+        Given empty "blogs"
+        When we post to "users"
+            """
+            {"username": "foo", "email": "foo@bar.com", "is_active": true, "sign_off": "abc"}
+            """
+        When we post to "/blogs"
+            """
+            {"title": "Sports blog", "members": [{"user": "#users._id#"}]}
+            """
+        And we get "/blogs"
+        Then we get list with 1 items
+            """
+            {"_items": [{"title": "Sports blog", "members": [{"user": "#users._id#"}]}]}
+            """
+        Then we get notifications
+            """
+            [{"event": "blog", "extra": {"created": 1, "blog_id": "#blogs._id#"}}]
             """
