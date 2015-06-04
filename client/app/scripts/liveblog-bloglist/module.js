@@ -235,8 +235,6 @@
                     scope.users = {};
                     scope.exclude = [];
 
-                    console.log('_ is ', _);
-
                     var _refresh = function() {
                         scope.users = {};
                         return api('users').query({where: JSON.stringify({
@@ -249,7 +247,6 @@
                         })})
                         .then(function(result) {
                             scope.users = result;
-                            console.log(scope.users = result, scope.exclude);
                             scope.users._items = _.filter(scope.users._items, function(item) {
                                 //return _.findIndex(scope.exclude, {_id: item._id}) === -1;
                                 var ret = scope.exclude.indexOf({_id: item._id}) === -1;
@@ -334,7 +331,6 @@
 
                     scope.remove = function(user) {
 
-                        console.log('deskMembers index', $rootScope.deskMembers.indexOf(user));
                         //_.remove(scope.deskMembers, user);
                         var index = $rootScope.deskMembers.indexOf(user)
                         $rootScope.deskMembers.splice(index, 1);
