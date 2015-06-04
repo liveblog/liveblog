@@ -16,7 +16,7 @@ Feature: Themes operations
         """  
         Then we get existing resource
         """
-        {"name": "forest", "colour": "green"}
+        {"name": "forest"}
         """  
 
 	@auth

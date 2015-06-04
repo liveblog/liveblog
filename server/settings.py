@@ -137,14 +137,6 @@ SUPPORTED_LANGUAGES = {
     }
 }
 
-SUPPORTED_THEMES = {
-    'themes': {
-        'no_theme': 'none',
-        'ocean': 'blue',
-        'forest': 'green'
-    }
-}
-
 RENDITIONS = {
     'picture': {
         'thumbnail': {'width': 220, 'height': 120},
