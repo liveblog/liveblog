@@ -20,6 +20,11 @@ describe('blogs', function() {
         title: 'new blog title',
         description: 'new blog description',
         username: 'first name last name'
+    }, newBlogImage = {
+        title: 'new blog title',
+        description: 'new blog description',
+        username: 'first name last name',
+        picture_url: './upload/-busstop-jpg-1600-900.jpg'
     };
 
     beforeEach(function(done) {login().then(done);});
@@ -119,13 +124,11 @@ describe('blogs', function() {
             element(by.css('[ng-click="openNewBlog();"]')).click();
             //after the add new blog model is displayed
             browser.wait(element(by.model('newBlog.title')).isDisplayed);
-            element(by.model('newBlog.title')).sendKeys(newBlog.title);
-            element(by.model('newBlog.description')).sendKeys(newBlog.description);
-            var fileToUpload = './upload/-busstop-jpg-1600-900.jpg',
-                absolutePath = path.resolve(__dirname, fileToUpload);
-            element(by.css('input[type="file"]')).sendKeys(absolutePath);
+            element(by.model('newBlog.title')).sendKeys(newBlogImage.title);
+            element(by.model('newBlog.description')).sendKeys(newBlogImage.description);
+            element(by.css('input[type="file"]')).sendKeys(path.resolve(__dirname, newBlogImage.picture_url));
             element(by.buttonText('CREATE')).click();
-            expectBlog(newBlog);
+            expectBlog(newBlogImage);
         });
     });
 

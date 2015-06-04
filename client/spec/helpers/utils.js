@@ -162,7 +162,10 @@ function expectBlogsLength(len) {
 function expectBlog(blog, index) {
     index = index || 0;
     expect(element(by.repeater('blog in blogs._items').row(index).column('blog.title')).getText()).toBe(blog.title);
-    //expect(element(by.repeater('blog in blogs._items').row(index).column('blog.description')).getText()).toBe(blog.description);
+    expect(element(by.repeater('blog in blogs._items').row(index).column('blog.description')).getText()).toBe(blog.description);
+    if (blog.picture_url) {
+        expect(element(by.repeater('blog in blogs._items').row(index).column('blog.picture_url')).getText()).not.toBe('');
+    }
     expect(element(
         by.repeater('blog in blogs._items')
             .row(index)
