@@ -13,25 +13,26 @@ import superdesk
 from flask import render_template, request
 from superdesk import get_resource_service
 
-bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates', static_folder='assets')
+ASSETS_DIR = 'embed_assets'
+bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates', static_folder=ASSETS_DIR)
 
 
 @bp.route('/embed/<blog_id>')
 def embed(blog_id):
+
+    def complete_url(url):
+        def is_relative(url):
+            return not (url.startswith('/') or url.startswith('http://') or url.startswith('https://'))
+        if is_relative(url):
+            url = '/%s/%s/%s' % (ASSETS_DIR, blog['blog_preferences']['theme']['name'], url)
+        return url
+
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
-    blog['blog_preferences']['theme'] = {
-        'template': 'default-theme/default-theme-template.html',
-        'themeModule': 'liveblog.default-theme',
-        'styles': [
-            '/assets/default-theme/styles/embed.css',
-            '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css'
-        ],
-        'scripts': [
-            '//code.angularjs.org/1.3.14/angular-sanitize.js',
-            '//code.angularjs.org/1.3.14/angular-animate.js',
-            '/assets/default-theme/main.js'
-        ]
-    }
-    return render_template('embed.html', blog=blog, api_host=request.url_root)
+    # complete the urls from `scripts` and `styles` fields when it's relative
+    for asset_type in ['scripts', 'styles']:
+        blog['blog_preferences']['theme'][asset_type] = list(
+            map(complete_url, blog['blog_preferences']['theme'][asset_type])
+        )
+    return render_template('embed.html', blog=blog, api_host=request.url_root, assets_dir=ASSETS_DIR)
 
 # EOF

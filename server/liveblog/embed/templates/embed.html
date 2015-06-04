@@ -21,8 +21,9 @@
         <script type="text/javascript">
             window.LB_BLOG_ID = '{{ blog._id }}';
             window.LB_API_HOST = '{{ api_host }}';
+            window.LB_ASSETS_DIR = '/{{ assets_dir }}';
             window.LB_BLOG_PREFERENCES = {{ blog.blog_preferences | tojson }};
-            angular.module('liveblog-embed', ['ngResource', window.LB_BLOG_PREFERENCES.theme.themeModule]);
+            angular.module('liveblog-embed', ['ngResource', window.LB_BLOG_PREFERENCES.theme.angularModule]);
         </script>
 
         {% assets

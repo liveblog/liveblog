@@ -16,6 +16,24 @@ class ThemesResource(Resource):
     schema = {
         'name': {
             'type': 'string'
+        },
+        'version': {
+            'type': 'string'
+        },
+        'angularModule': {
+            'type': 'string'
+        },
+        'styles': {
+            'type': 'list',
+            'schema': {
+                'type': 'string'
+            }
+        },
+        'scripts': {
+            'type': 'list',
+            'schema': {
+                'type': 'string'
+            }
         }
     }
     datasource = {

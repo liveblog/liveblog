@@ -41,6 +41,13 @@ class GlobalPreferencesResource(Resource):
 class GlobalPreferencesService(BaseService):
     def get_global_prefs(self):
         res = get_resource_service(_preferences_key).get(req=None, lookup={})
-        return dict([v['key'], v['value']] for v in res)
+        pref = dict([v['key'], v['value']] for v in res)
+        # return a snapshot the the theme instead of the name
+        if 'theme' in pref:
+            theme = get_resource_service('themes').find_one(req=None, name=pref['theme'])
+            if theme is not None:
+                theme['_id'] = str(theme['_id'])
+                pref['theme'] = theme
+        return pref
 
 # EOF

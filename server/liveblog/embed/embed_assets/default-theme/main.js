@@ -39,7 +39,7 @@
             return {
                 controller: TimelineCtrl,
                 controllerAs: 'timeline',
-                templateUrl: '/assets/default-theme/default-theme-template.html'
+                templateUrl: window.LB_ASSETS_DIR+'/default-theme/default-theme-template.html'
             };
         });
 
