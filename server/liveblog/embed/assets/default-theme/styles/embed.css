@@ -1,3 +1,7 @@
+body, html {
+    background-color: #F6F6F6 !important;
+}
+
 .lb-timeline h1 small {
     display: block;
 }
@@ -5,9 +9,18 @@
 .lb-timeline .lb-posts {
     margin-top: 20px;
 }
+.lb-timeline .lb-post:first-child {
+    border-top: 0.0625rem solid red;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
 
+}
+.lb-timeline .lb-post {
+    margin-bottom: 12px;
+    border-top: 0.0625rem solid #BDBDBD;
+    border-bottom: 0.0625rem solid #EAEAEA;
+}
 .lb-timeline .lb-item {
-    background-color: rgba(188, 212, 215, 0.28);
     padding: 10px;
     margin: 5px;
 }
