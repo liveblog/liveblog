@@ -158,6 +158,29 @@
                                     </div>
                                 </div>
                             </form>
+                            <div class="subsettings-header header-top">
+                                <h3 translate>Contributors</h3>
+                            </div>
+                            <div class="subsettings-content">
+                                <div ng-if="settings.members.length === 0" translate>No members in the blog team</div>
+                                <div class="inline-content first-block members-bottom" ng-repeat="member in settings.members">
+                                    <div class="inline-content padded-right">
+                                        <div class="form-input profile-pic">
+                                             <figure class="avatar">
+                                                <img data-src="member.user.picture_url">
+                                            </figure>
+                                        </div>
+                                    </div>
+                                    <div class="inline-content">
+                                        <div class="form-input" data="original-creator-display-name">
+                                           <strong>{{ member.display_name }}</strong>
+                                        </div>
+                                        <div class="form-input" data="original-creator-username">
+                                            {{ member.username }}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

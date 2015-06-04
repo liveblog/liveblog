@@ -250,6 +250,15 @@ define([
                     //without automatically changing the owner that is displayed
                     vm.temp_selected_owner = vm.original_creator = data;
                 });
+            },
+            getMembers: function() {
+                //contributors
+                vm.members = [];
+                _.each(blog.members, function(member) {
+                    api('users').getById(member.user).then(function(data) {
+                        vm.members.push(data);
+                    });
+                });
             }
 
         });
@@ -268,6 +277,7 @@ define([
             vm.avUsers = data._items;
         });
         vm.buildOwner(blog.original_creator);
+        vm.getMembers();
         //check if form is dirty before leaving the page
         var deregisterPreventer = $scope.$on('$locationChangeStart', function (event, next, current) {
             event.preventDefault();
