@@ -84,22 +84,25 @@ class BlogsResource(ArchiveResource):
 
 class BlogService(ArchiveService):
 
+    def get_theme_snapshot(self, theme_name):
+        theme = get_resource_service('themes').find_one(req=None, name=theme_name)
+        if theme is not None:
+            theme['_id'] = str(theme['_id'])
+        return theme
+
     def on_create(self, docs):
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
             doc['guid'] = generate_guid(type=GUID_TAG)
-            # set the blog_preferences from merging given preferences with global_prefs
+            # set the blog_preferences by merging given preferences with global_prefs
             global_prefs = get_resource_service('global_preferences').get_global_prefs()
             prefs = global_prefs.copy()
             prefs.update(doc.get('blog_preferences', {}))
             doc['blog_preferences'] = prefs
             # save a snapshot of the theme in the `theme` field
             if 'theme' in prefs:
-                theme = get_resource_service('themes').find_one(req=None, name=prefs['theme'])
-                if theme is not None:
-                    theme['_id'] = str(theme['_id'])
-                    doc['theme'] = theme
+                doc['theme'] = self.get_theme_snapshot(prefs['theme'])
 
     def get(self, req, lookup):
         if req is None:
@@ -116,6 +119,16 @@ class BlogService(ArchiveService):
 
     def on_update(self, updates, original):
         user = get_user()
+        # if the theme changed, we republish the blog with the new one
+        if 'blog_preferences' in updates and 'theme' in updates['blog_preferences']:
+            if updates['blog_preferences']['theme'] != original['blog_preferences']['theme']:
+                updates['theme'] = original['theme']
+                new_theme = self.get_theme_snapshot(updates['blog_preferences']['theme'])
+                for key in original['theme'].keys():
+                    if key not in new_theme:
+                        updates['theme'][key] = None
+                    else:
+                        updates['theme'][key] = new_theme[key]
         updates['versioncreated'] = utcnow()
         updates['version_creator'] = str(user.get('_id'))
 

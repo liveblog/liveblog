@@ -31,7 +31,7 @@ def embed(blog_id):
     # complete the urls from `scripts` and `styles` fields when it's relative
     for asset_type in ['scripts', 'styles']:
         blog['theme'][asset_type] = list(
-            map(complete_url, blog['theme'][asset_type])
+            map(complete_url, blog['theme'].get(asset_type) or list())
         )
     return render_template('embed.html', blog=blog, api_host=request.url_root, assets_dir=ASSETS_DIR)
 
