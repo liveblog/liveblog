@@ -126,9 +126,12 @@ class BlogService(ArchiveService):
                 if new_theme:
                     for key in original['theme'].keys():
                         if key not in new_theme:
+                            # remove fields that are not in new_theme
                             updates['theme'][key] = None
-                        else:
-                            updates['theme'][key] = new_theme[key]
+                    for key, value in new_theme.items():
+                        # add or update fields that are new
+                        updates['theme'][key] = value
+
         updates['versioncreated'] = utcnow()
         updates['version_creator'] = str(get_user().get('_id'))
 
