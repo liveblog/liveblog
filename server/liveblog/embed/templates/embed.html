@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-        {% for style in blog.blog_preferences.theme.styles %}
+        {% for style in blog.theme.styles %}
             <link rel="stylesheet" href="{{ style }}">{% endfor %}
     </head>
 
@@ -22,8 +22,9 @@
             window.LB_BLOG_ID = '{{ blog._id }}';
             window.LB_API_HOST = '{{ api_host }}';
             window.LB_ASSETS_DIR = '/{{ assets_dir }}';
+            window.LB_BLOG_THEME = {{ blog.theme | tojson }};
             window.LB_BLOG_PREFERENCES = {{ blog.blog_preferences | tojson }};
-            angular.module('liveblog-embed', ['ngResource', window.LB_BLOG_PREFERENCES.theme.angularModule]);
+            angular.module('liveblog-embed', ['ngResource', window.LB_BLOG_THEME.angularModule]);
         </script>
 
         {% assets
@@ -34,7 +35,7 @@
             <script type="text/javascript" src="{{ ASSET_URL }}"></script>
         {% endassets %}
 
-        {% for script in blog.blog_preferences.theme.scripts %}
+        {% for script in blog.theme.scripts %}
             <script type="text/javascript" src="{{ script }}"></script>
         {% endfor %}
 

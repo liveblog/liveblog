@@ -15,8 +15,9 @@ blogs_schema = {
     'guid': metadata_schema['guid'],
     'title': metadata_schema['headline'],
     'description': metadata_schema['description'],
-    'language': Resource.rel('languages', True),
-    'theme': Resource.rel('themes', True),
+    'theme': {
+        'type': 'dict'
+    },
     'settings': {'type': 'dict'},
     'picture_url': {
         'type': 'string',
@@ -88,7 +89,17 @@ class BlogService(ArchiveService):
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
             doc['guid'] = generate_guid(type=GUID_TAG)
-            doc['blog_preferences'] = get_resource_service('global_preferences').get_global_prefs()
+            # set the blog_preferences from merging given preferences with global_prefs
+            global_prefs = get_resource_service('global_preferences').get_global_prefs()
+            prefs = global_prefs.copy()
+            prefs.update(doc.get('blog_preferences', {}))
+            doc['blog_preferences'] = prefs
+            # save a snapshot of the theme in the `theme` field
+            if 'theme' in prefs:
+                theme = get_resource_service('themes').find_one(req=None, name=prefs['theme'])
+                if theme is not None:
+                    theme['_id'] = str(theme['_id'])
+                    doc['theme'] = theme
 
     def get(self, req, lookup):
         if req is None:

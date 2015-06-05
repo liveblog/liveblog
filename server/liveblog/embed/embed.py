@@ -24,14 +24,14 @@ def embed(blog_id):
         def is_relative(url):
             return not (url.startswith('/') or url.startswith('http://') or url.startswith('https://'))
         if is_relative(url):
-            url = '/%s/%s/%s' % (ASSETS_DIR, blog['blog_preferences']['theme']['name'], url)
+            url = '/%s/%s/%s' % (ASSETS_DIR, blog['theme']['name'], url)
         return url
 
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     # complete the urls from `scripts` and `styles` fields when it's relative
     for asset_type in ['scripts', 'styles']:
-        blog['blog_preferences']['theme'][asset_type] = list(
-            map(complete_url, blog['blog_preferences']['theme'][asset_type])
+        blog['theme'][asset_type] = list(
+            map(complete_url, blog['theme'][asset_type])
         )
     return render_template('embed.html', blog=blog, api_host=request.url_root, assets_dir=ASSETS_DIR)
 
