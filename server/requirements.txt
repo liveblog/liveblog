@@ -1,5 +1,7 @@
 Flask-Assets==0.10
 jsmin==2.1.1
+# Flask-S3 with support for python3
+git+git://github.com/joehand/flask-s3@8fe9f27ebb5251b7cf53a6684595d41dc4af2fbf#egg=Flask-S3==0.1.7
 
 # hachoir3 and eve come from SD requirements
 # They are added here because they are retrieved from git and hg protocols. (This is not possible with setuptool)

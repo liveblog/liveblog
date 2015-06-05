@@ -10,7 +10,7 @@
 
 """Embed module"""
 import superdesk
-from flask import render_template, request
+from flask import render_template, request, current_app as app
 from superdesk import get_resource_service
 
 ASSETS_DIR = 'embed_assets'
