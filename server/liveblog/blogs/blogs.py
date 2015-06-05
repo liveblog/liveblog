@@ -118,19 +118,19 @@ class BlogService(ArchiveService):
         push_notification('blogs', created=1)
 
     def on_update(self, updates, original):
-        user = get_user()
         # if the theme changed, we republish the blog with the new one
         if 'blog_preferences' in updates and 'theme' in updates['blog_preferences']:
-            if updates['blog_preferences']['theme'] != original['blog_preferences']['theme']:
-                updates['theme'] = original['theme']
+            if updates['blog_preferences']['theme'] != original['blog_preferences'].get('theme'):
+                updates['theme'] = original.get('theme')
                 new_theme = self.get_theme_snapshot(updates['blog_preferences']['theme'])
-                for key in original['theme'].keys():
-                    if key not in new_theme:
-                        updates['theme'][key] = None
-                    else:
-                        updates['theme'][key] = new_theme[key]
+                if new_theme:
+                    for key in original['theme'].keys():
+                        if key not in new_theme:
+                            updates['theme'][key] = None
+                        else:
+                            updates['theme'][key] = new_theme[key]
         updates['versioncreated'] = utcnow()
-        updates['version_creator'] = str(user.get('_id'))
+        updates['version_creator'] = str(get_user().get('_id'))
 
     def on_updated(self, updates, original):
         push_notification('blogs', updated=1)
