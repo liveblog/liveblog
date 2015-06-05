@@ -90,8 +90,7 @@ class BlogsResource(ArchiveResource):
 def notify_members(docs, origin):
     for doc in docs:
         members = doc.get('members', {})
-        blog = get_resource_service('archive').find_one(req=None, _id=doc['_id'])
-        add_activity('notify', 'you have been added as a member', resource=None, item=blog, notify=members)
+        add_activity('notify', 'you have been added as a member', resource=None, item=doc, notify=members)
         send_email_to_added_members(doc, members, origin)
 
 
