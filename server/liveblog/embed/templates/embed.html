@@ -7,7 +7,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
         {% for style in blog.theme.styles %}
-            {% if not (style.startswith('/') or style.startswith('http://') or style.startswith('https://')) %}
+            {% if style | is_relative %}
                 <link rel="stylesheet" href="{{ url_for('embed_liveblog.static', filename=style) }}">
             {% else %}
                 <link rel="stylesheet" href="{{ style }}">
@@ -43,7 +43,7 @@
         {% endassets %}
 
         {% for script in blog.theme.scripts %}
-            {% if not (script.startswith('/') or script.startswith('http://') or script.startswith('https://')) %}
+            {% if script | is_relative %}
                 <script type="text/javascript" src="{{ url_for('embed_liveblog.static', filename=script) }}"></script>
             {% else %}
                 <script type="text/javascript" src="{{ script }}"></script>

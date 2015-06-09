@@ -17,12 +17,14 @@ ASSETS_DIR = 'embed_assets'
 bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates', static_folder=ASSETS_DIR)
 
 
+def is_relative(url):
+    return not (url.startswith('/') or url.startswith('http://') or url.startswith('https://'))
+
+
 @bp.route('/embed/<blog_id>')
 def embed(blog_id):
 
     def complete_url(url):
-        def is_relative(url):
-            return not (url.startswith('/') or url.startswith('http://') or url.startswith('https://'))
         if is_relative(url):
             url = '%s/%s' % (blog['theme']['name'], url)
         return url
@@ -34,5 +36,10 @@ def embed(blog_id):
             map(complete_url, blog['theme'].get(asset_type) or list())
         )
     return render_template('embed.html', blog=blog, api_host=request.url_root, assets_dir=ASSETS_DIR)
+
+
+@bp.app_template_filter('is_relative')
+def is_relative_filter(s):
+    return is_relative(s)
 
 # EOF
