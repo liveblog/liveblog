@@ -35,12 +35,12 @@
     }
 
     angular.module('liveblog.default-theme', ['liveblog-embed', 'ngSanitize' ,'ngAnimate'])
-        .directive('lbTemplate', function() {
+        .directive('lbTemplate', ['config', function(config) {
             return {
                 controller: TimelineCtrl,
                 controllerAs: 'timeline',
-                templateUrl: window.LB_ASSETS_DIR+'/default-theme/default-theme-template.html'
+                templateUrl: config.assets_dir+'/default-theme/default-theme-template.html'
             };
-        });
+        }]);
 
 })(angular);

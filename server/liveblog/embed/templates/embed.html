@@ -19,12 +19,14 @@
         <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.2/moment.min.js"></script>
 
         <script type="text/javascript">
-            window.LB_BLOG_ID = '{{ blog._id }}';
-            window.LB_API_HOST = '{{ api_host }}';
-            window.LB_ASSETS_DIR = '/{{ assets_dir }}';
-            window.LB_BLOG_THEME = {{ blog.theme | tojson }};
-            window.LB_BLOG_PREFERENCES = {{ blog.blog_preferences | tojson }};
-            angular.module('liveblog-embed', ['ngResource', window.LB_BLOG_THEME.angularModule]);
+            angular.module('liveblog-embed', ['ngResource', '{{ blog.theme.angularModule }}'])
+                .constant('theme', {{ blog.theme | tojson }})
+                .constant('config', {
+                    blog_id: '{{ blog._id }}',
+                    api_host: '{{ api_host }}',
+                    assets_dir: '/{{ assets_dir }}',
+                    preferences: {{ blog.blog_preferences | tojson }}
+                });
         </script>
 
         {% assets
