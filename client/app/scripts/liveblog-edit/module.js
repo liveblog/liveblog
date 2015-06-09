@@ -220,9 +220,7 @@ define([
                     original_creator: vm.original_creator._id,
                     blog_status: vm.blog_switch === true? 'open': 'closed'
                 };
-                angular.forEach(vm.newBlog, function(value, key) {
-                    changedBlog[key] = value;
-                });
+                angular.extend(changedBlog, vm.newBlog);
                 blogService.save(vm.blog._id, changedBlog).then(function(blog) {
                     vm.isSaved = true;
                     vm.blog = blog;
