@@ -29,7 +29,7 @@
                 .constant('config', {
                     blog_id: '{{ blog._id }}',
                     api_host: '{{ api_host }}',
-                    assets_dir: '/{{ assets_dir }}',
+                    assets_root: '{{ assets_root }}',
                     preferences: {{ blog.blog_preferences | tojson }}
                 });
         </script>
