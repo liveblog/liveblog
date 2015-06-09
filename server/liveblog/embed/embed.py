@@ -10,7 +10,7 @@
 
 """Embed module"""
 import superdesk
-from flask import render_template, request, current_app as app
+from flask import render_template, request
 from superdesk import get_resource_service
 
 ASSETS_DIR = 'embed_assets'
@@ -24,7 +24,7 @@ def embed(blog_id):
         def is_relative(url):
             return not (url.startswith('/') or url.startswith('http://') or url.startswith('https://'))
         if is_relative(url):
-            url = '/%s/%s/%s' % (ASSETS_DIR, blog['theme']['name'], url)
+            url = '%s/%s' % (blog['theme']['name'], url)
         return url
 
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
