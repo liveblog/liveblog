@@ -7,7 +7,12 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
         {% for style in blog.theme.styles %}
-            <link rel="stylesheet" href="{{ style }}">{% endfor %}
+            {% if style | is_relative %}
+                <link rel="stylesheet" href="{{ url_for('embed_liveblog.static', filename=style) }}">
+            {% else %}
+                <link rel="stylesheet" href="{{ style }}">
+            {% endif %}
+        {% endfor %}
     </head>
 
     <body>
@@ -24,7 +29,7 @@
                 .constant('config', {
                     blog_id: '{{ blog._id }}',
                     api_host: '{{ api_host }}',
-                    assets_dir: '/{{ assets_dir }}',
+                    assets_root: '{{ assets_root }}',
                     preferences: {{ blog.blog_preferences | tojson }}
                 });
         </script>
@@ -32,13 +37,17 @@
         {% assets
             "embed_liveblog/scripts/liveblog-embed/resources.service.js",
             "embed_liveblog/scripts/liveblog-embed/pages-manager.service.js",
-            output="gen/lb-embed.js", filters="jsmin"
+            output="gen/lb-embed-%(version)s.js", filters="jsmin"
         %}
             <script type="text/javascript" src="{{ ASSET_URL }}"></script>
         {% endassets %}
 
         {% for script in blog.theme.scripts %}
-            <script type="text/javascript" src="{{ script }}"></script>
+            {% if script | is_relative %}
+                <script type="text/javascript" src="{{ url_for('embed_liveblog.static', filename=script) }}"></script>
+            {% else %}
+                <script type="text/javascript" src="{{ script }}"></script>
+            {% endif %}
         {% endfor %}
 
     </body>

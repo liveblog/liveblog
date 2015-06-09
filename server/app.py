@@ -28,10 +28,12 @@ from raven.contrib.flask import Sentry
 from superdesk.errors import SuperdeskError, SuperdeskApiError
 from liveblog.embed import embed_blueprint
 from flask.ext.assets import Environment
+import flask_s3
 
 
 logger = logging.getLogger('superdesk')
 sentry = Sentry(register_signal=False, wrap_wsgi=False)
+s3 = flask_s3.FlaskS3()
 
 
 def get_app(config=None):
@@ -114,7 +116,8 @@ def get_app(config=None):
     app.register_blueprint(embed_blueprint)
     # flask assets
     Environment(app)
-
+    # s3
+    s3.init_app(app)
     # we can only put mapping when all resources are registered
     app.data.elastic.put_mapping(app)
 
