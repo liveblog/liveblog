@@ -10,6 +10,8 @@ from apps.archive.common import generate_guid, GUID_TAG
 from superdesk import get_resource_service
 from superdesk.resource import Resource
 from bson.objectid import ObjectId
+from flask_s3 import url_for as s3_url_for
+from liveblog.embed import publish_embed
 
 blogs_schema = {
     'guid': metadata_schema['guid'],
@@ -47,6 +49,9 @@ blogs_schema = {
     },
     'blog_preferences': {
         'type': 'dict'
+    },
+    'public_url': {
+        'type': 'string'
     }
 }
 
@@ -116,6 +121,13 @@ class BlogService(ArchiveService):
 
     def on_created(self, docs):
         push_notification('blogs', created=1)
+        from flask import current_app as app
+        # Publish on s3 if possible and save the public_url in the blog
+        if app.config['AMAZON_ACCESS_KEY_ID']:
+            for doc in docs:
+                publish_embed(doc['_id'])
+                public_url = s3_url_for('static', filename='').replace('static/', '%s/index.html' % (str(doc['_id'])))
+                self.backend.update('blogs', doc['_id'], {'public_url': public_url}, doc)
 
     def on_update(self, updates, original):
         # if the theme changed, we republish the blog with the new one

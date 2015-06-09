@@ -195,7 +195,7 @@ define([
                 }
                 vm.tab = tab;
             },
-            iframe_url: config.server.url.replace('/api', '/embed/' + blog._id),
+            iframe_url: blog.public_url,
             setFormsPristine: function() {
                 if (vm.forms.dirty) {
                     vm.forms.dirty = false;

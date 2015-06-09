@@ -92,6 +92,7 @@
                                 <label for="inputEmbedCode" class="control-label" translate>Embed code</label>
                                 <div class="form-input">
                                     <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click><iframe width="100%" height="715" src="{{ settings.iframe_url }}" frameborder="0" allowfullscreen></iframe></textarea>
+                                    <a href="{{ settings.iframe_url }}" ng-bind="settings.iframe_url" target="_blank"></a>
                                 </div>
                             </div>
                         </form>
