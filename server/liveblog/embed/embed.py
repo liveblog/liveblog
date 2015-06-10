@@ -49,8 +49,8 @@ def publish_embed(blog_id):
         app.config['AWS_SECRET_ACCESS_KEY'],
         default_bucket=app.config['AMAZON_CONTAINER_NAME'])
     # Uploading a single file
-    s3.upload('%s/index.html' % (blog_id), io.BytesIO(bytes(html, 'utf-8')))
-    return html
+    response = s3.upload('%s/index.html' % (blog_id), io.BytesIO(bytes(html, 'utf-8')))
+    return response.url.replace('s3.amazonaws.com/liveblog-dev', 'liveblog-dev.s3.amazonaws.com')
 
 
 @bp.app_template_filter('is_relative_to_current_folder')

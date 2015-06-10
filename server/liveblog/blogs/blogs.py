@@ -10,12 +10,11 @@ from apps.archive.common import generate_guid, GUID_TAG
 from superdesk import get_resource_service
 from superdesk.resource import Resource
 from bson.objectid import ObjectId
-from flask_s3 import url_for as s3_url_for
-from liveblog.embed import publish_embed
 from superdesk.activity import add_activity
 from flask.globals import g
 from flask import current_app as app, render_template
 from superdesk.emails import send_email
+import liveblog.embed
 
 blogs_schema = {
     'guid': metadata_schema['guid'],
@@ -113,7 +112,6 @@ def send_email_to_added_members(doc, members, origin):
 
 
 def send_members_email(recipients, user_name, doc, url):
-    print('sending notification email to:', recipients)
     admins = app.config['ADMINS']
     app_name = app.config['APPLICATION_NAME']
     subject = render_template("invited_members_subject.txt", username=user_name)
@@ -132,6 +130,11 @@ class BlogService(ArchiveService):
             theme['_id'] = str(theme['_id'])
         return theme
 
+    def publish_blog_on_s3(self, blog):
+        public_url = liveblog.embed.publish_embed(blog['_id'])
+        self.update(blog['_id'], {'public_url': public_url}, blog)
+        return public_url
+
     def on_create(self, docs):
         for doc in docs:
             update_dates_for(doc)
@@ -146,6 +149,17 @@ class BlogService(ArchiveService):
             if 'theme' in prefs:
                 doc['theme'] = self.get_theme_snapshot(prefs['theme'])
 
+    def on_created(self, docs):
+        # Publish on s3 if possible and save the public_url in the blog
+        if app.config['AMAZON_ACCESS_KEY_ID']:
+            for blog in docs:
+                self.publish_blog_on_s3(blog)
+        # notify client with websocket
+        for doc in docs:
+            push_notification(self.notification_key, created=1, blog_id=str(doc.get('_id')))
+        # and members with emails
+        notify_members(docs, app.config['CLIENT_URL'])
+
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
@@ -155,19 +169,6 @@ class BlogService(ArchiveService):
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
         return doc
-
-    def on_created(self, docs):
-        # Publish on s3 if possible and save the public_url in the blog
-        if app.config['AMAZON_ACCESS_KEY_ID']:
-            for doc in docs:
-                publish_embed(doc['_id'])
-                public_url = s3_url_for('static', filename='').replace('static/', '%s/index.html' % (str(doc['_id'])))
-                self.backend.update('blogs', doc['_id'], {'public_url': public_url}, doc)
-        # notify client with websocket
-        for doc in docs:
-            push_notification(self.notification_key, created=1, blog_id=str(doc.get('_id')))
-        # and members with emails
-        notify_members(docs, app.config['CLIENT_URL'])
 
     def on_update(self, updates, original):
         # if the theme changed, we republish the blog with the new one
@@ -189,6 +190,7 @@ class BlogService(ArchiveService):
 
     def on_updated(self, updates, original):
         push_notification('blogs', updated=1)
+        self.publish_blog_on_s3(original)
 
     def on_deleted(self, doc):
         push_notification('blogs', deleted=1)
