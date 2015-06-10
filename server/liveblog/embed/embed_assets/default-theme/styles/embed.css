@@ -1,0 +1,37 @@
+body, html {
+    background-color: #F6F6F6 !important;
+}
+
+.lb-timeline h1 small {
+    display: block;
+}
+
+.lb-timeline .lb-posts {
+    margin-top: 20px;
+}
+.lb-timeline .lb-post:first-child {
+    border-top: 0.0625rem solid red;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+
+}
+.lb-timeline .lb-post {
+    margin-bottom: 12px;
+    border-top: 0.0625rem solid #BDBDBD;
+    border-bottom: 0.0625rem solid #EAEAEA;
+}
+.lb-timeline .lb-item {
+    padding: 10px;
+    margin: 5px;
+}
+
+.lb-post.ng-enter, .lb-post.ng-leave {
+    -webkit-transition:1s linear all;
+    -moz-transition:1s linear all;
+}
+.lb-post.ng-enter, .lb-post.ng-leave.ng-leave-active {
+    opacity: 0;
+}
+.lb-post.ng-enter.ng-enter-active, .lb-post.ng-leave  {
+    opacity: 1;
+}

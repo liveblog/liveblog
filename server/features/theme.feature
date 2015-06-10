@@ -1,6 +1,6 @@
 Feature: Themes operations
 
-	@auth
+    @auth
     Scenario: List empty themes
         Given empty "themes"
         When we get "/themes"
@@ -16,10 +16,10 @@ Feature: Themes operations
         """  
         Then we get existing resource
         """
-        {"name": "forest", "colour": "green"}
+        {"name": "forest"}
         """  
 
-	@auth
+    @auth
     Scenario: Delete theme
         Given empty "themes"
         When we post to "themes"
@@ -29,17 +29,17 @@ Feature: Themes operations
         When we delete latest
         Then we get deleted response
 
-	@auth
+    @auth
     Scenario: Assign a theme to a blog
         Given "themes"
         """
         [{"name": "forest"}]
         """
         When we post to "blogs"
-		"""
-		[{"title": "foo_blog", "theme": "#themes._id#"}]
-		"""
-		Then we get existing resource
-		"""
-		{"title": "foo_blog", "theme": "#themes._id#"}
-		"""
+        """
+        [{"title": "foo_blog", "blog_preferences": {"theme": "forest"}}]
+        """
+        Then we get existing resource
+        """
+        {"title": "foo_blog", "theme": {"name": "forest"}, "blog_preferences": {"theme": "forest"}}
+        """

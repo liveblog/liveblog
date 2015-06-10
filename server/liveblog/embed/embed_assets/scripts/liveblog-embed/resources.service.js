@@ -4,14 +4,14 @@
     var blog_id = window.LB_BLOG_ID;
     var api_hostname = window.LB_API_HOST;
 
-    Blogs.$inject = ['$resource'];
-    function Blogs($resource) {
-        return $resource(api_hostname + 'api/client_blogs/:blogId', {blogId: blog_id});
+    Blogs.$inject = ['$resource', 'config'];
+    function Blogs($resource, config) {
+        return $resource(config.api_host + 'api/client_blogs/:blogId', {blogId: config.blog_id});
     }
 
-    Posts.$inject = ['$resource'];
-    function Posts($resource) {
-        return $resource(api_hostname + 'api/client_blogs/:blogId/posts', {blogId: blog_id}, {
+    Posts.$inject = ['$resource', 'config'];
+    function Posts($resource, config) {
+        return $resource(config.api_host + 'api/client_blogs/:blogId/posts', {blogId: config.blog_id}, {
             get: {
                 transformResponse: function(posts) {
                     // decode json

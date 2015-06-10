@@ -11,12 +11,28 @@
 """Embed module"""
 import superdesk
 from flask import render_template, request
+from superdesk import get_resource_service
 
-bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates', static_folder='assets')
+ASSETS_DIR = 'embed_assets'
+bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates', static_folder=ASSETS_DIR)
 
 
 @bp.route('/embed/<blog_id>')
 def embed(blog_id):
-    return render_template('embed.html', blog_id=blog_id, api_host=request.url_root)
+
+    def complete_url(url):
+        def is_relative_to_current_folder(url):
+            return not (url.startswith('/') or url.startswith('http://') or url.startswith('https://'))
+        if is_relative_to_current_folder(url):
+            url = '/%s/%s/%s' % (ASSETS_DIR, blog['theme']['name'], url)
+        return url
+
+    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    # complete the urls from `scripts` and `styles` fields when it's relative
+    for asset_type in ['scripts', 'styles']:
+        blog['theme'][asset_type] = list(
+            map(complete_url, blog['theme'].get(asset_type) or list())
+        )
+    return render_template('embed.html', blog=blog, api_host=request.url_root, assets_dir=ASSETS_DIR)
 
 # EOF

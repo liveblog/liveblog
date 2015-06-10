@@ -9,15 +9,31 @@
 # at https://www.sourcefabric.org/superdesk/license
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from settings import SUPPORTED_THEMES
 
 
 class ThemesResource(Resource):
 
     schema = {
         'name': {
-            'type': 'string',
-            'allowed': SUPPORTED_THEMES['themes']
+            'type': 'string'
+        },
+        'version': {
+            'type': 'string'
+        },
+        'angularModule': {
+            'type': 'string'
+        },
+        'styles': {
+            'type': 'list',
+            'schema': {
+                'type': 'string'
+            }
+        },
+        'scripts': {
+            'type': 'list',
+            'schema': {
+                'type': 'string'
+            }
         }
     }
     datasource = {
@@ -30,7 +46,4 @@ class ThemesResource(Resource):
 
 
 class ThemesService(BaseService):
-
-    def on_create(self, docs):
-        for doc in docs:
-            doc['colour'] = SUPPORTED_THEMES['themes'][doc['name']]
+    pass
