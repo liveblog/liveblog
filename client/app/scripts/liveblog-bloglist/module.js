@@ -176,6 +176,17 @@
                         var img = new Image();
                         img.onload = function() {
                             scope.progressWidth = 80;
+
+                            if (this.width < 320 || this.height < 240) {
+                                scope.$apply(function() {
+                                    notify.pop();
+                                    notify.error(gettext('Sorry, but blog image must be at least 320x240 pixels big.'));
+                                    scope.src = null;
+                                    scope.progressWidth = 0;
+                                });
+
+                                return;
+                            }
                             elem.append(img);
                             scope.$apply(function() {
                                 scope.progressWidth = 0;
@@ -186,5 +197,20 @@
                 });
             }
         };
-    }]);
+    }]).directive('ifBackgroundImage', function() {
+        return {
+            restrict: 'A',
+            scope: {
+                ifBackgroundImage: '@'
+            },
+            link: function(scope, element, attrs) {
+                var url = scope.ifBackgroundImage;
+                if (url) {
+                    element.css({
+                        'background-image': 'url(' + url + ')'
+                    });
+                }
+            }
+        };
+    });
 })();

@@ -20,13 +20,15 @@ function expectBlogsLength(len) {
 
 function expectBlog(blog, index) {
     index = index || 0;
-    expect(element(by.repeater('blog in blogs._items').row(index).column('blog.title')).getText()).toBe(blog.title);
-    expect(element(by.repeater('blog in blogs._items').row(index).column('blog.description')).getText()).toBe(blog.description);
-    expect(element(
-        by.repeater('blog in blogs._items')
-            .row(index)
-            .column('blog.original_creator | username'))
-            .getText())
+    var allBlogs = element.all(by.repeater('blog in blogs._items')),
+        currentBlog = allBlogs.get(index);
+
+    expect(currentBlog.element(by.binding('blog.title')).getText()).toBe(blog.title);
+    expect(currentBlog.element(by.binding('blog.description')).getText()).toBe(blog.description);
+    if (blog.picture_url) {
+        expect(currentBlog.getAttribute('if-background-image')).not.toBe('');
+    }
+    expect(currentBlog.element(by.binding('blog.original_creator | username')).getText())
     .toBe(blog.username);
 }
 
