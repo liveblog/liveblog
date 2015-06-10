@@ -131,9 +131,13 @@ class BlogService(ArchiveService):
         return theme
 
     def publish_blog_on_s3(self, blog):
-        public_url = liveblog.embed.publish_embed(blog['_id'])
-        self.update(blog['_id'], {'public_url': public_url}, blog)
-        return public_url
+        if blog.get('theme', False):
+            try:
+                public_url = liveblog.embed.publish_embed(blog['_id'])
+                self.update(blog['_id'], {'public_url': public_url}, blog)
+                return public_url
+            except liveblog.embed.AmazonAccessKeyUnknownException:
+                pass
 
     def on_create(self, docs):
         for doc in docs:
@@ -151,9 +155,8 @@ class BlogService(ArchiveService):
 
     def on_created(self, docs):
         # Publish on s3 if possible and save the public_url in the blog
-        if app.config['AMAZON_ACCESS_KEY_ID']:
-            for blog in docs:
-                self.publish_blog_on_s3(blog)
+        for blog in docs:
+            self.publish_blog_on_s3(blog)
         # notify client with websocket
         for doc in docs:
             push_notification(self.notification_key, created=1, blog_id=str(doc.get('_id')))
