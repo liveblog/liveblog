@@ -5,7 +5,7 @@ describe('General settings', function() {
 
     var DEFAULT_LANGUAGE = 'english',
         NEW_LANGUAGE = 'french',
-        DEFAULT_THEME = 'ocean',
+        DEFAULT_THEME = 'default-theme',
         NEW_THEME = 'forest';
 
     beforeEach(function(done) {login().then(done);});

@@ -7,12 +7,13 @@ from apps.archive.archive import ArchiveVersionsResource
 from liveblog.common import get_user, update_dates_for
 from apps.content import metadata_schema
 from apps.archive.common import generate_guid, GUID_TAG
+from superdesk.celery_app import celery
 from superdesk import get_resource_service
 from superdesk.resource import Resource
 from bson.objectid import ObjectId
 from superdesk.activity import add_activity
 from flask.globals import g
-from flask import current_app as app, render_template
+from flask import current_app as app, render_template, request
 from superdesk.emails import send_email
 import liveblog.embed
 
@@ -121,6 +122,17 @@ def send_members_email(recipients, user_name, doc, url):
                      text_body=text_body, html_body=html_body)
 
 
+@celery.task(soft_time_limit=1800)
+def publish_blog_embed_on_s3(blog, api_host):
+    if blog.get('theme', False):
+        try:
+            public_url = liveblog.embed.publish_embed(blog['_id'], api_host)
+            get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
+            return public_url
+        except liveblog.embed.AmazonAccessKeyUnknownException:
+            pass
+
+
 class BlogService(ArchiveService):
     notification_key = 'blog'
 
@@ -129,15 +141,6 @@ class BlogService(ArchiveService):
         if theme is not None:
             theme['_id'] = str(theme['_id'])
         return theme
-
-    def publish_blog_on_s3(self, blog):
-        if blog.get('theme', False):
-            try:
-                public_url = liveblog.embed.publish_embed(blog['_id'])
-                self.update(blog['_id'], {'public_url': public_url}, blog)
-                return public_url
-            except liveblog.embed.AmazonAccessKeyUnknownException:
-                pass
 
     def on_create(self, docs):
         for doc in docs:
@@ -156,7 +159,7 @@ class BlogService(ArchiveService):
     def on_created(self, docs):
         # Publish on s3 if possible and save the public_url in the blog
         for blog in docs:
-            self.publish_blog_on_s3(blog)
+            publish_blog_embed_on_s3.delay(blog, request.url_root)
         # notify client with websocket
         for doc in docs:
             push_notification(self.notification_key, created=1, blog_id=str(doc.get('_id')))
@@ -192,8 +195,8 @@ class BlogService(ArchiveService):
         updates['version_creator'] = str(get_user().get('_id'))
 
     def on_updated(self, updates, original):
+        publish_blog_embed_on_s3.delay(original, request.url_root)
         push_notification('blogs', updated=1)
-        self.publish_blog_on_s3(original)
 
     def on_deleted(self, doc):
         push_notification('blogs', deleted=1)

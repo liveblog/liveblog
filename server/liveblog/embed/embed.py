@@ -29,7 +29,8 @@ def is_relative_to_current_folder(url):
 
 
 @bp.route('/embed/<blog_id>')
-def embed(blog_id):
+def embed(blog_id, api_host=None):
+    api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if not blog:
         return 'blog not found', 404
@@ -42,14 +43,14 @@ def embed(blog_id):
         )
     scope = {
         'blog': blog,
-        'api_host': request.url_root,
+        'api_host': api_host,
         'assets_root': '/%s/%s/' % (ASSETS_DIR, theme_root)
     }
     return render_template('embed.html', **scope)
 
 
-def publish_embed(blog_id):
-    html = embed(blog_id)
+def publish_embed(blog_id, api_host=None):
+    html = embed(blog_id, api_host)
     if not app.config['AMAZON_ACCESS_KEY_ID']:
         raise AmazonAccessKeyUnknownException()
     s3 = tinys3.Connection(
