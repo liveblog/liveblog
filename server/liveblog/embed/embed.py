@@ -20,19 +20,18 @@ ASSETS_DIR = 'embed_assets'
 bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates', static_folder=ASSETS_DIR)
 
 
-def is_relative(url):
+def is_relative_to_current_folder(url):
     return not (url.startswith('/') or url.startswith('http://') or url.startswith('https://'))
 
 
 @bp.route('/embed/<blog_id>')
 def embed(blog_id):
-
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     theme_root = blog['theme']['name']
     # complete the urls from `scripts` and `styles` fields when it's relative
     for asset_type in ('scripts', 'styles'):
         blog['theme'][asset_type] = list(
-            map(lambda url: '%s/%s' % (theme_root, url) if is_relative(url) else url,
+            map(lambda url: '%s/%s' % (theme_root, url) if is_relative_to_current_folder(url) else url,
                 blog['theme'].get(asset_type) or list())
         )
     scope = {
@@ -55,8 +54,8 @@ def publish_embed(blog_id):
     return html
 
 
-@bp.app_template_filter('is_relative')
-def is_relative_filter(s):
-    return is_relative(s)
+@bp.app_template_filter('is_relative_to_current_folder')
+def is_relative_to_current_folder_filter(s):
+    return is_relative_to_current_folder(s)
 
 # EOF
