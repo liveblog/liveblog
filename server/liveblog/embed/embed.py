@@ -21,9 +21,9 @@ bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates'
 def embed(blog_id):
 
     def complete_url(url):
-        def is_relative(url):
+        def is_relative_to_current_folder(url):
             return not (url.startswith('/') or url.startswith('http://') or url.startswith('https://'))
-        if is_relative(url):
+        if is_relative_to_current_folder(url):
             url = '/%s/%s/%s' % (ASSETS_DIR, blog['theme']['name'], url)
         return url
 
