@@ -8,7 +8,7 @@
 
         {% for style in blog.theme.styles %}
             {% if style | is_relative_to_current_folder %}
-                <link rel="stylesheet" href="{{ url_for('embed_liveblog.static', filename=style) }}">
+                <link rel="stylesheet" href="{{ url_for('embed_liveblog.static', filename=style, _external=False) }}">
             {% else %}
                 <link rel="stylesheet" href="{{ style }}">
             {% endif %}
@@ -44,7 +44,7 @@
 
         {% for script in blog.theme.scripts %}
             {% if script | is_relative_to_current_folder %}
-                <script type="text/javascript" src="{{ url_for('embed_liveblog.static', filename=script) }}"></script>
+                <script type="text/javascript" src="{{ url_for('embed_liveblog.static', filename=script, _external=False) }}"></script>
             {% else %}
                 <script type="text/javascript" src="{{ script }}"></script>
             {% endif %}
