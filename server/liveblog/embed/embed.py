@@ -42,7 +42,6 @@ def embed(blog_id):
     return render_template('embed.html', **scope)
 
 
-@bp.route('/publish_embed/<blog_id>')
 def publish_embed(blog_id):
     html = embed(blog_id)
     s3 = tinys3.Connection(
