@@ -195,7 +195,9 @@ define([
                 }
                 vm.tab = tab;
             },
-            iframe_url: blog.public_url,
+            // take the public url (from s3) or the local address
+            // FIXME: The local address shouldn't be given on production mode
+            iframe_url: blog.public_url || config.server.url.replace('/api', '/embed/' + blog._id),
             setFormsPristine: function() {
                 if (vm.forms.dirty) {
                     vm.forms.dirty = false;
