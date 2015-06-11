@@ -11,7 +11,9 @@
 """Embed module"""
 
 from .embed import bp as embed_blueprint
+from .embed import publish_embed
+from .embed import AmazonAccessKeyUnknownException
 
-__all__ = ['embed_blueprint']
+__all__ = ['embed_blueprint', 'publish_embed', 'AmazonAccessKeyUnknownException']
 
 # EOF

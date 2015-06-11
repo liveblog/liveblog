@@ -7,15 +7,15 @@ from apps.archive.archive import ArchiveVersionsResource
 from liveblog.common import get_user, update_dates_for
 from apps.content import metadata_schema
 from apps.archive.common import generate_guid, GUID_TAG
+from superdesk.celery_app import celery
 from superdesk import get_resource_service
 from superdesk.resource import Resource
 from bson.objectid import ObjectId
 from superdesk.activity import add_activity
-from settings import CLIENT_URL
 from flask.globals import g
-from flask import current_app as app, render_template
+from flask import current_app as app, render_template, request
 from superdesk.emails import send_email
-
+import liveblog.embed
 
 blogs_schema = {
     'guid': metadata_schema['guid'],
@@ -53,6 +53,9 @@ blogs_schema = {
     },
     'blog_preferences': {
         'type': 'dict'
+    },
+    'public_url': {
+        'type': 'string'
     }
 }
 
@@ -110,7 +113,6 @@ def send_email_to_added_members(doc, members, origin):
 
 
 def send_members_email(recipients, user_name, doc, url):
-    print('sending notification email to:', recipients)
     admins = app.config['ADMINS']
     app_name = app.config['APPLICATION_NAME']
     subject = render_template("invited_members_subject.txt", username=user_name)
@@ -118,6 +120,17 @@ def send_members_email(recipients, user_name, doc, url):
     html_body = render_template("invited_members.html", username=user_name, app_name=app_name)
     send_email.delay(subject=subject, sender=admins[0], recipients=recipients,
                      text_body=text_body, html_body=html_body)
+
+
+@celery.task(soft_time_limit=1800)
+def publish_blog_embed_on_s3(blog, api_host):
+    if blog.get('theme', False):
+        try:
+            public_url = liveblog.embed.publish_embed(blog['_id'], api_host)
+            get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
+            return public_url
+        except liveblog.embed.AmazonAccessKeyUnknownException:
+            pass
 
 
 class BlogService(ArchiveService):
@@ -143,6 +156,16 @@ class BlogService(ArchiveService):
             if 'theme' in prefs:
                 doc['theme'] = self.get_theme_snapshot(prefs['theme'])
 
+    def on_created(self, docs):
+        # Publish on s3 if possible and save the public_url in the blog
+        for blog in docs:
+            publish_blog_embed_on_s3.delay(blog, request.url_root)
+        # notify client with websocket
+        for doc in docs:
+            push_notification(self.notification_key, created=1, blog_id=str(doc.get('_id')))
+        # and members with emails
+        notify_members(docs, app.config['CLIENT_URL'])
+
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
@@ -152,12 +175,6 @@ class BlogService(ArchiveService):
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
         return doc
-
-    def on_created(self, docs):
-        for doc in docs:
-            push_notification(self.notification_key, created=1, blog_id=str(doc.get('_id')))
-
-        notify_members(docs, CLIENT_URL)
 
     def on_update(self, updates, original):
         # if the theme changed, we republish the blog with the new one
@@ -178,6 +195,7 @@ class BlogService(ArchiveService):
         updates['version_creator'] = str(get_user().get('_id'))
 
     def on_updated(self, updates, original):
+        publish_blog_embed_on_s3.delay(original, request.url_root)
         push_notification('blogs', updated=1)
 
     def on_deleted(self, doc):

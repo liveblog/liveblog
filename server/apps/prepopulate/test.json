@@ -21,7 +21,7 @@
     "resource": "global_preferences",
     "data": {
         "key": "theme",
-        "value": "ocean"
+        "value": "default-theme"
     }
 },
 {
@@ -52,6 +52,24 @@
     "id_name": "-id theme ocean-",
     "data": {
         "name": "ocean"
+    }
+},
+{
+    "resource": "themes",
+    "id_name": "-id theme default-",
+    "data": {
+        "name": "default-theme",
+        "version": "1.0",
+        "angularModule": "liveblog.default-theme",
+        "styles": [
+            "styles/embed.css",
+            "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
+        ],
+        "scripts": [
+            "//code.angularjs.org/1.3.14/angular-sanitize.js",
+            "//code.angularjs.org/1.3.14/angular-animate.js",
+            "main.js"
+        ]
     }
 },
 {
