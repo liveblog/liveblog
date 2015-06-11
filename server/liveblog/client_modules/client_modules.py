@@ -4,6 +4,7 @@ from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, 
 from apps.users.users import UsersResource
 from apps.users.services import UsersService
 from apps.archive.common import item_url
+from superdesk import get_resource_service
 
 
 class ClientUsersResource(UsersResource):
@@ -95,4 +96,10 @@ class ClientBlogPostsService(BlogPostsService):
         if req is None:
             req = ParsedRequest()
         docs = super().get(req, lookup)
+        # nest the user in the response
+        for doc in docs:
+            creator = get_resource_service('users').find_one(req=None, _id=doc.get('original_creator'))
+            # select fields that are useful
+            wanted_fields = ('first_name', 'last_name', 'display_name', 'username', 'picture_url')
+            doc['original_creator'] = {key: creator.get(key, None) for key in wanted_fields}
         return docs

@@ -7,8 +7,14 @@
     </h1>
     <ul class="lb-posts list-group">
         <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item">
-            <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
-                <div ng-bind-html="item.text"></div>
+            <div>
+                <div class="lb-creator">
+                    <figure class="lb-avatar"><img ng-src="{{ post.original_creator.picture_url }}"/></figure>
+                    <div class="lb-user-info" ng-bind="post.original_creator.display_name"></div>
+                </div>
+                <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
+                    <div ng-bind-html="item.text"></div>
+                </div>
             </div>
         </li>
     </ul>
