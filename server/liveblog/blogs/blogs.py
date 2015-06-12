@@ -126,7 +126,7 @@ def send_members_email(recipients, user_name, doc, url):
 def publish_blog_embed_on_s3(blog, api_host):
     if blog.get('theme', False):
         try:
-            public_url = liveblog.embed.publish_embed(blog['_id'], api_host)
+            public_url = liveblog.embed.publish_embed(str(blog['_id']), api_host)
             get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
             return public_url
         except liveblog.embed.AmazonAccessKeyUnknownException:
