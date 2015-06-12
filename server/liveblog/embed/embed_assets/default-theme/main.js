@@ -6,21 +6,14 @@
 
         var vm = this;
 
-        function retrieveUpdate(force_sync) {
-            force_sync = vm.autoUpdate || force_sync === true;
-            return vm.pagesManager.retrieveUpdate(force_sync).then(function(posts) {
-                // save updates meta data
-                vm.updatesAvailable = posts._meta.total;
-            });
+        function retrieveUpdate() {
+            return vm.pagesManager.retrieveUpdate(true);
         }
 
         // define view model
         angular.extend(vm, {
-            autoUpdate: false,
             blog: {},
-            pagesManager: new PagesManager(5),
-            updatesAvailable: 0,
-            retrieveUpdate: retrieveUpdate
+            pagesManager: new PagesManager(5)
         });
         // retrieve blog information
         blogsService.get().$promise.then(function(blog) {
