@@ -2,6 +2,7 @@ var utils = require('../app/scripts/bower_components/superdesk/client/spec/helpe
     login = utils.login,
     expectBlog = require('./helpers/utils.js').expectBlog,
     expectBlogsLength = require('./helpers/utils.js').expectBlogsLength,
+    openBlog = require('./helpers/utils').openBlog,
     blogs = require('./helpers/utils.js').blogs;
 
 describe('blogs', function() {
@@ -85,6 +86,7 @@ describe('blogs', function() {
             browser.wait(element(by.model('newBlog.title')).isDisplayed);
             element(by.model('newBlog.title')).sendKeys(newBlog.title);
             element(by.model('newBlog.description')).sendKeys(newBlog.description);
+            element(by.buttonText('NEXT')).click();
             element(by.buttonText('CREATE')).click();
             expectBlog(newBlog);
         });
@@ -96,8 +98,27 @@ describe('blogs', function() {
             element(by.model('newBlog.title')).sendKeys(newBlogImage.title);
             element(by.model('newBlog.description')).sendKeys(newBlogImage.description);
             element(by.css('input[type="file"]')).sendKeys(path.resolve(__dirname, newBlogImage.picture_url));
+            element(by.buttonText('NEXT')).click();
             element(by.buttonText('CREATE')).click();
             expectBlog(newBlogImage);
+        });
+        it('should add a blog with members', function() {
+            element(by.css('[ng-click="openNewBlog();"]')).click();
+            //after the add new blog model is displayed
+            browser.wait(element(by.model('newBlog.title')).isDisplayed);
+            element(by.model('newBlog.title')).sendKeys(newBlog.title);
+            element(by.model('newBlog.description')).sendKeys(newBlog.description);
+            element(by.buttonText('NEXT')).click();
+            element(by.model('search')).sendKeys('s');
+            browser.wait(function() {
+                return browser.driver.isElementPresent(by.css('[ng-click="choose(user)"]'));
+            }, 5000);
+            element(by.repeater('user in users._items').row(0)).click();
+            element(by.buttonText('CREATE')).click();
+            openBlog(0);
+            element(by.css('.settings-link')).click();
+            element(by.css('[data="blog-settings-team"]')).click();
+            expect(element.all(by.repeater('member in settings.members')).count()).toBe(1);
         });
     });
 
