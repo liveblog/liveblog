@@ -10,9 +10,11 @@
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from flask import current_app as app
+from superdesk import get_resource_service
 import os
 import glob
 import json
+import superdesk
 
 
 class ThemesResource(Resource):
@@ -63,3 +65,22 @@ class ThemesService(BaseService):
         if app.config.get('SUPERDESK_TESTING', False):
             doc['_items'] = list(self.get_local_themes_packages())
             return doc
+
+    def update_registered_theme_with_local_files(self):
+            for theme in self.get_local_themes_packages():
+                previous_theme = self.find_one(req=None, name=theme.get('name'))
+                print('coucou', previous_theme)
+                if previous_theme:
+                    self.replace(previous_theme['_id'], theme, previous_theme)
+                else:
+                    self.create([theme])
+
+
+class ThemesCommand(superdesk.Command):
+
+    def run(self):
+        theme_service = get_resource_service('themes')
+        theme_service.update_registered_theme_with_local_files()
+
+
+superdesk.command('register', ThemesCommand())
