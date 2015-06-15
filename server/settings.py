@@ -194,7 +194,7 @@ else:
     INSTALLED_APPS.append('apps.auth.db')
 
 SUPERDESK_TESTING = (env('SUPERDESK_TESTING', 'false').lower() == 'true')
-
+SUPERDESK_DEBUGGING = env('SUPERDESK_DEBUGGING', 'false').lower() == 'true'
 # The number of minutes since the last update of the Mongo auth object after which it will be deleted
 SESSION_EXPIRY_MINUTES = 240
 

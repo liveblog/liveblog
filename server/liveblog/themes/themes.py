@@ -62,14 +62,13 @@ class ThemesService(BaseService):
     def on_fetched(self, doc):
         # FIXME: for debugging, retrieve themes from filesystem.
         # Useful to don't have to register a theme in order to have it in the list
-        if app.config.get('SUPERDESK_TESTING', False):
+        if app.config.get('SUPERDESK_DEBUGGING', False):
             doc['_items'] = list(self.get_local_themes_packages())
             return doc
 
     def update_registered_theme_with_local_files(self):
             for theme in self.get_local_themes_packages():
                 previous_theme = self.find_one(req=None, name=theme.get('name'))
-                print('coucou', previous_theme)
                 if previous_theme:
                     self.replace(previous_theme['_id'], theme, previous_theme)
                 else:
@@ -83,4 +82,4 @@ class ThemesCommand(superdesk.Command):
         theme_service.update_registered_theme_with_local_files()
 
 
-superdesk.command('register', ThemesCommand())
+superdesk.command('register_local_themes', ThemesCommand())
