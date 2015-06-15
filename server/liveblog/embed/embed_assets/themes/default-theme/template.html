@@ -1,0 +1,37 @@
+
+<div class="cover">
+    <h1>
+        {{ timeline.blog.title }}
+        <small>
+            {{ timeline.blog.description }}
+        </small>
+    </h1>
+</div>
+
+<div class="lb-timeline" ng-show="!timeline.showSplash">
+    <ul class="lb-posts list-group">
+        <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item">
+            <div>
+                <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
+                    <article lb-bind-html html-content="{{ item.text }}"></article>
+                </div>
+                <div class="lb-creator">
+                    <div class="lb-user-info" ng-bind="post.original_creator.display_name"></div>
+                </div>
+            </div>
+        </li>
+    </ul>
+</div>
+<div class="footer"></div>
+<div class="splash" ng-show="timeline.showSplash">
+    <div class="bg" ng-style="{'background-image':'url({{timeline.blog.picture_url}})'}"></div>
+    <div class="wrapper">
+        <h1>
+            {{ timeline.blog.title }}
+            <small>
+                {{ timeline.blog.description }}
+            </small>
+        </h1>
+        <button class="btn btn-default btn-lg" ng-click="timeline.showSplash = false">Enter the Liveblog</button>
+    </div>
+</div>

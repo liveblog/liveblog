@@ -1,0 +1,144 @@
+body, html {
+    background-color: #F6F6F6 !important;
+    height: 100%;
+}
+
+.lb-timeline {
+    font-family: 'Poppins', sans-serif;
+    height: 100%;
+}
+.cover {
+    position: relative;
+    text-align: center;
+}
+.cover .bg{
+/*    background-size: cover;
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    top:0;
+    bottom: 0;
+    right:0;
+    left: 0;
+    opacity: .5;*/
+}
+.cover h1 small {
+    display: block;
+    color: black;
+}
+.cover h1 {
+    position: relative;
+    /*font-size: 1.5em;*/
+    text-transform: capitalize;
+    /*padding-left:20px;*/
+    color: black;
+}
+.lb-timeline {
+    font-family: Cabin;
+    position: relative;
+    z-index: 1;
+}
+
+
+
+.lb-timeline .lb-posts {
+    margin-top: 20px;
+}
+.lb-timeline .lb-post:first-child {
+    border-top: 0.0625rem solid red;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+
+}
+.lb-timeline .lb-post {
+    border: 0px solid black;
+
+ /*   margin-bottom: 12px;
+    border-top: 0.0625rem solid #BDBDBD;
+    border-bottom: 0.0625rem solid #EAEAEA;*/
+}
+.lb-timeline img {
+    height: auto;
+    display: block;
+    width: 100%;
+}
+.lb-timeline .lb-user-info {
+    text-transform: capitalize;
+    padding-top: 2px;
+    padding-left: 26px;
+    text-align: right;
+    font-size: .8em;
+    /*padding-bottom: 16px;*/
+    /*border-bottom: 1px solid #EAEAEA;*/
+}
+.lb-timeline .lb-item {
+    padding: 0 10px;
+    margin: 0 5px;
+}
+
+.lb-post.ng-enter, .lb-post.ng-leave {
+    -webkit-transition:1s linear all;
+    -moz-transition:1s linear all;
+}
+.lb-post.ng-enter, .lb-post.ng-leave.ng-leave-active {
+    opacity: 0;
+}
+.lb-post.ng-enter.ng-enter-active, .lb-post.ng-leave  {
+    opacity: 1;
+}
+
+.splash {
+    z-index: 2;
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    text-align: center;
+    font-size: 2em;
+    padding-top: 10%;
+}
+
+.splash .bg {
+    background-size: cover;
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 0;
+    opacity: .6;
+
+}
+.splash .wrapper {
+    position: relative;
+    position: relative;
+    background-color: rgba(255, 255, 255, 0.79);
+    padding: 40px;
+    max-width: 690px;
+    margin: 0 auto;
+    position: absolute;
+    left: 0;
+    right: 0;
+}
+.splash small {
+    padding:20px 0px;
+    display: block;
+    color: black;
+}
+
+.splash.ng-hide-add {
+
+}
+
+.splash.ng-hide-add-active {
+    -webkit-animation: flipOutX 1s;
+    animation: flipOutX 1s;
+}
+
+.lb-timeline.ng-hide-remove-active {
+    -webkit-animation: fadeInUp 3s;
+    animation: fadeInUp 2s;
+}
