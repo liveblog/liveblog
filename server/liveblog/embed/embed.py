@@ -50,9 +50,14 @@ def embed(blog_id, api_host=None, theme=None):
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if not blog:
         return 'blog not found', 404
-    theme_dir = theme or request.args.get('theme', None) or blog['theme']['name']
+    theme_name = theme
+    try:
+        theme_name = theme_name or request.args.get('theme', None)
+    except RuntimeError:
+        pass
+    theme_name = theme_name or blog['theme']['name']
     theme_package = '%s/%s/themes/%s/package.json' % \
-                    (os.path.dirname(os.path.realpath(__file__)), ASSETS_DIR, theme_dir)
+                    (os.path.dirname(os.path.realpath(__file__)), ASSETS_DIR, theme_name)
     theme = json.loads(open(theme_package).read())
     blog['theme'] = theme
     # complete the urls from `scripts` and `styles` fields when it's relative
