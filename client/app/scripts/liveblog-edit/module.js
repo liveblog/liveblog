@@ -280,8 +280,8 @@ define([
         vm.buildOwner(blog.original_creator);
         vm.getMembers();
         //check if form is dirty before leaving the page
-        var deregisterPreventer = $scope.$on('$locationChangeStart', function (event, next, current) {
-            event.preventDefault();
+        var deregisterPreventer = $scope.$on('$locationChangeStart', routeChange);
+        function routeChange (event, next, current) {
             //check if one of the forms is dirty
             var dirty = false;
             if (vm.forms.dirty) {
@@ -295,17 +295,13 @@ define([
                 });
             }
             if (dirty) {
+                event.preventDefault();
                 modal.confirm(gettext('You have unsaved settings. Are you sure you want to leave the page?')).then(function() {
-                    goToNextPage(next);
+                    deregisterPreventer();
+                    $location.url($location.url(next).hash());
                 });
-            } else {
-                goToNextPage(next);
             }
-        });
-        var goToNextPage = function(url) {
-            $location.path($location.url(url).hash());
-            deregisterPreventer();
-        };
+        }
         vm.changeTab('general');
         vm.blog_switch = vm.newBlog.blog_status === 'open'? true: false;
     }
