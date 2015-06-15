@@ -9,6 +9,10 @@
 # at https://www.sourcefabric.org/superdesk/license
 from superdesk.resource import Resource
 from superdesk.services import BaseService
+from flask import current_app as app
+import os
+import glob
+import json
 
 
 class ThemesResource(Resource):
@@ -46,4 +50,16 @@ class ThemesResource(Resource):
 
 
 class ThemesService(BaseService):
-    pass
+
+    def get_local_themes_packages(self):
+            embed_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                        '../', 'embed', 'embed_assets', 'themes')
+            for file in glob.glob(embed_folder + '/**/package.json'):
+                yield json.loads(open(file).read())
+
+    def on_fetched(self, doc):
+        # FIXME: for debugging, retrieve themes from filesystem.
+        # Useful to don't have to register a theme in order to have it in the list
+        if app.config.get('SUPERDESK_TESTING', False):
+            doc['_items'] = list(self.get_local_themes_packages())
+            return doc
