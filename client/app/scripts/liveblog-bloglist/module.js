@@ -11,6 +11,8 @@
         ];
 
         $scope.activeState = $scope.states[0];
+        $scope.creationStep = 'Details';
+        $scope.blogMembers = [];
 
         $scope.changeState = function(state) {
             $scope.activeState = state;
@@ -51,10 +53,9 @@
         };
 
         $scope.createBlog = function() {
-            var members = _.map($scope.deskMembers, function(obj) {
+            var members = _.map($scope.blogMembers, function(obj) {
                 return {user: obj._id};
             });
-            console.log('members is ', members);
             if (angular.equals({}, $scope.preview)) {
                $scope.makeBlog({
                     title: $scope.newBlog.title,
@@ -108,6 +109,18 @@
 
         $scope.edit = function(blog) {
             $location.path('/liveblog/edit/' + blog._id);
+        };
+
+        $scope.switchTab = function(newTab) {
+            $scope.creationStep = newTab;
+        };
+
+        $scope.addMember = function(user) {
+            $scope.blogMembers.push(user);
+        };
+
+        $scope.removeMember = function(user) {
+            $scope.blogMembers.splice($scope.blogMembers.indexOf(user), 1);
         };
 
         function getCriteria() {
@@ -221,11 +234,10 @@
     .directive('lbUserSelectList', ['$filter', 'api', function($filter, api) {
             return {
                 scope: {
-                    exclude: '=',
+                    members: '=',
                     onchoose: '&'
                 },
                 templateUrl: 'scripts/bower_components/superdesk/client/app/scripts/superdesk-desks/views/user-select.html',
-                ///home/vlad/work/liveblog/client/app/scripts/bower_components/superdesk/client/app/scripts/superdesk-desks/views/user-select.html
                 link: function(scope, elem, attrs) {
 
                     var ARROW_UP = 38, ARROW_DOWN = 40, ENTER = 13;
@@ -233,7 +245,6 @@
                     scope.selected = null;
                     scope.search = null;
                     scope.users = {};
-                    scope.exclude = [];
 
                     var _refresh = function() {
                         scope.users = {};
@@ -248,10 +259,13 @@
                         .then(function(result) {
                             scope.users = result;
                             scope.users._items = _.filter(scope.users._items, function(item) {
-                                //return _.findIndex(scope.exclude, {_id: item._id}) === -1;
-                                var ret = scope.exclude.indexOf({_id: item._id}) === -1;
-                                console.log('ret is ', ret);
-                                return scope.exclude.indexOf({_id: item._id}) === -1;
+                                var found = false;
+                                _.each(scope.members, function(member) {
+                                    if (member._id === item._id) {
+                                        found = true;
+                                    }
+                                });
+                                return !found;
                             });
                             scope.selected = null;
                         });
@@ -266,22 +280,30 @@
 
                     function getSelectedIndex() {
                         if (scope.selected) {
-                            return _.findIndex(scope.users._items, scope.selected);
+                            var selectedIndex = -1;
+                            _.each(scope.users._items, function(item, index) {
+                                if (item === scope.selected) {
+                                    selectedIndex = index;
+                                }
+                            });
+                            return selectedIndex;
                         } else {
                             return -1;
                         }
                     }
 
                     function previous() {
-                        var selectedIndex = getSelectedIndex();
+                        var selectedIndex = getSelectedIndex(),
+                        previousIndex = _.max([0, selectedIndex - 1]);
                         if (selectedIndex > 0) {
-                            scope.select(scope.users._items[_.max([0, selectedIndex - 1])]);
+                            scope.select(scope.users._items[previousIndex]);
                         }
                     }
 
                     function next() {
-                        var selectedIndex = getSelectedIndex();
-                        scope.select(scope.users._items[_.min([scope.users._items.length - 1, selectedIndex + 1])]);
+                        var selectedIndex = getSelectedIndex(),
+                        nextIndex = _.min([scope.users._items.length - 1, selectedIndex + 1]);
+                        scope.select(scope.users._items[nextIndex]);
                     }
 
                     elem.bind('keydown keypress', function(event) {
@@ -315,34 +337,5 @@
                     };
                 }
             };
-        }])
-        .directive('lbBlogeditPeople', ['gettext', 'WizardHandler', 'desks',  '$rootScope',
-            function(gettext, WizardHandler, desks, $rootScope) {
-            return {
-                link: function(scope, elem, attrs) {
-
-                    scope.search = null;
-                    $rootScope.deskMembers = [];
-                    scope.message = null;
-
-                    scope.add = function(user) {
-                        $rootScope.deskMembers.push(user);
-                    };
-
-                    scope.remove = function(user) {
-
-                        //_.remove(scope.deskMembers, user);
-                        var index = $rootScope.deskMembers.indexOf(user)
-                        $rootScope.deskMembers.splice(index, 1);
-                    };
-
-                    scope.save = function() {
-                        var members = _.map(scope.deskMembers, function(obj) {
-                            return {user: obj._id};
-                        });
-                    };
-                }
-            };
-        }])
-;
+        }]);
 })();
