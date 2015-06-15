@@ -123,10 +123,11 @@ def send_members_email(recipients, user_name, doc, url):
 
 
 @celery.task(soft_time_limit=1800)
-def publish_blog_embed_on_s3(blog, api_host):
+def publish_blog_embed_on_s3(blog_id, api_host):
+    blog = get_resource_service('blogs').find_one(req=None, _id=blog_id)
     if blog.get('theme', False):
         try:
-            public_url = liveblog.embed.publish_embed(str(blog['_id']), api_host)
+            public_url = liveblog.embed.publish_embed(blog_id, api_host)
             get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
             return public_url
         except liveblog.embed.AmazonAccessKeyUnknownException:
@@ -159,7 +160,7 @@ class BlogService(ArchiveService):
     def on_created(self, docs):
         # Publish on s3 if possible and save the public_url in the blog
         for blog in docs:
-            publish_blog_embed_on_s3.delay(blog, request.url_root)
+            publish_blog_embed_on_s3.delay(str(blog['_id']), request.url_root)
         # notify client with websocket
         for doc in docs:
             push_notification(self.notification_key, created=1, blog_id=str(doc.get('_id')))
@@ -195,7 +196,7 @@ class BlogService(ArchiveService):
         updates['version_creator'] = str(get_user().get('_id'))
 
     def on_updated(self, updates, original):
-        publish_blog_embed_on_s3.delay(original, request.url_root)
+        publish_blog_embed_on_s3.delay(str(original['_id']), request.url_root)
         push_notification('blogs', updated=1)
 
     def on_deleted(self, doc):

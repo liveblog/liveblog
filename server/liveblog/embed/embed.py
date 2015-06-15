@@ -34,14 +34,17 @@ def publish_embed(blog_id, api_host=None, theme=None):
     html = embed(blog_id, api_host, theme)
     if not app.config['AMAZON_ACCESS_KEY_ID']:
         raise AmazonAccessKeyUnknownException()
+    region = app.config['AMAZON_REGION']
+    bucket = app.config['AMAZON_CONTAINER_NAME']
     s3 = tinys3.Connection(
         app.config['AMAZON_ACCESS_KEY_ID'],
-        app.config['AWS_SECRET_ACCESS_KEY'],
-        default_bucket=app.config['AMAZON_CONTAINER_NAME'])
+        app.config['AMAZON_SECRET_ACCESS_KEY'],
+        default_bucket=bucket,
+        endpoint='s3-%s.amazonaws.com' % (region))
     # Uploading a single file
     response = s3.upload('%s/blogs/index.html' % (blog_id), io.BytesIO(bytes(html, 'utf-8')))
-    return response.url.replace('s3.amazonaws.com/%s' % (app.config['AMAZON_CONTAINER_NAME']),
-                                '%s.s3.amazonaws.com' % (app.config['AMAZON_CONTAINER_NAME']))
+    return response.url.replace('s3-%s.amazonaws.com/%s' % (region, bucket),
+                                '%s.s3-%s.amazonaws.com' % (bucket, region))
 
 
 @bp.route('/embed/<blog_id>')
