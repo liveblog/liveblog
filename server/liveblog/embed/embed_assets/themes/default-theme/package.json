@@ -1,10 +1,12 @@
 {
     "name": "default-theme",
     "version": "1.0",
-    "angularModule": "liveblog.default-theme",
+    "angularModule": "default-theme",
     "styles": [
         "styles/embed.css",
-        "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
+        "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css",
+        "//cdnjs.cloudflare.com/ajax/libs/animate.css/3.3.0/animate.min.css",
+        "//fonts.googleapis.com/css?family=Poppins:400,500"
     ],
     "scripts": [
         "//code.angularjs.org/1.3.14/angular-sanitize.js",

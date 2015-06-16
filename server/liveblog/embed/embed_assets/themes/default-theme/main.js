@@ -1,8 +1,8 @@
 (function(angular) {
     'use strict';
 
-    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs'];
-    function TimelineCtrl($interval, PagesManager, blogsService) {
+    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config'];
+    function TimelineCtrl($interval, PagesManager, blogsService, config) {
 
         var vm = this;
 
@@ -12,12 +12,9 @@
 
         // define view model
         angular.extend(vm, {
-            blog: {},
-            pagesManager: new PagesManager(5)
-        });
-        // retrieve blog information
-        blogsService.get().$promise.then(function(blog) {
-            vm.blog = blog;
+            blog: config.blog,
+            showSplash: true,
+            pagesManager: new PagesManager(50)
         });
         // retrieve first page
         vm.pagesManager.fetchNewPage()
@@ -27,12 +24,12 @@
         });
     }
 
-    angular.module('liveblog.default-theme', ['liveblog-embed', 'ngSanitize' ,'ngAnimate'])
+    angular.module('default-theme', ['liveblog-embed', 'ngSanitize' ,'ngAnimate'])
         .directive('lbTemplate', ['config', function(config) {
             return {
                 controller: TimelineCtrl,
                 controllerAs: 'timeline',
-                templateUrl: config.assets_root + 'default-theme-template.html'
+                templateUrl: config.assets_root + 'template.html'
             };
         }]);
 

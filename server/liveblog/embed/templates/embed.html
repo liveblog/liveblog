@@ -25,18 +25,19 @@
 
         <script type="text/javascript">
             angular.module('liveblog-embed', ['ngResource', '{{ blog.theme.angularModule }}'])
-                .constant('theme', {{ blog.theme | tojson }})
+                .constant('theme', {{ blog.theme | tojson | safe }})
                 .constant('config', {
                     blog_id: '{{ blog._id }}',
+                    blog: {{ blog | tojson | safe }},
                     api_host: '{{ api_host }}',
-                    assets_root: '{{ assets_root }}',
-                    preferences: {{ blog.blog_preferences | tojson }}
+                    assets_root: '{{ assets_root }}'
                 });
         </script>
 
         {% assets
             "embed_liveblog/scripts/liveblog-embed/resources.service.js",
             "embed_liveblog/scripts/liveblog-embed/pages-manager.service.js",
+            "embed_liveblog/scripts/liveblog-embed/directives.js",
             output="gen/lb-embed-%(version)s.js", filters="jsmin"
         %}
             <script type="text/javascript" src="{{ ASSET_URL }}"></script>

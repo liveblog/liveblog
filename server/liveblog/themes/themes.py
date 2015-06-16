@@ -9,6 +9,12 @@
 # at https://www.sourcefabric.org/superdesk/license
 from superdesk.resource import Resource
 from superdesk.services import BaseService
+from flask import current_app as app
+from superdesk import get_resource_service
+import os
+import glob
+import json
+import superdesk
 
 
 class ThemesResource(Resource):
@@ -46,4 +52,34 @@ class ThemesResource(Resource):
 
 
 class ThemesService(BaseService):
-    pass
+
+    def get_local_themes_packages(self):
+            embed_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                        '../', 'embed', 'embed_assets', 'themes')
+            for file in glob.glob(embed_folder + '/**/package.json'):
+                yield json.loads(open(file).read())
+
+    def on_fetched(self, doc):
+        # FIXME: for debugging, retrieve themes from filesystem.
+        # Useful to don't have to register a theme in order to have it in the list
+        if app.config.get('SUPERDESK_DEBUGGING', False):
+            doc['_items'] = list(self.get_local_themes_packages())
+            return doc
+
+    def update_registered_theme_with_local_files(self):
+            for theme in self.get_local_themes_packages():
+                previous_theme = self.find_one(req=None, name=theme.get('name'))
+                if previous_theme:
+                    self.replace(previous_theme['_id'], theme, previous_theme)
+                else:
+                    self.create([theme])
+
+
+class ThemesCommand(superdesk.Command):
+
+    def run(self):
+        theme_service = get_resource_service('themes')
+        theme_service.update_registered_theme_with_local_files()
+
+
+superdesk.command('register_local_themes', ThemesCommand())
