@@ -57,6 +57,7 @@ def embed(blog_id, api_host=None, theme=None):
     try:
         theme_name = theme_name or request.args.get('theme', None)
     except RuntimeError:
+        # this method can be called outside from a request context
         pass
     theme_name = theme_name or blog['theme']['name']
     theme_package = '%s/%s/themes/%s/package.json' % \
