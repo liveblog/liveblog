@@ -11,6 +11,8 @@
         ];
 
         $scope.activeState = $scope.states[0];
+        $scope.creationStep = 'Details';
+        $scope.blogMembers = [];
 
         $scope.changeState = function(state) {
             $scope.activeState = state;
@@ -51,10 +53,14 @@
         };
 
         $scope.createBlog = function() {
+            var members = _.map($scope.blogMembers, function(obj) {
+                return {user: obj._id};
+            });
             if (angular.equals({}, $scope.preview)) {
                $scope.makeBlog({
                     title: $scope.newBlog.title,
-                    description: $scope.newBlog.description
+                    description: $scope.newBlog.description,
+                    members: members
                 });
             } else {
                 $scope.upload($scope.preview).then(function() {
@@ -103,6 +109,18 @@
 
         $scope.edit = function(blog) {
             $location.path('/liveblog/edit/' + blog._id);
+        };
+
+        $scope.switchTab = function(newTab) {
+            $scope.creationStep = newTab;
+        };
+
+        $scope.addMember = function(user) {
+            $scope.blogMembers.push(user);
+        };
+
+        $scope.removeMember = function(user) {
+            $scope.blogMembers.splice($scope.blogMembers.indexOf(user), 1);
         };
 
         function getCriteria() {
@@ -212,5 +230,112 @@
                 }
             }
         };
-    });
+    })
+    .directive('lbUserSelectList', ['$filter', 'api', function($filter, api) {
+            return {
+                scope: {
+                    members: '=',
+                    onchoose: '&'
+                },
+                templateUrl: 'scripts/bower_components/superdesk/client/app/scripts/superdesk-desks/views/user-select.html',
+                link: function(scope, elem, attrs) {
+
+                    var ARROW_UP = 38, ARROW_DOWN = 40, ENTER = 13;
+
+                    scope.selected = null;
+                    scope.search = null;
+                    scope.users = {};
+
+                    var _refresh = function() {
+                        scope.users = {};
+                        return api('users').query({where: JSON.stringify({
+                            '$or': [
+                                {username: {'$regex': scope.search, '$options': '-i'}},
+                                {first_name: {'$regex': scope.search, '$options': '-i'}},
+                                {last_name: {'$regex': scope.search, '$options': '-i'}},
+                                {email: {'$regex': scope.search, '$options': '-i'}}
+                            ]
+                        })})
+                        .then(function(result) {
+                            scope.users = result;
+                            scope.users._items = _.filter(scope.users._items, function(item) {
+                                var found = false;
+                                _.each(scope.members, function(member) {
+                                    if (member._id === item._id) {
+                                        found = true;
+                                    }
+                                });
+                                return !found;
+                            });
+                            scope.selected = null;
+                        });
+                    };
+                    var refresh = _.debounce(_refresh, 1000);
+
+                    scope.$watch('search', function() {
+                        if (scope.search) {
+                            refresh();
+                        }
+                    });
+
+                    function getSelectedIndex() {
+                        if (scope.selected) {
+                            var selectedIndex = -1;
+                            _.each(scope.users._items, function(item, index) {
+                                if (item === scope.selected) {
+                                    selectedIndex = index;
+                                }
+                            });
+                            return selectedIndex;
+                        } else {
+                            return -1;
+                        }
+                    }
+
+                    function previous() {
+                        var selectedIndex = getSelectedIndex(),
+                        previousIndex = _.max([0, selectedIndex - 1]);
+                        if (selectedIndex > 0) {
+                            scope.select(scope.users._items[previousIndex]);
+                        }
+                    }
+
+                    function next() {
+                        var selectedIndex = getSelectedIndex(),
+                        nextIndex = _.min([scope.users._items.length - 1, selectedIndex + 1]);
+                        scope.select(scope.users._items[nextIndex]);
+                    }
+
+                    elem.bind('keydown keypress', function(event) {
+                        scope.$apply(function() {
+                            switch (event.which) {
+                                case ARROW_UP:
+                                    event.preventDefault();
+                                    previous();
+                                    break;
+                                case ARROW_DOWN:
+                                    event.preventDefault();
+                                    next();
+                                    break;
+                                case ENTER:
+                                    event.preventDefault();
+                                    if (getSelectedIndex() >= 0) {
+                                        scope.choose(scope.selected);
+                                    }
+                                    break;
+                            }
+                        });
+                    });
+
+                    scope.choose = function(user) {
+                        scope.onchoose({user: user});
+                        scope.search = null;
+                    };
+
+                    scope.select = function(user) {
+                        scope.selected = user;
+                    };
+                }
+            };
+        }]);
 })();
