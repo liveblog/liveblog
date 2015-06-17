@@ -108,7 +108,7 @@ def send_email_to_added_members(doc, members, origin):
             recipients.append(user_doc['email'])
     if recipients:
         username = g.user.get('display_name') or g.user.get('username')
-        url = 'archive/<{0}:blog_id>'.format(origin, doc['_id'])
+        url = '<{0}:blog_id>'.format(origin, doc['_id'])
         send_members_email(recipients, username, doc, url)
 
 
@@ -116,8 +116,8 @@ def send_members_email(recipients, user_name, doc, url):
     admins = app.config['ADMINS']
     app_name = app.config['APPLICATION_NAME']
     subject = render_template("invited_members_subject.txt", username=user_name)
-    text_body = render_template("invited_members.txt", username=user_name, app_name=app_name)
-    html_body = render_template("invited_members.html", username=user_name, app_name=app_name)
+    text_body = render_template("invited_members.txt", username=user_name, link=url, app_name=app_name)
+    html_body = render_template("invited_members.html", username=user_name, link=url, app_name=app_name)
     send_email.delay(subject=subject, sender=admins[0], recipients=recipients,
                      text_body=text_body, html_body=html_body)
 
