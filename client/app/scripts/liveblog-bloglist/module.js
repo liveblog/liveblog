@@ -29,6 +29,8 @@
                 description: ''
             };
             $scope.newBlogError = '';
+            $scope.creationStep = 'Details';
+            $scope.blogMembers = [];
         }
         clearCreateBlogForm();
 
