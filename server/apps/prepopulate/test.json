@@ -42,23 +42,10 @@
 },
 {
     "resource": "themes",
-    "id_name": "-id theme forest-",
-    "data": {
-        "name": "forest"
-    }
-},
-{
-    "resource": "themes",
-    "id_name": "-id theme ocean-",
-    "data": {
-        "name": "ocean"
-    }
-},
-{
-    "resource": "themes",
     "id_name": "-id theme default-",
     "data": {
         "name": "default-theme",
+        "label": "Default Theme",
         "version": "1.0",
         "angularModule": "liveblog.default-theme",
         "styles": [

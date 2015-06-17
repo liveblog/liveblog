@@ -23,6 +23,9 @@ class ThemesResource(Resource):
         'name': {
             'type': 'string'
         },
+        'label': {
+            'type': 'string'
+        },
         'version': {
             'type': 'string'
         },
