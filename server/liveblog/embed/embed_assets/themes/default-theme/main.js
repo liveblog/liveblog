@@ -14,6 +14,11 @@
         angular.extend(vm, {
             blog: config.blog,
             showSplash: true,
+            order: 'editorial',
+            orderBy: function(order_by) {
+                vm.order = order_by;
+                vm.pagesManager.changeOrder(order_by);
+            },
             initTwitter: function() {
                 window.twttr = (function(d, s, id) {
                     var js, fjs = d.getElementsByTagName(s)[0],t = window.twttr || {};
@@ -22,7 +27,7 @@
                     fjs.parentNode.insertBefore(js, fjs); t._e = [];
                     t.ready = function(f) {t._e.push(f);}; return t;}(document, "script", "twitter-wjs"));
             },
-            pagesManager: new PagesManager(50)
+            pagesManager: new PagesManager(5, 'newest_first')
         });
         // retrieve first page
         vm.pagesManager.fetchNewPage()

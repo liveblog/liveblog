@@ -12,9 +12,18 @@
     <div class="sorting-bar">
         <div class="sorting-bar__title">Sort by:</div>
         <div class="sorting-bar__orders">
-            <div class="sorting-bar__order sorting-bar__order--active">Editorial</div>
-            <div class="sorting-bar__order">Newest first</div>
-            <div class="sorting-bar__order">Oldest first</div>
+            <div
+                class="sorting-bar__order"
+                ng-class="{'sorting-bar__order--active': timeline.order=='editorial'}"
+                ng-click="timeline.orderBy('editorial')">Editorial</div>
+            <div
+                class="sorting-bar__order"
+                ng-class="{'sorting-bar__order--active': timeline.order=='newest_first'}"
+                ng-click="timeline.orderBy('newest_first')">Newest first</div>
+            <div
+                class="sorting-bar__order"
+                ng-class="{'sorting-bar__order--active': timeline.order=='oldest_first'}"
+                ng-click="timeline.orderBy('oldest_first')">Oldest first</div>
         </div>
     </div>
     <ul class="lb-posts list-group">

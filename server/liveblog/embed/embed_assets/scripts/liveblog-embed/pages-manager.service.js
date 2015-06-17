@@ -4,8 +4,12 @@
     PagesManagerFactory.$inject = ['posts', '$q'];
     function PagesManagerFactory(postsService, $q) {
 
-        function PagesManager (max_results) {
-
+        function PagesManager (max_results, sort) {
+            var SORTS = {
+                'editorial' : {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
+                'newest_first' : {_created: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
+                'oldest_first' : {_created: {order: 'asc', missing:'_last', unmapped_type: 'long'}}
+            };
             var self = this;
 
             /**
@@ -30,7 +34,7 @@
                 var posts_criteria = {
                     source: {
                         query: {filtered: {filter: {and: [{term: {post_status: 'open'}}, {not: {term: {deleted: true}}}]}}},
-                        sort: [{order: {order: 'desc', missing:'_last', unmapped_type: 'long'}}]
+                        sort: [SORTS[self.sort]]
                     },
                     page: page,
                     max_results: max_results || self.maxResults
@@ -40,6 +44,17 @@
                     self.meta = data._meta;
                     return data;
                 });
+            }
+
+            /**
+             * Change the order in the future posts request, remove exising post and load a new page
+             * @param {string} sort_name - The name of the new order (see self.SORTS)
+             * @returns {promise}
+             */
+            function changeOrder(sort_name) {
+                self.sort = sort_name;
+                self.pages = [];
+                return fetchNewPage();
             }
 
             /**
@@ -167,8 +182,16 @@
                 posts = posts || self.allPosts();
                 self.pages = [];
                 // respect the order
-                // TODO: allow other field for ordering
-                posts.sort(function(a, b) {return a.order < b.order;});
+                var sort_by = Object.keys(SORTS[self.sort])[0];
+                var order_by = SORTS[self.sort][sort_by].order;
+                posts.sort(function(a, b) {
+                    if (order_by === 'desc') {
+                        return a[sort_by] < b[sort_by];
+                    }
+                    else {
+                        return a[sort_by] > b[sort_by];
+                    }
+                });
                 var page;
                 posts.forEach(function(post, index) {
                     if (index % self.maxResults === 0) {
@@ -277,6 +300,14 @@
                  * Represent the meta data of posts (total number for instance)
                  */
                 meta: {},
+                /**
+                 * Set the initial order (see self.SORTS)
+                 */
+                sort: sort || 'editorial',
+                /**
+                 * Change the order in the future posts request, remove exising post and load a new page
+                 */
+                changeOrder: changeOrder,
                 /**
                  * Number of results per page
                  */
