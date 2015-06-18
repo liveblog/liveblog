@@ -179,7 +179,7 @@ article blockquote li:before {
     font-weight: 400;
     opacity: 1;
     transition-property: opacity;
-    transition-duration:1s;
+    transition-duration:.25s;
 }
 .loading.ng-hide {
     opacity: 0;

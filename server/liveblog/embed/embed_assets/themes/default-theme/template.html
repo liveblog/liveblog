@@ -28,7 +28,7 @@
     </div>
     <div
         class="lb-post emtpy-message"
-        ng-show="timeline.pagesManager.allPosts().length < 1">
+        ng-show="timeline.pagesManager.allPosts().length < 1 && !timeline.loading">
         <div class="content">No post for now.</div>
     </div>
     <ul
