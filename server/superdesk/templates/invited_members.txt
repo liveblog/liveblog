@@ -1,1 +1,1 @@
-You were invited to contribute to the following blog: {{link}}
+You were invited to contribute to blog {{title}}: {{link}}
