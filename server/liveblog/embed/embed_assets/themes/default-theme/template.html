@@ -35,6 +35,7 @@
             <div class="content">
                 <figure class="lb-avatar"><img ng-src="{{ post.original_creator.picture_url }}"/></figure>
                 <div class="lb-creator">
+                    <div class="lb-post-date" ng-bind="post._updated | date"></div>
                     <div class="lb-user-info" ng-bind="post.original_creator.display_name"></div>
                 </div>
                 <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">

@@ -11,6 +11,7 @@
     "scripts": [
         "//code.angularjs.org/1.3.14/angular-animate.js",
         "vendors/ng-infinite-scroll.min.js",
+        "vendors/fecha.js",
         "main.js"
     ]
 }

@@ -60,7 +60,13 @@
                 controllerAs: 'timeline',
                 templateUrl: config.assets_root + 'template.html'
             };
-        }]);
+        }])
+        .filter('date', function() {
+            return function(input) {
+                var date = fecha.parse(input, 'YYYY-MM-DDTHH:mm:ss+0000');
+                return fecha.format(date, 'DD/MM/YYYY  hh:mm A');
+            };
+        });
     angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 1000);
 
 })(angular);

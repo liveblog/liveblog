@@ -74,12 +74,19 @@ img {
 }
 .lb-creator, .lb-item {
     margin-left: 70px;
+
 }
 .lb-creator {
     font-weight: 400;
     text-transform: capitalize;
     margin-bottom: 20px;
 }
+.lb-post-date {
+    font-size: .8em;
+    float: right;
+    color: #3C3C3C;
+}
+
 /* text */
 article b {
     font-weight: 400;
