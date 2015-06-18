@@ -9,6 +9,7 @@ from superdesk.services import BaseService
 from apps.content import LINKED_IN_PACKAGES
 from superdesk.celery_app import update_key
 import flask
+from superdesk.utc import utcnow
 
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
@@ -75,6 +76,12 @@ class PostsResource(ArchiveResource):
         'order': {
             'type': 'number',
             'default': 0
+        },
+        'published_date': {
+            'type': 'datetime'
+        },
+        'unpublished_date': {
+            'type': 'datetime'
         }
     })
     privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
@@ -100,6 +107,9 @@ class PostsService(ArchiveService):
         for doc in docs:
             doc['type'] = 'composite'
             doc['order'] = self.get_next_order_sequence()
+            #if you publish a post directly without beeing draft it will have  a published_date assign
+            if doc['post_status'] == 'open':
+                doc['published_date'] = utcnow()
         super().on_create(docs)
 
     def on_created(self, docs):
@@ -110,6 +120,10 @@ class PostsService(ArchiveService):
         # put the published item from drafts at the top of the timeline
         if updates.get('post_status') == 'open' and original.get('post_status') == 'draft':
             updates['order'] = self.get_next_order_sequence()
+            #if you publish a post from a draft it will only then have a published_date assign
+            updates['published_date'] = utcnow()
+        if original.get('post_status') == 'open' and updates.get('post_status') == 'draft':
+            updates['unpublished_date'] = utcnow()
         super().on_update(updates, original)
 
     def on_updated(self, updates, original):
