@@ -42,6 +42,13 @@
 },
 {
     "resource": "themes",
+    "data": {
+        "name": "forest",
+        "label": "forest"
+    }
+},
+{
+    "resource": "themes",
     "id_name": "-id theme default-",
     "data": {
         "name": "default-theme",

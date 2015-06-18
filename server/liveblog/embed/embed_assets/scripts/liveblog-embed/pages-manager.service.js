@@ -218,6 +218,8 @@
                 to_page = to_page || self.pages.length;
                 return retrievePage(1, to_page * self.maxResults).then(function(posts) {
                     createPagesWithPosts(posts._items);
+                    return posts;
+
                 });
             }
 

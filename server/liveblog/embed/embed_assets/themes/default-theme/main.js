@@ -14,30 +14,46 @@
         angular.extend(vm, {
             blog: config.blog,
             showSplash: true,
+            loading: true,
+            finished: false,
             order: 'editorial',
             orderBy: function(order_by) {
                 vm.order = order_by;
                 vm.pagesManager.changeOrder(order_by);
+                vm.finished = false;
             },
-            initTwitter: function() {
+            fetchNewPage: function() {
+                vm.loading = true;
+                return vm.pagesManager.fetchNewPage().then(function(data){
+                    vm.loading = false;
+                    vm.finished = data._meta.total <= data._meta.max_results;
+                });
+            },
+            isAllowedToLoadMore: function() {
+                return !vm.loading && !vm.finished;
+            },
+            initTwitter: function(element_id) {
                 window.twttr = (function(d, s, id) {
                     var js, fjs = d.getElementsByTagName(s)[0],t = window.twttr || {};
                     if (d.getElementById(id)) return t; js = d.createElement(s);js.id = id;
                     js.src = "https://platform.twitter.com/widgets.js";
                     fjs.parentNode.insertBefore(js, fjs); t._e = [];
                     t.ready = function(f) {t._e.push(f);}; return t;}(document, "script", "twitter-wjs"));
+                    window.twttr.ready(function(){
+                        window.twttr.widgets.load(document.getElementById(element_id));
+                    });
             },
-            pagesManager: new PagesManager(5, 'newest_first')
+            pagesManager: new PagesManager(5, 'editorial')
         });
         // retrieve first page
-        vm.pagesManager.fetchNewPage()
+        vm.fetchNewPage()
         // retrieve updates periodically
         .then(function() {
             $interval(retrieveUpdate, 10000);
         });
     }
 
-    angular.module('default-theme', ['liveblog-embed', 'ngAnimate'])
+    angular.module('default-theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll'])
         .directive('lbTemplate', ['config', function(config) {
             return {
                 controller: TimelineCtrl,
@@ -45,5 +61,6 @@
                 templateUrl: config.assets_root + 'template.html'
             };
         }]);
+    angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 1000);
 
 })(angular);

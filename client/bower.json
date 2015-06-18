@@ -24,9 +24,8 @@
   "dependencies": {
     "superdesk": "https://github.com/liveblog/superdesk.git#1.0.10",
     "Eventable": "https://github.com/nistormihai/eventable.git",
-    "embed": "https://github.com/nistormihai/plugin-liveblog-embed-server.git#993d4540ad",
     "ng-sir-trevor": "~2.0.0",
-    "angular-embed": "^2.0.0",
+    "angular-embed": "^2.0.2",
     "lrInfiniteScroll": "~1.0.0",
     "dragula.js": "~1.5.1"
   },

@@ -26,7 +26,11 @@
                 ng-click="timeline.orderBy('oldest_first')">Oldest first</div>
         </div>
     </div>
-    <ul class="lb-posts list-group">
+    <ul
+        class="lb-posts list-group"
+        infinite-scroll="timeline.fetchNewPage()"
+        infinite-scroll-disabled="!timeline.isAllowedToLoadMore()"
+        infinite-scroll-immediate-check="false">
         <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item">
             <div class="content">
                 <figure class="lb-avatar"><img ng-src="{{ post.original_creator.picture_url }}"/></figure>
@@ -37,7 +41,7 @@
                     <div ng-switch="item.item_type">
                         <div ng-switch-when="embed">
                             <div ng-switch="item.meta.provider_name">
-                                <div ng-switch-when="Twitter" ng-init="timeline.initTwitter()" lb-bind-html html-content="{{ item.meta.html }}">
+                                <div ng-switch-when="Twitter" ng-init="timeline.initTwitter(item.meta.element_id)" lb-bind-html html-content="{{ item.meta.html }}">
                                 </div>
                                 <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
                             </div>
@@ -48,4 +52,5 @@
             </div>
         </li>
     </ul>
+    <div ng-show="timeline.loading">Loading</div>
 </div>
