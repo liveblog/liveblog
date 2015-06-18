@@ -26,6 +26,11 @@
                 ng-click="timeline.orderBy('oldest_first')">Oldest first</div>
         </div>
     </div>
+    <div
+        class="lb-post emtpy-message"
+        ng-show="timeline.pagesManager.allPosts().length < 1">
+        <div class="content">No post for now.</div>
+    </div>
     <ul
         class="lb-posts list-group"
         infinite-scroll="timeline.fetchNewPage()"

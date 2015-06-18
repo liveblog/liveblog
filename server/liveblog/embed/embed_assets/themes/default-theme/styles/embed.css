@@ -1,3 +1,6 @@
+html, body {
+    height: 100%;
+}
 body {
     background-color: #EAEAEA;
     font-family: 'Roboto', sans-serif;
@@ -62,6 +65,17 @@ img {
 }
 .lb-post {
     border-bottom: 1px solid #CBCBCB;
+}
+.lb-post.ng-enter, .lb-post.ng-move {
+  -webkit-transition:1s linear all;
+  -moz-transition:1s linear all;
+  -o-transition:1s linear all;
+  transition:1s linear all;
+  opacity:0;
+}
+.lb-post.ng-enter.ng-enter-active,
+.lb-post.ng-move.ng-move-active {
+  opacity:1;
 }
 .lb-avatar {
     display: block;
@@ -139,6 +153,7 @@ article blockquote li:before {
     margin-left: -20px;
     padding-right: 5px;
 }
+/* loading */
 .loading {
     background-color: #7CB6BD;
     color: white;
@@ -146,4 +161,18 @@ article blockquote li:before {
     padding: 20px;
     font-size: 1.2em;
     font-weight: 400;
+}
+.loading {
+    background-color: #7CB6BD;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 1.2em;
+    font-weight: 400;
+    opacity: 1;
+    transition-property: opacity;
+    transition-duration:1s;
+}
+.loading.ng-hide {
+    opacity: 0;
 }
