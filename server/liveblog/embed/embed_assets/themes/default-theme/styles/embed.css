@@ -139,3 +139,11 @@ article blockquote li:before {
     margin-left: -20px;
     padding-right: 5px;
 }
+.loading {
+    background-color: #7CB6BD;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    font-size: 1.2em;
+    font-weight: 400;
+}
