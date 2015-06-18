@@ -100,7 +100,15 @@ img {
     float: right;
     color: #3C3C3C;
 }
-
+.lb-updated-date {
+    text-align: right;
+    font-size: .8em;
+    color: #7C7C7C;
+    text-transform: uppercase;
+}
+.lb-updated-date span{
+    color: black;
+}
 /* text */
 article b {
     font-weight: 400;
