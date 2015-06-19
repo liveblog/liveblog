@@ -1,37 +1,65 @@
 
-<div class="cover">
-    <h1>
-        {{ timeline.blog.title }}
-        <small>
-            {{ timeline.blog.description }}
-        </small>
-    </h1>
-</div>
-
-<div class="lb-timeline" ng-show="!timeline.showSplash">
-    <ul class="lb-posts list-group">
+<div class="lb-timeline">
+    <div class="content">
+        <h1>
+            {{ timeline.blog.title }}
+        </h1>
+        <div class="illustration">
+            <img src="{{ timeline.blog.picture_url }}"/>
+        </div>
+        <p>{{ timeline.blog.description }}</p>
+    </div>
+    <div class="sorting-bar">
+        <div class="sorting-bar__title">Sort by:</div>
+        <div class="sorting-bar__orders">
+            <div
+                class="sorting-bar__order"
+                ng-class="{'sorting-bar__order--active': timeline.order=='editorial'}"
+                ng-click="timeline.orderBy('editorial')">Editorial</div>
+            <div
+                class="sorting-bar__order"
+                ng-class="{'sorting-bar__order--active': timeline.order=='newest_first'}"
+                ng-click="timeline.orderBy('newest_first')">Newest first</div>
+            <div
+                class="sorting-bar__order"
+                ng-class="{'sorting-bar__order--active': timeline.order=='oldest_first'}"
+                ng-click="timeline.orderBy('oldest_first')">Oldest first</div>
+        </div>
+    </div>
+    <div
+        class="lb-post emtpy-message"
+        ng-show="timeline.pagesManager.allPosts().length < 1 && !timeline.loading">
+        <div class="content">No post for now.</div>
+    </div>
+    <ul
+        class="lb-posts list-group"
+        infinite-scroll="timeline.fetchNewPage()"
+        infinite-scroll-disabled="!timeline.isAllowedToLoadMore()"
+        infinite-scroll-immediate-check="false">
         <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item">
-            <div>
-                <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
-                    <article lb-bind-html html-content="{{ item.text }}"></article>
-                </div>
+            <div class="content">
+                <figure class="lb-avatar"><img ng-src="{{ post.original_creator.picture_url }}"/></figure>
                 <div class="lb-creator">
+                    <div class="lb-post-date" ng-bind="post._created | date"></div>
                     <div class="lb-user-info" ng-bind="post.original_creator.display_name"></div>
+                </div>
+                <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
+                    <div ng-switch="item.item_type">
+                        <div ng-switch-when="embed">
+                            <div ng-switch="item.meta.provider_name">
+                                <div ng-switch-when="Twitter" ng-init="timeline.initTwitter(item.meta.element_id)" lb-bind-html html-content="{{ item.meta.html }}">
+                                </div>
+                                <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
+                            </div>
+                        </div>
+                        <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
+                    </div>
+                    <div class="lb-updated-date" ng-show="post._updated !== post._created">
+                        Updated <span ng-bind="post._updated | date"></span>
+                    </div>
                 </div>
             </div>
         </li>
     </ul>
-</div>
-<div class="footer"></div>
-<div class="splash" ng-show="timeline.showSplash">
-    <div class="bg" ng-style="{'background-image':'url({{timeline.blog.picture_url}})'}"></div>
-    <div class="wrapper">
-        <h1>
-            {{ timeline.blog.title }}
-            <small>
-                {{ timeline.blog.description }}
-            </small>
-        </h1>
-        <button class="btn btn-default btn-lg" ng-click="timeline.showSplash = false">Enter the Liveblog</button>
-    </div>
+    <div class="loading" ng-show="timeline.loading">Loading</div>
 </div>
