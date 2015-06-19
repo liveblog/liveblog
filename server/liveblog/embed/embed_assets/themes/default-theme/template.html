@@ -54,9 +54,9 @@
                         </div>
                         <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
                     </div>
-                    <div class="lb-updated-date" ng-show="post._updated !== post._created">
-                        Updated <span ng-bind="post._updated | date"></span>
-                    </div>
+                </div>
+                <div class="lb-updated-date" ng-show="post._updated !== post._created">
+                    Updated <span ng-bind="post._updated | date"></span>
                 </div>
             </div>
         </li>
