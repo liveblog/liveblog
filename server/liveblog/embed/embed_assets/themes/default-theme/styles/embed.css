@@ -106,6 +106,22 @@ img {
     color: #7C7C7C;
     text-transform: uppercase;
 }
+@media (max-width: 600px) {
+    .lb-avatar  {
+        width: 40px;
+        height: 40px;
+    }
+    .lb-post-date {
+        float: none;
+    }
+    .lb-creator {
+        margin-left: 50px;
+        margin-bottom: 20px;
+    }
+    .lb-item {
+        margin-left: 0;
+    }
+}
 .lb-updated-date span{
     color: black;
 }
