@@ -5,11 +5,12 @@ body {
     background-color: #EAEAEA;
     font-family: 'Roboto', sans-serif;
     font-weight: 300;
+    color: #333333;
     line-height: 1.25em;
 }
 h1 {
     font-weight: 400;
-    font-size: 1.4em;
+    font-size: 24pt;
 }
 img {
     max-width: 100%;
@@ -21,7 +22,7 @@ img {
 .lb-timeline {
     clear: both;
     background-color: white;
-    max-width: 800px;
+    max-width: 600px;
     margin: 0 auto;
     margin-top: 50px;
     border-top: 2px solid #CBCBCB;
@@ -32,6 +33,9 @@ img {
     margin: 20px 0;
     text-align: center;
 }
+.description {
+    font-size: 16pt;
+}
 .sorting-bar {
     background-color: #FAFAFA;
     border-top: 2px solid #CBCBCB;
@@ -39,12 +43,14 @@ img {
     overflow: auto;
     padding: 10px 0 0 20px;
     margin: 20px 0;
-    color: #7C7C7C;
 }
 .sorting-bar__title {
     float: left;
     text-transform: uppercase;
     position: absolute;
+    color: #adadad;
+    font-size: 11pt;
+    font-weight: 500;
 }
 .sorting-bar__orders {
     float: left;
@@ -55,9 +61,11 @@ img {
     margin: 0 10px;
     padding-bottom: 10px;
     cursor: pointer;
+    color: #333333;
+    font-size: 12pt;
 }
 .sorting-bar__order--active, .sorting-bar__order:hover {
-    color: black;
+    color: #999999;
     border-bottom: 1px solid #3FA9C5;
 }
 .lb-posts {
@@ -91,20 +99,26 @@ img {
 
 }
 .lb-creator {
-    font-weight: 400;
+    font-weight: 500;
     text-transform: capitalize;
     margin-bottom: 20px;
+    font-size: 13pt;
 }
 .lb-post-date {
-    font-size: .8em;
-    float: right;
-    color: #3C3C3C;
+    float: left;
+    padding-right: 20px;
 }
 .lb-updated-date {
+    font-size: 10pt;
+    color: #adadad;
     text-align: right;
-    font-size: .8em;
-    color: #7C7C7C;
     text-transform: uppercase;
+    margin-top: 20px;
+}
+.lb-updated-date span {
+    color: #333333;
+    font-weight: 500;
+    font-size: 13pt;
 }
 @media (max-width: 600px) {
     .lb-avatar  {
@@ -122,12 +136,13 @@ img {
         margin-left: 0;
     }
 }
-.lb-updated-date span{
-    color: black;
-}
 /* text */
+article {
+    font-size: 14pt;
+    color: #666666;
+}
 article b {
-    font-weight: 400;
+    font-weight: 500;
 }
 /* images */
 .lb-item figure {
