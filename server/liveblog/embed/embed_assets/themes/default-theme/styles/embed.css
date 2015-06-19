@@ -17,12 +17,12 @@ img {
     max-height: 500px;
 }
 .content {
-    margin: 20px;
+    margin: 10px;
 }
 .lb-timeline {
     clear: both;
     background-color: white;
-    max-width: 600px;
+    max-width: 800px;
     margin: 0 auto;
     margin-top: 50px;
     border-top: 2px solid #CBCBCB;
@@ -41,7 +41,7 @@ img {
     border-top: 2px solid #CBCBCB;
     border-bottom: 1px solid #CBCBCB;
     overflow: auto;
-    padding: 10px 0 0 20px;
+    padding: 10px 0 0 10px;
     margin: 20px 0;
 }
 .sorting-bar__title {
@@ -54,7 +54,7 @@ img {
 }
 .sorting-bar__orders {
     float: left;
-    padding-left: 60px;
+    padding-left: 70px;
 }
 .sorting-bar__order {
     float: left;
@@ -95,14 +95,14 @@ img {
     height: 50px;
 }
 .lb-creator, .lb-item {
-    margin-left: 70px;
-
+    margin-left: 80px;
 }
 .lb-creator {
     font-weight: 500;
     text-transform: capitalize;
     margin-bottom: 20px;
     font-size: 13pt;
+    padding-top: 5px;
 }
 .lb-post-date {
     float: left;
@@ -119,22 +119,6 @@ img {
     color: #333333;
     font-weight: 500;
     font-size: 13pt;
-}
-@media (max-width: 600px) {
-    .lb-avatar  {
-        width: 40px;
-        height: 40px;
-    }
-    .lb-post-date {
-        float: none;
-    }
-    .lb-creator {
-        margin-left: 50px;
-        margin-bottom: 20px;
-    }
-    .lb-item {
-        margin-left: 0;
-    }
 }
 /* text */
 article {
@@ -214,4 +198,21 @@ article blockquote li:before {
 }
 .loading.ng-hide {
     opacity: 0;
+}
+@media (max-width: 600px) {
+    .lb-avatar  {
+        width: 40px;
+        height: 40px;
+    }
+    .lb-post-date {
+        float: none;
+    }
+    .lb-creator {
+        margin-left: 50px;
+        margin-bottom: 20px;
+        padding-top: 0;
+    }
+    .lb-item {
+        margin-left: 0;
+    }
 }
