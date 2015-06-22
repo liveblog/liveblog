@@ -47,7 +47,8 @@ URL_PREFIX = server_url.path.lstrip('/') or ''
 VALIDATION_ERROR_STATUS = 400
 JSON_SORT_KEYS = True
 
-CACHE_CONTROL = 'max-age=0, no-cache'
+# Uncomment if you have issue with cache browser
+# CACHE_CONTROL = 'max-age=0, no-cache'
 
 X_DOMAINS = '*'
 X_MAX_AGE = 24 * 3600
