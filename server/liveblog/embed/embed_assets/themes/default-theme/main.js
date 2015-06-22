@@ -6,6 +6,7 @@
 
         var POSTS_PER_PAGE = 20;
         var DEFAULT_ORDER = 'editorial'; // newest_first, oldest_first or editorial
+        var UPDATE_EVERY = 10*1000; // retrieve update interval in millisecond
         var vm = this;
 
         function retrieveUpdate() {
@@ -54,7 +55,7 @@
         vm.fetchNewPage()
         // retrieve updates periodically
         .then(function() {
-            $interval(retrieveUpdate, 10000);
+            $interval(retrieveUpdate, UPDATE_EVERY);
         });
     }
 
