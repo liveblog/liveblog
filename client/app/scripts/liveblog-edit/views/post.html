@@ -23,8 +23,7 @@
                 <div ng-if="post.show_all">
                      <ul>
                          <li ng-repeat="item in post.items track by item.item._id">
-                            <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item" ng-class="{'lb-post__item--even': !$first}"
-                           html-location="medium-editable" lb-simple-edit="allowQuickEdit" se-item="item.item"></div>
+                            <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item" ng-class="{'lb-post__item--even': !$first}" se-item="item.item"></div>
                          </li>
                      </ul>
                 </div>
@@ -32,8 +31,7 @@
             <div ng-if="!post.multiple_items" class="lb-post__list">
                 <ul>
                     <li ng-repeat="item in post.items track by item.item._id">
-                        <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item" ng-class-even="'lb-post__item--even'"
-                       html-location="medium-editable" lb-simple-edit="allowQuickEdit" se-item="item.item"></div>
+                        <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item" ng-class-even="'lb-post__item--even'" se-item="item.item"></div>
                      </li>
                  </ul>
             </div>
