@@ -21,7 +21,7 @@ describe('timeline add to top and edit', function() {
         var randomText = publishPost();
         //go and check the timeline
         element(by.css('.column-timeline')).all(by.repeater('post in posts')).then(function(posts) {
-            var textElement = posts[0].element(by.css('div[medium-editable]'));
+            var textElement = posts[0].element(by.css('[lb-bind-html]'));
             //first element should have the new entered value
             textElement.getText().then(function(text) {
                 expect(text).toEqual(randomText);
