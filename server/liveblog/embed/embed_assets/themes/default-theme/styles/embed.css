@@ -10,7 +10,7 @@ body {
 }
 h1 {
     font-weight: 400;
-    font-size: 24pt;
+    font-size: 24px;
 }
 img {
     max-width: 100%;
@@ -34,7 +34,7 @@ img {
     text-align: center;
 }
 .description {
-    font-size: 16pt;
+    font-size: 16px;
 }
 .sorting-bar {
     background-color: #FAFAFA;
@@ -49,7 +49,7 @@ img {
     text-transform: uppercase;
     position: absolute;
     color: #adadad;
-    font-size: 11pt;
+    font-size: 11px;
     font-weight: 500;
 }
 .sorting-bar__orders {
@@ -62,7 +62,7 @@ img {
     padding-bottom: 10px;
     cursor: pointer;
     color: #333333;
-    font-size: 12pt;
+    font-size: 12px;
 }
 .sorting-bar__order--active, .sorting-bar__order:hover {
     color: #999999;
@@ -101,7 +101,7 @@ img {
     font-weight: 500;
     text-transform: capitalize;
     margin-bottom: 20px;
-    font-size: 13pt;
+    font-size: 13px;
     padding-top: 5px;
 }
 .lb-post-date {
@@ -109,7 +109,7 @@ img {
     padding-right: 20px;
 }
 .lb-updated-date {
-    font-size: 10pt;
+    font-size: 10px;
     color: #adadad;
     text-align: right;
     text-transform: uppercase;
@@ -118,15 +118,18 @@ img {
 .lb-updated-date span {
     color: #333333;
     font-weight: 500;
-    font-size: 13pt;
+    font-size: 13px;
 }
 /* text */
 article {
-    font-size: 14pt;
+    font-size: 14px;
     color: #666666;
 }
 article b {
     font-weight: 500;
+}
+article p {
+    margin: 1em 0;
 }
 /* images */
 .lb-item figure {
