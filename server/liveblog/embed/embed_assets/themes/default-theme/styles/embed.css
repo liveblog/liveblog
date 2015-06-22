@@ -5,18 +5,19 @@ body {
     background-color: #EAEAEA;
     font-family: 'Roboto', sans-serif;
     font-weight: 300;
+    color: #333333;
     line-height: 1.25em;
 }
 h1 {
     font-weight: 400;
-    font-size: 1.4em;
+    font-size: 24pt;
 }
 img {
     max-width: 100%;
     max-height: 500px;
 }
 .content {
-    margin: 20px;
+    margin: 10px;
 }
 .lb-timeline {
     clear: both;
@@ -32,32 +33,39 @@ img {
     margin: 20px 0;
     text-align: center;
 }
+.description {
+    font-size: 16pt;
+}
 .sorting-bar {
     background-color: #FAFAFA;
     border-top: 2px solid #CBCBCB;
     border-bottom: 1px solid #CBCBCB;
     overflow: auto;
-    padding: 10px 0 0 20px;
+    padding: 10px 0 0 10px;
     margin: 20px 0;
-    color: #7C7C7C;
 }
 .sorting-bar__title {
     float: left;
     text-transform: uppercase;
     position: absolute;
+    color: #adadad;
+    font-size: 11pt;
+    font-weight: 500;
 }
 .sorting-bar__orders {
     float: left;
-    padding-left: 60px;
+    padding-left: 70px;
 }
 .sorting-bar__order {
     float: left;
     margin: 0 10px;
     padding-bottom: 10px;
     cursor: pointer;
+    color: #333333;
+    font-size: 12pt;
 }
 .sorting-bar__order--active, .sorting-bar__order:hover {
-    color: black;
+    color: #999999;
     border-bottom: 1px solid #3FA9C5;
 }
 .lb-posts {
@@ -87,31 +95,38 @@ img {
     height: 50px;
 }
 .lb-creator, .lb-item {
-    margin-left: 70px;
-
+    margin-left: 80px;
 }
 .lb-creator {
-    font-weight: 400;
+    font-weight: 500;
     text-transform: capitalize;
     margin-bottom: 20px;
+    font-size: 13pt;
+    padding-top: 5px;
 }
 .lb-post-date {
-    font-size: .8em;
-    float: right;
-    color: #3C3C3C;
+    float: left;
+    padding-right: 20px;
 }
 .lb-updated-date {
+    font-size: 10pt;
+    color: #adadad;
     text-align: right;
-    font-size: .8em;
-    color: #7C7C7C;
     text-transform: uppercase;
+    margin-top: 20px;
 }
-.lb-updated-date span{
-    color: black;
+.lb-updated-date span {
+    color: #333333;
+    font-weight: 500;
+    font-size: 13pt;
 }
 /* text */
+article {
+    font-size: 14pt;
+    color: #666666;
+}
 article b {
-    font-weight: 400;
+    font-weight: 500;
 }
 /* images */
 .lb-item figure {
@@ -123,13 +138,13 @@ article .liveblog--card {
     font-size: 0.8em;
     line-height: 1.25em;
 }
-article .embed-preview {
+article .embed-preview:not([data-twttr-id]) {
     position: relative;
     padding-bottom: 56.25%; /* 16:9 */
     padding-top: 25px;
     height: 0;
 }
-.embed-preview > iframe {
+.embed-preview:not([data-twttr-id]) > iframe {
     position: absolute;
     top: 0;
     left: 0;
@@ -183,4 +198,21 @@ article blockquote li:before {
 }
 .loading.ng-hide {
     opacity: 0;
+}
+@media (max-width: 600px) {
+    .lb-avatar  {
+        width: 40px;
+        height: 40px;
+    }
+    .lb-post-date {
+        float: none;
+    }
+    .lb-creator {
+        margin-left: 50px;
+        margin-bottom: 20px;
+        padding-top: 0;
+    }
+    .lb-item {
+        margin-left: 0;
+    }
 }
