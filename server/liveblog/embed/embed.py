@@ -42,7 +42,7 @@ def publish_embed(blog_id, api_host=None, theme=None):
         default_bucket=bucket,
         endpoint='s3-%s.amazonaws.com' % (region))
     # Uploading a single file
-    response = s3.upload('%s/blogs/index.html' % (blog_id), io.BytesIO(bytes(html, 'utf-8')))
+    response = s3.upload('blogs/%s/index.html' % (blog_id), io.BytesIO(bytes(html, 'utf-8')))
     return response.url.replace('s3-%s.amazonaws.com/%s' % (region, bucket),
                                 '%s.s3-%s.amazonaws.com' % (bucket, region))
 
