@@ -22,11 +22,7 @@ class ClientUsersResource(UsersResource):
 
 
 class ClientUsersService(UsersService):
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        docs = super().get(req, lookup)
-        return docs
+    pass
 
 
 class ClientBlogsResource(BlogsResource):
@@ -45,11 +41,7 @@ class ClientBlogsResource(BlogsResource):
 
 
 class ClientBlogsService(BlogService):
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        docs = super().get(req, lookup)
-        return docs
+    pass
 
 
 class ClientPostsResource(PostsResource):
@@ -68,11 +60,7 @@ class ClientPostsResource(PostsResource):
 
 
 class ClientPostsService(PostsService):
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        docs = super().get(req, lookup)
-        return docs
+    pass
 
 
 class ClientBlogPostsResource(BlogPostsResource):
@@ -92,14 +80,4 @@ class ClientBlogPostsResource(BlogPostsResource):
 
 
 class ClientBlogPostsService(BlogPostsService):
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        docs = super().get(req, lookup)
-        # nest the user in the response
-        for doc in docs:
-            creator = get_resource_service('users').find_one(req=None, _id=doc.get('original_creator'))
-            # select fields that are useful
-            wanted_fields = ('first_name', 'last_name', 'display_name', 'username', 'picture_url')
-            doc['original_creator'] = {key: creator.get(key, None) for key in wanted_fields}
-        return docs
+    pass
