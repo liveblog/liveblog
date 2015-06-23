@@ -107,7 +107,7 @@ class PostsService(ArchiveService):
         for doc in docs:
             doc['type'] = 'composite'
             doc['order'] = self.get_next_order_sequence()
-            #if you publish a post directly without beeing draft it will have  a published_date assign
+            # if you publish a post directly without beeing draft it will have  a published_date assign
             if doc['post_status'] == 'open':
                 doc['published_date'] = utcnow()
         super().on_create(docs)
@@ -120,7 +120,7 @@ class PostsService(ArchiveService):
         # put the published item from drafts at the top of the timeline
         if updates.get('post_status') == 'open' and original.get('post_status') == 'draft':
             updates['order'] = self.get_next_order_sequence()
-            #if you publish a post from a draft it will only then have a published_date assign
+            # if you publish a post from a draft it will only then have a published_date assign
             updates['published_date'] = utcnow()
         if original.get('post_status') == 'open' and updates.get('post_status') == 'draft':
             updates['unpublished_date'] = utcnow()
