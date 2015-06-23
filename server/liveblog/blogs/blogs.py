@@ -108,7 +108,7 @@ def send_email_to_added_members(doc, members, origin):
             recipients.append(user_doc['email'])
     if recipients:
         username = g.user.get('display_name') or g.user.get('username')
-        url = '{}/#/blogs/{}'.format(origin, doc['_id'])
+        url = '{}/#/liveblog/edit/{}'.format(origin, doc['_id'])
         title = doc['title']
         send_members_email(recipients, username, doc, title, url)
 
