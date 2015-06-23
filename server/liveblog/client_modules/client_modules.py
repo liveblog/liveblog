@@ -3,6 +3,7 @@ from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, 
 from apps.users.users import UsersResource
 from apps.users.services import UsersService
 from apps.archive.common import item_url
+from flask import current_app as app
 
 
 class ClientUsersResource(UsersResource):
@@ -75,4 +76,12 @@ class ClientBlogPostsResource(BlogPostsResource):
 
 
 class ClientBlogPostsService(BlogPostsService):
-    pass
+
+    def get(self, req, lookup):
+        cache_key = 'lb_ClientBlogPostsService_get_%s' % (hash(frozenset(req.__dict__.items())))
+        blog_id = lookup.get('blog_id')
+        docs = app.blog_cache.get(blog_id, cache_key)
+        if not docs:
+            docs = super().get(req, lookup)
+            app.blog_cache.set(blog_id, cache_key, docs)
+        return docs
