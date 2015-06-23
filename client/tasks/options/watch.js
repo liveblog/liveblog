@@ -10,18 +10,6 @@ module.exports = {
             '<%= appDir %>/scripts/liveblog-*/**/*.less'
         ]
     },
-    code: {
-        options: {livereload: true},
-        files: ['<%= appDir %>/scripts/**/*.js']
-    },
-    assets: {
-        options: {livereload: true},
-        tasks: ['copy:assets'],
-        files: [
-            '<%= appDir %>/styles/**/*.css',
-            '<%= appDir %>/scripts/**/*.html'
-        ]
-    },
     index: {
         options: {livereload: true},
         tasks: ['template'],
