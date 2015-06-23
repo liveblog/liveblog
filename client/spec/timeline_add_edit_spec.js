@@ -26,6 +26,11 @@ describe('timeline add to top and edit', function() {
             textElement.getText().then(function(text) {
                 expect(text).toEqual(randomText);
             });
+            //updated time should have a non empty value
+            var updatedTimeEl = posts[0].element(by.css('.updated-time'));
+            updatedTimeEl.getText().then(function(text) {
+                expect(text.length).toBeGreaterThan(0);
+            });
         });
     });
 
