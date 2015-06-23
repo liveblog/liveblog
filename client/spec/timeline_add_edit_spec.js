@@ -21,7 +21,7 @@ describe('timeline add to top and edit', function() {
         var randomText = publishPost();
         //go and check the timeline
         element(by.css('.column-timeline')).all(by.repeater('post in posts')).then(function(posts) {
-            var textElement = posts[0].element(by.css('div[medium-editable]'));
+            var textElement = posts[0].element(by.css('[lb-bind-html]'));
             //first element should have the new entered value
             textElement.getText().then(function(text) {
                 expect(text).toEqual(randomText);
@@ -50,44 +50,6 @@ describe('timeline add to top and edit', function() {
                 });
                 expect(getFirstPostText()).toBe(randomText);
             });
-    });
-
-    it('can edit an item on the timeline (quick edit mode)', function() {
-        openBlog(2);
-        var randomText = randomString(10);
-        //go and check the timeline
-        element(by.css('.column-timeline')).all(by.repeater('post in posts')).then(function(posts) {
-            posts[0].isElementPresent(by.css('.lb-post__expander-holder')).then(function(present) {
-                if (present) {
-                    posts[0].element(by.css('.lb-post__expander-holder')).click();
-                }
-            });
-            var textElement = posts[0].element(by.css('div[medium-editable]'));
-            //add some text
-            textElement.sendKeys(randomText);
-            //click the save button
-            posts[0].element(by.css('[ng-click="updateMedium()"]')).click();
-            //get the new edited text
-            textElement.getText().then(function(editedText) {
-                //click on back to liveblog list
-                element(by.css('[class="icon-th-large"]')).click();
-                //open first blog
-                openBlog(2);
-                //go and check the timeline
-                element(by.css('.column-timeline')).all(by.repeater('post in posts')).then(function(posts) {
-                    posts[0].isElementPresent(by.css('.lb-post__expander-holder')).then(function(present) {
-                        if (present) {
-                            posts[0].element(by.css('.lb-post__expander-holder')).click();
-                        }
-                    });
-                    var textElement = posts[0].element(by.css('div[medium-editable]'));
-                    textElement.getText().then(function(text) {
-                        //first element should have the new edited value
-                        expect(text).toEqual(editedText);
-                    });
-                });
-            });
-        });
     });
 
     it('can unpublish your own post', function() {

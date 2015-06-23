@@ -106,53 +106,49 @@
                      <div class="content">
                         <div class="settings-subsection">
                             <div class="subsettings-header">
-                                <h3 translate>Owner</h3>
+                                <h3 translate class="inline-block">Owner</h3>
+                                <a ng-click="settings.openOwner = true" class="open-modal" data-button="CHANGE OWNER" translate>CHANGE OWNER</a>
+                            </div>
+                            <div class="dropdown-content" ng-show="settings.openOwner" ng-click=" $event.stopPropagation();">
+                                <div class="user-select">
+                                    <div>
+                                        <form>
+                                            <label for="assignee-search" translate>Chose new owner</label>
+                                            <input type="text" name="assignee-search" ng-model="settings.search">
+                                        </form>
+                                        <div class="search-result">
+                                            <ul class="users-list-embed">
+                                                <li ng-repeat="user in settings.avUsers | filter:settings.search" ng-click="settings.temp_selected_owner = user" ng-class="{'active': settings.temp_selected_owner._id === user._id}">
+                                                    <figure class="avatar small"><img sd-user-avatar data-src="user.picture_url"></figure>
+                                                    <div class="name">{{user.display_name}}</div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="footer">
+                                    <span class="clear pull-left" ng-click="settings.search = null" ng-show="settings.search" translate>Clear</span>
+                                    <button class="btn btn-info pull-right" ng-click="settings.buildOwner(settings.temp_selected_owner._id); settings.openOwner = false; $event.stopPropagation(); settings.forms.team.$setDirty();" ng-disabled="!settings.temp_selected_owner" translate>Select</button>
+                                    <button class="btn pull-right" ng-click="settings.openOwner = false;  $event.stopPropagation();" translate>Cancel</button>
+                                </div>
                             </div>
                             <form class="form-horizontal" name="settings.forms.team">
                                 <div class="subsettings-content">
                                     <div class="inline-content first-block">
                                         <div class="inline-content padded-right">
                                             <div class="form-input profile-pic">
-                                                 <figure class="avatar">
-                                                    <img data-src="settings.original_creator.user.picture_url">
+                                                 <figure class="avatar large">
+                                                    <img sd-user-avatar data-src="settings.original_creator.picture_url">
                                                 </figure>
                                             </div>
                                         </div>
                                         <div class="inline-content">
-                                            <div class="form-input" data="original-creator-display-name">
-                                               <strong>{{ settings.original_creator.display_name }}</strong>
-                                            </div>
-                                            <div class="form-input" data="original-creator-username">
-                                                {{ settings.original_creator.username }}
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="inline-content">
-                                        <div class="inline-content">
-                                            <button class="btn btn-info" type="button" translate ng-click="settings.open = !settings.open">Change Owner</button>
-                                        </div>
-                                        <div class="inline-content">
-                                            <div class="dropdown-content" ng-show="settings.open" ng-click=" $event.stopPropagation();">
-                                                <div class="user-select">
-                                                    <div>
-                                                        <form>
-                                                            <label for="assignee-search" translate>Chose new owner</label>
-                                                            <input type="text" name="assignee-search" ng-model="settings.search">
-                                                        </form>
-                                                        <div class="search-result">
-                                                            <ul class="users-list-embed">
-                                                                <li ng-repeat="user in settings.avUsers | filter:settings.search" ng-click="settings.temp_selected_owner = user" ng-class="{'active': settings.temp_selected_owner._id === user._id}">
-                                                                    <figure class="avatar small"><img data-src="user.picture_url"></figure>
-                                                                    <div class="name">{{user.display_name}}</div>
-                                                                </li>
-                                                            </ul>
-                                                        </div>
-                                                    </div>
+                                            <div style="margin-top: 25px;">
+                                                <div class="form-input" data="original-creator-display-name">
+                                                    <strong>{{ settings.original_creator.display_name }}</strong>
                                                 </div>
-                                                <div class="footer">
-                                                    <span class="clear pull-left" ng-click="settings.search = null" ng-show="settings.search" translate>Clear</span>
-                                                    <button class="btn btn-info pull-right" ng-click="settings.buildOwner(settings.temp_selected_owner._id); settings.open = false; $event.stopPropagation(); settings.forms.team.$setDirty();" ng-disabled="!settings.temp_selected_owner" translate>Select</button>
-                                                    <button class="btn pull-right" ng-click="settings.open = false;  $event.stopPropagation();" translate>Cancel</button>
+                                                <div class="form-input" data="original-creator-username">
+                                                    {{ settings.original_creator.username }}
                                                 </div>
                                             </div>
                                         </div>
@@ -160,26 +156,55 @@
                                 </div>
                             </form>
                             <div class="subsettings-header header-top">
-                                <h3 translate>Contributors</h3>
+                                <h3 class="inline-block" translate>Contributors</h3>
+                                <a ng-click="settings.editTeam()" class="open-modal" data-button="EDIT TEAM" translate>EDIT</a>
                             </div>
                             <div class="subsettings-content">
                                 <div ng-if="settings.members.length === 0" translate>No members in the blog team</div>
                                 <div class="inline-content first-block members-bottom" ng-repeat="member in settings.members">
                                     <div class="inline-content padded-right">
                                         <div class="form-input profile-pic">
-                                             <figure class="avatar">
-                                                <img data-src="member.user.picture_url">
-                                            </figure>
+                                             <figure class="avatar large"><img sd-user-avatar data-src="member.picture_url"></figure>
                                         </div>
                                     </div>
                                     <div class="inline-content">
-                                        <div class="form-input" data="original-creator-display-name">
-                                           <strong>{{ member.display_name }}</strong>
-                                        </div>
-                                        <div class="form-input" data="original-creator-username">
-                                            {{ member.username }}
+                                        <div style="margin-top: 25px;">
+                                            <div class="form-input" data="original-creator-display-name">
+                                               <strong>{{ member.display_name }}</strong>
+                                            </div>
+                                            <div class="form-input" data="original-creator-username">
+                                                {{ member.username }}
+                                            </div>
                                         </div>
                                     </div>
+                                </div>
+                            </div>
+                            <div sd-modal="" data-model="settings.editTeamModal" class="team-edit" macro-team="">
+                                <div class="modal-header"> 
+                                    <button class="close" ng-click="settings.cancelTeamEdit()"><i class="icon-close-small"></i></button>
+                                    <h3 translate>Contributors</h3>
+                                </div>
+                                <div class="modal-body" style="height: 400px; max-height:400px;">
+                                    <div translate style="color: gray">ADD PEOPLE</div>
+                                    <div class="team_settings">
+                                        <div lb-user-select-list data-members="settings.blogMembers" data-onchoose="settings.addMember(user)"></div>
+                                        <div class="content">
+                                            <p ng-if="message">{{ message }}</p>
+                                            <div class="member-list clearfix">
+                                                <ul>
+                                                    <li ng-repeat="user in settings.blogMembers" ng-class="{'inactive' : !user.is_enabled || !user.is_active}">
+                                                        <i class="icon-close-small" ng-click="settings.removeMember(user)"></i>
+                                                        <figure class="avatar"><img sd-user-avatar data-src="user.picture_url"></figure>
+                                                        <div class="name">{{user.display_name}}</div>
+                                                    </li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" translate ng-click="settings.cancelTeamEdit()">Cancel</button>
+                                    <button type="button" class="btn btn-primary btn-info" ng-click="settings.doneTeamEdit()" translate>Done</button>
                                 </div>
                             </div>
                         </div>

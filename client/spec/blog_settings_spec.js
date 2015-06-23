@@ -101,7 +101,7 @@ describe('Blog settings', function() {
         openBlog(0);
         openSettings();
         element(by.css('[data="blog-settings-team"]')).click();
-        element(by.buttonText('CHANGE OWNER')).click();
+        element(by.css('[data-button="CHANGE OWNER"]')).click();
         element(by.repeater('user in settings.avUsers').row(1).column('user.display_name')).click();
         element(by.buttonText('SELECT')).click();
         element(by.css('[ng-click="settings.saveAndClose()"]')).click();
@@ -111,6 +111,22 @@ describe('Blog settings', function() {
         element(by.css('[data="original-creator-username"]')).getText().then(function(text) {
             expect(text).toEqual('admin');
         });
+    });
+    it('ads a team member from blog settings', function() {
+        openBlog(0);
+        openSettings();
+        element(by.css('[data="blog-settings-team"]')).click();
+        element(by.css('[data-button="EDIT TEAM"]')).click();
+        element(by.model('search')).sendKeys('s');
+        browser.wait(function() {
+            return browser.driver.isElementPresent(by.css('[ng-click="choose(user)"]'));
+        }, 5000);
+        element(by.repeater('user in users._items').row(0)).click();
+        element(by.css('[ng-click="settings.doneTeamEdit()"')).click();
+        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
+        openSettings();
+        element(by.css('[data="blog-settings-team"]')).click();
+        expect(element.all(by.repeater('member in settings.members')).count()).toBe(1);
     });
     it('should archive a blog', function() {
         //open first blog

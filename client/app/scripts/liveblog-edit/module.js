@@ -186,7 +186,10 @@ define([
             availableLanguages: [],
             original_creator: {},
             availableThemes: [],
+            //used as an aux var to be able to change members and safely cancel the changes
+            blogMembers: [],
             isSaved: true,
+            editTeamModal: false,
             forms: {},
             tab: false,
             changeTab: function(tab) {
@@ -213,14 +216,36 @@ define([
                     vm.close();
                 });
             },
+            editTeam: function() {
+                vm.blogMembers = _.clone(vm.members);
+                vm.editTeamModal = true;
+            },
+            cancelTeamEdit: function() {
+                vm.editTeamModal = false;
+            },
+            doneTeamEdit: function() {
+                vm.members = _.clone(vm.blogMembers);
+                vm.forms.dirty = true;
+                vm.cancelTeamEdit();
+            },
+            addMember: function(user) {
+                vm.blogMembers.push(user);
+            },
+            removeMember: function(user) {
+                vm.blogMembers.splice(vm.blogMembers.indexOf(user), 1);
+            },
             save: function() {
                 // save on backend
                 var deferred = $q.defer();
+                var members = _.map(vm.members, function(member) {
+                    return ({user: member._id});
+                });
                 notify.info(gettext('saving blog settings'));
                 var changedBlog = {
                     blog_preferences: vm.blogPreferences,
                     original_creator: vm.original_creator._id,
-                    blog_status: vm.blog_switch === true? 'open': 'closed'
+                    blog_status: vm.blog_switch === true? 'open': 'closed',
+                    members: members
                 };
                 angular.extend(changedBlog, vm.newBlog);
                 blogService.save(vm.blog._id, changedBlog).then(function(blog) {
