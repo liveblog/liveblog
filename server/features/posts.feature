@@ -389,3 +389,71 @@ Feature: Post operations
         {"_items": [{"headline": "first post", "blog": "#blogs._id#", "post_status": "open"},
         			   {"headline": "second post", "blog": "#blogs._id#", "post_status": "open"}]}
         """
+        
+	@auth
+    Scenario: Post published date
+        Given empty "posts"
+        Given empty "items"
+        Given "blogs"
+        """
+        [{"title": "test_blog3"}]
+        """
+        When we post to "items"
+        """
+        [{"text": "test one", "blog": "#blogs._id#"}]
+        """
+        When we post to "/posts" with success
+        """
+        {
+            "blog": "#blogs._id#",
+            "headline": "first post",
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "residRef": "#items._id#"
+                        }
+                    ],
+                    "role": "main"
+                }
+            ]
+        }
+        """
+        Then we get new resource
+        """
+        {"firstcreated": "", "post_status": "open", "published_date": "", "blog": "#blogs._id#", "headline": "first post"}
+        """
+
+    @auth
+    Scenario: Published date on posts that were drafts
+        Given "blogs"
+        """
+        [{"title": "test_blog3"}]
+        """
+        Given "posts"
+        """
+        [{"headline": "my draft will be published", "post_status": "draft", "blog": "#blogs._id#"}]
+        """
+        When we patch given
+        """
+        {
+            "post_status": "open"
+        }
+        """
+        Then we get new resource
+        """
+        {"post_status": "open", "published_date": "", "blog": "#blogs._id#", "headline": "my draft will be published"}
+        """
+        When we patch latest
+        """
+        {
+            "post_status": "draft",
+            "unpublished_date":"2015-06-22T11:53:58+00:00"
+        }
+        """
+        Then we get new resource
+        """
+        {"post_status": "draft", "published_date": "", "blog": "#blogs._id#", "headline": "my draft will be published", "unpublished_date":""}
+        """
