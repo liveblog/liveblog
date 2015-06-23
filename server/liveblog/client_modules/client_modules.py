@@ -1,10 +1,8 @@
 from liveblog.blogs.blogs import BlogsResource, BlogService
-from eve.utils import ParsedRequest
 from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, BlogPostsResource
 from apps.users.users import UsersResource
 from apps.users.services import UsersService
 from apps.archive.common import item_url
-from superdesk import get_resource_service
 
 
 class ClientUsersResource(UsersResource):
@@ -16,7 +14,6 @@ class ClientUsersResource(UsersResource):
     public_item_methods = ['GET']
     item_methods = ['GET']
     resource_methods = ['GET']
-
     schema = {}
     schema.update(UsersResource.schema)
 
@@ -35,7 +32,6 @@ class ClientBlogsResource(BlogsResource):
     public_item_methods = ['GET']
     item_methods = ['GET']
     resource_methods = ['GET']
-
     schema = {}
     schema.update(BlogsResource.schema)
 
@@ -54,7 +50,6 @@ class ClientPostsResource(PostsResource):
     public_item_methods = ['GET']
     item_methods = ['GET']
     resource_methods = ['GET']
-
     schema = {}
     schema.update(PostsResource.schema)
 

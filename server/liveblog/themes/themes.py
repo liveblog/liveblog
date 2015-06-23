@@ -70,19 +70,34 @@ class ThemesService(BaseService):
             return doc
 
     def update_registered_theme_with_local_files(self):
-            for theme in self.get_local_themes_packages():
-                previous_theme = self.find_one(req=None, name=theme.get('name'))
-                if previous_theme:
-                    self.replace(previous_theme['_id'], theme, previous_theme)
-                else:
-                    self.create([theme])
+        created = []
+        updated = []
+        for theme in self.get_local_themes_packages():
+            previous_theme = self.find_one(req=None, name=theme.get('name'))
+            if previous_theme:
+                print(previous_theme)
+                self.replace(previous_theme['_id'], theme, previous_theme)
+                updated.append(theme)
+            else:
+                self.create([theme])
+                created.append(theme)
+        return (created, updated)
 
 
 class ThemesCommand(superdesk.Command):
 
     def run(self):
         theme_service = get_resource_service('themes')
-        theme_service.update_registered_theme_with_local_files()
+        created, updated = theme_service.update_registered_theme_with_local_files()
+        print('%d themes registered' % (len(created) + len(updated)))
+        if created:
+            print('added:')
+            for theme in created:
+                print('\t+ %s %s (%s)' % (theme['label'], theme['version'], theme['name']))
+        if updated:
+            print('updated:')
+            for theme in updated:
+                print('\t* %s %s (%s)' % (theme['label'], theme['version'], theme['name']))
 
 
 superdesk.command('register_local_themes', ThemesCommand())
