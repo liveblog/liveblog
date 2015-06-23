@@ -3,6 +3,8 @@ import superdesk
 from superdesk.utc import utcnow
 from flask import current_app as app
 from superdesk.celery_app import update_key
+import unittest
+import app as app_module
 
 
 def get_user(required=False):
@@ -33,3 +35,15 @@ class BlogCache(object):
 
     def invalidate(self, blog):
         return self.__get_blog_version(blog, invalidate=True)
+
+
+class BlogCacheTestCase(unittest.TestCase):
+
+    def test_cache(self):
+        with app_module.get_app().app_context():
+            blog_cache = BlogCache()
+            self.assertEqual(blog_cache.get('blog', 'key'), None)
+            blog_cache.set('blog', 'key', 'value')
+            self.assertEqual(blog_cache.get('blog', 'key'), 'value')
+            blog_cache.invalidate('blog')
+            self.assertEqual(blog_cache.get('blog', 'key'), None)
