@@ -70,12 +70,17 @@ describe('blogs', function() {
         });
 
         it('can list archived blogs', function() {
-            element(by.repeater('state in states').row(1).column('state.text')).click();
-            var blogsLength = archived.length;
-            expectBlogsLength(blogsLength);
-            for (var i = 0; i < blogsLength; i++) {
-                expectBlog(archived[i], i);
+            function checkIfBlogsAreArchived() {
+                var blogsLength = archived.length;
+                expectBlogsLength(blogsLength);
+                for (var i = 0; i < blogsLength; i++) {
+                    expectBlog(archived[i], i);
+                }
             }
+            element(by.repeater('state in states').row(1).column('state.text')).click();
+            checkIfBlogsAreArchived();
+            browser.get('/#/liveblog/archived');
+            checkIfBlogsAreArchived();
         });
     });
 
