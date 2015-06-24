@@ -6,7 +6,7 @@
     "styles": [
         "styles/reset.css",
         "styles/embed.css",
-        "//fonts.googleapis.com/css?family=Roboto:400,500"
+        "//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic"
     ],
     "scripts": [
         "//code.angularjs.org/1.3.14/angular-animate.js",
