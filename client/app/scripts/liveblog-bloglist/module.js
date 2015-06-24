@@ -1,24 +1,21 @@
 (function() {
     'use strict';
 
-    BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload'];
-    function BlogListController($scope, $location, api, gettext, upload) {
+    BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload', 'isArchivedFilterSelected'];
+    function BlogListController($scope, $location, api, gettext, upload, isArchivedFilterSelected) {
         $scope.maxResults = 25;
-
         $scope.states = [
-            {code: 'open', text: gettext('Active blogs')},
-            {code: 'closed', text: gettext('Archived blogs')}
+            {name: 'active', code: 'open', text: gettext('Active blogs')},
+            {name: 'archived', code: 'closed', text: gettext('Archived blogs')}
         ];
-
-        $scope.activeState = $scope.states[0];
+        $scope.activeState = isArchivedFilterSelected ? $scope.states[1] : $scope.states[0];
         $scope.creationStep = 'Details';
         $scope.blogMembers = [];
-
         $scope.changeState = function(state) {
             $scope.activeState = state;
+            $location.path('/liveblog/' + state.name);
             fetchBlogs();
         };
-
         $scope.modalActive = false;
 
         function clearCreateBlogForm() {
@@ -175,7 +172,18 @@
                 label: gettext('Blog List'),
                 controller: BlogListController,
                 templateUrl: 'scripts/liveblog-bloglist/views/main.html',
-                category: superdesk.MENU_MAIN
+                category: superdesk.MENU_MAIN,
+                resolve: {isArchivedFilterSelected: function() {return false;}}
+            }).activity('/liveblog/active', {
+                label: gettext('Blog List'),
+                controller: BlogListController,
+                templateUrl: 'scripts/liveblog-bloglist/views/main.html',
+                resolve: {isArchivedFilterSelected: function() {return false;}}
+            }).activity('/liveblog/archived', {
+                label: gettext('Blog List'),
+                controller: BlogListController,
+                templateUrl: 'scripts/liveblog-bloglist/views/main.html',
+                resolve: {isArchivedFilterSelected: function() {return true;}}
             });
     }]);
     app.filter('username', ['session', function usernameFilter(session) {
