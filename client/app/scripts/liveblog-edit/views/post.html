@@ -7,7 +7,12 @@
         </div>
         <div class="lb-post__content">
             <div class="lb-post__header">
-                <span class="name">{{ ::post.original_creator_name }}</span> | <time>{{ post._updated | reldate }}</time>
+                <div class="inline first">
+                    <span class="name">{{ ::post.original_creator_name }}</span> | <time>{{ post.published_date | reldate }}</time>
+                </div>
+                <div class="inline">
+                    <span class="updated-label" translate>Updated</span> <time class="updated-time">{{ post._updated | reldate }}</time>
+                </div>
                 <div class="lb-post__actions">
                     <ul>
                         <li><a ng-click="onEditClick(post)" tooltip-placement="bottom" tooltip="{{ 'Edit' | translate }}"><i class="icon-pencil"></i></a></li>
