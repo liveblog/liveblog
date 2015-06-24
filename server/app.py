@@ -83,7 +83,7 @@ def get_app(config=None):
 
     # cache
     app.cache = Cache(app, config={'CACHE_TYPE': 'simple'})
-    app.blog_cache = BlogCache()
+    app.blog_cache = BlogCache(cache=app.cache)
     # mail
     app.mail = Mail(app)
 
