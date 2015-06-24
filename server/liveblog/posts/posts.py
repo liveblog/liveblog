@@ -117,7 +117,7 @@ class PostsService(ArchiveService):
         super().on_created(docs)
         # invalidate cache for updated blog
         for doc in docs:
-            app.blog_cache.invalidate(doc['blog'])
+            app.blog_cache.invalidate(doc.get('blog'))
         # send notifications
         push_notification('posts', created=True)
 

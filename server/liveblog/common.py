@@ -19,7 +19,7 @@ def update_dates_for(doc):
 
 
 class BlogCache(object):
-
+    ''' '''
     def __get_blog_version(self, blog, invalidate=False):
         return update_key('%s__version' % (blog), flag=invalidate)
 
