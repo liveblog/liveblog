@@ -40,7 +40,7 @@
             <div class="content">
                 <figure class="lb-avatar"><img ng-src="{{ post.original_creator.picture_url }}"/></figure>
                 <div class="lb-creator">
-                    <div class="lb-post-date" ng-bind="post._created | date"></div>
+                    <div class="lb-post-date" ng-bind="post.published_date | date"></div>
                     <div class="lb-user-info" ng-bind="post.original_creator.display_name"></div>
                 </div>
                 <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
@@ -55,7 +55,7 @@
                         <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
                     </div>
                 </div>
-                <div class="lb-updated-date" ng-show="post._updated !== post._created">
+                <div class="lb-updated-date" ng-show="post._updated !== post.published_date">
                     Updated <span ng-bind="post._updated | date"></span>
                 </div>
             </div>
