@@ -64,7 +64,7 @@ before_script:
 
 script:
     - if [ "${TARGET}" = "server" ]; then
-        cd server && nosetests && cd .. ;
+        cd server && nosetests --all-modules && cd .. ;
       fi
     - if [ "${TARGET}" = "server" ]; then
         cd server &&
