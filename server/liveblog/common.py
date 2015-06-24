@@ -4,7 +4,6 @@ from superdesk.utc import utcnow
 from flask import current_app as app
 from superdesk.celery_app import update_key
 import unittest
-import app as app_module
 
 
 def get_user(required=False):
@@ -40,6 +39,7 @@ class BlogCache(object):
 class BlogCacheTestCase(unittest.TestCase):
 
     def test_cache(self):
+        import app as app_module
         with app_module.get_app().app_context():
             blog_cache = BlogCache()
             self.assertEqual(blog_cache.get('blog', 'key'), None)
