@@ -4,20 +4,28 @@ html, body {
 body {
     background-color: #EAEAEA;
     font-family: 'Roboto', sans-serif;
-    font-weight: 300;
+    font-weight: 400;
     color: #333333;
-    line-height: 1.25em;
+    line-height: 1.35em;
+    font-size: 14px;
 }
 h1 {
     font-weight: 400;
     font-size: 24px;
+    line-height: 110%;
 }
 img {
     max-width: 100%;
     max-height: 500px;
 }
 .content {
-    margin: 10px;
+    margin: 15px 10px;
+}
+a {
+    color: #3394bc !important;
+}
+a:hover {
+    text-decoration: none;
 }
 .lb-timeline {
     clear: both;
@@ -42,7 +50,8 @@ img {
     border-bottom: 1px solid #CBCBCB;
     overflow: auto;
     padding: 10px 0 0 10px;
-    margin: 20px 0;
+    margin: 10px 0;
+    position: relative;
 }
 .sorting-bar__title {
     float: left;
@@ -55,18 +64,24 @@ img {
 .sorting-bar__orders {
     float: left;
     padding-left: 70px;
+    margin-right: 90px;
 }
 .sorting-bar__order {
     float: left;
     margin: 0 10px;
-    padding-bottom: 10px;
+    padding-bottom: 8px;
     cursor: pointer;
-    color: #333333;
-    font-size: 12px;
+    color: #999999;
+    font-size: 13px;
 }
 .sorting-bar__order--active, .sorting-bar__order:hover {
-    color: #999999;
-    border-bottom: 1px solid #3FA9C5;
+    color: #333333;
+    border-bottom: 2px solid #5ea9c8;
+}
+.sorting-bar__logo {
+    position: absolute;
+    right: 10px;
+    top: 5px;
 }
 .lb-posts {
     clear: both;
@@ -137,7 +152,7 @@ article p {
 }
 /* youtube */
 article .liveblog--card {
-    font-size: 0.8em;
+    font-size: 0.9em;
     line-height: 1.25em;
 }
 article .embed-preview:not([data-twttr-id]) {
@@ -180,20 +195,12 @@ article blockquote li:before {
 }
 /* loading */
 .loading {
-    background-color: #7CB6BD;
-    color: white;
+    color: #5ea9c8;
     text-align: center;
     padding: 20px;
-    font-size: 1.2em;
-    font-weight: 400;
-}
-.loading {
-    background-color: #7CB6BD;
-    color: white;
-    text-align: center;
-    padding: 20px;
-    font-size: 1.2em;
-    font-weight: 400;
+    margin: 10px;
+    font-size: 1em;
+    font-weight: 300;
     opacity: 1;
     transition-property: opacity;
     transition-duration:.25s;

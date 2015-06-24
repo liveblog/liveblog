@@ -25,6 +25,11 @@
                 ng-class="{'sorting-bar__order--active': timeline.order=='oldest_first'}"
                 ng-click="timeline.orderBy('oldest_first')">Oldest first</div>
         </div>
+        <div class="sorting-bar__logo">
+            <a href="https://www.sourcefabric.org/liveblog/" target="_blank">
+                <img src="{{ timeline.templateDir}}images/lb-logo.png"/>
+            </a>
+        </div>
     </div>
     <div
         class="lb-post emtpy-message"
