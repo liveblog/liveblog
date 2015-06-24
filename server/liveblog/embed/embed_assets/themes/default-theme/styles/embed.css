@@ -43,6 +43,7 @@ img {
     overflow: auto;
     padding: 10px 0 0 10px;
     margin: 20px 0;
+    position: relative;
 }
 .sorting-bar__title {
     float: left;
@@ -55,6 +56,7 @@ img {
 .sorting-bar__orders {
     float: left;
     padding-left: 70px;
+    margin-right: 90px;
 }
 .sorting-bar__order {
     float: left;
@@ -67,6 +69,11 @@ img {
 .sorting-bar__order--active, .sorting-bar__order:hover {
     color: #999999;
     border-bottom: 1px solid #3FA9C5;
+}
+.sorting-bar__logo {
+    position: absolute;
+    right: 10px;
+    top: 7px;
 }
 .lb-posts {
     clear: both;

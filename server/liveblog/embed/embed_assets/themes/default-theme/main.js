@@ -15,6 +15,7 @@
 
         // define view model
         angular.extend(vm, {
+            templateDir: config.assets_root,
             blog: config.blog,
             loading: true,
             finished: false,
