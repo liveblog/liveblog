@@ -10,7 +10,7 @@
                 <div class="inline first">
                     <span class="name">{{ ::post.original_creator_name }}</span> | <time>{{ post.published_date | reldate }}</time>
                 </div>
-                <div class="inline">
+                <div class="inline" ng-if="post._updated !== post.published_date">
                     <span class="updated-label" translate>Updated</span> <time class="updated-time">{{ post._updated | reldate }}</time>
                 </div>
                 <div class="lb-post__actions">
