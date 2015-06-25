@@ -28,12 +28,15 @@ from raven.contrib.flask import Sentry
 from superdesk.errors import SuperdeskError, SuperdeskApiError
 from liveblog.embed import embed_blueprint
 from flask.ext.assets import Environment
+from flask.ext.cache import Cache
+from liveblog.common import BlogCache
 import flask_s3
 
 
 logger = logging.getLogger('superdesk')
 sentry = Sentry(register_signal=False, wrap_wsgi=False)
 s3 = flask_s3.FlaskS3()
+assets = Environment()
 
 
 def get_app(config=None):
@@ -78,6 +81,10 @@ def get_app(config=None):
     ])
     app.jinja_loader = custom_loader
 
+    # cache
+    app.cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+    app.blog_cache = BlogCache(cache=app.cache)
+    # mail
     app.mail = Mail(app)
 
     @app.errorhandler(SuperdeskError)
@@ -112,12 +119,12 @@ def get_app(config=None):
         prefix = app.api_prefix or None
         app.register_blueprint(blueprint, url_prefix=prefix)
 
-    # embed feature
-    app.register_blueprint(embed_blueprint)
     # flask assets
-    Environment(app)
+    assets.init_app(app)
     # s3
     s3.init_app(app)
+    # embed feature
+    app.register_blueprint(embed_blueprint)
     # we can only put mapping when all resources are registered
     app.data.elastic.put_mapping(app)
 

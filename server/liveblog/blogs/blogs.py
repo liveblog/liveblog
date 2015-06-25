@@ -198,9 +198,15 @@ class BlogService(ArchiveService):
 
     def on_updated(self, updates, original):
         publish_blog_embed_on_s3.delay(str(original['_id']), request.url_root)
+        # invalidate cache for updated blog
+        app.blog_cache.invalidate(original.get('_id'))
+        # send notifications
         push_notification('blogs', updated=1)
 
     def on_deleted(self, doc):
+        # invalidate cache for updated blog
+        app.blog_cache.invalidate(doc.get('_id'))
+        # send notifications
         push_notification('blogs', deleted=1)
 
 

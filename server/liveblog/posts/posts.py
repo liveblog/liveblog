@@ -8,6 +8,7 @@ from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
 from apps.content import LINKED_IN_PACKAGES
 from superdesk.celery_app import update_key
+from flask import current_app as app
 import flask
 from superdesk.utc import utcnow
 
@@ -114,6 +115,10 @@ class PostsService(ArchiveService):
 
     def on_created(self, docs):
         super().on_created(docs)
+        # invalidate cache for updated blog
+        for doc in docs:
+            app.blog_cache.invalidate(doc.get('blog'))
+        # send notifications
         push_notification('posts', created=True)
 
     def on_update(self, updates, original):
@@ -128,6 +133,9 @@ class PostsService(ArchiveService):
 
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
+        # invalidate cache for updated blog
+        app.blog_cache.invalidate(original.get('blog'))
+        # send notifications
         if updates.get('deleted', False):
             push_notification('posts', deleted=True, post_id=original.get('_id'))
         elif updates.get('post_status') == 'draft':
@@ -146,6 +154,9 @@ class PostsService(ArchiveService):
 
     def on_deleted(self, doc):
         super().on_deleted(doc)
+        # invalidate cache for updated blog
+        app.blog_cache.invalidate(doc.get('blog'))
+        # send notifications
         push_notification('posts', deleted=True)
 
 

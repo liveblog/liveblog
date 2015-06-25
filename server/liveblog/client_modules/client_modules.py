@@ -1,10 +1,9 @@
 from liveblog.blogs.blogs import BlogsResource, BlogService
-from eve.utils import ParsedRequest
 from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, BlogPostsResource
 from apps.users.users import UsersResource
 from apps.users.services import UsersService
 from apps.archive.common import item_url
-from superdesk import get_resource_service
+from flask import current_app as app
 
 
 class ClientUsersResource(UsersResource):
@@ -16,17 +15,12 @@ class ClientUsersResource(UsersResource):
     public_item_methods = ['GET']
     item_methods = ['GET']
     resource_methods = ['GET']
-
     schema = {}
     schema.update(UsersResource.schema)
 
 
 class ClientUsersService(UsersService):
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        docs = super().get(req, lookup)
-        return docs
+    pass
 
 
 class ClientBlogsResource(BlogsResource):
@@ -39,17 +33,12 @@ class ClientBlogsResource(BlogsResource):
     public_item_methods = ['GET']
     item_methods = ['GET']
     resource_methods = ['GET']
-
     schema = {}
     schema.update(BlogsResource.schema)
 
 
 class ClientBlogsService(BlogService):
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        docs = super().get(req, lookup)
-        return docs
+    pass
 
 
 class ClientPostsResource(PostsResource):
@@ -62,17 +51,12 @@ class ClientPostsResource(PostsResource):
     public_item_methods = ['GET']
     item_methods = ['GET']
     resource_methods = ['GET']
-
     schema = {}
     schema.update(PostsResource.schema)
 
 
 class ClientPostsService(PostsService):
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        docs = super().get(req, lookup)
-        return docs
+    pass
 
 
 class ClientBlogPostsResource(BlogPostsResource):
@@ -92,14 +76,12 @@ class ClientBlogPostsResource(BlogPostsResource):
 
 
 class ClientBlogPostsService(BlogPostsService):
+
     def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        docs = super().get(req, lookup)
-        # nest the user in the response
-        for doc in docs:
-            creator = get_resource_service('users').find_one(req=None, _id=doc.get('original_creator'))
-            # select fields that are useful
-            wanted_fields = ('first_name', 'last_name', 'display_name', 'username', 'picture_url')
-            doc['original_creator'] = {key: creator.get(key, None) for key in wanted_fields}
+        cache_key = 'lb_ClientBlogPostsService_get_%s' % (hash(frozenset(req.__dict__.items())))
+        blog_id = lookup.get('blog_id')
+        docs = app.blog_cache.get(blog_id, cache_key)
+        if not docs:
+            docs = super().get(req, lookup)
+            app.blog_cache.set(blog_id, cache_key, docs)
         return docs
