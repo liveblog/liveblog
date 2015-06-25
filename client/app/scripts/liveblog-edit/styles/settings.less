@@ -1,6 +1,8 @@
 @SUBNAV_HEIGHT: 48px;
 @SUBSETTINGS_WIDTH: 60%;
 @PADDING: 20px;
+@import 'mixins.less';
+@import 'variables.less';
 .settings-disabled {
     .navbtn {
         opacity: 0.3;
@@ -33,6 +35,8 @@
                         font-size: 11px;
                         text-transform: uppercase;
                         color: #808080;
+                        float: left;
+                        min-width: 150px;
                     }
                     .form-input {
                         width: 50%;
@@ -145,6 +149,28 @@
         height: 84px!important;
         width: 84px!important;
     }
+    .blog-media {
+        .border-box();
+        border: 1px solid #d0d0d0 !important;
+        img {
+            padding: 7px;
+            max-width: 240px;
+            max-height: 240px;
+        }
+        .blog-image-actions {
+            width: 110px;
+            float: right;
+            margin: 5px;
+            button {
+                width: 100%;
+                margin-bottom: 10px;
+            }
+        }
+    }
+    .image-text {
+        margin-left: 10px;
+        margin-top: 3px;
+    }    
 }
 .team-edit {
     position: absolute;
