@@ -46,6 +46,8 @@
 
 // Hide the link to desks in the menu.
 // Needed since we import superdesk.desks in the modules
-#main-menu .content > ul > li > a[href="#/desks/"] {
-    display: none;
+#main-menu .content > ul > li > a[href="#/desks/"],
+.nav-tabs > li > a[href="#/settings/desks"],
+.nav-tabs > li > a[href="#/settings/user-roles"] {
+    display: none !important;
 }
