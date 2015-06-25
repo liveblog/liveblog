@@ -50,6 +50,11 @@
                 controller: LiveblogSettingsController,
                 templateUrl: 'scripts/liveblog-settings/views/general.html',
                 category: superdesk.MENU_SETTINGS
+            })
+            .activity('/settings/', {
+                label: gettext('Liveblog'),
+                controller: LiveblogSettingsController,
+                templateUrl: 'scripts/liveblog-settings/views/general.html'
             });
     }])
     .config(['apiProvider', function(apiProvider) {
