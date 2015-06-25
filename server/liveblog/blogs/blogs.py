@@ -86,7 +86,7 @@ class BlogsResource(ArchiveResource):
     }
 
     item_methods = ['GET', 'PATCH', 'PUT', 'DELETE']
-    privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
+    privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'PUT': 'blogs', 'DELETE': 'blogs'}
 
     schema = blogs_schema
 

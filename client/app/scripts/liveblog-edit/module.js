@@ -174,21 +174,31 @@ define([
     }
 
     BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
-        'gettext', 'config', 'modal', '$q'];
+        'gettext', 'config', 'modal', '$q', 'upload'];
     function BlogSettingsController($scope, blog, api, blogService, $location, notify,
-        gettext, config, modal, $q) {
+        gettext, config, modal, $q, upload) {
         // set view's model
         var vm = this;
         angular.extend(vm, {
             blog: blog,
-            newBlog: _.create(blog),
+            newBlog: _.clone(blog),
             blogPreferences: angular.copy(blog.blog_preferences),
             availableLanguages: [],
             original_creator: {},
             availableThemes: [],
             isSaved: true,
             forms: {},
+            preview: {},
+            progress: {width: 0},
             tab: false,
+            openUploadModal: function() {
+                vm.uploadModal = true;
+            },
+            closeUploadModal: function() {
+                vm.uploadModal = false;
+                vm.preview = {};
+                vm.progress = {width: 0};
+            },
             changeTab: function(tab) {
                 if (vm.tab) {
                     vm.forms.dirty = vm.forms.dirty || vm.forms[vm.tab].$dirty;
@@ -208,6 +218,46 @@ define([
                     }
                 });
             },
+            removeImage: function() {
+                modal.confirm(gettext('Are you sure you want to remove the blog image?')).then(function() {
+                    deregisterPreventer();
+                    delete vm.newBlog.picture_url;
+                    delete vm.newBlog.picture;
+                    vm.forms.dirty = true;
+                });
+            },
+            upload: function(config) {
+                var form = {};
+                if (config.img) {
+                    form.media = config.img;
+                } else if (config.url) {
+                    form.URL = config.url;
+                } else {
+                    return;
+                }
+                // return a promise of upload which will call the success/error callback
+                return api.upload.getUrl().then(function(url) {
+                    return upload.start({
+                        method: 'POST',
+                        url: url,
+                        data: form
+                    })
+                    .then(function(response) {
+                        if (response.data._status === 'ERR'){
+                            return;
+                        }
+                        var picture_url = response.data.renditions.viewImage.href;
+                        vm.newBlog.picture_url = picture_url;
+                        vm.newBlog.picture = response.data._id;
+                        vm.uploadModal = false;
+                        vm.preview = {};
+                        vm.progress = {width: 0};
+                        vm.forms.dirty = true;
+                    }, null, function(progress) {
+                        vm.progress.width = Math.round(progress.loaded / progress.total * 100.0);
+                    });
+                });
+            },
             saveAndClose: function() {
                 vm.save().then(function() {
                     vm.close();
@@ -223,7 +273,10 @@ define([
                     blog_status: vm.blog_switch === true? 'open': 'closed'
                 };
                 angular.extend(changedBlog, vm.newBlog);
-                blogService.save(vm.blog._id, changedBlog).then(function(blog) {
+                delete changedBlog._latest_version;
+                delete changedBlog._version;
+                delete changedBlog.marked_for_not_publication;
+                blogService.replace(changedBlog).then(function(blog) {
                     vm.isSaved = true;
                     vm.blog = blog;
                     notify.pop();
@@ -328,7 +381,8 @@ define([
         'angular-embed',
         'angular-embed.handlers',
         'ngRoute',
-        'superdesk.services.modal'
+        'superdesk.services.modal',
+        'superdesk.upload'
     ]);
     app.config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/liveblog/edit/:_id', {

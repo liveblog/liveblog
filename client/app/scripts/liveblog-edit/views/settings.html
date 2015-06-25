@@ -56,7 +56,25 @@
                                         class="form-control"
                                     />
                                 </div>
-                            </div>                        
+                            </div>
+
+                            <div class="form-group">
+                                <label for="inputImage" class="control-label" translate>Blog Image</label>
+                                <div class="form-input form-image">
+                                    <figure class="blog-media" ng-show="settings.newBlog.picture">
+                                        <img src="{{settings.newBlog.picture_url}}"/>
+                                        <div class="blog-image-actions">
+                                            <button class="btn btn-info pull-right" ng-click="settings.openUploadModal()" translate>Change</button>                                    
+                                            <button class="btn btn-default pull-right" ng-click="settings.removeImage()" translate>Remove</button>
+                                        </div>
+                                    </figure>
+                                    <div ng-hide="settings.newBlog.picture">
+                                        <button class="btn btn-info pull-left" ng-click="settings.openUploadModal()" translate>Upload Image</button>
+                                        <div class="image-text pull-left" translate>Image has not been set so far</div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <label for="inputDescription" class="control-label" translate>Blog Description</label>
                                 <div class="form-input">
@@ -188,4 +206,47 @@
             </div>
         </div>
     </div>
+</div>
+
+<div sd-modal="" data-model="settings.uploadModal">
+    <form ng-submit="settings.upload(settings.preview)" name="uploadImageForm">
+        <div class="modal-header"> 
+            <button class="close" ng-click="settings.closeUploadModal()"><i class="icon-close-small"></i></button>
+            <h3 translate>Upload Blog Image</h3>
+        </div>
+        <div class="modal-body">
+            <div class="upload-form">
+                <section 
+                    class="main" 
+                    sd-image-preview="settings.preview.url" 
+                    data-file="settings.preview.img" 
+                    data-progress-width="settings.progress.width"
+                >
+                    <div class="upload-progress" ng-show="progress.width">
+                        <div class="bar" style="width: {{ progress.width }}%;"></div>
+                    </div>
+                    <div class="computer" ng-if="!settings.preview.url" ng-hide="settings.progress.width">
+                        <div class="dropzone" ng-file-drop="settings.preview.img = $files[0]">
+                            <div class="text" translate>Drop it here</div>
+                            <div class="input-holder">
+                                <input type="file" accept="image/*;capture=camera" ng-file-select="settings.preview.img = $files[0]">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="preview" ng-if="settings.preview.url">
+                        <div class="original">
+                            <div sd-plain-image
+                                data-src="settings.preview.url"
+                                data-progress-width="settings.progress.width"
+                                data-prepare-upload="settings.prepareUpload"
+                            ></div>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        
+        <div class="modal-footer">
+            <button type="submit" class="btn btn-primary btn-info" translate>Done</button>
+        </div>
+    </form>
 </div>

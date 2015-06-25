@@ -29,14 +29,18 @@ define([
                     return api.blogs.save(blogsCache.get(_id), data);
                 }
 
+                function replace(data) {
+                    return api.blogs.replace(data);
+                }
+
                 function get(_id) {
                     return blogsCache.get(_id);
                 }
-
                 return {
                     get: get,
                     update: update,
-                    save: save
+                    save: save,
+                    replace: replace
                 };
             }]);
 });
