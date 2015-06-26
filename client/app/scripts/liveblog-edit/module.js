@@ -181,7 +181,7 @@ define([
         var vm = this;
         angular.extend(vm, {
             blog: blog,
-            newBlog: _.clone(blog),
+            newBlog: angular.copy(blog),
             blogPreferences: angular.copy(blog.blog_preferences),
             availableLanguages: [],
             original_creator: {},
@@ -297,13 +297,15 @@ define([
                     blog_status: vm.blog_switch === true? 'open': 'closed',
                     members: members
                 };
-                angular.extend(changedBlog, vm.newBlog);
-                delete changedBlog._latest_version;
-                delete changedBlog._version;
-                delete changedBlog.marked_for_not_publication;
-                blogService.replace(changedBlog).then(function(blog) {
+                angular.extend(vm.newBlog, changedBlog);
+                delete vm.newBlog._latest_version;
+                delete vm.newBlog._version;
+                delete vm.newBlog.marked_for_not_publication;
+                blogService.replace(vm.newBlog).then(function(blog) {
                     vm.isSaved = true;
                     vm.blog = blog;
+                    vm.newBlog = angular.copy(blog),
+                    vm.blogPreferences = angular.copy(blog.blog_preferences);
                     notify.pop();
                     notify.info(gettext('blog settings saved'));
                     vm.setFormsPristine();
