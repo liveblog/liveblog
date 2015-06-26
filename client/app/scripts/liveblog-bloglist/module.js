@@ -1,8 +1,8 @@
 (function() {
     'use strict';
 
-    BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload', 'isArchivedFilterSelected'];
-    function BlogListController($scope, $location, api, gettext, upload, isArchivedFilterSelected) {
+    BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload', 'isArchivedFilterSelected', '$q'];
+    function BlogListController($scope, $location, api, gettext, upload, isArchivedFilterSelected, $q) {
         $scope.maxResults = 25;
         $scope.states = [
             {name: 'active', code: 'open', text: gettext('Active blogs')},
@@ -39,38 +39,25 @@
             $scope.newBlogModalActive = true;
         };
 
-        $scope.makeBlog = function(blog) {
-            return api.blogs.save(blog)
-                .then(function(message) {
-                    clearCreateBlogForm();
-                    $scope.newBlogModalActive = false;
-                    fetchBlogs(getCriteria());
-                }, function(error) {
-                    //error handler
-                    $scope.newBlogError = gettext('Something went wrong. Please try again later');
-                });
-        };
-
         $scope.createBlog = function() {
             var members = _.map($scope.blogMembers, function(obj) {
                 return {user: obj._id};
             });
-            if (angular.equals({}, $scope.preview)) {
-               $scope.makeBlog({
+            var promise = angular.equals({}, $scope.preview) ? $q.when() : $scope.upload($scope.preview);
+            return promise.then(function() {
+                return api.blogs.save({
                     title: $scope.newBlog.title,
                     description: $scope.newBlog.description,
+                    picture_url: $scope.newBlog.picture_url,
+                    picture: $scope.newBlog.picture,
                     members: members
+                }).then(function(blog) {
+                    $scope.edit(blog);
+                }, function(error) {
+                    //error handler
+                    $scope.newBlogError = gettext('Something went wrong. Please try again later');
                 });
-            } else {
-                $scope.upload($scope.preview).then(function() {
-                   $scope.makeBlog({
-                        title: $scope.newBlog.title,
-                        description: $scope.newBlog.description,
-                        picture_url: $scope.newBlog.picture_url,
-                        picture: $scope.newBlog.picture
-                   });
-                });
-            }
+            });
         };
 
         $scope.upload = function(config) {
