@@ -3,9 +3,10 @@ var login = require('../app/scripts/bower_components/superdesk/client/spec/helpe
 describe('General settings', function() {
     'use strict';
 
-    var DEFAULT_LANGUAGE = 'english',
-        NEW_LANGUAGE = 'french',
-        DEFAULT_THEME = 'default-theme',
+    // FIXME: must be uncommented after release (LBSD-546)
+    // var DEFAULT_LANGUAGE = 'english',
+        // NEW_LANGUAGE = 'french',
+    var DEFAULT_THEME = 'default-theme',
         NEW_THEME = 'forest';
 
     beforeEach(function(done) {login().then(done);});
@@ -37,23 +38,25 @@ describe('General settings', function() {
         element(by.css('[ng-click="saveSettings()"]')).click();
     }
 
-    it('shows the default language', function() {
-        openLiveblogSettings();
-        expectSelected('liveblogSettings.language.value', DEFAULT_LANGUAGE);
-    });
+    // FIXME: must be uncommented after release (LBSD-546)
+    // it('shows the default language', function() {
+    //     openLiveblogSettings();
+    //     expectSelected('liveblogSettings.language.value', DEFAULT_LANGUAGE);
+    // });
 
     it('shows the default theme', function() {
         openLiveblogSettings();
         expectSelected('liveblogSettings.theme.value', DEFAULT_THEME);
     });
 
-    it('sets new language', function() {
-        openLiveblogSettings();
-        setSelected('liveblogSettings.language.value', NEW_LANGUAGE);
-        saveSettings();
-        openLiveblogSettings();
-        expectSelected('liveblogSettings.language.value', NEW_LANGUAGE);
-    });
+    // FIXME: must be uncommented after release (LBSD-546)
+    // it('sets new language', function() {
+    //     openLiveblogSettings();
+    //     setSelected('liveblogSettings.language.value', NEW_LANGUAGE);
+    //     saveSettings();
+    //     openLiveblogSettings();
+    //     expectSelected('liveblogSettings.language.value', NEW_LANGUAGE);
+    // });
 
     it('sets new theme', function() {
         openLiveblogSettings();
