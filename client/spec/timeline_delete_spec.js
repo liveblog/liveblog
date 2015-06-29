@@ -5,7 +5,7 @@ var login = require('../app/scripts/bower_components/superdesk/client/spec/helpe
 describe('timeline deletions', function() {
     beforeEach(function(done) {login().then(done);});
     it('can delete posts on the timeline', function() {
-        openBlog(2);
+        openBlog(3);
         element.all(by.repeater('post in posts')).then(function(posts) {
             posts[0].element(by.css('[ng-click="askRemovePost(post)"]')).click();
             confirmRemoval();

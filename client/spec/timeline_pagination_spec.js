@@ -4,7 +4,7 @@ var login = require('../app/scripts/bower_components/superdesk/client/spec/helpe
 describe('timeline pagination', function() {
     beforeEach(function(done) {login().then(done);});
     it('can scroll to last item and load more', function() {
-        openBlog(0);
+        openBlog(1);
         var postsNo = element.all(by.repeater('post in posts')).count(),
             lastPost = element.all(by.repeater('post in posts')).last();
         browser.driver.executeScript('arguments[0].scrollIntoView(true);', lastPost.getWebElement());
