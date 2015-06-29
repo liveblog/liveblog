@@ -37,7 +37,7 @@ describe('timeline add to top and edit', function() {
         }
 
         var randomText = randomString(10);
-        openBlog(2);
+        openBlog(3);
         element(by.repeater('post in posts').row(0))
             .element(by.css('[ng-click="onEditClick(post)"]')).click();
         element(by.css('.editor .st-text-block')).clear().sendKeys(randomText);
@@ -79,7 +79,7 @@ describe('timeline add to top and edit', function() {
                 });
         }
 
-        openBlog(2);
+        openBlog(3);
         publishPost();
         publishPost();
         // open draft posts panel
