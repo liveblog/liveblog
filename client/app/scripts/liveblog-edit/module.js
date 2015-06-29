@@ -304,7 +304,7 @@ define([
                 blogService.replace(vm.newBlog).then(function(blog) {
                     vm.isSaved = true;
                     vm.blog = blog;
-                    vm.newBlog = angular.copy(blog),
+                    vm.newBlog = angular.copy(blog);
                     vm.blogPreferences = angular.copy(blog.blog_preferences);
                     notify.pop();
                     notify.info(gettext('blog settings saved'));
