@@ -72,6 +72,30 @@ describe('Blog settings', function() {
         element(by.css('[href="/#/liveblog"]')).click();
         expectBlog(blog);
     });
+
+    it('shows the default language selected', function() {
+        openBlog(0);
+        openSettings();
+
+        element(by.css('[ng-click="settings.openUploadModal()"]')).click();
+        element(by.css('input[type="file"]')).sendKeys(path.resolve(__dirname, blog.picture_url));
+        element(by.buttonText('UPLOAD')).click();
+        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
+        element(by.css('[href="/#/liveblog"]')).click();
+        expectBlog(blog);
+    });
+
+    it('should remove the image from blog', function() {
+        var blog = blogs[0];
+        openBlog(0);
+        delete blog.picture_url;
+        openSettings();
+        element(by.css('[ng-click="settings.removeImage()"]')).click();
+        element(by.css('[ng-click="ok()"]')).click();
+        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
+        element(by.css('[href="/#/liveblog"]')).click();
+        expectBlog(blog);
+    });
     // FIXME: must be uncommented after release (LBSD-546)
     // it('shows the default language selected', function() {
     //     openBlog(0);
