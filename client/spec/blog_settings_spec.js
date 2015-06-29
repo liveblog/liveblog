@@ -48,7 +48,7 @@ describe('Blog settings', function() {
 
     it('should change the image for blog', function() {
         var path = require('path'),
-            blog = blogs[0];
+            blog = JSON.parse(JSON.stringify(blogs[0]));
         blog.picture_url = './upload/-o-jpg-1600-900.jpg';
         openBlog(0);
         openSettings();
@@ -62,7 +62,7 @@ describe('Blog settings', function() {
     });
 
     it('should remove the image from blog', function() {
-        var blog = blogs[0];
+        var blog = JSON.parse(JSON.stringify(blogs[0]));
         openBlog(0);
         delete blog.picture_url;
         openSettings();
