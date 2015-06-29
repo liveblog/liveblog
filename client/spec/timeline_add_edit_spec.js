@@ -26,11 +26,6 @@ describe('timeline add to top and edit', function() {
             textElement.getText().then(function(text) {
                 expect(text).toEqual(randomText);
             });
-            //updated time should have a non empty value
-            var updatedTimeEl = posts[0].element(by.css('.updated-time'));
-            updatedTimeEl.getText().then(function(text) {
-                expect(text.length).toBeGreaterThan(0);
-            });
         });
     });
 
@@ -49,11 +44,17 @@ describe('timeline add to top and edit', function() {
         element(by.css('[ng-click="publish()"]')).click();
         browser.waitForAngular();
         getFirstPostText().then(function (old_text) {
-                // wait a change in the post
-                browser.wait(function() {
-                    return getFirstPostText() !== old_text;
-                });
-                expect(getFirstPostText()).toBe(randomText);
+            // wait a change in the post
+            browser.wait(function() {
+                return getFirstPostText() !== old_text;
+            });
+            expect(getFirstPostText()).toBe(randomText);
+        });
+        //updated time should have a non empty value
+        element(by.repeater('post in posts').row(0))
+            .element(by.css('.updated-time'))
+            .getText().then(function(text) {
+                expect(text.length).toBeGreaterThan(0);
             });
     });
 
