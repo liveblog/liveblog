@@ -71,6 +71,9 @@ describe('Blog settings', function() {
             return element(by.css('.modal-footer.ng-scope')).isDisplayed();
         });
         element(by.css('[ng-click="ok()"]')).click();
+        browser.wait(function() {
+            return element(by.css('[ng-click="settings.saveAndClose()"]')).isEnabled();
+        });
         element(by.css('[ng-click="settings.saveAndClose()"]')).click();
         element(by.css('[href="/#/liveblog"]')).click();
         expectBlog(blog);
