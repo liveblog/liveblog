@@ -35,7 +35,7 @@ def env(variable, fallback_value=None):
 XML = False
 IF_MATCH = True
 BANDWIDTH_SAVER = False
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S+0000'
+DATE_FORMAT = '%Y-%m-%dT%H:%M:%S+00:00'
 PAGINATION_LIMIT = 200
 
 APPLICATION_NAME = env('APP_NAME', 'Live Blog')
