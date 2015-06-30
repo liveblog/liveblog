@@ -72,7 +72,7 @@ describe('Blog settings', function() {
         browser.wait(EC.elementToBeClickable(eOk), 10000);
         eOk.click();
         var eSave = element(by.css('[ng-click="settings.saveAndClose()"]'));
-        browser.wait(EC.elementToBeClickable(eSave), 10000)
+        browser.wait(EC.elementToBeClickable(eSave), 10000);
         eSave.click();
         element(by.css('[href="/#/liveblog"]')).click();
         expectBlog(blog);
