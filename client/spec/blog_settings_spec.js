@@ -2,8 +2,7 @@ var utils = require('../app/scripts/bower_components/superdesk/client/spec/helpe
     login = utils.login,
     expectBlog = require('./helpers/utils').expectBlog,
     openBlog = require('./helpers/utils').openBlog,
-    blogs = require('./helpers/utils').blogs,
-    EC = protractor.ExpectedConditions;
+    blogs = require('./helpers/utils').blogs;
 
 describe('Blog settings', function() {
     'use strict';
@@ -68,12 +67,11 @@ describe('Blog settings', function() {
         delete blog.picture_url;
         openSettings();
         element(by.css('[ng-click="settings.removeImage()"]')).click();
-        var eOk = element(by.css('[ng-click="ok()"]'));
-        browser.wait(EC.elementToBeClickable(eOk), 10000);
-        eOk.click();
-        var eSave = element(by.css('[ng-click="settings.saveAndClose()"]'));
-        browser.wait(EC.elementToBeClickable(eSave), 10000);
-        eSave.click();
+        browser.wait(function() {
+            return element(by.css('.modal-footer.ng-scope')).isDisplayed();
+        });
+        element(by.css('[ng-click="ok()"]')).click();
+        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
         element(by.css('[href="/#/liveblog"]')).click();
         expectBlog(blog);
     });
