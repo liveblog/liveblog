@@ -49,7 +49,7 @@
         <ul class="card-list" ng-if="gridview">
             <li ng-repeat="blog in blogs._items track by blog._id" ng-click="edit(blog)">
                 <figure class="media">
-                    <div ng-if="blog.picture" if-background-image="{{blog.picture_url}}"></div>
+                    <div ng-if="blog.picture_url" if-background-image="{{blog.picture_url}}"></div>
                 </figure>            
                 <div class="content">
                     <h3>{{ ::blog.title }}</h3>
@@ -106,7 +106,6 @@
                                         sd-image-preview="preview.url" 
                                         data-file="preview.img" 
                                         data-progress-width="progress.width"
-                                        data-cords=""
                                     >
                                         <div class="upload-progress" ng-show="progress.width">
                                             <div class="bar" style="width: {{ progress.width }}%;"></div>

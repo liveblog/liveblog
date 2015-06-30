@@ -37,7 +37,7 @@ var posts = [
 describe('timeline', function() {
     beforeEach(function(done) {login().then(done);});
     it('can show items on the timeline', function() {
-        openBlog(2);
+        openBlog(3);
         //go and check the timeline
         element.all(by.repeater('post in posts')).then(function(marks) {
             var postsLength = posts.length;

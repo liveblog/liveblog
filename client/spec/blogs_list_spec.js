@@ -10,9 +10,9 @@ describe('blogs', function() {
     var archived = [
         {title: 'title: end to end closed', description: 'description: end to end closed', username: 'first name last name'}
     ], searchs = [
-        {blogs: [0, 1, 2], search: 'title'},
-        {blogs: [0], search: 'thre'},
-        {blogs: [0, 1, 2], search: 'to'}
+        {blogs: [0, 1, 2, 3], search: 'title'},
+        {blogs: [1], search: 'thre'},
+        {blogs: [0, 1, 2, 3], search: 'to'}
     ], newBlog = {
         title: 'new blog title',
         description: 'new blog description',
