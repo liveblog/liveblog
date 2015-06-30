@@ -51,3 +51,11 @@
 .nav-tabs > li > a[href="#/settings/user-roles"] {
     display: none !important;
 }
+
+// Remove language options from general and blog settings
+// because the feature is not implemented yet
+// FIXME: must be uncommented after release (LBSD-546)
+.blog-settings-view div.form-group:nth-child(4),
+.general-settings div.form-group:nth-child(1) {
+    display: none !important;
+}

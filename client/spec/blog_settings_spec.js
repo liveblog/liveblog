@@ -7,8 +7,9 @@ var utils = require('../app/scripts/bower_components/superdesk/client/spec/helpe
 describe('Blog settings', function() {
     'use strict';
 
-    var DEFAULT_LANGUAGE = 'english';
-    var NEW_LANGUAGE = 'french';
+    // FIXME: must be uncommented after release (LBSD-546)
+    // var DEFAULT_LANGUAGE = 'english';
+    // var NEW_LANGUAGE = 'french';
 
     beforeEach(function(done) {login().then(done);});
 
@@ -17,13 +18,15 @@ describe('Blog settings', function() {
         element(by.css('.settings-link')).click();
     }
 
-    function expectSelectedLanguageIs(language) {
-        expect(element(by.model('settings.blogPreferences.language')).$('option:checked').getText()).toEqual(language);
-    }
+    // FIXME: must be uncommented after release (LBSD-546)
+    // function expectSelectedLanguageIs(language) {
+    //     expect(element(by.model('settings.blogPreferences.language')).$('option:checked').getText()).toEqual(language);
+    // }
 
-    function setLanguage(language) {
-        element(by.model('settings.blogPreferences.language')).sendKeys(language);
-    }
+    // function setLanguage(language) {
+    //     element(by.model('settings.blogPreferences.language')).sendKeys(language);
+    // }
+
     it('should modify title and description for blog', function() {
         var blog = {username: 'first name last name'};
         openBlog(0);
@@ -43,48 +46,49 @@ describe('Blog settings', function() {
         expectBlog(blog);
     });
 
-    it('shows the default language selected', function() {
-        openBlog(0);
-        openSettings();
-        expectSelectedLanguageIs(DEFAULT_LANGUAGE);
-    });
+    // FIXME: must be uncommented after release (LBSD-546)
+    // it('shows the default language selected', function() {
+    //     openBlog(0);
+    //     openSettings();
+    //     expectSelectedLanguageIs(DEFAULT_LANGUAGE);
+    // });
 
-    it('save a new value for language', function() {
-        openBlog(0);
-        openSettings();
-        setLanguage(NEW_LANGUAGE);
-        // save
-        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
-        openSettings();
-        expectSelectedLanguageIs(NEW_LANGUAGE);
-    });
+    // it('save a new value for language', function() {
+    //     openBlog(0);
+    //     openSettings();
+    //     setLanguage(NEW_LANGUAGE);
+    //     // save
+    //     element(by.css('[ng-click="settings.saveAndClose()"]')).click();
+    //     openSettings();
+    //     expectSelectedLanguageIs(NEW_LANGUAGE);
+    // });
 
-    it('reset default language value', function() {
-        openBlog(0);
-        openSettings();
-        setLanguage(NEW_LANGUAGE);
-        // save a new value
-        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
-        openSettings();
-        expectSelectedLanguageIs(NEW_LANGUAGE);
-        // reset
-        element(by.css('[ng-click="settings.reset()"]')).click();
-        expectSelectedLanguageIs(DEFAULT_LANGUAGE);
-    });
+    // it('reset default language value', function() {
+    //     openBlog(0);
+    //     openSettings();
+    //     setLanguage(NEW_LANGUAGE);
+    //     // save a new value
+    //     element(by.css('[ng-click="settings.saveAndClose()"]')).click();
+    //     openSettings();
+    //     expectSelectedLanguageIs(NEW_LANGUAGE);
+    //     // reset
+    //     element(by.css('[ng-click="settings.reset()"]')).click();
+    //     expectSelectedLanguageIs(DEFAULT_LANGUAGE);
+    // });
 
-    it('cancel changed language', function() {
-        openBlog(0);
-        openSettings();
-        setLanguage(NEW_LANGUAGE);
-        // cancel
-        element(by.css('[ng-click="settings.close()"]')).click();
-        browser.wait(function() {
-            return element(by.css('.modal-footer.ng-scope')).isDisplayed();
-        });
-        element(by.css('button[ng-click="ok()"')).sendKeys(protractor.Key.ENTER);
-        openSettings();
-        expectSelectedLanguageIs(DEFAULT_LANGUAGE);
-    });
+    // it('cancel changed language', function() {
+    //     openBlog(0);
+    //     openSettings();
+    //     setLanguage(NEW_LANGUAGE);
+    //     // cancel
+    //     element(by.css('[ng-click="settings.close()"]')).click();
+    //     browser.wait(function() {
+    //         return element(by.css('.modal-footer.ng-scope')).isDisplayed();
+    //     });
+    //     element(by.css('button[ng-click="ok()"')).sendKeys(protractor.Key.ENTER);
+    //     openSettings();
+    //     expectSelectedLanguageIs(DEFAULT_LANGUAGE);
+    // });
     it('shows original creator full name and username', function() {
         openBlog(0);
         openSettings();
