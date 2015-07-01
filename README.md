@@ -1,5 +1,9 @@
-# liveblog
-Liveblog  https://liveblog.sd-test.sourcefabric.org
+# Liveblog
+[Download](https://github.com/superdesk/liveblog/archive/master.zip) •
+[Fork](https://github.com/superdesk/liveblog) •
+[License](https://github.com/superdesk/liveblog/blob/master/LICENSE) •
+Documentation (Coming soon) •
+*Version 0.1*
 
 [![Build Status](https://travis-ci.org/superdesk/liveblog.svg?branch=master)](https://travis-ci.org/superdesk/liveblog)
 

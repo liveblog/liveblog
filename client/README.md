@@ -1,14 +1,5 @@
-# Liveblog Client based on Superdesk Client
-[![Build Status](https://travis-ci.org/superdesk/liveblog-client.svg)](https://travis-ci.org/superdesk/liveblog-client)
-[![devDependency Status](https://david-dm.org/superdesk/liveblog-client/dev-status.png)](https://david-dm.org/superdesk/liveblog-client#info=devDependencies)
-[![Coverage Status](https://img.shields.io/coveralls/superdesk/liveblog-client.svg)](https://coveralls.io/r/superdesk/liveblog-client?branch=master)
-
+# Liveblog Client
 Liveblog Client is a javascript client for Liveblog REST API server.
-
-*License*: [GPLv3](http://www.gnu.org/licenses/gpl-3.0.txt)
-
-*Copyright*: [Sourcefabric o.p.s.](http://www.sourcefabric.org)
-
 
 ## Setup
 
@@ -57,4 +48,3 @@ For trivial changes you can ommit JIRA ref or Description or both: ```Fix typo i
 ### CI
 
 You can test your code before sending a PR via: ```grunt ci```
-
