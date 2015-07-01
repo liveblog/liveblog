@@ -1,4 +1,4 @@
-# Live Blog Server [![Build Status](https://travis-ci.org/superdesk/liveblog-server.png?branch=master)](https://travis-ci.org/superdesk/liveblog-server)
+# Liveblog Server
 
 Live Blog Server provides a REST API server for [Live Blog project](https://wiki.sourcefabric.org/display/LB/Live+Blog).
 It's a python app, built on top of [eve](http://python-eve.org/)/[flask](http://flask.pocoo.org/) framework.
