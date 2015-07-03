@@ -25,10 +25,6 @@ describe('General settings', function() {
             return element(by.css('[href="#/settings"]')).isDisplayed();
         });
         element(by.css('[href="#/settings"]')).click();
-        browser.wait(function() {
-            return element(by.css('[href="#/settings/liveblog"]')).isDisplayed();
-        });
-        element(by.css('[href="#/settings/liveblog"]')).click();
     }
 
     function saveSettings() {
