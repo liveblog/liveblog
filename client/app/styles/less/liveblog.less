@@ -59,3 +59,12 @@
 .general-settings div.form-group:nth-child(1) {
     display: none !important;
 }
+
+//Hide liveblog tab in global settings
+:not(.blog-settings-view)>.settings-page>.tabbable.outer>.nav-stacked {
+    display: none !important;
+}
+
+:not(.blog-settings-view)>.settings-page .tabbable.outer .tab-content.outer {
+    position: inherit;
+}
