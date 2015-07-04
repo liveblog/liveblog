@@ -1,5 +1,5 @@
 @SUBNAV_HEIGHT: 48px;
-@SUBSETTINGS_WIDTH: 60%;
+@SUBSETTINGS_WIDTH: 100%;
 @PADDING: 20px;
 @import 'mixins.less';
 @import 'variables.less';
@@ -25,6 +25,9 @@
             }
             > .content {
                 padding: @PADDING;
+                width: 100%;
+                max-width: 660px;
+                .box-sizing(border-box);
                 .form-group {
                     display: table;
                     content: " ";
@@ -35,11 +38,11 @@
                         font-size: 11px;
                         text-transform: uppercase;
                         color: #808080;
-                        float: left;
-                        min-width: 150px;
+                        float: left;                        
+                        width: 20%;
                     }
                     .form-input {
-                        width: 50%;
+                        width: 80%;
                         float: left;
                         select {margin: 0; height: auto;} // overwrite bootstrap
                         input {
