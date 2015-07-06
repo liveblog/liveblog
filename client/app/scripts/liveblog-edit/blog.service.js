@@ -14,8 +14,8 @@ define([
     'use strict';
 
     angular.module('liveblog.blog', [])
-        .service('blogService', ['api', 'postsService', '$cacheFactory',
-            function(api, postsService, $cacheFactory) {
+        .service('blogService', ['api', '$cacheFactory',
+            function(api, $cacheFactory) {
                 var blogsCache = $cacheFactory('blog');
 
                 function update(_id, cache) {

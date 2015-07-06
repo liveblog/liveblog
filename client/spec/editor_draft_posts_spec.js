@@ -25,7 +25,7 @@ describe('Draft Posts', function() {
     }
 
     function checkDraftInDraftList(row_expected, data_expected) {
-        expect(element(by.css('.column-draft-posts')).element(by.repeater('post in postsList.posts').row(row_expected))
+        expect(element(by.css('.column-draft-posts')).element(by.repeater('post in postsList.pagesManager.allPosts()').row(row_expected))
             .element(by.css('[html-content]')).getText()
         ).toContain(data_expected);
     }
@@ -68,7 +68,7 @@ describe('Draft Posts', function() {
         var draft = createDraft();
         resetEditor();
         browser.waitForAngular();
-        var first_post = element(by.css('.column-draft-posts')).element(by.repeater('post in postsList.posts').row(0));
+        var first_post = element(by.css('.column-draft-posts')).element(by.repeater('post in postsList.pagesManager.allPosts()').row(0));
         first_post.element(by.css('[ng-click="onEditClick(post)"]')).click();
         browser.wait(function() {
             return element(by.css('.editor .st-text-block')).isPresent();
@@ -79,7 +79,7 @@ describe('Draft Posts', function() {
             // timeline
             expect(element(by.css('.column-timeline')).element(by.repeater('post in posts').row(0)).isPresent()).toBe(true);
             // draft posts
-            expect(element(by.css('.column-draft-posts')).all(by.repeater('post in postsList.posts')).count())
+            expect(element(by.css('.column-draft-posts')).all(by.repeater('post in postsList.pagesManager.allPosts()')).count())
                 .toBe(0);
         });
     });

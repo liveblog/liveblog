@@ -147,7 +147,10 @@ define([
                 }
             },
             fetchNewTimelinePage: function() {
-                vm.timelineInstance.fetchPage();
+                vm.timelineInstance.fetchNewPage();
+            },
+            fetchNewDraftPage: function() {
+                vm.draftPostsInstance.fetchNewPage();
             },
             isBlogOpened: function() {
                 return $scope.blog.blog_status === 'open';
@@ -409,7 +412,8 @@ define([
         'angular-embed.handlers',
         'ngRoute',
         'superdesk.services.modal',
-        'superdesk.upload'
+        'superdesk.upload',
+        'liveblog.pages-manager'
     ]);
     app.config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/liveblog/edit/:_id', {

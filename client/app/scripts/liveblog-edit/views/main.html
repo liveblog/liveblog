@@ -27,12 +27,12 @@
          slideable-move=".columns-holder">
         <header>Drafts</header>
         <div class="content">
-            <div class="draft-posts" ng-if="draftPanelState === 'open'">
+            <div class="draft-posts" ng-if="draftPanelState === 'open'" lr-infinite-scroll="fetchNewDraftPage">
                 <lb-posts-list
                   lb-posts-instance="blogEdit.draftPostsInstance"
                   lb-posts-blog-id="blog._id"
                   lb-posts-status="draft"
-                  lb-posts-order-by="-_updated"
+                  lb-posts-order-by="updated_first"
                   lb-posts-empty-message="<p>You don't have any draft yet.</p><p>To create one, start to compose your post and click on the &#34;SAVE AS DRAFT&#34; button. You will be able to re-open it later in the editor.</p>"
                   lb-posts-allow-quick-edit="false"
                   lb-posts-allow-unpublish="false"

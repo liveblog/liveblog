@@ -2,9 +2,9 @@
 <div ng-if="postsList.isPostsEmpty()" class="alert alert-info" role="alert">
     <span><strong lb-bind-html html-content="{{postsList.emptyMessage}}"></strong></span>
 </div>
-<ul class="posts" lr-infinite-scroll="postsList.fetchPage">
+<ul class="posts">
     <lb-post
-      ng-repeat="post in postsList.posts | orderBy: postsList.orderBy track by post._id"
+      ng-repeat="post in postsList.pagesManager.allPosts() track by post._id"
       post="post"
       on-edit-click="postsList.onPostSelected"
       allow-unpublish="postsList.allowUnpublish"
