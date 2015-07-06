@@ -1,5 +1,5 @@
 <!doctype html>
-<html ng-app="liveblog-embed">
+<html>
     <head>
         <title>{{ blog.title }}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -17,24 +17,24 @@
 
     <body>
 
-        <lb-template></lb-template>
+        {{ template | safe }}
+
 
         <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
         <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
         <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular-resource.js"></script>
-        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script> -->
+
         <script type="text/javascript">
-            angular.module('liveblog-embed', ['ngResource', '{{ blog.theme.angularModule }}'])
-                .constant('theme', {{ blog.theme | tojson | safe }})
-                .constant('config', {
-                    blog_id: '{{ blog._id }}',
-                    blog: {{ blog | tojson | safe }},
-                    api_host: '{{ api_host }}',
-                    assets_root: '{{ assets_root }}'
-                });
+            window.LB = {
+                blog: {{ blog | tojson | safe }},
+                api_host: '{{ api_host }}',
+                assets_root: '{{ assets_root }}'
+            };
         </script>
 
         {% assets
+            "embed_liveblog/scripts/liveblog-embed/main.js",
             "embed_liveblog/scripts/liveblog-embed/resources.service.js",
             "embed_liveblog/scripts/liveblog-embed/pages-manager.service.js",
             "embed_liveblog/scripts/liveblog-embed/directives.js",

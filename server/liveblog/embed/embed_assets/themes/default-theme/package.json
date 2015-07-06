@@ -2,7 +2,6 @@
     "name": "default-theme",
     "label": "Default Theme",
     "version": "1.0",
-    "angularModule": "default-theme",
     "styles": [
         "styles/reset.css",
         "styles/embed.css",

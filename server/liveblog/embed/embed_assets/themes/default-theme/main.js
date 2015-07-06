@@ -60,14 +60,8 @@
         });
     }
 
-    angular.module('default-theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll'])
-        .directive('lbTemplate', ['config', function(config) {
-            return {
-                controller: TimelineCtrl,
-                controllerAs: 'timeline',
-                templateUrl: config.assets_root + 'template.html'
-            };
-        }])
+    angular.module('theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll'])
+        .controller('TimelineCtrl', TimelineCtrl)
         .filter('date', function() {
             return function(input) {
                 var date = fecha.parse(input, 'YYYY-MM-DDTHH:mm:ss+0000');

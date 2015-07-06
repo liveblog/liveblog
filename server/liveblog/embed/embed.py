@@ -11,6 +11,7 @@
 """Embed module"""
 import superdesk
 from flask import render_template, json, request, current_app as app
+from eve.io.mongo import MongoJSONEncoder
 from superdesk import get_resource_service
 import tinys3
 import io
@@ -60,6 +61,8 @@ def embed(blog_id, api_host=None, theme=None):
         # this method can be called outside from a request context
         pass
     theme_name = theme_name or blog['theme']['name']
+    template_file = '%s/%s/themes/%s/template.html' % \
+                    (os.path.dirname(os.path.realpath(__file__)), ASSETS_DIR, theme_name)
     theme_package = '%s/%s/themes/%s/package.json' % \
                     (os.path.dirname(os.path.realpath(__file__)), ASSETS_DIR, theme_name)
     theme = json.loads(open(theme_package).read())
@@ -74,6 +77,7 @@ def embed(blog_id, api_host=None, theme=None):
     scope = {
         'blog': blog,
         'api_host': api_host,
+        'template': open(template_file).read(),
         'assets_root': '/%s/%s/' % (ASSETS_DIR, theme_root)
     }
     return render_template('embed.html', **scope)
@@ -92,18 +96,9 @@ def embed_overview(blog_id, api_host=None):
     return render_template('iframe-for-every-themes.html', **scope)
 
 
-class JSONEncoder(json.JSONEncoder):
-    def default(self, o):
-        if type(o).__name__ == 'ObjectId':
-            return str(o)
-        if hasattr(o, 'isoformat'):
-            return o.isoformat()
-        return json.JSONEncoder.default(self, o)
-
-
 @bp.app_template_filter('tojson')
 def tojson(obj):
-    return json.dumps(obj, cls=JSONEncoder)
+    return json.dumps(obj, cls=MongoJSONEncoder)
 
 
 @bp.app_template_filter('is_relative_to_current_folder')
