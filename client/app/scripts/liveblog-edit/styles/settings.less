@@ -1,5 +1,5 @@
 @SUBNAV_HEIGHT: 48px;
-@SUBSETTINGS_WIDTH: 100%;
+@SUBSETTINGS_WIDTH: 60%;
 @PADDING: 20px;
 @import 'mixins.less';
 @import 'variables.less';
@@ -25,8 +25,7 @@
             }
             > .content {
                 padding: @PADDING;
-                width: 100%;
-                max-width: 660px;
+                width: @SUBSETTINGS_WIDTH;               
                 .box-sizing(border-box);
                 .form-group {
                     display: table;
@@ -39,7 +38,8 @@
                         text-transform: uppercase;
                         color: #808080;
                         float: left;                        
-                        width: 20%;
+                        width: 18%;
+                        margin-right: 2%;
                     }
                     .form-input {
                         width: 80%;
@@ -94,7 +94,9 @@
         }
     }
     .first-block {
-            width: 300px;
+            min-width: 180px;
+            margin-right: 60px;
+            .box-sizing(border-box);
     }
     .padded-right {
         padding-right: 20px;
@@ -103,7 +105,6 @@
             color: #666;
             font-weight: 400;
             border-bottom: 1px solid #e0e0e0;
-            width:@SUBSETTINGS_WIDTH;
         }
     .users-list-embed {
         max-height:136px;
@@ -178,7 +179,12 @@
 .team-edit {
     position: absolute;
     top: 100px;
-    left: 210px
+    .modal-dialog {
+        .modal-body {
+            height: 400px; 
+            max-height:400px;
+        }
+    }
 }
 .edit-contributors {
     .search-result {
