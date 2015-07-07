@@ -27,7 +27,6 @@ from superdesk.validator import SuperdeskValidator
 from raven.contrib.flask import Sentry
 from superdesk.errors import SuperdeskError, SuperdeskApiError
 from liveblog.embed import embed_blueprint
-from flask.ext.assets import Environment
 from flask.ext.cache import Cache
 from liveblog.common import BlogCache
 import flask_s3
@@ -36,7 +35,6 @@ import flask_s3
 logger = logging.getLogger('superdesk')
 sentry = Sentry(register_signal=False, wrap_wsgi=False)
 s3 = flask_s3.FlaskS3()
-assets = Environment()
 
 
 def get_app(config=None):
@@ -119,8 +117,6 @@ def get_app(config=None):
         prefix = app.api_prefix or None
         app.register_blueprint(blueprint, url_prefix=prefix)
 
-    # flask assets
-    assets.init_app(app)
     # s3
     s3.init_app(app)
     # embed feature

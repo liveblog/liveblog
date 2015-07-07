@@ -4,13 +4,11 @@
 
 import superdesk
 from flask.ext.script import Manager
-from flask.ext.assets import ManageAssets
 from app import get_app
 import flask_s3
 
 app = get_app()
 manager = Manager(app)
-manager.add_command("assets", ManageAssets())
 
 
 @manager.command
