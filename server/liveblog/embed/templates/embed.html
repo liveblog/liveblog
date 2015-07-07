@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-        {% for style in blog.theme.styles %}
+        {% for style in assets.styles %}
             {% if style | is_relative_to_current_folder %}
                 <link rel="stylesheet" href="{{ url_for('embed_liveblog.static', filename=style, _external=False) }}">
             {% else %}
@@ -43,7 +43,7 @@
             <script type="text/javascript" src="{{ ASSET_URL }}"></script>
         {% endassets %}
 
-        {% for script in blog.theme.scripts %}
+        {% for script in assets.scripts %}
             {% if script | is_relative_to_current_folder %}
                 <script type="text/javascript" src="{{ url_for('embed_liveblog.static', filename=script, _external=False) }}"></script>
             {% else %}

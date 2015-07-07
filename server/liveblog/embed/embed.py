@@ -50,32 +50,37 @@ def publish_embed(blog_id, api_host=None, theme=None):
 
 @bp.route('/embed/<blog_id>')
 def embed(blog_id, api_host=None, theme=None):
+    current_directory = os.path.dirname(os.path.realpath(__file__))
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if not blog:
         return 'blog not found', 404
-    theme_name = theme
+    # retrieve the wanted theme and add it to blog['theme'] if is not the registered one
     try:
-        theme_name = theme_name or request.args.get('theme', None)
+        theme_name = request.args.get('theme', theme)
     except RuntimeError:
         # this method can be called outside from a request context
-        pass
-    theme_name = theme_name or blog['theme']['name']
-    template_file = '%s/%s/themes/%s/template.html' % \
-                    (os.path.dirname(os.path.realpath(__file__)), ASSETS_DIR, theme_name)
-    theme_package = '%s/%s/themes/%s/package.json' % \
-                    (os.path.dirname(os.path.realpath(__file__)), ASSETS_DIR, theme_name)
-    theme = json.loads(open(theme_package).read())
-    blog['theme'] = theme
+        theme_name = theme
+    if theme_name:
+        theme_package = '%s/%s/themes/%s/theme.json' % \
+                        (current_directory, ASSETS_DIR, theme_name)
+        blog['theme'] = json.loads(open(theme_package).read())
     # complete the urls from `scripts` and `styles` fields when it's relative
     theme_root = 'themes/' + blog['theme']['name']
+    assets = {}
     for asset_type in ('scripts', 'styles'):
-        blog['theme'][asset_type] = list(
+        assets[asset_type] = list(
             map(lambda url: '%s/%s' % (theme_root, url) if is_relative_to_current_folder(url) else url,
                 blog['theme'].get(asset_type) or list())
         )
+        try:
+            del blog['theme'][asset_type]
+        except KeyError:
+            pass
+    template_file = '%s/%s/themes/%s/template.html' % (current_directory, ASSETS_DIR, blog['theme']['name'])
     scope = {
         'blog': blog,
+        'assets': assets,
         'api_host': api_host,
         'template': open(template_file).read(),
         'assets_root': '/%s/%s/' % (ASSETS_DIR, theme_root)
