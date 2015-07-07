@@ -352,7 +352,8 @@ define([
         });
         // load available themes
         api('themes').query().then(function(data) {
-            vm.availableThemes = data._items;
+            // filter theme with label (without label are `generic` from inheritance)
+            vm.availableThemes = data._items.filter(function(theme) {return angular.isDefined(theme.label)});
         });
         api('users').getById(blog.original_creator).then(function(data) {
             vm.original_creator = data;
