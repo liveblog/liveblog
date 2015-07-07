@@ -84,11 +84,11 @@ class ThemesCommand(superdesk.Command):
         if created:
             print('added:')
             for theme in created:
-                print('\t+ %s %s (%s)' % (theme['label'], theme['version'], theme['name']))
+                print('\t+ %s %s (%s)' % (theme.get('label', theme['name']), theme['version'], theme['name']))
         if updated:
             print('updated:')
             for theme in updated:
-                print('\t* %s %s (%s)' % (theme['label'], theme['version'], theme['name']))
+                print('\t* %s %s (%s)' % (theme.get('label', theme['name']), theme['version'], theme['name']))
 
 
 superdesk.command('register_local_themes', ThemesCommand())

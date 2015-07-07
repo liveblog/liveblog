@@ -1,7 +1,8 @@
 {
     "name": "default-theme",
     "label": "Default Theme",
-    "version": "1.0",
+    "version": "1.0.0",
+    "extends": "angular-base",
     "styles": [
         "styles/reset.css",
         "styles/embed.css",
