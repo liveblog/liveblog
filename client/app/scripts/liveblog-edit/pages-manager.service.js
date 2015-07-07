@@ -1,6 +1,9 @@
 (function(angular) {
     'use strict';
 
+    // TODO: Factorize this file with
+    // server/liveblog/embed/embed_assets/scripts/liveblog-embed/pages-manager.service.js
+
     PagesManagerFactory.$inject = ['postsService', '$q'];
     function PagesManagerFactory(postsService, $q) {
 
