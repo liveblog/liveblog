@@ -268,6 +268,10 @@ define([
             },
             editTeam: function() {
                 vm.blogMembers = _.clone(vm.members);
+                //close the change owner dropdown if open
+                if (vm.openOwner === true) {
+                    vm.openOwner = false;
+                }
                 vm.editTeamModal = true;
             },
             cancelTeamEdit: function() {
