@@ -61,13 +61,7 @@
     }
 
     angular.module('theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll'])
-        .controller('TimelineCtrl', TimelineCtrl)
-        .filter('date', function() {
-            return function(input) {
-                var date = fecha.parse(input, 'YYYY-MM-DDTHH:mm:ss+0000');
-                return fecha.format(date, 'DD/MM/YYYY  HH:mm');
-            };
-        });
+        .controller('TimelineCtrl', TimelineCtrl);
     angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 1000);
 
 })(angular);
