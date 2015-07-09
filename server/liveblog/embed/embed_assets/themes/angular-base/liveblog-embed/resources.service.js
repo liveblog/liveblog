@@ -1,12 +1,9 @@
 (function(angular) {
     'use strict';
 
-    var blog_id = window.LB_BLOG_ID;
-    var api_hostname = window.LB_API_HOST;
-
     Blogs.$inject = ['$resource', 'config'];
     function Blogs($resource, config) {
-        return $resource(config.api_host + 'api/client_blogs/:blogId', {blogId: config.blog_id});
+        return $resource(config.api_host + 'api/client_blogs/:blogId', {blogId: config.blog._id});
     }
 
     Users.$inject = ['$resource', 'config'];
@@ -16,7 +13,7 @@
 
     Posts.$inject = ['$resource', 'config', 'users'];
     function Posts($resource, config, users) {
-        return $resource(config.api_host + 'api/client_blogs/:blogId/posts', {blogId: config.blog_id}, {
+        return $resource(config.api_host + 'api/client_blogs/:blogId/posts', {blogId: config.blog._id}, {
             get: {
                 transformResponse: function(posts) {
                     // decode json

@@ -1,12 +1,12 @@
 <!doctype html>
-<html ng-app="liveblog-embed">
+<html>
     <head>
         <title>{{ blog.title }}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-        {% for style in blog.theme.styles %}
+        {% for style in assets.styles %}
             {% if style | is_relative_to_current_folder %}
                 <link rel="stylesheet" href="{{ url_for('embed_liveblog.static', filename=style, _external=False) }}">
             {% else %}
@@ -17,33 +17,17 @@
 
     <body>
 
-        <lb-template></lb-template>
+        {{ template | safe }}
 
-        <script type="text/javascript" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-        <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.14/angular.min.js"></script>
-        <script type="text/javascript" src="//code.angularjs.org/1.3.14/angular-resource.js"></script>
-        <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
         <script type="text/javascript">
-            angular.module('liveblog-embed', ['ngResource', '{{ blog.theme.angularModule }}'])
-                .constant('theme', {{ blog.theme | tojson | safe }})
-                .constant('config', {
-                    blog_id: '{{ blog._id }}',
-                    blog: {{ blog | tojson | safe }},
-                    api_host: '{{ api_host }}',
-                    assets_root: '{{ assets_root }}'
-                });
+            window.LB = {
+                blog: {{ blog | tojson | safe }},
+                api_host: '{{ api_host }}',
+                assets_root: '{{ assets_root }}'
+            };
         </script>
 
-        {% assets
-            "embed_liveblog/scripts/liveblog-embed/resources.service.js",
-            "embed_liveblog/scripts/liveblog-embed/pages-manager.service.js",
-            "embed_liveblog/scripts/liveblog-embed/directives.js",
-            output="gen/lb-embed-%(version)s.js", filters="jsmin"
-        %}
-            <script type="text/javascript" src="{{ ASSET_URL }}"></script>
-        {% endassets %}
-
-        {% for script in blog.theme.scripts %}
+        {% for script in assets.scripts %}
             {% if script | is_relative_to_current_folder %}
                 <script type="text/javascript" src="{{ url_for('embed_liveblog.static', filename=script, _external=False) }}"></script>
             {% else %}

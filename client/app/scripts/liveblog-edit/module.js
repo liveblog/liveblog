@@ -304,7 +304,7 @@ define([
                 delete vm.newBlog._latest_version;
                 delete vm.newBlog._version;
                 delete vm.newBlog.marked_for_not_publication;
-                blogService.replace(vm.newBlog).then(function(blog) {
+                blogService.update(vm.blog, vm.newBlog).then(function(blog) {
                     vm.isSaved = true;
                     vm.blog = blog;
                     vm.newBlog = angular.copy(blog);
@@ -352,7 +352,8 @@ define([
         });
         // load available themes
         api('themes').query().then(function(data) {
-            vm.availableThemes = data._items;
+            // filter theme with label (without label are `generic` from inheritance)
+            vm.availableThemes = data._items.filter(function(theme) {return angular.isDefined(theme.label);});
         });
         api('users').getById(blog.original_creator).then(function(data) {
             vm.original_creator = data;
@@ -395,7 +396,7 @@ define([
     BlogResolver.$inject = ['api', '$route', '$location', 'notify', 'gettext', 'blogService'];
     function BlogResolver(api, $route, $location, notify, gettext, blogService) {
 
-        return blogService.update($route.current.params._id)
+        return blogService.get($route.current.params._id)
             .then(null, function(response) {
                 if (response.status === 404) {
                     notify.error(gettext('Blog was not found, sorry.'), 5000);
