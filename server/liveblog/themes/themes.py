@@ -20,15 +20,16 @@ class ThemesResource(Resource):
 
     schema = {
         'name': {
-            'type': 'string'
+            'type': 'string',
+            'unique': True
         },
         'label': {
             'type': 'string'
         },
-        'version': {
+        'extends': {
             'type': 'string'
         },
-        'angularModule': {
+        'version': {
             'type': 'string'
         },
         'styles': {

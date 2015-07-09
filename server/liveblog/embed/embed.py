@@ -44,7 +44,6 @@ def collect_theme_assets(theme, assets=None, template=None):
         template_file_name = '%s/%s/themes/%s/template.html' % (
             CURRENT_DIRECTORY, ASSETS_DIR, theme['name'])
         if os.path.isfile(template_file_name):
-            print('read template')
             template = open(template_file_name).read()
     # add assets from parent theme
     if theme.get('extends', None):
