@@ -51,7 +51,8 @@
                     <div ng-switch="item.item_type">
                         <div ng-switch-when="embed">
                             <div ng-switch="item.meta.provider_name">
-                                <div ng-switch-when="Twitter" ng-init="timeline.initTwitter(item.meta.element_id)" lb-bind-html html-content="{{ item.meta.html }}">
+                                <div ng-switch-when="Twitter">
+                                    <lb-twitter-card lb-twitter-content="{{ item.meta.html }}"></lb-twitter-card>
                                 </div>
                                 <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
                             </div>

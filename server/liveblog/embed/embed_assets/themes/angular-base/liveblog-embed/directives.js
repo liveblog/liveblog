@@ -4,7 +4,6 @@
         .directive('lbBindHtml', [function() {
             return {
                 restrict: 'A',
-                priority: 2,
                 link: function(scope, elem, attrs) {
                     attrs.$observe('htmlContent', function() {
                         if (attrs.htmlLocation) {
@@ -15,6 +14,14 @@
                             elem.html(attrs.htmlContent);
                         }
                     });
+                }
+            };
+        }])
+        .directive('lbTwitterCard', [function() {
+            return {
+                restrict: 'E',
+                link: function(scope, elem, attrs) {
+                    elem.html(attrs.lbTwitterContent);
                 }
             };
         }]);

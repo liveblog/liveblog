@@ -53,15 +53,17 @@
     "data": {
         "name": "default-theme",
         "label": "Default Theme",
-        "version": "1.0",
-        "angularModule": "liveblog.default-theme",
+        "version": "2.0.0",
+        "extends": "angular-base",
         "styles": [
+            "styles/reset.css",
             "styles/embed.css",
-            "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css"
+            "//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic"
         ],
         "scripts": [
-            "//code.angularjs.org/1.3.14/angular-sanitize.js",
             "//code.angularjs.org/1.3.14/angular-animate.js",
+            "vendors/ng-infinite-scroll.min.js",
+            "vendors/fecha.js",
             "main.js"
         ]
     }
@@ -108,7 +110,7 @@
         "firstcreated" : "2014-02-03T19:37:00+0000",
         "blog_status": "closed"
     },
-    "id_name": "-id blog four-"    
+    "id_name": "-id blog four-"
 },
 {
     "resource": "blogs",
@@ -118,7 +120,7 @@
         "firstcreated" : "2014-02-03T19:38:00+0000",
         "picture_url": "http://i.imgur.com/L0Ci8Yj.png"
     },
-    "id_name": "-id blog five-"    
+    "id_name": "-id blog five-"
 },
 
 {
@@ -166,7 +168,7 @@
                 }, {
                     "residRef": "-id post one item two-"
                 }, {
-                    "residRef": "-id post one item three-"                    
+                    "residRef": "-id post one item three-"
                 }],
                 "role": "grpRole:Main"
             }]
