@@ -1,8 +1,8 @@
 (function(angular) {
     'use strict';
 
-    PagesManagerFactory.$inject = ['posts', '$q'];
-    function PagesManagerFactory(postsService, $q) {
+    PagesManagerFactory.$inject = ['posts', '$q', 'config'];
+    function PagesManagerFactory(postsService, $q, config) {
 
         function PagesManager (max_results, sort) {
             var SORTS = {
@@ -93,8 +93,8 @@
                 };
                 return postsService.get(posts_criteria).$promise.then(function(updates) {
                     var meta = updates._meta;
-                    // if 
-                    // - there is no other page 
+                    // if
+                    // - there is no other page
                     // - or if we don't give a latest update date (b/c we look after the meta or the latest date)
                     // = then we return the first page of result
                     if (meta.total <= meta.max_results * meta.page || !angular.isDefined(date)) {
@@ -313,7 +313,7 @@
                 /**
                  * Number of results per page
                  */
-                maxResults: max_results,
+                maxResults: max_results || config.settings.postsPerPage,
                 /**
                  * Latest updated date. Used for retrieving updates since this date.
                  */

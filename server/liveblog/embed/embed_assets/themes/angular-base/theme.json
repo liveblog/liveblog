@@ -11,5 +11,14 @@
         "liveblog-embed/pages-manager.service.js",
         "liveblog-embed/directives.js",
         "liveblog-embed/filters.js"
+    ],
+    "options": [
+        {
+            "name": "postsPerPage",
+            "label": "Number of posts per page",
+            "type": "number",
+            "default": 20,
+            "help": "Set the number of posts you want to see at the initialization"
+        }
     ]
 }
