@@ -1,3 +1,14 @@
+#!/usr/bin/env python
+# -*- coding: utf-8; -*-
+#
+# This file is part of Superdesk.
+#
+# Copyright 2013, 2014, 2015 Sourcefabric z.u. and contributors.
+#
+# For the full copyright and license information, please see the
+# AUTHORS and LICENSE files distributed with this source code, or
+# at https://www.sourcefabric.org/superdesk/license
+
 from superdesk.notification import push_notification
 from superdesk.utc import utcnow
 from eve.utils import ParsedRequest
@@ -18,6 +29,7 @@ from superdesk.emails import send_email
 import liveblog.embed
 from bson.objectid import ObjectId
 import superdesk
+import eve.io.base
 
 blogs_schema = {
     'guid': metadata_schema['guid'],
@@ -247,20 +259,24 @@ class UpdateThemesBlogsCommand(superdesk.Command):
         # update themes
         theme_service = get_resource_service('themes')
         created, updated = theme_service.update_registered_theme_with_local_files()
-        print('\n%d themes updated from local files\n' % (len(created) + len(updated)))
+        print('\n* %d themes updated from local files\n' % (len(created) + len(updated)))
         # retrieves all opened blogs
         blogs_service = get_resource_service('blogs')
         blogs = blogs_service.get(req=None, lookup=dict(blog_status='open'))
-        print('\nUpdate the theme for every blog\n')
+        print('* Update the theme for every blog\n')
         for blog in blogs:
             theme = blogs_service.get_theme_snapshot(blog['blog_preferences']['theme'])
-            if not (theme['name'] == blog['theme']['name'] and theme['version'] == blog['theme']['version']):
+            try:
                 blogs_service.system_update(ObjectId(blog['_id']), {'theme': theme}, blog)
-                print('- Theme of blog "%s" was updated to %s %s' % (
+            except eve.io.base.DataLayer.OriginalChangedError:
+                print(u'! an error occured during saving blog "%s".' % (blog['title']),
+                      'Can be a broken relationship (with user for instance)')
+            else:
+                print('- Blog "%s"\'s theme was updated to %s %s' % (
                     blog['title'], theme['name'], theme['version']))
         # republish on s3
         if republish:
-            print('\nRepublishing blogs:\n')
+            print('\n* Republishing blogs:\n')
             for blog in blogs:
                 url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
                 print('  - Blog "%s" republished: %s' % (blog['title'], url))
