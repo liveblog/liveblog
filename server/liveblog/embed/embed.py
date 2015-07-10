@@ -82,6 +82,13 @@ def publish_embed(blog_id, api_host=None, theme=None):
                                 '%s.s3-%s.amazonaws.com' % (bucket, region))
 
 
+def get_settings(blog):
+    settings = {}
+    for option in blog.get('theme').get('options'):
+        settings[option.get('name')] = option.get('default')
+    return settings
+
+
 @bp.route('/embed/<blog_id>')
 def embed(blog_id, api_host=None, theme=None):
     api_host = api_host or request.url_root
@@ -110,9 +117,9 @@ def embed(blog_id, api_host=None, theme=None):
             del blog['theme'][asset_type]
         except KeyError:
             pass
-
     scope = {
         'blog': blog,
+        'settings': get_settings(blog),
         'assets': assets,
         'api_host': api_host,
         'template': template_file,

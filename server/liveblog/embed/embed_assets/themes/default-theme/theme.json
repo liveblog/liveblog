@@ -13,5 +13,21 @@
         "vendors/ng-infinite-scroll.min.js",
         "vendors/fecha.js",
         "main.js"
+    ],
+    "options": [
+        {
+            "name": "showAuthor",
+            "label": "Show Author",
+            "type": "checkbox",
+            "default": false,
+            "help": "Show the author information on posts"
+        },
+        {
+            "name": "postsPerPage",
+            "label": "Number of posts per page",
+            "type": "number",
+            "default": 10,
+            "help": "Set the number of posts you want to see at the initialization"
+        }
     ]
 }
