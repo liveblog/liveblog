@@ -112,7 +112,7 @@ a:hover {
 .lb-user-info {
     display: none;
 }
-.show-author .lb-creator {
+.show-author .lb-user-info {
     display: block;
 }
 .show-author .lb-creator, .show-author .lb-item {
