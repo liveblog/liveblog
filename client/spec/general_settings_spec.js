@@ -13,7 +13,10 @@ describe('General settings', function() {
 
     function expectSelected(model, value) {
         browser.waitForAngular();
-        expect(element(by.model(model)).$('option:checked').getText()).toEqual(value);
+        expect(element(by.model(model))
+              .element(by.css('option:checked'))
+              .getText())
+        .toEqual(value);
     }
 
     function setSelected(model, value) {
