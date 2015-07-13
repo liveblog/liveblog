@@ -38,7 +38,6 @@ blogs_schema = {
     'theme': {
         'type': 'dict'
     },
-    'settings': {'type': 'dict'},
     'picture_url': {
         'type': 'string',
     },
