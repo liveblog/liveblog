@@ -137,7 +137,7 @@
                                         <div class="search-result">
                                             <ul class="users-list-embed">
                                                  <a>Team</a>
-                                                <li ng-repeat="member in settings.members" ng-click="settings.temp_selected_owner = member" ng-class="{'active': settings.temp_selected_owner._id === member._id}">
+                                                <li ng-repeat="member in settings.members track by member._id" ng-click="settings.temp_selected_owner = member" ng-class="{'active': settings.temp_selected_owner._id === member._id}">
                                                     <figure class="avatar small"><img sd-user-avatar data-src="user.picture_url"></figure>
                                                     <div class="name">{{member.display_name}}</div>
                                                 </li>
@@ -185,7 +185,7 @@
                             </div>
                             <div class="subsettings-content">
                                 <div ng-if="settings.members.length === 0" translate>No members in the blog team</div>
-                                <div class="inline-content first-block members-bottom" ng-repeat="member in settings.members">
+                                <div class="inline-content first-block members-bottom" ng-repeat="member in settings.members track by member._id">
                                     <div class="inline-content padded-right">
                                         <div class="form-input profile-pic">
                                              <figure class="avatar large"><img sd-user-avatar data-src="member.picture_url"></figure>
