@@ -43,6 +43,12 @@ class ThemesResource(Resource):
             'schema': {
                 'type': 'string'
             }
+        },
+        'options': {
+            'type': 'list',
+            'schema': {
+                'type': 'dict'
+            }
         }
     }
     datasource = {

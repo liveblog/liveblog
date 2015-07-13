@@ -1,8 +1,9 @@
+#!/usr/bin/env python
 # -*- coding: utf-8; -*-
 #
 # This file is part of Superdesk.
 #
-# Copyright 2013, 2014 Sourcefabric z.u. and contributors.
+# Copyright 2013, 2014, 2015 Sourcefabric z.u. and contributors.
 #
 # For the full copyright and license information, please see the
 # AUTHORS and LICENSE files distributed with this source code, or
@@ -65,6 +66,22 @@ def collect_theme_assets(theme, assets=None, template=None):
     return assets, template
 
 
+def get_default_settings(theme, settings=None):
+    settings = settings or {}
+    if theme.get('extends', False):
+        parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
+        if parent_theme:
+            settings = get_default_settings(parent_theme, settings)
+        else:
+            error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
+                % (theme.get('name'), theme.get('extends'))
+            logger.info(error_message)
+            raise UnknownTheme(error_message)
+    for option in theme.get('options'):
+        settings[option.get('name')] = option.get('default')
+    return settings
+
+
 def publish_embed(blog_id, api_host=None, theme=None):
     html = embed(blog_id, api_host, theme)
     if not app.config['AMAZON_ACCESS_KEY_ID']:
@@ -110,9 +127,9 @@ def embed(blog_id, api_host=None, theme=None):
             del blog['theme'][asset_type]
         except KeyError:
             pass
-
     scope = {
         'blog': blog,
+        'settings': get_default_settings(blog.get('theme')),
         'assets': assets,
         'api_host': api_host,
         'template': template_file,

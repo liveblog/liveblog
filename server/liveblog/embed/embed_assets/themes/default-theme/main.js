@@ -3,8 +3,8 @@
 
     TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config'];
     function TimelineCtrl($interval, PagesManager, blogsService, config) {
-
-        var POSTS_PER_PAGE = 20;
+        var POSTS_PER_PAGE = config.settings.postsPerPage;
+        var SHOW_AUTHOR = config.settings.showAuthor;
         var DEFAULT_ORDER = 'editorial'; // newest_first, oldest_first or editorial
         var UPDATE_EVERY = 10*1000; // retrieve update interval in millisecond
         var vm = this;
@@ -19,6 +19,7 @@
             blog: config.blog,
             loading: true,
             finished: false,
+            showAuthor: SHOW_AUTHOR,
             order: DEFAULT_ORDER,
             orderBy: function(order_by) {
                 vm.order = order_by;

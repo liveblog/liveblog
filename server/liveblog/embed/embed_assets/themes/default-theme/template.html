@@ -31,7 +31,7 @@
         </div>
     </div>
     <div
-        class="lb-post emtpy-message"
+        class="lb-post emtpy-message ng-cloak"
         ng-show="timeline.pagesManager.allPosts().length < 1 && !timeline.loading">
         <div class="content">No post for now.</div>
     </div>
@@ -40,9 +40,9 @@
         infinite-scroll="timeline.fetchNewPage()"
         infinite-scroll-disabled="!timeline.isAllowedToLoadMore()"
         infinite-scroll-immediate-check="false">
-        <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item">
-            <div class="content">
-                <figure class="lb-avatar"><img ng-src="{{ post.original_creator.picture_url }}"/></figure>
+        <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item ng-cloak">
+            <div class="content" ng-class="{'show-author': timeline.showAuthor}">
+                <figure class="lb-avatar" ng-if="timeline.showAuthor"><img ng-src="{{ post.original_creator.picture_url }}"/></figure>
                 <div class="lb-creator">
                     <div class="lb-post-date" ng-bind="post.published_date | date"></div>
                     <div class="lb-user-info" ng-bind="post.original_creator.display_name"></div>
