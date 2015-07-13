@@ -1,8 +1,9 @@
+#!/usr/bin/env python
 # -*- coding: utf-8; -*-
 #
 # This file is part of Superdesk.
 #
-# Copyright 2013, 2014 Sourcefabric z.u. and contributors.
+# Copyright 2013, 2014, 2015 Sourcefabric z.u. and contributors.
 #
 # For the full copyright and license information, please see the
 # AUTHORS and LICENSE files distributed with this source code, or
@@ -70,7 +71,6 @@ def get_default_settings(theme, settings=None):
     if theme.get('extends', False):
         parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
         if parent_theme:
-            print('coucou')
             settings = get_default_settings(parent_theme, settings)
         else:
             error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
