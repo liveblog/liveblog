@@ -169,7 +169,7 @@ describe('Blog settings', function() {
         element(by.css('[ng-click="settings.saveAndClose()"]')).click();
         openSettings();
         element(by.css('[data="blog-settings-team"]')).click();
-        expect(element.all(by.repeater('member in settings.members')).count()).toBe(1);
+        expect(element(by.css('.subsettings-content:nth-child(5)')).all(by.repeater('member in settings.members')).count()).toBe(1);
     });
     it('should archive a blog', function() {
         //open first blog

@@ -197,6 +197,15 @@ define([
             preview: {},
             progress: {width: 0},
             tab: false,
+            userNotInMembers:function(user) {
+                var filter = true;
+                for (var i = 0; i < vm.members.length; i ++) {
+                    if (user._id === vm.members[i]._id) {
+                        return false;
+                    }
+                }
+                return filter;
+            },
             openUploadModal: function() {
                 vm.uploadModal = true;
             },
