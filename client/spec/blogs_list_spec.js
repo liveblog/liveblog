@@ -130,7 +130,7 @@ describe('blogs', function() {
                 openBlog(0);
                 element(by.css('.settings-link')).click();
                 element(by.css('[data="blog-settings-team"]')).click();
-                expect(element.all(by.repeater('member in settings.members')).count()).toBe(1);
+                expect(element(by.css('.subsettings-content:nth-child(5)')).all(by.repeater('member in settings.members')).count()).toBe(1);
             });
         });
     });

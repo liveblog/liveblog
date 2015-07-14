@@ -14,15 +14,16 @@ define([
     'dragula',
     './module',
     './posts.service',
-    './blog.service'
+    './blog.service',
+    './pages-manager.service'
 ], function(angular, _, dragula) {
     'use strict';
 
-    // * SLIDEABLE
-    // *  used for left side bar
-    // *   - slideable: take a boolean, true to be opened
-    // *   - slideableMove: take the other element to be right-moved
     angular.module('liveblog.edit')
+        // * SLIDEABLE
+        // *  used for left side bar
+        // *   - slideable: take a boolean, true to be opened
+        // *   - slideableMove: take the other element to be right-moved
         .directive('slideable', function() {
             return {
                 restrict: 'A',
@@ -52,115 +53,47 @@ define([
             };
         })
         .directive('lbPostsList', [
-            'postsService', 'notify', '$q', '$timeout', 'session',
-            function(postsService, notify, $q, $timeout, session) {
+            'postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager',
+            function(postsService, notify, $q, $timeout, session, PagesManager) {
 
                 LbPostsListCtrl.$inject = ['$scope'];
                 function LbPostsListCtrl($scope) {
                     var vm = this;
-
-                    function fetchPage() {
-                        // Find the next page containing new posts
-                        var page = Math.floor(vm.posts.length / vm.pagination.limit) + 1;
-                        // active loading
-                        vm.isLoading = true;
-                        // retrieve a page of posts
-                        return postsService
-                            .getPosts(vm.blogId, {status: vm.status, sort: vm.orderBy}, vm.pagination.limit, page)
-                            .then(function(posts) {
-                                vm.isLoading = false;
-                                vm.postsMeta.total = posts._meta.total;
-                                posts._items.forEach(function(post) {
-                                    // add only if not already present
-                                    if (getPostIndex(post._id) === -1) {
-                                        vm.posts.push(post);
-                                    }
-                                });
-                            }, function(reason) {
-                                notify.error(gettext('Could not load posts... please try again later'));
-                                vm.isLoading = false;
-                            });
-                    }
-
-                    function getPostIndex(post_id) {
-                        return _.findIndex(vm.posts, function(post) {
-                            return post._id === post_id;
-                        });
-                    }
-
                     angular.extend(vm, {
-                        posts: [],
-                        postsMeta: {},
-                        // pagination.limit is the initial amount of posts when loaded for the first time
-                        pagination: {limit: 15},
+                        isLoading: true,
                         blogId: $scope.lbPostsBlogId,
-                        status: $scope.lbPostsStatus,
                         emptyMessage: $scope.lbPostsEmptyMessage,
-                        orderBy: $scope.lbPostsOrderBy || '-order',
                         allowQuickEdit: $scope.lbPostsAllowQuickEdit,
                         allowUnpublish: $scope.lbPostsAllowUnpublish,
                         allowReordering: $scope.lbPostsAllowReordering,
                         onPostSelected: $scope.lbPostsOnPostSelected,
-                        fetchPage: fetchPage,
+                        pagesManager: new PagesManager($scope.lbPostsBlogId,
+                                                       $scope.lbPostsStatus,
+                                                       10,
+                                                       $scope.lbPostsOrderBy || 'editorial'),
+                        fetchNewPage: function() {
+                            vm.isLoading = true;
+                            return vm.pagesManager.fetchNewPage().then(function() {
+                                vm.isLoading = false;
+                            });
+                        },
                         updatePostOrder: function(post, order) {
                             postsService.savePost(post.blog, post, undefined, {order: order});
                         },
                         isPostsEmpty: function() {
-                            return vm.posts.length < 1 && !vm.isLoading;
+                            return vm.pagesManager.count() < 1 && !vm.isLoading;
                         }
                     });
                     $scope.lbPostsInstance = vm;
-                    // init posts list and metadata from database
-                    $q.when(fetchPage()).then(function () {
-                        // auto-update: bind events sent from backend and do the appropriated operation (a,b,c,d,e)
+                    // retrieve first page
+                    vm.fetchNewPage()
+                    // retrieve updates when event is recieved
+                    .then(function() {
                         $scope.$on('posts', function(e, event_params) {
-                            var post_index = getPostIndex(event_params.post_id);
-                            if (event_params.deleted) {
-                                if (post_index > -1) {
-                                    // a) removed
-                                    vm.posts.splice(post_index, 1);
-                                }
-                            } else if (event_params.drafted) {
-                                if (vm.status === 'draft') {
-                                    if (post_index < 0) {
-                                        if (event_params.author_id === session.identity._id) {
-                                            // b.1) new draft from the user
-                                            postsService.retrievePost(event_params.post_id).then(function(data) {
-                                                vm.posts.push(data);
-                                            });
-                                        }
-                                    }
-                                } else {
-                                    if (post_index > -1) {
-                                        // b.2) post was set as draft, we remove it
-                                        vm.posts.splice(post_index, 1);
-                                    }
-                                }
-                            } else {
-                                // retrieve lastest updates from database
-                                var latest_update = postsService.getLatestUpdateDate(vm.posts);
-                                postsService.getPosts(vm.blogId, {
-                                    updatedAfter: latest_update,
-                                    sort: vm.orderBy
-                                }).then(function(posts) {
-                                    posts._items.forEach(function(post_updated) {
-                                        if (post_updated.post_status === vm.status) {
-                                            if (getPostIndex(post_updated._id) > -1) {
-                                                // c) updated
-                                                vm.posts[getPostIndex(post_updated._id)] = post_updated;
-                                            } else {
-                                                // d) added
-                                                vm.posts.push(post_updated);
-                                            }
-                                        } else {
-                                            // e) status changed, then we remove
-                                            if (getPostIndex(post_updated._id) > -1) {
-                                                vm.posts.splice(getPostIndex(post_updated._id), 1);
-                                            }
-                                        }
-                                    });
-                                });
-                            }
+                            vm.isLoading = true;
+                            vm.pagesManager.retrieveUpdate(true).then(function() {
+                                vm.isLoading = false;
+                            });
                         });
                     });
                 }

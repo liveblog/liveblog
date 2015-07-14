@@ -147,7 +147,10 @@ define([
                 }
             },
             fetchNewTimelinePage: function() {
-                vm.timelineInstance.fetchPage();
+                vm.timelineInstance.fetchNewPage();
+            },
+            fetchNewDraftPage: function() {
+                vm.draftPostsInstance.fetchNewPage();
             },
             isBlogOpened: function() {
                 return $scope.blog.blog_status === 'open';
@@ -194,6 +197,15 @@ define([
             preview: {},
             progress: {width: 0},
             tab: false,
+            userNotInMembers:function(user) {
+                var filter = true;
+                for (var i = 0; i < vm.members.length; i ++) {
+                    if (user._id === vm.members[i]._id) {
+                        return false;
+                    }
+                }
+                return filter;
+            },
             openUploadModal: function() {
                 vm.uploadModal = true;
             },
@@ -268,6 +280,10 @@ define([
             },
             editTeam: function() {
                 vm.blogMembers = _.clone(vm.members);
+                //close the change owner dropdown if open
+                if (vm.openOwner === true) {
+                    vm.openOwner = false;
+                }
                 vm.editTeamModal = true;
             },
             cancelTeamEdit: function() {
@@ -301,7 +317,7 @@ define([
                 delete vm.newBlog._latest_version;
                 delete vm.newBlog._version;
                 delete vm.newBlog.marked_for_not_publication;
-                blogService.replace(vm.newBlog).then(function(blog) {
+                blogService.update(vm.blog, vm.newBlog).then(function(blog) {
                     vm.isSaved = true;
                     vm.blog = blog;
                     vm.newBlog = angular.copy(blog);
@@ -349,7 +365,8 @@ define([
         });
         // load available themes
         api('themes').query().then(function(data) {
-            vm.availableThemes = data._items;
+            // filter theme with label (without label are `generic` from inheritance)
+            vm.availableThemes = data._items.filter(function(theme) {return angular.isDefined(theme.label);});
         });
         api('users').getById(blog.original_creator).then(function(data) {
             vm.original_creator = data;
@@ -392,7 +409,7 @@ define([
     BlogResolver.$inject = ['api', '$route', '$location', 'notify', 'gettext', 'blogService'];
     function BlogResolver(api, $route, $location, notify, gettext, blogService) {
 
-        return blogService.update($route.current.params._id)
+        return blogService.get($route.current.params._id)
             .then(null, function(response) {
                 if (response.status === 404) {
                     notify.error(gettext('Blog was not found, sorry.'), 5000);
@@ -409,7 +426,8 @@ define([
         'angular-embed.handlers',
         'ngRoute',
         'superdesk.services.modal',
-        'superdesk.upload'
+        'superdesk.upload',
+        'liveblog.pages-manager'
     ]);
     app.config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/liveblog/edit/:_id', {

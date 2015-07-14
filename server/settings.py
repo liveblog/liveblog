@@ -56,8 +56,8 @@ X_HEADERS = ['Content-Type', 'Authorization', 'If-Match']
 
 MONGO_ENABLE_MULTI_DBS = False
 MONGO_DBNAME = env('MONGO_DBNAME', 'liveblog')
-if env('MONGOLAB_URI'):
-    MONGO_URI = env('MONGOLAB_URI')
+if env('MONGO_URI'):
+    MONGO_URI = env('MONGO_URI')
 elif env('MONGODB_PORT'):
     MONGO_URI = '{0}/{1}'.format(env('MONGODB_PORT').replace('tcp:', 'mongodb:'), MONGO_DBNAME)
 
@@ -195,7 +195,6 @@ else:
     INSTALLED_APPS.append('apps.auth.db')
 
 SUPERDESK_TESTING = (env('SUPERDESK_TESTING', 'false').lower() == 'true')
-SUPERDESK_DEBUGGING = env('SUPERDESK_DEBUGGING', 'false').lower() == 'true'
 # The number of minutes since the last update of the Mongo auth object after which it will be deleted
 SESSION_EXPIRY_MINUTES = 240
 

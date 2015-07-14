@@ -8,7 +8,8 @@
             $scope.languages = data._items;
         });
         api.themes.query().then(function(data) {
-            $scope.themes = data._items;
+            // filter theme with label (without label are `generic` from inheritance)
+            $scope.themes = data._items.filter(function(theme) {return angular.isDefined(theme.label);});
         });
         $scope.settingsLoading = true;
         api.global_preferences.query().then(function(data) {
@@ -45,12 +46,6 @@
     var liveblogSettingsModule = angular.module('liveblog.settings', [])
     .config(['superdeskProvider', function(superdesk) {
         superdesk
-            .activity('/settings/liveblog', {
-                label: gettext('Liveblog'),
-                controller: LiveblogSettingsController,
-                templateUrl: 'scripts/liveblog-settings/views/general.html',
-                category: superdesk.MENU_SETTINGS
-            })
             .activity('/settings/', {
                 label: gettext('Liveblog'),
                 controller: LiveblogSettingsController,

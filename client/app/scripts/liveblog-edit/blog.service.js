@@ -14,33 +14,25 @@ define([
     'use strict';
 
     angular.module('liveblog.blog', [])
-        .service('blogService', ['api', 'postsService', '$cacheFactory',
-            function(api, postsService, $cacheFactory) {
-                var blogsCache = $cacheFactory('blog');
+        .service('blogService', ['api', '$cacheFactory',
+            function(api, $cacheFactory) {
 
-                function update(_id, cache) {
-                    return api.blogs.getById(_id, cache).then(function(data) {
-                        blogsCache.put(_id, data);
-                        return blogsCache.get(_id);
-                    });
+                function update(blog, updated) {
+                    return api.blogs.update(blog, updated);
                 }
 
-                function save(_id, data) {
-                    return api.blogs.save(blogsCache.get(_id), data);
-                }
-
-                function replace(data) {
-                    return api.blogs.replace(data);
+                function save(blog, data) {
+                    return api.blogs.save(blog, data);
                 }
 
                 function get(_id) {
-                    return blogsCache.get(_id);
+                    return api.blogs.getById(_id);
                 }
+
                 return {
                     get: get,
                     update: update,
-                    save: save,
-                    replace: replace
+                    save: save
                 };
             }]);
 });

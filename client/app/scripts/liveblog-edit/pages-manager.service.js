@@ -1,14 +1,18 @@
 (function(angular) {
     'use strict';
 
-    PagesManagerFactory.$inject = ['posts', '$q'];
+    // TODO: Factorize this file with
+    // server/liveblog/embed/embed_assets/scripts/liveblog-embed/pages-manager.service.js
+
+    PagesManagerFactory.$inject = ['postsService', '$q'];
     function PagesManagerFactory(postsService, $q) {
 
-        function PagesManager (max_results, sort) {
+        function PagesManager (blog_id, status, max_results, sort) {
             var SORTS = {
-                'editorial' : {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
-                'newest_first' : {_created: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
-                'oldest_first' : {_created: {order: 'asc', missing:'_last', unmapped_type: 'long'}}
+                'editorial': {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
+                'updated_first': {_updated: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
+                'newest_first': {_created: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
+                'oldest_first': {_created: {order: 'asc', missing:'_last', unmapped_type: 'long'}}
             };
             var self = this;
 
@@ -30,16 +34,7 @@
              * @returns {promise}
              */
             function retrievePage(page, max_results) {
-                // set request parameters
-                var posts_criteria = {
-                    source: {
-                        query: {filtered: {filter: {and: [{term: {post_status: 'open'}}, {not: {term: {deleted: true}}}]}}},
-                        sort: [SORTS[self.sort]]
-                    },
-                    page: page,
-                    max_results: max_results || self.maxResults
-                };
-                return postsService.get(posts_criteria).$promise.then(function(data) {
+                return postsService.getPosts(self.blogId, {status: self.status}, max_results || self.maxResults, page).then(function(data) {
                     // update posts meta data (used to know the total number of posts and pages)
                     self.meta = data._meta;
                     return data;
@@ -82,19 +77,12 @@
             function retrieveUpdate(should_apply_updates) {
                 should_apply_updates = should_apply_updates === true;
                 var date = self.latestUpdatedDate ? self.latestUpdatedDate.utc().format() : undefined;
-                var posts_criteria = {
-                    page: 1,
-                    source: {
-                        sort: [{_updated: {order: 'desc'}}],
-                        query: {filtered: {filter: {and: [
-                            {range: {_updated: {gt: date}}}
-                        ]}}}
-                    }
-                };
-                return postsService.get(posts_criteria).$promise.then(function(updates) {
+                var page = 1;
+                return postsService.getPosts(self.blogId, {updatedAfter: date, excludeDeleted: false}, undefined, page)
+                .then(function(updates) {
                     var meta = updates._meta;
-                    // if 
-                    // - there is no other page 
+                    // if
+                    // - there is no other page
                     // - or if we don't give a latest update date (b/c we look after the meta or the latest date)
                     // = then we return the first page of result
                     if (meta.total <= meta.max_results * meta.page || !angular.isDefined(date)) {
@@ -103,11 +91,11 @@
                     } else {
                         var promises = [];
                         for (var i = meta.page + 1; i <= Math.floor(meta.total / meta.max_results) + 1; i++) {
-                            posts_criteria.page = i;
-                            promises.push(postsService.get(posts_criteria).$promise);
+                            page = i;
+                            promises.push(postsService.getPosts(self.blogId, {updatedAfter: date, excludeDeleted: false}, undefined, page));
                         }
                         return $q.all(promises).then(function(updates_pages) {
-                            return angular.extend({} ,updates_pages[0], {
+                            return angular.extend({}, updates_pages[0], {
                                 _items: [].concat.apply([], updates_pages.map(function(update) {return update._items;})),
                                 _meta: angular.extend(meta, {max_results: meta.max_results * updates_pages.length})
                             });
@@ -137,7 +125,7 @@
                             removePost(post);
                         } else {
                             // post updated
-                            if (post.post_status === 'draft') {
+                            if (post.post_status !== self.status) {
                                removePost(post);
                             } else {
                                 // update
@@ -147,7 +135,7 @@
                         }
                     } else {
                         // post doesn't exist in the list
-                        if (!post.deleted && post.post_status === 'open') {
+                        if (!post.deleted && post.post_status === self.status) {
                             addPost(post);
                         }
                     }
@@ -187,8 +175,7 @@
                 posts.sort(function(a, b) {
                     if (order_by === 'desc') {
                         return a[sort_by] < b[sort_by];
-                    }
-                    else {
+                    } else {
                         return a[sort_by] > b[sort_by];
                     }
                 });
@@ -306,6 +293,8 @@
                  * Set the initial order (see self.SORTS)
                  */
                 sort: sort || 'editorial',
+                blogId: blog_id,
+                status: status,
                 /**
                  * Change the order in the future posts request, remove exising post and load a new page
                  */
@@ -338,7 +327,11 @@
                     // flatten array
                     var merged = [];
                     return merged.concat.apply(merged, posts);
-                }
+                },
+                /**
+                 * Returns the number of posts in the local pages
+                 */
+                count: count
             });
         }
 
@@ -346,7 +339,7 @@
         return PagesManager;
     }
 
-    angular.module('liveblog-embed')
+    angular.module('liveblog.pages-manager', ['liveblog.posts'])
         .factory('PagesManager', PagesManagerFactory);
 
 })(angular);

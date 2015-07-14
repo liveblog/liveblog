@@ -32,7 +32,7 @@ describe('timeline add to top and edit', function() {
     it('can edit an item on the timeline', function() {
 
         function getFirstPostText() {
-            return element(by.repeater('post in postsList.posts').row(0))
+            return element(by.repeater('post in postsList.pagesManager.allPosts()').row(0))
                 .element(by.css('.lb-post__list')).getText();
         }
 

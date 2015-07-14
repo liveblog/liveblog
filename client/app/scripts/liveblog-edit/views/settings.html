@@ -40,7 +40,7 @@
                         <form class="form-horizontal" name="settings.forms.general">
                             <div class="form-group">
                                 <label for="inputTitle" class="control-label" translate>Blog Status</label>
-                                <div class="form-input top-pad">
+                                <div class="form-input">
                                     <span class="blog-status">{{ settings.blog_switch ? 'Active' : 'Archived' | translate }}</span>
                                     <span tooltip="{{ settings.blog_switch ? 'Archive Blog' : 'Activate Blog' | translate }}" tooltip-placement="right">
                                         <span class="pull-left" sd-switch ng-model="settings.blog_switch" data-blog-status-switch></span>
@@ -62,9 +62,9 @@
                                 <label for="inputImage" class="control-label" translate>Blog Image</label>
                                 <div class="form-input form-image">
                                     <figure class="blog-media" ng-show="settings.newBlog.picture_url">
-                                        <img src="{{settings.newBlog.picture_url}}"/>
+                                        <img ng-src="{{settings.newBlog.picture_url}}"/>
                                         <div class="blog-image-actions">
-                                            <button class="btn btn-info pull-right" ng-click="settings.openUploadModal()" translate>Change</button>                                    
+                                            <button class="btn btn-info pull-right" ng-click="settings.openUploadModal()" translate>Change</button>
                                             <button class="btn btn-default pull-right" ng-click="settings.removeImage()" translate>Remove</button>
                                         </div>
                                     </figure>
@@ -84,7 +84,7 @@
                                         class="form-control"
                                     ></textarea>
                                 </div>
-                            </div>                        
+                            </div>
 
                             <div class="form-group">
                                 <label for="inputLanguage" class="control-label" translate>Language</label>
@@ -136,7 +136,13 @@
                                         </form>
                                         <div class="search-result">
                                             <ul class="users-list-embed">
-                                                <li ng-repeat="user in settings.avUsers | filter:settings.search | orderBy: 'display_name'" ng-click="settings.temp_selected_owner = user" ng-class="{'active': settings.temp_selected_owner._id === user._id}">
+                                                 <a>Team</a>
+                                                <li ng-repeat="member in settings.members track by member._id" ng-click="settings.temp_selected_owner = member" ng-class="{'active': settings.temp_selected_owner._id === member._id}">
+                                                    <figure class="avatar small"><img sd-user-avatar data-src="user.picture_url"></figure>
+                                                    <div class="name">{{member.display_name}}</div>
+                                                </li>
+                                                <a>Users</a>
+                                                <li ng-repeat="user in settings.avUsers | filter:settings.search | filter:settings.userNotInMembers | orderBy: 'display_name'" ng-click="settings.temp_selected_owner = user" ng-class="{'active': settings.temp_selected_owner._id === user._id}">
                                                     <figure class="avatar small"><img sd-user-avatar data-src="user.picture_url"></figure>
                                                     <div class="name">{{user.display_name}}</div>
                                                 </li>
@@ -179,7 +185,7 @@
                             </div>
                             <div class="subsettings-content">
                                 <div ng-if="settings.members.length === 0" translate>No members in the blog team</div>
-                                <div class="inline-content first-block members-bottom" ng-repeat="member in settings.members">
+                                <div class="inline-content first-block members-bottom" ng-repeat="member in settings.members track by member._id">
                                     <div class="inline-content padded-right">
                                         <div class="form-input profile-pic">
                                              <figure class="avatar large"><img sd-user-avatar data-src="member.picture_url"></figure>
@@ -198,12 +204,12 @@
                                 </div>
                             </div>
                             <div sd-modal="" data-model="settings.editTeamModal" class="team-edit" macro-team="">
-                                <div class="modal-header"> 
+                                <div class="modal-header">
                                     <button class="close" ng-click="settings.cancelTeamEdit()"><i class="icon-close-small"></i></button>
                                     <h3 translate>Contributors</h3>
                                 </div>
-                                <div class="modal-body" style="height: 400px; max-height:400px;">
-                                    <div translate style="color: gray">ADD PEOPLE</div>
+                                <div class="modal-body">
+                                    <div translate class="add-label">ADD PEOPLE</div>
                                     <div class="team_settings edit-contributors">
                                         <div lb-user-select-list data-members="settings.blogMembers" data-onchoose="settings.addMember(user)"></div>
                                         <div class="content">
@@ -235,16 +241,16 @@
 
 <div sd-modal="" data-model="settings.uploadModal">
     <form ng-submit="settings.upload(settings.preview)" name="uploadImageForm">
-        <div class="modal-header"> 
+        <div class="modal-header">
             <button class="close" ng-click="settings.closeUploadModal()"><i class="icon-close-small"></i></button>
             <h3 translate>Upload Blog Image</h3>
         </div>
         <div class="modal-body">
             <div class="upload-form">
-                <section 
-                    class="main" 
-                    sd-image-preview="settings.preview.url" 
-                    data-file="settings.preview.img" 
+                <section
+                    class="main"
+                    sd-image-preview="settings.preview.url"
+                    data-file="settings.preview.img"
                     data-progress-width="settings.progress.width"
                 >
                     <div class="upload-progress" ng-show="progress.width">
@@ -269,7 +275,7 @@
                     </div>
             </div>
         </div>
-        
+
         <div class="modal-footer">
             <button type="submit" class="btn btn-primary btn-info" translate>Upload</button>
         </div>

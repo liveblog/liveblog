@@ -100,7 +100,7 @@ a:hover {
 .lb-post.ng-move.ng-move-active {
   opacity:1;
 }
-.lb-avatar {
+.show-author .lb-avatar {
     display: block;
     position: absolute;
     border-radius: 50%;
@@ -109,8 +109,15 @@ a:hover {
     width: 50px;
     height: 50px;
 }
-.lb-creator, .lb-item {
+.lb-user-info {
+    display: none;
+}
+.show-author .lb-user-info {
+    display: block;
+}
+.show-author .lb-creator, .show-author .lb-item {
     margin-left: 80px;
+
 }
 .lb-creator {
     font-weight: 500;

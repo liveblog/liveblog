@@ -9,7 +9,6 @@
 # at https://www.sourcefabric.org/superdesk/license
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from flask import current_app as app
 from superdesk import get_resource_service
 import os
 import glob
@@ -21,15 +20,16 @@ class ThemesResource(Resource):
 
     schema = {
         'name': {
-            'type': 'string'
+            'type': 'string',
+            'unique': True
         },
         'label': {
             'type': 'string'
         },
-        'version': {
+        'extends': {
             'type': 'string'
         },
-        'angularModule': {
+        'version': {
             'type': 'string'
         },
         'styles': {
@@ -42,6 +42,12 @@ class ThemesResource(Resource):
             'type': 'list',
             'schema': {
                 'type': 'string'
+            }
+        },
+        'options': {
+            'type': 'list',
+            'schema': {
+                'type': 'dict'
             }
         }
     }
@@ -59,15 +65,8 @@ class ThemesService(BaseService):
     def get_local_themes_packages(self):
             embed_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                         '../', 'embed', 'embed_assets', 'themes')
-            for file in glob.glob(embed_folder + '/**/package.json'):
+            for file in glob.glob(embed_folder + '/**/theme.json'):
                 yield json.loads(open(file).read())
-
-    def on_fetched(self, doc):
-        # FIXME: for debugging, retrieve themes from filesystem.
-        # Useful to don't have to register a theme in order to have it in the list
-        if app.config.get('SUPERDESK_DEBUGGING', False):
-            doc['_items'] = list(self.get_local_themes_packages())
-            return doc
 
     def update_registered_theme_with_local_files(self):
         created = []
@@ -75,7 +74,6 @@ class ThemesService(BaseService):
         for theme in self.get_local_themes_packages():
             previous_theme = self.find_one(req=None, name=theme.get('name'))
             if previous_theme:
-                print(previous_theme)
                 self.replace(previous_theme['_id'], theme, previous_theme)
                 updated.append(theme)
             else:
@@ -93,11 +91,11 @@ class ThemesCommand(superdesk.Command):
         if created:
             print('added:')
             for theme in created:
-                print('\t+ %s %s (%s)' % (theme['label'], theme['version'], theme['name']))
+                print('\t+ %s %s (%s)' % (theme.get('label', theme['name']), theme['version'], theme['name']))
         if updated:
             print('updated:')
             for theme in updated:
-                print('\t* %s %s (%s)' % (theme['label'], theme['version'], theme['name']))
+                print('\t* %s %s (%s)' % (theme.get('label', theme['name']), theme['version'], theme['name']))
 
 
 superdesk.command('register_local_themes', ThemesCommand())

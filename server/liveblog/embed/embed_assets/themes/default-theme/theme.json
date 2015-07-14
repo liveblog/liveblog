@@ -1,8 +1,8 @@
 {
     "name": "default-theme",
     "label": "Default Theme",
-    "version": "1.0",
-    "angularModule": "default-theme",
+    "version": "2.1.0",
+    "extends": "angular-base",
     "styles": [
         "styles/reset.css",
         "styles/embed.css",
@@ -13,5 +13,14 @@
         "vendors/ng-infinite-scroll.min.js",
         "vendors/fecha.js",
         "main.js"
+    ],
+    "options": [
+        {
+            "name": "showAuthor",
+            "label": "Show Author",
+            "type": "checkbox",
+            "default": true,
+            "help": "Show the author information on posts"
+        }
     ]
 }

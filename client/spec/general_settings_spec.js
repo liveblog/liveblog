@@ -12,7 +12,11 @@ describe('General settings', function() {
     beforeEach(function(done) {login().then(done);});
 
     function expectSelected(model, value) {
-        expect(element(by.model(model)).$('option:checked').getText()).toEqual(value);
+        browser.waitForAngular();
+        browser.wait(function() {
+            return element(by.model(model)).element(by.css('option:checked')).isDisplayed();
+        });
+        expect(element(by.model(model)).element(by.css('option:checked')).getText()).toEqual(value);
     }
 
     function setSelected(model, value) {
@@ -25,10 +29,6 @@ describe('General settings', function() {
             return element(by.css('[href="#/settings"]')).isDisplayed();
         });
         element(by.css('[href="#/settings"]')).click();
-        browser.wait(function() {
-            return element(by.css('[href="#/settings/liveblog"]')).isDisplayed();
-        });
-        element(by.css('[href="#/settings/liveblog"]')).click();
     }
 
     function saveSettings() {

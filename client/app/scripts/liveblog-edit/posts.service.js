@@ -30,16 +30,22 @@ define([
          * @param {integer} page - page index
          */
         function getPosts(blog_id, filters, max_results, page) {
-            filters       = filters     || {};
-            page          = page        || 1;
-            max_results   = max_results || 15;
+            filters     = filters     || {};
+            page        = page        || 1;
+            max_results = max_results || 15;
+            // excludeDeleted: default set to true
+            filters.excludeDeleted = angular.isDefined(filters.excludeDeleted) ? filters.excludeDeleted : true;
             var posts_criteria = {
                 source: {
-                    query: {filtered: {filter: {and: [{not: {term: {deleted: true}}}]}}}
+                    query: {filtered: {filter: {and: []}}}
                 },
                 page: page,
                 max_results: max_results
             };
+            // filters.excludeDeleted
+            if (filters.excludeDeleted) {
+                posts_criteria.source.query.filtered.filter.and.push({not: {term: {deleted: true}}});
+            }
             // filters.sort
             if (angular.isDefined(filters.sort)) {
                 // this converts the format '-_created' to the elasticsearch one
