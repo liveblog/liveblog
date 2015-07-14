@@ -3,7 +3,7 @@
 [Fork](https://github.com/superdesk/liveblog) •
 [License](https://github.com/superdesk/liveblog/blob/master/LICENSE) •
 Documentation (Coming soon) •
-*Version 0.1*
+*Version 3.0-alpha2*
 
 [![Build Status](https://travis-ci.org/superdesk/liveblog.svg?branch=master)](https://travis-ci.org/superdesk/liveblog)
 
