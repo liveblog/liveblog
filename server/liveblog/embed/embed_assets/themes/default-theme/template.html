@@ -41,10 +41,16 @@
         infinite-scroll="timeline.fetchNewPage()"
         infinite-scroll-disabled="!timeline.isAllowedToLoadMore()"
         infinite-scroll-immediate-check="false">
-        <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item">
+        <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" 
+            class="lb-post list-group-item" ng-class="{ 'lb-post-permalink-selected': post._id === timeline.permalinkId}">
             <div class="content">
                 <figure class="lb-avatar"><img ng-src="{{ post.original_creator.picture_url }}"/></figure>
                 <div class="lb-creator">
+                    <div class="lb-post-permalink">
+                        <a href="{{ timeline.getPermalink(post._id) }}" id="{{ post._id }}" target="_blank">
+                            <i class="fa fa-link fa-2"></i>
+                        </a>
+                    </div>
                     <div class="lb-post-date" ng-bind="post.published_date | date"></div>
                     <div class="lb-user-info" ng-bind="post.original_creator.display_name"></div>
                 </div>
