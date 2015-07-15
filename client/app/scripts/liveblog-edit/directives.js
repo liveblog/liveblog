@@ -58,10 +58,6 @@ define([
 
                 LbPostsListCtrl.$inject = ['$scope', '$element'];
                 function LbPostsListCtrl($scope, $element) {
-
-                   
-
-                    
                     var vm = this;
                     angular.extend(vm, {
                         isLoading: true,
@@ -86,27 +82,31 @@ define([
                         startReorder: function(post) {
                             vm.reorderPost = post;
                         },
-                        reorder: function(index) {
+                        cancelReorder: function() {
+                            vm.reorderPost = false;
+                        },
+                        reorder: function(index, location) {
                             if (vm.allowReordering) {
                                 var posts_list = $element.find('.posts');
                                 var position = index;
                                 var order, before, after;
-                                
                                 if (position === 0) {
-                                    console.log('pos 0');
                                     order = angular.element(posts_list.find('li .lb-post').get(0)).scope().post.order + 1;
-                                } else if (position == posts_list.find('li .lb-post').length - 1) {
-                                    console.log('!after');
+                                } else if (position === posts_list.find('li .lb-post').length - 1) {
                                     order = angular.element(posts_list.find('li .lb-post').get(position)).scope().post.order - 1;
                                 } else {
-                                    console.log('else');
-                                    before = angular.element(posts_list.find('li .lb-post').get(position)).scope().post.order;
-                                    after = angular.element(posts_list.find('li .lb-post').get(position + 1)).scope().post.order;
+                                    if (location === 'above') {
+                                        before = angular.element(posts_list.find('li .lb-post').get(position - 1)).scope().post.order;
+                                        after = angular.element(posts_list.find('li .lb-post').get(position)).scope().post.order;
+                                    } else {
+                                        before = angular.element(posts_list.find('li .lb-post').get(position)).scope().post.order;
+                                        after = angular.element(posts_list.find('li .lb-post').get(position + 1)).scope().post.order;
+                                    }
                                     order = after + (before - after) / 2;
                                 }
-                                console.log('reordering to ', index , ' ', order);
                                 vm.updatePostOrder(vm.reorderPost, order);
-                            };
+                                vm.cancelReorder();
+                            }
                         },
                         updatePostOrder: function(post, order) {
                             postsService.savePost(post.blog, post, undefined, {order: order});
@@ -182,8 +182,8 @@ define([
                             preMovePost: function(post) {
                                 scope.startReorder({post: post});
                             },
-                            movePost: function(index) {
-                                scope.reorder({index: index});
+                            movePost: function(index, location) {
+                                scope.reorder({index: index, location: location});
                             },
                             askRemovePost: function(post) {
                                 modal.confirm(gettext('Are you sure you want to delete the post?'))

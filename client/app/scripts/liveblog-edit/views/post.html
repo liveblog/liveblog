@@ -1,6 +1,6 @@
 <li>
-    <div ng-if="post.order > reorderPost.order" class="timeline-reorder" ng-click="movePost(index);">click here to reorder to {{index}} {{post.order}}</div>
-    <div class="lb-post">
+    <div ng-if="post.order > reorderPost.order" class="timeline-reorder top" ng-click="movePost(index, 'above');" translate>Click to place the item here</div>
+    <div class="lb-post" ng-class="{'active': post.order === reorderPost.order}">
         <div class="lb-post__holder">
             <div class="lb-post__figure">
                 <figure class="avatar">
@@ -57,5 +57,5 @@
             <div class="lb-post__collapser-multiple-items"></div>
         </a>
     </div>
-    <div ng-if="post.order < reorderPost.order" class="timeline-reorder" ng-click="movePost(index);">click here to reorder {{index}} {{post.order}}</div>
+    <div ng-if="post.order < reorderPost.order" class="timeline-reorder bottom" ng-click="movePost(index, 'below');" translate>Click to place the item here</div>
 </li>
