@@ -6,7 +6,7 @@ describe('General settings', function() {
     // FIXME: must be uncommented after release (LBSD-546)
     // var DEFAULT_LANGUAGE = 'english',
         // NEW_LANGUAGE = 'french',
-    var DEFAULT_THEME = 'default-theme',
+    var DEFAULT_THEME = 'Default Theme',
         NEW_THEME = 'forest';
 
     beforeEach(function(done) {login().then(done);});
