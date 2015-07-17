@@ -1,8 +1,7 @@
 var utils = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils'),
     login = utils.login,
-    expectBlog = require('./helpers/utils').expectBlog,
-    openBlog = require('./helpers/utils').openBlog,
-    blogs = require('./helpers/utils').blogs;
+    randomString = require('./helpers/pages').randomString,
+    list = require('./helpers/pages').list;
 
 describe('Blog settings', function() {
     'use strict';
@@ -12,11 +11,6 @@ describe('Blog settings', function() {
     // var NEW_LANGUAGE = 'french';
 
     beforeEach(function(done) {login().then(done);});
-
-    function openSettings() {
-        // click on the settings button
-        element(by.css('.settings-link')).click();
-    }
 
     // FIXME: must be uncommented after release (LBSD-546)
     // function expectSelectedLanguageIs(language) {
@@ -28,55 +22,47 @@ describe('Blog settings', function() {
     // }
 
     it('should modify title and description for blog', function() {
-        var blog = {username: 'first name last name'};
-        openBlog(0);
-        openSettings();
-        //modifying the title
-        blog.title = 'ABC';
-        var inputTitle = element(by.model('settings.newBlog.title'));
-        inputTitle.clear();
-        inputTitle.sendKeys(blog.title);
-        //modifying the description
-        blog.description = 'test description ABC';
-        var inputDescription = element(by.model('settings.newBlog.description'));
-        inputDescription.clear();
-        inputDescription.sendKeys(blog.description);
-        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
-        element(by.css('[href="/#/liveblog"]')).click();
-        expectBlog(blog);
+        var blog = list.cloneBlog();
+        blog.title = randomString();
+        blog.description = randomString();
+
+        list.openBlog().openSettings();
+        list.blog.settings.title.clear().sendKeys(blog.title);
+        list.blog.settings.description.clear().sendKeys(blog.description);
+        list.blog.settings.done()
+                .openList()
+            .expectBlog(blog);
     });
 
     it('should change the image for blog', function() {
         var path = require('path'),
-            blog = JSON.parse(JSON.stringify(blogs[0]));
+            blog = list.cloneBlog();
         blog.picture_url = './upload/-o-jpg-1600-900.jpg';
-        openBlog(0);
-        openSettings();
 
-        element(by.css('[ng-click="settings.openUploadModal()"]')).click();
-        element(by.css('input[type="file"]')).sendKeys(path.resolve(__dirname, blog.picture_url));
-        element(by.buttonText('UPLOAD')).click();
-        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
-        element(by.css('[href="/#/liveblog"]')).click();
-        expectBlog(blog);
+        list.openBlog().openSettings();
+
+        list.blog.settings.openUploadModal();
+        list.blog.settings.file.sendKeys(path.resolve(__dirname, blog.picture_url));
+        list.blog.settings
+                    .upload()
+                    .done()
+                .openList()
+            .expectBlog(blog);
     });
 
     it('should remove the image from blog', function() {
-        var blog = JSON.parse(JSON.stringify(blogs[0]));
-        openBlog(0);
+        var blog = list.cloneBlog();
         delete blog.picture_url;
-        openSettings();
-        element(by.css('[ng-click="settings.removeImage()"]')).click();
-        browser.wait(function() {
-            return element(by.css('.modal-footer.ng-scope')).isDisplayed();
-        });
-        element(by.css('[ng-click="ok()"]')).click();
-        browser.wait(function() {
-            return element(by.css('[ng-click="settings.saveAndClose()"]')).isEnabled();
-        });
-        element(by.css('[ng-click="settings.saveAndClose()"]')).click();
-        element(by.css('[href="/#/liveblog"]')).click();
-        expectBlog(blog);
+
+        list.openBlog().openSettings();
+        list.blog.settings
+                    .removeImage()
+                    .waitForModal()
+                    .okModal()
+                    .waitDone()
+                    .done()
+                .openList()
+            .expectBlog(blog);
     });
 
     // FIXME: must be uncommented after release (LBSD-546)
@@ -129,17 +115,15 @@ describe('Blog settings', function() {
     //     expectSelectedLanguageIs(DEFAULT_LANGUAGE);
     // });
     it('shows original creator full name and username', function() {
-        openBlog(0);
-        openSettings();
-        element(by.css('[data="blog-settings-team"]')).click();
-        //expect original creator name
-        element(by.css('[data="original-creator-display-name"]')).getText().then(function(text) {
+        list.openBlog().openSettings().openTeam();
+        list.blog.settings.displayName.getText().then(function(text) {
             expect(text).toEqual('first name last name');
         });
-        element(by.css('[data="original-creator-username"]')).getText().then(function(text) {
+        list.blog.settings.userName.getText().then(function(text) {
             expect(text).toEqual('test_user');
         });
     });
+
     it('changes blog ownership', function() {
         openBlog(0);
         openSettings();
