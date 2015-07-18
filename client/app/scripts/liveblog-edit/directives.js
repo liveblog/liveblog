@@ -87,7 +87,6 @@ define([
                             vm.reorderPost = false;
                             $timeout(function() {
                                 vm.keepHighlighted = false;
-                                console.log('keepHighlighted false', vm.keepHighlighted);
                             }, 2000);
                             $timeout(function() {
                                 vm.hideAllPosts = false;
