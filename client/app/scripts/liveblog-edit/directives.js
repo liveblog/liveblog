@@ -68,6 +68,7 @@ define([
                         allowReordering: $scope.lbPostsAllowReordering,
                         onPostSelected: $scope.lbPostsOnPostSelected,
                         showReorder: false,
+                        hideAllPosts: false,
                         originalOrder: 0,
                         pagesManager: new PagesManager($scope.lbPostsBlogId,
                                                        $scope.lbPostsStatus,
@@ -84,6 +85,13 @@ define([
                         },
                         cancelReorder: function() {
                             vm.reorderPost = false;
+                            $timeout(function() {
+                                vm.keepHighlighted = false;
+                                console.log('keepHighlighted false', vm.keepHighlighted);
+                            }, 2000);
+                            $timeout(function() {
+                                vm.hideAllPosts = false;
+                            }, 600);
                         },
                         reorder: function(index, location) {
                             if (vm.allowReordering) {
@@ -105,6 +113,8 @@ define([
                                     order = after + (before - after) / 2;
                                 }
                                 vm.updatePostOrder(vm.reorderPost, order);
+                                vm.hideAllPosts = true;
+                                vm.keepHighlighted = order;
                                 vm.cancelReorder();
                             }
                         },
@@ -156,6 +166,7 @@ define([
                         onEditClick: '=',
                         allowQuickEdit: '=',
                         reorderPost: '=',
+                        keepHighlighted: '=',
                         allowUnpublish: '=',
                         startReorder: '&',
                         reorder: '&',

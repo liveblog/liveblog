@@ -48,6 +48,20 @@ describe('timeline', function() {
         });
     });
 
+    it('can reorder posts on the timeline', function() {
+        openBlog(3);
+        element.all(by.repeater('post in posts')).then(function(timelinePosts) {
+            //move 2nd element to 1st postion
+            timelinePosts[1].element(by.css('[ng-click="preMovePost(post);"]')).click();
+            element.all(by.css('[ng-click="movePost(index, \'above\');"]')).get(0).click();
+
+            element.all(by.repeater('post in posts')).then(function(marks) {
+                //expect the 1st post from the timeline to be the 2nd post from the initial array
+                expectPost(posts[1][0], marks[0]);
+            });
+        });
+    });
+
     function expectPost(post, mark) {
         expect(mark.element(by.binding('post.original_creator_name')).getText()).toBe(post.username);
         expect(mark.element(by.css('.lb-post__list')).getText()).toBe(post.text);

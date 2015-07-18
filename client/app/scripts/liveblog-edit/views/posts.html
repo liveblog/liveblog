@@ -1,8 +1,8 @@
 <div class="loading-indicator" ng-show="postsList.isLoading"><span translate>loading</span></div>
 <div ng-if="postsList.isPostsEmpty()" class="alert alert-info" role="alert">
     <span><strong lb-bind-html html-content="{{postsList.emptyMessage}}"></strong></span>
-</div>
-<ul class="posts">
+</div>	
+<ul class="posts" ng-class="{'flicker': postsList.hideAllPosts}">
     <lb-post
       ng-repeat="post in postsList.pagesManager.allPosts() track by post._id"
       post="post"
@@ -10,6 +10,7 @@
       start-reorder="postsList.startReorder(post)"
       reorder="postsList.reorder(index, location)"
       reorder-post="postsList.reorderPost"
+      keep-highlighted="postsList.keepHighlighted"
       on-edit-click="postsList.onPostSelected"
       allow-unpublish="postsList.allowUnpublish"
       allow-quick-edit="postsList.allowQuickEdit">

@@ -9,17 +9,25 @@
     }
     .posts {
         padding: 20px;
+        opacity: 1;
+        transition: opacity linear 0.1s;
         > li {
             margin: 10px 0px;
         }
         .lb-post {
+            border: 1px solid #F0F0F0;
             border-bottom: 1px solid #D4D4D4;
+            transition: border 0.4s;
+            transition: box-shadow 0.4s;
         }
         .lb-post.active {
             border: 1px solid #5ea9c8!important;
             box-shadow: 0 5px 16px rgba(0,0,0,.23);
         }
         
+    }
+    .posts.flicker {
+        opacity: 0;
     }
     .table-cell {
         display: table-cell;
@@ -42,13 +50,20 @@
         z-index: 1;
     }
     .timeline-reorder {
-        border: 1px dashed #ccc;
-        height: 34px;
+        border: 0px;
+        height: 0px;
         color: #ccc;
-        font-size: 18px;
+        font-size: 0px;
         background: transparent;
         text-align: center;
+        padding-top: 0px;
+        transition: all linear 0.4s;
+    }
+    .timeline-reorder.active {
         padding-top: 15px;
+        height: 34px;
+        font-size: 18px;
+        border: 1px dashed #ccc;
     }
     .timeline-reorder.top {
         margin-bottom: 10px;
