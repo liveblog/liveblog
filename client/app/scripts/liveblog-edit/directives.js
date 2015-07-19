@@ -171,11 +171,10 @@ define([
                         reorder: '&',
                         index: '='
                     },
-                    require: '^lbPostsList',
                     replace: true,
                     restrict: 'E',
                     templateUrl: 'scripts/liveblog-edit/views/post.html',
-                    link: function(scope, elem, attrs, postsListCtrl) {
+                    link: function(scope, elem, attrs) {
                         angular.extend(scope, {
                             toggleMultipleItems: function() {
                                 scope.post.show_all = !scope.post.show_all;
