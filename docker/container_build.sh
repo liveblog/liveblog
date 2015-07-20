@@ -50,7 +50,7 @@ docker-compose pull &&
 docker-compose build &&
 docker-compose up -d &&
 
-(
+test -z $bamboo_SKIP_TESTS && (
 	# run backend unit tests:
 	docker-compose run backend ./scripts/fig_wrapper.sh nosetests -sv --with-xunit --xunit-file=./results-unit/unit.xml --logging-level ERROR ;
 
