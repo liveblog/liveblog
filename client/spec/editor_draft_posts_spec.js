@@ -1,86 +1,41 @@
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login;
-var openBlog = require('./helpers/utils.js').openBlog;
-var randomString = require('./helpers/utils.js').randomString;
+var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login,
+    blogs = require('./helpers/pages').blogs;
 
 describe('Draft Posts', function() {
     'use strict';
 
     beforeEach(function(done) {login().then(done);});
 
-    function createDraft(body) {
-        var data = {
-            body: randomString(10),
-            quote: randomString(10),
-            author: randomString(10)
-        };
-        element(by.css('.editor .st-text-block')).sendKeys(data.body);
-        // click on the "+" bar
-        element(by.css('.st-block-controls__top')).click();
-        // click on the quote button
-        element(by.css('[data-type="quote"]')).click();
-        element(by.css('.editor .quote-input')).sendKeys(data.quote);
-        element(by.css('.editor .js-cite-input')).sendKeys(data.author);
-        element(by.css('[ng-click="saveAsDraft()"]')).click();
-        return data;
-    }
-
-    function checkDraftInDraftList(row_expected, data_expected) {
-        expect(element(by.css('.column-draft-posts')).element(by.repeater('post in postsList.pagesManager.allPosts()').row(row_expected))
-            .element(by.css('[html-content]')).getText()
-        ).toContain(data_expected);
-    }
-
-    function openDraftBar() {
-        element(by.css('[ng-click="toggleDraftPanel()"]')).click();
-    }
-
-    function resetEditor() {
-        element(by.css('[ng-click="askAndResetEditor()"]')).click().then(function() {
-            browser.wait(function() {
-                return element(by.css('.editor .st-text-block')).isPresent();
-            });
-            expect(element(by.css('.editor .st-text-block')).getText()).toEqual('');
-        });
-    }
-
     it('can open drafts panel from url', function() {
-        openBlog(0);
+        var drafts = (blogs.openBlog(0)).drafts;
         browser.getCurrentUrl().then(function(url) {
             browser.get(url + '?drafts=open').then(function() {
-                expect(element(by.css('.draft-posts')).isPresent()).toBe(true);
+                expect(drafts.posts.isPresent()).toBe(true);
             });
         });
     });
 
     it('can create drafts and respect the order', function() {
-        openBlog(0);
-        openDraftBar();
-        var draft1 = createDraft();
-        var draft2 = createDraft();
+        var drafts = blogs.openBlog(0).openDrafts(),
+            dataDraft1 = drafts.editor.createDraft(),
+            dataDraft  = drafts.editor.createDraft();
         // check
-        checkDraftInDraftList(0, draft2.quote);
-        checkDraftInDraftList(1, draft1.quote);
+        drafts
+            .expectPost(0, dataDraft.quote)
+            .expectPost(1, dataDraft1.quote);
     });
 
-    it('can open a draft in the editor and publish it', function() {
-        openBlog(0);
-        openDraftBar();
-        var draft = createDraft();
-        resetEditor();
+    iit('can open a draft in the editor and publish it', function() {
+        var drafts = blogs.openBlog(0).openDrafts(),
+            dataDraft  = drafts.editor.createDraft();
+        drafts.editor.resetEditor();
         browser.waitForAngular();
-        var first_post = element(by.css('.column-draft-posts')).element(by.repeater('post in postsList.pagesManager.allPosts()').row(0));
-        first_post.element(by.css('[ng-click="onEditClick(post)"]')).click();
-        browser.wait(function() {
-            return element(by.css('.editor .st-text-block')).isPresent();
-        });
-        expect(element(by.css('.editor .st-text-block')).getText()).toEqual(draft.body);
-        // and publish it
-        element(by.css('[ng-click="publish()"]')).click().then(function() {
-            // timeline
-            expect(element(by.css('.column-timeline')).element(by.repeater('post in posts').row(0)).isPresent()).toBe(true);
-            // draft posts
-            expect(element(by.css('.column-draft-posts')).all(by.repeater('post in postsList.pagesManager.allPosts()')).count())
-                .toBe(0);
+        var draft = drafts.get(0);
+        drafts.edit(draft).waitForEditor();
+        expect(drafts.editor.textElement.getText()).toEqual(dataDraft.body);
+        drafts.editor.publish().then(function() {
+            expect(blogs.blog.timeline.get(0).isPresent()).toBe(true);
+            expect(drafts.all().count()).toBe(0);
         });
     });
 });
