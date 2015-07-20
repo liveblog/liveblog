@@ -67,7 +67,7 @@ docker-compose run backend ./scripts/fig_wrapper.sh python3 manage.py users:crea
 echo "+++ new user has been created" &&
 
 # run e2e tests:
-(
+test -z $bamboo_SKIP_TESTS && (
 	cd $BAMBOO_DIR/client &&
 	sh $SCRIPT_DIR/run_e2e_tests.sh ;
 	mv $BAMBOO_DIR/client/e2e-test-results $CLIENT_RESULTS_DIR/e2e
@@ -83,7 +83,7 @@ echo "===clean-up:"
 	docker-compose kill;
 	killall chromedriver;
 );
-test $CODE -gt 0 && (
+test -z $bamboo_SKIP_TESTS && test $CODE -gt 0 && (
 	docker-compose rm --force;
 ) ;
 echo "+++clean-up done"
