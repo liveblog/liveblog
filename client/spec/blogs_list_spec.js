@@ -1,5 +1,5 @@
 var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
-    list = require('./helpers/pages').list;
+    blogs = require('./helpers/pages').blogs;
 
 describe('Blogs list', function() {
     'use strict';
@@ -23,49 +23,48 @@ describe('Blogs list', function() {
     describe('list', function() {
 
         it('can list blogs', function() {
-            var blogs = list.getActiveBlogs(),
-                count = blogs.length;
-            list.expectCount(count);
+            var activeBlogs = blogs.getActiveBlogs(),
+                count = activeBlogs.length;
+            blogs.expectCount(count);
             for (var i = 0; i < count; i++) {
-                list.expectBlog(blogs[i], i);
+                blogs.expectBlog(activeBlogs[i], i);
             }
         });
 
         it('can list blogs in a listed view', function() {
-            var blogs = list.getActiveBlogs(),
-                count = blogs.length;
+            var activeBlogs = blogs.getActiveBlogs(),
+                count = activeBlogs.length;
             // assert we have no <table> as inital state. We should arrive on the grid view.
-            expect(list.gridElement.isPresent()).toBe(false);
+            expect(blogs.gridElement.isPresent()).toBe(false);
             // click on the "switch to listed view" button
-            list.switchView();
+            blogs.switchView();
             // assert we have a listed view (we look for a <table>)
-            expect(list.gridElement.isPresent()).toBe(true);
+            expect(blogs.gridElement.isPresent()).toBe(true);
             // check the number of blogs
-            list.expectCount(count);
+            blogs.expectCount(count);
         });
 
         it('can search all blogs', function() {
-            list.searchBlogs(searchs[0]);
+            blogs.searchBlogs(searchs[0]);
         });
         it('can search just one blog', function() {
-            list.searchBlogs(searchs[1]);
+            blogs.searchBlogs(searchs[1]);
         });
+
         it('can search case insensitive blogs', function() {
-            list.searchBlogs(searchs[2]);
-            var blogs = list.getActiveBlogs(),
-                count = blogs.length;
+            blogs.searchBlogs(searchs[2]);
         });
 
         it('can list archived blogs', function() {
-            var blogs = list.getArchivedBlogs(),
-                count = blogs.length;
-            list.selectState('archived');
+            var archivedBlogs = blogs.getArchivedBlogs(),
+                count = archivedBlogs.length;
+            blogs.selectState('archived');
             browser.getCurrentUrl().then(function(url) {
                 expect(url.indexOf('archived')).toBeGreaterThan(-1);
             });
-            list.expectCount(count);
+            blogs.expectCount(count);
             for (var i = 0; i < count; i++) {
-                list.expectBlog(blogs[i], i);
+                blogs.expectBlog(archivedBlogs[i], i);
             }
         });
     });
@@ -73,37 +72,37 @@ describe('Blogs list', function() {
     describe('add', function() {
 
         it('should add a blog', function() {
-            list.openCreateBlog().waitForModal();
+            blogs.openCreateBlog().waitForModal();
 
-            list.title.sendKeys(newBlog.title);
-            list.description.sendKeys(newBlog.description);
-            list.createBlogNext().createBlogCreate()
+            blogs.title.sendKeys(newBlog.title);
+            blogs.description.sendKeys(newBlog.description);
+            blogs.createBlogNext().createBlogCreate()
                     .openList()
                 .expectBlog(newBlog);
         });
 
         it('should add blog with a image', function() {
             var path = require('path');
-            list.openCreateBlog().waitForModal();
-            list.title.sendKeys(newBlog.title);
-            list.description.sendKeys(newBlog.description);
-            list.file.sendKeys(path.resolve(__dirname, newBlogImage.picture_url));
-            list.createBlogNext().createBlogCreate()
+            blogs.openCreateBlog().waitForModal();
+            blogs.title.sendKeys(newBlog.title);
+            blogs.description.sendKeys(newBlog.description);
+            blogs.file.sendKeys(path.resolve(__dirname, newBlogImage.picture_url));
+            blogs.createBlogNext().createBlogCreate()
                     .openList()
                 .expectBlog(newBlogImage);
         });
 
         it('should add a blog with members', function() {
-            list.openCreateBlog().waitForModal();
+            blogs.openCreateBlog().waitForModal();
 
-            list.title.sendKeys(newBlog.title);
-            list.description.sendKeys(newBlog.description);
-            list.createBlogNext();
-            list.team.searchUser('s')
+            blogs.title.sendKeys(newBlog.title);
+            blogs.description.sendKeys(newBlog.description);
+            blogs.createBlogNext();
+            blogs.team.searchUser('s')
                     .waitChooseUser()
                     .changeToUser();
-            list.createBlogCreate().openSettings().openTeam();
-            expect(list.blog.settings.contributors.count()).toBe(1);
+            blogs.createBlogCreate().openSettings().openTeam();
+            expect(blogs.blog.settings.contributors.count()).toBe(1);
         });
     });
 

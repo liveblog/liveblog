@@ -1,14 +1,15 @@
 'use strict';
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login,
-    openBlog = require('./helpers/utils.js').openBlog;
+var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
+    blogs = require('./helpers/pages').blogs;
+
 describe('timeline pagination', function() {
     beforeEach(function(done) {login().then(done);});
     it('can scroll to last item and load more', function() {
-        openBlog(1);
-        var postsNo = element.all(by.repeater('post in posts')).count(),
-            lastPost = element.all(by.repeater('post in posts')).last();
+        var blog = blogs.openBlog(1);
+        var postsNo = blog.timeline.all().count(),
+            lastPost = blog.timeline.all().last();
         browser.driver.executeScript('arguments[0].scrollIntoView(true);', lastPost.getWebElement());
         browser.waitForAngular();
-        expect(element.all(by.repeater('post in posts')).count()).toBeGreaterThan(postsNo);
+        expect(blog.timeline.all().count()).toBeGreaterThan(postsNo);
     });
 });

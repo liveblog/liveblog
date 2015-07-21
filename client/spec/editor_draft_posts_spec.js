@@ -7,7 +7,7 @@ describe('Draft Posts', function() {
     beforeEach(function(done) {login().then(done);});
 
     it('can open drafts panel from url', function() {
-        var drafts = (blogs.openBlog(0)).drafts;
+        var drafts = blogs.openBlog(0).drafts;
         browser.getCurrentUrl().then(function(url) {
             browser.get(url + '?drafts=open').then(function() {
                 expect(drafts.posts.isPresent()).toBe(true);
@@ -25,7 +25,7 @@ describe('Draft Posts', function() {
             .expectPost(1, dataDraft1.quote);
     });
 
-    iit('can open a draft in the editor and publish it', function() {
+    it('can open a draft in the editor and publish it', function() {
         var drafts = blogs.openBlog(0).openDrafts(),
             dataDraft  = drafts.editor.createDraft();
         drafts.editor.resetEditor();
