@@ -99,8 +99,6 @@ INSTALLED_APPS = [
     'superdesk.upload',
     'superdesk.notification',
     'superdesk.activity',
-    'superdesk.comments',
-    'superdesk.storage.amazon.import_from_amazon',
 
     'apps.archive',
     'apps.preferences',
@@ -124,6 +122,7 @@ RESOURCE_METHODS = ['GET', 'POST']
 ITEM_METHODS = ['GET', 'PATCH', 'PUT', 'DELETE']
 EXTENDED_MEDIA_INFO = ['content_type', 'name', 'length']
 RETURN_MEDIA_AS_BASE64_STRING = False
+VERSION = '_current_version'
 
 AMAZON_CONTAINER_NAME = env('AMAZON_CONTAINER_NAME', '')
 AMAZON_ACCESS_KEY_ID = env('AMAZON_ACCESS_KEY_ID', '')
@@ -221,3 +220,6 @@ WS_PORT = env('WSPORT', '5100')
 
 # Defines default value for Source to be set for manually created articles
 DEFAULT_SOURCE_VALUE_FOR_MANUAL_ARTICLES = env('DEFAULT_SOURCE_VALUE_FOR_MANUAL_ARTICLES', 'Liveblog')
+
+OrganizationName = "Liveblog"
+OrganizationNameAbbreviation = "LB"
