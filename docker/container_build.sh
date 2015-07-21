@@ -24,7 +24,6 @@ export COMPOSE_PROJECT_NAME=build_$INSTANCE
 
 # clean-up container stuff:
 cd $SCRIPT_DIR &&
-. ./docker-compose.yml.sh > docker-compose.yml &&
 docker-compose stop;
 docker-compose kill;
 docker-compose rm --force;
@@ -38,9 +37,12 @@ mkdir -p $CLIENT_RESULTS_DIR/unit &&
 sudo rm -r $SCREENSHOTS_DIR
 mkdir -p $SCREENSHOTS_DIR
 
-# reset repo files' dates:
-cd $BAMBOO_DIR
-find ./ -print0 | grep -vzZ .git/ | xargs -0 touch -t 200001010000.00
+if [ -n $bamboo_buildKey ]
+	then
+		# reset repo files' dates:
+		cd $BAMBOO_DIR
+		find ./ -print0 | grep -vzZ .git/ | xargs -0 touch -t 200001010000.00
+fi
 
 # build container:
 cd $SCRIPT_DIR &&
@@ -48,13 +50,15 @@ docker-compose pull &&
 docker-compose build &&
 docker-compose up -d &&
 
-(
+test -z $bamboo_SKIP_TESTS && (
 	# run backend unit tests:
-	docker-compose run backend ./scripts/fig_wrapper.sh nosetests -sv --with-xunit --xunit-file=./results-unit/unit.xml ;
+	docker-compose run backend ./scripts/fig_wrapper.sh nosetests -sv --with-xunit --xunit-file=./results-unit/unit.xml --logging-level ERROR ;
 
 	# run backend behavior tests:
 	docker-compose run backend ./scripts/fig_wrapper.sh behave --junit --junit-directory ./results-behave/  --format progress2 --logging-level ERROR ;
 
+	# run frontend unit tests:
+	docker-compose run frontend bash -c "grunt bamboo && mv test-results.xml ./unit-test-results/" ;
 	true
 ) &&
 
@@ -63,7 +67,7 @@ docker-compose run backend ./scripts/fig_wrapper.sh python3 manage.py users:crea
 echo "+++ new user has been created" &&
 
 # run e2e tests:
-(
+test -z $bamboo_SKIP_TESTS && (
 	cd $BAMBOO_DIR/client &&
 	sh $SCRIPT_DIR/run_e2e_tests.sh ;
 	mv $BAMBOO_DIR/client/e2e-test-results $CLIENT_RESULTS_DIR/e2e
@@ -79,7 +83,7 @@ echo "===clean-up:"
 	docker-compose kill;
 	killall chromedriver;
 );
-test $CODE -gt 0 && (
+test -z $bamboo_SKIP_TESTS && test $CODE -gt 0 && (
 	docker-compose rm --force;
 ) ;
 echo "+++clean-up done"
