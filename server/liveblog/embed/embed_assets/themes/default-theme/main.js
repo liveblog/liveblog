@@ -12,14 +12,19 @@
         var PERMALINK_HASH_MARK = '?'; // the hasj mark identifier can be `?` or `#`.
         var vm = this;
         var href; // from where it should take the location url.
-        try {
+        if(document.parent) {
             // use document parent if avalible, see iframe cors limitation.
             // this also works well for direct access, testing link.
-            href = document.parent.location.href; // use this option only if from server
-        } catch(e) {
+            try {
+                href = document.location.href; 
+            } catch(e) {
             // if not use the referrer of the iframe.
-            href = document.referrer; 
+                href = document.referrer; 
+            }
+        } else {
+            href = document.location.href; // use this option only if from server
         }
+
         function retrieveUpdate() {
             return vm.pagesManager.retrieveUpdate(true);
         }
@@ -55,7 +60,7 @@
             },
             getPermalink: function(id) {
                 var permalink = false,
-                    newHash = PERMALINK_HASH + '=' + id;
+                    newHash = PERMALINK_HASH + '=' + id + '->' + vm.order;
 
                 if (href.indexOf(PERMALINK_HASH_MARK) === -1) {
                     permalink = href + PERMALINK_HASH_MARK + newHash;
@@ -67,10 +72,16 @@
                 }
                 return permalink;
             },
-            getPermalinkId: function() {
+            initPermalink: function() {
                 var matches, 
-                    regexHash = new RegExp(escapeRegExp(PERMALINK_HASH) + '=([^&#]*)');
-                return (matches = href.match(regexHash)) ? matches[1] : false;
+                    regexHash = new RegExp(escapeRegExp(PERMALINK_HASH) + '=([^&#]*)'),
+                    matches = href.match(regexHash);
+                if(matches) {
+                    var arr = decodeURIComponent(matches[1]).split('->');
+                    vm.permalinkId = arr[0];
+                    vm.order = arr[1];
+                    vm.pagesManager.setSort(vm.order);
+                }
             },
             scrollToPermalink: function() {
                 if(!vm.permalinkId) {
@@ -96,7 +107,8 @@
             pagesManager: new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER)
         });
 
-        vm.permalinkId = vm.getPermalinkId();
+        // initialize permalink if any.
+        vm.initPermalink();
         // retrieve first page
         vm.fetchNewPage()
         // retrieve updates periodically
