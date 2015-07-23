@@ -70,8 +70,7 @@
             getPermalinkId: function() {
                 var matches, 
                     regexHash = new RegExp(escapeRegExp(PERMALINK_HASH) + '=([^&#]*)');
-                vm.permalinkId = (matches = href.match(regexHash)) ? matches[1] : false;
-
+                return (matches = href.match(regexHash)) ? matches[1] : false;
             },
             scrollToPermalink: function() {
                 if(!vm.permalinkId) {
@@ -97,7 +96,7 @@
             pagesManager: new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER)
         });
 
-        vm.getPermalinkId();
+        vm.permalinkId = vm.getPermalinkId();
         // retrieve first page
         vm.fetchNewPage()
         // retrieve updates periodically
