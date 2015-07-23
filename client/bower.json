@@ -22,7 +22,7 @@
     "tests"
   ],
   "dependencies": {
-    "superdesk": "https://github.com/liveblog/superdesk.git#fd894d81f75e17335b4f11cb512975b4246ff3f9",
+    "superdesk": "https://github.com/liveblog/superdesk.git#1.0.16",
     "Eventable": "https://github.com/nistormihai/eventable.git",
     "ng-sir-trevor": "~2.0.0",
     "angular-embed": "^2.0.2",
