@@ -196,16 +196,19 @@ class BlogService(ArchiveService):
         # if the theme changed, we republish the blog with the new one
         if 'blog_preferences' in updates and 'theme' in updates['blog_preferences']:
             if updates['blog_preferences']['theme'] != original['blog_preferences'].get('theme'):
-                updates['theme'] = original.get('theme')
                 new_theme = self.get_theme_snapshot(updates['blog_preferences']['theme'])
                 if new_theme:
-                    for key in original['theme'].keys():
-                        if key not in new_theme:
-                            # remove fields that are not in new_theme
-                            updates['theme'][key] = None
-                    for key, value in new_theme.items():
-                        # add or update fields that are new
-                        updates['theme'][key] = value
+                    if 'theme' in original:
+                        updates['theme'] = original.get('theme')
+                        for key in original['theme'].keys():
+                            if key not in new_theme:
+                                # remove fields that are not in new_theme
+                                updates['theme'][key] = None
+                        for key, value in new_theme.items():
+                            # add or update fields that are new
+                            updates['theme'][key] = value
+                    else:
+                        updates['theme'] = new_theme
 
         updates['versioncreated'] = utcnow()
         updates['version_creator'] = str(get_user().get('_id'))
