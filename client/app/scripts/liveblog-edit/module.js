@@ -315,6 +315,7 @@ define([
                 };
                 angular.extend(vm.newBlog, changedBlog);
                 delete vm.newBlog._latest_version;
+                delete vm.newBlog._current_version;
                 delete vm.newBlog._version;
                 delete vm.newBlog.marked_for_not_publication;
                 blogService.update(vm.blog, vm.newBlog).then(function(blog) {
