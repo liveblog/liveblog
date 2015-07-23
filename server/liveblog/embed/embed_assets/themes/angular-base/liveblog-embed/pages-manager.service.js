@@ -58,6 +58,15 @@
             }
 
             /**
+             * Change the order in the future posts request
+             * @param {string} sort_name - The name of the new order (see self.SORTS)
+             */
+            function setSort(sort_name) {
+                self.sort = sort_name;
+                return self;
+            }
+
+            /**
              * Fetch a new page of posts and add it to the Pages Manager.
              * @returns {promise}
              */
@@ -310,6 +319,10 @@
                  * Change the order in the future posts request, remove exising post and load a new page
                  */
                 changeOrder: changeOrder,
+                /**
+                 * Set the order in the future posts request.
+                 */
+                setSort: setSort,
                 /**
                  * Number of results per page
                  */
