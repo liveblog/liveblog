@@ -1,26 +1,18 @@
 'use strict';
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login,
-    openBlog = require('./helpers/utils.js').openBlog;
+var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
+    blogs = require('./helpers/pages').blogs;
 
 describe('timeline deletions', function() {
     beforeEach(function(done) {login().then(done);});
     it('can delete posts on the timeline', function() {
-        openBlog(3);
-        element.all(by.repeater('post in posts')).then(function(posts) {
-            posts[0].element(by.css('[ng-click="askRemovePost(post)"]')).click();
-            confirmRemoval();
-            compare(posts.length);
+        var blog = blogs.openBlog(3);
+        blog.timeline.all().then(function(posts) {
+            blog.timeline.remove(0)
+                            .waitForModal()
+                            .okModal();
+            blog.timeline.all().then(function(newPosts) {
+                expect(posts.length).not.toEqual(newPosts.length);
+            });
         });
     });
 });
-function compare(oldLength) {
-    element.all(by.repeater('post in posts')).then(function(newPosts) {
-        expect(oldLength).not.toEqual(newPosts.length);
-    });
-}
-function confirmRemoval() {
-    browser.wait(function() {
-        return element(by.css('.modal-footer.ng-scope')).isDisplayed();
-    });
-    element(by.css('button[ng-click="ok()"')).sendKeys(protractor.Key.ENTER);
-}
