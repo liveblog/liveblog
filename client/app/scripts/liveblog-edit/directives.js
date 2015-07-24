@@ -11,12 +11,11 @@
 define([
     'angular',
     'lodash',
-    'dragula',
     './module',
     './posts.service',
     './blog.service',
     './pages-manager.service'
-], function(angular, _, dragula) {
+], function(angular, _) {
     'use strict';
 
     angular.module('liveblog.edit')
@@ -83,42 +82,49 @@ define([
                         startReorder: function(post) {
                             vm.reorderPost = post;
                         },
-                        cancelReorder: function() {
+                        clearReorder: function() {
                             vm.reorderPost = false;
                             $timeout(function() {
                                 vm.keepHighlighted = false;
                             }, 2000);
                             $timeout(function() {
                                 vm.hideAllPosts = false;
-                            }, 600);
+                            }, 200);
+                        },
+                        getOrder: function(position) {
+                            return angular.element($element.find('.posts').find('li .lb-post').get(position)).scope().post.order;
                         },
                         reorder: function(index, location) {
                             if (vm.allowReordering) {
-                                var posts_list = $element.find('.posts');
                                 var position = index;
                                 var order, before, after;
                                 if (position === 0) {
-                                    order = angular.element(posts_list.find('li .lb-post').get(0)).scope().post.order + 1;
-                                } else if (position === posts_list.find('li .lb-post').length - 1) {
-                                    order = angular.element(posts_list.find('li .lb-post').get(position)).scope().post.order - 1;
+                                    order = vm.getOrder(0) + 1;
+                                } else if (position === $element.find('.posts').find('li .lb-post').length - 1) {
+                                    order = vm.getOrder(position) - 1;
                                 } else {
                                     if (location === 'above') {
-                                        before = angular.element(posts_list.find('li .lb-post').get(position - 1)).scope().post.order;
-                                        after = angular.element(posts_list.find('li .lb-post').get(position)).scope().post.order;
+                                        before = vm.getOrder(position - 1);
+                                        after = vm.getOrder(position);
                                     } else {
-                                        before = angular.element(posts_list.find('li .lb-post').get(position)).scope().post.order;
-                                        after = angular.element(posts_list.find('li .lb-post').get(position + 1)).scope().post.order;
+                                        before = vm.getOrder(position);
+                                        after = vm.getOrder(position + 1);
                                     }
                                     order = after + (before - after) / 2;
                                 }
                                 vm.updatePostOrder(vm.reorderPost, order);
-                                vm.hideAllPosts = true;
-                                vm.keepHighlighted = order;
-                                vm.cancelReorder();
                             }
                         },
                         updatePostOrder: function(post, order) {
-                            postsService.savePost(post.blog, post, undefined, {order: order});
+                            vm.hideAllPosts = true;
+                            postsService.savePost(post.blog, post, undefined, {order: order}).then(function() {
+                                vm.keepHighlighted = order;
+                                vm.clearReorder();
+                            }, function() {
+                                vm.hideAllPosts = false;
+                                notify.pop();
+                                notify.error(gettext('Something went wrong. Please reload and try again later'));
+                            });
                         },
                         isPostsEmpty: function() {
                             return vm.pagesManager.count() < 1 && !vm.isLoading;
@@ -164,11 +170,16 @@ define([
                         post: '=',
                         onEditClick: '=',
                         allowQuickEdit: '=',
+                        //the post that is in the process of being reordered
                         reorderPost: '=',
+                        //the order property of the post that was reordered and should stay highlighted a bit more
                         keepHighlighted: '=',
                         allowUnpublish: '=',
+                        //call when the user clicks on the reorder icon 
                         startReorder: '&',
+                        //call when the user has chosen a new place for the post
                         reorder: '&',
+                        //the index of the post in the list
                         index: '='
                     },
                     replace: true,
