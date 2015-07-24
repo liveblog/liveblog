@@ -8,4 +8,4 @@ git+git://github.com/joehand/flask-s3@8fe9f27ebb5251b7cf53a6684595d41dc4af2fbf#e
 git+git://github.com/superdesk/eve@sync-develop-24-june#egg=Eve==0.6.0-dev
 
 git+git://github.com/amagdas/tinys3@list-buckets#egg=tinys3
-git+git://github.com/liveblog/superdesk@1.0.16#egg=Superdesk-Server
+git+git://github.com/liveblog/superdesk@1.0.17#egg=Superdesk-Server
