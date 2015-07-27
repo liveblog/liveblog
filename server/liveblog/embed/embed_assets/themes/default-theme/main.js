@@ -8,8 +8,8 @@
         var SHOW_AUTHOR = config.settings.showAuthor;
         var DEFAULT_ORDER = 'editorial'; // newest_first, oldest_first or editorial
         var UPDATE_EVERY = 10*1000; // retrieve update interval in millisecond
-        var PERMALINK_HASH = 'liveblog._id'; // the hash identifier for permalink.
-        var PERMALINK_HASH_MARK = '?'; // the hasj mark identifier can be `?` or `#`.
+        var PERMALINK_HASH = config.settings.permalinkHash; // the hash identifier for permalink.
+        var PERMALINK_HASH_MARK = config.settings.permalinkHashMark; // the hasj mark identifier can be `?` or `#`.
         var vm = this;
         var href; // from where it should take the location url.
         if(document.parent) {

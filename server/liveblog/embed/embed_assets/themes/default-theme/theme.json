@@ -22,6 +22,24 @@
             "type": "checkbox",
             "default": true,
             "help": "Show the author information on posts"
+        },
+        {
+            "name": "permalinkHashMark",
+            "label": "Permalin Hash Mark",
+            "type": "select",
+            "options": [
+                {"value": "?", "label": "Query delimiter"},
+                {"value": "#", "label": " Fragment identifier delimiter"}
+            ],
+            "default": "?",
+            "help": "Sets the separator used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
+        },
+        {
+            "name": "permalinkHash",
+            "label": "Permalin Hash",
+            "type": "text",
+            "default": "liveblog._id",
+            "help": "Sets the identifier used to send the permalink. ex: permalinkHash=liveblog._id, http://example.com/#liveblog._id={id}"
         }
     ]
 }
