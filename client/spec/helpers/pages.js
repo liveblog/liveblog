@@ -2,12 +2,12 @@
 
 var blogs = [
     [
-        {title: 'title: end to end image', description: 'description: end to end image', username: 'first name last name'},
-        {title: 'title: end To end three', description: 'description: end to end three', username: 'first name last name'},
-        {title: 'title: end to end two', description: 'description: end to end two', username: 'first name last name'},
-        {title: 'title: end to end One', description: 'description: end to end one', username: 'first name last name'}
+        {title: 'title: end to end image', description: 'description: end to end image', username: 'Medor the Editor'},
+        {title: 'title: end To end three', description: 'description: end to end three', username: 'Medor the Editor'},
+        {title: 'title: end to end two', description: 'description: end to end two', username: 'Medor the Editor'},
+        {title: 'title: end to end One', description: 'description: end to end one', username: 'Medor the Editor'}
     ], [
-        {title: 'title: end to end closed', description: 'description: end to end closed', username: 'first name last name'}
+        {title: 'title: end to end closed', description: 'description: end to end closed', username: 'Medor the Editor'}
     ]
 ], stateMap = {
     'active': 0,
