@@ -57,7 +57,7 @@ class ItemsResource(ArchiveResource):
             'type': 'string'
         }
     })
-    privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
+    privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
 
 
 class ItemsService(ArchiveService):
@@ -101,7 +101,7 @@ class BlogItemsResource(ArchiveResource):
         'default_sort': [('_updated', -1)]
     }
     resource_methods = ['GET']
-    privileges = {'GET': 'blogs'}
+    privileges = {'GET': 'posts'}
 
 
 class BlogItemsService(ArchiveService):

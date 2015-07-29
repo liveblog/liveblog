@@ -99,7 +99,7 @@ class BlogsResource(ArchiveResource):
     }
 
     item_methods = ['GET', 'PATCH', 'PUT', 'DELETE']
-    privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'PUT': 'blogs', 'DELETE': 'blogs'}
+    privileges = {'POST': 'blogs', 'PATCH': 'blogs', 'PUT': 'blogs', 'DELETE': 'blogs'}
 
     schema = blogs_schema
 
@@ -227,7 +227,7 @@ class BlogService(ArchiveService):
         push_notification('blogs', deleted=1)
 
 
-class UserBlogsResource(Resource):
+class UserBlogsResource(BlogsResource):
     url = 'users/<regex("[a-f0-9]{24}"):user_id>/blogs'
     schema = blogs_schema
     datasource = {
@@ -235,7 +235,6 @@ class UserBlogsResource(Resource):
         'elastic_filter': {'term': {'particular_type': 'blog'}},
         'default_sort': [('title', 1)]
     }
-
     resource_methods = ['GET']
 
 

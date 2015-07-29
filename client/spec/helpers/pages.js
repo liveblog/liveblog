@@ -476,9 +476,7 @@ function GeneralSettingsPage() {
 
     self.expectSelected = function(model, value) {
         browser.waitForAngular();
-        browser.wait(function() {
-            return element(by.model(model)).element(by.css('option:checked')).isDisplayed();
-        });
+        browser.sleep(1000);
         expect(element(by.model(model)).element(by.css('option:checked')).getText()).toEqual(value);
     };
 

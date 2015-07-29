@@ -1,13 +1,33 @@
-[{
+[
+{
+    "resource": "roles",
+    "id_name": "-id Editor role-",
+    "data": {
+        "description": "Editor can control and publish content to the liveblog and invite people to contribute",
+        "name": "Editor",
+        "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}
+    }
+},
+{
+    "resource": "roles",
+    "id_name": "-id Contributor role-",
+    "data": {
+        "description": "Contributor can submit post to be approved by the Editor",
+        "name": "Contributor",
+        "privileges": {"submit_post": 1, "posts": 1, "archive": 1}
+    }
+},
+{
     "resource": "users",
     "data": {
         "username": "admin",
         "first_name": "first name",
         "last_name": "last name",
+        "role": "-id Editor role-",
         "password": "admin",
         "user_type": "administrator",
-        "email": "a@a_other.com",
-	"sign_off": "abc"
+        "email": "abc@other.com",
+        "sign_off": "abc"
     }
 },
 {
@@ -78,6 +98,7 @@
 },
 {
     "resource": "blogs",
+    "username": "admin",
     "data": {
         "title": "title: end to end One",
         "versioncreated" : "2014-02-03T19:34:00+0000",
@@ -87,6 +108,7 @@
 },
 {
     "resource": "blogs",
+    "username": "admin",
     "data": {
         "title": "title: end to end two",
         "versioncreated" : "2014-02-03T19:35:00+0000",
@@ -95,6 +117,7 @@
 },
 {
     "resource": "blogs",
+    "username": "admin",
     "data": {
         "title": "title: end To end three",
         "versioncreated" : "2014-02-03T19:36:00+0000",
@@ -104,6 +127,7 @@
 },
 {
     "resource": "blogs",
+    "username": "admin",
     "data": {
         "title": "title: end to end closed",
         "description": "description: end to end closed",
@@ -114,6 +138,7 @@
 },
 {
     "resource": "blogs",
+    "username": "admin",
     "data": {
         "title": "title: end to end image",
         "description": "description: end to end image",

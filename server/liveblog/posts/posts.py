@@ -11,6 +11,8 @@ from superdesk.celery_app import update_key
 from flask import current_app as app
 import flask
 from superdesk.utc import utcnow
+from apps.users.services import current_user_has_privilege
+from superdesk.errors import SuperdeskApiError
 
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
@@ -85,7 +87,7 @@ class PostsResource(ArchiveResource):
             'type': 'datetime'
         }
     })
-    privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
+    privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
 
 
 class PostsService(ArchiveService):
@@ -104,11 +106,33 @@ class PostsService(ArchiveService):
     def get_next_order_sequence(self):
         return update_key('post_order_sequence', True)
 
+    def check_post_permission(self, post):
+
+        def can_publish_a_post():
+            if not current_user_has_privilege('publish_post'):
+                return False, 'User does not have sufficient permissions.'
+            return True, ''
+
+        def can_submit_a_post_for_aprobation():
+            if not current_user_has_privilege('submit_post'):
+                return False, 'User does not have sufficient permissions.'
+            return True, ''
+        if 'post_status' in post and post['post_status'] == 'open':
+            able, error_message = can_publish_a_post()
+            if not able:
+                raise SuperdeskApiError.forbiddenError(message=error_message)
+        if 'post_status' in post and post['post_status'] == 'submit_for_aprobation':
+            able, error_message = can_submit_a_post_for_aprobation()
+            if not able:
+                raise SuperdeskApiError.forbiddenError(message=error_message)
+
     def on_create(self, docs):
         for doc in docs:
+            # check permission
+            self.check_post_permission(doc)
             doc['type'] = 'composite'
             doc['order'] = self.get_next_order_sequence()
-            # if you publish a post directly without beeing draft it will have  a published_date assign
+            # if you publish a post directly which is not a draft it will have a published_date assigned
             if doc['post_status'] == 'open':
                 doc['published_date'] = utcnow()
         super().on_create(docs)
@@ -122,6 +146,8 @@ class PostsService(ArchiveService):
         push_notification('posts', created=True)
 
     def on_update(self, updates, original):
+        # check permission
+        self.check_post_permission(updates)
         # put the published item from drafts at the top of the timeline
         if updates.get('post_status') == 'open' and original.get('post_status') == 'draft':
             updates['order'] = self.get_next_order_sequence()
@@ -170,7 +196,7 @@ class BlogPostsResource(Resource):
         'default_sort': DEFAULT_POSTS_ORDER
     }
     resource_methods = ['GET']
-    privileges = {'GET': 'blogs'}
+    privileges = {'GET': 'posts'}
 
 
 class BlogPostsService(ArchiveService):
