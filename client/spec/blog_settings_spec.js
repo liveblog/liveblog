@@ -114,10 +114,10 @@ describe('Blog settings', function() {
     it('shows original creator full name and username', function() {
         blogs.openBlog(0).openSettings().openTeam();
         blogs.blog.settings.displayName.getText().then(function(text) {
-            expect(text).toEqual('first name last name');
+            expect(text).toEqual('Medor the Editor');
         });
         blogs.blog.settings.userName.getText().then(function(text) {
-            expect(text).toEqual('test_user');
+            expect(text).toEqual('editor');
         });
     });
 
@@ -130,7 +130,7 @@ describe('Blog settings', function() {
                         .openSettings().openTeam();
 
         blogs.blog.settings.userName.getText().then(function(text) {
-            expect(text).toEqual('admin');
+            expect(text).toEqual('test_user');
         });
     });
 
