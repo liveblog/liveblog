@@ -45,6 +45,10 @@ Feature: Post operations
     Scenario: Create posts without permissions
         Given empty "posts"
         Given empty "items"
+        When we login as user "foo" with password "bar"
+        """
+        {"user_type": "user", "email": "foo.bar@foobar.org"}
+        """
         Given "blogs"
         """
         [{"title": "TEST_BLOG"}]
