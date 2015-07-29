@@ -1,5 +1,5 @@
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login;
-var openBlog = require('./helpers/utils.js').openBlog;
+var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login,
+    blogs = require('./helpers/pages').blogs;
 
 describe('editor embed:', function() {
     'use strict';
@@ -9,17 +9,14 @@ describe('editor embed:', function() {
     beforeEach(function(done) {login().then(done);});
 
     it('add a youtube iframe in the editor', function() {
-        openBlog(0);
-        // click on the "+" bar
-        element(by.css('[class="st-block-controls__top"]')).click();
-        // click on the embed button
-        element(by.css('[data-type="embed"]')).click();
+        var editor = blogs.openBlog(0).editor
+                            .addTop()
+                            .addEmbed();
         // write a youtube url
-        element(by.css('.embed-input')).sendKeys(youtube_url);
+        editor.embedElement.sendKeys(youtube_url);
         // wait for an iframe
-        var iframe = element(by.css('.liveblog--card iframe'));
-        browser.wait(function() {return iframe.isPresent();});
-        expect(iframe.isPresent()).toBe(true);
+        browser.wait(function() {return editor.iframe.isPresent();});
+        expect(editor.iframe.isPresent()).toBe(true);
     });
 
 });

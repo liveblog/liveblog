@@ -41,6 +41,6 @@ class GlobalPreferencesResource(Resource):
 class GlobalPreferencesService(BaseService):
     def get_global_prefs(self):
         res = get_resource_service(_preferences_key).get(req=None, lookup={})
-        return dict([v['key'], v['value']] for v in res)
+        return dict([v['key'], v['value']] for v in res if 'value' in v and 'key' in v)
 
 # EOF
