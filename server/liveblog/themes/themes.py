@@ -83,23 +83,20 @@ class ThemesService(BaseService):
                 created.append(theme)
         return (created, updated)
 
-    def on_delete(self, doc):
+    def on_delete(self, deleted_theme):
         blogs_service = get_resource_service('blogs')
-#         blogs = blogs_service.get(req=None, lookup=dict(blog_status='open'))
-        bb = blogs_service.get(req=None, lookup={'theme.name': doc['name']})
-        for blog in bb:
-            # if the blog theme is the one which is intended to delete
-            if blog['theme']['name'] == doc['name']:
-                # will assign the default theme to this blog
-                theme = blogs_service.get_theme_snapshot(blog['blog_preferences']['theme'])
-                try:
-                    blogs_service.system_update(ObjectId(blog['_id']), {'theme': theme}, blog)
-                except eve.io.base.DataLayer.OriginalChangedError:
-                    print(u'! an error occured during saving blog "%s".' % (blog['title']),
-                          'Can be a broken relationship (with user for instance)')
-                else:
-                    print('- Blog "%s"\'s theme was updated to %s %s' % (
-                        blog['title'], theme['name'], theme['version']))
+        blogs = blogs_service.get(req=None, lookup={'theme._id': deleted_theme['_id']})
+        for blog in blogs:
+            # will assign the default theme to this blog
+            theme = blogs_service.get_theme_snapshot(blog['blog_preferences']['theme'])
+            try:
+                blogs_service.system_update(ObjectId(blog['_id']), {'theme': theme}, blog)
+            except eve.io.base.DataLayer.OriginalChangedError:
+                print(u'! an error occured during saving blog "%s".' % (blog['title']),
+                      'Can be a broken relationship (with user for instance)')
+            else:
+                print('- Blog "%s"\'s theme was updated to %s %s' % (
+                    blog['title'], theme['name'], theme['version']))
 
 
 class ThemesCommand(superdesk.Command):
