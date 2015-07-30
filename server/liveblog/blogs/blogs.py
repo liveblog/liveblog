@@ -197,9 +197,7 @@ class BlogService(ArchiveService):
     def on_update(self, updates, original):
         # check permission (see https://github.com/superdesk/liveblog/pull/167)
         # only the owner can change blog's settings
-        blog = original.copy()
-        blog.update(updates)
-        if str(flask.g.user['_id']) != str(blog['original_creator']):
+        if str(flask.g.user['_id']) != str(original['original_creator']):
             raise SuperdeskApiError.forbiddenError(message='You need to be the blog owner to perform updates on it')
         # if the theme changed, we republish the blog with the new one
         if 'blog_preferences' in updates and 'theme' in updates['blog_preferences']:
