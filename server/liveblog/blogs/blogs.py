@@ -26,8 +26,10 @@ from superdesk.activity import add_activity
 from flask.globals import g
 from flask import current_app as app, render_template
 from superdesk.emails import send_email
+from superdesk.errors import SuperdeskApiError
 import liveblog.embed
 from bson.objectid import ObjectId
+import flask
 import superdesk
 import eve.io.base
 
@@ -193,6 +195,12 @@ class BlogService(ArchiveService):
         return doc
 
     def on_update(self, updates, original):
+        # check permission (see https://github.com/superdesk/liveblog/pull/167)
+        # only the owner can change blog's settings
+        blog = original.copy()
+        blog.update(updates)
+        if str(flask.g.user['_id']) != str(blog['original_creator']):
+            raise SuperdeskApiError.forbiddenError(message='You need to be the blog owner to perform updates on it')
         # if the theme changed, we republish the blog with the new one
         if 'blog_preferences' in updates and 'theme' in updates['blog_preferences']:
             if updates['blog_preferences']['theme'] != original['blog_preferences'].get('theme'):
