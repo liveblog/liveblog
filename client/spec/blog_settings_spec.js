@@ -9,7 +9,7 @@ describe('Blog settings', function() {
     // var DEFAULT_LANGUAGE = 'english';
     // var NEW_LANGUAGE = 'french';
 
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {login('editor', 'editor').then(done);});
 
     // FIXME: must be uncommented after release (LBSD-546) * must change to support pageObject
     // function expectSelectedLanguageIs(language) {

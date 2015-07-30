@@ -1,6 +1,6 @@
 Feature: Blog operations
 
-	@auth
+    @auth
     Scenario: List empty blogs
         Given empty "blogs"
         When we get "/blogs"
@@ -15,13 +15,12 @@ Feature: Blog operations
         """
         And we get "blogs?embedded={"original_creator":1}"
         Then we get list with 1 items
-	    """
-	    {"_items": [{"title": "title One", "description": "description", "blog_status": "open", "original_creator": {"username": "test_user"}}]}
-	    """
+        """
+        {"_items": [{"title": "title One", "description": "description", "blog_status": "open", "original_creator": {"username": "test_user"}}]}
+        """
 
     @auth
     Scenario: Update blog
-		Given empty "blogs"
         When we post to "blogs"
         """
         [{"title": "testBlog"}]
@@ -37,6 +36,19 @@ Feature: Blog operations
         Then we get updated response
 
     @auth
+    Scenario: Update blog without being the owner
+        When we post to "blogs"
+        """
+        [{"title": "Update blog without being the owner"}]
+        """
+        When we login as user "foo" with password "bar"
+        When we patch "/blogs/#blogs._id#"
+        """
+        {"description": "this is a test blog"}
+        """
+        Then we get response code 400
+
+    @auth
     Scenario: Check blog_status
         Given "blogs"
         """
@@ -44,14 +56,14 @@ Feature: Blog operations
         """
         When we get "/blogs?source={"query": {"filtered": {"filter": {"term": {"blog_status": "closed"}}}}}"
         Then we get list with 2 items
-	    """
-	    {"_items": [{"title": "testBlog"}, {"title": "testBlog2"}]}
-	    """
-	    When we get "/blogs?source={"query": {"filtered": {"filter": {"term": {"blog_status": "open"}}}}}"
-	    Then we get list with 1 items
-	    """
-	    {"_items": [{"title": "testBlog3"}]}
-	    """
+        """
+        {"_items": [{"title": "testBlog"}, {"title": "testBlog2"}]}
+        """
+        When we get "/blogs?source={"query": {"filtered": {"filter": {"term": {"blog_status": "open"}}}}}"
+        Then we get list with 1 items
+        """
+        {"_items": [{"title": "testBlog3"}]}
+        """
 
     @auth
     Scenario: Search for blogs
@@ -67,33 +79,33 @@ Feature: Blog operations
 
         When we get "/blogs?source={"query": {"filtered": {"filter": {"term": {"blog_status": "open"}}, "query": {"query_string": {"query": "title:(descript*) description:(descript*)", "lenient": false, "default_operator": "OR"}} }}}"
         Then we get list with 1 items
-	    """
-	    {"_items": [{"title": "title One", "description": "Description", "blog_status": "open"}]}
-	    """
+        """
+        {"_items": [{"title": "title One", "description": "Description", "blog_status": "open"}]}
+        """
 
         When we get "/blogs?source={"query": {"filtered": {"filter": {"term": {"blog_status": "open"}}, "query": {"query_string": {"query": "title:(One) description:(One)", "lenient": false, "default_operator": "OR"}} }}}"
         Then we get list with 2 items
-	    """
-	    {"_items": [
+        """
+        {"_items": [
                     {"title": "title One", "description": "Description", "blog_status": "open"},
                     {"title": "title Two", "description": "one", "blog_status": "open"}
-	               ]}
-	    """
-
-   	@auth
-	Scenario: Delete blog
-		Given "blogs"
-		"""
-		[{"title": "test_blog1"}]
-		"""
-		When we post to "/blogs"
+                   ]}
         """
-       	[{"title": "test_blog2"}]
-		 """
+
+       @auth
+    Scenario: Delete blog
+        Given "blogs"
+        """
+        [{"title": "test_blog1"}]
+        """
+        When we post to "/blogs"
+        """
+           [{"title": "test_blog2"}]
+         """
         And we delete latest
         Then we get deleted response
 
-		@auth
+        @auth
         Scenario: Adding blogs with or without members
         Given empty "users"
         When we post to "users"
@@ -120,7 +132,7 @@ Feature: Blog operations
             {"_items": [{"title": "foo blog", "members": [{"user": "#user_foo#"}]}]}
             """
 
-	@auth
+    @auth
     @notification
     Scenario: Create new blog and get notification
         Given empty "users"
