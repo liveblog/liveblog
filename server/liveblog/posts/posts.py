@@ -107,24 +107,15 @@ class PostsService(ArchiveService):
         return update_key('post_order_sequence', True)
 
     def check_post_permission(self, post):
-
-        def can_publish_a_post():
-            if not current_user_has_privilege('publish_post'):
-                return False, 'User does not have sufficient permissions.'
-            return True, ''
-
-        def can_submit_a_post_for_aprobation():
-            if not current_user_has_privilege('submit_post'):
-                return False, 'User does not have sufficient permissions.'
-            return True, ''
-        if 'post_status' in post and post['post_status'] == 'open':
-            able, error_message = can_publish_a_post()
-            if not able:
-                raise SuperdeskApiError.forbiddenError(message=error_message)
-        if 'post_status' in post and post['post_status'] == 'submit_for_aprobation':
-            able, error_message = can_submit_a_post_for_aprobation()
-            if not able:
-                raise SuperdeskApiError.forbiddenError(message=error_message)
+        to_be_checked = (
+            dict(status='open', privilege_required='publish_post'),
+            dict(status='submit_for_aprobation', privilege_required='submit_post')
+        )
+        for rule in to_be_checked:
+            if 'post_status' in post and post['post_status'] == rule['status']:
+                if not current_user_has_privilege(rule['privilege_required']):
+                    raise SuperdeskApiError.forbiddenError(
+                        message='User does not have sufficient permissions.')
 
     def on_create(self, docs):
         for doc in docs:
@@ -147,7 +138,9 @@ class PostsService(ArchiveService):
 
     def on_update(self, updates, original):
         # check permission
-        self.check_post_permission(updates)
+        post = original.copy()
+        post.update(updates)
+        self.check_post_permission(post)
         # put the published item from drafts at the top of the timeline
         if updates.get('post_status') == 'open' and original.get('post_status') == 'draft':
             updates['order'] = self.get_next_order_sequence()
