@@ -16,6 +16,7 @@ from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
 from apps.archive.archive import ArchiveVersionsResource
 from liveblog.common import get_user, update_dates_for
+from apps.users.services import is_admin
 from apps.content import metadata_schema
 from apps.archive.common import generate_guid, GUID_TAG
 from superdesk.celery_app import celery
@@ -197,7 +198,7 @@ class BlogService(ArchiveService):
     def on_update(self, updates, original):
         # check permission (see https://github.com/superdesk/liveblog/pull/167)
         # only the owner can change blog's settings
-        if str(flask.g.user['_id']) != str(original['original_creator']):
+        if not is_admin(get_user()) and str(flask.g.user['_id']) != str(original['original_creator']):
             raise SuperdeskApiError.forbiddenError(message='You need to be the blog owner to perform updates on it')
         # if the theme changed, we republish the blog with the new one
         if 'blog_preferences' in updates and 'theme' in updates['blog_preferences']:

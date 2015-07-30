@@ -41,7 +41,13 @@ Feature: Blog operations
         """
         [{"title": "Update blog without being the owner"}]
         """
+        Given "roles"
+        """
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
+        """
         When we login as user "foo" with password "bar"
+        Given we have "Editor" role
+        Given we have "user" as type of user
         When we patch "/blogs/#blogs._id#"
         """
         {"description": "this is a test blog"}
