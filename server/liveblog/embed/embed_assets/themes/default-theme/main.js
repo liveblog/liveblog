@@ -1,35 +1,20 @@
 (function(angular) {
     'use strict';
 
-    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout'];
-    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout) {
+    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink'];
+    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink) {
 
         var POSTS_PER_PAGE = config.settings.postsPerPage;
         var SHOW_AUTHOR = config.settings.showAuthor;
+        var PERMALINK_DELIMITER = config.settings.permalinkDelimiter || '?';
         var DEFAULT_ORDER = 'editorial'; // newest_first, oldest_first or editorial
         var UPDATE_EVERY = 10*1000; // retrieve update interval in millisecond
-        var PERMALINK_HASH = config.settings.permalinkHash; // the hash identifier for permalink.
-        var PERMALINK_HASH_MARK = config.settings.permalinkHashMark; // the hasj mark identifier can be `?` or `#`.
         var vm = this;
-        var href; // from where it should take the location url.
-        if(document.parent) {
-            // use document parent if avalible, see iframe cors limitation.
-            // this also works well for direct access, testing link.
-            try {
-                href = document.location.href; 
-            } catch(e) {
-            // if not use the referrer of the iframe.
-                href = document.referrer; 
-            }
-        } else {
-            href = document.location.href; // use this option only if from server
-        }
+        var pagesManager = new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER),
+            permalink = new Permalink(pagesManager, PERMALINK_DELIMITER);
 
         function retrieveUpdate() {
             return vm.pagesManager.retrieveUpdate(true);
-        }
-        function escapeRegExp(string) {
-            return string.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, '\\$1');
         }
         // define view model
         angular.extend(vm, {
@@ -38,9 +23,7 @@
             loading: true,
             finished: false,
             showAuthor: SHOW_AUTHOR,
-            order: DEFAULT_ORDER,
             orderBy: function(order_by) {
-                vm.order = order_by;
                 vm.loading = true;
                 vm.finished = false;
                 vm.pagesManager.changeOrder(order_by).then(function() {
@@ -55,67 +38,26 @@
                     // TODO: notify updates
                 });
             },
+            permalinkScroll: function() {
+                vm.loading = true;
+                vm.permalink.loadPost().then(function(id){
+                    $anchorScroll(id);
+                    vm.loading = false;
+                }, function(){
+                    vm.loading = false;
+                });
+            },
             isAllowedToLoadMore: function() {
                 return !vm.loading && !vm.finished;
             },
-            getPermalink: function(id) {
-                var permalink = false,
-                    newHash = PERMALINK_HASH + '=' + id + '->' + vm.order;
-
-                if (href.indexOf(PERMALINK_HASH_MARK) === -1) {
-                    permalink = href + PERMALINK_HASH_MARK + newHash;
-                } else if (href.indexOf(PERMALINK_HASH + '=') !== -1) {
-                    var regexHash = new RegExp(escapeRegExp(PERMALINK_HASH) + '=[^&#]*');
-                    permalink = href.replace(regexHash, newHash);
-                } else {
-                    permalink = href + '&' + newHash;
-                }
-                return permalink;
-            },
-            initPermalink: function() {
-                var matches, 
-                    regexHash = new RegExp(escapeRegExp(PERMALINK_HASH) + '=([^&#]*)'),
-                    matches = href.match(regexHash);
-                if(matches) {
-                    var arr = decodeURIComponent(matches[1]).split('->');
-                    vm.permalinkId = arr[0];
-                    vm.order = arr[1];
-                    vm.pagesManager.setSort(vm.order);
-                }
-            },
-            scrollToPermalink: function() {
-                if(!vm.permalinkId) {
-                    return;
-                }
-                var posts = vm.pagesManager.allPosts(),
-                    found = false;
-                angular.forEach(posts, function(post) {
-                    if(post._id === vm.permalinkId) {
-                        found = true;
-                    }
-                });
-                if (!found && vm.isAllowedToLoadMore()) {
-                    vm.fetchNewPage().then(function() {
-                        vm.scrollToPermalink();
-                    });
-                } else if(found) {
-                    $timeout(function(){
-                        $anchorScroll(vm.permalinkId);                        
-                    });
-                }
-            },
-            pagesManager: new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER)
+            pagesManager: pagesManager,
+            permalink: permalink
         });
-
-        // initialize permalink if any.
-        vm.initPermalink();
         // retrieve first page
         vm.fetchNewPage()
         // retrieve updates periodically
         .then(function() {
-            vm.scrollToPermalink();
-        })
-        .then(function() {
+            vm.permalinkScroll();
             $interval(retrieveUpdate, UPDATE_EVERY);
         });
     }

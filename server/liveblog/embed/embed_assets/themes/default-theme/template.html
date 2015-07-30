@@ -13,15 +13,15 @@
         <div class="sorting-bar__orders">
             <div
                 class="sorting-bar__order"
-                ng-class="{'sorting-bar__order--active': timeline.order=='editorial'}"
+                ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='editorial'}"
                 ng-click="timeline.orderBy('editorial')">Editorial</div>
             <div
                 class="sorting-bar__order"
-                ng-class="{'sorting-bar__order--active': timeline.order=='newest_first'}"
+                ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='newest_first'}"
                 ng-click="timeline.orderBy('newest_first')">Newest first</div>
             <div
                 class="sorting-bar__order"
-                ng-class="{'sorting-bar__order--active': timeline.order=='oldest_first'}"
+                ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
                 ng-click="timeline.orderBy('oldest_first')">Oldest first</div>
         </div>
         <div class="sorting-bar__logo">
@@ -41,14 +41,15 @@
         infinite-scroll-disabled="!timeline.isAllowedToLoadMore()"
         infinite-scroll-immediate-check="false">
         <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item ng-cloak">
-            <div class="content" ng-class="{'show-author': timeline.showAuthor, 'lb-post-permalink-selected': post._id === timeline.permalinkId}"  ng-class="{ 'lb-post-permalink-selected': post._id === timeline.permalinkId}">
+            <div class="content" ng-class="{'show-author': timeline.showAuthor, 'lb-post-permalink-selected': post._id === timeline.permalink._id}">
                 <figure class="lb-avatar" ng-if="timeline.showAuthor"><img ng-src="{{ post.original_creator.picture_url }}"/></figure>
                 <div class="lb-creator">
                     <div class="lb-post-permalink">
-                        <a href="{{ timeline.getPermalink(post._id) }}" id="{{ post._id }}" target="_blank">
+                        <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
                             <i class="fa fa-link fa-2"></i>
                         </a>
-                    </div>
+                    </div>                
+                    <lb-permalink post-id="{{ post._id }}"></lb-permalink>                
                     <div class="lb-post-date" ng-bind="post.published_date | date"></div>
                     <div class="lb-user-info" ng-bind="post.original_creator.display_name"></div>
                 </div>

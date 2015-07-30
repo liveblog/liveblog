@@ -58,12 +58,15 @@
             }
 
             /**
-             * Change the order in the future posts request
-             * @param {string} sort_name - The name of the new order (see self.SORTS)
+             * Getter or Settre the order in the future posts request
+             * Gets the order current used.
              */
-            function setSort(sort_name) {
-                self.sort = sort_name;
-                return self;
+            function order(sort_name) {
+                if(sort_name) {
+                    self.sort = sort_name;
+                } else {
+                    return self.sort;
+                }
             }
 
             /**
@@ -320,9 +323,9 @@
                  */
                 changeOrder: changeOrder,
                 /**
-                 * Set the order in the future posts request.
+                 * Setter or Getter the order in the future posts request.
                  */
-                setSort: setSort,
+                order: order,
                 /**
                  * Number of results per page
                  */
