@@ -114,7 +114,7 @@ describe('Blog settings', function() {
     it('shows original creator full name and username', function() {
         blogs.openBlog(0).openSettings().openTeam();
         blogs.blog.settings.displayName.getText().then(function(text) {
-            expect(text).toEqual('Medor the Editor');
+            expect(text).toEqual('Victor the Editor');
         });
         blogs.blog.settings.userName.getText().then(function(text) {
             expect(text).toEqual('editor');

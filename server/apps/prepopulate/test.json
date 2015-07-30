@@ -33,7 +33,7 @@
     "resource": "users",
     "data": {
         "username": "editor",
-        "first_name": "Medor",
+        "first_name": "Victor",
         "last_name": "the Editor",
         "role": "-id Editor role-",
         "user_type": "administrator",
