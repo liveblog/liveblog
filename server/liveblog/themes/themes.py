@@ -85,8 +85,9 @@ class ThemesService(BaseService):
 
     def on_delete(self, doc):
         blogs_service = get_resource_service('blogs')
-        blogs = blogs_service.get(req=None, lookup=dict(blog_status='open'))
-        for blog in blogs:
+#         blogs = blogs_service.get(req=None, lookup=dict(blog_status='open'))
+        bb = blogs_service.get(req=None, lookup={'theme.name': doc['name']})
+        for blog in bb:
             # if the blog theme is the one which is intended to delete
             if blog['theme']['name'] == doc['name']:
                 # will assign the default theme to this blog
