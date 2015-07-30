@@ -233,7 +233,7 @@ class BlogService(ArchiveService):
         push_notification('blogs', deleted=1)
 
 
-class UserBlogsResource(BlogsResource):
+class UserBlogsResource(Resource):
     url = 'users/<regex("[a-f0-9]{24}"):user_id>/blogs'
     schema = blogs_schema
     datasource = {
