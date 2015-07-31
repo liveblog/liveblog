@@ -194,6 +194,8 @@ function TimelinePage(blog) {
     self.byPosts = by.repeater('post in posts');
     self.byEdit = by.css('[ng-click="onEditClick(post)"]');
     self.byUnpublish = by.css('[ng-click="unpublishPost(post)"]');
+    self.byStartMoving = by.css('[ng-click="preMovePost(post);"]');
+    self.byMoveTo = by.css('[ng-click="movePost(index, \'above\');"]');
     self.byRemove = by.css('[ng-click="askRemovePost(post)"]');
     self.waitForModal = waitForModal.bind(self);
     self.okModal = okModal.bind(self);
@@ -221,6 +223,16 @@ function TimelinePage(blog) {
 
     self.unpublish = function(index) {
         self.column.element(self.byPosts.row(index)).element(self.byUnpublish).click();
+        return self;
+    };
+
+    self.startMoving = function(index) {
+        self.column.element(self.byPosts.row(index)).element(self.byStartMoving).click();
+        return self;
+    };
+
+    self.moveTo = function(index) {
+        self.column.element(self.byPosts.row(index)).element(self.byMoveTo).click();
         return self;
     };
 

@@ -44,4 +44,10 @@ describe('timeline', function() {
             blog.timeline.expectPost(i, posts[i][0]);
         }
     });
+    it('can reorder posts on the timeline', function() {
+        var blog = blogs.openBlog(3);
+        blog.timeline.startMoving(1);
+        blog.timeline.moveTo(0);
+        blog.timeline.expectPost(0, posts[1][0]);
+    });
 });
