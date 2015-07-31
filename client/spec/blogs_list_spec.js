@@ -1,15 +1,9 @@
-var utils = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js'),
-    login = utils.login,
-    expectBlog = require('./helpers/utils.js').expectBlog,
-    expectBlogsLength = require('./helpers/utils.js').expectBlogsLength,
-    openBlog = require('./helpers/utils').openBlog,
-    blogs = require('./helpers/utils.js').blogs;
+var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
+    blogs = require('./helpers/pages').blogs;
 
-describe('blogs', function() {
+describe('Blogs list', function() {
     'use strict';
-    var archived = [
-        {title: 'title: end to end closed', description: 'description: end to end closed', username: 'first name last name'}
-    ], searchs = [
+    var searchs = [
         {blogs: [0, 1, 2, 3], search: 'title'},
         {blogs: [1], search: 'thre'},
         {blogs: [0, 1, 2, 3], search: 'to'}
@@ -26,112 +20,89 @@ describe('blogs', function() {
 
     beforeEach(function(done) {login().then(done);});
 
-    describe('blogs list:', function() {
+    describe('list', function() {
 
         it('can list blogs', function() {
-            var blogsLength = blogs.length;
-            expectBlogsLength(blogsLength);
-            for (var i = 0; i < blogsLength; i++) {
-                expectBlog(blogs[i], i);
+            var activeBlogs = blogs.getActiveBlogs(),
+                count = activeBlogs.length;
+            blogs.expectCount(count);
+            for (var i = 0; i < count; i++) {
+                blogs.expectBlog(activeBlogs[i], i);
             }
         });
+
         it('can list blogs in a listed view', function() {
+            var activeBlogs = blogs.getActiveBlogs(),
+                count = activeBlogs.length;
             // assert we have no <table> as inital state. We should arrive on the grid view.
-            expect(element(by.css('.list-container table')).isPresent()).toBe(false);
+            expect(blogs.gridElement.isPresent()).toBe(false);
             // click on the "switch to listed view" button
-            element(by.css('button[ng-show="gridview"]')).click();
+            blogs.switchView();
             // assert we have a listed view (we look for a <table>)
-            expect(element(by.css('.list-container table')).isPresent()).toBe(true);
+            expect(blogs.gridElement.isPresent()).toBe(true);
             // check the number of blogs
-            expectBlogsLength(blogs.length);
+            blogs.expectCount(count);
         });
-        function searchBlogs(search) {
-            element(by.css('[ng-click="flags.extended = !flags.extended"]')).click();
-            element(by.model('q')).clear().sendKeys(search.search);
-            var currentUrl;
-            browser.getCurrentUrl().then(function(url) {
-                currentUrl = url;
-            }
-            ).then(function () {
-                expectBlogsLength(search.blogs.length);
-                for (var j = 0, countj = search.blogs.length; j < countj; j++) {
-                    expectBlog(blogs[search.blogs[j]], j);
-                }
-            });
-        }
+
         it('can search all blogs', function() {
-            searchBlogs(searchs[0]);
+            blogs.searchBlogs(searchs[0]);
         });
         it('can search just one blog', function() {
-            searchBlogs(searchs[1]);
+            blogs.searchBlogs(searchs[1]);
         });
+
         it('can search case insensitive blogs', function() {
-            searchBlogs(searchs[2]);
+            blogs.searchBlogs(searchs[2]);
         });
 
         it('can list archived blogs', function() {
-            function checkIfBlogsAreArchived() {
-                var blogsLength = archived.length;
-                expectBlogsLength(blogsLength);
-                for (var i = 0; i < blogsLength; i++) {
-                    expectBlog(archived[i], i);
-                }
+            var archivedBlogs = blogs.getArchivedBlogs(),
+                count = archivedBlogs.length;
+            blogs.selectState('archived');
+            browser.getCurrentUrl().then(function(url) {
+                expect(url.indexOf('archived')).toBeGreaterThan(-1);
+            });
+            blogs.expectCount(count);
+            for (var i = 0; i < count; i++) {
+                blogs.expectBlog(archivedBlogs[i], i);
             }
-            element(by.repeater('state in states').row(1).column('state.text')).click();
-            checkIfBlogsAreArchived();
-            browser.get('/#/liveblog/archived');
-            checkIfBlogsAreArchived();
         });
     });
 
-    describe('add blog', function() {
+    describe('add', function() {
+
         it('should add a blog', function() {
-            element(by.css('[ng-click="openNewBlog();"]')).click();
-            //after the add new blog model is displayed
-            browser.wait(element(by.model('newBlog.title')).isDisplayed);
-            element(by.model('newBlog.title')).sendKeys(newBlog.title);
-            element(by.model('newBlog.description')).sendKeys(newBlog.description);
-            element(by.buttonText('NEXT')).click();
-            element(by.buttonText('CREATE')).click();
-            element(by.css('.homebtn')).click().then(function() {
-                expectBlog(newBlog);
-            });
+            blogs.openCreateBlog().waitForModal();
+
+            blogs.title.sendKeys(newBlog.title);
+            blogs.description.sendKeys(newBlog.description);
+            blogs.createBlogNext().createBlogCreate()
+                    .openList()
+                .expectBlog(newBlog);
         });
+
         it('should add blog with a image', function() {
             var path = require('path');
-            element(by.css('[ng-click="openNewBlog();"]')).click();
-            //after the add new blog model is displayed
-            browser.wait(element(by.model('newBlog.title')).isDisplayed);
-            element(by.model('newBlog.title')).sendKeys(newBlogImage.title);
-            element(by.model('newBlog.description')).sendKeys(newBlogImage.description);
-            element(by.css('input[type="file"]')).sendKeys(path.resolve(__dirname, newBlogImage.picture_url));
-            element(by.buttonText('NEXT')).click().then(function() {
-                element(by.buttonText('CREATE')).click().then(function() {
-                    element(by.css('.homebtn')).click().then(function() {
-                        expectBlog(newBlogImage);
-                    });
-                });
-            });
+            blogs.openCreateBlog().waitForModal();
+            blogs.title.sendKeys(newBlog.title);
+            blogs.description.sendKeys(newBlog.description);
+            blogs.file.sendKeys(path.resolve(__dirname, newBlogImage.picture_url));
+            blogs.createBlogNext().createBlogCreate()
+                    .openList()
+                .expectBlog(newBlogImage);
         });
+
         it('should add a blog with members', function() {
-            element(by.css('[ng-click="openNewBlog();"]')).click();
-            //after the add new blog model is displayed
-            browser.wait(element(by.model('newBlog.title')).isDisplayed);
-            element(by.model('newBlog.title')).sendKeys(newBlog.title);
-            element(by.model('newBlog.description')).sendKeys(newBlog.description);
-            element(by.buttonText('NEXT')).click();
-            element(by.model('search')).sendKeys('s');
-            browser.wait(function() {
-                return browser.driver.isElementPresent(by.css('[ng-click="choose(user)"]'));
-            }, 5000);
-            element(by.repeater('user in users._items').row(0)).click();
-            element(by.buttonText('CREATE')).click();
-            element(by.css('.homebtn')).click().then(function() {
-                openBlog(0);
-                element(by.css('.settings-link')).click();
-                element(by.css('[data="blog-settings-team"]')).click();
-                expect(element(by.css('.subsettings-content:nth-child(5)')).all(by.repeater('member in settings.members')).count()).toBe(1);
-            });
+            blogs.openCreateBlog().waitForModal();
+
+            blogs.title.sendKeys(newBlog.title);
+            blogs.description.sendKeys(newBlog.description);
+            blogs.createBlogNext();
+            blogs.team.searchUser('s')
+                    .waitChooseUser()
+                    .changeToUser();
+            blogs.createBlogCreate().openSettings().openTeam();
+            expect(blogs.blog.settings.contributors.count()).toBe(1);
         });
     });
 
