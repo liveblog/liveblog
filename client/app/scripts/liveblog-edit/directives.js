@@ -175,7 +175,7 @@ define([
                         //the order property of the post that was reordered and should stay highlighted a bit more
                         keepHighlighted: '=',
                         allowUnpublish: '=',
-                        //call when the user clicks on the reorder icon 
+                        //call when the user clicks on the reorder icon
                         startReorder: '&',
                         //call when the user has chosen a new place for the post
                         reorder: '&',
