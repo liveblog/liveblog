@@ -14,6 +14,9 @@ import os
 import glob
 import json
 import superdesk
+from bson.objectid import ObjectId
+import eve.io.base
+from superdesk.errors import SuperdeskApiError
 
 
 class ThemesResource(Resource):
@@ -80,6 +83,27 @@ class ThemesService(BaseService):
                 self.create([theme])
                 created.append(theme)
         return (created, updated)
+
+    def on_delete(self, deleted_theme):
+        global_prefs = get_resource_service('global_preferences').get_global_prefs()
+        if deleted_theme['name'] == global_prefs['theme']:
+            get_resource_service('themes').find_one(req=None, name=deleted_theme['name'])
+            raise SuperdeskApiError.forbiddenError("This is a default theme and can not be deleted")
+        blogs_service = get_resource_service('blogs')
+        blogs = blogs_service.get(req=None, lookup={'theme._id': deleted_theme['_id']})
+        for blog in blogs:
+            # will assign the default theme to this blog
+            global_prefs = get_resource_service('global_preferences').get_global_prefs()
+            theme = blogs_service.get_theme_snapshot(global_prefs['theme'])
+
+            try:
+                blogs_service.system_update(ObjectId(blog['_id']), {'theme': theme}, blog)
+            except eve.io.base.DataLayer.OriginalChangedError:
+                print(u'! an error occured during saving blog "%s".' % (blog['title']),
+                      'Can be a broken relationship (with user for instance)')
+            else:
+                print('- Blog "%s"\'s theme was updated to %s %s' % (
+                    blog['title'], theme['name'], theme['version']))
 
 
 class ThemesCommand(superdesk.Command):
