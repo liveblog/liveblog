@@ -4,32 +4,32 @@ var login = require('../app/scripts/bower_components/superdesk/client/spec/helpe
 
 var posts = [
         [{
-            username: 'first name last name',
+            username: 'Victor the Editor',
             item_type: 'text',
             text: 'text post three: end to end item one'
         }],
         [{
-            username: 'first name last name',
+            username: 'Victor the Editor',
             item_type: 'text',
             text: 'text post two: end to end item onE'
         },
         {
-            username: 'first name last name',
+            username: 'Victor the Editor',
             item_type: 'text',
             text: 'text post two: end to end item two'
         }],
         [{
-            username: 'first name last name',
+            username: 'Victor the Editor',
             item_type: 'text',
             text: 'text post one: end to end item One'
         },
         {
-            username: 'first name last name',
+            username: 'Victor the Editor',
             item_type: 'text',
             text: 'text post one: end to end item two'
         },
         {
-            username: 'first name last name',
+            username: 'Victor the Editor',
             item_type: 'text',
             text: 'text post one: End to End item three'
         }]
