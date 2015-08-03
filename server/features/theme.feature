@@ -38,11 +38,21 @@ Feature: Themes operations
 
         @auth
         Scenario: Delete a theme
+        Given "global_preferences"
+        """
+        [{"key": "theme", "value": "default-theme"}]
+        """
+        When we get "/global_preferences"
+        Then we get list with 1 items
+        """
+        {"_items": [{"key": "theme", "value": "default-theme"}]}
+        """
         Given "themes"
         """
         [{"name": "forest-theme", "version": "1.0.1"}, {"name": "default-theme", "version": "1.0.1"}]
         """
         When we find for "themes" the id as "my-theme" by "{"name": "forest-theme"}"
+        When we find for "themes" the id as "my-default-theme" by "{"name": "default-theme"}"
         Given empty "blogs"
         When we post to "/blogs"
         """
@@ -57,9 +67,11 @@ Feature: Themes operations
         """
         When we patch "/blogs/#blogs._id#"
         """
-        {"theme": {"name": "forest-theme"}}
+        {"theme": {"_id": "#my-theme#"}}
         """
         Then we get updated response
+        When we delete "themes/#my-default-theme#"
+        Then we get response code 403
         When we delete "/themes/#my-theme#"
         Then we get deleted response
         When we get "/blogs"
