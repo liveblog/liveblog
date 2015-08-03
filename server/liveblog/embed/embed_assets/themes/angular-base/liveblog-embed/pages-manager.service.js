@@ -58,6 +58,18 @@
             }
 
             /**
+             * Getter or Settre the order in the future posts request
+             * Gets the order current used.
+             */
+            function order(sort_name) {
+                if(sort_name) {
+                    self.sort = sort_name;
+                } else {
+                    return self.sort;
+                }
+            }
+
+            /**
              * Fetch a new page of posts and add it to the Pages Manager.
              * @returns {promise}
              */
@@ -310,6 +322,10 @@
                  * Change the order in the future posts request, remove exising post and load a new page
                  */
                 changeOrder: changeOrder,
+                /**
+                 * Setter or Getter the order in the future posts request.
+                 */
+                order: order,
                 /**
                  * Number of results per page
                  */

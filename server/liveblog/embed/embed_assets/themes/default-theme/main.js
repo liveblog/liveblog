@@ -1,18 +1,21 @@
 (function(angular) {
     'use strict';
 
-    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config'];
-    function TimelineCtrl($interval, PagesManager, blogsService, config) {
+    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink'];
+    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink) {
+
         var POSTS_PER_PAGE = config.settings.postsPerPage;
         var SHOW_AUTHOR = config.settings.showAuthor;
+        var PERMALINK_DELIMITER = config.settings.permalinkDelimiter || '?';
         var DEFAULT_ORDER = 'editorial'; // newest_first, oldest_first or editorial
         var UPDATE_EVERY = 10*1000; // retrieve update interval in millisecond
         var vm = this;
+        var pagesManager = new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER),
+            permalink = new Permalink(pagesManager, PERMALINK_DELIMITER);
 
         function retrieveUpdate() {
             return vm.pagesManager.retrieveUpdate(true);
         }
-
         // define view model
         angular.extend(vm, {
             templateDir: config.assets_root,
@@ -20,9 +23,7 @@
             loading: true,
             finished: false,
             showAuthor: SHOW_AUTHOR,
-            order: DEFAULT_ORDER,
             orderBy: function(order_by) {
-                vm.order = order_by;
                 vm.loading = true;
                 vm.finished = false;
                 vm.pagesManager.changeOrder(order_by).then(function() {
@@ -37,15 +38,26 @@
                     // TODO: notify updates
                 });
             },
+            permalinkScroll: function() {
+                vm.loading = true;
+                vm.permalink.loadPost().then(function(id){
+                    $anchorScroll(id);
+                    vm.loading = false;
+                }, function(){
+                    vm.loading = false;
+                });
+            },
             isAllowedToLoadMore: function() {
                 return !vm.loading && !vm.finished;
             },
-            pagesManager: new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER)
+            pagesManager: pagesManager,
+            permalink: permalink
         });
         // retrieve first page
         vm.fetchNewPage()
         // retrieve updates periodically
         .then(function() {
+            vm.permalinkScroll();
             $interval(retrieveUpdate, UPDATE_EVERY);
         });
     }
