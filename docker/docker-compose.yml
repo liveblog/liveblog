@@ -44,6 +44,10 @@ backend:
    - elastic
    - logstash
    - postfix
+  volumes:
+   - ../server:/opt/superdesk
+   - ../results/server/unit:/opt/superdesk/results-unit/
+   - ../results/server/behave:/opt/superdesk/results-behave/
 
 frontend:
   extends:
@@ -56,3 +60,5 @@ frontend:
   ports:
    - "443:443"
    - "80:80"
+  volumes:
+   - ../results/client/unit:/opt/superdesk-client/unit-test-results

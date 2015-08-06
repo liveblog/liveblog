@@ -58,13 +58,7 @@ backend:
    - SUPERDESK_URL=http://127.0.0.1/api
    - SUPERDESK_CLIENT_URL=http://127.0.0.1
    - SUPERDESK_TESTING=True
-  volumes:
-   - ../server:/opt/superdesk
-   - ../results/server/unit:/opt/superdesk/results-unit/
-   - ../results/server/behave:/opt/superdesk/results-behave/
 
 frontend:
   build: ../client
   command: sh -c "grunt build --server='http://127.0.0.1/api' --ws='ws://127.0.0.1/ws' && nginx"
-  volumes:
-   - ../results/client/unit:/opt/superdesk-client/unit-test-results
