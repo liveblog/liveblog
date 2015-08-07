@@ -516,6 +516,11 @@ def step_impl_when_upload_image(context, filename, dest):
     upload_file(context, dest, filename, 'media')
 
 
+@when('we upload a theme "{filename}" to "{dest}"')
+def step_impl_when_upload_theme(context, filename, dest):
+    upload_file(context, dest, filename, 'zippedfiles')
+
+
 @when('we upload a binary file with cropping')
 def step_impl_when_upload_with_crop(context):
     data = {'CropTop': '0', 'CropLeft': '0', 'CropBottom': '333', 'CropRight': '333'}
