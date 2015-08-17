@@ -21,6 +21,8 @@ kibana:
     service: kibana
   links:
   - elastic
+  ports:
+  - "5601:5601"
 
 elastic:
   extends:
@@ -51,3 +53,6 @@ frontend:
    - EMBEDLY_KEY=$bamboo_EMBEDLY_KEY
   links:
    - backend
+  ports:
+   - "443:443"
+   - "80:80"
