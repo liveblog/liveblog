@@ -9,7 +9,7 @@ describe('Blog settings', function() {
     // var DEFAULT_LANGUAGE = 'english';
     // var NEW_LANGUAGE = 'french';
 
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {login('editor', 'editor').then(done);});
 
     // FIXME: must be uncommented after release (LBSD-546) * must change to support pageObject
     // function expectSelectedLanguageIs(language) {
@@ -114,10 +114,10 @@ describe('Blog settings', function() {
     it('shows original creator full name and username', function() {
         blogs.openBlog(0).openSettings().openTeam();
         blogs.blog.settings.displayName.getText().then(function(text) {
-            expect(text).toEqual('first name last name');
+            expect(text).toEqual('Victor the Editor');
         });
         blogs.blog.settings.userName.getText().then(function(text) {
-            expect(text).toEqual('test_user');
+            expect(text).toEqual('editor');
         });
     });
 
@@ -130,7 +130,7 @@ describe('Blog settings', function() {
                         .openSettings().openTeam();
 
         blogs.blog.settings.userName.getText().then(function(text) {
-            expect(text).toEqual('admin');
+            expect(text).toEqual('test_user');
         });
     });
 

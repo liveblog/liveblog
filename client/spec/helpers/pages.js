@@ -2,12 +2,12 @@
 
 var blogs = [
     [
-        {title: 'title: end to end image', description: 'description: end to end image', username: 'first name last name'},
-        {title: 'title: end To end three', description: 'description: end to end three', username: 'first name last name'},
-        {title: 'title: end to end two', description: 'description: end to end two', username: 'first name last name'},
-        {title: 'title: end to end One', description: 'description: end to end one', username: 'first name last name'}
+        {title: 'title: end to end image', description: 'description: end to end image', username: 'Victor the Editor'},
+        {title: 'title: end To end three', description: 'description: end to end three', username: 'Victor the Editor'},
+        {title: 'title: end to end two', description: 'description: end to end two', username: 'Victor the Editor'},
+        {title: 'title: end to end One', description: 'description: end to end one', username: 'Victor the Editor'}
     ], [
-        {title: 'title: end to end closed', description: 'description: end to end closed', username: 'first name last name'}
+        {title: 'title: end to end closed', description: 'description: end to end closed', username: 'Victor the Editor'}
     ]
 ], stateMap = {
     'active': 0,
@@ -464,9 +464,7 @@ function GeneralSettingsPage() {
 
     self.expectSelected = function(model, value) {
         browser.waitForAngular();
-        browser.wait(function() {
-            return element(by.model(model)).element(by.css('option:checked')).isDisplayed();
-        });
+        browser.sleep(1000);
         expect(element(by.model(model)).element(by.css('option:checked')).getText()).toEqual(value);
     };
 

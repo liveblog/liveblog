@@ -8,7 +8,6 @@
 
 cd $(dirname "$0")/../docker &&
 
-. ./docker-compose.yml.sh > ./docker-compose.yml &&
 echo '
 |=================================================================|
 |open in browser "http://localhost:80" after server will be ready |

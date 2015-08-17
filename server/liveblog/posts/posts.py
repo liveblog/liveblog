@@ -11,6 +11,8 @@ from superdesk.celery_app import update_key
 from flask import current_app as app
 import flask
 from superdesk.utc import utcnow
+from apps.users.services import current_user_has_privilege
+from superdesk.errors import SuperdeskApiError
 
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
@@ -85,7 +87,7 @@ class PostsResource(ArchiveResource):
             'type': 'datetime'
         }
     })
-    privileges = {'GET': 'blogs', 'POST': 'blogs', 'PATCH': 'blogs', 'DELETE': 'blogs'}
+    privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
 
 
 class PostsService(ArchiveService):
@@ -104,11 +106,24 @@ class PostsService(ArchiveService):
     def get_next_order_sequence(self):
         return update_key('post_order_sequence', True)
 
+    def check_post_permission(self, post):
+        to_be_checked = (
+            dict(status='open', privilege_required='publish_post'),
+            dict(status='submit_for_aprobation', privilege_required='submit_post')
+        )
+        for rule in to_be_checked:
+            if 'post_status' in post and post['post_status'] == rule['status']:
+                if not current_user_has_privilege(rule['privilege_required']):
+                    raise SuperdeskApiError.forbiddenError(
+                        message='User does not have sufficient permissions.')
+
     def on_create(self, docs):
         for doc in docs:
+            # check permission
+            self.check_post_permission(doc)
             doc['type'] = 'composite'
             doc['order'] = self.get_next_order_sequence()
-            # if you publish a post directly without beeing draft it will have  a published_date assign
+            # if you publish a post directly which is not a draft it will have a published_date assigned
             if doc['post_status'] == 'open':
                 doc['published_date'] = utcnow()
         super().on_create(docs)
@@ -122,6 +137,10 @@ class PostsService(ArchiveService):
         push_notification('posts', created=True)
 
     def on_update(self, updates, original):
+        # check permission
+        post = original.copy()
+        post.update(updates)
+        self.check_post_permission(post)
         # put the published item from drafts at the top of the timeline
         if updates.get('post_status') == 'open' and original.get('post_status') == 'draft':
             updates['order'] = self.get_next_order_sequence()
@@ -170,7 +189,7 @@ class BlogPostsResource(Resource):
         'default_sort': DEFAULT_POSTS_ORDER
     }
     resource_methods = ['GET']
-    privileges = {'GET': 'blogs'}
+    privileges = {'GET': 'posts'}
 
 
 class BlogPostsService(ArchiveService):

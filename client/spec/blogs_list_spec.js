@@ -10,11 +10,11 @@ describe('Blogs list', function() {
     ], newBlog = {
         title: 'new blog title',
         description: 'new blog description',
-        username: 'first name last name'
+        username: 'Edwin the admin'
     }, newBlogImage = {
         title: 'new blog title',
         description: 'new blog description',
-        username: 'first name last name',
+        username: 'Edwin the admin',
         picture_url: './upload/-busstop-jpg-1600-900.jpg'
     };
 
