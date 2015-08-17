@@ -86,7 +86,7 @@ define([
             });
             // complete Post With User Information
             userList.getUser(post.original_creator).then(function(user) {
-                post.original_creator_name = user.display_name;
+                post.user = user;
             });
             return post;
         }

@@ -4,13 +4,13 @@
         <div class="lb-post__holder">
             <div class="lb-post__figure">
                 <figure class="avatar">
-                    <img class="ng-isolate-scope" data-src="post.picture_url" sd-user-avatar="">
+                    <img class="ng-isolate-scope" data-src="post.user.picture_url" sd-user-avatar="">
                 </figure>
             </div>
             <div class="lb-post__content">
                 <div class="lb-post__header">
                     <div class="inline first">
-                        <span class="name">{{ ::post.original_creator_name }}</span> | <time>{{ post.published_date | reldate }}</time>
+                        <span class="name">{{ ::post.user.display_name }}</span> | <time>{{ post.published_date | reldate }}</time>
                     </div>
                     <div class="inline" ng-if="post._updated !== post.published_date">
                         <span class="updated-label" translate>Updated</span> <time class="updated-time">{{ post._updated | reldate }}</time>
