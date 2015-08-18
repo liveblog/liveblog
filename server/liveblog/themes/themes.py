@@ -35,6 +35,15 @@ class ThemesResource(Resource):
         'version': {
             'type': 'string'
         },
+        'screenshot': {
+            'type': 'string'
+        },
+        'author': {
+            'type': 'string'
+        },
+        'license': {
+            'type': 'string'
+        },
         'styles': {
             'type': 'list',
             'schema': {

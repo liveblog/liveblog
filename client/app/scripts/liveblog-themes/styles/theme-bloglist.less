@@ -1,0 +1,127 @@
+// planning.less
+// Styling for the superdesk content planing modules
+// ----------------------------------------------------------------------------------------
+@import 'mixins.less';
+@import 'variables.less';
+.theme-blogs-modal {
+    .modal-dialog {
+        width: 600px !important;
+    }
+    .modal-header-blogs  {
+        height: 85px !important;
+    }
+    .modal-header h3 {
+        color: #b4b4b4;
+        font-weight: 400;
+        line-height: 20px;
+        font-size: 12px;
+        text-transform: uppercase;
+    }
+    .modal-body {
+        padding: 0px !important;
+    }
+    h2 {
+
+    }
+    .theme-blogs {
+        > li {
+            padding: 5px 5px 5px 15px;
+            border-top: 1px solid #E4E4E4;
+            background-color: #FAFAFA;
+            &:hover {
+                background-color: #F0F0F0 !important;
+            }
+        }
+    }
+}
+.themelist {
+	header {
+		position: absolute;
+		top: 0; left: 0; right: 0;
+		height: @nav-height;
+		border-bottom: 1px solid #e0e0e0;
+		.view-select {
+			button {
+				border: 0;
+				background: none;
+				padding: 10px;
+			}
+		}
+	}
+	.list-container {
+		position: absolute;
+		top: 0px;
+		left: 0; right: 0; bottom: 0;
+		padding: 30px;
+		.card-list {
+            > li {
+				border: 1px solid #d4d4d4;
+				background-color: white;
+				padding: 10px;
+				width: 100%;
+				.border-box();
+				float: left;
+				.close {
+					position: absolute;
+					right: 10px;
+					top: 10px;
+				}
+                .media {
+                    max-width: 400px;
+                    height: 140px;                    
+                    .border-box();
+                    background: #f8f8f8 url('../../images/blog-default-img.png') no-repeat center center;
+                    float: left;
+                    div {
+                    	width: 238px;
+                    	height: 140px;
+                    	background-position: center center;
+                    	background-size: cover;
+                    }
+                }
+				.content {
+					.border-box();
+					padding: 0;
+					overflow: hidden;
+					margin: 10px 30px 0;
+                    float: left;
+                    dl {
+                        margin: 0;
+                        font-size: 11px;
+                        dt {
+                            .text-light();
+                            clear: both;
+                            float: left;
+                            color: #b4b4b4;
+                            font-weight: 400;
+                            line-height: 20px;
+                            min-width: 160px;
+                            text-transform: uppercase;
+                        }
+                        dd {
+                            .text-light();
+                            float: left;
+                            font-weight: 400;
+                            line-height: 16px;
+                        }
+                    }
+				}
+
+				.side {                
+                    float: right;
+                    width: 200px;
+                    button {
+                        width: 125px;
+                        margin: 5px;
+                    }
+                    .default-theme {
+                        float: right;
+                        width: 90px;
+                        height: 65px;
+                        background: url('../../images/default-icon.png') no-repeat left bottom;
+                    }                    
+				};
+			}
+		}
+	}
+}
