@@ -45,7 +45,6 @@ backend:
    - logstash
    - postfix
   volumes:
-   - ../server:/opt/superdesk
    - ../results/server/unit:/opt/superdesk/results-unit/
    - ../results/server/behave:/opt/superdesk/results-behave/
 
