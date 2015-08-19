@@ -99,6 +99,22 @@
             }
         };
 
+        $scope.removeTheme = function(theme) {
+            api.themes.query().then(function(data) {
+                data._items.forEach(function(item) {
+                    if (item._id === theme._id) {
+                    console.log('we will delete the theme');
+                }
+                else {
+                    console.log('we will not delete the theme')
+                }
+            });
+            });
+            // delete theme
+
+            // _.remove($scope.themes._items, theme);
+        };
+
         $scope.switchBlogPreview = function(blog) {
             $scope.selectedBlog = blog;
             $scope.selectedBlog.iframe_url = $sce.trustAsResourceUrl(

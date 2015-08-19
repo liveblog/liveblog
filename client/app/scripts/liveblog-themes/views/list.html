@@ -49,11 +49,16 @@
                 </div>
                 <div class="side">
                     <div ng-hide="theme.name === globalTheme.value">
-                        <button ng-click="remove(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
+                        <button ng-click="removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
                         <button ng-click="makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
                     </div>
                     <div ng-show="theme.name === globalTheme.value">
                         <div class="default-theme"></div>
+                    </div>
+                    <div class="lb-theme-actions">
+                        <ul>
+                            <li><a ng-click="removeTheme(theme)" tooltip-placement="bottom" tooltip="{{ 'Remove' | translate }}"><i class="icon-remove"></i></a></li>
+                        </ul>
                     </div>
                 </div>
             </li>
