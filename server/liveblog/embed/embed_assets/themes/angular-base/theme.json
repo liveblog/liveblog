@@ -31,6 +31,6 @@
             ],
             "default": "?",
             "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
-        },       
+        }
     ]
 }
