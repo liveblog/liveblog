@@ -62,7 +62,6 @@ define([
                         isLoading: true,
                         blogId: $scope.lbPostsBlogId,
                         emptyMessage: $scope.lbPostsEmptyMessage,
-                        allowQuickEdit: $scope.lbPostsAllowQuickEdit,
                         allowUnpublish: $scope.lbPostsAllowUnpublish,
                         allowReordering: $scope.lbPostsAllowReordering,
                         onPostSelected: $scope.lbPostsOnPostSelected,
@@ -149,7 +148,6 @@ define([
                         lbPostsStatus: '@',
                         lbPostsOrderBy: '@',
                         lbPostsEmptyMessage: '@',
-                        lbPostsAllowQuickEdit: '=',
                         lbPostsAllowUnpublish: '=',
                         lbPostsAllowReordering: '=',
                         lbPostsOnPostSelected: '=',
@@ -169,12 +167,12 @@ define([
                     scope: {
                         post: '=',
                         onEditClick: '=',
-                        allowQuickEdit: '=',
                         //the post that is in the process of being reordered
                         reorderPost: '=',
                         //the order property of the post that was reordered and should stay highlighted a bit more
                         keepHighlighted: '=',
                         allowUnpublish: '=',
+                        allowReordering: '=',
                         //call when the user clicks on the reorder icon
                         startReorder: '&',
                         //call when the user has chosen a new place for the post
@@ -182,7 +180,6 @@ define([
                         //the index of the post in the list
                         index: '='
                     },
-                    replace: true,
                     restrict: 'E',
                     templateUrl: 'scripts/liveblog-edit/views/post.html',
                     link: function(scope, elem, attrs) {
