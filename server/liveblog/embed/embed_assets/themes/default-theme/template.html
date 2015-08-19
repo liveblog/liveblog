@@ -48,8 +48,8 @@
                         <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
                             <i class="fa fa-link fa-2"></i>
                         </a>
-                    </div>                
-                    <lb-permalink post-id="{{ post._id }}"></lb-permalink>                
+                    </div>
+                    <lb-permalink post-id="{{ post._id }}"></lb-permalink>
                     <div class="lb-post-date" ng-bind="post.published_date | date"></div>
                     <div class="lb-user-info" ng-bind="post.original_creator.display_name"></div>
                 </div>

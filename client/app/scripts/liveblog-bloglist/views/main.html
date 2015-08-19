@@ -9,7 +9,7 @@
         </ul>
     </div>
 
-    <div class="button-stack right-stack">
+    <div class="button-stack right-stack" ng-if="isUserAllowedToCreateABlog();">
         <button class="navbtn navbtn-info" ng-click="openNewBlog();">
             <i class="svg-icon-add inverse"></i> <span class="title" translate>Create Blog</span>
         </button>
@@ -50,7 +50,7 @@
             <li ng-repeat="blog in blogs._items track by blog._id" ng-click="edit(blog)">
                 <figure class="media">
                     <div ng-if="blog.picture_url" if-background-image="{{blog.picture_url}}"></div>
-                </figure>            
+                </figure>
                 <div class="content">
                     <h3>{{ ::blog.title }}</h3>
                     <div class="description">{{ ::blog.description }}</div>
@@ -71,7 +71,7 @@
 
     <div sd-modal="" data-model="newBlogModalActive">
         <form ng-submit="createBlog()" name="createBlogForm">
-            <div class="modal-header"> 
+            <div class="modal-header">
                 <button class="close" ng-click="cancelCreate()"><i class="icon-close-small"></i></button>
                 <h3 translate>Create New Blog</h3>
             </div>
@@ -101,10 +101,10 @@
                             <div class="field ">
                                 <label translate>Blog image</label>
                                 <div class="upload-form">
-                                    <section 
-                                        class="main" 
-                                        sd-image-preview="preview.url" 
-                                        data-file="preview.img" 
+                                    <section
+                                        class="main"
+                                        sd-image-preview="preview.url"
+                                        data-file="preview.img"
                                         data-progress-width="progress.width"
                                     >
                                         <div class="upload-progress" ng-show="progress.width">
@@ -126,7 +126,7 @@
                                         </div>
                                     </section>
                                     </div>
-                            </div>                    
+                            </div>
                         </fieldset>
                     </div>
                     <div data-title="Team" ng-if="creationStep === 'Team'" class="team_settings">
@@ -148,7 +148,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <div class="modal-footer">
                 <div ng-if="creationStep === 'Details'">
                     <span class="error">{{newBlogError}}</span>
@@ -165,4 +165,3 @@
 
 
 </section>
-
