@@ -38,33 +38,33 @@
                 }
             });
             // load all the themes.
+            // TODO: Pagination
             api.themes.query().then(function(data) {
-
                 // filter theme with label (without label are `generic` from inheritance)
-                $scope.themes = data._items.filter(function(theme) {
-                    if (angular.isDefined(theme.label)) {
-                        // set the priority for default theme.
-                        if ($scope.globalTheme.value === theme.name) {
-                            theme.order = 0;
-                        } else {
-                            theme.order = 1;
-                        }
-                        // create criteria to load blogs with the theme.
-                        var criteria = {
-                                source: {
-                                    query: {filtered: {filter: {term: {'theme._id': theme._id}}}}
-                                }
-                            };
-                        api.blogs.query(criteria).then(function(data) {
-                            theme.blogs_count = data._meta.total;
-                            // TODO: Pagination. Will only show the first results page
-                            theme.blogs = data._items;
-                        });
-                        parseTheme(theme);
-                        return true;
-                    }
-                    return false;
+                var themes = data._items.filter(function(theme) {
+                    return angular.isDefined(theme.label);
                 });
+                themes.forEach(function(theme) {
+                    // set the priority for default theme.
+                    if ($scope.globalTheme.value === theme.name) {
+                        theme.order = 0;
+                    } else {
+                        theme.order = 1;
+                    }
+                    // create criteria to load blogs with the theme.
+                    var criteria = {
+                            source: {
+                                query: {filtered: {filter: {term: {'theme._id': theme._id}}}}
+                            }
+                        };
+                    api.blogs.query(criteria).then(function(data) {
+                        theme.blogs_count = data._meta.total;
+                        // TODO: Pagination. Will only show the first results page
+                        theme.blogs = data._items;
+                    });
+                    parseTheme(theme);
+                });
+                $scope.themes = themes;
             $scope.loading = false;
             });
         });
