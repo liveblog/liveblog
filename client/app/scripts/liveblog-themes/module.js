@@ -56,6 +56,8 @@
                                 }
                             };
                         api.blogs.query(criteria).then(function(data) {
+                            theme.blogs_count = data._meta.total;
+                            // TODO: Pagination. Will only show the first results page
                             theme.blogs = data._items;
                         });
                         parseTheme(theme);
