@@ -77,8 +77,9 @@ def get_default_settings(theme, settings=None):
                 % (theme.get('name'), theme.get('extends'))
             logger.info(error_message)
             raise UnknownTheme(error_message)
-    for option in theme.get('options'):
-        settings[option.get('name')] = option.get('default')
+    if theme.get('options', False):
+        for option in theme.get('options', []):
+            settings[option.get('name')] = option.get('default')
     return settings
 
 

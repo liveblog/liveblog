@@ -43,3 +43,7 @@ backend:
   ports:
     - "5000:5000"
     - "5100:5100"
+  volumes:
+   - ../server:/opt/superdesk
+   - ../results/server/unit:/opt/superdesk/results-unit/
+   - ../results/server/behave:/opt/superdesk/results-behave/

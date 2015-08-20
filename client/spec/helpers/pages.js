@@ -2,12 +2,12 @@
 
 var blogs = [
     [
-        {title: 'title: end to end image', description: 'description: end to end image', username: 'first name last name'},
-        {title: 'title: end To end three', description: 'description: end to end three', username: 'first name last name'},
-        {title: 'title: end to end two', description: 'description: end to end two', username: 'first name last name'},
-        {title: 'title: end to end One', description: 'description: end to end one', username: 'first name last name'}
+        {title: 'title: end to end image', description: 'description: end to end image', username: 'Victor the Editor'},
+        {title: 'title: end To end three', description: 'description: end to end three', username: 'Victor the Editor'},
+        {title: 'title: end to end two', description: 'description: end to end two', username: 'Victor the Editor'},
+        {title: 'title: end to end One', description: 'description: end to end one', username: 'Victor the Editor'}
     ], [
-        {title: 'title: end to end closed', description: 'description: end to end closed', username: 'first name last name'}
+        {title: 'title: end to end closed', description: 'description: end to end closed', username: 'Victor the Editor'}
     ]
 ], stateMap = {
     'active': 0,
@@ -194,6 +194,8 @@ function TimelinePage(blog) {
     self.byPosts = by.repeater('post in posts');
     self.byEdit = by.css('[ng-click="onEditClick(post)"]');
     self.byUnpublish = by.css('[ng-click="unpublishPost(post)"]');
+    self.byStartMoving = by.css('[ng-click="preMovePost(post);"]');
+    self.byMoveTo = by.css('[ng-click="movePost(index, \'above\');"]');
     self.byRemove = by.css('[ng-click="askRemovePost(post)"]');
     self.waitForModal = waitForModal.bind(self);
     self.okModal = okModal.bind(self);
@@ -224,6 +226,16 @@ function TimelinePage(blog) {
         return self;
     };
 
+    self.startMoving = function(index) {
+        self.column.element(self.byPosts.row(index)).element(self.byStartMoving).click();
+        return self;
+    };
+
+    self.moveTo = function(index) {
+        self.column.element(self.byPosts.row(index)).element(self.byMoveTo).click();
+        return self;
+    };
+
     self.remove = function(index) {
         self.column.element(self.byPosts.row(index)).element(self.byRemove).click();
         return self;
@@ -237,7 +249,7 @@ function TimelinePage(blog) {
         var post = self.get(index);
         expect(self.getText(index)).toBe(data.text);
         if (data.username) {
-            expect(post.element(by.binding('post.original_creator_name')).getText()).toBe(data.username);
+            expect(post.element(by.binding('post.user.display_name')).getText()).toBe(data.username);
         }
         return self;
     };
@@ -464,9 +476,7 @@ function GeneralSettingsPage() {
 
     self.expectSelected = function(model, value) {
         browser.waitForAngular();
-        browser.wait(function() {
-            return element(by.model(model)).element(by.css('option:checked')).isDisplayed();
-        });
+        browser.sleep(1000);
         expect(element(by.model(model)).element(by.css('option:checked')).getText()).toEqual(value);
     };
 
