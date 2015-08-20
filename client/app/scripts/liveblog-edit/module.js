@@ -16,14 +16,13 @@ define([
     'angular-embed'
 ], function(angular, _) {
     'use strict';
-
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext',
         'upload', 'config', 'embedService', 'postsService', 'modal',
-        'blogService', '$route', '$routeParams'
+        'blogService', '$route', '$routeParams', 'blogSecurityService'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext,
-        upload, config, embedService, postsService, modal, blogService, $route, $routeParams) {
+        upload, config, embedService, postsService, modal, blogService, $route, $routeParams, blogSecurityService) {
 
         // return the list of items from the editor
         function getItemsFromEditor() {
@@ -176,6 +175,12 @@ define([
                     return true;
                 }
             }
+
+        });
+        blogSecurityService.isUserOwner().then(function(result) {
+            $scope.blog.showSettingsLink = result;
+        }, function() {
+            $scope.blog.showSettingsLink = false;
         });
     }
 
@@ -433,6 +438,44 @@ define([
         'superdesk.upload',
         'liveblog.pages-manager'
     ]);
+    app.service('blogSecurityService',
+        ['$q', '$rootScope', '$route', 'blogService', '$location', function($q, $rootScope, $route, blogService, $location) {
+        function isUserOwner() {
+            var def = $q.defer();
+            blogService.get($route.current.params._id)
+            .then(function(response) {
+                if ($rootScope.currentUser._id !== response.original_creator) {
+                    def.resolve(false);
+                } else {
+                    def.resolve(true);
+                }
+            }, function(response) {
+                if (response.status === 404) {
+                    def.reject('Blog does not exist');
+                }
+            });
+            return def.promise;
+        }
+        function canGoToSettings() {
+            var def = $q.defer();
+            isUserOwner().then(function(result) {
+                if (result) {
+                    def.resolve();
+                } else {
+                    def.reject('You do not have permission to change the settings of this blog');
+                    $location.path('/liveblog/edit/' + $route.current.params._id);
+                }
+            }, function() {
+                $location.path('/liveblog');
+                def.reject('You do not have permission to change the settings of this blog');
+            });
+            return def.promise;
+        }
+        return {
+            canGoToSettings: canGoToSettings,
+            isUserOwner: isUserOwner
+        };
+    }]);
     app.config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/liveblog/edit/:_id', {
             label: gettext('Blog Edit'),
@@ -447,7 +490,12 @@ define([
             controller: BlogSettingsController,
             controllerAs: 'settings',
             templateUrl: 'scripts/liveblog-edit/views/settings.html',
-            resolve: {blog: BlogResolver}
+            resolve: {
+                blog: BlogResolver,
+                security: ['blogSecurityService', function(blogSecurityService) {
+                    return blogSecurityService.canGoToSettings();
+                }]
+            }
         });
     }]).config(['apiProvider', function(apiProvider) {
         apiProvider.api('posts', {
