@@ -19,7 +19,6 @@
     <link rel="stylesheet" href="styles/css/sir-trevor-icons.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <link rel="stylesheet" href="styles/css/sir-trevor.css" type="text/css" media="screen" title="no title" charset="utf-8">
     <link rel="stylesheet" href="scripts/bower_components/jcrop/css/jquery.Jcrop.css">
-    <link rel="stylesheet" href="scripts/bower_components/dragula.js/dist/dragula.min.css">
     <link rel="stylesheet" href="scripts/bower_components/sir-trevor-js/sir-trevor.css" type="text/css" media="screen" title="no title" charset="utf-8">
 
   </head>
@@ -77,7 +76,7 @@
     <!-- build:js scripts/liveblog.js -->
     <script src="scripts/liveblog-bloglist/module.js"></script>
     <script src="scripts/liveblog-settings/module.js"></script>
-    <script src="scripts/liveblog-themes/module.js"></script>    
+    <script src="scripts/liveblog-themes/module.js"></script>
     <!-- endbuild -->
 
     <!-- build:js scripts/config.js -->
@@ -94,13 +93,14 @@
             superdesk: 'scripts/bower_components/superdesk/client/app/'
         };
         var modules = [
-            'superdesk.settings',
+            // Disable since we don't have anything to show in the settings
+            // 'superdesk.settings',
+            // 'liveblog.settings',
             'liveblog.bloglist',
             'liveblog.edit',
             'liveblog.posts',
             'liveblog.blog',
             'liveblog.timeline',
-            'liveblog.settings',
             'liveblog.themes',
             'superdesk.desks',
             'superdesk.list',

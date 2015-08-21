@@ -26,6 +26,7 @@
     "moment": false,
     "gettext": false,
     "it": false,
+    "d3": false,
     "xit": false,
     "beforeEach": false,
     "afterEach": false,

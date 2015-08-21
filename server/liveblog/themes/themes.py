@@ -31,6 +31,9 @@ class ThemesResource(Resource):
         'extends': {
             'type': 'string'
         },
+        'abstract': {
+            'type': 'boolean'
+        },
         'version': {
             'type': 'string'
         },

@@ -119,7 +119,10 @@
                     sort: '[("versioncreated", -1)]',
                     source: {
                         query: {filtered: {filter: {term: {blog_status: $scope.activeState.code}}}}
-                    }
+                    },
+                    // bypass the chrome browser cache
+                    // FIXME: should be handled by the api-service with `Cache-Control`
+                    timestamp: Date()
                 };
             if (params.q) {
                 criteria.source.query.filtered.query = {
@@ -136,7 +139,7 @@
         }
 
         function fetchBlogs() {
-            api.blogs.query(getCriteria()).then(function(blogs) {
+            api.blogs.query(getCriteria(), false).then(function(blogs) {
                 $scope.blogs = blogs;
             });
         }
