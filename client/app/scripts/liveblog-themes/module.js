@@ -201,6 +201,7 @@
                 label: gettext('Theme Manager'),
                 controller: LiveblogThemesController,
                 category: superdesk.MENU_MAIN,
+                privileges: {'global_preferences': 1},
                 templateUrl: 'scripts/liveblog-themes/views/list.html'
             });
     }])
