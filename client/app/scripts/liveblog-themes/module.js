@@ -85,47 +85,12 @@
         $scope.selectedBlog = false;
         // loading indicatior for the first timeload.
         $scope.loading = true;
+
         $scope.getTheme = function(name) {
             return $scope.themes.find(function(theme) {
                 return theme.name === name;
             });
         };
-        // load only global preference for themes.
-        api.global_preferences.query({'where': {'key': 'theme'}}).then(function(data) {
-            data._items.forEach(function(item) {
-                if (item.key === 'theme') {
-                    $scope.globalTheme = item;
-                    return;
-                }
-            });
-            // load all the themes.
-            // TODO: Pagination
-            api.themes.query().then(function(data) {
-                var themes = data._items;
-                themes.forEach(function(theme) {
-                    // create criteria to load blogs with the theme.
-                    var criteria = {
-                            source: {
-                                query: {filtered: {filter: {term: {'theme._id': theme._id}}}}
-                            }
-                        };
-                    api.blogs.query(criteria).then(function(data) {
-                        theme.blogs_count = data._meta.total;
-                        // TODO: Pagination. Will only show the first results page
-                        theme.blogs = data._items;
-                    });
-                    parseTheme(theme);
-                });
-                // object that represent the themes hierachy
-                var themes_hierachy = getHierachyFromThemesCollection(themes);
-                // update the scope
-                angular.extend($scope, {
-                    themesHierachy: themes_hierachy,
-                    themes: themes,
-                    loading: false
-                });
-            });
-        });
 
         $scope.isDefaultTheme = function(theme) {
             return $scope.getTheme($scope.globalTheme.value).name === theme.name;
@@ -178,19 +143,11 @@
         };
 
         $scope.removeTheme = function(theme) {
-            api.themes.query().then(function(data) {
-                data._items.forEach(function(item) {
-                    if (item._id === theme._id) {
-                    console.log('we will delete the theme');
-                }
-                else {
-                    console.log('we will not delete the theme')
-                }
+            api.themes.remove(angular.copy(theme)).then(function(message) {
+                notify.pop();
+                notify.info(gettext('Theme "' + theme.label + '" removed.'));
+                init();
             });
-            });
-            // delete theme
-
-            // _.remove($scope.themes._items, theme);
         };
 
         $scope.switchBlogPreview = function(blog) {
@@ -208,6 +165,47 @@
             //return to blog list page
             $location.path('/liveblog/');
         };
+
+        function init() {
+            // load only global preference for themes.
+            api.global_preferences.query({'where': {'key': 'theme'}}).then(function(data) {
+                data._items.forEach(function(item) {
+                    if (item.key === 'theme') {
+                        $scope.globalTheme = item;
+                        return;
+                    }
+                });
+                // load all the themes.
+                // TODO: Pagination
+                api.themes.query({timestamp: Date()}).then(function(data) {
+                    var themes = data._items;
+                    themes.forEach(function(theme) {
+                        // create criteria to load blogs with the theme.
+                        var criteria = {
+                                source: {
+                                    query: {filtered: {filter: {term: {'theme._id': theme._id}}}}
+                                }
+                            };
+                        api.blogs.query(criteria).then(function(data) {
+                            theme.blogs_count = data._meta.total;
+                            // TODO: Pagination. Will only show the first results page
+                            theme.blogs = data._items;
+                        });
+                        parseTheme(theme);
+                    });
+                    // object that represent the themes hierachy
+                    var themes_hierachy = getHierachyFromThemesCollection(themes);
+                    // update the scope
+                    angular.extend($scope, {
+                        themesHierachy: themes_hierachy,
+                        themes: themes,
+                        loading: false
+                    });
+                });
+            });
+        }
+
+        init();
     }
 
     var liveblogThemeModule = angular.module('liveblog.themes', [])
