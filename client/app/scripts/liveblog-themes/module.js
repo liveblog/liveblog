@@ -3,6 +3,77 @@
 
     LiveblogThemesController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q', '$sce', 'config'];
     function LiveblogThemesController($scope, api, $location, notify, gettext, $q, $sce, config) {
+        /**
+         * Return the scale domain (d3) of the keys given a hierarchical collection
+         * @param {object} hierachical_collection
+         * @returns {array} the scale domain
+         */
+        function getColorDomain(hierachical_collection, domain) {
+            domain = domain || [];
+            _.forEach(hierachical_collection, function(value, key) {
+                domain.push(key);
+                if (angular.isObject(value)) {
+                    getColorDomain(value, domain);
+                }
+            });
+            return domain;
+        }
+        /**
+         * Return a collection that represent the hierachy of the themes
+         * @param {array} themes
+         * @returns {object} hierachical collection
+         */
+        function getHierachyFromThemesCollection(themes) {
+            var todo = [];
+            var themes_hierachy = {};
+            function getParentNode(name, collection) {
+                collection = collection || themes_hierachy;
+                for (var key in collection) {
+                    if (collection.hasOwnProperty(key)) {
+                        if (key === name) {
+                            return collection[key];
+                        }
+                        if (angular.isObject(collection[key])) {
+                            var res = getParentNode(name, collection[key]);
+                            if (angular.isDefined(res)) {
+                                return res;
+                            }
+                        }
+                    }
+                }
+            }
+            function addToHierarchy(name, extend) {
+                if (angular.isDefined(extend)) {
+                    var parent_node = getParentNode(extend);
+                    if (angular.isDefined(parent_node)) {
+                        // parent_node[]
+                        var index = todo.findIndex(function(a) {
+                            return a[0] === name;
+                        });
+                        if (index > -1) {
+                            todo.splice(index, 1);
+                        }
+                        parent_node[name] = {};
+                    } else {
+                        todo.push([name, extend]);
+                    }
+                } else {
+                    if (!angular.isDefined(themes_hierachy[name])) {
+                        themes_hierachy[name] = {};
+                    }
+                }
+            }
+            themes.map(function(theme) {
+                addToHierarchy(theme.name, theme['extends']);
+            });
+            while (todo.length > 0) {
+                // FIXME: prevent infinit loop
+                for (var i = 0; i < todo.length; i++) {
+                    addToHierarchy(todo[i][0], todo[i][1]);
+                }
+            }
+            return themes_hierachy;
+        }
         // parse the theme and create or fix properties.
         function parseTheme(theme) {
             var authorRX = /^([^<(]+?)?[ \t]*(?:<([^>(]+?)>)?[ \t]*(?:\(([^)]+?)\)|$)/gm,
@@ -29,6 +100,11 @@
         $scope.selectedBlog = false;
         // loading indicatior for the first timeload.
         $scope.loading = true;
+        $scope.findTheme = function(name) {
+            return $scope.themes.find(function(theme) {
+                return theme.name === name;
+            });
+        };
         // load only global preference for themes.
         api.global_preferences.query({'where': {'key': 'theme'}}).then(function(data) {
             data._items.forEach(function(item) {
@@ -40,17 +116,8 @@
             // load all the themes.
             // TODO: Pagination
             api.themes.query().then(function(data) {
-                // filter theme with label (without label are `generic` from inheritance)
-                var themes = data._items.filter(function(theme) {
-                    return angular.isDefined(theme.label);
-                });
+                var themes = data._items;
                 themes.forEach(function(theme) {
-                    // set the priority for default theme.
-                    if ($scope.globalTheme.value === theme.name) {
-                        theme.order = 0;
-                    } else {
-                        theme.order = 1;
-                    }
                     // create criteria to load blogs with the theme.
                     var criteria = {
                             source: {
@@ -64,8 +131,19 @@
                     });
                     parseTheme(theme);
                 });
-                $scope.themes = themes;
-            $scope.loading = false;
+                // object that represent the themes hierachy
+                var themes_hierachy = getHierachyFromThemesCollection(themes);
+                // set the color for every theme, to visualize the inheritance
+                var color = d3.scale.category20().domain(getColorDomain(themes_hierachy));
+                themes.map(function(theme) {
+                    theme.color = color(theme.name);
+                });
+                // update the scope
+                angular.extend($scope, {
+                    themesHierachy: themes_hierachy,
+                    themes: themes,
+                    loading: false
+                });
             });
         });
 
@@ -93,11 +171,10 @@
                 });
             } else {
                 api.global_preferences.save({'key': 'theme', 'value': theme.name}).then(function(data) {
-                notify.pop();
-                notify.info(gettext('Default theme saved'));
-                $scope.globalTheme = data;
-            });
-
+                    notify.pop();
+                    notify.info(gettext('Default theme saved'));
+                    $scope.globalTheme = data;
+                });
             }
         };
 

@@ -15,49 +15,55 @@
     <div class="loading-indicator" ng-show="loading"><span translate>loading</span></div>
     <div class="list-container">
         <!-- LIST VIEW -->
-        <ul class="card-list">
-            <li ng-repeat="theme in themes | orderBy:'order' track by theme._id ">
-                <figure class="media">
-                    <div if-background-image="{{theme.screenshot}}"></div>
-                </figure>
-                <div class="content">
-                    <h3>{{ ::theme.label }}</h3>
-                    <dl>
-                        <dt>{{ ::'Version' | translate }}:</dt>
-                        <dd>{{ ::theme.version }}</dd>
-                        <dt>{{ ::'Author' | translate }}:</dt>
-                        <dd>
-                            <div ng-if="theme.author.email && !theme.author.url">
-                                <a href="mailto:{{theme.author.email}}?subject={{theme.label}}" target="_blank">{{ ::theme.author.name }}</a>
+        <script type="text/ng-template" id="themeTree">
+            <ul class="">
+                <li ng-init="theme=findTheme(themeName)" ng-style="{'border-color': theme.color}">
+                    <div class="theme card">
+                        <figure class="media">
+                            <div if-background-image="{{theme.screenshot}}"></div>
+                        </figure>
+                        <div class="content">
+                            <h3>{{ ::theme.label }}</h3>
+                            <dl>
+                                <dt>{{ ::'Version' | translate }}:</dt>
+                                <dd>{{ ::theme.version }}</dd>
+                                <dt>{{ ::'Author' | translate }}:</dt>
+                                <dd>
+                                    <div ng-if="theme.author.email && !theme.author.url">
+                                        <a href="mailto:{{theme.author.email}}?subject={{theme.label}}" target="_blank">{{ ::theme.author.name }}</a>
+                                    </div>
+                                    <div ng-if="theme.author.url">
+                                        <a href="{{theme.author.url}}" ng-show="theme.author.email">{{ ::theme.author.name }}</a>
+                                    </div>
+                                    <div ng-if="!theme.author.email && !theme.author.url">
+                                        {{ ::theme.author.name }}
+                                    </div>
+                                </dd>
+                                <dt>{{ ::'No. of blogs using theme' | translate }}:</dt>
+                                <dd>
+                                    <a ng-click="openThemeBlogsModal(theme)">
+                                        {{ ::theme.blogs_count }}
+                                    </a>
+                                </dd>
+                                <dt>{{ ::'Copyright' | translate }}:</dt>
+                                <dd>{{ ::theme.license }}</dd>
+                            </dl>
+                        </div>
+                        <div class="side">
+                            <div ng-hide="theme.name === globalTheme.value">
+                                <button ng-click="remove(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
+                                <button ng-click="makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
                             </div>
-                            <div ng-if="theme.author.url">
-                                <a href="{{theme.author.url}}" ng-show="theme.author.email">{{ ::theme.author.name }}</a>
+                            <div ng-show="theme.name === globalTheme.value">
+                                <div class="default-theme"></div>
                             </div>
-                            <div ng-if="!theme.author.email && !theme.author.url">
-                                {{ ::theme.author.name }}
-                            </div>
-                        </dd>
-                        <dt>{{ ::'No. of blogs using theme' | translate }}:</dt>
-                        <dd>
-                            <a ng-click="openThemeBlogsModal(theme)">
-                                {{ ::theme.blogs_count }}
-                            </a>
-                        </dd>
-                        <dt>{{ ::'Copyright' | translate }}:</dt>
-                        <dd>{{ ::theme.license }}</dd>
-                    </dl>
-                </div>
-                <div class="side">
-                    <div ng-hide="theme.name === globalTheme.value">
-                        <button ng-click="remove(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
-                        <button ng-click="makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
+                        </div>
                     </div>
-                    <div ng-show="theme.name === globalTheme.value">
-                        <div class="default-theme"></div>
-                    </div>
-                </div>
-            </li>
-        </ul>
+                    <ng-include ng-repeat="(themeName, themeChildren) in themeChildren | orderBy:'-themeName'" src="'themeTree'"></ng-include>
+                </li>
+            </ul>
+        </script>
+        <ng-include ng-repeat="(themeName, themeChildren) in themesHierachy | orderBy:'-themeName'" src="'themeTree'"></ng-include>
     </div>
 </section>
 <div sd-modal="" data-model="themeBlogsModal" class="theme-blogs-modal" macro-team="">

@@ -53,19 +53,23 @@
         top: 0px;
         left: 0; right: 0; bottom: 0;
         padding: 30px;
-        .card-list {
-            > li {
+        ul {
+            li {
+                margin-left: 5px;
+                border-left: 5px solid black;
+            }
+            .theme {
+                background-color: white;
+                overflow: auto;
+                width: 100%;
+            }
+            .card {
                 border: 1px solid #d4d4d4;
                 background-color: white;
                 padding: 10px;
-                width: 100%;
+                box-shadow: none;
+                cursor: default;
                 .border-box();
-                float: left;
-                .close {
-                    position: absolute;
-                    right: 10px;
-                    top: 10px;
-                }
                 .media {
                     max-width: 400px;
                     height: 140px;
