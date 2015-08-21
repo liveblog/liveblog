@@ -85,7 +85,7 @@
         $scope.selectedBlog = false;
         // loading indicatior for the first timeload.
         $scope.loading = true;
-        $scope.findTheme = function(name) {
+        $scope.getTheme = function(name) {
             return $scope.themes.find(function(theme) {
                 return theme.name === name;
             });
@@ -126,6 +126,25 @@
                 });
             });
         });
+
+        $scope.isDefaultTheme = function(theme) {
+            return $scope.getTheme($scope.globalTheme.value).name === theme.name;
+        };
+
+        $scope.isPartOfTheDefaultTheme = function(theme) {
+            if ($scope.isDefaultTheme(theme)) {
+                return true;
+            }
+            var default_theme = $scope.getTheme($scope.globalTheme.value);
+            var extend = default_theme['extends'];
+            while (extend) {
+                if (extend === theme.name) {
+                    return true;
+                }
+                extend = $scope.getTheme(extend)['extends'];
+            }
+            return false;
+        };
 
         $scope.openThemeBlogsModal = function(theme) {
             if (theme.blogs.length) {

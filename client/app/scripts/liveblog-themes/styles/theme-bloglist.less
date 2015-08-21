@@ -86,7 +86,7 @@
                     .border-box();
                     padding: 0;
                     overflow: hidden;
-                    margin: 10px 30px 0;
+                    margin: 0 30px 0;
                     float: left;
                     dl {
                         margin: 0;
@@ -112,18 +112,20 @@
 
                 .side {
                     float: right;
-                    width: 200px;
+                    width: 135px;
                     button {
                         width: 125px;
                         margin: 5px;
                     }
-                    .default-theme {
-                        float: right;
-                        width: 90px;
-                        height: 65px;
-                        background: url('../../images/default-icon.png') no-repeat left bottom;
-                    }
-                };
+                }
+                .default-theme {
+                    position: absolute;
+                    right: 0;
+                    top: 0;
+                    width: 90px;
+                    height: 65px;
+                    background: url('../../images/default-icon.png') no-repeat left bottom;
+                }
             }
         }
     }
