@@ -16,8 +16,8 @@
     <div class="list-container">
         <!-- LIST VIEW -->
         <script type="text/ng-template" id="themeTree">
-            <ul class="">
-                <li ng-init="theme=findTheme(themeName)" ng-style="{'border-color': theme.color}">
+            <ul>
+                <li ng-init="theme=findTheme(themeName)">
                     <div class="theme card">
                         <figure class="media">
                             <div if-background-image="{{theme.screenshot}}"></div>

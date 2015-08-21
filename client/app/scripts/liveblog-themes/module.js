@@ -4,21 +4,6 @@
     LiveblogThemesController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q', '$sce', 'config'];
     function LiveblogThemesController($scope, api, $location, notify, gettext, $q, $sce, config) {
         /**
-         * Return the scale domain (d3) of the keys given a hierarchical collection
-         * @param {object} hierachical_collection
-         * @returns {array} the scale domain
-         */
-        function getColorDomain(hierachical_collection, domain) {
-            domain = domain || [];
-            _.forEach(hierachical_collection, function(value, key) {
-                domain.push(key);
-                if (angular.isObject(value)) {
-                    getColorDomain(value, domain);
-                }
-            });
-            return domain;
-        }
-        /**
          * Return a collection that represent the hierachy of the themes
          * @param {array} themes
          * @returns {object} hierachical collection
@@ -133,11 +118,6 @@
                 });
                 // object that represent the themes hierachy
                 var themes_hierachy = getHierachyFromThemesCollection(themes);
-                // set the color for every theme, to visualize the inheritance
-                var color = d3.scale.category20().domain(getColorDomain(themes_hierachy));
-                themes.map(function(theme) {
-                    theme.color = color(theme.name);
-                });
                 // update the scope
                 angular.extend($scope, {
                     themesHierachy: themes_hierachy,
