@@ -148,7 +148,7 @@
             api.themes.remove(angular.copy(theme)).then(function(message) {
                 notify.pop();
                 notify.info(gettext('Theme "' + theme.label + '" removed.'));
-                init();
+                loadThemes();
             });
         };
 
@@ -168,7 +168,7 @@
             $location.path('/liveblog/');
         };
 
-        function init() {
+        function loadThemes() {
             // load only global preference for themes.
             api.global_preferences.query({'where': {'key': 'theme'}}).then(function(data) {
                 data._items.forEach(function(item) {
@@ -207,7 +207,7 @@
             });
         }
 
-        init();
+        loadThemes();
     }
 
     var liveblogThemeModule = angular.module('liveblog.themes', [])
