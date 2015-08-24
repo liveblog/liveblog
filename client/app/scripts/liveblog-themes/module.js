@@ -1,8 +1,8 @@
 (function() {
     'use strict';
 
-    LiveblogThemesController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q', '$sce', 'config'];
-    function LiveblogThemesController($scope, api, $location, notify, gettext, $q, $sce, config) {
+    LiveblogThemesController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q', '$sce', 'config', 'lodash'];
+    function LiveblogThemesController($scope, api, $location, notify, gettext, $q, $sce, config, _) {
         /**
          * Return a collection that represent the hierachy of the themes
          * @param {array} themes
@@ -30,17 +30,18 @@
             function addToHierarchy(name, extend) {
                 if (angular.isDefined(extend)) {
                     var parent_node = getParentNode(extend);
+                    var index = _.findIndex(todo, function(a) {
+                        return a[0] === name;
+                    });
                     if (angular.isDefined(parent_node)) {
-                        // parent_node[]
-                        var index = todo.findIndex(function(a) {
-                            return a[0] === name;
-                        });
                         if (index > -1) {
                             todo.splice(index, 1);
                         }
                         parent_node[name] = {};
                     } else {
-                        todo.push([name, extend]);
+                        if (index === -1) {
+                            todo.push([name, extend]);
+                        }
                     }
                 } else {
                     if (!angular.isDefined(themes_hierachy[name])) {
@@ -51,11 +52,12 @@
             themes.map(function(theme) {
                 addToHierarchy(theme.name, theme['extends']);
             });
-            while (todo.length > 0) {
-                // FIXME: prevent infinit loop
+            var max_loops = todo.length * todo.length;
+            while (todo.length > 0 && max_loops > 0) {
                 for (var i = 0; i < todo.length; i++) {
                     addToHierarchy(todo[i][0], todo[i][1]);
                 }
+                max_loops--;
             }
             return themes_hierachy;
         }
@@ -86,7 +88,7 @@
         // loading indicatior for the first timeload.
         $scope.loading = true;
         $scope.getTheme = function(name) {
-            return $scope.themes.find(function(theme) {
+            return _.find($scope.themes, function(theme) {
                 return theme.name === name;
             });
         };

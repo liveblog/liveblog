@@ -81,6 +81,47 @@
 },
 {
     "resource": "themes",
+    "data": {
+        "label": "Angular Base",
+        "name": "angular-base",
+        "abstract": true,
+        "version": "1.1.0",
+        "scripts": [
+            "//code.jquery.com/jquery-1.11.3.min.js",
+            "//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js",
+            "//code.angularjs.org/1.4.2/angular-resource.js",
+            "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js",
+            "liveblog-embed/main.js",
+            "liveblog-embed/resources.service.js",
+            "liveblog-embed/pages-manager.service.js",
+            "liveblog-embed/permalink.service.js",
+            "liveblog-embed/directives.js",
+            "liveblog-embed/filters.js"
+        ],
+        "options": [
+            {
+                "name": "postsPerPage",
+                "label": "Number of posts per page",
+                "type": "number",
+                "default": 20,
+                "help": "Set the number of posts you want to see at the initialization"
+            },
+            {
+                "name": "permalinkDelimiter",
+                "label": "Permalin Delimiter",
+                "type": "select",
+                "options": [
+                    {"value": "?", "label": "Query delimiter"},
+                    {"value": "#", "label": " Fragment identifier delimiter"}
+                ],
+                "default": "?",
+                "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
+            }
+        ]
+    }
+},
+{
+    "resource": "themes",
     "id_name": "-id theme default-",
     "data": {
         "name": "default-theme",
