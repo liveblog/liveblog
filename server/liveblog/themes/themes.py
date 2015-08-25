@@ -100,6 +100,12 @@ class ThemesService(BaseService):
         # raise an exception if the removed theme is the default one
         if deleted_theme['name'] == global_default_theme:
             raise SuperdeskApiError.forbiddenError("This is a default theme and can not be deleted")
+        else:
+            default_theme = get_resource_service('themes').find_one(req=None, name=global_default_theme)
+            extend = default_theme['extends']
+            if deleted_theme['name'] == extend:
+                raise SuperdeskApiError.forbiddenError(
+                    'This theme is referenced by a default-theme and can not be removed')
         # update all the blogs using the removed theme and assign the default theme
         blogs_service = get_resource_service('blogs')
         blogs = blogs_service.get(req=None, lookup={'theme._id': deleted_theme['_id']})
