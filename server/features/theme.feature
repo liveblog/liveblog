@@ -49,7 +49,7 @@ Feature: Themes operations
         """
         Given "themes"
         """
-        [{"name": "forest-theme", "version": "1.0.1"}, {"name": "default-theme", "version": "1.0.1"}]
+        [{"name": "forest-theme", "version": "1.0.1"}, {"name": "default-theme", "version": "1.0.1", "extends": "forest-theme"}]
         """
         When we find for "themes" the id as "my-theme" by "{"name": "forest-theme"}"
         When we find for "themes" the id as "my-default-theme" by "{"name": "default-theme"}"
@@ -73,7 +73,7 @@ Feature: Themes operations
         When we delete "themes/#my-default-theme#"
         Then we get response code 403
         When we delete "/themes/#my-theme#"
-        Then we get deleted response
+        Then we get response code 403
         When we get "/blogs"
         Then we get list with 1 items
         """
