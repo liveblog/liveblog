@@ -1,0 +1,90 @@
+<div class="subnav ng-scope">
+    <h3 class="page-nav-title" translate>Theme Manager</h3>
+    <div class="button-stack right-stack">
+        <!-- Commented for release (feature is not ready) -->
+        <!-- <button class="navbtn navbtn-info" ng-click="openNewTheme();">
+            <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
+        </button> -->
+        <div style="margin:10px; float: left;">
+            <button ng-click="saveSettings()" class="btn btn-info pull-right" type="button" translate ng-disabled="!setForm.$dirty">Save</button>
+            <button ng-click="close()" class="btn btn-default pull-right" type="button" translate>Cancel</button>
+        </div>
+    </div>
+</div>
+
+<section class="main-section themelist">
+    <div class="loading-indicator" ng-show="loading"><span translate>loading</span></div>
+    <div class="list-container">
+        <!-- LIST VIEW -->
+        <script type="text/ng-template" id="themeTree">
+            <ul>
+                <li ng-init="theme=getTheme(themeName)">
+                    <div class="theme card">
+                        <figure class="media">
+                            <div if-background-image="{{theme.screenshot}}"></div>
+                        </figure>
+                        <div class="content">
+                            <h3>{{ ::theme.label }}</h3>
+                            <dl>
+                                <dt>{{ ::'Version' | translate }}:</dt>
+                                <dd>{{ ::theme.version }}</dd>
+                                <dt>{{ ::'Author' | translate }}:</dt>
+                                <dd>
+                                    <div ng-if="theme.author.email && !theme.author.url">
+                                        <a href="mailto:{{theme.author.email}}?subject={{theme.label}}" target="_blank">{{ ::theme.author.name }}</a>
+                                    </div>
+                                    <div ng-if="theme.author.url">
+                                        <a href="{{theme.author.url}}" ng-show="theme.author.email">{{ ::theme.author.name }}</a>
+                                    </div>
+                                    <div ng-if="!theme.author.email && !theme.author.url">
+                                        {{ ::theme.author.name }}
+                                    </div>
+                                </dd>
+                                <dt>{{ ::'No. of blogs using theme' | translate }}:</dt>
+                                <dd>
+                                    <a ng-click="openThemeBlogsModal(theme)">
+                                        {{ ::theme.blogs_count }}
+                                    </a>
+                                </dd>
+                                <dt>{{ ::'Copyright' | translate }}:</dt>
+                                <dd>{{ ::theme.license }}</dd>
+                            </dl>
+                        </div>
+                        <div class="side">
+                            <div ng-hide="isDefaultTheme(theme)">
+                                <!-- Commented for release (feature is not ready) -->
+                                <!-- <button ng-disabled="isPartOfTheDefaultTheme(theme)" ng-click="remove(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button> -->
+                                <button ng-if="!theme.abstract" ng-click="makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
+                            </div>
+                        </div>
+                        <div class="default-theme" ng-show="isDefaultTheme(theme)"></div>
+                    </div>
+                    <ng-include ng-repeat="(themeName, themeChildren) in themeChildren | orderBy:'-themeName'" src="'themeTree'"></ng-include>
+                </li>
+            </ul>
+        </script>
+        <ng-include ng-repeat="(themeName, themeChildren) in themesHierachy | orderBy:'-themeName'" src="'themeTree'"></ng-include>
+    </div>
+</section>
+<div sd-modal="" data-model="themeBlogsModal" class="theme-blogs-modal" macro-team="">
+    <div class="modal-header" ng-class="{'modal-header-blogs': !selectedBlog}">
+        <button class="close" ng-click="closeThemeBlogsModal()"><i class="icon-close-small"></i></button>
+        <div ng-hide="selectedBlog">
+            <h3 translate>List of blogs using theme</h3>
+            <h2>{{selectedTheme.label}}
+        </div>
+    </div>
+    <div class="modal-body">
+        <div  ng-hide="selectedBlog">
+            <ul class="theme-blogs">
+                <li ng-repeat="blog in selectedTheme.blogs" ng-click="switchBlogPreview(blog)">{{blog.title}}</li>
+            <ul>
+        </div>
+        <div ng-show="selectedBlog">
+            <iframe width="100%" height="715" ng-src="{{ selectedBlog.iframe_url }}" frameborder="0" allowfullscreen></iframe>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" translate ng-click="closeThemeBlogsModal()">Cancel</button>
+    </div>
+</div>

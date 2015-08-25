@@ -127,6 +127,48 @@ function BlogsPage() {
     };
 }
 
+function ThemesManagerPage() {
+    var self = this;
+    self.themes = element.all(by.css('.theme'));
+    self.blogsRows = element.all(by.repeater('blog in selectedTheme.blogs'));
+
+    self.openThemesManager = function() {
+        element(by.css('[ng-click="toggleMenu()"]')).click();
+        browser.wait(function() {
+            return element(by.css('[href="#/themes/"]')).isDisplayed();
+        });
+        element(by.css('[href="#/themes/"]')).click();
+        return self;
+    };
+
+    self.setAsDefault = function(theme_index) {
+        return self.themes.get(theme_index).element(by.css('[ng-click="makeDefault(theme)"]')).click();
+    };
+
+    self.expectTheme = function(index, params) {
+        var theme = self.themes.get(index);
+        var number_of_blog_elmt = theme.element(by.css('[ng-click="openThemeBlogsModal(theme)"]'));
+        // check if it is the default theme
+        expect(theme.element(by.css('.default-theme')).isDisplayed()).toBe(params.is_default_theme);
+        // check if the number shown match
+        expect(number_of_blog_elmt.getText()).toBe(params.number_of_blogs_expected.toString());
+        // open the modal
+        number_of_blog_elmt.click();
+        // check if first row is displayed
+        if (params.number_of_blogs_expected > 0) {
+            expect(self.blogsRows.get(0).isDisplayed()).toBe(true);
+        }
+        // check if the number of row matchs
+        expect(self.blogsRows.count()).toBe(params.number_of_blogs_expected);
+        var close_modal = element(by.css('[ng-click="closeThemeBlogsModal()"]'));
+        close_modal.isPresent().then(function(is_present) {
+            if (is_present) {
+                close_modal.click();
+            }
+        });
+    };
+}
+
 function BlogPage(blogs) {
     var self = this;
     self.blogs = blogs;
@@ -499,3 +541,4 @@ function randomString(maxLen) {
 exports.blogs = new BlogsPage();
 exports.generalSettings = new GeneralSettingsPage();
 exports.randomString = randomString;
+exports.themeManager = new ThemesManagerPage();

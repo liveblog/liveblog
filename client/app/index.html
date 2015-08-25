@@ -76,6 +76,7 @@
     <!-- build:js scripts/liveblog.js -->
     <script src="scripts/liveblog-bloglist/module.js"></script>
     <script src="scripts/liveblog-settings/module.js"></script>
+    <script src="scripts/liveblog-themes/module.js"></script>
     <!-- endbuild -->
 
     <!-- build:js scripts/config.js -->
@@ -92,13 +93,15 @@
             superdesk: 'scripts/bower_components/superdesk/client/app/'
         };
         var modules = [
-            'superdesk.settings',
+            // Disable since we don't have anything to show in the settings
+            // 'superdesk.settings',
+            // 'liveblog.settings',
             'liveblog.bloglist',
             'liveblog.edit',
             'liveblog.posts',
             'liveblog.blog',
             'liveblog.timeline',
-            'liveblog.settings',
+            'liveblog.themes',
             'superdesk.desks',
             'superdesk.list',
             'superdesk.notification',

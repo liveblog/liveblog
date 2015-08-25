@@ -31,7 +31,19 @@ class ThemesResource(Resource):
         'extends': {
             'type': 'string'
         },
+        'abstract': {
+            'type': 'boolean'
+        },
         'version': {
+            'type': 'string'
+        },
+        'screenshot': {
+            'type': 'string'
+        },
+        'author': {
+            'type': 'string'
+        },
+        'license': {
             'type': 'string'
         },
         'styles': {
