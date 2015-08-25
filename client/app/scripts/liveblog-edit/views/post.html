@@ -9,7 +9,7 @@
             </div>
             <div class="lb-post__content">
                 <div class="lb-post__header">
-                    <div class="inline first">
+                    <div class="inline">
                         <span class="name">{{ ::post.user.display_name }}</span> | <time>{{ post.published_date | reldate }}</time>
                     </div>
                     <div class="inline" ng-if="post.published_date && post._updated !== post.published_date">
