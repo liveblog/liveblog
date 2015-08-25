@@ -141,6 +141,10 @@ function ThemesManagerPage() {
         return self;
     };
 
+    self.setAsDefault = function(theme_index) {
+        return self.themes.get(theme_index).element(by.css('[ng-click="makeDefault(theme)"]')).click();
+    };
+
     self.expectTheme = function(index, params) {
         var theme = self.themes.get(index);
         var number_of_blog_elmt = theme.element(by.css('[ng-click="openThemeBlogsModal(theme)"]'));
@@ -156,6 +160,12 @@ function ThemesManagerPage() {
         }
         // check if the number of row matchs
         expect(self.blogsRows.count()).toBe(params.number_of_blogs_expected);
+        var close_modal = element(by.css('[ng-click="closeThemeBlogsModal()"]'));
+        close_modal.isPresent().then(function(is_present) {
+            if (is_present) {
+                close_modal.click();
+            }
+        });
     };
 }
 
