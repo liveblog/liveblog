@@ -93,12 +93,9 @@
             });
         };
         // load only global preference for themes.
-        api.global_preferences.query({'where': {'key': 'theme'}}).then(function(data) {
-            data._items.forEach(function(item) {
-                if (item.key === 'theme') {
-                    $scope.globalTheme = item;
-                    return;
-                }
+        api.global_preferences.query({'where': {'key': 'theme'}}).then(function(global_preferences) {
+            $scope.globalTheme = _.find(global_preferences._items, function(item) {
+                return item.key === 'theme';
             });
             // load all the themes.
             // TODO: Pagination
@@ -130,7 +127,9 @@
         });
 
         $scope.isDefaultTheme = function(theme) {
-            return $scope.getTheme($scope.globalTheme.value).name === theme.name;
+            if (angular.isDefined($scope.globalTheme)) {
+                return $scope.getTheme($scope.globalTheme.value).name === theme.name;
+            }
         };
 
         $scope.isPartOfTheDefaultTheme = function(theme) {
