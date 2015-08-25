@@ -1,13 +1,45 @@
-[{
+[
+{
+    "resource": "roles",
+    "id_name": "-id Editor role-",
+    "data": {
+        "description": "Editor can control and publish content to the liveblog and invite people to contribute",
+        "name": "Editor",
+        "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}
+    }
+},
+{
+    "resource": "roles",
+    "id_name": "-id Contributor role-",
+    "data": {
+        "description": "Contributor can submit post to be approved by the Editor",
+        "name": "Contributor",
+        "privileges": {"submit_post": 1, "posts": 1, "archive": 1}
+    }
+},
+{
     "resource": "users",
     "data": {
         "username": "admin",
-        "first_name": "first name",
-        "last_name": "last name",
+        "first_name": "Edwin",
+        "last_name": "the admin",
         "password": "admin",
         "user_type": "administrator",
-        "email": "a@a_other.com",
-	"sign_off": "abc"
+        "email": "abc@other.com",
+        "sign_off": "abc"
+    }
+},
+{
+    "resource": "users",
+    "data": {
+        "username": "editor",
+        "first_name": "Victor",
+        "last_name": "the Editor",
+        "role": "-id Editor role-",
+        "user_type": "administrator",
+        "password": "editor",
+        "email": "editor@other.com",
+        "sign_off": "eo"
     }
 },
 {
@@ -49,6 +81,47 @@
 },
 {
     "resource": "themes",
+    "data": {
+        "label": "Angular Base",
+        "name": "angular-base",
+        "abstract": true,
+        "version": "1.1.0",
+        "scripts": [
+            "//code.jquery.com/jquery-1.11.3.min.js",
+            "//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js",
+            "//code.angularjs.org/1.4.2/angular-resource.js",
+            "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js",
+            "liveblog-embed/main.js",
+            "liveblog-embed/resources.service.js",
+            "liveblog-embed/pages-manager.service.js",
+            "liveblog-embed/permalink.service.js",
+            "liveblog-embed/directives.js",
+            "liveblog-embed/filters.js"
+        ],
+        "options": [
+            {
+                "name": "postsPerPage",
+                "label": "Number of posts per page",
+                "type": "number",
+                "default": 20,
+                "help": "Set the number of posts you want to see at the initialization"
+            },
+            {
+                "name": "permalinkDelimiter",
+                "label": "Permalin Delimiter",
+                "type": "select",
+                "options": [
+                    {"value": "?", "label": "Query delimiter"},
+                    {"value": "#", "label": " Fragment identifier delimiter"}
+                ],
+                "default": "?",
+                "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
+            }
+        ]
+    }
+},
+{
+    "resource": "themes",
     "id_name": "-id theme default-",
     "data": {
         "name": "default-theme",
@@ -78,6 +151,7 @@
 },
 {
     "resource": "blogs",
+    "username": "editor",
     "data": {
         "title": "title: end to end One",
         "versioncreated" : "2014-02-03T19:34:00+0000",
@@ -87,6 +161,7 @@
 },
 {
     "resource": "blogs",
+    "username": "editor",
     "data": {
         "title": "title: end to end two",
         "versioncreated" : "2014-02-03T19:35:00+0000",
@@ -95,6 +170,7 @@
 },
 {
     "resource": "blogs",
+    "username": "editor",
     "data": {
         "title": "title: end To end three",
         "versioncreated" : "2014-02-03T19:36:00+0000",
@@ -104,6 +180,7 @@
 },
 {
     "resource": "blogs",
+    "username": "editor",
     "data": {
         "title": "title: end to end closed",
         "description": "description: end to end closed",
@@ -114,6 +191,7 @@
 },
 {
     "resource": "blogs",
+    "username": "editor",
     "data": {
         "title": "title: end to end image",
         "description": "description: end to end image",
@@ -125,6 +203,7 @@
 
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "firstcreated": "2013-11-11T11:11:11+00:00",
         "text": "text post one: end to end item One",
@@ -134,6 +213,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "firstcreated": "2013-11-11T11:11:12+00:00",
         "text": "text post one: end to end item two",
@@ -143,6 +223,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "firstcreated": "2013-11-11T11:11:13+00:00",
         "text": "text post one: End to End item three",
@@ -152,6 +233,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "firstcreated": "2013-11-11T11:11:14+00:00",
         "blog": "-id blog one-",
@@ -176,6 +258,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "firstcreated": "2013-11-11T11:11:15+00:00",
         "text": "text post two: end to end item onE",
@@ -185,6 +268,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "firstcreated": "2013-11-11T11:11:16+00:00",
         "text": "text post two: end to end item two",
@@ -194,6 +278,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "firstcreated": "2013-11-11T11:11:17+00:00",
         "blog": "-id blog one-",
@@ -216,6 +301,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "firstcreated": "2013-11-11T11:11:18+00:00",
         "text": "text post three: end to end item one",
@@ -225,6 +311,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "firstcreated": "2013-11-11T11:11:19+00:00",
         "blog": "-id blog one-",
@@ -245,6 +332,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post four: end to end item one",
         "item_type": "text"
@@ -253,6 +341,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post five: end to end item one",
         "item_type": "text"
@@ -261,6 +350,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post six: end to end item one",
         "item_type": "text"
@@ -269,6 +359,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post seven: end to end item one",
         "item_type": "text"
@@ -277,6 +368,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post eight: end to end item one",
         "item_type": "text"
@@ -285,6 +377,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post nine: end to end item one",
         "item_type": "text"
@@ -293,6 +386,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post ten: end to end item one",
         "item_type": "text"
@@ -301,6 +395,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post eleven: end to end item one",
         "item_type": "text"
@@ -309,6 +404,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post twelve: end to end item one",
         "item_type": "text"
@@ -317,6 +413,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post thirteen: end to end item one",
         "item_type": "text"
@@ -325,6 +422,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post fourteen: end to end item one",
         "item_type": "text"
@@ -333,6 +431,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post fifteen: end to end item one",
         "item_type": "text"
@@ -341,6 +440,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post sixteen: end to end item one",
         "item_type": "text"
@@ -349,6 +449,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post seventeen: end to end item one",
         "item_type": "text"
@@ -357,6 +458,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post eighteen: end to end item one",
         "item_type": "text"
@@ -365,6 +467,7 @@
 },
 {
     "resource": "items",
+    "username": "editor",
     "data": {
         "text": "text post nineteen: end to end item one",
         "item_type": "text"
@@ -373,6 +476,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -392,6 +496,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -411,6 +516,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -430,6 +536,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -449,6 +556,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -468,6 +576,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -487,6 +596,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -506,6 +616,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -525,6 +636,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -544,6 +656,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -563,6 +676,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -582,6 +696,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -601,6 +716,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -620,6 +736,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -639,6 +756,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{
@@ -658,6 +776,7 @@
 },
 {
     "resource": "posts",
+    "username": "editor",
     "data": {
         "blog": "-id blog three-",
         "groups": [{

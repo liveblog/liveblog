@@ -162,7 +162,7 @@ article .liveblog--card {
     font-size: 0.9em;
     line-height: 1.25em;
 }
-article .embed-preview:not([data-twttr-id]) {
+article .embed-preview:not(:empty):not([data-twttr-id]) {
     position: relative;
     padding-bottom: 56.25%; /* 16:9 */
     padding-top: 25px;
@@ -231,4 +231,40 @@ article blockquote li:before {
     .lb-item {
         margin-left: 0;
     }
+}
+
+.lb-post-permalink {
+    float: right;
+    visibility: hidden;
+}
+
+.lb-post:hover .lb-post-permalink {
+    visibility: visible;
+}
+@-webkit-keyframes fadeIt {
+  0%   { background-color: #FFFFFF; }
+  50%  { background-color: #e6f6ef; }
+  100% { background-color: #FFFFFF; }
+}
+@-moz-keyframes fadeIt {
+  0%   { background-color: #FFFFFF; }
+  50%  { background-color: #e6f6ef; }
+  100% { background-color: #FFFFFF; }
+}
+@-o-keyframes fadeIt {
+  0%   { background-color: #FFFFFF; }
+  50%  { background-color: #e6f6ef; }
+  100% { background-color: #FFFFFF; }
+}
+@keyframes fadeIt {
+  0%   { background-color: #FFFFFF; }
+  50%  { background-color: #e6f6ef; }
+  100% { background-color: #FFFFFF; }
+}
+.lb-post-permalink-selected {
+    background-image:none !important;
+    -webkit-animation: fadeIt 5s ease-in-out;
+       -moz-animation: fadeIt 5s ease-in-out;
+         -o-animation: fadeIt 5s ease-in-out;
+            animation: fadeIt 5s ease-in-out;
 }

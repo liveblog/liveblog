@@ -55,11 +55,11 @@ Feature: Settings operations
 
     @auth
     Scenario: Update theme preferences for a specific blog
-        Given "blogs"
+        When we post to "blogs"
         """
         [{"title": "abc"}]
         """
-        When we patch given
+        When we patch latest
         """
         {"blog_preferences": {"theme": "railscast"}}
         """

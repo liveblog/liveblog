@@ -14,6 +14,8 @@ import os
 import glob
 import json
 import superdesk
+from bson.objectid import ObjectId
+from superdesk.errors import SuperdeskApiError
 
 
 class ThemesResource(Resource):
@@ -29,7 +31,19 @@ class ThemesResource(Resource):
         'extends': {
             'type': 'string'
         },
+        'abstract': {
+            'type': 'boolean'
+        },
         'version': {
+            'type': 'string'
+        },
+        'screenshot': {
+            'type': 'string'
+        },
+        'author': {
+            'type': 'string'
+        },
+        'license': {
             'type': 'string'
         },
         'styles': {
@@ -80,6 +94,19 @@ class ThemesService(BaseService):
                 self.create([theme])
                 created.append(theme)
         return (created, updated)
+
+    def on_delete(self, deleted_theme):
+        global_default_theme = get_resource_service('global_preferences').get_global_prefs()['theme']
+        # raise an exception if the removed theme is the default one
+        if deleted_theme['name'] == global_default_theme:
+            raise SuperdeskApiError.forbiddenError("This is a default theme and can not be deleted")
+        # update all the blogs using the removed theme and assign the default theme
+        blogs_service = get_resource_service('blogs')
+        blogs = blogs_service.get(req=None, lookup={'theme._id': deleted_theme['_id']})
+        for blog in blogs:
+            # will assign the default theme to this blog
+            default_theme = blogs_service.get_theme_snapshot(global_default_theme)
+            blogs_service.system_update(ObjectId(blog['_id']), {'theme': default_theme}, blog)
 
 
 class ThemesCommand(superdesk.Command):

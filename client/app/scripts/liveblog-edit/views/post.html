@@ -1,56 +1,61 @@
-<li class="lb-post">
-    <div class="lb-post__holder">
-        <div class="lb-post__figure">
-            <figure class="avatar">
-                <img class="ng-isolate-scope" data-src="post.picture_url" sd-user-avatar="">
-            </figure>
-        </div>
-        <div class="lb-post__content">
-            <div class="lb-post__header">
-                <div class="inline first">
-                    <span class="name">{{ ::post.original_creator_name }}</span> | <time>{{ post.published_date | reldate }}</time>
-                </div>
-                <div class="inline" ng-if="post._updated !== post.published_date">
-                    <span class="updated-label" translate>Updated</span> <time class="updated-time">{{ post._updated | reldate }}</time>
-                </div>
-                <div class="lb-post__actions">
-                    <ul>
-                        <li><a ng-click="onEditClick(post)" tooltip-placement="bottom" tooltip="{{ 'Edit' | translate }}"><i class="icon-pencil"></i></a></li>
-                        <li><a ng-click="askRemovePost(post)" tooltip-placement="bottom" tooltip="{{ 'Remove' | translate }}"><i class="icon-remove"></i></a></li>
-                        <li ng-if="allowUnpublish"><a ng-click="unpublishPost(post)" tooltip-placement="bottom" tooltip="{{ 'Unpublish and save in draft' | translate }}"><i class="icon-archive" alt="draft posts"></i></a></li>
-                    </ul>
-                </div>
+<li>
+    <div ng-if="allowReordering" ng-class="{'active top': post.order > reorderPost.order}" class="timeline-reorder" ng-click="movePost(index, 'above');" translate>Click to place the item here</div>
+    <div class="lb-post" ng-class="{'active': (post.order === reorderPost.order || post.order === keepHighlighted)}">
+        <div class="lb-post__holder">
+            <div class="lb-post__figure">
+                <figure class="avatar">
+                    <img class="ng-isolate-scope" data-src="post.user.picture_url" sd-user-avatar="">
+                </figure>
             </div>
-            <div ng-if="post.multiple_items" class="lb-post__list">
-                <div ng-if="!post.show_all" title="Click to show all items" ng-click="toggleMultipleItems()" class="multiple-item">
-                    <div lb-bind-html html-content="{{ post.mainItem.item.text }}"></div>
+            <div class="lb-post__content">
+                <div class="lb-post__header">
+                    <div class="inline">
+                        <span class="name">{{ ::post.user.display_name }}</span> | <time>{{ post.published_date | reldate }}</time>
+                    </div>
+                    <div class="inline" ng-if="post.published_date && post._updated !== post.published_date">
+                        <span class="updated-label" translate>Updated</span> <time class="updated-time">{{ post._updated | reldate }}</time>
+                    </div>
+                    <div class="lb-post__actions">
+                        <ul>
+                            <li><a ng-click="onEditClick(post)" tooltip-placement="bottom" tooltip="{{ 'Edit' | translate }}"><i class="icon-pencil"></i></a></li>
+                            <li><a ng-click="askRemovePost(post)" tooltip-placement="bottom" tooltip="{{ 'Remove' | translate }}"><i class="icon-remove"></i></a></li>
+                            <li ng-if="allowUnpublish"><a ng-click="unpublishPost(post)" tooltip-placement="bottom" tooltip="{{ 'Unpublish and save in draft' | translate }}"><i class="icon-archive" alt="draft posts"></i></a></li>
+                            <li ng-if="allowReordering"><a ng-click="preMovePost(post);" tooltip-placement="bottom" tooltip="{{ 'Change order' | translate }}"><i class="icon-move"></i></a></li>
+                        </ul>
+                    </div>
                 </div>
-                <div ng-if="post.show_all">
-                     <ul>
-                         <li ng-repeat="item in post.items track by item.item._id">
-                            <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item" ng-class="{'lb-post__item--even': !$first}"></div>
+                <div ng-if="post.multiple_items" class="lb-post__list">
+                    <div ng-if="!post.show_all" title="Click to show all items" ng-click="toggleMultipleItems()" class="multiple-item">
+                        <div lb-bind-html html-content="{{ post.mainItem.item.text }}"></div>
+                    </div>
+                    <div ng-if="post.show_all">
+                         <ul>
+                             <li ng-repeat="item in post.items track by item.item._id">
+                                <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item" ng-class="{'lb-post__item--even': !$first}"></div>
+                             </li>
+                         </ul>
+                    </div>
+                </div>
+                <div ng-if="!post.multiple_items" class="lb-post__list">
+                    <ul>
+                        <li ng-repeat="item in post.items track by item.item._id">
+                            <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item" ng-class-even="'lb-post__item--even'"></div>
                          </li>
                      </ul>
                 </div>
             </div>
-            <div ng-if="!post.multiple_items" class="lb-post__list">
-                <ul>
-                    <li ng-repeat="item in post.items track by item.item._id">
-                        <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item" ng-class-even="'lb-post__item--even'"></div>
-                     </li>
-                 </ul>
-            </div>
         </div>
+        <a class="lb-post__expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && !post.show_all">
+            <div class="lb-post__expander-multiple-items">
+                <div class="lb-post__expander-multiple-items-roundel">
+                    <div class="lb-post__expander-multiple-items-roundel-text">{{ post.multiple_items }}</div>
+                </div>
+                <div translate class="lb-post__expander-multiple-items-roundel-label">ITEMS</div>
+            </div>
+        </a>
+        <a class="lb-post__expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && post.show_all">
+            <div class="lb-post__collapser-multiple-items"></div>
+        </a>
     </div>
-    <a class="lb-post__expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && !post.show_all">
-        <div class="lb-post__expander-multiple-items">
-            <div class="lb-post__expander-multiple-items-roundel">
-                <div class="lb-post__expander-multiple-items-roundel-text">{{ post.multiple_items }}</div>
-            </div>
-            <div translate class="lb-post__expander-multiple-items-roundel-label">ITEMS</div>
-        </div>
-    </a>
-    <a class="lb-post__expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && post.show_all">
-        <div class="lb-post__collapser-multiple-items"></div>
-    </a>
+    <div ng-if="allowReordering" ng-class="{'active bottom': post.order < reorderPost.order}" class="timeline-reorder" ng-click="movePost(index, 'below');" translate>Click to place the post here</div>
 </li>

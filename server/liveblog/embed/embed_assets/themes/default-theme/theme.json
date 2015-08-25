@@ -6,14 +6,18 @@
     "styles": [
         "styles/reset.css",
         "styles/embed.css",
-        "//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic"
+        "//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic",
+        "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
     ],
     "scripts": [
-        "//code.angularjs.org/1.3.14/angular-animate.js",
+        "//code.angularjs.org/1.4.2/angular-animate.js",
         "vendors/ng-infinite-scroll.min.js",
         "vendors/fecha.js",
         "main.js"
     ],
+    "screenshot": "screenshot.png",
+    "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
+    "license": "AGPL-3.0",
     "options": [
         {
             "name": "showAuthor",

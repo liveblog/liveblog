@@ -57,9 +57,7 @@ def get_app(config=None):
 
     if config['AMAZON_CONTAINER_NAME']:
         from superdesk.storage.amazon.amazon_media_storage import AmazonMediaStorage
-        from superdesk.storage.amazon.import_from_amazon import ImportFromAmazonCommand
         media_storage = AmazonMediaStorage
-        superdesk.command('import:amazon', ImportFromAmazonCommand())
 
     config['DOMAIN'] = {}
 
@@ -132,7 +130,7 @@ if __name__ == '__main__':
     debug = True
     host = '0.0.0.0'
     port = int(os.environ.get('PORT', '5000'))
-    superdesk.logger.setLevel(logging.INFO)
-    superdesk.logger.addHandler(logging.StreamHandler())
+    logger.setLevel(logging.INFO)
+    logger.addHandler(logging.StreamHandler())
     app = get_app()
     app.run(host=host, port=port, debug=debug, use_reloader=debug)

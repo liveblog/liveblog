@@ -1,8 +1,8 @@
 (function() {
     'use strict';
 
-    BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload', 'isArchivedFilterSelected', '$q'];
-    function BlogListController($scope, $location, api, gettext, upload, isArchivedFilterSelected, $q) {
+    BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload', 'isArchivedFilterSelected', '$q', 'privileges'];
+    function BlogListController($scope, $location, api, gettext, upload, isArchivedFilterSelected, $q, privileges) {
         $scope.maxResults = 25;
         $scope.states = [
             {name: 'active', code: 'open', text: gettext('Active blogs')},
@@ -30,7 +30,9 @@
             $scope.blogMembers = [];
         }
         clearCreateBlogForm();
-
+        $scope.isUserAllowedToCreateABlog = function () {
+            return privileges.userHasPrivileges({'blogs': 1});
+        };
         $scope.cancelCreate = function() {
             clearCreateBlogForm();
             $scope.newBlogModalActive = false;
@@ -117,7 +119,10 @@
                     sort: '[("versioncreated", -1)]',
                     source: {
                         query: {filtered: {filter: {term: {blog_status: $scope.activeState.code}}}}
-                    }
+                    },
+                    // bypass the chrome browser cache
+                    // FIXME: should be handled by the api-service with `Cache-Control`
+                    timestamp: Date()
                 };
             if (params.q) {
                 criteria.source.query.filtered.query = {
@@ -134,7 +139,7 @@
         }
 
         function fetchBlogs() {
-            api.blogs.query(getCriteria()).then(function(blogs) {
+            api.blogs.query(getCriteria(), false).then(function(blogs) {
                 $scope.blogs = blogs;
             });
         }
