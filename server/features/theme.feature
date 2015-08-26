@@ -19,6 +19,20 @@ Feature: Themes operations
         {"name": "forest"}
         """  
 
+ 	@auth
+    Scenario: Add a theme through theme manager
+        Given empty "themes"
+        When we upload a theme "foo-bar.zip" to "themes"
+        Then we get new resource
+        """
+        {"_id": "#themes._id#", "_status": "OK"}
+        """
+        When we get "/themes"
+        Then we get list with 1 items
+        """
+        {"_items": [{"zippedfiles":{"content_type": "application/zip"}}]}
+        """
+
 
     @auth
     Scenario: Assign a theme to a blog

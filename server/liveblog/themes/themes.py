@@ -16,6 +16,8 @@ import json
 import superdesk
 from bson.objectid import ObjectId
 from superdesk.errors import SuperdeskApiError
+from flask import current_app as app
+import zipfile
 
 
 class ThemesResource(Resource):
@@ -24,6 +26,9 @@ class ThemesResource(Resource):
         'name': {
             'type': 'string',
             'unique': True
+        },
+        'zippedfiles': {
+            'type': 'media'
         },
         'label': {
             'type': 'string'
@@ -82,9 +87,27 @@ class ThemesService(BaseService):
             for file in glob.glob(embed_folder + '/**/theme.json'):
                 yield json.loads(open(file).read())
 
+    def get_themes(self):
+        res = get_resource_service('themes').get(req=None, lookup={})
+        return res
+
     def update_registered_theme_with_local_files(self):
+        embed_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                    '../', 'embed', 'embed_assets', 'themes')
         created = []
         updated = []
+        themes = self.get_themes()
+        for theme in themes:
+            if theme.get('zippedfiles') is None:
+                theme['zippedfiles'] = ''
+            else:
+                zf = self.find_one(req=None, _id=theme['_id'])
+                media_id = zf['zippedfiles']
+                media_file = app.media.get(media_id, 'themes')
+                zipf = zipfile.ZipFile(media_file)
+                for name in zipf.namelist():
+                    outpath = embed_folder
+                    zipf.extract(name, outpath)
         for theme in self.get_local_themes_packages():
             previous_theme = self.find_one(req=None, name=theme.get('name'))
             if previous_theme:
