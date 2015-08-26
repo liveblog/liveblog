@@ -1,8 +1,8 @@
 (function() {
     'use strict';
 
-    LiveblogThemesController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q', '$sce', 'config', 'lodash'];
-    function LiveblogThemesController($scope, api, $location, notify, gettext, $q, $sce, config, _) {
+    LiveblogThemesController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q', '$sce', 'config', 'lodash', 'upload'];
+    function LiveblogThemesController($scope, api, $location, notify, gettext, $q, $sce, config, _, upload) {
         /**
          * Return a collection that represent the hierachy of the themes
          * @param {array} themes
@@ -193,6 +193,20 @@
             //return to blog list page
             $location.path('/liveblog/');
         };
+
+        $scope.onFileChange = function(e) {
+            api.themes.getUrl().then(function(url) {
+                upload.start({
+                    method: 'POST',
+                    url: url.replace('themes', 'theme-upload'),
+                    data: {media: e.files[0]}
+                })
+                .then(function(response) {
+                    console.log('response', response);
+                });
+            });
+        };
+
     }
 
     var liveblogThemeModule = angular.module('liveblog.themes', [])

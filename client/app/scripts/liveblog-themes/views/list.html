@@ -1,14 +1,12 @@
-<div class="subnav ng-scope">
+<div class="subnav ng-scope themes-manager">
     <h3 class="page-nav-title" translate>Theme Manager</h3>
     <div class="button-stack right-stack">
-        <!-- Commented for release (feature is not ready) -->
-        <!-- <button class="navbtn navbtn-info" ng-click="openNewTheme();">
-            <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
-        </button> -->
-        <div style="margin:10px; float: left;">
-            <button ng-click="saveSettings()" class="btn btn-info pull-right" type="button" translate ng-disabled="!setForm.$dirty">Save</button>
-            <button ng-click="close()" class="btn btn-default pull-right" type="button" translate>Cancel</button>
-        </div>
+        <form action="#" method="post" enctype="multipart/form-data">
+            <label class="navbtn navbtn-info" for="uploadAThemeFile">
+                <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
+            </label>
+            <input type="file" name="uploadAThemeFile" id="uploadAThemeFile" onchange="angular.element(this).scope().onFileChange(this)"></input>
+        </form>
     </div>
 </div>
 
@@ -52,8 +50,7 @@
                         </div>
                         <div class="side">
                             <div ng-hide="isDefaultTheme(theme)">
-                                <!-- Commented for release (feature is not ready) -->
-                                <!-- <button ng-disabled="isPartOfTheDefaultTheme(theme)" ng-click="remove(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button> -->
+                                <button ng-disabled="isPartOfTheDefaultTheme(theme)" ng-click="remove(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
                                 <button ng-if="!theme.abstract" ng-click="makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
                             </div>
                         </div>

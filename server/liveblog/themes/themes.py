@@ -16,6 +16,16 @@ import json
 import superdesk
 from bson.objectid import ObjectId
 from superdesk.errors import SuperdeskApiError
+from flask.ext.cors import cross_origin
+from flask import request, current_app as app
+import zipfile
+import os
+
+
+ASSETS_DIR = 'themes_assets'
+CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
+themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=ASSETS_DIR)
 
 
 class ThemesResource(Resource):
@@ -63,6 +73,9 @@ class ThemesResource(Resource):
             'schema': {
                 'type': 'dict'
             }
+        },
+        'files': {
+            'type': 'list'
         }
     }
     datasource = {
@@ -107,6 +120,41 @@ class ThemesService(BaseService):
             # will assign the default theme to this blog
             default_theme = blogs_service.get_theme_snapshot(global_default_theme)
             blogs_service.system_update(ObjectId(blog['_id']), {'theme': default_theme}, blog)
+
+
+@upload_theme_blueprint.route('/theme-upload', methods=['POST'])
+@cross_origin()
+def upload_a_theme():
+    with zipfile.ZipFile(request.files['media']) as zip_file:
+        # Keep only actual files (not folders)
+        files = [file for file in zip_file.namelist() if not file.endswith('/')]
+        # Check if the package is correct
+        try:
+            description_file = next((file for file in files if file.endswith('theme.json')))
+            # decode and load as a json file
+            description_file = json.loads(zip_file.read(description_file).decode('utf-8'))
+        except StopIteration:
+            return 'A theme needs a theme.json file', 400
+        # Extract and save files
+        for name in files:
+            # Save the file in the media storage is AmazonMediaStorage
+            if type(app.media).__name__ is 'AmazonMediaStorage':
+                app.media.put(zip_file.read(name), filename=os.path.join(ASSETS_DIR, name), content_type='')
+            # Save file in local storage too (for developement)
+            local_filepath = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR, name)
+            # 1. create folder if doesn't exist
+            os.makedirs(os.path.dirname(local_filepath), exist_ok=True)
+            # 2. write the file
+            with open(local_filepath, 'wb') as file_in_local_storage:
+                file_in_local_storage.write(zip_file.read(name))
+        # Save the theme in the database
+        themes_service = get_resource_service('themes')
+        previous_theme = themes_service.find_one(req=None, name=description_file.get('name'))
+        if previous_theme:
+            themes_service.replace(previous_theme['_id'], description_file, previous_theme)
+        else:
+            themes_service.create([description_file])
+    return 'Ok'
 
 
 class ThemesCommand(superdesk.Command):
