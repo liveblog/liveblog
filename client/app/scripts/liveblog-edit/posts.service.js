@@ -18,9 +18,10 @@ define([
     PostsService.$inject = [
         'api',
         '$q',
-        'userList'
+        'userList',
+        'notify'
     ];
-    function PostsService(api, $q, userList) {
+    function PostsService(api, $q, userList, notify) {
 
         /**
          * Fetch a page of posts
@@ -193,7 +194,10 @@ define([
 
         function removePost(post) {
             var deleted = {deleted: true};
-            return savePost(post.blog, post, [], deleted);
+            return savePost(post.blog, post, [], deleted).then(function(post) {
+                notify.pop();
+                notify.info(gettext('Post removed'));
+            });;
         }
 
         return {
