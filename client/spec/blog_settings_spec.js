@@ -1,6 +1,5 @@
 var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
     randomString = require('./helpers/pages').randomString,
-    Login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/pages').login,
     blogs = require('./helpers/pages').blogs;
 
 describe('Blog settings', function() {
@@ -122,19 +121,6 @@ describe('Blog settings', function() {
         });
     });
 
-    // it('changes blog ownership', function() {
-    //     blogs.openBlog(0).openSettings().openTeam()
-    //                         .changeOwner()
-    //                         .changeToOwner()
-    //                         .selectOwner()
-    //                         .done()
-    //                     .openSettings().openTeam();
-
-    //     blogs.blog.settings.userName.getText().then(function(text) {
-    //         expect(text).toEqual('test_user');
-    //     });
-    // });
-
     it('ads a team member from blog settings', function() {
         blogs.openBlog(0).openSettings().openTeam()
                             .editTeam();
@@ -179,16 +165,18 @@ describe('Blog settings', function() {
 
         browser.driver.manage().window().setSize(1280, 1024);
         browser.get('/');
-        var modal = new Login();
         element(by.css('button.current-user')).click();
         browser.waitForAngular();
         element(by.buttonText('SIGN OUT')).click();
         browser.sleep(2000); // it reloads page
         browser.waitForAngular();
-        modal.login('test_user', 'test_password');
-        blogs.openBlog(0).openSettings().openTeam();
-        blogs.blog.settings.userName.getText().then(function(text) {
-            expect(text).toEqual('test_user');
+        browser.sleep(2000); // it reloads page
+        login('test_user', 'test_password').then(function() {
+            browser.waitForAngular();
+            blogs.openBlog(0).openSettings().openTeam();
+            blogs.blog.settings.userName.getText().then(function(text) {
+                expect(text).toEqual('test_user');
+            });
         });
     });
 });
