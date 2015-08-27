@@ -58,6 +58,7 @@ define([
         angular.extend($scope, {
             blog: blog,
             currentPost: undefined,
+            isUserOwner: blogSecurityService.isUserOwner,
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
             },
@@ -172,12 +173,6 @@ define([
                     return true;
                 }
             }
-
-        });
-        blogSecurityService.isUserOwner().then(function(result) {
-            $scope.blog.showSettingsLink = result;
-        }, function() {
-            $scope.blog.showSettingsLink = false;
         });
     }
 
@@ -437,29 +432,21 @@ define([
     ]);
     app.service('blogSecurityService',
         ['$q', '$rootScope', '$route', 'blogService', '$location', function($q, $rootScope, $route, blogService, $location) {
-        function isUserOwner() {
+        function isUserOwner(blog) {
+            if ($rootScope.currentUser._id !== blog.original_creator) {
+                return false;
+            } else {
+                return true;
+            }
+        }
+        function goToSettings() {
             var def = $q.defer();
             blogService.get($route.current.params._id)
             .then(function(response) {
-                if ($rootScope.currentUser._id !== response.original_creator) {
-                    def.resolve(false);
-                } else {
-                    def.resolve(true);
-                }
-            }, function(response) {
-                if (response.status === 404) {
-                    def.reject('Blog does not exist');
-                }
-            });
-            return def.promise;
-        }
-        function canGoToSettings() {
-            var def = $q.defer();
-            isUserOwner().then(function(result) {
-                if (result) {
+                if (isUserOwner(response)) {
                     def.resolve();
                 } else {
-                    def.reject('You do not have permission to change the settings of this blog');
+                    def.reject();
                     $location.path('/liveblog/edit/' + $route.current.params._id);
                 }
             }, function() {
@@ -469,7 +456,7 @@ define([
             return def.promise;
         }
         return {
-            canGoToSettings: canGoToSettings,
+            goToSettings: goToSettings,
             isUserOwner: isUserOwner
         };
     }]);
@@ -490,7 +477,7 @@ define([
             resolve: {
                 blog: BlogResolver,
                 security: ['blogSecurityService', function(blogSecurityService) {
-                    return blogSecurityService.canGoToSettings();
+                    return blogSecurityService.goToSettings();
                 }]
             }
         });
