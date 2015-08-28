@@ -14,7 +14,7 @@ define([
     'ng-sir-trevor'
 ], function(angular, _) {
     'use strict';
-  
+
     function isURI(string) {
         var url_regex = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
         return (url_regex.test(string));
@@ -297,8 +297,8 @@ define([
                 html: [
                     '<div class="row st-block__upload-container">',
                     '    <div class="col-md-6">',
-                    '       <label for="file-upload" class="btn btn-default"><%= i18n.t("general:upload") %></label>',
-                    '       <input id="file-upload" type="file" type="st-file-upload" />',
+                    '       <label onclick="$(this).next().trigger(\'click\');" class="btn btn-default"><%= i18n.t("general:upload") %></label>',
+                    '       <input type="file" type="st-file-upload" />',
                     '    </div>',
                     '</div>'
                 ].join('\n')
