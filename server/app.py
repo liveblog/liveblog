@@ -114,6 +114,10 @@ def get_app(config=None):
         prefix = app.api_prefix or None
         app.register_blueprint(blueprint, url_prefix=prefix)
 
+    #  load local themes
+    with app.app_context():
+        created, updated = superdesk.get_resource_service('themes').update_registered_theme_with_local_files()
+        print('%d themes registered' % (len(created) + len(updated)))
     # s3
     s3.init_app(app)
     # embed feature

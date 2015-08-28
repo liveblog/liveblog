@@ -90,19 +90,19 @@ class ThemesResource(Resource):
 class ThemesService(BaseService):
 
     def get_local_themes_packages(self):
-            embed_folder = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                        '../', 'embed', 'embed_assets', 'themes')
-            for file in glob.glob(embed_folder + '/**/theme.json'):
+            theme_folder = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR)
+            for file in glob.glob(theme_folder + '/**/theme.json'):
                 yield json.loads(open(file).read())
 
-    def update_registered_theme_with_local_files(self):
+    def update_registered_theme_with_local_files(self, force=False):
         created = []
         updated = []
         for theme in self.get_local_themes_packages():
             previous_theme = self.find_one(req=None, name=theme.get('name'))
             if previous_theme:
-                self.replace(previous_theme['_id'], theme, previous_theme)
-                updated.append(theme)
+                if force:
+                    self.replace(previous_theme['_id'], theme, previous_theme)
+                    updated.append(theme)
             else:
                 self.create([theme])
                 created.append(theme)
@@ -161,7 +161,7 @@ class ThemesCommand(superdesk.Command):
 
     def run(self):
         theme_service = get_resource_service('themes')
-        created, updated = theme_service.update_registered_theme_with_local_files()
+        created, updated = theme_service.update_registered_theme_with_local_files(force=True)
         print('%d themes registered' % (len(created) + len(updated)))
         if created:
             print('added:')
