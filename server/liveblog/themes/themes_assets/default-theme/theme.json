@@ -15,7 +15,6 @@
         "vendors/fecha.js",
         "main.js"
     ],
-    "screenshot": "screenshot.png",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "license": "AGPL-3.0",
     "options": [
