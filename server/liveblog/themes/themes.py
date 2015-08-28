@@ -18,6 +18,7 @@ from bson.objectid import ObjectId
 from superdesk.errors import SuperdeskApiError
 from flask.ext.cors import cross_origin
 from flask import request, current_app as app
+from superdesk.errors import SuperdeskError
 import zipfile
 import os
 
@@ -121,40 +122,62 @@ class ThemesService(BaseService):
             default_theme = blogs_service.get_theme_snapshot(global_default_theme)
             blogs_service.system_update(ObjectId(blog['_id']), {'theme': default_theme}, blog)
 
+    def get_dependencies(self, theme_name, deps=[]):
+        ''' return a list of the dependencies names '''
+        deps.append(theme_name)
+        theme = self.find_one(req=None, name=theme_name)
+        if not theme:
+            raise SuperdeskError(400, 'Dependencies are not satisfied')
+        if theme and theme.get('extends', False):
+            self.get_dependencies(theme.get('extends'), deps)
+        return deps
+
 
 @upload_theme_blueprint.route('/theme-upload', methods=['POST'])
 @cross_origin()
 def upload_a_theme():
+    themes_service = get_resource_service('themes')
     with zipfile.ZipFile(request.files['media']) as zip_file:
         # Keep only actual files (not folders)
         files = [file for file in zip_file.namelist() if not file.endswith('/')]
+        # Determine if there is a root folder
+        roots = set(file.split('/')[0] for file in files)
+        root_folder = len(roots) == 1 and '%s/' % roots.pop() or ''
         # Check if the package is correct
         try:
             description_file = next((file for file in files if file.endswith('theme.json')))
             # decode and load as a json file
             description_file = json.loads(zip_file.read(description_file).decode('utf-8'))
         except StopIteration:
-            return 'A theme needs a theme.json file', 400
+            return json.dumps(dict(error='A theme needs a theme.json file')), 400
+        # check dependencies
+        try:
+            themes_service.get_dependencies(description_file.get('extends', None))
+        except SuperdeskError as e:
+            return json.dumps(dict(error=e.desc)), 400
         # Extract and save files
         for name in files:
+            # remove the root folder
+            final_file_name = name.replace(root_folder, '', 1)
+            # prepend in a root folder called as the theme's name
+            final_file_name = os.path.join(description_file.get('name'), final_file_name)
             # Save the file in the media storage is AmazonMediaStorage
             if type(app.media).__name__ is 'AmazonMediaStorage':
-                app.media.put(zip_file.read(name), filename=os.path.join(ASSETS_DIR, name), content_type='')
+                app.media.put(zip_file.read(name), filename=os.path.join(ASSETS_DIR, final_file_name), content_type='')
             # Save file in local storage too (for developement)
-            local_filepath = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR, name)
+            local_filepath = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR, final_file_name)
             # 1. create folder if doesn't exist
             os.makedirs(os.path.dirname(local_filepath), exist_ok=True)
             # 2. write the file
             with open(local_filepath, 'wb') as file_in_local_storage:
                 file_in_local_storage.write(zip_file.read(name))
-        # Save the theme in the database
-        themes_service = get_resource_service('themes')
+        # Save or update the theme in the database
         previous_theme = themes_service.find_one(req=None, name=description_file.get('name'))
         if previous_theme:
             themes_service.replace(previous_theme['_id'], description_file, previous_theme)
         else:
             themes_service.create([description_file])
-    return 'Ok'
+    return json.dumps(dict(created=previous_theme is None, theme=description_file))
 
 
 class ThemesCommand(superdesk.Command):
