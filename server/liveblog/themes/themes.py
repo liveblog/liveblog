@@ -17,16 +17,19 @@ import superdesk
 from bson.objectid import ObjectId
 from superdesk.errors import SuperdeskApiError
 from flask.ext.cors import cross_origin
+from eve.io.mongo import MongoJSONEncoder
 from flask import request, current_app as app
 from superdesk.errors import SuperdeskError
 import zipfile
 import os
+import magic
 
 
 ASSETS_DIR = 'themes_assets'
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
 themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=ASSETS_DIR)
+mime = magic.Magic(mime=True)
 
 
 class ThemesResource(Resource):
@@ -48,7 +51,7 @@ class ThemesResource(Resource):
         'version': {
             'type': 'string'
         },
-        'screenshot': {
+        'screenshot_url': {
             'type': 'string'
         },
         'author': {
@@ -91,23 +94,42 @@ class ThemesResource(Resource):
 class ThemesService(BaseService):
 
     def get_local_themes_packages(self):
-            theme_folder = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR)
-            for file in glob.glob(theme_folder + '/**/theme.json'):
-                yield json.loads(open(file).read())
+        theme_folder = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR)
+        for file in glob.glob(theme_folder + '/**/theme.json'):
+            files = []
+            for root, dirnames, filenames in os.walk(os.path.dirname(file)):
+                for filename in filenames:
+                    files.append(os.path.join(root, filename))
+            yield json.loads(open(file).read()), files
 
     def update_registered_theme_with_local_files(self, force=False):
-        created = []
-        updated = []
-        for theme in self.get_local_themes_packages():
-            previous_theme = self.find_one(req=None, name=theme.get('name'))
-            if previous_theme:
-                if force:
-                    self.replace(previous_theme['_id'], theme, previous_theme)
-                    updated.append(theme)
+        results = {'created': [], 'updated': []}
+        for theme, files in self.get_local_themes_packages():
+            result = self.save_or_update_theme(theme, files, force_update=force)
+            results[result.get('status')].append(result.get('theme'))
+        return (results.get('created'), results.get('updated'))
+
+    def save_or_update_theme(self, theme, files=[], force_update=False):
+        # Save the file in the media storage if needed
+        for name in files:
+            with open(name, 'rb') as file:
+                if name.endswith('screenshot.png') or type(app.media).__name__ is 'AmazonMediaStorage':
+                    content_type = mime.from_file(name).decode('utf8')
+                    final_file_name = os.path.relpath(name, CURRENT_DIRECTORY)
+                    file_id = app.media.put(file.read(), filename=final_file_name, content_type=content_type)
+                    # save the screenshot url
+                    if name.endswith('screenshot.png'):
+                        theme['screenshot_url'] = superdesk.upload.url_for_media(file_id)
+        previous_theme = self.find_one(req=None, name=theme.get('name'))
+        if previous_theme:
+            if force_update:
+                self.replace(previous_theme['_id'], theme, previous_theme)
+                return dict(status='updated', theme=theme)
             else:
-                self.create([theme])
-                created.append(theme)
-        return (created, updated)
+                return dict(status='unchanged', theme=theme)
+        else:
+            self.create([theme])
+            return dict(status='created', theme=theme)
 
     def on_delete(self, deleted_theme):
         global_default_theme = get_resource_service('global_preferences').get_global_prefs()['theme']
@@ -156,28 +178,21 @@ def upload_a_theme():
         except SuperdeskError as e:
             return json.dumps(dict(error=e.desc)), 400
         # Extract and save files
+        extracted_files = []
         for name in files:
-            # remove the root folder
-            final_file_name = name.replace(root_folder, '', 1)
-            # prepend in a root folder called as the theme's name
-            final_file_name = os.path.join(description_file.get('name'), final_file_name)
-            # Save the file in the media storage is AmazonMediaStorage
-            if type(app.media).__name__ is 'AmazonMediaStorage':
-                app.media.put(zip_file.read(name), filename=os.path.join(ASSETS_DIR, final_file_name), content_type='')
-            # Save file in local storage too (for developement)
-            local_filepath = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR, final_file_name)
+            # 1. remove the root folder
+            local_filepath = name.replace(root_folder, '', 1)
+            # 2. prepend in a root folder called as the theme's name
+            local_filepath = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR, description_file.get('name'), local_filepath)
             # 1. create folder if doesn't exist
             os.makedirs(os.path.dirname(local_filepath), exist_ok=True)
             # 2. write the file
             with open(local_filepath, 'wb') as file_in_local_storage:
                 file_in_local_storage.write(zip_file.read(name))
+                extracted_files.append(local_filepath)
         # Save or update the theme in the database
-        previous_theme = themes_service.find_one(req=None, name=description_file.get('name'))
-        if previous_theme:
-            themes_service.replace(previous_theme['_id'], description_file, previous_theme)
-        else:
-            themes_service.create([description_file])
-    return json.dumps(dict(created=previous_theme is None, theme=description_file))
+        result = themes_service.save_or_update_theme(description_file, extracted_files, force_update=True)
+        return json.dumps(dict(status=result.get('status'), theme=description_file), cls=MongoJSONEncoder)
 
 
 class ThemesCommand(superdesk.Command):

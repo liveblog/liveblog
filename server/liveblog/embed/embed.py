@@ -145,7 +145,7 @@ def embed_overview(blog_id, api_host=None):
     blog['_id'] = str(blog['_id'])
     scope = {
         'blog': blog,
-        'themes': themes
+        'themes': [t[0] for t in themes]
     }
     return render_template('iframe-for-every-themes.html', **scope)
 

@@ -75,11 +75,6 @@
                     'url': authorArray[3]
                 };
             }
-            // If the screenshot string is not a url then compose it from server api url.
-            var protocolRegex = /^(http[s]?:)?\/{2}/;
-            if (theme.screenshot && !protocolRegex.test(theme.screenshot)) {
-                theme.screenshot = config.server.url.replace('/api', '') + '/embed_assets/themes/' + theme.name + '/' + theme.screenshot;
-            }
         }
         // Modal is disabled by default.
         $scope.themeBlogsModal = false;
@@ -203,10 +198,11 @@
                 })
                 .then(function(response) {
                     console.log('response', response);
+                }, function(error) {
+                    console.log('error', error);
                 });
             });
         };
-
     }
 
     var liveblogThemeModule = angular.module('liveblog.themes', [])
