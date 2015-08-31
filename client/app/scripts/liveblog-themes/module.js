@@ -87,11 +87,13 @@
         $scope.selectedBlog = false;
         // loading indicatior for the first timeload.
         $scope.loading = true;
+
         $scope.getTheme = function(name) {
             return _.find($scope.themes, function(theme) {
                 return theme.name === name;
             });
         };
+
         // load only global preference for themes.
         api.global_preferences.query({'where': {'key': 'theme'}}).then(function(global_preferences) {
             $scope.globalTheme = _.find(global_preferences._items, function(item) {
@@ -178,6 +180,14 @@
             }
         };
 
+        $scope.removeTheme = function(theme) {
+            api.themes.remove(angular.copy(theme)).then(function(message) {
+                notify.pop();
+                notify.info(gettext('Theme "' + theme.label + '" removed.'));
+                loadThemes();
+            });
+        };
+
         $scope.switchBlogPreview = function(blog) {
             $scope.selectedBlog = blog;
             $scope.selectedBlog.iframe_url = $sce.trustAsResourceUrl(
@@ -193,6 +203,47 @@
             //return to blog list page
             $location.path('/liveblog/');
         };
+
+        function loadThemes() {
+            // load only global preference for themes.
+            api.global_preferences.query({'where': {'key': 'theme'}}).then(function(data) {
+                data._items.forEach(function(item) {
+                    if (item.key === 'theme') {
+                        $scope.globalTheme = item;
+                        return;
+                    }
+                });
+                // load all the themes.
+                // TODO: Pagination
+                api.themes.query({timestamp: Date()}).then(function(data) {
+                    var themes = data._items;
+                    themes.forEach(function(theme) {
+                        // create criteria to load blogs with the theme.
+                        var criteria = {
+                                source: {
+                                    query: {filtered: {filter: {term: {'theme._id': theme._id}}}}
+                                }
+                            };
+                        api.blogs.query(criteria).then(function(data) {
+                            theme.blogs_count = data._meta.total;
+                            // TODO: Pagination. Will only show the first results page
+                            theme.blogs = data._items;
+                        });
+                        parseTheme(theme);
+                    });
+                    // object that represent the themes hierachy
+                    var themes_hierachy = getHierachyFromThemesCollection(themes);
+                    // update the scope
+                    angular.extend($scope, {
+                        themesHierachy: themes_hierachy,
+                        themes: themes,
+                        loading: false
+                    });
+                });
+            });
+        }
+
+        loadThemes();
     }
 
     var liveblogThemeModule = angular.module('liveblog.themes', [])
