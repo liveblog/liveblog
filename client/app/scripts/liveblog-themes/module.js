@@ -1,8 +1,8 @@
 (function() {
     'use strict';
 
-    LiveblogThemesController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q', '$sce', 'config'];
-    function LiveblogThemesController($scope, api, $location, notify, gettext, $q, $sce, config) {
+    LiveblogThemesController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q', '$sce', 'config', 'lodash'];
+    function LiveblogThemesController($scope, api, $location, notify, gettext, $q, $sce, config, _) {
         /**
          * Return a collection that represent the hierachy of the themes
          * @param {array} themes
@@ -30,17 +30,18 @@
             function addToHierarchy(name, extend) {
                 if (angular.isDefined(extend)) {
                     var parent_node = getParentNode(extend);
+                    var index = _.findIndex(todo, function(a) {
+                        return a[0] === name;
+                    });
                     if (angular.isDefined(parent_node)) {
-                        // parent_node[]
-                        var index = todo.findIndex(function(a) {
-                            return a[0] === name;
-                        });
                         if (index > -1) {
                             todo.splice(index, 1);
                         }
                         parent_node[name] = {};
                     } else {
-                        todo.push([name, extend]);
+                        if (index === -1) {
+                            todo.push([name, extend]);
+                        }
                     }
                 } else {
                     if (!angular.isDefined(themes_hierachy[name])) {
@@ -51,11 +52,12 @@
             themes.map(function(theme) {
                 addToHierarchy(theme.name, theme['extends']);
             });
-            while (todo.length > 0) {
-                // FIXME: prevent infinit loop
+            var max_loops = todo.length * todo.length;
+            while (todo.length > 0 && max_loops > 0) {
                 for (var i = 0; i < todo.length; i++) {
                     addToHierarchy(todo[i][0], todo[i][1]);
                 }
+                max_loops--;
             }
             return themes_hierachy;
         }
@@ -87,13 +89,49 @@
         $scope.loading = true;
 
         $scope.getTheme = function(name) {
-            return $scope.themes.find(function(theme) {
+            return _.find($scope.themes, function(theme) {
                 return theme.name === name;
             });
         };
 
+        // load only global preference for themes.
+        api.global_preferences.query({'where': {'key': 'theme'}}).then(function(global_preferences) {
+            $scope.globalTheme = _.find(global_preferences._items, function(item) {
+                return item.key === 'theme';
+            });
+            // load all the themes.
+            // TODO: Pagination
+            api.themes.query().then(function(data) {
+                var themes = data._items;
+                themes.forEach(function(theme) {
+                    // create criteria to load blogs with the theme.
+                    var criteria = {
+                            source: {
+                                query: {filtered: {filter: {term: {'theme._id': theme._id}}}}
+                            }
+                        };
+                    api.blogs.query(criteria).then(function(data) {
+                        theme.blogs_count = data._meta.total;
+                        // TODO: Pagination. Will only show the first results page
+                        theme.blogs = data._items;
+                    });
+                    parseTheme(theme);
+                });
+                // object that represent the themes hierachy
+                var themes_hierachy = getHierachyFromThemesCollection(themes);
+                // update the scope
+                angular.extend($scope, {
+                    themesHierachy: themes_hierachy,
+                    themes: themes,
+                    loading: false
+                });
+            });
+        });
+
         $scope.isDefaultTheme = function(theme) {
-            return $scope.getTheme($scope.globalTheme.value).name === theme.name;
+            if (angular.isDefined($scope.globalTheme)) {
+                return $scope.getTheme($scope.globalTheme.value).name === theme.name;
+            }
         };
 
         $scope.isPartOfTheDefaultTheme = function(theme) {
@@ -215,6 +253,7 @@
                 label: gettext('Theme Manager'),
                 controller: LiveblogThemesController,
                 category: superdesk.MENU_MAIN,
+                privileges: {'global_preferences': 1},
                 templateUrl: 'scripts/liveblog-themes/views/list.html'
             });
     }])
