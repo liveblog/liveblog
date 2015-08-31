@@ -137,6 +137,10 @@ define([
                         $scope.$on('posts', function(e, event_params) {
                             vm.isLoading = true;
                             vm.pagesManager.retrieveUpdate(true).then(function() {
+                                if (event_params.deleted === true) {
+                                    notify.pop();
+                                    notify.info(gettext('Post removed'));
+                                }
                                 vm.isLoading = false;
                             });
                         });
