@@ -198,9 +198,9 @@ def upload_a_theme():
         return json.dumps(
             dict(
                 _status='OK',
-                _id=result.get('theme')['_id'],
-                theme=description_file),
-            cls=MongoJSONEncoder)
+                _action=result.get('status'),
+                theme=description_file
+            ), cls=MongoJSONEncoder)
 
 
 class ThemesCommand(superdesk.Command):
