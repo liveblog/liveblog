@@ -42,4 +42,17 @@ describe('Themes Manager', function() {
             themeManager.expectTheme(1, {number_of_blogs_expected: 0, is_default_theme:false, name: 'Actual Dog'});
         });
     });
+
+        it('can remove a theme', function() {
+        themeManager.openThemesManager()
+        .themes
+        .then(function(themes) {
+            // removing forest theme
+            themeManager.remove(2);
+            themeManager.openThemesManager()
+            .themes.then(function(newThemes) {
+                expect(themes.length).not.toEqual(newThemes.length);
+            });
+        });
+    });
 });

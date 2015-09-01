@@ -132,6 +132,7 @@ function ThemesManagerPage() {
     self.themes = element.all(by.css('.theme'));
     self.blogsRows = element.all(by.repeater('blog in selectedTheme.blogs'));
     self.fileThemeElement = element(by.css('#uploadAThemeFile'));
+    self.byRemove = by.css('[ng-click="removeTheme(theme)"]');
 
     self.openThemesManager = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
@@ -144,6 +145,11 @@ function ThemesManagerPage() {
 
     self.setAsDefault = function(theme_index) {
         return self.themes.get(theme_index).element(by.css('[ng-click="makeDefault(theme)"]')).click();
+    };
+
+    self.remove = function(theme_index) {
+        self.themes.get(theme_index).element(self.byRemove).click();
+        return self;
     };
 
     self.expectTheme = function(index, params) {
