@@ -195,7 +195,12 @@ def upload_a_theme():
                 extracted_files.append(local_filepath)
         # Save or update the theme in the database
         result = themes_service.save_or_update_theme(description_file, extracted_files, force_update=True)
-        return json.dumps(dict(status=result.get('status'), theme=description_file), cls=MongoJSONEncoder)
+        return json.dumps(
+            dict(
+                _status='OK',
+                _id=result.get('theme')['_id'],
+                theme=description_file),
+            cls=MongoJSONEncoder)
 
 
 class ThemesCommand(superdesk.Command):

@@ -13,11 +13,25 @@ Feature: Themes operations
         When we post to "themes"
         """
         [{"name": "forest"}]
-        """  
+        """
         Then we get existing resource
         """
         {"name": "forest"}
-        """  
+        """
+
+
+    @auth
+    Scenario: Upload a theme with satisfied dependencies
+        Given "themes"
+        """
+        [{"name": "angular-base"}]
+        """
+        When we upload a file "dog-theme.zip" to "theme-upload"
+        When we get "/themes"
+        Then we get list with 2 items
+        """
+        {"_items": [{"name": "angular-base"}, {"name": "actual-dog"}]}
+        """
 
 
     @auth
