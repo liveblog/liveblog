@@ -176,10 +176,11 @@ def upload_a_theme():
         except StopIteration:
             return json.dumps(dict(error='A theme needs a theme.json file')), 400
         # check dependencies
-        try:
-            themes_service.get_dependencies(description_file.get('extends', None))
-        except SuperdeskError as e:
-            return json.dumps(dict(error=e.desc)), 400
+        if description_file.get('extends', False):
+            try:
+                themes_service.get_dependencies(description_file.get('extends'))
+            except SuperdeskError as e:
+                return json.dumps(dict(error=e.desc)), 400
         # Extract and save files
         extracted_files = []
         for name in files:
