@@ -15,7 +15,6 @@ from flask import render_template, json, request, current_app as app
 from eve.io.mongo import MongoJSONEncoder
 from superdesk import get_resource_service
 from liveblog.themes import ASSETS_DIR as THEMES_ASSETS_DIR
-import tinys3
 import io
 import os
 import json
@@ -26,7 +25,7 @@ THEMES_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath
 bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
 
 
-class AmazonAccessKeyUnknownException(Exception):
+class MediaStorageUnsupportedForBlogPublishing(Exception):
     pass
 
 
@@ -84,19 +83,12 @@ def get_default_settings(theme, settings=None):
 
 def publish_embed(blog_id, api_host=None, theme=None):
     html = embed(blog_id, api_host, theme)
-    if not app.config['AMAZON_ACCESS_KEY_ID']:
-        raise AmazonAccessKeyUnknownException()
-    region = app.config['AMAZON_REGION']
-    bucket = app.config['AMAZON_CONTAINER_NAME']
-    s3 = tinys3.Connection(
-        app.config['AMAZON_ACCESS_KEY_ID'],
-        app.config['AMAZON_SECRET_ACCESS_KEY'],
-        default_bucket=bucket,
-        endpoint='s3-%s.amazonaws.com' % (region))
-    # Uploading a single file
-    response = s3.upload('blogs/%s/index.html' % (blog_id), io.BytesIO(bytes(html, 'utf-8')))
-    return response.url.replace('s3-%s.amazonaws.com/%s' % (region, bucket),
-                                '%s.s3-%s.amazonaws.com' % (bucket, region))
+    if type(app.media).__name__ is not 'AmazonMediaStorage':
+        raise MediaStorageUnsupportedForBlogPublishing()
+    file_id = app.media.put(io.BytesIO(bytes(html, 'utf-8')),
+                            filename='blogs/%s/index.html' % (blog_id),
+                            content_type='text/html')
+    return superdesk.upload.url_for_media(file_id)
 
 
 @bp.route('/embed/<blog_id>')

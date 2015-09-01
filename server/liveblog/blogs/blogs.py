@@ -147,7 +147,7 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
             public_url = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
             get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
             return public_url
-        except liveblog.embed.AmazonAccessKeyUnknownException as e:
+        except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:
                 raise e
 
