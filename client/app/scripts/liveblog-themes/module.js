@@ -87,39 +87,6 @@
                 return theme.name === name;
             });
         };
-        // load only global preference for themes.
-        api.global_preferences.query({'where': {'key': 'theme'}}).then(function(global_preferences) {
-            $scope.globalTheme = _.find(global_preferences._items, function(item) {
-                return item.key === 'theme';
-            });
-            // load all the themes.
-            // TODO: Pagination
-            api.themes.query().then(function(data) {
-                var themes = data._items;
-                themes.forEach(function(theme) {
-                    // create criteria to load blogs with the theme.
-                    var criteria = {
-                            source: {
-                                query: {filtered: {filter: {term: {'theme._id': theme._id}}}}
-                            }
-                        };
-                    api.blogs.query(criteria).then(function(data) {
-                        theme.blogs_count = data._meta.total;
-                        // TODO: Pagination. Will only show the first results page
-                        theme.blogs = data._items;
-                    });
-                    parseTheme(theme);
-                });
-                // object that represent the themes hierachy
-                var themes_hierachy = getHierachyFromThemesCollection(themes);
-                // update the scope
-                angular.extend($scope, {
-                    themesHierachy: themes_hierachy,
-                    themes: themes,
-                    loading: false
-                });
-            });
-        });
 
         $scope.isDefaultTheme = function(theme) {
             if (angular.isDefined($scope.globalTheme)) {
@@ -190,12 +157,9 @@
 
         function loadThemes() {
             // load only global preference for themes.
-            return api.global_preferences.query({'where': {'key': 'theme'}}).then(function(data) {
-                data._items.forEach(function(item) {
-                    if (item.key === 'theme') {
-                        $scope.globalTheme = item;
-                        return;
-                    }
+            return api.global_preferences.query({'where': {'key': 'theme'}}).then(function(global_preferences) {
+                $scope.globalTheme = _.find(global_preferences._items, function(item) {
+                    return item.key === 'theme';
                 });
                 // load all the themes.
                 // TODO: Pagination
@@ -246,6 +210,8 @@
                 });
             });
         };
+
+        loadThemes();
     }
 
     var liveblogThemeModule = angular.module('liveblog.themes', [])
