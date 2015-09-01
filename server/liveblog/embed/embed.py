@@ -85,7 +85,9 @@ def publish_embed(blog_id, api_host=None, theme=None):
     html = embed(blog_id, api_host, theme)
     if type(app.media).__name__ is not 'AmazonMediaStorage':
         raise MediaStorageUnsupportedForBlogPublishing()
-    file_id = app.media.put(io.BytesIO(bytes(html, 'utf-8')), filename='blogs/%s/index.html' % (blog_id), content_type='text/html')
+    file_id = app.media.put(io.BytesIO(bytes(html, 'utf-8')),
+                            filename='blogs/%s/index.html' % (blog_id),
+                            content_type='text/html')
     return superdesk.upload.url_for_media(file_id)
 
 
