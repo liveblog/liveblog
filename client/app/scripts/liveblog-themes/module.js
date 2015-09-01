@@ -127,19 +127,10 @@
             }
         };
 
-        $scope.isPartOfTheDefaultTheme = function(theme) {
-            if ($scope.isDefaultTheme(theme)) {
-                return true;
-            }
-            var default_theme = $scope.getTheme($scope.globalTheme.value);
-            var extend = default_theme['extends'];
-            while (extend) {
-                if (extend === theme.name) {
-                    return true;
-                }
-                extend = $scope.getTheme(extend)['extends'];
-            }
-            return false;
+        $scope.hasChildren = function(theme) {
+            return $scope.themes.some(function(t) {
+                return t['extends'] === theme.name;
+            });
         };
 
         $scope.openThemeBlogsModal = function(theme) {
@@ -199,7 +190,7 @@
 
         function loadThemes() {
             // load only global preference for themes.
-            api.global_preferences.query({'where': {'key': 'theme'}}).then(function(data) {
+            return api.global_preferences.query({'where': {'key': 'theme'}}).then(function(data) {
                 data._items.forEach(function(item) {
                     if (item.key === 'theme') {
                         $scope.globalTheme = item;
@@ -208,7 +199,7 @@
                 });
                 // load all the themes.
                 // TODO: Pagination
-                api.themes.query({timestamp: Date()}).then(function(data) {
+                return api.themes.query({timestamp: Date()}).then(function(data) {
                     var themes = data._items;
                     themes.forEach(function(theme) {
                         // create criteria to load blogs with the theme.
@@ -232,9 +223,10 @@
                         themes: themes,
                         loading: false
                     });
+                    return themes;
                 });
             });
-        };
+        }
 
         $scope.onFileChange = function(e) {
             api.themes.getUrl().then(function(url) {
@@ -244,9 +236,13 @@
                     data: {media: e.files[0]}
                 })
                 .then(function(response) {
-                    console.log('response', response);
+                    loadThemes().then(function() {
+                        notify.pop();
+                        notify.info('Theme uploaded and added');
+                    });
                 }, function(error) {
-                    console.log('error', error);
+                    notify.pop();
+                    notify.error(error.data.error);
                 });
             });
         };

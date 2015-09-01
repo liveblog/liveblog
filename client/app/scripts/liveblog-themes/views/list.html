@@ -50,7 +50,7 @@
                         </div>
                         <div class="side">
                             <div ng-hide="isDefaultTheme(theme)">
-                                <button ng-disabled="isPartOfTheDefaultTheme(theme)" ng-click="removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
+                                <button ng-disabled="hasChildren(theme)" ng-click="removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
                                 <button ng-if="!theme.abstract" ng-click="makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
                             </div>
                         </div>
