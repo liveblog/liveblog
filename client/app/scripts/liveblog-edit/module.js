@@ -239,8 +239,8 @@ define([
             removeImage: function() {
                 modal.confirm(gettext('Are you sure you want to remove the blog image?')).then(function() {
                     deregisterPreventer();
-                    delete vm.newBlog.picture_url;
-                    delete vm.newBlog.picture;
+                    vm.newBlog.picture_url = null;
+                    vm.newBlog.picture = null;
                     vm.forms.dirty = true;
                 });
             },
