@@ -43,8 +43,9 @@ blogs_schema = {
     },
     'picture_url': {
         'type': 'string',
+        'nullable': True
     },
-    'picture': Resource.rel('upload', True),
+    'picture': Resource.rel('upload', embeddable=True, nullable=True),
     'original_creator': metadata_schema['original_creator'],
     'version_creator': metadata_schema['version_creator'],
     'versioncreated': metadata_schema['versioncreated'],

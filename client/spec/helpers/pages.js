@@ -107,7 +107,9 @@ function BlogsPage() {
         expect(currentBlog.element(by.binding('blog.title')).getText()).toBe(blog.title);
         expect(currentBlog.element(by.binding('blog.description')).getText()).toBe(blog.description);
         if (blog.picture_url) {
-            expect(currentBlog.getAttribute('if-background-image')).not.toBe('');
+            expect(currentBlog.element(by.css('[if-background-image]')).isPresent()).toBe(true);
+        } else {
+            expect(currentBlog.element(by.css('[if-background-image]')).isPresent()).toBe(false);
         }
         expect(currentBlog.element(by.binding('blog.original_creator | username')).getText())
         .toBe(blog.username);
