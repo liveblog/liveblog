@@ -51,13 +51,14 @@
                     <button class="btn btn-info pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
                 </header>
                 <div class="content">
-                    <div class="editor-holder">
+                    <div class="editor-holder" ng-class="{'preview': preview}">
                         <div class="editor">
                             <div class="editor" ng-sir-trevor st-model="editor" st-params="stParams"></div>
                         </div>
                     </div>
                     <div class="actions">
                         <button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished()" translate>Save draft</button>
+                        <button class="btn" ng-click="togglePreview()" translate>{{ preview? 'Edit': 'Preview' }}</button>
                         <button class="btn btn-info" ng-disabled="publishDisabled" ng-click="publish()" ng-switch="isCurrentPostPublished()">
                             <span ng-switch-when="true"  translate>Update</span>
                             <span ng-switch-when="false" translate>Publish</span>
