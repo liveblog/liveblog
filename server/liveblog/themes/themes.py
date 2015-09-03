@@ -177,12 +177,11 @@ def upload_a_theme():
         roots = set(file.split('/')[0] for file in files)
         root_folder = len(roots) == 1 and '%s/' % roots.pop() or ''
         # Check if the package is correct
-        try:
-            description_file = next((file for file in files if file.endswith('theme.json')))
-            # decode and load as a json file
-            description_file = json.loads(zip_file.read(description_file).decode('utf-8'))
-        except StopIteration:
+        description_file = next((file for file in files if file.endswith('theme.json')), None)
+        if description_file is None:
             return json.dumps(dict(error='A theme needs a theme.json file')), 400
+        # decode and load as a json file
+        description_file = json.loads(zip_file.read(description_file).decode('utf-8'))
         # check dependencies
         if description_file.get('extends', False):
             try:
