@@ -2,7 +2,12 @@
 
 var blogs = [
     [
-        {title: 'title: end to end image', description: 'description: end to end image', username: 'Victor the Editor'},
+        {
+            title: 'title: end to end image',
+            description: 'description: end to end image',
+            username: 'Victor the Editor',
+            picture_url: 'http://i.imgur.com/L0Ci8Yj.png'
+        },
         {title: 'title: end To end three', description: 'description: end to end three', username: 'Victor the Editor'},
         {title: 'title: end to end two', description: 'description: end to end two', username: 'Victor the Editor'},
         {title: 'title: end to end One', description: 'description: end to end one', username: 'Victor the Editor'}
@@ -107,7 +112,9 @@ function BlogsPage() {
         expect(currentBlog.element(by.binding('blog.title')).getText()).toBe(blog.title);
         expect(currentBlog.element(by.binding('blog.description')).getText()).toBe(blog.description);
         if (blog.picture_url) {
-            expect(currentBlog.getAttribute('if-background-image')).not.toBe('');
+            expect(currentBlog.element(by.css('[if-background-image]')).isPresent()).toBe(true);
+        } else {
+            expect(currentBlog.element(by.css('[if-background-image]')).isPresent()).toBe(false);
         }
         expect(currentBlog.element(by.binding('blog.original_creator | username')).getText())
         .toBe(blog.username);

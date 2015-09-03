@@ -30,7 +30,7 @@ describe('Blog settings', function() {
         blogs.blog.settings.description.clear().sendKeys(blog.description);
         blogs.blog.settings.done()
                 .openList()
-            .expectBlog(blog);
+            .expectBlog(blog, 0);
     });
 
     it('should change the image for blog', function() {
