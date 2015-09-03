@@ -27,6 +27,11 @@ import magic
 
 ASSETS_DIR = 'themes_assets'
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
+CONTENT_TYPES = {
+    '.css': 'text/css',
+    '.js': 'application/javascript',
+    '.json': 'application/json'
+}
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
 themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=ASSETS_DIR)
 mime = magic.Magic(mime=True)
@@ -77,9 +82,6 @@ class ThemesResource(Resource):
             'schema': {
                 'type': 'dict'
             }
-        },
-        'files': {
-            'type': 'list'
         }
     }
     datasource = {
@@ -116,8 +118,8 @@ class ThemesService(BaseService):
                 if name.endswith('screenshot.png') or type(app.media).__name__ is 'AmazonMediaStorage':
                     # set the content type
                     content_type = mime.from_file(name).decode('utf8')
-                    if content_type == 'text/plain' and name.endswith(('.css', '.js', '.json')):
-                        content_type = content_type.replace('plain', os.path.splitext(name)[1][1:])
+                    if content_type == 'text/plain' and name.endswith(tuple(CONTENT_TYPES.keys())):
+                        content_type = CONTENT_TYPES[os.path.splitext(name)[1]]
                     final_file_name = os.path.relpath(name, CURRENT_DIRECTORY)
                     # remove existing first
                     app.media.delete(final_file_name)
