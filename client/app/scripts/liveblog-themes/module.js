@@ -192,7 +192,9 @@
             });
         }
 
-        $scope.onFileChange = function(e) {
+        $scope.uploadZippedTheme = function(e) {
+            notify.pop();
+            notify.info('Uploading the theme...');
             api.themes.getUrl().then(function(url) {
                 upload.start({
                     method: 'POST',
