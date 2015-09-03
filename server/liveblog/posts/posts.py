@@ -69,7 +69,7 @@ class PostsResource(ArchiveResource):
         },
         'post_status': {
             'type': 'string',
-            'allowed': ['open', 'draft'],
+            'allowed': ['open', 'draft', 'submitted'],
             'default': 'open'
         },
         'deleted': {
@@ -107,9 +107,10 @@ class PostsService(ArchiveService):
         return update_key('post_order_sequence', True)
 
     def check_post_permission(self, post):
+        print('post:', post)
         to_be_checked = (
             dict(status='open', privilege_required='publish_post'),
-            dict(status='submit_for_aprobation', privilege_required='submit_post')
+            dict(status='submitted', privilege_required='submit_post')
         )
         for rule in to_be_checked:
             if 'post_status' in post and post['post_status'] == rule['status']:
