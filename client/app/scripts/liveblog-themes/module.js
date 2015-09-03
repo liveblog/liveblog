@@ -136,6 +136,10 @@
                 notify.pop();
                 notify.info(gettext('Theme "' + theme.label + '" removed.'));
                 loadThemes();
+            }, function(error) {
+                notify.pop();
+                notify.error('An error occured. ' + error.data.error);
+                loadThemes();
             });
         };
 
