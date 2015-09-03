@@ -119,6 +119,9 @@ class ThemesService(BaseService):
                     if content_type == 'text/plain' and name.endswith(('.css', '.js', '.json')):
                         content_type = content_type.replace('plain', os.path.splitext(name)[1][1:])
                     final_file_name = os.path.relpath(name, CURRENT_DIRECTORY)
+                    # remove existing first
+                    app.media.delete(final_file_name)
+                    # upload
                     file_id = app.media.put(file.read(), filename=final_file_name, content_type=content_type)
                     # save the screenshot url
                     if name.endswith('screenshot.png'):
