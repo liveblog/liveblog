@@ -185,7 +185,7 @@ define([
                     link: function(scope, elem, attrs) {
                         angular.extend(scope, {
                             toggleMultipleItems: function() {
-                                scope.post.show_all = !scope.post.show_all;
+                                scope.show_all = !scope.show_all;
                             },
                             removePost: function(post) {
                                 postsService.remove(angular.copy(post)).then(function(message) {
