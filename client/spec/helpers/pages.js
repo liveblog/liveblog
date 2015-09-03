@@ -131,6 +131,8 @@ function ThemesManagerPage() {
     var self = this;
     self.themes = element.all(by.css('.theme'));
     self.blogsRows = element.all(by.repeater('blog in selectedTheme.blogs'));
+    self.fileThemeElement = element(by.css('#uploadAThemeFile'));
+    self.byRemove = by.css('[ng-click="removeTheme(theme)"]');
 
     self.openThemesManager = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
@@ -145,11 +147,20 @@ function ThemesManagerPage() {
         return self.themes.get(theme_index).element(by.css('[ng-click="makeDefault(theme)"]')).click();
     };
 
+    self.remove = function(theme_index) {
+        self.themes.get(theme_index).element(self.byRemove).click();
+        return self;
+    };
+
     self.expectTheme = function(index, params) {
         var theme = self.themes.get(index);
         var number_of_blog_elmt = theme.element(by.css('[ng-click="openThemeBlogsModal(theme)"]'));
         // check if it is the default theme
         expect(theme.element(by.css('.default-theme')).isDisplayed()).toBe(params.is_default_theme);
+        // check if the name match
+        if (params.name) {
+            expect(theme.element(by.css('h3')).getText()).toBe(params.name);
+        }
         // check if the number shown match
         expect(number_of_blog_elmt.getText()).toBe(params.number_of_blogs_expected.toString());
         // open the modal

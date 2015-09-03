@@ -13,11 +13,25 @@ Feature: Themes operations
         When we post to "themes"
         """
         [{"name": "forest"}]
-        """  
+        """
         Then we get existing resource
         """
         {"name": "forest"}
-        """  
+        """
+
+
+    @auth
+    Scenario: Upload a theme with satisfied dependencies
+        Given "themes"
+        """
+        [{"name": "angular-base"}]
+        """
+        When we upload a file "dog-theme.zip" to "theme-upload"
+        When we get "/themes"
+        Then we get list with 2 items
+        """
+        {"_items": [{"name": "angular-base"}, {"name": "actual-dog"}]}
+        """
 
 
     @auth
@@ -49,9 +63,10 @@ Feature: Themes operations
         """
         Given "themes"
         """
-        [{"name": "forest-theme", "version": "1.0.1"}, {"name": "default-theme", "version": "1.0.1"}]
+        [{"name": "forest-theme", "version": "1.0.1", "extends": "ocean-theme"}, {"name": "ocean-theme", "version": "2.0.1"}, {"name": "default-theme", "version": "1.0.1", "extends": "forest-theme"}]
         """
-        When we find for "themes" the id as "my-theme" by "{"name": "forest-theme"}"
+        When we find for "themes" the id as "my-forest-theme" by "{"name": "forest-theme"}"
+        When we find for "themes" the id as "my-ocean-theme" by "{"name": "ocean-theme"}"
         When we find for "themes" the id as "my-default-theme" by "{"name": "default-theme"}"
         Given empty "blogs"
         When we post to "/blogs"
@@ -72,8 +87,10 @@ Feature: Themes operations
         Then we get updated response
         When we delete "themes/#my-default-theme#"
         Then we get response code 403
-        When we delete "/themes/#my-theme#"
-        Then we get deleted response
+        When we delete "/themes/#my-forest-theme#"
+        Then we get response code 403
+        When we delete "/themes/#my-ocean-theme#"
+        Then we get response code 403
         When we get "/blogs"
         Then we get list with 1 items
         """
