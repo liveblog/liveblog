@@ -2,7 +2,7 @@
 
 var blogs = [
     [
-        {title: 'title: end to end image', description: 'description: end to end image', username: 'Victor the Editor'},
+        {title: 'title: end to end image', description: 'description: end to end image', username: 'Victor the Editor', picture_url: 'http://i.imgur.com/L0Ci8Yj.png'},
         {title: 'title: end To end three', description: 'description: end to end three', username: 'Victor the Editor'},
         {title: 'title: end to end two', description: 'description: end to end two', username: 'Victor the Editor'},
         {title: 'title: end to end One', description: 'description: end to end one', username: 'Victor the Editor'}
