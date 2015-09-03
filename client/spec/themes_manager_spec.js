@@ -35,7 +35,11 @@ describe('Themes Manager', function() {
     it('can upload a new theme', function() {
         themeManager.openThemesManager()
             .fileThemeElement.sendKeys(path.resolve(__dirname) + '/upload/dog-theme.zip');
-        browser.waitForAngular();
+        browser.wait(function() {
+            return themeManager.themes.count().then(function(count) {
+                return count === 4;
+            });
+        });
         themeManager.themes.then(function(themes) {
             expect(themes.length).toBe(4);
             // actual-dog
