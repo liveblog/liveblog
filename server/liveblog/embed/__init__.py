@@ -12,8 +12,8 @@
 
 from .embed import bp as embed_blueprint
 from .embed import publish_embed
-from .embed import AmazonAccessKeyUnknownException
+from .embed import MediaStorageUnsupportedForBlogPublishing
 
-__all__ = ['embed_blueprint', 'publish_embed', 'AmazonAccessKeyUnknownException']
+__all__ = ['embed_blueprint', 'publish_embed', 'MediaStorageUnsupportedForBlogPublishing']
 
 # EOF

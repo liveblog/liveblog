@@ -31,7 +31,6 @@ from flask.ext.cache import Cache
 from liveblog.common import BlogCache
 import flask_s3
 
-
 logger = logging.getLogger('superdesk')
 sentry = Sentry(register_signal=False, wrap_wsgi=False)
 s3 = flask_s3.FlaskS3()

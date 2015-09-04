@@ -47,7 +47,11 @@ backend:
   volumes:
    - ../results/server/unit:/opt/superdesk/results-unit/
    - ../results/server/behave:/opt/superdesk/results-behave/
-
+  environment:
+    - AMAZON_ACCESS_KEY_ID=$bamboo_AMAZON_ACCESS_KEY_ID
+    - AMAZON_CONTAINER_NAME=$bamboo_AMAZON_CONTAINER_NAME
+    - AMAZON_REGION=$bamboo_AMAZON_REGION
+    - AMAZON_SECRET_ACCESS_KEY=$bamboo_AMAZON_SECRET_ACCESS_KEY
 frontend:
   extends:
     file: common.yml
