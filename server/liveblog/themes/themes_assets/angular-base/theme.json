@@ -3,6 +3,8 @@
     "name": "angular-base",
     "abstract": true,
     "version": "1.1.0",
+    "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
+    "license": "AGPL-3.0",
     "scripts": [
         "//code.jquery.com/jquery-1.11.3.min.js",
         "//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js",
