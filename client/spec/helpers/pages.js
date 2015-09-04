@@ -188,10 +188,21 @@ function BlogPage(blogs) {
     self.settings = new BlogSettingsPage(self);
     self.timeline = new TimelinePage(self);
     self.editor = new EditPostPage(self);
+    self.contributions = self;
 
     self.openDrafts = function() {
-        element(by.css('[ng-click="toggleDraftPanel()"]')).click();
+        element(by.css('[ng-click="openPanel(\'drafts\')"]')).click();
         return self.drafts;
+    };
+
+    self.openEditor = function() {
+        element(by.css('[ng-click="openPanel(\'editor\')"]')).click();
+        return self.editor;
+    };
+
+    self.openContributions = function() {
+        element(by.css('[ng-click="openPanel(\'contributions\')"]')).click();
+        return self.contributions;
     };
 
     self.openList = function() {
@@ -212,9 +223,8 @@ function BlogPage(blogs) {
 function DraftsPage(blog) {
     var self = this;
     self.blog = blog;
-    self.editor = new EditPostPage(self);
     self.posts = element(by.css('.draft-posts'));
-    self.column = element(by.css('.column-draft-posts'));
+    self.column = element(by.css('.panel--draft'));
     self.byDrafts = by.repeater('post in postsList.pagesManager.allPosts()');
 
     self.get = function(index) {
@@ -231,7 +241,7 @@ function DraftsPage(blog) {
 
     self.edit = function(draft) {
         draft.element(by.css('[ng-click="onEditClick(post)"]')).click();
-        return self.editor;
+        return self;
     };
 
     self.expectPost = function(index, data) {

@@ -9,32 +9,33 @@ describe('Draft Posts', function() {
     it('can open drafts panel from url', function() {
         var drafts = blogs.openBlog(0).drafts;
         browser.getCurrentUrl().then(function(url) {
-            browser.get(url + '?drafts=open').then(function() {
+            browser.get(url + '?panel=drafts').then(function() {
                 expect(drafts.posts.isPresent()).toBe(true);
             });
         });
     });
 
     it('can create drafts and respect the order', function() {
-        var drafts = blogs.openBlog(0).openDrafts(),
-            dataDraft1 = drafts.editor.createDraft(),
-            dataDraft  = drafts.editor.createDraft();
+        var blog = blogs.openBlog(0);
+        var dataDraft1 = blog.editor.createDraft();
+        var dataDraft = blog.editor.createDraft();
         // check
-        drafts
+        blog.openDrafts()
             .expectPost(0, dataDraft.quote)
             .expectPost(1, dataDraft1.quote);
     });
 
     it('can open a draft in the editor and publish it', function() {
-        var drafts = blogs.openBlog(0).openDrafts(),
-            dataDraft  = drafts.editor.createDraft();
-        drafts.editor.resetEditor();
-        browser.waitForAngular();
+        var blog = blogs.openBlog(0);
+        var dataDraft = blog.editor.createDraft();
+        var drafts = blog.openDrafts();
         var draft = drafts.get(0);
-        drafts.edit(draft).waitForEditor();
-        expect(drafts.editor.textElement.getText()).toEqual(dataDraft.body);
-        drafts.editor.publish().then(function() {
+        drafts.edit(draft);
+        var editor = blog.openEditor();
+        expect(editor.textElement.getText()).toEqual(dataDraft.body);
+        editor.publish().then(function() {
             expect(blogs.blog.timeline.get(0).isPresent()).toBe(true);
+            blog.openDrafts();
             expect(drafts.all().count()).toBe(0);
         });
     });

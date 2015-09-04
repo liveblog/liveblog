@@ -31,7 +31,7 @@
         <div class="column column--first">
             <span ng-if="isBlogOpened()">
                 <!-- drafts -->
-                <div ng-if="panelState === 'drafts'">
+                <div class="panel--draft" ng-if="panelState === 'drafts'">
                     <header>Drafts</header>
                     <div class="content" lr-infinite-scroll="fetchNewDraftPage">
                         <div class="draft-posts">
