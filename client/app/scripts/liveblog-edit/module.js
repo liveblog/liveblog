@@ -58,7 +58,7 @@ define([
         angular.extend($scope, {
             blog: blog,
             currentPost: undefined,
-            isUserOwner: blogSecurityService.isUserOwner,
+            blogSecurityService: blogSecurityService,
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
             },
@@ -446,7 +446,11 @@ define([
         'liveblog.pages-manager'
     ]);
     app.service('blogSecurityService',
-        ['$q', '$rootScope', '$route', 'blogService', '$location', function($q, $rootScope, $route, blogService, $location) {
+        ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges',
+        function($q, $rootScope, $route, blogService, $location, privileges) {
+        function canPublishAPost(blog) {
+            return privileges.userHasPrivileges({'publish_post': 1});
+        }
         function isUserOwner(blog) {
             if ($rootScope.currentUser._id !== blog.original_creator) {
                 return false;
@@ -472,7 +476,8 @@ define([
         }
         return {
             goToSettings: goToSettings,
-            isUserOwner: isUserOwner
+            isUserOwner: isUserOwner,
+            canPublishAPost: canPublishAPost
         };
     }]);
     app.config(['superdeskProvider', function(superdesk) {

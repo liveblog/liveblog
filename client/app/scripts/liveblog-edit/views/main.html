@@ -5,7 +5,7 @@
         </a>
     </div>
     <h3 class="page-nav-title">{{ blog.title }}</h3>
-    <div class="button-stack right-stack" ng-if="isUserOwner(blog)">
+    <div class="button-stack right-stack" ng-if="blogSecurityService.isUserOwner(blog)">
         <a class="navbtn settings-link" ng-href="#/liveblog/settings/{{::blog._id}}">
             <i class="svg-icon-settings"></i>
         </a>
@@ -76,12 +76,14 @@
                             </div>
                         </div>
                         <div class="actions">
-                            <button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished()" translate>Save draft</button>
-                            <button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished()" translate>Submit</button>
-                            <button class="btn btn-info" ng-disabled="publishDisabled" ng-click="publish()" ng-switch="isCurrentPostPublished()">
-                                <span ng-switch-when="true"  translate>Update</span>
-                                <span ng-switch-when="false" translate>Publish</span>
-                            </button>
+                            <div style="display:table-row">
+                                <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished()" translate>Save draft</button></div>
+                                <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished()" translate>Submit</button></div>
+                                <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell"><button class="btn btn-info" ng-disabled="publishDisabled" ng-click="publish()" ng-switch="isCurrentPostPublished()">
+                                    <span ng-switch-when="true"  translate>Update</span>
+                                    <span ng-switch-when="false" translate>Publish</span>
+                                </button></div>
+                            </div>
                         </div>
                     </div>
                 </div>

@@ -22,12 +22,12 @@ def private_draft_filter():
     As private we treat items where user is creator
     """
     user = getattr(flask.g, 'user', None)
-    if user:
+    if user and 'draft' in flask.request.args['source']:
         private_filter = {'should': [
             {'term': {'post_status': 'open'}},
             {'term': {'original_creator': str(user['_id'])}},
         ]}
-    return {'bool': private_filter}
+        return {'bool': private_filter}
 
 
 class PostsVersionsResource(ArchiveVersionsResource):
@@ -107,7 +107,6 @@ class PostsService(ArchiveService):
         return update_key('post_order_sequence', True)
 
     def check_post_permission(self, post):
-        print('post:', post)
         to_be_checked = (
             dict(status='open', privilege_required='publish_post'),
             dict(status='submitted', privilege_required='submit_post')
