@@ -78,6 +78,17 @@ define([
                 $scope.openPanel('editor');
                 doOrAskBeforeIfEditorIsNotEmpty(fillEditor.bind(null, post));
             },
+            saveAsContribution: function() {
+                notify.info(gettext('Saving draft'));
+                postsService.saveContribution(blog._id, $scope.currentPost, getItemsFromEditor()).then(function(post) {
+                    notify.pop();
+                    notify.info(gettext('Contribution submitted'));
+                    cleanEditor();
+                }, function() {
+                    notify.pop();
+                    notify.error(gettext('Something went wrong. Please try again later'));
+                });
+            },
             saveAsDraft: function() {
                 notify.info(gettext('Saving draft'));
                 postsService.saveDraft(blog._id, $scope.currentPost, getItemsFromEditor()).then(function(post) {

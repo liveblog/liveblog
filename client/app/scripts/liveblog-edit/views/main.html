@@ -52,7 +52,20 @@
                 <!-- contributions -->
                 <div ng-if="panelState === 'contributions'">
                     <header>Contributions</header>
-                    <div class="content">
+                    <div class="content" lr-infinite-scroll="">
+                        <div class="contributions-posts">
+                            <lb-posts-list
+                              lb-posts-instance="blogEdit.contributionsPostsInstance"
+                              lb-posts-blog-id="blog._id"
+                              lb-posts-status="submitted"
+                              lb-posts-order-by="updated_first"
+                              lb-posts-empty-message="<p>There is no contribution yet.</p><p>To create one, start to compose your post and click on the &#34;SUBMIT&#34; button. You will be able to re-open it later in the editor.</p>"
+                              lb-posts-allow-unpublish="false"
+                              lb-posts-allow-reordering="false"
+                              lb-posts-on-post-selected="openPostInEditor"
+                            >
+                            </lb-posts-list>
+                        </div>
                     </div>
                 </div>
                 <!-- editor -->
@@ -68,6 +81,7 @@
                         </div>
                         <div class="actions">
                             <button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished()" translate>Save draft</button>
+                            <button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished()" translate>Submit</button>
                             <button class="btn btn-info" ng-disabled="publishDisabled" ng-click="publish()" ng-switch="isCurrentPostPublished()">
                                 <span ng-switch-when="true"  translate>Update</span>
                                 <span ng-switch-when="false" translate>Publish</span>
