@@ -26,7 +26,7 @@ define([
 
         // return the list of items from the editor
         function getItemsFromEditor() {
-            return _.map($scope.editor.get(), function(block) {
+            return _.map(vm.editor.get(), function(block) {
                 return {
                     text: block.text.replace(/(^<div>)|(<\/div>$)/g, '').replace(/(<br>$)/g, ''),
                     meta: block.meta,
@@ -38,7 +38,7 @@ define([
         // ask in a modalbox if the user is sure to want to overwrite editor.
         // call the callback if user say yes or if editor is empty
         function doOrAskBeforeIfEditorIsNotEmpty(callback, msg) {
-            var are_all_blocks_empty = _.all($scope.editor.blocks, function(block) {return block.isEmpty();});
+            var are_all_blocks_empty = _.all(vm.editor.blocks, function(block) {return block.isEmpty();});
             if (are_all_blocks_empty || !$scope.isCurrentPostUnsaved()) {
                 callback();
             } else {
@@ -49,7 +49,7 @@ define([
 
         // remove and clean every items from the editor
         function cleanEditor() {
-            $scope.editor.reinitialize();
+            vm.editor.reinitialize();
             $scope.currentPost = undefined;
         }
         var vm = this;
@@ -71,10 +71,11 @@ define([
                         item = item.item;
                         if (angular.isDefined(item)) {
                             var data = _.extend({text: item.text}, item.meta);
-                            $scope.editor.createBlock(item.item_type, data);
+                            vm.editor.createBlock(item.item_type, data);
                         }
                     });
                 }
+                $scope.openPanel('editor');
                 doOrAskBeforeIfEditorIsNotEmpty(fillEditor.bind(null, post));
             },
             saveAsDraft: function() {
@@ -106,15 +107,12 @@ define([
                     $scope.publishDisabled = false;
                 });
             },
-            // retrieve draft panel status from url
-            draftPanelState: $routeParams.drafts === 'open'? 'open' : 'closed',
-            toggleDraftPanel: function() {
-                // reverse status
-                var newStateValue = $scope.draftPanelState === 'open' ? 'closed': 'open';
-                // update new status
-                $scope.draftPanelState = newStateValue;
+            // retrieve panel status from url
+            panelState: angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor',
+            openPanel: function(panel) {
+                $scope.panelState = panel;
                 // update url for deeplinking
-                $route.updateParams({drafts: newStateValue === 'open' ? 'open' : undefined});
+                $route.updateParams({panel: $scope.panelState});
             },
             stParams: {
                 coverMaxWidth: 350,
