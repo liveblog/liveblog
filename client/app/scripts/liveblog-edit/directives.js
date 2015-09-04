@@ -139,7 +139,7 @@ define([
                             vm.pagesManager.retrieveUpdate(true).then(function() {
                                 if (event_params.deleted === true) {
                                     notify.pop();
-                                    notify.info(gettext('Post removed'));
+                                    notify.info(gettext('Removing the post...'));
                                 }
                                 vm.isLoading = false;
                             });
