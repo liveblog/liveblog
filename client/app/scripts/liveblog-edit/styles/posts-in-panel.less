@@ -1,59 +1,53 @@
 @import 'variables.less';
 @import 'mixins.less';
 
-.column-draft-posts {
-
-    .draft-posts {
-        overflow-x: hidden;
-        overflow-y: auto;
-        height: 100%;
-        .lb-post {
-            &__holder {
+.panel {
+    .lb-post {
+        &__holder {
+            background-color: transparent;
+            padding: 14px 10px 0 12px;
+            border-bottom: 1px solid #DBDBDB;
+            .border-radius(0);
+        }
+        &__content {margin-left: 0;}
+        &__figure { // smaller figure
+            margin-right: 0;
+            .avatar {
+                width: 24px;
+                height: 24px;
+            }
+        }
+        &__expander {
+            &-multiple-items {
+                background-color: @sd-background;
+                right: 12px;
+            }
+            &-holder {
                 background-color: transparent;
-                padding: 14px 10px 0 12px;
-                border-bottom: 1px solid #DBDBDB;
-                .border-radius(0);
+                border-top: none;
+                height: 15px;
             }
-            &__content {margin-left: 0;}
-            &__figure { // smaller figure
-                margin-right: 0;
-                .avatar {
-                    width: 24px;
-                    height: 24px;
-                }
-            }
-            &__expander {
-                &-multiple-items {
-                    background-color: @sd-background;
-                    right: 12px;
-                }
-                &-holder {
-                    background-color: transparent;
-                    border-top: none;
-                    height: 15px;
-                }
-            }
-            &__collapser-multiple-items {
-                    right: 58px;
-            }
-            .cover-preview {
+        }
+        &__collapser-multiple-items {
+                right: 58px;
+        }
+        .cover-preview {
+            left: -12px;
+            position: relative;
+        }
+        .embed-preview {
+            .fb-post {
                 left: -12px;
-                position: relative;
             }
-            .embed-preview {
-                .fb-post {
-                    left: -12px;
-                }
-                iframe {
-                    width: 100%;
-                    height: 33%;
-                }
+            iframe {
+                width: 100%;
+                height: 33%;
             }
-            &__editable {
+        }
+        &__editable {
+            border: none;
+            &:hover {
                 border: none;
-                &:hover {
-                    border: none;
-                }
             }
         }
     }

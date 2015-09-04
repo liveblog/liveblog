@@ -31,41 +31,37 @@
         <div class="column column--first">
             <span ng-if="isBlogOpened()">
                 <!-- drafts -->
-                <div class="panel--draft" ng-if="panelState === 'drafts'">
+                <div class="panel panel--draft" ng-if="panelState === 'drafts'">
                     <header>Drafts</header>
                     <div class="content" lr-infinite-scroll="fetchNewDraftPage">
-                        <div class="draft-posts">
-                            <lb-posts-list
-                              lb-posts-instance="blogEdit.draftPostsInstance"
-                              lb-posts-blog-id="blog._id"
-                              lb-posts-status="draft"
-                              lb-posts-order-by="updated_first"
-                              lb-posts-empty-message="<p>You don't have any draft yet.</p><p>To create one, start to compose your post and click on the &#34;SAVE AS DRAFT&#34; button. You will be able to re-open it later in the editor.</p>"
-                              lb-posts-allow-unpublish="false"
-                              lb-posts-allow-reordering="false"
-                              lb-posts-on-post-selected="openPostInEditor"
-                            >
-                            </lb-posts-list>
-                        </div>
+                        <lb-posts-list
+                          lb-posts-instance="blogEdit.draftPostsInstance"
+                          lb-posts-blog-id="blog._id"
+                          lb-posts-status="draft"
+                          lb-posts-order-by="updated_first"
+                          lb-posts-empty-message="<p>You don't have any draft yet.</p><p>To create one, start to compose your post and click on the &#34;SAVE AS DRAFT&#34; button. You will be able to re-open it later in the editor.</p>"
+                          lb-posts-allow-unpublish="false"
+                          lb-posts-allow-reordering="false"
+                          lb-posts-on-post-selected="openPostInEditor"
+                        >
+                        </lb-posts-list>
                     </div>
                 </div>
                 <!-- contributions -->
-                <div ng-if="panelState === 'contributions'">
+                <div class="panel panel--contribution" ng-if="panelState === 'contributions'">
                     <header>Contributions</header>
-                    <div class="content" lr-infinite-scroll="">
-                        <div class="contributions-posts">
-                            <lb-posts-list
-                              lb-posts-instance="blogEdit.contributionsPostsInstance"
-                              lb-posts-blog-id="blog._id"
-                              lb-posts-status="submitted"
-                              lb-posts-order-by="updated_first"
-                              lb-posts-empty-message="<p>There is no contribution yet.</p><p>To create one, start to compose your post and click on the &#34;SUBMIT&#34; button. You will be able to re-open it later in the editor.</p>"
-                              lb-posts-allow-unpublish="false"
-                              lb-posts-allow-reordering="false"
-                              lb-posts-on-post-selected="openPostInEditor"
-                            >
-                            </lb-posts-list>
-                        </div>
+                    <div class="content" lr-infinite-scroll="fetchNewContributionPage">
+                        <lb-posts-list
+                          lb-posts-instance="blogEdit.contributionsPostsInstance"
+                          lb-posts-blog-id="blog._id"
+                          lb-posts-status="submitted"
+                          lb-posts-order-by="updated_first"
+                          lb-posts-empty-message="<p>There is no contribution yet.</p><p>To create one, start to compose your post and click on the &#34;SUBMIT&#34; button. You will be able to re-open it later in the editor.</p>"
+                          lb-posts-allow-unpublish="false"
+                          lb-posts-allow-reordering="false"
+                          lb-posts-on-post-selected="openPostInEditor"
+                        >
+                        </lb-posts-list>
                     </div>
                 </div>
                 <!-- editor -->
@@ -97,23 +93,14 @@
                 </div>
             </span>
         </div>
-
         <!-- timeline column -->
         <div class="column column-timeline">
-            <header>
-                <ul class="nav nav-tabs">
-                    <li class="active">
-                        <button translate>Timeline</button>
-                    </li>
-                </ul>
-            </header>
-            <div class="content">
+            <header>Timeline</header>
+            <div class="content" lr-infinite-scroll="fetchNewTimelinePage">
                 <div>
                     <div
                       class="timeline-posts-list"
                       lb-posts-instance="blogEdit.timelineInstance"
-                      lr-infinite-scroll="fetchNewTimelinePage"
-                      set-timeline-height
                       lb-posts-list
                       lb-posts-blog-id="blog._id"
                       lb-posts-status="open"

@@ -158,11 +158,14 @@ define([
                     });
                 }
             },
-            fetchNewTimelinePage: function() {
-                vm.timelineInstance.fetchNewPage();
+            fetchNewContributionPage: function() {
+                vm.contributionsPostsInstance.fetchNewPage();
             },
             fetchNewDraftPage: function() {
                 vm.draftPostsInstance.fetchNewPage();
+            },
+            fetchNewTimelinePage: function() {
+                vm.timelineInstance.fetchNewPage();
             },
             isBlogOpened: function() {
                 return $scope.blog.blog_status === 'open';
