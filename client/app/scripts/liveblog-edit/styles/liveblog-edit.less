@@ -109,7 +109,6 @@
                     }
                     .st-block-controls {
                         padding: 0;
-
                         // [block types bar]
                         &--active {
                             display: flex; // for easy adding additional button
@@ -455,4 +454,64 @@
             color: #5ea9c8;
         }
     }
+}
+
+// preview changes
+.preview {
+    background-color: white!important;
+    .st-block-controls__top {
+        display: none!important;
+    }
+    .st-text-block {
+        padding: 0px!important;
+        border: 0px!important;
+        min-height: 0em!important;
+    }
+    .st-icon, .st-icon--add:after {
+        display: none!important;
+    }
+    .st-block__inner {
+        margin: 0px!important;
+        padding: 0px!important;
+        border: 0px!important;
+    }
+    .st-block__inner:hover {
+        box-shadow: 0px 0px 0px 0px rgba(0,0,0,0)!important;
+    }
+    .st-image-block {
+        border: 0px!important;
+        display: inline;
+    }
+    .st-embed-block {
+        border: 0px!important;
+        margin: 0px!important;
+        font-size: 13px!important;
+        padding: 0px!important;
+        text-transform: none!important;
+        font-weight: normal!important;
+    }
+    .title-preview, .description-preview, .credit-preview {
+        color: black!important;
+    }
+    .quote-input::before, .st-quote-block::before {
+        content:""!important;
+        margin: 0px!important;
+        padding-right: 0px!important;
+    }
+    .quote-input {
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 22.5px;
+        margin: 0px!important;
+        
+    }
+    .st-quote-block {
+        margin: 0px!important;
+        border: 0px!important;
+        color: black!important;
+    }
+    .js-cite-input.st-quote-block {
+        font-size:13px!important;
+    }
+
 }

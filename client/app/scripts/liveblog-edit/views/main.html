@@ -70,13 +70,14 @@
                         Editor<button class="btn btn-info pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
                     </header>
                     <div class="content">
-                        <div class="editor-holder">
+                        <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">
                                 <div class="editor" ng-sir-trevor st-model="blogEdit.editor" st-params="stParams"></div>
                             </div>
                         </div>
                         <div class="actions">
                             <div style="display:table-row">
+                                <div style="display:table-cell"><button class="btn" ng-click="togglePreview()" translate>{{ preview? 'Edit': 'Preview' }}</button></div>
                                 <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished()" translate>Save draft</button></div>
                                 <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished()" translate>Submit</button></div>
                                 <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell"><button class="btn btn-info" ng-disabled="publishDisabled" ng-click="publish()" ng-switch="isCurrentPostPublished()">
