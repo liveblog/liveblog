@@ -79,21 +79,21 @@ define([
                 doOrAskBeforeIfEditorIsNotEmpty(fillEditor.bind(null, post));
             },
             saveAsDraft: function() {
-                $scope.saveAsDraftDisabled = true;
+                $scope.actionPending = true;
                 notify.info(gettext('Saving draft'));
                 postsService.saveDraft(blog._id, $scope.currentPost, getItemsFromEditor()).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Draft saved'));
                     cleanEditor();
-                    $scope.saveAsDraftDisabled = false;
+                    $scope.actionPending = false;
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
-                    $scope.saveAsDraftDisabled = false;
+                    $scope.actionPending = false;
                 });
             },
             publish: function() {
-                $scope.publishDisabled = true;
+                $scope.actionPending = true;
                 notify.info(gettext('Saving post'));
                 postsService.savePost(blog._id,
                     $scope.currentPost,
@@ -103,11 +103,11 @@ define([
                     notify.pop();
                     notify.info(gettext('Post saved'));
                     cleanEditor();
-                    $scope.publishDisabled = false;
+                    $scope.actionPending = false;
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
-                    $scope.publishDisabled = false;
+                    $scope.actionPending = false;
                 });
             },
             // retrieve draft panel status from url
