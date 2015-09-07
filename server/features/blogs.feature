@@ -99,7 +99,7 @@ Feature: Blog operations
         """
 
        @auth
-    Scenario: Delete blog
+    	Scenario: Delete blog
         Given "blogs"
         """
         [{"title": "test_blog1"}]
@@ -110,6 +110,22 @@ Feature: Blog operations
          """
         And we delete latest
         Then we get deleted response
+        
+		@auth
+    	Scenario: Delete blog without being the owner
+        When we post to "blogs"
+        """
+        [{"title": "Update blog without being the owner"}]
+        """
+        Given "roles"
+        """
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
+        """
+        When we login as user "foo" with password "bar"
+        Given we have "Editor" role
+        Given we have "user" as type of user
+        When we delete "/blogs/#blogs._id#"
+        Then we get response code 403
 
         @auth
         Scenario: Adding blogs with or without members

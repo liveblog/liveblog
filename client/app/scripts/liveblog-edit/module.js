@@ -181,7 +181,6 @@ define([
 
     BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
         'gettext', 'config', 'modal', '$q', 'upload'];
-    
     function BlogSettingsController($scope, blog, api, blogService, $location, notify,
         gettext, config, modal, $q, upload) {
         // set view's model
@@ -342,11 +341,15 @@ define([
                     });
                 });
             },
-            removeBlog: function(blog) {
+            removeBlog: function() {
                 api.blogs.remove(angular.copy(vm.blog)).then(function(message) {
                     notify.pop();
                     notify.info(gettext('Blog removed'));
+                }, function () {
+                    notify.pop();
+                    notify.error(gettext('Something went wrong'));
                 });
+                $location.path('/liveblog');
             },
             close: function() {
                 // return to blog edit page

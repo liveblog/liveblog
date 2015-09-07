@@ -195,11 +195,14 @@ class BlogService(ArchiveService):
         doc = super().find_one(req, **lookup)
         return doc
 
+    def is_owner(self, doc):
+        if not is_admin(get_user()) and str(flask.g.user['_id']) != str(doc['original_creator']):
+            raise SuperdeskApiError.forbiddenError(message='You need to be the blog owner to perform updates on it')
+
     def on_update(self, updates, original):
         # check permission (see https://github.com/superdesk/liveblog/pull/167)
         # only the owner can change blog's settings
-        if not is_admin(get_user()) and str(flask.g.user['_id']) != str(original['original_creator']):
-            raise SuperdeskApiError.forbiddenError(message='You need to be the blog owner to perform updates on it')
+        self.is_owner(original)
         # if the theme changed, we republish the blog with the new one
         if 'blog_preferences' in updates and 'theme' in updates['blog_preferences']:
             if updates['blog_preferences']['theme'] != original['blog_preferences'].get('theme'):
@@ -226,6 +229,9 @@ class BlogService(ArchiveService):
         app.blog_cache.invalidate(original.get('_id'))
         # send notifications
         push_notification('blogs', updated=1)
+
+    def on_delete(self, doc):
+        self.is_owner(doc)
 
     def on_deleted(self, doc):
         # invalidate cache for updated blog
