@@ -451,8 +451,8 @@ define([
         function canPublishAPost(blog) {
             return privileges.userHasPrivileges({'publish_post': 1});
         }
-        function isUserOwner(blog) {
-            if ($rootScope.currentUser._id !== blog.original_creator) {
+        function isUserOwner(archive) {
+            if ($rootScope.currentUser._id !== archive.original_creator) {
                 return false;
             } else {
                 return true;

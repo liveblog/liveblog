@@ -21,7 +21,8 @@ def private_draft_filter():
     """Filter out users private drafts.
     As private we treat items where user is creator
     """
-    private_filter = {'should': [{'term': {'post_status': 'open'}}]}
+    private_filter = {'should': [{'term': {'post_status': 'open'}},
+                                 {'term': {'post_status': 'submitted'}}]}
     user = getattr(flask.g, 'user', None)
     if user:
         private_filter['should'].append(
