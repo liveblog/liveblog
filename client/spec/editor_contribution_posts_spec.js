@@ -60,16 +60,22 @@ describe('Contributions Posts', function() {
         browser.driver.manage().window().setSize(1280, 1024);
         browser.get('/');
         element(by.css('button.current-user')).click();
-        browser.waitForAngular();
+        // wait for sidebar animation to finish
+        browser.wait(function() {
+            return element(by.buttonText('SIGN OUT')).isDisplayed();
+        }, 1000);
         element(by.buttonText('SIGN OUT')).click();
-        browser.sleep(2000); // it reloads page
-        browser.waitForAngular();
+        browser.wait(function() {
+            return browser.driver.isElementPresent(by.id('login-btn'));
+        }, 5000);
         browser.executeScript('window.sessionStorage.clear();');
         browser.executeScript('window.localStorage.clear();');
         browser.sleep(2000); // it reloads page
-        browser.get('/');
         login('contributor', 'contributor').then(function() {
             var contributions = blogs.openBlog(0).openContributions();
+            browser.wait(function() {
+                return element(contributions.byPosts).isPresent();
+            }, 200);
             contributions.expectPost(0, contrib.quote);
             expect(contributions.editButtonIsPresent(contributions.get(0))).toBe(false);
         });

@@ -230,11 +230,11 @@ function AbstractPanelPage(blog) {
     var self = this;
     self.blog = blog;
     self.column = element(by.css(self._class_name));
-    self.byDrafts = by.repeater('post in postsList.pagesManager.allPosts()');
+    self.byPosts = by.repeater('post in postsList.pagesManager.allPosts()');
     self.byEditButton = by.css('[ng-click="onEditClick(post)"]');
 
     self.get = function(index) {
-        return self.column.element(self.byDrafts.row(index));
+        return self.column.element(self.byPosts.row(index));
     };
 
     self.getFull = function(index) {
@@ -242,7 +242,7 @@ function AbstractPanelPage(blog) {
     };
 
     self.all = function() {
-        return self.column.all(self.byDrafts);
+        return self.column.all(self.byPosts);
     };
 
     self.editButtonIsPresent = function(draft) {
