@@ -341,15 +341,22 @@ define([
                     });
                 });
             },
+            askRemoveBlog: function() {
+                                modal.confirm(gettext('Are you sure you want to delete the blog?'))
+                                    .then(function() {
+                                        vm.removeBlog();
+                                    });
+            },
             removeBlog: function() {
                 api.blogs.remove(angular.copy(vm.blog)).then(function(message) {
                     notify.pop();
                     notify.info(gettext('Blog removed'));
+                    $location.path('/liveblog');
                 }, function () {
                     notify.pop();
                     notify.error(gettext('Something went wrong'));
-                });
-                $location.path('/liveblog');
+                    $location.path('/liveblog/edit/' + vm.blog._id);
+                    });
             },
             close: function() {
                 // return to blog edit page
