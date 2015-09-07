@@ -173,7 +173,9 @@ describe('Blog settings', function() {
         browser.sleep(2000); // it reloads page
         login('test_user', 'test_password').then(function() {
             browser.waitForAngular();
-            blogs.openBlog(0).openSettings().openTeam();
+            var blog = blogs.openBlog(0);
+            browser.waitForAngular();
+            blog.openSettings().openTeam();
             blogs.blog.settings.userName.getText().then(function(text) {
                 expect(text).toEqual('test_user');
             });

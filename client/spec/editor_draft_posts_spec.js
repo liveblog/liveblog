@@ -10,7 +10,7 @@ describe('Draft Posts', function() {
         var drafts = blogs.openBlog(0).drafts;
         browser.getCurrentUrl().then(function(url) {
             browser.get(url + '?panel=drafts').then(function() {
-                expect(drafts.posts.isPresent()).toBe(true);
+                expect(drafts.column.isPresent()).toBe(true);
             });
         });
     });

@@ -6,7 +6,7 @@ Feature: Post operations
         Given empty "items"
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
         """
         Given we have "Editor" role
         Given we have "user" as type of user
@@ -203,7 +203,7 @@ Feature: Post operations
         Given empty "items"
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
         """
         Given we have "Editor" role
         Given we have "user" as type of user
@@ -272,7 +272,7 @@ Feature: Post operations
         Given empty "items"
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
         """
         Given we have "Editor" role
         Given we have "user" as type of user
@@ -363,7 +363,7 @@ Feature: Post operations
         Given empty "items"
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
         """
         Given we have "Editor" role
         Given we have "user" as type of user
@@ -438,7 +438,7 @@ Feature: Post operations
         Given empty "posts"
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
         """
         Given we have "Editor" role
         Given we have "user" as type of user
@@ -479,7 +479,7 @@ Feature: Post operations
         Given empty "items"
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
         """
         Given we have "Editor" role
         Given we have "user" as type of user
@@ -588,7 +588,7 @@ Feature: Post operations
         Given empty "items"
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
         """
         Given we have "Editor" role
         Given we have "user" as type of user
@@ -628,7 +628,7 @@ Feature: Post operations
     Scenario: Published date on posts that were drafts
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
         """
         Given we have "Editor" role
         Given we have "user" as type of user

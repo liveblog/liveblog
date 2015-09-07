@@ -21,13 +21,13 @@ def private_draft_filter():
     """Filter out users private drafts.
     As private we treat items where user is creator
     """
+    private_filter = {'should': [{'term': {'post_status': 'open'}}]}
     user = getattr(flask.g, 'user', None)
-    if user and 'draft' in flask.request.args['source']:
-        private_filter = {'should': [
-            {'term': {'post_status': 'open'}},
-            {'term': {'original_creator': str(user['_id'])}},
-        ]}
-        return {'bool': private_filter}
+    if user:
+        private_filter['should'].append(
+            {'term': {'original_creator': str(user['_id'])}}
+        )
+    return {'bool': private_filter}
 
 
 class PostsVersionsResource(ArchiveVersionsResource):
@@ -182,12 +182,7 @@ class PostsService(ArchiveService):
 class BlogPostsResource(Resource):
     url = 'blogs/<regex("[a-f0-9]{24}"):blog_id>/posts'
     schema = PostsResource.schema
-    datasource = {
-        'source': 'archive',
-        'elastic_filter_callback': private_draft_filter,
-        'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': DEFAULT_POSTS_ORDER
-    }
+    datasource = PostsResource.datasource
     resource_methods = ['GET']
     privileges = {'GET': 'posts'}
 

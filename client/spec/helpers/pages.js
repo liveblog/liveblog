@@ -223,7 +223,6 @@ function BlogPage(blogs) {
 function DraftsPage(blog) {
     var self = this;
     self.blog = blog;
-    self.posts = element(by.css('.draft-posts'));
     self.column = element(by.css('.panel--draft'));
     self.byDrafts = by.repeater('post in postsList.pagesManager.allPosts()');
 
