@@ -59,6 +59,7 @@ define([
             blog: blog,
             currentPost: undefined,
             isUserOwner: blogSecurityService.isUserOwner,
+            preview: false,
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
             },
@@ -175,6 +176,9 @@ define([
                 } else {
                     return true;
                 }
+            },
+            togglePreview: function() {
+                $scope.preview = !$scope.preview;
             }
         });
     }
