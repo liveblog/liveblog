@@ -139,7 +139,7 @@ define([
                             vm.pagesManager.retrieveUpdate(true).then(function() {
                                 if (event_params.deleted === true) {
                                     notify.pop();
-                                    notify.info(gettext('Removing the post...'));
+                                    notify.info(gettext('Post removed'));
                                 }
                                 vm.isLoading = false;
                             });
@@ -197,7 +197,7 @@ define([
                             removePost: function(post) {
                                 postsService.remove(angular.copy(post)).then(function(message) {
                                     notify.pop();
-                                    notify.info(gettext('Post removed'));
+                                    notify.info(gettext('Removing post...'));
                                 }, function() {
                                     notify.pop();
                                     notify.error(gettext('Something went wrong'));
