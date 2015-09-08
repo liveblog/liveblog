@@ -75,7 +75,7 @@ describe('Contributions Posts', function() {
             var contributions = blogs.openBlog(0).openContributions();
             browser.wait(function() {
                 return element(contributions.byPosts).isPresent();
-            }, 2000);
+            });
             contributions.expectPost(0, contrib.quote);
             expect(contributions.editButtonIsPresent(contributions.get(0))).toBe(false);
         });
