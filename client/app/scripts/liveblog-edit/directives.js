@@ -161,8 +161,8 @@ define([
             }
         ])
         .directive('lbPost', [
-            'notify', 'gettext', 'asset', 'postsService', 'modal',
-            function(notify, gettext, asset, postsService, modal) {
+            'notify', 'gettext', 'asset', 'postsService', 'modal', 'blogSecurityService',
+            function(notify, gettext, asset, postsService, modal, blogSecurityService) {
                 return {
                     scope: {
                         post: '=',
@@ -184,6 +184,9 @@ define([
                     templateUrl: 'scripts/liveblog-edit/views/post.html',
                     link: function(scope, elem, attrs) {
                         angular.extend(scope, {
+                            isAbleToEditContribution: function(post) {
+                                return blogSecurityService.canPublishAPost() || blogSecurityService.isUserOwner(post);
+                            },
                             toggleMultipleItems: function() {
                                 scope.show_all = !scope.show_all;
                             },
