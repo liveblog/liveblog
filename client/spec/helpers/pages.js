@@ -2,7 +2,12 @@
 
 var blogs = [
     [
-        {title: 'title: end to end image', description: 'description: end to end image', username: 'Victor the Editor'},
+        {
+            title: 'title: end to end image',
+            description: 'description: end to end image',
+            username: 'Victor the Editor',
+            picture_url: 'http://i.imgur.com/L0Ci8Yj.png'
+        },
         {title: 'title: end To end three', description: 'description: end to end three', username: 'Victor the Editor'},
         {title: 'title: end to end two', description: 'description: end to end two', username: 'Victor the Editor'},
         {title: 'title: end to end One', description: 'description: end to end one', username: 'Victor the Editor'}
@@ -107,7 +112,9 @@ function BlogsPage() {
         expect(currentBlog.element(by.binding('blog.title')).getText()).toBe(blog.title);
         expect(currentBlog.element(by.binding('blog.description')).getText()).toBe(blog.description);
         if (blog.picture_url) {
-            expect(currentBlog.getAttribute('if-background-image')).not.toBe('');
+            expect(currentBlog.element(by.css('[if-background-image]')).isPresent()).toBe(true);
+        } else {
+            expect(currentBlog.element(by.css('[if-background-image]')).isPresent()).toBe(false);
         }
         expect(currentBlog.element(by.binding('blog.original_creator | username')).getText())
         .toBe(blog.username);
@@ -183,15 +190,25 @@ function ThemesManagerPage() {
 function BlogPage(blogs) {
     var self = this;
     self.blogs = blogs;
-
     self.drafts = new DraftsPage(self);
+    self.contributions = new ContributionsPage(self);
     self.settings = new BlogSettingsPage(self);
     self.timeline = new TimelinePage(self);
     self.editor = new EditPostPage(self);
 
     self.openDrafts = function() {
-        element(by.css('[ng-click="toggleDraftPanel()"]')).click();
+        element(by.css('[ng-click="openPanel(\'drafts\')"]')).click();
         return self.drafts;
+    };
+
+    self.openEditor = function() {
+        element(by.css('[ng-click="openPanel(\'editor\')"]')).click();
+        return self.editor;
+    };
+
+    self.openContributions = function() {
+        element(by.css('[ng-click="openPanel(\'contributions\')"]')).click();
+        return self.contributions;
     };
 
     self.openList = function() {
@@ -209,16 +226,15 @@ function BlogPage(blogs) {
     };
 }
 
-function DraftsPage(blog) {
+function AbstractPanelPage(blog) {
     var self = this;
     self.blog = blog;
-    self.editor = new EditPostPage(self);
-    self.posts = element(by.css('.draft-posts'));
-    self.column = element(by.css('.column-draft-posts'));
-    self.byDrafts = by.repeater('post in postsList.pagesManager.allPosts()');
+    self.column = element(by.css(self._class_name));
+    self.byPosts = by.repeater('post in postsList.pagesManager.allPosts()');
+    self.byEditButton = by.css('[ng-click="onEditClick(post)"]');
 
     self.get = function(index) {
-        return self.column.element(self.byDrafts.row(index));
+        return self.column.element(self.byPosts.row(index));
     };
 
     self.getFull = function(index) {
@@ -226,12 +242,16 @@ function DraftsPage(blog) {
     };
 
     self.all = function() {
-        return self.column.all(self.byDrafts);
+        return self.column.all(self.byPosts);
+    };
+
+    self.editButtonIsPresent = function(draft) {
+        return draft.element(self.byEditButton).isPresent();
     };
 
     self.edit = function(draft) {
-        draft.element(by.css('[ng-click="onEditClick(post)"]')).click();
-        return self.editor;
+        draft.element(self.byEditButton).click();
+        return self;
     };
 
     self.expectPost = function(index, data) {
@@ -239,6 +259,20 @@ function DraftsPage(blog) {
         return self;
     };
 }
+
+function DraftsPage(blog) {
+    var self = this;
+    self._class_name = '.panel--draft';
+    AbstractPanelPage.call(self);
+}
+DraftsPage.prototype = Object.create(AbstractPanelPage.prototype);
+
+function ContributionsPage(blog) {
+    var self = this;
+    self._class_name = '.panel--contribution';
+    AbstractPanelPage.call(self);
+}
+ContributionsPage.prototype = Object.create(AbstractPanelPage.prototype);
 
 function TimelinePage(blog) {
     var self = this;
@@ -312,6 +346,7 @@ function EditPostPage() {
     var self = this;
 
     self.textElement = element(by.css('.editor .st-text-block'));
+    self.quoteElement = element(by.css('.editor .st-quote-block'));
     self.fileElement = element(by.css('input[type="file"]'));
     self.imageElement = element(by.css('.st-block__editor img'));
     self.errorElement = element(by.css('.st-msg'));
@@ -347,6 +382,11 @@ function EditPostPage() {
         return self;
     };
 
+    self.saveContribution = function() {
+        element(by.css('[ng-click="saveAsContribution()"]')).click();
+        return self;
+    };
+
     self.publish = function() {
         return element(by.css('[ng-click="publish()"]')).click();
     };
@@ -358,7 +398,7 @@ function EditPostPage() {
         return data;
     };
 
-    self.createDraft = function() {
+    self.writeMultiplePost = function() {
         var data = {
             body: randomString(10),
             quote: randomString(10),
@@ -366,8 +406,19 @@ function EditPostPage() {
         };
         self.textElement.sendKeys(data.body);
         self.addTop()
-            .addQuote(data)
-            .saveDraft();
+            .addQuote(data);
+        return data;
+    };
+
+    self.createDraft = function() {
+        var data = self.writeMultiplePost();
+        self.saveDraft();
+        return data;
+    };
+
+    self.createContribution = function() {
+        var data = self.writeMultiplePost();
+        self.saveContribution();
         return data;
     };
 

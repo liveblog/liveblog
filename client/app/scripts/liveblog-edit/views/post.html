@@ -17,18 +17,18 @@
                     </div>
                     <div class="lb-post__actions">
                         <ul>
-                            <li><a ng-click="onEditClick(post)" tooltip-placement="bottom" tooltip="{{ 'Edit' | translate }}"><i class="icon-pencil"></i></a></li>
-                            <li><a ng-click="askRemovePost(post)" tooltip-placement="bottom" tooltip="{{ 'Remove' | translate }}"><i class="icon-remove"></i></a></li>
+                            <li ng-if="isAbleToEditContribution(post)"><a ng-click="onEditClick(post)" tooltip-placement="bottom" tooltip="{{ 'Edit' | translate }}"><i class="icon-pencil"></i></a></li>
+                            <li ng-if="isAbleToEditContribution(post)"><a ng-click="askRemovePost(post)" tooltip-placement="bottom" tooltip="{{ 'Remove' | translate }}"><i class="icon-remove"></i></a></li>
                             <li ng-if="allowUnpublish"><a ng-click="unpublishPost(post)" tooltip-placement="bottom" tooltip="{{ 'Unpublish and save in draft' | translate }}"><i class="icon-archive" alt="draft posts"></i></a></li>
                             <li ng-if="allowReordering"><a ng-click="preMovePost(post);" tooltip-placement="bottom" tooltip="{{ 'Change order' | translate }}"><i class="icon-move"></i></a></li>
                         </ul>
                     </div>
                 </div>
                 <div ng-if="post.multiple_items" class="lb-post__list">
-                    <div ng-if="!post.show_all" title="Click to show all items" ng-click="toggleMultipleItems()" class="multiple-item lb-post__item">
+                    <div ng-if="!show_all" title="Click to show all items" ng-click="toggleMultipleItems()" class="multiple-item lb-post__item">
                         <div lb-bind-html html-content="{{ post.mainItem.item.text }}"></div>
                     </div>
-                    <div ng-if="post.show_all">
+                    <div ng-if="show_all">
                          <ul>
                              <li ng-repeat="item in post.items track by item.item._id">
                                 <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item" ng-class="{'lb-post__item--even': !$first}"></div>
@@ -45,7 +45,7 @@
                 </div>
             </div>
         </div>
-        <a class="lb-post__expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && !post.show_all">
+        <a class="lb-post__expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && !show_all">
             <div class="lb-post__expander-multiple-items">
                 <div class="lb-post__expander-multiple-items-roundel">
                     <div class="lb-post__expander-multiple-items-roundel-text">{{ post.multiple_items }}</div>
@@ -53,7 +53,7 @@
                 <div translate class="lb-post__expander-multiple-items-roundel-label">ITEMS</div>
             </div>
         </a>
-        <a class="lb-post__expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && post.show_all">
+        <a class="lb-post__expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && show_all">
             <div class="lb-post__collapser-multiple-items"></div>
         </a>
     </div>
