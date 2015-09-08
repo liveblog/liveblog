@@ -80,14 +80,17 @@ define([
                 doOrAskBeforeIfEditorIsNotEmpty(fillEditor.bind(null, post));
             },
             saveAsContribution: function() {
-                notify.info(gettext('Saving draft'));
+                $scope.actionPending = true;
+                notify.info(gettext('Submitting contribution'));
                 postsService.saveContribution(blog._id, $scope.currentPost, getItemsFromEditor()).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Contribution submitted'));
                     cleanEditor();
+                    $scope.actionPending = false;
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
+                    $scope.actionPending = false;
                 });
             },
             saveAsDraft: function() {
