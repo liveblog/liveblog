@@ -78,9 +78,9 @@
                         <div class="actions">
                             <div style="display:table-row">
                                 <div style="display:table-cell"><button class="btn" ng-click="togglePreview()" translate>{{ preview? 'Edit': 'Preview' }}</button></div>
-                                <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished()" translate>Save draft</button></div>
+                                <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished() || actionPending" translate>Save draft</button></div>
                                 <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished()" translate>Submit</button></div>
-                                <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell"><button class="btn btn-info" ng-disabled="publishDisabled" ng-click="publish()" ng-switch="isCurrentPostPublished()">
+                                <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell"><button class="btn btn-info" ng-disabled="actionPending" ng-click="publish()" ng-switch="isCurrentPostPublished()">
                                     <span ng-switch-when="true"  translate>Update</span>
                                     <span ng-switch-when="false" translate>Publish</span>
                                 </button></div>
