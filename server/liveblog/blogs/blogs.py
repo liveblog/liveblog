@@ -87,13 +87,6 @@ class BlogsVersionsResource(ArchiveVersionsResource):
     }
 
 
-class BlogsVersionsService(BaseService):
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        return self.backend.get('archive_versions', req=req, lookup=lookup)
-
-
 class BlogsResource(ArchiveResource):
     datasource = {
         'source': 'archive',
