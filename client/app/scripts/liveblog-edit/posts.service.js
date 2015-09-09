@@ -204,6 +204,9 @@ define([
             saveDraft: function(blog_id, post, items) {
                 return savePost(blog_id, post, items, {post_status: 'draft'});
             },
+            saveContribution: function(blog_id, post, items) {
+                return savePost(blog_id, post, items, {post_status: 'submitted'});
+            },
             remove: removePost
         };
     }

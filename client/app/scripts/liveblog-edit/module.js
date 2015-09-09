@@ -26,7 +26,7 @@ define([
 
         // return the list of items from the editor
         function getItemsFromEditor() {
-            return _.map($scope.editor.get(), function(block) {
+            return _.map(vm.editor.get(), function(block) {
                 return {
                     text: block.text.replace(/(^<div>)|(<\/div>$)/g, '').replace(/(<br>$)/g, ''),
                     meta: block.meta,
@@ -38,7 +38,7 @@ define([
         // ask in a modalbox if the user is sure to want to overwrite editor.
         // call the callback if user say yes or if editor is empty
         function doOrAskBeforeIfEditorIsNotEmpty(callback, msg) {
-            var are_all_blocks_empty = _.all($scope.editor.blocks, function(block) {return block.isEmpty();});
+            var are_all_blocks_empty = _.all(vm.editor.blocks, function(block) {return block.isEmpty();});
             if (are_all_blocks_empty || !$scope.isCurrentPostUnsaved()) {
                 callback();
             } else {
@@ -49,7 +49,7 @@ define([
 
         // remove and clean every items from the editor
         function cleanEditor() {
-            $scope.editor.reinitialize();
+            vm.editor.reinitialize();
             $scope.currentPost = undefined;
         }
         var vm = this;
@@ -58,7 +58,7 @@ define([
         angular.extend($scope, {
             blog: blog,
             currentPost: undefined,
-            isUserOwner: blogSecurityService.isUserOwner,
+            blogSecurityService: blogSecurityService,
             preview: false,
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
@@ -72,25 +72,40 @@ define([
                         item = item.item;
                         if (angular.isDefined(item)) {
                             var data = _.extend({text: item.text}, item.meta);
-                            $scope.editor.createBlock(item.item_type, data);
+                            vm.editor.createBlock(item.item_type, data);
                         }
                     });
                 }
+                $scope.openPanel('editor');
                 doOrAskBeforeIfEditorIsNotEmpty(fillEditor.bind(null, post));
             },
-            saveAsDraft: function() {
+            saveAsContribution: function() {
                 notify.info(gettext('Saving draft'));
-                postsService.saveDraft(blog._id, $scope.currentPost, getItemsFromEditor()).then(function(post) {
+                postsService.saveContribution(blog._id, $scope.currentPost, getItemsFromEditor()).then(function(post) {
                     notify.pop();
-                    notify.info(gettext('Draft saved'));
+                    notify.info(gettext('Contribution submitted'));
                     cleanEditor();
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
                 });
             },
+            saveAsDraft: function() {
+                $scope.actionPending = true;
+                notify.info(gettext('Saving draft'));
+                postsService.saveDraft(blog._id, $scope.currentPost, getItemsFromEditor()).then(function(post) {
+                    notify.pop();
+                    notify.info(gettext('Draft saved'));
+                    cleanEditor();
+                    $scope.actionPending = false;
+                }, function() {
+                    notify.pop();
+                    notify.error(gettext('Something went wrong. Please try again later'));
+                    $scope.actionPending = false;
+                });
+            },
             publish: function() {
-                $scope.publishDisabled = true;
+                $scope.actionPending = true;
                 notify.info(gettext('Saving post'));
                 postsService.savePost(blog._id,
                     $scope.currentPost,
@@ -100,22 +115,19 @@ define([
                     notify.pop();
                     notify.info(gettext('Post saved'));
                     cleanEditor();
-                    $scope.publishDisabled = false;
+                    $scope.actionPending = false;
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
-                    $scope.publishDisabled = false;
+                    $scope.actionPending = false;
                 });
             },
-            // retrieve draft panel status from url
-            draftPanelState: $routeParams.drafts === 'open'? 'open' : 'closed',
-            toggleDraftPanel: function() {
-                // reverse status
-                var newStateValue = $scope.draftPanelState === 'open' ? 'closed': 'open';
-                // update new status
-                $scope.draftPanelState = newStateValue;
+            // retrieve panel status from url
+            panelState: angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor',
+            openPanel: function(panel) {
+                $scope.panelState = panel;
                 // update url for deeplinking
-                $route.updateParams({drafts: newStateValue === 'open' ? 'open' : undefined});
+                $route.updateParams({panel: $scope.panelState});
             },
             stParams: {
                 coverMaxWidth: 350,
@@ -150,11 +162,14 @@ define([
                     });
                 }
             },
-            fetchNewTimelinePage: function() {
-                vm.timelineInstance.fetchNewPage();
+            fetchNewContributionPage: function() {
+                vm.contributionsPostsInstance.fetchNewPage();
             },
             fetchNewDraftPage: function() {
                 vm.draftPostsInstance.fetchNewPage();
+            },
+            fetchNewTimelinePage: function() {
+                vm.timelineInstance.fetchNewPage();
             },
             isBlogOpened: function() {
                 return $scope.blog.blog_status === 'open';
@@ -455,9 +470,13 @@ define([
         'liveblog.pages-manager'
     ]);
     app.service('blogSecurityService',
-        ['$q', '$rootScope', '$route', 'blogService', '$location', function($q, $rootScope, $route, blogService, $location) {
-        function isUserOwner(blog) {
-            if ($rootScope.currentUser._id !== blog.original_creator) {
+        ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges',
+        function($q, $rootScope, $route, blogService, $location, privileges) {
+        function canPublishAPost(blog) {
+            return privileges.userHasPrivileges({'publish_post': 1});
+        }
+        function isUserOwner(archive) {
+            if ($rootScope.currentUser._id !== archive.original_creator) {
                 return false;
             } else {
                 return true;
@@ -481,7 +500,8 @@ define([
         }
         return {
             goToSettings: goToSettings,
-            isUserOwner: isUserOwner
+            isUserOwner: isUserOwner,
+            canPublishAPost: canPublishAPost
         };
     }]);
     app.config(['superdeskProvider', function(superdesk) {

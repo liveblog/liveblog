@@ -137,6 +137,10 @@ define([
                         $scope.$on('posts', function(e, event_params) {
                             vm.isLoading = true;
                             vm.pagesManager.retrieveUpdate(true).then(function() {
+                                if (event_params.deleted === true) {
+                                    notify.pop();
+                                    notify.info(gettext('Post removed'));
+                                }
                                 vm.isLoading = false;
                             });
                         });
@@ -161,8 +165,8 @@ define([
             }
         ])
         .directive('lbPost', [
-            'notify', 'gettext', 'asset', 'postsService', 'modal',
-            function(notify, gettext, asset, postsService, modal) {
+            'notify', 'gettext', 'asset', 'postsService', 'modal', 'blogSecurityService',
+            function(notify, gettext, asset, postsService, modal, blogSecurityService) {
                 return {
                     scope: {
                         post: '=',
@@ -184,13 +188,16 @@ define([
                     templateUrl: 'scripts/liveblog-edit/views/post.html',
                     link: function(scope, elem, attrs) {
                         angular.extend(scope, {
+                            isAbleToEditContribution: function(post) {
+                                return blogSecurityService.canPublishAPost() || blogSecurityService.isUserOwner(post);
+                            },
                             toggleMultipleItems: function() {
                                 scope.show_all = !scope.show_all;
                             },
                             removePost: function(post) {
                                 postsService.remove(angular.copy(post)).then(function(message) {
                                     notify.pop();
-                                    notify.info(gettext('Post removed'));
+                                    notify.info(gettext('Removing post...'));
                                 }, function() {
                                     notify.pop();
                                     notify.error(gettext('Something went wrong'));
