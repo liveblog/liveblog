@@ -12,7 +12,6 @@
     "scripts": [
         "//code.angularjs.org/1.4.2/angular-animate.js",
         "vendors/ng-infinite-scroll.min.js",
-        "vendors/fecha.js",
         "main.js"
     ],
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
