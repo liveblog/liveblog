@@ -105,7 +105,7 @@ class ThemesService(BaseService):
             yield json.loads(open(file).read()), files
 
     def update_registered_theme_with_local_files(self, force=False):
-        results = {'created': [], 'updated': []}
+        results = {'created': [], 'updated': [], 'unchanged': []}
         for theme, files in self.get_local_themes_packages():
             result = self.save_or_update_theme(theme, files, force_update=force)
             results[result.get('status')].append(result.get('theme'))
