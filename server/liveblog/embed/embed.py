@@ -14,19 +14,18 @@ import superdesk
 from flask import render_template, json, request, current_app as app
 from eve.io.mongo import MongoJSONEncoder
 from superdesk import get_resource_service
-import tinys3
+from liveblog.themes import ASSETS_DIR as THEMES_ASSETS_DIR
 import io
 import os
 import json
 import logging
 
 logger = logging.getLogger('superdesk')
-ASSETS_DIR = 'embed_assets'
-CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
-bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates', static_folder=ASSETS_DIR)
+THEMES_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'themes'))
+bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
 
 
-class AmazonAccessKeyUnknownException(Exception):
+class MediaStorageUnsupportedForBlogPublishing(Exception):
     pass
 
 
@@ -42,8 +41,7 @@ def collect_theme_assets(theme, assets=None, template=None):
     assets = assets or {'scripts': [], 'styles': []}
     # load the template
     if not template:
-        template_file_name = '%s/%s/themes/%s/template.html' % (
-            CURRENT_DIRECTORY, ASSETS_DIR, theme['name'])
+        template_file_name = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme['name'], 'template.html')
         if os.path.isfile(template_file_name):
             template = open(template_file_name).read()
     # add assets from parent theme
@@ -58,7 +56,7 @@ def collect_theme_assets(theme, assets=None, template=None):
             raise UnknownTheme(error_message)
     # add assets from theme
     for asset_type in ('scripts', 'styles'):
-        theme_folder = 'themes/' + theme['name']
+        theme_folder = theme['name']
         assets[asset_type].extend(
             map(lambda url: '%s/%s' % (theme_folder, url) if is_relative_to_current_folder(url) else url,
                 theme.get(asset_type) or list())
@@ -85,19 +83,16 @@ def get_default_settings(theme, settings=None):
 
 def publish_embed(blog_id, api_host=None, theme=None):
     html = embed(blog_id, api_host, theme)
-    if not app.config['AMAZON_ACCESS_KEY_ID']:
-        raise AmazonAccessKeyUnknownException()
-    region = app.config['AMAZON_REGION']
-    bucket = app.config['AMAZON_CONTAINER_NAME']
-    s3 = tinys3.Connection(
-        app.config['AMAZON_ACCESS_KEY_ID'],
-        app.config['AMAZON_SECRET_ACCESS_KEY'],
-        default_bucket=bucket,
-        endpoint='s3-%s.amazonaws.com' % (region))
-    # Uploading a single file
-    response = s3.upload('blogs/%s/index.html' % (blog_id), io.BytesIO(bytes(html, 'utf-8')))
-    return response.url.replace('s3-%s.amazonaws.com/%s' % (region, bucket),
-                                '%s.s3-%s.amazonaws.com' % (bucket, region))
+    if type(app.media).__name__ is not 'AmazonMediaStorage':
+        raise MediaStorageUnsupportedForBlogPublishing()
+    file_path = 'blogs/%s/index.html' % (blog_id)
+    # remove existing
+    app.media.delete(file_path)
+    # upload
+    file_id = app.media.put(io.BytesIO(bytes(html, 'utf-8')),
+                            filename=file_path,
+                            content_type='text/html')
+    return superdesk.upload.url_for_media(file_id)
 
 
 @bp.route('/embed/<blog_id>')
@@ -114,8 +109,7 @@ def embed(blog_id, api_host=None, theme=None):
         theme_name = theme
     # if a theme is provided, overwrite the default theme
     if theme_name:
-        theme_package = '%s/%s/themes/%s/theme.json' % \
-                        (CURRENT_DIRECTORY, ASSETS_DIR, theme_name)
+        theme_package = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
         blog['theme'] = json.loads(open(theme_package).read())
     # collect static assets to load them in the template
     try:
@@ -134,7 +128,7 @@ def embed(blog_id, api_host=None, theme=None):
         'assets': assets,
         'api_host': api_host,
         'template': template_file,
-        'assets_root': '/%s/%s/' % (ASSETS_DIR, 'themes/' + blog['theme']['name'])
+        'assets_root': '/%s/' % ('/'.join((THEMES_ASSETS_DIR, blog['theme']['name'])))
     }
     return render_template('embed.html', **scope)
 
@@ -147,7 +141,7 @@ def embed_overview(blog_id, api_host=None):
     blog['_id'] = str(blog['_id'])
     scope = {
         'blog': blog,
-        'themes': themes
+        'themes': [t[0] for t in themes]
     }
     return render_template('iframe-for-every-themes.html', **scope)
 

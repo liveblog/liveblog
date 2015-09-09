@@ -43,6 +43,19 @@
     }
 },
 {
+    "resource": "users",
+    "data": {
+        "username": "contributor",
+        "first_name": "Gregor",
+        "last_name": "the contributor",
+        "role": "-id Contributor role-",
+        "user_type": "user",
+        "password": "contributor",
+        "email": "contributor@other.com",
+        "sign_off": "co"
+    }
+},
+{
     "resource": "global_preferences",
     "data": {
         "key": "language",

@@ -139,8 +139,10 @@
         }
 
         function fetchBlogs() {
+            $scope.blogsLoading = true;
             api.blogs.query(getCriteria(), false).then(function(blogs) {
                 $scope.blogs = blogs;
+                $scope.blogsLoading = false;
             });
         }
 

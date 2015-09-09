@@ -5,7 +5,7 @@
         </a>
     </div>
     <h3 class="page-nav-title">{{ blog.title }}</h3>
-    <div class="button-stack right-stack">
+    <div class="button-stack right-stack" ng-if="blogSecurityService.isUserOwner(blog)">
         <a class="navbtn settings-link" ng-href="#/liveblog/settings/{{::blog._id}}">
             <i class="svg-icon-settings"></i>
         </a>
@@ -16,79 +16,94 @@
 
     <!-- left sidebar -->
     <div class="side-menu">
-        <button class="navbtn" ng-click="toggleDraftPanel()" ng-class="{'active': draftPanelState === 'open'}">
+        <button class="navbtn" ng-click="openPanel('editor')" ng-class="{'active': panelState === 'editor'}">
+            <i class="big-icon-editor" alt="editor"></i>
+        </button>
+        <button class="navbtn" ng-click="openPanel('contributions')" ng-class="{'active': panelState === 'contributions'}">
+            <i class="big-icon-contributions" alt="contributions"></i>
+        </button>
+        <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}">
             <i class="big-icon-archive" alt="draft posts"></i>
         </button>
     </div>
 
-    <!-- draft posts column -->
-    <div class="column column-draft-posts"
-         slideable="draftPanelState === 'open'"
-         slideable-move=".columns-holder">
-        <header>Drafts</header>
-        <div class="content">
-            <div class="draft-posts" ng-if="draftPanelState === 'open'" lr-infinite-scroll="fetchNewDraftPage">
-                <lb-posts-list
-                  lb-posts-instance="blogEdit.draftPostsInstance"
-                  lb-posts-blog-id="blog._id"
-                  lb-posts-status="draft"
-                  lb-posts-order-by="updated_first"
-                  lb-posts-empty-message="<p>You don't have any draft yet.</p><p>To create one, start to compose your post and click on the &#34;SAVE AS DRAFT&#34; button. You will be able to re-open it later in the editor.</p>"
-                  lb-posts-allow-unpublish="false"
-                  lb-posts-allow-reordering="false"
-                  lb-posts-on-post-selected="openPostInEditor"
-                >
-                </lb-posts-list>
-            </div>
-        </div>
-    </div>
-
     <div class="columns-holder">
-        <!-- editor column -->
-        <div class="column column-editor">
-            <span ng-show="isBlogOpened()">
-                <header>
-                    <button class="btn btn-info pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
-                </header>
-                <div class="content">
-                    <div class="editor-holder">
-                        <div class="editor">
-                            <div class="editor" ng-sir-trevor st-model="editor" st-params="stParams"></div>
-                        </div>
+        <div class="column column--first">
+            <span ng-if="isBlogOpened()">
+                <!-- drafts -->
+                <div class="panel panel--draft" ng-if="panelState === 'drafts'">
+                    <header>Drafts</header>
+                    <div class="content" lr-infinite-scroll="fetchNewDraftPage">
+                        <lb-posts-list
+                          lb-posts-instance="blogEdit.draftPostsInstance"
+                          lb-posts-blog-id="blog._id"
+                          lb-posts-status="draft"
+                          lb-posts-order-by="updated_first"
+                          lb-posts-empty-message="<p>You don't have any draft yet.</p><p>To create one, start to compose your post and click on the &#34;SAVE AS DRAFT&#34; button. You will be able to re-open it later in the editor.</p>"
+                          lb-posts-allow-unpublish="false"
+                          lb-posts-allow-reordering="false"
+                          lb-posts-on-post-selected="openPostInEditor"
+                        >
+                        </lb-posts-list>
                     </div>
-                    <div class="actions">
-                        <button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished()" translate>Save draft</button>
-                        <button class="btn btn-info" ng-click="publish()" ng-switch="isCurrentPostPublished()">
-                            <span ng-switch-when="true"  translate>Update</span>
-                            <span ng-switch-when="false" translate>Publish</span>
-                        </button>
+                </div>
+                <!-- contributions -->
+                <div class="panel panel--contribution" ng-if="panelState === 'contributions'">
+                    <header>Contributions</header>
+                    <div class="content" lr-infinite-scroll="fetchNewContributionPage">
+                        <lb-posts-list
+                          lb-posts-instance="blogEdit.contributionsPostsInstance"
+                          lb-posts-blog-id="blog._id"
+                          lb-posts-status="submitted"
+                          lb-posts-order-by="updated_first"
+                          lb-posts-empty-message="<p>There is no contribution yet.</p><p>To create one, start to compose your post and click on the &#34;SUBMIT&#34; button. You will be able to re-open it later in the editor.</p>"
+                          lb-posts-allow-unpublish="false"
+                          lb-posts-allow-reordering="false"
+                          lb-posts-on-post-selected="openPostInEditor"
+                        >
+                        </lb-posts-list>
+                    </div>
+                </div>
+                <!-- editor -->
+                <div class="panel--editor" ng-show="panelState === 'editor'">
+                    <header>
+                        Editor<button class="btn btn-info pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
+                    </header>
+                    <div class="content">
+                        <div class="editor-holder" ng-class="{'preview': preview}">
+                            <div class="editor">
+                                <div class="editor" ng-sir-trevor st-model="blogEdit.editor" st-params="stParams"></div>
+                            </div>
+                        </div>
+                        <div class="actions">
+                            <div style="display:table-row">
+                                <div style="display:table-cell"><button class="btn" ng-click="togglePreview()" translate>{{ preview? 'Edit': 'Preview' }}</button></div>
+                                <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished() || actionPending" translate>Save draft</button></div>
+                                <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished() || actionPending" translate>Submit</button></div>
+                                <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell"><button class="btn btn-info" ng-disabled="actionPending" ng-click="publish()" ng-switch="isCurrentPostPublished()">
+                                    <span ng-switch-when="true"  translate>Update</span>
+                                    <span ng-switch-when="false" translate>Publish</span>
+                                </button></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </span>
-            <span ng-show="!isBlogOpened()">
+            <span ng-if="!isBlogOpened()">
                 <div class="alert alert-danger margin15px" role="alert">
                     <span><strong translate>This blog is closed!</strong></span><br />
                     <span translate >No posts allowed on closed blogs. Reopen the blogs in order to make any changes</span>
                 </div>
             </span>
         </div>
-
         <!-- timeline column -->
         <div class="column column-timeline">
-            <header>
-                <ul class="nav nav-tabs">
-                    <li class="active">
-                        <button translate>Timeline</button>
-                    </li>
-                </ul>
-            </header>
-            <div class="content">
+            <header>Timeline</header>
+            <div class="content" lr-infinite-scroll="fetchNewTimelinePage">
                 <div>
                     <div
                       class="timeline-posts-list"
                       lb-posts-instance="blogEdit.timelineInstance"
-                      lr-infinite-scroll="fetchNewTimelinePage"
-                      set-timeline-height
                       lb-posts-list
                       lb-posts-blog-id="blog._id"
                       lb-posts-status="open"

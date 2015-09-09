@@ -30,7 +30,7 @@ describe('Blog settings', function() {
         blogs.blog.settings.description.clear().sendKeys(blog.description);
         blogs.blog.settings.done()
                 .openList()
-            .expectBlog(blog);
+            .expectBlog(blog, 0);
     });
 
     it('should change the image for blog', function() {
@@ -121,19 +121,6 @@ describe('Blog settings', function() {
         });
     });
 
-    it('changes blog ownership', function() {
-        blogs.openBlog(0).openSettings().openTeam()
-                            .changeOwner()
-                            .changeToOwner()
-                            .selectOwner()
-                            .done()
-                        .openSettings().openTeam();
-
-        blogs.blog.settings.userName.getText().then(function(text) {
-            expect(text).toEqual('test_user');
-        });
-    });
-
     it('ads a team member from blog settings', function() {
         blogs.openBlog(0).openSettings().openTeam()
                             .editTeam();
@@ -167,5 +154,31 @@ describe('Blog settings', function() {
                 .openList()
             .selectState('active')
             .expectBlog(blog);
+    });
+
+    it('changes blog ownership', function() {
+        blogs.openBlog(0).openSettings().openTeam()
+                            .changeOwner()
+                            .changeToOwner()
+                            .selectOwner()
+                            .done();
+
+        browser.driver.manage().window().setSize(1280, 1024);
+        browser.get('/');
+        element(by.css('button.current-user')).click();
+        browser.waitForAngular();
+        element(by.buttonText('SIGN OUT')).click();
+        browser.sleep(2000); // it reloads page
+        browser.waitForAngular();
+        browser.sleep(2000); // it reloads page
+        login('test_user', 'test_password').then(function() {
+            browser.waitForAngular();
+            var blog = blogs.openBlog(0);
+            browser.waitForAngular();
+            blog.openSettings().openTeam();
+            blogs.blog.settings.userName.getText().then(function(text) {
+                expect(text).toEqual('test_user');
+            });
+        });
     });
 });

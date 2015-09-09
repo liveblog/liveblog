@@ -43,8 +43,9 @@ blogs_schema = {
     },
     'picture_url': {
         'type': 'string',
+        'nullable': True
     },
-    'picture': Resource.rel('upload', True),
+    'picture': Resource.rel('upload', embeddable=True, nullable=True),
     'original_creator': metadata_schema['original_creator'],
     'version_creator': metadata_schema['version_creator'],
     'versioncreated': metadata_schema['versioncreated'],
@@ -147,7 +148,7 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
             public_url = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
             get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
             return public_url
-        except liveblog.embed.AmazonAccessKeyUnknownException as e:
+        except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:
                 raise e
 
