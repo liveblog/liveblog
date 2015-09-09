@@ -110,6 +110,14 @@ Feature: Blog operations
          """
         And we delete latest
         Then we get deleted response
+        When we get "/blogs"
+        Then we get list with 1 items
+        """
+        {"_items": [
+                    {"title": "test_blog1", "blog_status": "open"}
+                   ]}
+        """
+        
         
 		@auth
     	Scenario: Delete blog without being the owner

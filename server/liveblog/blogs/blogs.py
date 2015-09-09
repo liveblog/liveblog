@@ -83,8 +83,7 @@ class BlogsVersionsResource(ArchiveVersionsResource):
     """
 
     datasource = {
-        'source': 'archive' + '_versions',
-        'filter': {'type': 'composite'}
+        'source': 'archive' + '_versions'
     }
 
 
