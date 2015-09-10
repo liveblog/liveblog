@@ -19,6 +19,14 @@ define([
         var url_regex = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
         return (url_regex.test(string));
     }
+    function embedFacebookToUrl(string) {
+        var facebook_regex = /(\b(?:([A-Za-z]+):)?\/\/([0-9.\-A-Za-z]+)facebook.com[-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[-A-Za-z0-9+&@#\/%=~_|])/,
+            matches = string.match(facebook_regex);
+        if (matches) {
+            return matches[0];
+        }
+        return string;
+    }
     angular
     .module('SirTrevorBlocks', [])
         .config(['SirTrevorProvider', function(SirTrevor) {
@@ -64,6 +72,9 @@ define([
                         that.resetMessages();
                         // start a loader over the block, it will be stopped in the loadData function
                         that.loading();
+                        // if facebook embed replace it with facebook url.
+                        // rendering facebook embed via url it doesn't cause issue LBSD-646.
+                        input = embedFacebookToUrl(input);
                         // if the input is an url, use embed services
                         if (isURI(input)) {
                             // request the embedService with the provided url
