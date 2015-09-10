@@ -156,29 +156,20 @@ describe('Blog settings', function() {
             .expectBlog(blog);
     });
 
-    it('changes blog ownership', function() {
+    it('changes blog ownership and admin can open settings for any blog', function() {
         blogs.openBlog(0).openSettings().openTeam()
                             .changeOwner()
                             .changeToOwner()
                             .selectOwner()
                             .done();
-
-        browser.driver.manage().window().setSize(1280, 1024);
+        browser.waitForAngular();
         browser.get('/');
-        element(by.css('button.current-user')).click();
-        browser.waitForAngular();
-        element(by.buttonText('SIGN OUT')).click();
         browser.sleep(2000); // it reloads page
+        var blog = blogs.openBlog(0);
         browser.waitForAngular();
-        browser.sleep(2000); // it reloads page
-        login('test_user', 'test_password').then(function() {
-            browser.waitForAngular();
-            var blog = blogs.openBlog(0);
-            browser.waitForAngular();
-            blog.openSettings().openTeam();
-            blogs.blog.settings.userName.getText().then(function(text) {
-                expect(text).toEqual('test_user');
-            });
+        blog.openSettings().openTeam();
+        blogs.blog.settings.userName.getText().then(function(text) {
+            expect(text).toEqual('test_user');
         });
     });
 });
