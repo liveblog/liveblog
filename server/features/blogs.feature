@@ -153,14 +153,14 @@ Feature: Blog operations
         """
         And we get "/blogs"
         Then we get list with 2 items
-            """
-            {"_items": [{"title": "bar blog"},{"title": "foo blog", "members": [{"user": "#user_foo#"}]}]}
-            """
-                When we get "/users/#user_foo#/blogs"
-                Then we get list with 1 items
-            """
-            {"_items": [{"title": "foo blog", "members": [{"user": "#user_foo#"}]}]}
-            """
+        """
+       	{"_items": [{"title": "bar blog"},{"title": "foo blog", "members": [{"user": "#user_foo#"}]}]}
+        """
+		When we get "/users/#user_foo#/blogs"
+        Then we get list with 1 items
+        """
+        {"_items": [{"title": "foo blog", "members": [{"user": "#user_foo#"}]}]}
+        """
 
     @auth
     @notification

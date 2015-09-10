@@ -25,8 +25,7 @@ class ClientUsersService(UsersService):
 
 class ClientBlogsResource(BlogsResource):
     datasource = {
-        'source': 'archive',
-        'elastic_filter': {'term': {'particular_type': 'blog'}},
+        'source': 'blogs',
         'default_sort': [('_updated', -1)]
     }
     public_methods = ['GET']

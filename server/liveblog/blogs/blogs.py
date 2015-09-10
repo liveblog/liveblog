@@ -89,7 +89,7 @@ class BlogsVersionsResource(ArchiveVersionsResource):
 
 class BlogsResource(ArchiveResource):
     datasource = {
-        'source': 'archive',
+        'search_backend': 'elastic',
         'elastic_filter': {'term': {'particular_type': 'blog'}},
         'default_sort': [('_updated', -1)]
     }
@@ -237,8 +237,7 @@ class UserBlogsResource(Resource):
     url = 'users/<regex("[a-f0-9]{24}"):user_id>/blogs'
     schema = blogs_schema
     datasource = {
-        'source': 'archive',
-        'elastic_filter': {'term': {'particular_type': 'blog'}},
+        'source': 'blogs',
         'default_sort': [('title', 1)]
     }
     resource_methods = ['GET']
