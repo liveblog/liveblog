@@ -57,6 +57,7 @@ define([
         // define the $scope
         angular.extend($scope, {
             blog: blog,
+            selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
             preview: false,

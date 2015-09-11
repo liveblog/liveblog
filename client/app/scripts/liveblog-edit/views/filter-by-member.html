@@ -1,0 +1,37 @@
+<button ng-click="vm.openSelector = true" class="btn btn-info btn-mini">+</button>
+<div class="dropdown-content" ng-click="$event.stopPropagation();" ng-if="vm.openSelector">
+    <div class="user-select">
+        <div>
+            <form>
+                <label for="assignee-search" translate>Select users</label>
+                <input type="text" name="assignee-search" ng-model="vm.search">
+            </form>
+            <div class="search-result">
+                <ul class="users-list-embed">
+                    <li ng-repeat="user in vm.members | filter:vm.search | orderBy: 'display_name'"
+                        ng-click="vm.toggleUserInPreselection(user)"
+                        ng-class="{'active': vm.isUserInPreselection(user)}">
+                        <figure class="avatar small"><img sd-user-avatar data-src="user.picture_url"></figure>
+                        <div class="name">{{user.display_name}}</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <button
+            class="btn btn-info pull-right"
+            ng-click="vm.confirmPreselection(); vm.openSelector = false;"
+            translate>Select</button>
+        <button
+            class="btn pull-right"
+            ng-click="vm.openSelector = false;  $event.stopPropagation();"
+            translate>Cancel</button>
+    </div>
+</div>
+<button
+    class="btn btn-mini"
+    ng-repeat="user in selectedUsers"
+    ng-click="vm.removeUserFromSelection(user)"
+    ng-bind="user.display_name"></button>
+<a ng-click="vm.clearSelection()" ng-if="selectedUsers.length > 0">clear all</a>

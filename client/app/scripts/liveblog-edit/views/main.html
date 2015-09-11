@@ -51,6 +51,13 @@
                 <div class="panel panel--contribution" ng-if="panelState === 'contributions'">
                     <header>Contributions</header>
                     <div class="content" lr-infinite-scroll="fetchNewContributionPage">
+                        <div class="panel--contribution__filters">
+                            <span class="panel--contribution__filters__title">Filter by user</span>
+                            <lb-filter-by-member
+                                selected-users="selectedUsersFilter"
+                                blog-id="blog._id">
+                            </lb-filter-by-member>
+                        </div>
                         <lb-posts-list
                           lb-posts-instance="blogEdit.contributionsPostsInstance"
                           lb-posts-blog-id="blog._id"
@@ -59,6 +66,7 @@
                           lb-posts-empty-message="<p>There is no contribution yet.</p><p>To create one, start to compose your post and click on the &#34;SUBMIT&#34; button. You will be able to re-open it later in the editor.</p>"
                           lb-posts-allow-unpublish="false"
                           lb-posts-allow-reordering="false"
+                          lb-posts-filter-authors="selectedUsersFilter"
                           lb-posts-on-post-selected="openPostInEditor"
                         >
                         </lb-posts-list>
@@ -97,7 +105,7 @@
             </span>
         </div>
         <!-- timeline column -->
-        <div class="column column-timeline">
+        <div class="column column--timeline">
             <header>Timeline</header>
             <div class="content" lr-infinite-scroll="fetchNewTimelinePage">
                 <div>

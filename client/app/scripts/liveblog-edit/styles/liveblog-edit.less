@@ -58,344 +58,371 @@
             .box-shadow(3px 0 0 @grayLight);
             z-index: 1;
         }
-    }
-
-
-    .column-timeline {
-        right: 0;
-        left: 540px;
-        background: #f0f0f0;
-        header {
-            background: #fff;
+        &--timeline {
+            right: 0;
+            left: 540px;
+            background: #f0f0f0;
+            header {
+                background: #fff;
+            }
         }
     }
-
-    // editor
-    .panel--editor .content {
-        overflow: none;
-        .editor-holder {
-            position: absolute;
-            bottom: 88px; left: 0; right: 0; top:0;
-            padding: 20px;
-            overflow: auto;
-            .editor {
-                textarea {
-                    border: 1px solid #dfdfdf !important;
-                    resize:vertical;
-                    height: 180px;
-                    padding: 10px;
-                    font-size: 14px;
-                    line-height: 24px;
-                    .border-radius(5px) !important;
-                    margin-bottom: 20px;
-                    &:focus {
-                        .box-shadow(inset 0 3px 0 0 #f0f0f0) !important;
-                    }
+    .panel {
+        &--contribution {
+            &__filters {
+                line-height: 2pc;
+                .border-box();
+                background-color: white;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 10px 20px;
+                &__title {
+                    color: @gray;
+                    text-transform: uppercase;
                 }
-                // Sir-trevor elements ---------------------------
-                .st-outer {
-                    // ["+" bars]
-                    .st-block-controls__top:before, .st-icon--add:after {
-                        background-color: transparent;
-                        color: #CBCBCB;
-                        border-radius: 0;
-                        padding: 5px 0;
-                        line-height: 1;
-                    }
-                    .st-block-controls__top:hover:before, .st-block--with-plus:after {
-                        cursor: pointer;
-                        background-color: #E5E5E5;
-                        color: #666666;
-                    }
-                    .st-block-controls {
-                        padding: 0;
-                        // [block types bar]
-                        &--active {
-                            display: flex; // for easy adding additional button
-                            flex-direction: row;
-                            flex-wrap: wrap;
-                            padding-left: 0;
-                            .st-block-control {
-                                .btn;
-                                position: relative;
-                                margin: 0 10px 0 0;
-                                padding: 0 10px 0 20px;
-                                font-size: 14px;
-                                flex: 1 auto;
-                                height: 40px;
-                                line-height: 40px;
-                                &:hover {
-                                    color: inherit;
-                                    font-family: inherit;
-                                    .box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5)) !important;
-                                } // prevent style from sir-trevor
-                                .st-icon {
-                                    font-size: 20px;
-                                    display: inline;
-                                    vertical-align: top;
-                                    position: absolute;
-                                    left: 16px;
-                                    top: 9px;
-                                    color: @gray;
-                                }
-                                &:last-child {
-                                    margin: 0;
-                                }
-                            }
+                .btn {
+                    padding: 4px 6px;
+                }
+                .dropdown-content {
+                    background-color: #fff;
+                    border: 1px solid #c6c6c6;
+                    border-radius: 3px;
+                    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+                    padding: 10px;
+                    width: 290px;
+                    z-index: 1;
+                    position: absolute;
+                    left: 136px;
+                    top:0;
+                }
+            }
+        }
+        // editor
+        &--editor .content {
+            overflow: none;
+            .editor-holder {
+                position: absolute;
+                bottom: 88px; left: 0; right: 0; top:0;
+                padding: 20px;
+                overflow: auto;
+                .editor {
+                    textarea {
+                        border: 1px solid #dfdfdf !important;
+                        resize:vertical;
+                        height: 180px;
+                        padding: 10px;
+                        font-size: 14px;
+                        line-height: 24px;
+                        .border-radius(5px) !important;
+                        margin-bottom: 20px;
+                        &:focus {
+                            .box-shadow(inset 0 3px 0 0 #f0f0f0) !important;
                         }
                     }
-                    // [remove and reorder buttons]
-                    .st-block-ui-btn {
-                        &:hover { text-decoration: inherit;} // prevent style from sir-trevor
-                    }
-                    // error messages
-                    .st-block__messages {
-                        top: -20px;
-                        left: -20px;
-                    }
-                    // [border on error or delete states]
-                    .st-block--with-errors .st-block__inner .st-text-block,
-                    .st-block--delete-active .st-block__inner .st-text-block {
-                        border-color: #d70014 !important;
-                    }
-                    .st-block {
-                        &__inputs, &__editor {
-                            padding: 1.6em 0px 1em;
-                            background-color: transparent; // prevent style from sir-trevor.css
+                    // Sir-trevor elements ---------------------------
+                    .st-outer {
+                        // ["+" bars]
+                        .st-block-controls__top:before, .st-icon--add:after {
+                            background-color: transparent;
+                            color: #CBCBCB;
+                            border-radius: 0;
+                            padding: 5px 0;
+                            line-height: 1;
                         }
-                        &__ui { // [reorder and close buttons]
-                            // set it at the top right corner
-                            bottom: auto;
-                            top: 6px;
-                            right: 6px;
-                            .st-block-ui-btn {
-                                color: lighten(@grayLight, 20%);
-                                border: none;
-                                // background-color: transparent;
-                                width: 1.6em;
-                                height: 1.6em;
-                                line-height: 1.7em;
-                                font-size: 1.2em;
-                                background-color: transparent;
-                                vertical-align: middle;
-                                &:hover {
-                                    background-color: @grayLighter;
-                                    color: @gray;
-                                }
-                                // hide the reorder button
-                                &--reorder { display: none; }
-                            }
+                        .st-block-controls__top:hover:before, .st-block--with-plus:after {
+                            cursor: pointer;
+                            background-color: #E5E5E5;
+                            color: #666666;
                         }
-                        &__ui-delete-controls { // [delete confirmation buttons]
-                            // set it at the top right corner
-                            bottom: auto;
-                            top: 0;
-                            .st-block__delete-label { // hide the label
-                                display: none;
-                                border-style: none;
-                            }
-                            .st-block-ui-btn {
-                                border-width: 0;
-                                border-style: none;
-                                width: auto;
-                                height: auto;
-                                line-height: normal;
-                                margin-top: 10px;
-                                margin-right: 10px;
-                                &:hover {
-                                    background-color: inherit;
-                                }
-                            }
-                            .st-block-ui-btn--confirm-delete, .st-block-ui-btn--deny-delete {
+                        .st-block-controls {
+                            padding: 0;
+                            // [block types bar]
+                            &--active {
+                                display: flex; // for easy adding additional button
+                                flex-direction: row;
+                                flex-wrap: wrap;
+                                padding-left: 0;
+                                .st-block-control {
                                     .btn;
-                                    padding: 9px 20px;
-                                    font-size: 12px !important;
+                                    position: relative;
+                                    margin: 0 10px 0 0;
+                                    padding: 0 10px 0 20px;
+                                    font-size: 14px;
+                                    flex: 1 auto;
+                                    height: 40px;
+                                    line-height: 40px;
                                     &:hover {
+                                        color: inherit;
+                                        font-family: inherit;
                                         .box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5)) !important;
-                                    }
-                                &:before {
-                                    text-transform: uppercase;
-                                    font-family: @baseFontFamily; // remove the sir-trevor icon behavior
-                                }
-                            }
-                            .st-block-ui-btn--confirm-delete {
-                                .btn-danger;
-                                &:before {
-                                    content: "delete";
-                                }
-                                &:active {
-                                    .box-shadow(inset 0 2px 0px multiply(@btnDefaultColor,rgba(0,0,0,12%)));
-                                }
-                            }
-                            .st-block-ui-btn--deny-delete {
-                                .buttonStates(#CDCDCD, @black); // needed to give a no transparent background in order to hide the cross
-                                &:active {
-                                    .box-shadow(inset 0 2px 0px multiply(@btnDangerColor,rgba(0,0,0,12%)));
-                                }
-                                &:before {content: "cancel"; }
-                            }
-                        }
-                        &__dropzone {
-                            background-color: transparent; // prevent style from sir-trevor.css
-                            border: 1px dashed @grayLight;
-                            padding: @main-content-padding * 2;
-                            p, .st-icon {
-                                color: @grayLight;
-                            }
-                        }
-                        &__upload-container {
-                            text-align: left; // prevent style from sir-trevor.css
-                            margin: 1em 0 0 0;
-
-                            // custom input type file
-                            input[type="file"] {
-                                display: none;
-                            }
-
-                            .st-upload-btn {
-                                // NOTE: responsive layout from bootstrap is currently disabled.
-                                // To be removed when grid system is activated
-                                min-width: 50%; white-space: nowrap;
-                            }
-                        }
-                        // padding
-                        &__inner {padding: 0;}
-                        &[data-type='quote'], &[data-type='image'], &[data-type='embed'] {
-                            .st-block__inner {
-                                padding: 20px;
-                                background: @white;
-                                border: 1px solid lighten(@grayLight, 25%);
-                                .border-radius(3px);
-                                &:focus, &:hover {
-                                    border: 1px solid @sd-blue;
-                                }
-                            }
-                        }
-                        &__inner {
-                            border: 0;
-                            margin: 10px 0;
-                            ::selection {
-                                background: @sd-blue;
-                                color: @white;
-                            }
-
-                            label { margin-bottom: auto; } // prevent style from bootstrap
-                            //.transition(box-shadow .25s ease);
-                            &:hover {
-                                .box-shadow(0px 2px 10px rgba(0, 0, 0, 0.15));
-                            }
-                            // for text input field (div[content-editable] looking like a textarea)
-                            .st-text-block {
-                                padding: 20px;
-                                font-size: 1em;
-                                border: 1px solid lighten(@grayLight, 25%);
-                                word-wrap: break-word;
-                                background-color: white;
-                                .border-radius(3px);
-                                &:focus, &:hover {
-                                    border: 1px solid @sd-blue;
-                                }
-                            }
-                            // make a contenteditable div looking like a custom input
-                            .inline-field() {
-                                .box-sizing(border-box); // width and height doesn't include the margin
-                                width: 100%;
-                                min-height: 1em;
-                                padding: 3px 5px;
-                                margin: @main-content-padding 0;
-                                border-bottom: 1px solid @grayLight;
-                                opacity: .7;
-                                .transition(opacity .25s ease);
-                                &:focus {
-                                    opacity: 1;
-                                }
-                                &:empty:after {
-                                    content: attr(placeholder);
-                                }
-                            }
-                            .st-image-block[contenteditable="true"]{
-                                .inline-field();
-                            }
-                            .st-quote-block {
-                                &.quote-input {
-                                    .inline-field();
-                                    position: relative;
-                                    &:before {
-                                        content: "\201C"; // “
-                                        font-size: 2em;
+                                    } // prevent style from sir-trevor
+                                    .st-icon {
+                                        font-size: 20px;
+                                        display: inline;
+                                        vertical-align: top;
                                         position: absolute;
-                                        left: -0.5em;
+                                        left: 16px;
+                                        top: 9px;
+                                        color: @gray;
                                     }
-                                }
-                                &.js-cite-input {
-                                    .inline-field();
-                                    &:before {
-                                        content: "\2014"; // —
-                                        margin-left: -20px;
-                                        padding-right: 5px;
+                                    &:last-child {
+                                        margin: 0;
                                     }
                                 }
                             }
-                            .st-embed-block {
-                                font-size: .9em;
-                                &.embed-input {.inline-field();}
-                                &.embed-preview .noembed-embed {
-                                    // responsive embed
-                                    position: relative;
-                                    padding-bottom: 67.5%;
-                                    height: 0;
-                                    margin: 10px 0;
-                                    overflow: hidden;
-                                    iframe, embed, object {
+                        }
+                        // [remove and reorder buttons]
+                        .st-block-ui-btn {
+                            &:hover { text-decoration: inherit;} // prevent style from sir-trevor
+                        }
+                        // error messages
+                        .st-block__messages {
+                            top: -20px;
+                            left: -20px;
+                        }
+                        // [border on error or delete states]
+                        .st-block--with-errors .st-block__inner .st-text-block,
+                        .st-block--delete-active .st-block__inner .st-text-block {
+                            border-color: #d70014 !important;
+                        }
+                        .st-block {
+                            &__inputs, &__editor {
+                                padding: 1.6em 0px 1em;
+                                background-color: transparent; // prevent style from sir-trevor.css
+                            }
+                            &__ui { // [reorder and close buttons]
+                                // set it at the top right corner
+                                bottom: auto;
+                                top: 6px;
+                                right: 6px;
+                                .st-block-ui-btn {
+                                    color: lighten(@grayLight, 20%);
+                                    border: none;
+                                    // background-color: transparent;
+                                    width: 1.6em;
+                                    height: 1.6em;
+                                    line-height: 1.7em;
+                                    font-size: 1.2em;
+                                    background-color: transparent;
+                                    vertical-align: middle;
+                                    &:hover {
+                                        background-color: @grayLighter;
+                                        color: @gray;
+                                    }
+                                    // hide the reorder button
+                                    &--reorder { display: none; }
+                                }
+                            }
+                            &__ui-delete-controls { // [delete confirmation buttons]
+                                // set it at the top right corner
+                                bottom: auto;
+                                top: 0;
+                                .st-block__delete-label { // hide the label
+                                    display: none;
+                                    border-style: none;
+                                }
+                                .st-block-ui-btn {
+                                    border-width: 0;
+                                    border-style: none;
+                                    width: auto;
+                                    height: auto;
+                                    line-height: normal;
+                                    margin-top: 10px;
+                                    margin-right: 10px;
+                                    &:hover {
+                                        background-color: inherit;
+                                    }
+                                }
+                                .st-block-ui-btn--confirm-delete, .st-block-ui-btn--deny-delete {
+                                        .btn;
+                                        padding: 9px 20px;
+                                        font-size: 12px !important;
+                                        &:hover {
+                                            .box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5)) !important;
+                                        }
+                                    &:before {
+                                        text-transform: uppercase;
+                                        font-family: @baseFontFamily; // remove the sir-trevor icon behavior
+                                    }
+                                }
+                                .st-block-ui-btn--confirm-delete {
+                                    .btn-danger;
+                                    &:before {
+                                        content: "delete";
+                                    }
+                                    &:active {
+                                        .box-shadow(inset 0 2px 0px multiply(@btnDefaultColor,rgba(0,0,0,12%)));
+                                    }
+                                }
+                                .st-block-ui-btn--deny-delete {
+                                    .buttonStates(#CDCDCD, @black); // needed to give a no transparent background in order to hide the cross
+                                    &:active {
+                                        .box-shadow(inset 0 2px 0px multiply(@btnDangerColor,rgba(0,0,0,12%)));
+                                    }
+                                    &:before {content: "cancel"; }
+                                }
+                            }
+                            &__dropzone {
+                                background-color: transparent; // prevent style from sir-trevor.css
+                                border: 1px dashed @grayLight;
+                                padding: @main-content-padding * 2;
+                                p, .st-icon {
+                                    color: @grayLight;
+                                }
+                            }
+                            &__upload-container {
+                                text-align: left; // prevent style from sir-trevor.css
+                                margin: 1em 0 0 0;
+
+                                // custom input type file
+                                input[type="file"] {
+                                    display: none;
+                                }
+
+                                .st-upload-btn {
+                                    // NOTE: responsive layout from bootstrap is currently disabled.
+                                    // To be removed when grid system is activated
+                                    min-width: 50%; white-space: nowrap;
+                                }
+                            }
+                            // padding
+                            &__inner {padding: 0;}
+                            &[data-type='quote'], &[data-type='image'], &[data-type='embed'] {
+                                .st-block__inner {
+                                    padding: 20px;
+                                    background: @white;
+                                    border: 1px solid lighten(@grayLight, 25%);
+                                    .border-radius(3px);
+                                    &:focus, &:hover {
+                                        border: 1px solid @sd-blue;
+                                    }
+                                }
+                            }
+                            &__inner {
+                                border: 0;
+                                margin: 10px 0;
+                                ::selection {
+                                    background: @sd-blue;
+                                    color: @white;
+                                }
+
+                                label { margin-bottom: auto; } // prevent style from bootstrap
+                                //.transition(box-shadow .25s ease);
+                                &:hover {
+                                    .box-shadow(0px 2px 10px rgba(0, 0, 0, 0.15));
+                                }
+                                // for text input field (div[content-editable] looking like a textarea)
+                                .st-text-block {
+                                    padding: 20px;
+                                    font-size: 1em;
+                                    border: 1px solid lighten(@grayLight, 25%);
+                                    word-wrap: break-word;
+                                    background-color: white;
+                                    .border-radius(3px);
+                                    &:focus, &:hover {
+                                        border: 1px solid @sd-blue;
+                                    }
+                                }
+                                // make a contenteditable div looking like a custom input
+                                .inline-field() {
+                                    .box-sizing(border-box); // width and height doesn't include the margin
+                                    width: 100%;
+                                    min-height: 1em;
+                                    padding: 3px 5px;
+                                    margin: @main-content-padding 0;
+                                    border-bottom: 1px solid @grayLight;
+                                    opacity: .7;
+                                    .transition(opacity .25s ease);
+                                    &:focus {
+                                        opacity: 1;
+                                    }
+                                    &:empty:after {
+                                        content: attr(placeholder);
+                                    }
+                                }
+                                .st-image-block[contenteditable="true"]{
+                                    .inline-field();
+                                }
+                                .st-quote-block {
+                                    &.quote-input {
+                                        .inline-field();
+                                        position: relative;
+                                        &:before {
+                                            content: "\201C"; // “
+                                            font-size: 2em;
+                                            position: absolute;
+                                            left: -0.5em;
+                                        }
+                                    }
+                                    &.js-cite-input {
+                                        .inline-field();
+                                        &:before {
+                                            content: "\2014"; // —
+                                            margin-left: -20px;
+                                            padding-right: 5px;
+                                        }
+                                    }
+                                }
+                                .st-embed-block {
+                                    font-size: .9em;
+                                    &.embed-input {.inline-field();}
+                                    &.embed-preview .noembed-embed {
+                                        // responsive embed
+                                        position: relative;
+                                        padding-bottom: 67.5%;
+                                        height: 0;
+                                        margin: 10px 0;
+                                        overflow: hidden;
+                                        iframe, embed, object {
+                                            position: absolute;
+                                            top: 0;
+                                            left: 0;
+                                            width: 100%;
+                                            height: 100%;
+                                        }
+                                    }
+                                    &.remove-cover-preview {
                                         position: absolute;
-                                        top: 0;
-                                        left: 0;
-                                        width: 100%;
-                                        height: 100%;
+                                        &:after {
+                                            content: "x";
+                                        }
                                     }
-                                }
-                                &.remove-cover-preview {
-                                    position: absolute;
-                                    &:after {
-                                        content: "x";
+                                    &.cover-preview {
+                                        background-size: cover;
                                     }
-                                }
-                                &.cover-preview {
-                                    background-size: cover;
-                                }
-                                &.title-preview {
-                                    .inline-field();
-                                    font-weight: bold;
-                                }
-                                &.description-preview {
-                                    .inline-field();
-                                }
-                                &.credit-preview {
-                                    .inline-field();
-                                    text-transform: uppercase;
+                                    &.title-preview {
+                                        .inline-field();
+                                        font-weight: bold;
+                                    }
+                                    &.description-preview {
+                                        .inline-field();
+                                    }
+                                    &.credit-preview {
+                                        .inline-field();
+                                        text-transform: uppercase;
+                                    }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-        > .actions {
-            position: absolute;
-            bottom: 0; left: 0px; right: 0px; height: 88px;
-            .border-box();
-            border-top: 1px solid #e0e0e0;
-            display:table;
-            table-layout: fixed;
-            border-spacing:10px;
-            width: 100%;
-            .btn {
+            > .actions {
+                position: absolute;
+                bottom: 0; left: 0px; right: 0px; height: 88px;
+                .border-box();
+                border-top: 1px solid #e0e0e0;
+                display:table;
+                table-layout: fixed;
+                border-spacing:10px;
                 width: 100%;
-                float: left;
-                height: 48px;
-                padding: 0;
-                line-height: 48px;
-                font-size: 14px;
+                .btn {
+                    width: 100%;
+                    float: left;
+                    height: 48px;
+                    padding: 0;
+                    line-height: 48px;
+                    font-size: 14px;
+                }
             }
         }
     }
@@ -503,7 +530,7 @@
         font-weight: 300;
         line-height: 22.5px;
         margin: 0px!important;
-        
+
     }
     .st-quote-block {
         margin: 0px!important;
