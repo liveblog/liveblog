@@ -20,6 +20,8 @@ define([
         return (url_regex.test(string));
     }
     function embedFacebookToUrl(string) {
+        // regular expression to catch a facebook url in the embed code string.
+        // catch protocol even if relative, subdomain, facebook.com hardcoded and the path.
         var facebook_regex = /(\b(?:([A-Za-z]+):)?\/\/([0-9.\-A-Za-z]+)facebook.com[-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[-A-Za-z0-9+&@#\/%=~_|])/,
             matches = string.match(facebook_regex);
         if (matches) {
