@@ -34,7 +34,13 @@
              * @returns {promise}
              */
             function retrievePage(page, max_results) {
-                return postsService.getPosts(self.blogId, {status: self.status}, max_results || self.maxResults, page).then(function(data) {
+                return postsService.getPosts(self.blogId,
+                                             {
+                                                 status: self.status,
+                                                 authors: self.authors
+                                             },
+                                             max_results || self.maxResults, page)
+                .then(function(data) {
                     // update posts meta data (used to know the total number of posts and pages)
                     self.meta = data._meta;
                     return data;
@@ -48,6 +54,17 @@
              */
             function changeOrder(sort_name) {
                 self.sort = sort_name;
+                self.pages = [];
+                return fetchNewPage();
+            }
+
+            /**
+             * Filter by author ids.
+             * @param {array} authors - The list of ids to filter with
+             * @returns {promise}
+             */
+            function setAuthors(authors) {
+                self.authors = authors;
                 self.pages = [];
                 return fetchNewPage();
             }
@@ -299,6 +316,14 @@
                  * Change the order in the future posts request, remove exising post and load a new page
                  */
                 changeOrder: changeOrder,
+                /**
+                 * Initial authors filter
+                 */
+                authors: [],
+                /**
+                 * Filter by author ids
+                 */
+                setAuthors: setAuthors,
                 /**
                  * Number of results per page
                  */

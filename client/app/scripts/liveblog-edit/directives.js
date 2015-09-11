@@ -145,6 +145,11 @@ define([
                             });
                         });
                     });
+                    $scope.$watch('lbPostsFilterAuthors', function(users) {
+                        if (users) {
+                            vm.pagesManager.setAuthors(users.map(function(user) {return user._id;}));
+                        }
+                    }, true);
                 }
                 return {
                     scope: {
@@ -155,6 +160,7 @@ define([
                         lbPostsAllowUnpublish: '=',
                         lbPostsAllowReordering: '=',
                         lbPostsOnPostSelected: '=',
+                        lbPostsFilterAuthors: '=',
                         lbPostsInstance: '='
                     },
                     restrict: 'EA',
