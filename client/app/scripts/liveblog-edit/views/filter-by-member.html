@@ -10,7 +10,8 @@
                 <ul class="users-list-embed">
                     <li ng-repeat="user in vm.members | filter:vm.search | orderBy: 'display_name'"
                         ng-click="vm.toggleUserInPreselection(user)"
-                        ng-class="{'active': vm.isUserInPreselection(user)}">
+                        ng-class="{'active': vm.isUserInPreselection(user)}"
+                        data-username="{{user.username}}">
                         <figure class="avatar small"><img sd-user-avatar data-src="user.picture_url"></figure>
                         <div class="name">{{user.display_name}}</div>
                     </li>

@@ -53,6 +53,7 @@ describe('Themes Manager', function() {
         .then(function(themes) {
             // removing forest theme
             themeManager.remove(2);
+            browser.waitForAngular();
             themeManager.openThemesManager()
             .themes.then(function(newThemes) {
                 expect(themes.length).not.toEqual(newThemes.length);

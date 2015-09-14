@@ -5,7 +5,7 @@
     "data": {
         "description": "Editor can control and publish content to the liveblog and invite people to contribute",
         "name": "Editor",
-        "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}
+        "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}
     }
 },
 {
@@ -27,7 +27,8 @@
         "user_type": "administrator",
         "email": "abc@other.com",
         "sign_off": "abc"
-    }
+    },
+    "id_name": "-id admin-"
 },
 {
     "resource": "users",
@@ -53,7 +54,9 @@
         "password": "contributor",
         "email": "contributor@other.com",
         "sign_off": "co"
-    }
+    },
+    "id_name": "-id contributor-"
+
 },
 {
     "resource": "global_preferences",
@@ -168,7 +171,8 @@
     "data": {
         "title": "title: end to end One",
         "versioncreated" : "2014-02-03T19:34:00+0000",
-        "description": "description: end to end one"
+        "description": "description: end to end one",
+        "members": [{"user": "-id admin-"}, {"user": "-id contributor-"}]
     },
     "id_name": "-id blog one-"
 },
@@ -307,6 +311,70 @@
                     "residRef": "-id post two item one-"
                 }, {
                     "residRef": "-id post two item two-"
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
+},
+{
+    "resource": "items",
+    "username": "editor",
+    "data": {
+        "firstcreated": "2013-11-11T11:11:18+00:00",
+        "text": "editor's contribution",
+        "item_type": "text"
+    },
+    "id_name": "-id editor contribution-"
+},
+{
+    "resource": "posts",
+    "username": "editor",
+    "data": {
+        "post_status": "submitted",
+        "firstcreated": "2013-11-11T11:11:19+00:00",
+        "blog": "-id blog one-",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-id editor contribution-"
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
+},
+{
+    "resource": "items",
+    "username": "admin",
+    "data": {
+        "firstcreated": "2013-11-11T11:11:19+00:00",
+        "text": "admin's contribution",
+        "item_type": "text"
+    },
+    "id_name": "-id admin contribution-"
+},
+{
+    "resource": "posts",
+    "username": "admin",
+    "data": {
+        "post_status": "submitted",
+        "firstcreated": "2013-11-11T11:11:20+00:00",
+        "blog": "-id blog one-",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-id admin contribution-"
                 }],
                 "role": "grpRole:Main"
             }]
