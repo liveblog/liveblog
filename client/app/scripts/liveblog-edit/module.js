@@ -479,10 +479,10 @@ define([
             return privileges.userHasPrivileges({'publish_post': 1});
         }
         function isUserOwner(archive) {
-            if ($rootScope.currentUser._id !== archive.original_creator) {
-                return false;
-            } else {
+            if ($rootScope.currentUser._id === archive.original_creator || $rootScope.currentUser.user_type === 'administrator') {
                 return true;
+            } else {
+                return false;
             }
         }
         function goToSettings() {
