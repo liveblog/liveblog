@@ -19,38 +19,6 @@ define([
     'use strict';
 
     angular.module('liveblog.edit')
-        // * SLIDEABLE
-        // *  used for left side bar
-        // *   - slideable: take a boolean, true to be opened
-        // *   - slideableMove: take the other element to be right-moved
-        .directive('slideable', function() {
-            return {
-                restrict: 'A',
-                scope: {
-                    'slideableMove': '@',
-                    'slideable': '='
-                },
-                link: function(scope, element, attrs) {
-                    var old_left = parseInt(element.css('left'), 10);
-                    var to_be_moved = angular.element(document.querySelectorAll(scope.slideableMove));
-                    var panel_width = element.width();
-                    function toggleSlide() {
-                        if (scope.slideable) {
-                            element.show();
-                            to_be_moved.css({
-                                left: panel_width + old_left
-                            });
-                        } else {
-                            element.hide();
-                            to_be_moved.css({
-                                left: old_left
-                            });
-                        }
-                    }
-                    scope.$watch('slideable', toggleSlide);
-                }
-            };
-        })
         .directive('lbPostsList', [
             'postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager',
             function(postsService, notify, $q, $timeout, session, PagesManager) {
@@ -127,6 +95,9 @@ define([
                         },
                         isPostsEmpty: function() {
                             return vm.pagesManager.count() < 1 && !vm.isLoading;
+                        },
+                        setAuthorFilter: function(users) {
+                            return vm.pagesManager.setAuthors(users.map(function(user) {return user._id;}));
                         }
                     });
                     $scope.lbPostsInstance = vm;
@@ -145,11 +116,6 @@ define([
                             });
                         });
                     });
-                    $scope.$watch('lbPostsFilterAuthors', function(users) {
-                        if (users) {
-                            vm.pagesManager.setAuthors(users.map(function(user) {return user._id;}));
-                        }
-                    }, true);
                 }
                 return {
                     scope: {
@@ -160,7 +126,6 @@ define([
                         lbPostsAllowUnpublish: '=',
                         lbPostsAllowReordering: '=',
                         lbPostsOnPostSelected: '=',
-                        lbPostsFilterAuthors: '=',
                         lbPostsInstance: '='
                     },
                     restrict: 'EA',
@@ -282,7 +247,7 @@ define([
                 restrict: 'E',
                 scope: {
                     blogId: '=',
-                    selectedUsers: '='
+                    onFilterChange: '='
                 },
                 templateUrl: 'scripts/liveblog-edit/views/filter-by-member.html',
                 controllerAs: 'vm',
@@ -292,6 +257,7 @@ define([
                         members: [],
                         openSelector: false,
                         preselectedUsers: [],
+                        selectedUsers: [],
                         findUserInPreselection: function(user_id) {
                             return _.find(vm.preselectedUsers, function(user) {
                                 return user._id === user_id;
@@ -309,32 +275,42 @@ define([
                             return vm.findUserInPreselection(user._id);
                         },
                         confirmPreselection: function() {
-                            $scope.selectedUsers = angular.copy(vm.preselectedUsers);
+                            vm.updateFilters(angular.copy(vm.preselectedUsers));
+                        },
+                        updateFilters: function(fitlers) {
+                            vm.selectedUsers = fitlers;
+                            $scope.onFilterChange(vm.selectedUsers);
                         },
                         clearSelection: function() {
-                            $scope.selectedUsers = [];
+                            vm.updateFilters([]);
                         },
                         removeUserFromSelection: function(user) {
-                            $scope.selectedUsers.splice($scope.selectedUsers.indexOf(user), 1);
-
+                            var filters = angular.copy(vm.selectedUsers);
+                            filters.splice(vm.selectedUsers.indexOf(user), 1);
+                            vm.updateFilters(filters);
+                        },
+                        toggleSelector: function() {
+                            vm.openSelector = !vm.openSelector;
+                            if (vm.openSelector) {
+                                // clear the search input
+                                vm.search = '';
+                                // preset the preselection to the current selection
+                                vm.preselectedUsers = angular.copy(vm.selectedUsers);
+                                // retrieve blog information to know the owner and the members
+                                api('blogs').getById($scope.blogId).then(function(blog) {
+                                    // add the owner
+                                    var ids = [blog.original_creator];
+                                    // add the members
+                                    if (blog.members) {
+                                        ids.push.apply(ids, blog.members.map(function(member) {return member.user;}));
+                                    }
+                                    // retrieve information about these users and list them in the view
+                                    api('users').query({where: {_id: {$in: ids}}}).then(function(data) {
+                                        vm.members = data._items;
+                                    });
+                                });
+                            }
                         }
-                    });
-                    // load the user list
-                    $scope.$watch(angular.bind(this, function () {return this.openSelector;}), function(is_open) {
-                        if (!is_open) {return;}
-                        // preset the preselection to the current selection
-                        vm.preselectedUsers = angular.copy($scope.selectedUsers);
-                        // retrieve blog information to know the owner and the members
-                        api('blogs').getById($scope.blogId).then(function(blog) {
-                            // add the owner
-                            var ids = [blog.original_creator];
-                            // add the members
-                            ids.push.apply(ids, blog.members.map(function(member) {return member.user;}));
-                            // retrieve information about these users and list them in the view
-                            api('users').query({where: {_id: {$in: ids}}}).then(function(data) {
-                                vm.members = data._items;
-                            });
-                        });
                     });
                 }]
             };
