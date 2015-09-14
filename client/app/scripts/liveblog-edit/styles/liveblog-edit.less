@@ -70,7 +70,6 @@
     .panel {
         &--contribution {
             &__filters {
-                line-height: 2pc;
                 .border-box();
                 background-color: white;
                 border-bottom: 1px solid #e0e0e0;
@@ -79,9 +78,30 @@
                     color: @gray;
                     text-transform: uppercase;
                 }
+
                 .btn {
                     padding: 4px 6px;
                     margin: 0 2px;
+                    position: relative;
+                    overflow: hidden;
+                    &--plus {
+                        font-size: 1.3em;
+                    }
+                    > .title {white-space: nowrap;}
+                    &:hover {> .overlay {top:0;}}
+                    > .overlay {
+                        transition-property: top;
+                        transition-duration: .25s;
+                        position: absolute;
+                        top: 20px;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        background-color: rgba(0, 0, 0, 0.6);
+                        color: white;
+                        padding-top: 4px;
+                        font-size: 1.3em;
+                    }
                 }
                 .dropdown-content {
                     background-color: #fff;

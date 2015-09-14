@@ -1,4 +1,4 @@
-<button ng-click="vm.toggleSelector()" class="btn btn-info btn-mini">+</button>
+<button ng-click="vm.toggleSelector()" class="btn btn-info btn-mini btn--plus">+</button>
 <div class="dropdown-content" ng-click="$event.stopPropagation();" ng-if="vm.openSelector">
     <div class="user-select">
         <div>
@@ -33,6 +33,9 @@
 <button
     class="btn btn-mini"
     ng-repeat="user in vm.selectedUsers"
-    ng-click="vm.removeUserFromSelection(user)"
-    ng-bind="user.display_name"></button>
+    ng-click="vm.removeUserFromSelection(user)">
+    <div class="title" ng-bind="user.display_name"></div>
+    <div class="overlay">&#10799</div>
+
+</button>
 <a ng-click="vm.clearSelection()" ng-if="vm.selectedUsers.length > 0">clear all</a>
