@@ -280,9 +280,9 @@ function ContributionsPage(blog) {
     };
 
     self.filterByMember = function(member_name) {
-        return self.openFiterByMember().then(function(){
+        return self.openFiterByMember().then(function() {
             element(self.byFilterBox)
-            .element(by.css('[data-username="'+member_name+'"]'))
+            .element(by.css('[data-username="' + member_name + '"]'))
             .click().then(function() {
                 return self.validFilterButton.click();
             });
