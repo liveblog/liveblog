@@ -12,17 +12,14 @@
 from superdesk.notification import push_notification
 from superdesk.utc import utcnow
 from eve.utils import ParsedRequest
-from apps.archive.archive import ArchiveResource, ArchiveService
+from apps.archive.archive import ArchiveService
 from superdesk.services import BaseService
-from apps.archive.archive import ArchiveVersionsResource
 from liveblog.common import get_user, update_dates_for
-from apps.users.services import is_admin
 from apps.content import metadata_schema
 from apps.archive.common import generate_guid, GUID_TAG
 from superdesk.celery_app import celery
 from superdesk import get_resource_service
 from superdesk.resource import Resource
-from bson.objectid import ObjectId
 from superdesk.activity import add_activity
 from flask.globals import g
 from flask import current_app as app, render_template
@@ -30,7 +27,6 @@ from superdesk.emails import send_email
 from superdesk.errors import SuperdeskApiError
 import liveblog.embed
 from bson.objectid import ObjectId
-import flask
 import superdesk
 import eve.io.base
 
@@ -54,11 +50,6 @@ blogs_schema = {
         'allowed': ['open', 'closed'],
         'default': 'open'
     },
-    'particular_type': {
-        'type': 'string',
-        'allowed': ['blog'],
-        'default': 'blog'
-    },
     'members': {
         'type': 'list',
         'schema': {
@@ -77,20 +68,10 @@ blogs_schema = {
 }
 
 
-class BlogsVersionsResource(ArchiveVersionsResource):
-    """
-    Resource class for versions of archive_media
-    """
-
+class BlogsResource(Resource):
     datasource = {
-        'source': 'archive' + '_versions'
-    }
-
-
-class BlogsResource(ArchiveResource):
-    datasource = {
+        'source': 'blogs',
         'search_backend': 'elastic',
-        'elastic_filter': {'term': {'particular_type': 'blog'}},
         'default_sort': [('_updated', -1)]
     }
 
@@ -145,6 +126,14 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
                 raise e
 
 
+def is_contributor(user):
+    """Test if given user is contributor.
+
+    :param user
+    """
+    return user.get('user_type', 'user') == 'user'
+
+
 class BlogService(ArchiveService):
     notification_key = 'blog'
 
@@ -188,14 +177,14 @@ class BlogService(ArchiveService):
         doc = super().find_one(req, **lookup)
         return doc
 
-    def is_owner(self, doc):
-        if not is_admin(get_user()) and str(flask.g.user['_id']) != str(doc['original_creator']):
-            raise SuperdeskApiError.forbiddenError(message='You need to be the blog owner to perform updates on it')
+    def can_change_settings(self, doc):
+        if is_contributor(get_user()):
+            raise SuperdeskApiError.forbiddenError(message='You do not have sufficient permission to change settings')
 
     def on_update(self, updates, original):
         # check permission (see https://github.com/superdesk/liveblog/pull/167)
         # only the owner can change blog's settings
-        self.is_owner(original)
+        self.can_change_settings(original)
         # if the theme changed, we republish the blog with the new one
         if 'blog_preferences' in updates and 'theme' in updates['blog_preferences']:
             if updates['blog_preferences']['theme'] != original['blog_preferences'].get('theme'):
@@ -224,7 +213,7 @@ class BlogService(ArchiveService):
         push_notification('blogs', updated=1)
 
     def on_delete(self, doc):
-        self.is_owner(doc)
+        self.can_change_settings(doc)
 
     def on_deleted(self, doc):
         # invalidate cache for updated blog
