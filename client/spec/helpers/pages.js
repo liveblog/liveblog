@@ -276,7 +276,7 @@ function ContributionsPage(blog) {
     AbstractPanelPage.call(self);
 
     self.openFiterByMember = function() {
-        return self.column.element(by.buttonText('+')).click();
+        return self.column.element(by.css('.btn--plus')).click();
     };
 
     self.filterByMember = function(member_name) {
