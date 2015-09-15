@@ -324,7 +324,7 @@ define([
         .directive('autofocus', ['$timeout', function($timeout) {
             return {
                 restrict: 'A',
-                link : function($scope, $element) {
+                link: function($scope, $element) {
                     $timeout(function() {
                         $element[0].focus();
                     });
@@ -334,7 +334,7 @@ define([
         .directive('fullHeight', ['$timeout', '$window', 'lodash', function($timeout, $window, _) {
             return {
                 restrict: 'A',
-                link : function($scope, $element) {
+                link: function($scope, $element) {
                     // update the element height to the window height minus its vertical offset
                     function setHeight() {
                         $timeout(function() {
