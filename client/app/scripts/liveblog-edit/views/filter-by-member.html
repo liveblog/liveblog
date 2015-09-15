@@ -8,12 +8,12 @@
             </form>
             <div class="search-result">
                 <ul class="users-list-embed">
-                    <li ng-repeat="user in vm.members | filter:vm.search | orderBy: 'display_name'"
+                    <li ng-repeat="user in vm.members | filter:vm.search | orderBy: 'display_name' track by user._id"
                         ng-click="vm.toggleUserInPreselection(user)"
                         ng-class="{'active': vm.isUserInPreselection(user)}"
                         data-username="{{user.username}}">
                         <figure class="avatar small"><img sd-user-avatar data-src="user.picture_url"></figure>
-                        <div class="name">{{user.display_name}}</div>
+                        <div class="name">{{::user.display_name}}</div>
                     </li>
                 </ul>
             </div>
@@ -32,9 +32,9 @@
 </div>
 <button
     class="btn btn-mini"
-    ng-repeat="user in vm.selectedUsers"
+    ng-repeat="user in vm.selectedUsers track by user._id"
     ng-click="vm.removeUserFromSelection(user)">
-    <div class="title" ng-bind="user.display_name"></div>
+    <div class="title" ng-bind="::user.display_name"></div>
     <div class="overlay">&#10799</div>
 
 </button>
