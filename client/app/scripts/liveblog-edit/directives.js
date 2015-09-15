@@ -29,7 +29,6 @@ define([
                     angular.extend(vm, {
                         isLoading: true,
                         blogId: $scope.lbPostsBlogId,
-                        emptyMessage: $scope.lbPostsEmptyMessage,
                         allowUnpublish: $scope.lbPostsAllowUnpublish,
                         allowReordering: $scope.lbPostsAllowReordering,
                         onPostSelected: $scope.lbPostsOnPostSelected,
@@ -96,8 +95,15 @@ define([
                         isPostsEmpty: function() {
                             return vm.pagesManager.count() < 1 && !vm.isLoading;
                         },
+                        isFilterEnable: function() {
+                            return vm.pagesManager.authors.length > 0;
+                        },
                         setAuthorFilter: function(users) {
-                            return vm.pagesManager.setAuthors(users.map(function(user) {return user._id;}));
+                            vm.authorFilters = users;
+                            vm.isLoading = true;
+                            return vm.pagesManager.setAuthors(users.map(function(user) {return user._id;})).then(function() {
+                                vm.isLoading = false;
+                            });
                         }
                     });
                     $scope.lbPostsInstance = vm;
@@ -122,13 +128,13 @@ define([
                         lbPostsBlogId: '=',
                         lbPostsStatus: '@',
                         lbPostsOrderBy: '@',
-                        lbPostsEmptyMessage: '@',
                         lbPostsAllowUnpublish: '=',
                         lbPostsAllowReordering: '=',
                         lbPostsOnPostSelected: '=',
                         lbPostsInstance: '='
                     },
                     restrict: 'EA',
+                    transclude: true,
                     templateUrl: 'scripts/liveblog-edit/views/posts.html',
                     controllerAs: 'postsList',
                     controller: LbPostsListCtrl
