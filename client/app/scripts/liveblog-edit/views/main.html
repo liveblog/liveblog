@@ -54,14 +54,14 @@
                 <!-- contributions -->
                 <div class="panel panel--contribution" ng-if="panelState === 'contributions'">
                     <header>Contributions</header>
-                    <div class="content" lr-infinite-scroll="fetchNewContributionPage">
-                        <div class="panel--contribution__filters">
-                            <span class="panel--contribution__filters__title">Filter by user</span>
-                            <lb-filter-by-member
-                                on-filter-change="blogEdit.contributionsPostsInstance.setAuthorFilter"
-                                blog-id="blog._id">
-                            </lb-filter-by-member>
-                        </div>
+                    <div class="panel--contribution__filters">
+                        <span class="panel--contribution__filters__title">Filter by user</span>
+                        <lb-filter-by-member
+                            on-filter-change="blogEdit.contributionsPostsInstance.setAuthorFilter"
+                            blog-id="blog._id">
+                        </lb-filter-by-member>
+                    </div>
+                    <div class="content" lr-infinite-scroll="fetchNewContributionPage" full-height>
                         <lb-posts-list
                           lb-posts-instance="blogEdit.contributionsPostsInstance"
                           lb-posts-blog-id="blog._id"

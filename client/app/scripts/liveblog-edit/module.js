@@ -454,7 +454,8 @@ define([
         'ngRoute',
         'superdesk.services.modal',
         'superdesk.upload',
-        'liveblog.pages-manager'
+        'liveblog.pages-manager',
+        'lrInfiniteScroll'
     ]);
     app.service('blogSecurityService',
         ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges',

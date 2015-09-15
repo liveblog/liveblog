@@ -330,6 +330,29 @@ define([
                     });
                 }
             };
+        }])
+        .directive('fullHeight', ['$timeout', '$window', 'lodash', function($timeout, $window, _) {
+            return {
+                restrict: 'A',
+                link : function($scope, $element) {
+                    // update the element height to the window height minus its vertical offset
+                    function setHeight() {
+                        $timeout(function() {
+                            var height = $window.innerHeight - $element.offset().top;
+                            $element.css('height', height);
+                            $element[0].focus();
+                        });
+                    }
+                    // initialize
+                    setHeight();
+                    // update when the window size changes
+                    angular.element($window).on('resize', _.debounce(setHeight, 500));
+                    // update when offset changes
+                    $scope.$watch(function() {
+                        return $element.offset().top;
+                    }, _.debounce(setHeight, 500));
+                }
+            };
         }]);
 });
 

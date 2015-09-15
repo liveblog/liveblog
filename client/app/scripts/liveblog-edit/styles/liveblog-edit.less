@@ -69,6 +69,12 @@
     }
     .panel {
         &--contribution {
+            .content {
+                // special rules for contributions because we don't know the filter
+                // height, then we can't use absolute. See fullHeight directive
+                position: relative;
+                top: 0;
+            }
             &__filters {
                 .border-box();
                 background-color: white;
