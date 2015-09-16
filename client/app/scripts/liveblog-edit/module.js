@@ -56,6 +56,7 @@ define([
 
         // define the $scope
         angular.extend($scope, {
+            publishDisabled: true,
             blog: blog,
             currentPost: undefined,
             isUserOwner: blogSecurityService.isUserOwner,
@@ -99,11 +100,9 @@ define([
                     notify.pop();
                     notify.info(gettext('Post saved'));
                     cleanEditor();
-                    $scope.publishDisabled = false;
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
-                    $scope.publishDisabled = false;
                 });
             },
             // retrieve draft panel status from url
@@ -117,6 +116,11 @@ define([
                 $route.updateParams({drafts: newStateValue === 'open' ? 'open' : undefined});
             },
             stParams: {
+                disableSubmit: function(value) {
+                    $scope.publishDisabled = value;
+                    // because this is called outside of angular scope from sir-trevor.
+                    $scope.$digest();
+                },
                 coverMaxWidth: 350,
                 embedService: embedService,
                 // provide an uploader to the editor for media (custom sir-trevor image block uses it)
