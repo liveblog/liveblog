@@ -56,6 +56,7 @@ define([
 
         // define the $scope
         angular.extend($scope, {
+            publishDisabled: true,
             blog: blog,
             selectedUsersFilter: [],
             currentPost: undefined,
@@ -134,6 +135,11 @@ define([
                 $route.updateParams({panel: $scope.panelState});
             },
             stParams: {
+                disableSubmit: function(value) {
+                    $scope.publishDisabled = value;
+                    // because this is called outside of angular scope from sir-trevor.
+                    $scope.$digest();
+                },
                 coverMaxWidth: 350,
                 embedService: embedService,
                 // provide an uploader to the editor for media (custom sir-trevor image block uses it)
