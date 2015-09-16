@@ -5,7 +5,7 @@
         </a>
     </div>
     <h3 class="page-nav-title">{{ blog.title }}</h3>
-    <div class="button-stack right-stack" ng-if="blogSecurityService.isUserOwner(blog)">
+    <div class="button-stack right-stack" ng-if="blogSecurityService.isUserOwnerOrAdmin(blog)">
         <a class="navbtn settings-link" ng-href="#/liveblog/settings/{{::blog._id}}">
             <i class="svg-icon-settings"></i>
         </a>
@@ -41,6 +41,8 @@
                           lb-posts-order-by="updated_first"
                           lb-posts-allow-unpublish="false"
                           lb-posts-allow-reordering="false"
+                          lb-posts-allow-editing="true"
+                          lb-posts-allow-deleting="true"
                           lb-posts-on-post-selected="openPostInEditor"
                         >
                             <p>You don't have any draft yet.</p>
@@ -69,6 +71,8 @@
                           lb-posts-order-by="updated_first"
                           lb-posts-allow-unpublish="false"
                           lb-posts-allow-reordering="false"
+                          lb-posts-allow-editing="true"
+                          lb-posts-allow-deleting="blogSecurityService.isUserOwnerOrAdmin"
                           lb-posts-on-post-selected="openPostInEditor"
                         >
                             <div ng-if="!blogEdit.contributionsPostsInstance.isFilterEnable()">
@@ -127,8 +131,10 @@
                       lb-posts-list
                       lb-posts-blog-id="blog._id"
                       lb-posts-status="open"
-                      lb-posts-allow-unpublish="true"
-                      lb-posts-allow-reordering="true"
+                      lb-posts-allow-unpublish="blogSecurityService.canPublishAPost"
+                      lb-posts-allow-reordering="blogSecurityService.canPublishAPost"
+                      lb-posts-allow-editing="blogSecurityService.canPublishAPost"
+                      lb-posts-allow-deleting="false"
                       lb-posts-on-post-selected="openPostInEditor"
                     >
                     There are no posts yet for this blog!

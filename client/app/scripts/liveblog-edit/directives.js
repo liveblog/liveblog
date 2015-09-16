@@ -31,6 +31,8 @@ define([
                         blogId: $scope.lbPostsBlogId,
                         allowUnpublish: $scope.lbPostsAllowUnpublish,
                         allowReordering: $scope.lbPostsAllowReordering,
+                        allowEditing: $scope.lbPostsAllowEditing,
+                        allowDeleting: $scope.lbPostsAllowDeleting,
                         onPostSelected: $scope.lbPostsOnPostSelected,
                         showReorder: false,
                         hideAllPosts: false,
@@ -130,6 +132,8 @@ define([
                         lbPostsOrderBy: '@',
                         lbPostsAllowUnpublish: '=',
                         lbPostsAllowReordering: '=',
+                        lbPostsAllowEditing: '=',
+                        lbPostsAllowDeleting: '=',
                         lbPostsOnPostSelected: '=',
                         lbPostsInstance: '='
                     },
@@ -152,19 +156,27 @@ define([
                         reorderPost: '=',
                         //the order property of the post that was reordered and should stay highlighted a bit more
                         keepHighlighted: '=',
-                        allowUnpublish: '=',
-                        allowReordering: '=',
                         //call when the user clicks on the reorder icon
                         startReorder: '&',
                         //call when the user has chosen a new place for the post
                         reorder: '&',
                         //the index of the post in the list
-                        index: '='
+                        index: '=',
+                        // the controller of parent posts list directive
+                        postsListCtrl: '='
                     },
                     restrict: 'E',
                     templateUrl: 'scripts/liveblog-edit/views/post.html',
                     link: function(scope, elem, attrs) {
                         angular.extend(scope, {
+                            functionize: function (obj) {
+                                if (typeof(obj) !== 'function') {
+                                    return function() {
+                                        return obj;
+                                    };
+                                }
+                                return obj;
+                            },
                             isAbleToEditContribution: function(post) {
                                 return blogSecurityService.canPublishAPost() || blogSecurityService.isUserOwner(post);
                             },

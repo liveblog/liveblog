@@ -463,18 +463,17 @@ define([
         function canPublishAPost(blog) {
             return privileges.userHasPrivileges({'publish_post': 1});
         }
-        function isUserOwner(archive) {
-            if ($rootScope.currentUser._id === archive.original_creator || $rootScope.currentUser.user_type === 'administrator') {
-                return true;
-            } else {
-                return false;
-            }
+        function isAdmin() {
+            return $rootScope.currentUser.user_type === 'administrator';
+        }
+        function isUserOwnerOrAdmin(archive) {
+            return $rootScope.currentUser._id === archive.original_creator || isAdmin();
         }
         function goToSettings() {
             var def = $q.defer();
             blogService.get($route.current.params._id)
             .then(function(response) {
-                if (isUserOwner(response)) {
+                if (isUserOwnerOrAdmin(response)) {
                     def.resolve();
                 } else {
                     def.reject();
@@ -488,7 +487,7 @@ define([
         }
         return {
             goToSettings: goToSettings,
-            isUserOwner: isUserOwner,
+            isUserOwnerOrAdmin: isUserOwnerOrAdmin,
             canPublishAPost: canPublishAPost
         };
     }]);

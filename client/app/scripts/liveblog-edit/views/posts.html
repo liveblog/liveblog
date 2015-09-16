@@ -7,13 +7,12 @@
       ng-repeat="post in postsList.pagesManager.allPosts() track by post._id"
       post="post"
       index=$index
+      posts-list-ctrl="postsList"
       start-reorder="postsList.startReorder(post)"
       reorder="postsList.reorder(index, location)"
       reorder-post="postsList.reorderPost"
       keep-highlighted="postsList.keepHighlighted"
-      on-edit-click="postsList.onPostSelected"
-      allow-reordering="postsList.allowReordering"
-      allow-unpublish="postsList.allowUnpublish">
+      on-edit-click="postsList.onPostSelected">
     </lb-post>
 </ul>
 <div ng-if="postsList.reorderPost" class="cancel-reorder">
