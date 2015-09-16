@@ -29,10 +29,11 @@ define([
                     angular.extend(vm, {
                         isLoading: true,
                         blogId: $scope.lbPostsBlogId,
-                        allowUnpublish: $scope.lbPostsAllowUnpublish,
-                        allowReordering: $scope.lbPostsAllowReordering,
-                        allowEditing: $scope.lbPostsAllowEditing,
-                        allowDeleting: $scope.lbPostsAllowDeleting,
+                        allowUnpublish: $scope.lbPostsAllowUnpublish || false,
+                        allowReordering: $scope.lbPostsAllowReordering || false,
+                        allowEditing: $scope.lbPostsAllowEditing || false,
+                        allowDeleting: $scope.lbPostsAllowDeleting || false,
+                        allowPublishing: $scope.lbPostsAllowPublishing || false,
                         onPostSelected: $scope.lbPostsOnPostSelected,
                         showReorder: false,
                         hideAllPosts: false,
@@ -134,6 +135,7 @@ define([
                         lbPostsAllowReordering: '=',
                         lbPostsAllowEditing: '=',
                         lbPostsAllowDeleting: '=',
+                        lbPostsAllowPublishing: '=',
                         lbPostsOnPostSelected: '=',
                         lbPostsInstance: '='
                     },
@@ -168,6 +170,16 @@ define([
                     restrict: 'E',
                     templateUrl: 'scripts/liveblog-edit/views/post.html',
                     link: function(scope, elem, attrs) {
+
+                        function changePostStatus(post, status) {
+                            // don't save the original post coming for the posts list, because it needs
+                            // to conserve its original update date in the posts list directive
+                            // in order to retrieve updates from this date (if latest)
+                            post = angular.copy(post);
+                            // save the post with the new status
+                            return postsService.savePost(post.blog, post, undefined, {post_status: status});
+                        }
+
                         angular.extend(scope, {
                             functionize: function (obj) {
                                 if (typeof(obj) !== 'function') {
@@ -205,14 +217,18 @@ define([
                                     });
                             },
                             unpublishPost: function(post) {
-                                // don't save the original post coming for the posts list, because it needs
-                                // to conserve its original update date in the posts list directive
-                                // in order to retrieve updates from this date (if latest)
-                                post = angular.copy(post);
-                                // save the post as draft
-                                postsService.saveDraft(post.blog, post).then(function(post) {
+                                changePostStatus(post, 'draft').then(function(post) {
                                     notify.pop();
                                     notify.info(gettext('Post saved as draft'));
+                                }, function() {
+                                    notify.pop();
+                                    notify.error(gettext('Something went wrong. Please try again later'));
+                                });
+                            },
+                            publishPost: function(post) {
+                                changePostStatus(post, 'open').then(function(post) {
+                                    notify.pop();
+                                    notify.info(gettext('Post published'));
                                 }, function() {
                                     notify.pop();
                                     notify.error(gettext('Something went wrong. Please try again later'));

@@ -37,6 +37,11 @@
                                     <i class="icon-move"></i>
                                 </a>
                             </li>
+                            <li ng-if="functionize(postsListCtrl.allowPublishing)(post)">
+                                <a ng-click="publishPost(post)" tooltip-placement="bottom" tooltip="{{ 'Publish' | translate }}">
+                                    <i class="icon-plane"></i>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>

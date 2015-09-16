@@ -86,7 +86,8 @@ class PostsResource(ArchiveResource):
         },
         'unpublished_date': {
             'type': 'datetime'
-        }
+        },
+        'publisher': Resource.rel('users', True),
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
 
@@ -127,6 +128,7 @@ class PostsService(ArchiveService):
             # if you publish a post directly which is not a draft it will have a published_date assigned
             if doc['post_status'] == 'open':
                 doc['published_date'] = utcnow()
+                doc['publisher'] = flask.g.user['_id']
         super().on_create(docs)
 
     def on_created(self, docs):
@@ -142,12 +144,13 @@ class PostsService(ArchiveService):
         post = original.copy()
         post.update(updates)
         self.check_post_permission(post)
-        # put the published item from drafts at the top of the timeline
+        # put the published item from drafts and contributions at the top of the timeline
         if updates.get('post_status') == 'open' and original.get('post_status') in ('draft', 'submitted'):
             updates['order'] = self.get_next_order_sequence()
-            # if you publish a post from a draft it will only then have a published_date assign
+            # if you publish a post it will save a published date and register who did it
             updates['published_date'] = utcnow()
-        if original.get('post_status') == 'open' and updates.get('post_status') == 'draft':
+            updates['publisher'] = flask.g.user['_id']
+        if original.get('post_status') == 'open' and updates.get('post_status') != 'open':
             updates['unpublished_date'] = utcnow()
         super().on_update(updates, original)
 

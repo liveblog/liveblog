@@ -71,8 +71,9 @@
                           lb-posts-order-by="updated_first"
                           lb-posts-allow-unpublish="false"
                           lb-posts-allow-reordering="false"
-                          lb-posts-allow-editing="true"
+                          lb-posts-allow-editing="blogSecurityService.isUserOwnerOrAdmin"
                           lb-posts-allow-deleting="blogSecurityService.isUserOwnerOrAdmin"
+                          lb-posts-allow-publishing="blogSecurityService.canPublishAPost"
                           lb-posts-on-post-selected="openPostInEditor"
                         >
                             <div ng-if="!blogEdit.contributionsPostsInstance.isFilterEnable()">
