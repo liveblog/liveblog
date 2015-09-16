@@ -4,8 +4,8 @@
     // TODO: Factorize this file with
     // server/liveblog/embed/embed_assets/scripts/liveblog-embed/pages-manager.service.js
 
-    PagesManagerFactory.$inject = ['postsService', '$q'];
-    function PagesManagerFactory(postsService, $q) {
+    PagesManagerFactory.$inject = ['postsService', '$q', 'lodash'];
+    function PagesManagerFactory(postsService, $q, _) {
 
         function PagesManager (blog_id, status, max_results, sort) {
             var SORTS = {
@@ -172,13 +172,7 @@
                 // respect the order
                 var sort_by = Object.keys(SORTS[self.sort])[0];
                 var order_by = SORTS[self.sort][sort_by].order;
-                posts.sort(function(a, b) {
-                    if (order_by === 'desc') {
-                        return a[sort_by] < b[sort_by];
-                    } else {
-                        return a[sort_by] > b[sort_by];
-                    }
-                });
+                posts = _.sortByOrder(posts, sort_by, order_by);
                 var page;
                 posts.forEach(function(post, index) {
                     if (index % self.maxResults === 0) {

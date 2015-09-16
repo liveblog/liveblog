@@ -99,11 +99,14 @@
         "name": "angular-base",
         "abstract": true,
         "version": "1.1.0",
+        "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
+        "license": "AGPL-3.0",
         "scripts": [
             "//code.jquery.com/jquery-1.11.3.min.js",
             "//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js",
             "//code.angularjs.org/1.4.2/angular-resource.js",
             "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js",
+            "vendors/lodash.min.js",
             "liveblog-embed/main.js",
             "liveblog-embed/resources.service.js",
             "liveblog-embed/pages-manager.service.js",
@@ -139,18 +142,29 @@
     "data": {
         "name": "default-theme",
         "label": "Default Theme",
-        "version": "2.0.0",
+        "version": "2.1.0",
         "extends": "angular-base",
         "styles": [
             "styles/reset.css",
             "styles/embed.css",
-            "//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic"
+            "//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic",
+            "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
         ],
         "scripts": [
-            "//code.angularjs.org/1.3.14/angular-animate.js",
+            "//code.angularjs.org/1.4.2/angular-animate.js",
             "vendors/ng-infinite-scroll.min.js",
-            "vendors/fecha.js",
             "main.js"
+        ],
+        "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
+        "license": "AGPL-3.0",
+        "options": [
+            {
+                "name": "showAuthor",
+                "label": "Show Author",
+                "type": "checkbox",
+                "default": true,
+                "help": "Show the author information on posts"
+            }
         ]
     }
 },

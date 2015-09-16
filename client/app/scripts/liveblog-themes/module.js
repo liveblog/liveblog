@@ -168,7 +168,7 @@
             });
             // load all the themes.
             // TODO: Pagination
-            return api.themes.query({timestamp: Date()}).then(function(data) {
+            return api.themes.query().then(function(data) {
                 var themes = data._items;
                 themes.forEach(function(theme) {
                     // create criteria to load blogs with the theme.
