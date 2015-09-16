@@ -143,8 +143,7 @@ class PostsService(ArchiveService):
         post.update(updates)
         self.check_post_permission(post)
         # put the published item from drafts at the top of the timeline
-        if (updates.get('post_status') == 'open' and original.get('post_status') == 'draft'
-                or original.get('post_status') == 'submitted'):
+        if updates.get('post_status') == 'open' and original.get('post_status') in ('draft', 'submitted'):
             updates['order'] = self.get_next_order_sequence()
             # if you publish a post from a draft it will only then have a published_date assign
             updates['published_date'] = utcnow()
