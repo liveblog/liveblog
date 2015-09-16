@@ -29,7 +29,7 @@ define([
                     angular.extend(vm, {
                         isLoading: true,
                         blogId: $scope.lbPostsBlogId,
-                        allowUnpublish: $scope.lbPostsAllowUnpublish || false,
+                        allowUnpublishing: $scope.lbPostsAllowUnpublishing || false,
                         allowReordering: $scope.lbPostsAllowReordering || false,
                         allowEditing: $scope.lbPostsAllowEditing || false,
                         allowDeleting: $scope.lbPostsAllowDeleting || false,
@@ -131,7 +131,7 @@ define([
                         lbPostsBlogId: '=',
                         lbPostsStatus: '@',
                         lbPostsOrderBy: '@',
-                        lbPostsAllowUnpublish: '=',
+                        lbPostsAllowUnpublishing: '=',
                         lbPostsAllowReordering: '=',
                         lbPostsAllowEditing: '=',
                         lbPostsAllowDeleting: '=',
