@@ -217,9 +217,9 @@ define([
                                     });
                             },
                             unpublishPost: function(post) {
-                                changePostStatus(post, 'draft').then(function(post) {
+                                changePostStatus(post, 'submitted').then(function(post) {
                                     notify.pop();
-                                    notify.info(gettext('Post saved as draft'));
+                                    notify.info(gettext('Post saved as contribution'));
                                 }, function() {
                                     notify.pop();
                                     notify.error(gettext('Something went wrong. Please try again later'));

@@ -144,12 +144,13 @@ class PostsService(ArchiveService):
         post = original.copy()
         post.update(updates)
         self.check_post_permission(post)
-        # put the published item from drafts and contributions at the top of the timeline
+        # when publishing, put the published item from drafts and contributions at the top of the timeline
         if updates.get('post_status') == 'open' and original.get('post_status') in ('draft', 'submitted'):
             updates['order'] = self.get_next_order_sequence()
             # if you publish a post it will save a published date and register who did it
             updates['published_date'] = utcnow()
             updates['publisher'] = flask.g.user['_id']
+        # when unpublishing
         if original.get('post_status') == 'open' and updates.get('post_status') != 'open':
             updates['unpublished_date'] = utcnow()
         super().on_update(updates, original)
@@ -161,9 +162,10 @@ class PostsService(ArchiveService):
         # send notifications
         if updates.get('deleted', False):
             push_notification('posts', deleted=True, post_id=original.get('_id'))
-        elif updates.get('post_status') == 'draft':
-            push_notification('posts', drafted=True, post_id=original.get('_id'),
-                              author_id=original.get('original_creator'))
+        # NOTE: Seems unsused, to be removed later if no bug appears.
+        # elif updates.get('post_status') == 'draft':
+        #     push_notification('posts', drafted=True, post_id=original.get('_id'),
+        #                       author_id=original.get('original_creator'))
         else:
             push_notification('posts', updated=True)
 
