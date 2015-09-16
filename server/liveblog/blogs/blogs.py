@@ -12,11 +12,9 @@
 from superdesk.notification import push_notification
 from superdesk.utc import utcnow
 from eve.utils import ParsedRequest
-from apps.archive.archive import ArchiveService
 from superdesk.services import BaseService
 from liveblog.common import get_user, update_dates_for
 from apps.content import metadata_schema
-from apps.archive.common import generate_guid, GUID_TAG
 from superdesk.celery_app import celery
 from superdesk import get_resource_service
 from superdesk.resource import Resource
@@ -24,14 +22,12 @@ from superdesk.activity import add_activity
 from flask.globals import g
 from flask import current_app as app, render_template
 from superdesk.emails import send_email
-from superdesk.errors import SuperdeskApiError
 import liveblog.embed
 from bson.objectid import ObjectId
 import superdesk
 import eve.io.base
 
 blogs_schema = {
-    'guid': metadata_schema['guid'],
     'title': metadata_schema['headline'],
     'description': metadata_schema['description'],
     'theme': {
@@ -126,15 +122,7 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
                 raise e
 
 
-def is_contributor(user):
-    """Test if given user is contributor.
-
-    :param user
-    """
-    return user.get('user_type', 'user') == 'user'
-
-
-class BlogService(ArchiveService):
+class BlogService(BaseService):
     notification_key = 'blog'
 
     def get_theme_snapshot(self, theme_name):
@@ -147,7 +135,6 @@ class BlogService(ArchiveService):
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
-            doc['guid'] = generate_guid(type=GUID_TAG)
             # set the blog_preferences by merging given preferences with global_prefs
             global_prefs = get_resource_service('global_preferences').get_global_prefs()
             prefs = global_prefs.copy()
@@ -177,14 +164,7 @@ class BlogService(ArchiveService):
         doc = super().find_one(req, **lookup)
         return doc
 
-    def can_change_settings(self, doc):
-        if is_contributor(get_user()):
-            raise SuperdeskApiError.forbiddenError(message='You do not have sufficient permission to change settings')
-
     def on_update(self, updates, original):
-        # check permission (see https://github.com/superdesk/liveblog/pull/167)
-        # only the owner can change blog's settings
-        self.can_change_settings(original)
         # if the theme changed, we republish the blog with the new one
         if 'blog_preferences' in updates and 'theme' in updates['blog_preferences']:
             if updates['blog_preferences']['theme'] != original['blog_preferences'].get('theme'):
@@ -211,9 +191,6 @@ class BlogService(ArchiveService):
         app.blog_cache.invalidate(original.get('_id'))
         # send notifications
         push_notification('blogs', updated=1)
-
-    def on_delete(self, doc):
-        self.can_change_settings(doc)
 
     def on_deleted(self, doc):
         # invalidate cache for updated blog

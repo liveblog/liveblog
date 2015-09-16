@@ -52,7 +52,7 @@ Feature: Blog operations
         """
         {"description": "this is a test blog"}
         """
-        Then we get response code 400
+        Then we get OK response
 
     @auth
     Scenario: Check blog_status
@@ -133,7 +133,7 @@ Feature: Blog operations
         Given we have "Editor" role
         Given we have "user" as type of user
         When we delete "/blogs/#blogs._id#"
-        Then we get response code 403
+        Then we get deleted response
 
         @auth
         Scenario: Adding blogs with or without members
