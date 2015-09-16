@@ -62,6 +62,16 @@ define([
             if (angular.isDefined(filters.status)) {
                 posts_criteria.source.query.filtered.filter.and.push({term: {post_status: filters.status}});
             }
+            // filters.authors
+            if (angular.isDefined(filters.authors) && filters.authors.length > 0) {
+                posts_criteria.source.query.filtered.filter.and.push({
+                    or: {
+                        filters: filters.authors.map(function(author) {
+                            return {term: {original_creator: author}};
+                        })
+                    }
+                });
+            }
             // filters.updatedAfter
             if (angular.isDefined(filters.updatedAfter)) {
                 posts_criteria.source.query.filtered.filter.and.push({

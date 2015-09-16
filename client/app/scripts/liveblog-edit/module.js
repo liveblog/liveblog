@@ -57,6 +57,7 @@ define([
         // define the $scope
         angular.extend($scope, {
             blog: blog,
+            selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
             preview: false,
@@ -453,7 +454,8 @@ define([
         'ngRoute',
         'superdesk.services.modal',
         'superdesk.upload',
-        'liveblog.pages-manager'
+        'liveblog.pages-manager',
+        'lrInfiniteScroll'
     ]);
     app.service('blogSecurityService',
         ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges',
