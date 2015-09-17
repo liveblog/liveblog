@@ -1,5 +1,5 @@
 <li>
-    <div ng-if="allowReordering" ng-class="{'active top': post.order > reorderPost.order}" class="timeline-reorder" ng-click="movePost(index, 'above');" translate>Click to place the item here</div>
+    <div ng-if="functionize(postsListCtrl.allowReordering)(post)" ng-class="{'active top': post.order > reorderPost.order}" class="timeline-reorder" ng-click="movePost(index, 'above');" translate>Click to place the item here</div>
     <div class="lb-post" ng-class="{'active': (post.order === reorderPost.order || post.order === keepHighlighted)}">
         <div class="lb-post__holder">
             <div class="lb-post__figure">
@@ -78,5 +78,5 @@
             <div class="lb-post__collapser-multiple-items"></div>
         </a>
     </div>
-    <div ng-if="allowReordering" ng-class="{'active bottom': post.order < reorderPost.order}" class="timeline-reorder" ng-click="movePost(index, 'below');" translate>Click to place the post here</div>
+    <div ng-if="functionize(postsListCtrl.allowReordering)(post)" ng-class="{'active bottom': post.order < reorderPost.order}" class="timeline-reorder" ng-click="movePost(index, 'below');" translate>Click to place the post here</div>
 </li>
