@@ -23,8 +23,65 @@
 
   </head>
   <body>
-
+    
     <div sd-superdesk-view></div>
+    <div class="dropdown help-link" dropdown>
+        <div class="dropdown-toggle" dropdown-toggle style="cursor:pointer">Help <b class="caret"></b></div>
+        <ul class="dropdown-menu">
+            <li><a href="https://github.com/superdesk/liveblog" target="_blank">Github</a></li>
+            <li translate ng-click="aboutModal = aboutModal? false: true"><button translate>About</button></li>
+        </ul>
+    </div>
+    <div sd-modal data-model="aboutModal" style="visibility: hidden" class="about-modal">
+        <div class="modal-header">
+            <button class="close" data-dismiss="modal"><i class="icon-close-small"></i></button>
+            <h3 translate>About</h3>
+        </div>
+        <div class="modal-body">
+            <div>
+                <div style="display:inline-block">
+                    <div translate class="text-title">
+                        Sourcefabric Live Blog
+                    </div>
+                    <div translate class="text-subtitle">
+                        Deliver Real News in Real Time
+                    </div>
+                </div>
+                <div style="display:inline-block" class="pull-right">
+                    <img src="images/lb-logo-about.png" alt="Superdesk Logo" class="pull-right">
+                </div>
+            </div>
+            <div class="about-page-text">
+                <p>
+                    <div style="font-weight: 700" translate>
+                        Live Blog 3.0 beta-1
+                    </div>
+                    <div translate>
+                        Released on 2015/09/22
+                    </div>
+                </p>
+                <p translate>
+                    Sourcefabric's <a href="https://www.sourcefabric.org/en/liveblog/" target="_blank">Live Blog</a> is an open source web app that enables journalists to provide immediate and ongoing coverage on rapidly evolving news events. Live Blog is powered by the <a href="http://www.superdesk.org/" target="_blank">Superdesk platform</a> and developed with love.
+                </p>
+                <p translate>
+                    Copyright (c) 2014 - 2015 Sourcefabric z.u. and contributors.<br/>
+                    Live Blog is released under the open source license AGPLv3.
+                </p>
+                <p>
+                    <div translate>Looking for help or support?</div>
+                    <div><a href="http://sourcefabric.booktype.pro/live-blog-20-for-journalists/what-is-live-blog/">User Manual</a></div>
+                </p>
+                <p translate>
+                    Get in touch with us via direct email liveblog@sourcefabric.org
+                    ... or find us in IRC Freenode at the #liveblog channel.
+                </p>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-primary btn-info" translate data-dismiss="modal">CLOSE</button>
+        </div>
+    </div>
+
 
     <!-- build:js scripts/vendor.js -->
     <script src="scripts/bower_components/jquery/dist/jquery.js"></script>

@@ -68,3 +68,65 @@
 :not(.blog-settings-view)>.settings-page .tabbable.outer .tab-content.outer {
     position: inherit;
 }
+
+.help-link {
+    color: white;
+    z-index: 2000;
+    position:absolute;
+    right: 126px;
+    top:15px;
+    .dropdown-menu {
+        min-width: 90px;
+    }
+    .dropdown-menu:before {
+        width: 23px;
+        height: 16px;
+        display: block;
+        z-index: 9999;
+        position: absolute;
+        top: -16px;
+        left: 10px;
+        background: url(../../images/dropdown-arrow-top.png) no-repeat;
+        content: " ";
+    }
+    .caret {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        vertical-align: middle;
+        margin-top: -2px;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4px solid white;
+        opacity: 0.3;
+        filter: alpha(opacity=30);
+        content: "";
+    }
+}
+.about-modal {
+    top: 115px!important;
+    .modal-dialog {
+        width: 662px!important;
+    }
+    p {
+        margin-top: 20px;
+    }
+    .page-text {
+        font-size: 13px;
+        font-weight: 400;
+    }
+    .text-title {
+        font-size: 24px;
+        font-weight: 400;
+        margin-top:8px;
+    }
+    .text-subtitle {
+        font-size: 16px;
+        font-weight: 400;
+        margin-top:6px;
+    }
+}
+
+.beta-switch {
+    display: none!important;
+}
