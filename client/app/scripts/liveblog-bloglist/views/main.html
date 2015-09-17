@@ -64,6 +64,10 @@
                         <dd sd-reldate ng-model="blog._created"></dd>
                         <dt>{{ ::'Last udpated' | translate }}:</dt>
                         <dd><time>{{ ::blog._updated | reldate }}</time></dd>
+                        <dt>{{ ::'Number of Posts' | translate }}:</dt>
+                        <dd>{{ ::blog.posts_count }}</dd>
+                        <dt>{{ ::'Last Posted' | translate }}:</dt>
+                        <dd>{{ ::blog.original_creator | username }}</dd>
                     </dl>
                 </div>
             </li>
