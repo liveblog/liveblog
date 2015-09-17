@@ -52,7 +52,7 @@ Feature: Blog operations
         """
         {"description": "this is a test blog"}
         """
-        Then we get response code 400
+        Then we get OK response
 
     @auth
     Scenario: Check blog_status
@@ -99,7 +99,7 @@ Feature: Blog operations
         """
 
        @auth
-    Scenario: Delete blog
+    	Scenario: Delete blog
         Given "blogs"
         """
         [{"title": "test_blog1"}]
@@ -109,6 +109,30 @@ Feature: Blog operations
            [{"title": "test_blog2"}]
          """
         And we delete latest
+        Then we get deleted response
+        When we get "/blogs"
+        Then we get list with 1 items
+        """
+        {"_items": [
+                    {"title": "test_blog1", "blog_status": "open"}
+                   ]}
+        """
+        
+        
+		@auth
+    	Scenario: Delete blog without being the owner
+        When we post to "blogs"
+        """
+        [{"title": "Update blog without being the owner"}]
+        """
+        Given "roles"
+        """
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
+        """
+        When we login as user "foo" with password "bar"
+        Given we have "Editor" role
+        Given we have "user" as type of user
+        When we delete "/blogs/#blogs._id#"
         Then we get deleted response
 
         @auth
@@ -129,14 +153,14 @@ Feature: Blog operations
         """
         And we get "/blogs"
         Then we get list with 2 items
-            """
-            {"_items": [{"title": "bar blog"},{"title": "foo blog", "members": [{"user": "#user_foo#"}]}]}
-            """
-                When we get "/users/#user_foo#/blogs"
-                Then we get list with 1 items
-            """
-            {"_items": [{"title": "foo blog", "members": [{"user": "#user_foo#"}]}]}
-            """
+        """
+       	{"_items": [{"title": "bar blog"},{"title": "foo blog", "members": [{"user": "#user_foo#"}]}]}
+        """
+		When we get "/users/#user_foo#/blogs"
+        Then we get list with 1 items
+        """
+        {"_items": [{"title": "foo blog", "members": [{"user": "#user_foo#"}]}]}
+        """
 
     @auth
     @notification
