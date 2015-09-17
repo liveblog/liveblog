@@ -128,7 +128,7 @@ class PostsService(ArchiveService):
             # if you publish a post directly which is not a draft it will have a published_date assigned
             if doc['post_status'] == 'open':
                 doc['published_date'] = utcnow()
-                doc['publisher'] = flask.g.user['_id']
+                doc['publisher'] = getattr(flask.g, 'user', None)
         super().on_create(docs)
 
     def on_created(self, docs):
@@ -149,7 +149,7 @@ class PostsService(ArchiveService):
             updates['order'] = self.get_next_order_sequence()
             # if you publish a post it will save a published date and register who did it
             updates['published_date'] = utcnow()
-            updates['publisher'] = flask.g.user['_id']
+            updates['publisher'] = getattr(flask.g, 'user', None)
         # when unpublishing
         if original.get('post_status') == 'open' and updates.get('post_status') != 'open':
             updates['unpublished_date'] = utcnow()
