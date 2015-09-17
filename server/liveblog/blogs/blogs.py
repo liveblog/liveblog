@@ -12,30 +12,22 @@
 from superdesk.notification import push_notification
 from superdesk.utc import utcnow
 from eve.utils import ParsedRequest
-from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
-from apps.archive.archive import ArchiveVersionsResource
 from liveblog.common import get_user, update_dates_for
-from apps.users.services import is_admin
 from apps.content import metadata_schema
-from apps.archive.common import generate_guid, GUID_TAG
 from superdesk.celery_app import celery
 from superdesk import get_resource_service
 from superdesk.resource import Resource
-from bson.objectid import ObjectId
 from superdesk.activity import add_activity
 from flask.globals import g
 from flask import current_app as app, render_template
 from superdesk.emails import send_email
-from superdesk.errors import SuperdeskApiError
 import liveblog.embed
 from bson.objectid import ObjectId
-import flask
 import superdesk
 import eve.io.base
 
 blogs_schema = {
-    'guid': metadata_schema['guid'],
     'title': metadata_schema['headline'],
     'description': metadata_schema['description'],
     'theme': {
@@ -53,11 +45,6 @@ blogs_schema = {
         'type': 'string',
         'allowed': ['open', 'closed'],
         'default': 'open'
-    },
-    'particular_type': {
-        'type': 'string',
-        'allowed': ['blog'],
-        'default': 'blog'
     },
     'members': {
         'type': 'list',
@@ -77,28 +64,10 @@ blogs_schema = {
 }
 
 
-class BlogsVersionsResource(ArchiveVersionsResource):
-    """
-    Resource class for versions of archive_media
-    """
-
+class BlogsResource(Resource):
     datasource = {
-        'source': 'archive' + '_versions',
-        'filter': {'type': 'composite'}
-    }
-
-
-class BlogsVersionsService(BaseService):
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        return self.backend.get('archive_versions', req=req, lookup=lookup)
-
-
-class BlogsResource(ArchiveResource):
-    datasource = {
-        'source': 'archive',
-        'elastic_filter': {'term': {'particular_type': 'blog'}},
+        'source': 'blogs',
+        'search_backend': 'elastic',
         'default_sort': [('_updated', -1)]
     }
 
@@ -153,7 +122,7 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
                 raise e
 
 
-class BlogService(ArchiveService):
+class BlogService(BaseService):
     notification_key = 'blog'
 
     def get_theme_snapshot(self, theme_name):
@@ -166,7 +135,6 @@ class BlogService(ArchiveService):
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
-            doc['guid'] = generate_guid(type=GUID_TAG)
             # set the blog_preferences by merging given preferences with global_prefs
             global_prefs = get_resource_service('global_preferences').get_global_prefs()
             prefs = global_prefs.copy()
@@ -197,10 +165,6 @@ class BlogService(ArchiveService):
         return doc
 
     def on_update(self, updates, original):
-        # check permission (see https://github.com/superdesk/liveblog/pull/167)
-        # only the owner can change blog's settings
-        if not is_admin(get_user()) and str(flask.g.user['_id']) != str(original['original_creator']):
-            raise SuperdeskApiError.forbiddenError(message='You need to be the blog owner to perform updates on it')
         # if the theme changed, we republish the blog with the new one
         if 'blog_preferences' in updates and 'theme' in updates['blog_preferences']:
             if updates['blog_preferences']['theme'] != original['blog_preferences'].get('theme'):
@@ -239,8 +203,7 @@ class UserBlogsResource(Resource):
     url = 'users/<regex("[a-f0-9]{24}"):user_id>/blogs'
     schema = blogs_schema
     datasource = {
-        'source': 'archive',
-        'elastic_filter': {'term': {'particular_type': 'blog'}},
+        'source': 'blogs',
         'default_sort': [('title', 1)]
     }
     resource_methods = ['GET']

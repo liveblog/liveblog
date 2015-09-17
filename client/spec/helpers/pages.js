@@ -545,6 +545,12 @@ function BlogSettingsPage(blog) {
         element(by.css('[ng-click="settings.doneTeamEdit()"')).click();
         return self;
     };
+
+    self.removeBlog = function() {
+        element(by.buttonText('REMOVE BLOG')).click().then(function() {
+            element(by.css('.btn-primary')).click();
+        });
+    };
 }
 
 function TeamPage() {
