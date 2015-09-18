@@ -139,6 +139,23 @@
             $scope.blogsLoading = true;
             api.blogs.query(getCriteria(), false).then(function(blogs) {
                 $scope.blogs = blogs;
+                blogs._items.forEach(function(blog) {
+                    var criteria = {
+                        source: {
+                            query: {filtered: {filter: {and: [{term: {'post_status': 'open'}},
+                            {term: {'blog': blog._id}}
+                            ]}}
+                        }, sort: [{'published_date': 'asc'}]}
+                    };
+
+                    api.posts.query(criteria).then(function(data) {
+                    blog.posts_count = data._meta.total;
+                    var posts = data._items;
+                    posts.forEach(function(post) {
+                        blog.last_posted = post.published_date;
+                    });
+                    });
+                });
                 $scope.blogsLoading = false;
             });
         }
