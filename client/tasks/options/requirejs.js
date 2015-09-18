@@ -12,7 +12,7 @@ module.exports = function(grunt) {
         });
     }
 
-    var include = ['main', 'liveblog-edit/timeline', 'liveblog-edit/directives'];
+    var include = ['main', 'liveblog-edit/directives'];
     include.push.apply(include, getModules());
 
     return {

@@ -50,7 +50,7 @@
                         </a>
                     </div>
                     <lb-permalink post-id="{{ post._id }}"></lb-permalink>
-                    <div class="lb-post-date" ng-bind="post.published_date | date"></div>
+                    <div class="lb-post-date" ng-bind="post.published_date | prettifyIsoDate"></div>
                     <div class="lb-user-info" ng-bind="post.original_creator.display_name"></div>
                 </div>
                 <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
@@ -67,7 +67,7 @@
                     </div>
                 </div>
                 <div class="lb-updated-date" ng-show="post._updated !== post.published_date">
-                    Updated <span ng-bind="post._updated | date"></span>
+                    Updated <span ng-bind="post._updated | prettifyIsoDate"></span>
                 </div>
             </div>
         </li>

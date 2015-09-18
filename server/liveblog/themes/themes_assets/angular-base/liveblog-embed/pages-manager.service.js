@@ -196,14 +196,7 @@
                 // respect the order
                 var sort_by = Object.keys(SORTS[self.sort])[0];
                 var order_by = SORTS[self.sort][sort_by].order;
-                posts.sort(function(a, b) {
-                    if (order_by === 'desc') {
-                        return a[sort_by] < b[sort_by];
-                    }
-                    else {
-                        return a[sort_by] > b[sort_by];
-                    }
-                });
+                posts = _.sortByOrder(posts, sort_by, order_by);
                 var page;
                 posts.forEach(function(post, index) {
                     if (index % self.maxResults === 0) {

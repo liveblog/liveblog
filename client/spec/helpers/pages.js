@@ -260,24 +260,40 @@ function AbstractPanelPage(blog) {
     };
 }
 
+DraftsPage.prototype = Object.create(AbstractPanelPage.prototype);
 function DraftsPage(blog) {
     var self = this;
     self._class_name = '.panel--draft';
     AbstractPanelPage.call(self);
 }
-DraftsPage.prototype = Object.create(AbstractPanelPage.prototype);
 
+ContributionsPage.prototype = Object.create(AbstractPanelPage.prototype);
 function ContributionsPage(blog) {
     var self = this;
     self._class_name = '.panel--contribution';
+    self.byFilterBox = by.css('.dropdown-content');
+    self.validFilterButton = element(self.byFilterBox).element(by.buttonText('SELECT'));
     AbstractPanelPage.call(self);
+
+    self.openFiterByMember = function() {
+        return self.column.element(by.css('.btn--plus')).click();
+    };
+
+    self.filterByMember = function(member_name) {
+        return self.openFiterByMember().then(function() {
+            element(self.byFilterBox)
+            .element(by.css('[data-username="' + member_name + '"]'))
+            .click().then(function() {
+                return self.validFilterButton.click();
+            });
+        });
+    };
 }
-ContributionsPage.prototype = Object.create(AbstractPanelPage.prototype);
 
 function TimelinePage(blog) {
     var self = this;
     self.blog = blog;
-    self.column = element(by.css('.column-timeline'));
+    self.column = element(by.css('.column--timeline'));
     self.byPosts = by.repeater('post in posts');
     self.byEdit = by.css('[ng-click="onEditClick(post)"]');
     self.byUnpublish = by.css('[ng-click="unpublishPost(post)"]');
@@ -522,6 +538,12 @@ function BlogSettingsPage(blog) {
     self.doneTeamEdit = function() {
         element(by.css('[ng-click="settings.doneTeamEdit()"')).click();
         return self;
+    };
+
+    self.removeBlog = function() {
+        element(by.buttonText('REMOVE BLOG')).click().then(function() {
+            element(by.css('.btn-primary')).click();
+        });
     };
 }
 

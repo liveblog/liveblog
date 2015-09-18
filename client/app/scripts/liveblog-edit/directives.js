@@ -19,38 +19,6 @@ define([
     'use strict';
 
     angular.module('liveblog.edit')
-        // * SLIDEABLE
-        // *  used for left side bar
-        // *   - slideable: take a boolean, true to be opened
-        // *   - slideableMove: take the other element to be right-moved
-        .directive('slideable', function() {
-            return {
-                restrict: 'A',
-                scope: {
-                    'slideableMove': '@',
-                    'slideable': '='
-                },
-                link: function(scope, element, attrs) {
-                    var old_left = parseInt(element.css('left'), 10);
-                    var to_be_moved = angular.element(document.querySelectorAll(scope.slideableMove));
-                    var panel_width = element.width();
-                    function toggleSlide() {
-                        if (scope.slideable) {
-                            element.show();
-                            to_be_moved.css({
-                                left: panel_width + old_left
-                            });
-                        } else {
-                            element.hide();
-                            to_be_moved.css({
-                                left: old_left
-                            });
-                        }
-                    }
-                    scope.$watch('slideable', toggleSlide);
-                }
-            };
-        })
         .directive('lbPostsList', [
             'postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager',
             function(postsService, notify, $q, $timeout, session, PagesManager) {
@@ -61,7 +29,6 @@ define([
                     angular.extend(vm, {
                         isLoading: true,
                         blogId: $scope.lbPostsBlogId,
-                        emptyMessage: $scope.lbPostsEmptyMessage,
                         allowUnpublish: $scope.lbPostsAllowUnpublish,
                         allowReordering: $scope.lbPostsAllowReordering,
                         onPostSelected: $scope.lbPostsOnPostSelected,
@@ -127,6 +94,16 @@ define([
                         },
                         isPostsEmpty: function() {
                             return vm.pagesManager.count() < 1 && !vm.isLoading;
+                        },
+                        isFilterEnable: function() {
+                            return vm.pagesManager.authors.length > 0;
+                        },
+                        setAuthorFilter: function(users) {
+                            vm.authorFilters = users;
+                            vm.isLoading = true;
+                            return vm.pagesManager.setAuthors(users.map(function(user) {return user._id;})).then(function() {
+                                vm.isLoading = false;
+                            });
                         }
                     });
                     $scope.lbPostsInstance = vm;
@@ -151,13 +128,13 @@ define([
                         lbPostsBlogId: '=',
                         lbPostsStatus: '@',
                         lbPostsOrderBy: '@',
-                        lbPostsEmptyMessage: '@',
                         lbPostsAllowUnpublish: '=',
                         lbPostsAllowReordering: '=',
                         lbPostsOnPostSelected: '=',
                         lbPostsInstance: '='
                     },
                     restrict: 'EA',
+                    transclude: true,
                     templateUrl: 'scripts/liveblog-edit/views/posts.html',
                     controllerAs: 'postsList',
                     controller: LbPostsListCtrl
@@ -268,6 +245,112 @@ define([
                             elem.html(attrs.htmlContent);
                         }
                     });
+                }
+            };
+        }])
+        .directive('lbFilterByMember', ['api', function(api) {
+            return {
+                restrict: 'E',
+                scope: {
+                    blogId: '=',
+                    onFilterChange: '='
+                },
+                templateUrl: 'scripts/liveblog-edit/views/filter-by-member.html',
+                controllerAs: 'vm',
+                controller: ['$scope', function($scope) {
+                    var vm = this;
+                    angular.extend(vm, {
+                        members: [],
+                        openSelector: false,
+                        preselectedUsers: [],
+                        selectedUsers: [],
+                        findUserInPreselection: function(user_id) {
+                            return _.find(vm.preselectedUsers, function(user) {
+                                return user._id === user_id;
+                            });
+                        },
+                        toggleUserInPreselection: function(user) {
+                            var old_user = vm.findUserInPreselection(user._id);
+                            if (old_user) {
+                                vm.preselectedUsers.splice(vm.preselectedUsers.indexOf(old_user), 1);
+                            } else {
+                                vm.preselectedUsers.push(user);
+                            }
+                        },
+                        isUserInPreselection: function(user) {
+                            return vm.findUserInPreselection(user._id);
+                        },
+                        confirmPreselection: function() {
+                            vm.updateFilters(angular.copy(vm.preselectedUsers));
+                        },
+                        updateFilters: function(fitlers) {
+                            vm.selectedUsers = fitlers;
+                            $scope.onFilterChange(vm.selectedUsers);
+                        },
+                        clearSelection: function() {
+                            vm.updateFilters([]);
+                        },
+                        removeUserFromSelection: function(user) {
+                            var filters = angular.copy(vm.selectedUsers);
+                            filters.splice(vm.selectedUsers.indexOf(user), 1);
+                            vm.updateFilters(filters);
+                        },
+                        toggleSelector: function() {
+                            vm.openSelector = !vm.openSelector;
+                            if (vm.openSelector) {
+                                // clear the search input
+                                vm.search = '';
+                                // preset the preselection to the current selection
+                                vm.preselectedUsers = angular.copy(vm.selectedUsers);
+                                // retrieve blog information to know the owner and the members
+                                api('blogs').getById($scope.blogId).then(function(blog) {
+                                    // add the owner
+                                    var ids = [blog.original_creator];
+                                    // add the members
+                                    if (blog.members) {
+                                        ids.push.apply(ids, blog.members.map(function(member) {return member.user;}));
+                                    }
+                                    // retrieve information about these users and list them in the view
+                                    api('users').query({where: {_id: {$in: ids}}}).then(function(data) {
+                                        vm.members = data._items;
+                                    });
+                                });
+                            }
+                        }
+                    });
+                }]
+            };
+        }])
+        .directive('autofocus', ['$timeout', function($timeout) {
+            return {
+                restrict: 'A',
+                link: function($scope, $element) {
+                    $timeout(function() {
+                        $element[0].focus();
+                    });
+                }
+            };
+        }])
+        .directive('fullHeight', ['$timeout', '$window', 'lodash', function($timeout, $window, _) {
+            return {
+                restrict: 'A',
+                link: function($scope, $element) {
+                    // update the element height to the window height minus its vertical offset
+                    function setHeight() {
+                        $timeout(function() {
+                            var height = $window.innerHeight - $element.offset().top;
+                            $element.css('height', height);
+                            $element[0].focus();
+                        });
+                    }
+                    // initialize
+                    setHeight();
+                    // update when the window size changes
+                    angular.element($window).on('resize', _.debounce(setHeight, 500));
+                    // update when offset changes
+                    $scope.$watch(function() {
+                        return $element.offset().top;
+                    }, _.debounce(setHeight, 500));
                 }
             };
         }]);

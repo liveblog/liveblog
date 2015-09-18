@@ -4,8 +4,8 @@
     // TODO: Factorize this file with
     // server/liveblog/embed/embed_assets/scripts/liveblog-embed/pages-manager.service.js
 
-    PagesManagerFactory.$inject = ['postsService', '$q'];
-    function PagesManagerFactory(postsService, $q) {
+    PagesManagerFactory.$inject = ['postsService', '$q', 'lodash'];
+    function PagesManagerFactory(postsService, $q, _) {
 
         function PagesManager (blog_id, status, max_results, sort) {
             var SORTS = {
@@ -34,7 +34,13 @@
              * @returns {promise}
              */
             function retrievePage(page, max_results) {
-                return postsService.getPosts(self.blogId, {status: self.status}, max_results || self.maxResults, page).then(function(data) {
+                return postsService.getPosts(self.blogId,
+                                             {
+                                                 status: self.status,
+                                                 authors: self.authors
+                                             },
+                                             max_results || self.maxResults, page)
+                .then(function(data) {
                     // update posts meta data (used to know the total number of posts and pages)
                     self.meta = data._meta;
                     return data;
@@ -48,6 +54,17 @@
              */
             function changeOrder(sort_name) {
                 self.sort = sort_name;
+                self.pages = [];
+                return fetchNewPage();
+            }
+
+            /**
+             * Filter by author ids.
+             * @param {array} authors - The list of ids to filter with
+             * @returns {promise}
+             */
+            function setAuthors(authors) {
+                self.authors = authors;
                 self.pages = [];
                 return fetchNewPage();
             }
@@ -172,13 +189,7 @@
                 // respect the order
                 var sort_by = Object.keys(SORTS[self.sort])[0];
                 var order_by = SORTS[self.sort][sort_by].order;
-                posts.sort(function(a, b) {
-                    if (order_by === 'desc') {
-                        return a[sort_by] < b[sort_by];
-                    } else {
-                        return a[sort_by] > b[sort_by];
-                    }
-                });
+                posts = _.sortByOrder(posts, sort_by, order_by);
                 var page;
                 posts.forEach(function(post, index) {
                     if (index % self.maxResults === 0) {
@@ -299,6 +310,14 @@
                  * Change the order in the future posts request, remove exising post and load a new page
                  */
                 changeOrder: changeOrder,
+                /**
+                 * Initial authors filter
+                 */
+                authors: [],
+                /**
+                 * Filter by author ids
+                 */
+                setAuthors: setAuthors,
                 /**
                  * Number of results per page
                  */

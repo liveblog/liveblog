@@ -75,9 +75,18 @@ describe('Contributions Posts', function() {
             var contributions = blogs.openBlog(0).openContributions();
             browser.wait(function() {
                 return element(contributions.byPosts).isPresent();
-            });
+            }, 5000);
             contributions.expectPost(0, contrib.quote);
             expect(contributions.editButtonIsPresent(contributions.get(0))).toBe(false);
+        });
+    });
+
+    it('filter contributions by member', function() {
+        var contributions = blogs.openBlog(3).openContributions();
+        contributions.expectPost(0, 'admin\'s contribution');
+        contributions.expectPost(1, 'editor\'s contribution');
+        contributions.filterByMember('editor').then(function() {
+            contributions.expectPost(0, 'editor\'s contribution');
         });
     });
 });
