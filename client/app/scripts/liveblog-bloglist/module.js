@@ -135,27 +135,28 @@
             return criteria;
         }
 
-
-        function postsCounter(blog_id) {
-            return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
-                .query().then(function(data) {
-                    data._meta.total
-                });
-                return data;
-        }
-
         function fetchBlogs() {
             $scope.blogsLoading = true;
             api.blogs.query(getCriteria(), false).then(function(blogs) {
                 $scope.blogs = blogs;
-                $scope.blogsLoading = false;
-            });
-            return api.blogs.query().then(function(data) {
-                var blogs = data._items;
-                blogs.forEach(function(blog) {
-                    console.log('b', blogs)
-                    blog.posts_count = postsCounter(blog._id)
+                blogs._items.forEach(function(blog) {
+                    var criteria = {
+                        source: {
+                            query: {filtered: {filter: {and: [{term: {'post_status': 'open'}},
+                            {term: {'blog': blog._id}}
+                            ]}}
+                        }, sort: [{'published_date': 'asc'}]}
+                    };
+
+                    api.posts.query(criteria).then(function(data) {
+                    blog.posts_count = data._meta.total;
+                    var posts = data._items;
+                    posts.forEach(function(post) {
+                        blog.last_posted = post.published_date;
+                    });
+                    });
                 });
+                $scope.blogsLoading = false;
             });
         }
 
