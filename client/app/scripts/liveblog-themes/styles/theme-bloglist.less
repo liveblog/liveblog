@@ -73,6 +73,21 @@
                     .border-box();
                     background: #f8f8f8 url('../../images/blog-default-img.png') no-repeat center center;
                     float: left;
+                    position: relative;
+                    &:hover {
+                        > .overlay {
+                            opacity: 1;
+                        }
+                    }
+                    > .overlay {
+                        cursor: pointer;
+                        opacity: 0;
+                        position: absolute;
+                        background-color: rgba(0, 0, 0, 0.5);
+                        top: 0; leff: 0; bottom: 0; right: 0;
+                        background-position: center center;
+                        background-size: 36%;
+                    }
                     div {
                         width: 238px;
                         height: 140px;
