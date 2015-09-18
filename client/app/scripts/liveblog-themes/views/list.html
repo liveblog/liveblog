@@ -18,8 +18,9 @@
             <ul>
                 <li ng-init="theme=getTheme(themeName)">
                     <div class="theme card">
-                        <figure class="media">
+                        <figure class="media" ng-click="vm.openThemePreview(theme)">
                             <div if-background-image="{{theme.screenshot_url}}"></div>
+                            <i class="fa fa-search"></i>
                             <div class="overlay big-icon-search"></div>
                         </figure>
                         <div class="content">
@@ -84,5 +85,17 @@
     </div>
     <div class="modal-footer">
         <button type="button" class="btn btn-default" translate ng-click="closeThemeBlogsModal()">Cancel</button>
+    </div>
+</div>
+
+<div sd-modal="" data-model="vm.themePreviewModal" class="theme-preview-modal" macro-team="">
+    <div class="modal-header">
+        <button class="close" ng-click="vm.themePreviewModal = false"><i class="icon-close-small"></i></button>
+    </div>
+    <div class="modal-body">
+        <img ng-src="{{vm.themePreviewModalTheme.screenshot_url}}"/>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" translate ng-click="vm.themePreviewModal = false">Cancel</button>
     </div>
 </div>

@@ -3,6 +3,7 @@
 
     LiveblogThemesController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q', '$sce', 'config', 'lodash', 'upload'];
     function LiveblogThemesController($scope, api, $location, notify, gettext, $q, $sce, config, _, upload) {
+        var vm = this;
         /**
          * Return a collection that represent the hierachy of the themes
          * @param {array} themes
@@ -217,6 +218,14 @@
             });
         };
 
+        angular.extend(vm, {
+            themePreviewModal: false,
+            openThemePreview: function(theme) {
+                vm.themePreviewModal = true;
+                vm.themePreviewModalTheme = theme;
+            }
+        });
+
         loadThemes();
     }
 
@@ -226,6 +235,7 @@
             .activity('/themes/', {
                 label: gettext('Theme Manager'),
                 controller: LiveblogThemesController,
+                controllerAs: 'vm',
                 category: superdesk.MENU_MAIN,
                 privileges: {'global_preferences': 1},
                 templateUrl: 'scripts/liveblog-themes/views/list.html'

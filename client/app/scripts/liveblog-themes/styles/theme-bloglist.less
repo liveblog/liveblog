@@ -3,6 +3,19 @@
 // ----------------------------------------------------------------------------------------
 @import 'mixins.less';
 @import 'variables.less';
+
+.theme-preview-modal {
+    .modal-dialog {
+        width: auto;
+    }
+    .modal-body {
+        text-align: center;
+        img {
+            max-width: 100%;
+        }
+    }
+}
+
 .theme-blogs-modal {
     .modal-dialog {
         width: 600px !important;
@@ -92,7 +105,7 @@
                         width: 238px;
                         height: 140px;
                         background-position: top center;
-                        background-size: cover;
+                        background-size: 150%;
                     }
                 }
                 .content {
