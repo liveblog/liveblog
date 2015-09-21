@@ -5,8 +5,22 @@
 @import 'variables.less';
 
 .theme-preview-modal {
+    .modal-content {
+        box-shadow: none;
+    }
     .modal-dialog {
         width: auto;
+    }
+    .modal-header {
+        background-color: inherit;
+        .close {
+            font-size: 2em;
+            opacity: 1;
+            color: white;
+            &:hover {
+                color: #D7D7D7;
+            }
+        }
     }
     .modal-body {
         text-align: center;

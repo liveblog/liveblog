@@ -90,12 +90,12 @@
 
 <div sd-modal="" data-model="vm.themePreviewModal" class="theme-preview-modal" macro-team="">
     <div class="modal-header">
-        <button class="close" ng-click="vm.themePreviewModal = false"><i class="icon-close-small"></i></button>
+        <button class="close" ng-click="vm.themePreviewModal = false">⨯</button>
     </div>
     <div class="modal-body">
-        <img ng-src="{{vm.themePreviewModalTheme.screenshot_url}}"/>
-    </div>
-    <div class="modal-footer">
-        <button type="button" class="btn btn-default" translate ng-click="vm.themePreviewModal = false">Cancel</button>
+        <img ng-src="{{vm.themePreviewModalTheme.screenshot_url}}"
+            full-height
+            full-height-use-max-height="true"
+            full-height-offset-bottom="50"/>
     </div>
 </div>
