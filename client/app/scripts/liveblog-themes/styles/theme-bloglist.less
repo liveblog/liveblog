@@ -98,6 +98,12 @@
                 cursor: default;
                 .border-box();
                 .media {
+                    &.no-screenshot {
+                        cursor: default;
+                        > .overlay {
+                            display: none;
+                        }
+                    }
                     max-width: 400px;
                     height: 140px;
                     .border-box();

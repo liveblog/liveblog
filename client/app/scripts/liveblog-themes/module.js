@@ -210,6 +210,9 @@
             },
             themePreviewModal: false,
             openThemePreview: function(theme) {
+                if (!theme.screenshot_url) {
+                    return false;
+                }
                 vm.themePreviewModal = true;
                 vm.themePreviewModalTheme = theme;
             }

@@ -18,9 +18,8 @@
             <ul>
                 <li ng-init="theme=vm.getTheme(themeName)">
                     <div class="theme card">
-                        <figure class="media" ng-click="vm.openThemePreview(theme)">
+                        <figure class="media" ng-click="vm.openThemePreview(theme)" ng-class="{'no-screenshot': !theme.screenshot_url}">
                             <div if-background-image="{{theme.screenshot_url}}"></div>
-                            <i class="fa fa-search"></i>
                             <div class="overlay big-icon-search"></div>
                         </figure>
                         <div class="content">
