@@ -137,9 +137,9 @@ function BlogsPage() {
 function ThemesManagerPage() {
     var self = this;
     self.themes = element.all(by.css('.theme'));
-    self.blogsRows = element.all(by.repeater('blog in selectedTheme.blogs'));
+    self.blogsRows = element.all(by.repeater('blog in vm.selectedTheme.blogs'));
     self.fileThemeElement = element(by.css('#uploadAThemeFile'));
-    self.byRemove = by.css('[ng-click="removeTheme(theme)"]');
+    self.byRemove = by.css('[ng-click="vm.removeTheme(theme)"]');
 
     self.openThemesManager = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
@@ -151,7 +151,7 @@ function ThemesManagerPage() {
     };
 
     self.setAsDefault = function(theme_index) {
-        return self.themes.get(theme_index).element(by.css('[ng-click="makeDefault(theme)"]')).click();
+        return self.themes.get(theme_index).element(by.css('[ng-click="vm.makeDefault(theme)"]')).click();
     };
 
     self.remove = function(theme_index) {
@@ -161,7 +161,7 @@ function ThemesManagerPage() {
 
     self.expectTheme = function(index, params) {
         var theme = self.themes.get(index);
-        var number_of_blog_elmt = theme.element(by.css('[ng-click="openThemeBlogsModal(theme)"]'));
+        var number_of_blog_elmt = theme.element(by.css('[ng-click="vm.openThemeBlogsModal(theme)"]'));
         // check if it is the default theme
         expect(theme.element(by.css('.default-theme')).isDisplayed()).toBe(params.is_default_theme);
         // check if the name match
@@ -178,7 +178,7 @@ function ThemesManagerPage() {
         }
         // check if the number of row matchs
         expect(self.blogsRows.count()).toBe(params.number_of_blogs_expected);
-        var close_modal = element(by.css('[ng-click="closeThemeBlogsModal()"]'));
+        var close_modal = element(by.css('[ng-click="vm.closeThemeBlogsModal()"]'));
         close_modal.isPresent().then(function(is_present) {
             if (is_present) {
                 close_modal.click();

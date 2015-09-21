@@ -5,18 +5,18 @@
             <label class="navbtn navbtn-info" for="uploadAThemeFile">
                 <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
             </label>
-            <input type="file" name="uploadAThemeFile" id="uploadAThemeFile" onchange="angular.element(this).scope().uploadThemeFile(this)"></input>
+            <input type="file" name="uploadAThemeFile" id="uploadAThemeFile" onchange="angular.element(this).controller().uploadThemeFile(this)"></input>
         </form>
     </div>
 </div>
 
 <section class="main-section themelist">
-    <div class="loading-indicator" ng-show="loading"><span translate>loading</span></div>
+    <div class="loading-indicator" ng-show="vm.loading"><span translate>loading</span></div>
     <div class="list-container">
         <!-- LIST VIEW -->
         <script type="text/ng-template" id="themeTree">
             <ul>
-                <li ng-init="theme=getTheme(themeName)">
+                <li ng-init="theme=vm.getTheme(themeName)">
                     <div class="theme card">
                         <figure class="media" ng-click="vm.openThemePreview(theme)">
                             <div if-background-image="{{theme.screenshot_url}}"></div>
@@ -42,7 +42,7 @@
                                 </dd>
                                 <dt>{{ ::'No. of blogs using theme' | translate }}:</dt>
                                 <dd>
-                                    <a ng-click="openThemeBlogsModal(theme)">
+                                    <a ng-click="vm.openThemeBlogsModal(theme)">
                                         {{ ::theme.blogs_count }}
                                     </a>
                                 </dd>
@@ -51,40 +51,40 @@
                             </dl>
                         </div>
                         <div class="side">
-                            <div ng-hide="isDefaultTheme(theme)">
-                                <button ng-disabled="hasChildren(theme)" ng-click="removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
-                                <button ng-if="!theme.abstract" ng-click="makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
+                            <div ng-hide="vm.isDefaultTheme(theme)">
+                                <button ng-disabled="vm.hasChildren(theme)" ng-click="vm.removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
+                                <button ng-if="!theme.abstract" ng-click="vm.makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
                             </div>
                         </div>
-                        <div class="default-theme" ng-show="isDefaultTheme(theme)"></div>
+                        <div class="default-theme" ng-show="vm.isDefaultTheme(theme)"></div>
                     </div>
                     <ng-include ng-repeat="(themeName, themeChildren) in themeChildren | orderBy:'-themeName'" src="'themeTree'"></ng-include>
                 </li>
             </ul>
         </script>
-        <ng-include ng-repeat="(themeName, themeChildren) in themesHierachy | orderBy:'-themeName'" src="'themeTree'"></ng-include>
+        <ng-include ng-repeat="(themeName, themeChildren) in vm.themesHierachy | orderBy:'-themeName'" src="'themeTree'"></ng-include>
     </div>
 </section>
-<div sd-modal="" data-model="themeBlogsModal" class="theme-blogs-modal" macro-team="">
-    <div class="modal-header" ng-class="{'modal-header-blogs': !selectedBlog}">
-        <button class="close" ng-click="closeThemeBlogsModal()"><i class="icon-close-small"></i></button>
-        <div ng-hide="selectedBlog">
+<div sd-modal="" data-model="vm.themeBlogsModal" class="theme-blogs-modal" macro-team="">
+    <div class="modal-header" ng-class="{'modal-header-blogs': !vm.selectedBlog}">
+        <button class="close" ng-click="vm.closeThemeBlogsModal()"><i class="icon-close-small"></i></button>
+        <div ng-hide="vm.selectedBlog">
             <h3 translate>List of blogs using theme</h3>
-            <h2>{{selectedTheme.label}}
+            <h2>{{vm.selectedTheme.label}}
         </div>
     </div>
     <div class="modal-body">
-        <div  ng-hide="selectedBlog">
+        <div  ng-hide="vm.selectedBlog">
             <ul class="theme-blogs">
-                <li ng-repeat="blog in selectedTheme.blogs" ng-click="switchBlogPreview(blog)">{{blog.title}}</li>
+                <li ng-repeat="blog in vm.selectedTheme.blogs" ng-click="vm.switchBlogPreview(blog)">{{blog.title}}</li>
             <ul>
         </div>
-        <div ng-show="selectedBlog">
-            <iframe width="100%" height="715" ng-src="{{ selectedBlog.iframe_url }}" frameborder="0" allowfullscreen></iframe>
+        <div ng-show="vm.selectedBlog">
+            <iframe width="100%" height="715" ng-src="{{ vm.selectedBlog.iframe_url }}" frameborder="0" allowfullscreen></iframe>
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-default" translate ng-click="closeThemeBlogsModal()">Cancel</button>
+        <button type="button" class="btn btn-default" translate ng-click="vm.closeThemeBlogsModal()">Cancel</button>
     </div>
 </div>
 
