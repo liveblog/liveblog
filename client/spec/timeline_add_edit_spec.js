@@ -33,13 +33,13 @@ describe('timeline add to top and edit', function() {
         var blog = blogs.openBlog(3);
         blog.editor.publishText();
         blog.editor.publishText();
-        blog.openDrafts();
+        blog.openContributions();
         blog.timeline.getFull(0).then(function(text) {
             // unpublish the first post of the timeline and
             // check if it appears on the top of the draft posts list
             blog.timeline.unpublish(0);
             expect(blog.timeline.getFull(0)).toNotBe(text);
-            expect(blog.drafts.getFull(0)).toBe(text);
+            expect(blog.contributions.getFull(0)).toBe(text);
         });
         // twice to ensure the order
         blog.timeline.getFull(0).then(function(text) {
@@ -47,7 +47,7 @@ describe('timeline add to top and edit', function() {
             // check if it appears on the top of the draft posts list
             blog.timeline.unpublish(0);
             expect(blog.timeline.getFull(0)).toNotBe(text);
-            expect(blog.drafts.getFull(0)).toBe(text);
+            expect(blog.contributions.getFull(0)).toBe(text);
         });
     });
 });
