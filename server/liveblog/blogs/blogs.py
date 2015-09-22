@@ -26,6 +26,8 @@ import liveblog.embed
 from bson.objectid import ObjectId
 import superdesk
 import eve.io.base
+from apps.users.services import is_admin
+from superdesk.errors import SuperdeskApiError
 
 blogs_schema = {
     'title': metadata_schema['headline'],
@@ -121,6 +123,9 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
             if not safe:
                 raise e
 
+def check_for_permissions():
+    if not is_admin(get_user()):
+        raise SuperdeskApiError.forbiddenError(message ='you do not have permission to open this blog')
 
 class BlogService(BaseService):
     notification_key = 'blog'
@@ -161,7 +166,14 @@ class BlogService(BaseService):
         return docs
 
     def find_one(self, req, **lookup):
+        user = str(get_user().get('_id'))
         doc = super().find_one(req, **lookup)
+        if not doc.get('members'):
+            check_for_permissions()
+        else:
+            members = doc.get('members')
+            if not user in members:
+                check_for_permissions()
         return doc
 
     def on_update(self, updates, original):
