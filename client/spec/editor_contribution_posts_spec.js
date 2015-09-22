@@ -25,6 +25,17 @@ describe('Contributions Posts', function() {
             .expectPost(1, contrib1.quote);
     });
 
+    it('can publish a contribution', function() {
+        var blog = blogs.openBlog(0);
+        blog.editor.createContribution();
+        var contributions = blog.openContributions();
+        var first_contrib = contributions.get(0);
+        contributions.publish(first_contrib);
+        expect(blogs.blog.timeline.get(0).isPresent()).toBe(true);
+        blog.openContributions();
+        expect(contributions.all().count()).toBe(0);
+    });
+
     it('can open a contributions in the editor and publish it', function() {
         var blog = blogs.openBlog(0);
         var contrib = blog.editor.createContribution();

@@ -232,6 +232,7 @@ function AbstractPanelPage(blog) {
     self.column = element(by.css(self._class_name));
     self.byPosts = by.repeater('post in postsList.pagesManager.allPosts()');
     self.byEditButton = by.css('[ng-click="onEditClick(post)"]');
+    self.byPublishButton = by.css('[ng-click="publishPost(post)"]');
 
     self.get = function(index) {
         return self.column.element(self.byPosts.row(index));
@@ -251,6 +252,11 @@ function AbstractPanelPage(blog) {
 
     self.edit = function(draft) {
         draft.element(self.byEditButton).click();
+        return self;
+    };
+
+    self.publish = function(draft) {
+        draft.element(self.byPublishButton).click();
         return self;
     };
 
