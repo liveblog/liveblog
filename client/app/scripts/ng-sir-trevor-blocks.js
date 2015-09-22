@@ -372,6 +372,7 @@ define([
                     }).html(data.credit));
                 },
                 onBlockRender: function() {
+                    var that = this;
                     // assert we have an uploader function in options
                     if (typeof(this.getOptions().uploader) !== 'function') {
                         throw 'Image block need an `uploader` function in options.';
@@ -436,6 +437,7 @@ define([
                     return this.retrieveData();
                 }
             });
+
             SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
                     var that = this;
                     // create and trigger a 'change' event for the $editor which is a contenteditable

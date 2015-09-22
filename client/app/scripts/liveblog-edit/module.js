@@ -48,8 +48,10 @@ define([
         }
 
         // remove and clean every items from the editor
-        function cleanEditor() {
+        function cleanEditor(val) {
+            val = (typeof val === 'boolean') ? val : true;
             vm.editor.reinitialize();
+            $scope.publishDisabled = val;
             $scope.currentPost = undefined;
         }
         var vm = this;
@@ -67,7 +69,7 @@ define([
             },
             openPostInEditor: function (post) {
                 function fillEditor(post) {
-                    cleanEditor();
+                    cleanEditor(false);
                     $scope.currentPost = angular.copy(post);
                     var items = post.groups[1].refs;
                     items.forEach(function(item) {
@@ -138,7 +140,9 @@ define([
                 disableSubmit: function(value) {
                     $scope.publishDisabled = value;
                     // because this is called outside of angular scope from sir-trevor.
-                    $scope.$digest();
+                    if (!$scope.$$phase) {
+                        $scope.$digest();
+                    }
                 },
                 coverMaxWidth: 350,
                 embedService: embedService,
