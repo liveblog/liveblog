@@ -140,6 +140,7 @@ function ThemesManagerPage() {
     self.blogsRows = element.all(by.repeater('blog in vm.selectedTheme.blogs'));
     self.fileThemeElement = element(by.css('#uploadAThemeFile'));
     self.byRemove = by.css('[ng-click="vm.removeTheme(theme)"]');
+    self.byPreview = by.css('[ng-click="vm.openThemePreview(theme)"]');
 
     self.openThemesManager = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
@@ -156,6 +157,14 @@ function ThemesManagerPage() {
 
     self.remove = function(theme_index) {
         self.themes.get(theme_index).element(self.byRemove).click();
+        return self;
+    };
+
+    self.openPreview = function(theme_index) {
+        self.themes.get(theme_index).element(self.byPreview).click().then(function() {
+            expect(element(by.css('.theme-preview-modal .modal-dialog')).isDisplayed()).toBe(true);
+            element(by.css('.theme-preview-modal .close')).click();
+        });
         return self;
     };
 

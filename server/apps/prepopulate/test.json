@@ -158,6 +158,7 @@
             "vendors/ng-infinite-scroll.min.js",
             "main.js"
         ],
+        "screenshot_url": "https://media.giphy.com/media/xkmQfH1TB0dLW/giphy.gif",
         "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
         "license": "AGPL-3.0",
         "options": [
