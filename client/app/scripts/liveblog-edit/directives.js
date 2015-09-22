@@ -362,12 +362,16 @@ define([
         .directive('fullHeight', ['$timeout', '$window', 'lodash', function($timeout, $window, _) {
             return {
                 restrict: 'A',
-                link: function($scope, $element) {
+                link: function($scope, $element, $attributes) {
                     // update the element height to the window height minus its vertical offset
                     function setHeight() {
                         $timeout(function() {
                             var height = $window.innerHeight - $element.offset().top;
-                            $element.css('height', height);
+                            if ($attributes.fullHeightOffsetBottom) {
+                                height -= $attributes.fullHeightOffsetBottom;
+                            }
+                            var css_name = $attributes.fullHeightUseMaxHeight ? 'max-height' : 'height';
+                            $element.css(css_name, height);
                             $element[0].focus();
                         });
                     }

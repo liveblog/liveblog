@@ -1,8 +1,9 @@
 (function() {
     'use strict';
 
-    LiveblogThemesController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q', '$sce', 'config', 'lodash', 'upload'];
-    function LiveblogThemesController($scope, api, $location, notify, gettext, $q, $sce, config, _, upload) {
+    LiveblogThemesController.$inject = ['api', '$location', 'notify', 'gettext', '$q', '$sce', 'config', 'lodash', 'upload'];
+    function LiveblogThemesController(api, $location, notify, gettext, $q, $sce, config, _, upload) {
+        var vm = this;
         /**
          * Return a collection that represent the hierachy of the themes
          * @param {array} themes
@@ -76,93 +77,10 @@
                 };
             }
         }
-        // Modal is disabled by default.
-        $scope.themeBlogsModal = false;
-        // this is used to when a blog is selected.
-        $scope.selectedBlog = false;
-        // loading indicatior for the first timeload.
-        $scope.loading = true;
-        $scope.getTheme = function(name) {
-            return _.find($scope.themes, function(theme) {
-                return theme.name === name;
-            });
-        };
-
-        $scope.isDefaultTheme = function(theme) {
-            if (angular.isDefined($scope.globalTheme)) {
-                return $scope.getTheme($scope.globalTheme.value).name === theme.name;
-            }
-        };
-
-        $scope.hasChildren = function(theme) {
-            return $scope.themes.some(function(t) {
-                return t['extends'] === theme.name;
-            });
-        };
-
-        $scope.openThemeBlogsModal = function(theme) {
-            if (theme.blogs.length) {
-                $scope.selectedTheme = theme;
-                $scope.themeBlogsModal = true;
-            }
-        };
-
-        $scope.closeThemeBlogsModal = function(theme) {
-            if ($scope.selectedBlog) {
-                $scope.selectedBlog = false;
-            } else {
-                $scope.themeBlogsModal = false;
-            }
-        };
-
-        $scope.makeDefault = function(theme) {
-            if ($scope.globalTheme) {
-                api.global_preferences.save($scope.globalTheme, {'key': 'theme', 'value': theme.name}).then(function(data) {
-                    notify.pop();
-                    notify.info(gettext('Default theme saved'));
-                    $scope.globalTheme = data;
-                });
-            } else {
-                api.global_preferences.save({'key': 'theme', 'value': theme.name}).then(function(data) {
-                    notify.pop();
-                    notify.info(gettext('Default theme saved'));
-                    $scope.globalTheme = data;
-                });
-            }
-        };
-
-        $scope.removeTheme = function(theme) {
-            api.themes.remove(angular.copy(theme)).then(function(message) {
-                notify.pop();
-                notify.info(gettext('Theme "' + theme.label + '" removed.'));
-                loadThemes();
-            }, function(error) {
-                notify.pop();
-                notify.error('An error occured. ' + error.data.error);
-                loadThemes();
-            });
-        };
-
-        $scope.switchBlogPreview = function(blog) {
-            $scope.selectedBlog = blog;
-            $scope.selectedBlog.iframe_url = $sce.trustAsResourceUrl(
-                blog.public_url || config.server.url.replace('/api', '/embed/' + blog._id
-            ));
-        };
-
-        $scope.save = function() {
-            notify.pop();
-            notify.info(gettext('Saving changes'));
-        };
-        $scope.close = function() {
-            //return to blog list page
-            $location.path('/liveblog/');
-        };
-
         function loadThemes() {
             // load only global preference for themes.
             api.global_preferences.query({'where': {'key': 'theme'}}).then(function(global_preferences) {
-                $scope.globalTheme = _.find(global_preferences._items, function(item) {
+                vm.globalTheme = _.find(global_preferences._items, function(item) {
                     return item.key === 'theme';
                 });
             });
@@ -187,7 +105,7 @@
                 // object that represent the themes hierachy
                 var themes_hierachy = getHierachyFromThemesCollection(themes);
                 // update the scope
-                angular.extend($scope, {
+                angular.extend(vm, {
                     themesHierachy: themes_hierachy,
                     themes: themes,
                     loading: false
@@ -195,27 +113,110 @@
                 return themes;
             });
         }
-
-        $scope.uploadThemeFile = function(e) {
-            notify.pop();
-            notify.info('Uploading the theme...');
-            api.themes.getUrl().then(function(url) {
-                upload.start({
-                    method: 'POST',
-                    url: url.replace('themes', 'theme-upload'),
-                    data: {media: e.files[0]}
-                })
-                .then(function(response) {
-                    loadThemes().then(function() {
+        angular.extend(vm, {
+            // Modal is disabled by default.
+            themeBlogsModal: false,
+            // this is used to when a blog is selected.
+            selectedBlog: false,
+            // loading indicatior for the first timeload.
+            loading: true,
+            getTheme: function(name) {
+                return _.find(vm.themes, function(theme) {
+                    return theme.name === name;
+                });
+            },
+            isDefaultTheme: function(theme) {
+                if (angular.isDefined(vm.globalTheme)) {
+                    return vm.getTheme(vm.globalTheme.value).name === theme.name;
+                }
+            },
+            hasChildren: function(theme) {
+                return vm.themes.some(function(t) {
+                    return t['extends'] === theme.name;
+                });
+            },
+            openThemeBlogsModal: function(theme) {
+                if (theme.blogs.length) {
+                    vm.selectedTheme = theme;
+                    vm.themeBlogsModal = true;
+                }
+            },
+            closeThemeBlogsModal: function(theme) {
+                if (vm.selectedBlog) {
+                    vm.selectedBlog = false;
+                } else {
+                    vm.themeBlogsModal = false;
+                }
+            },
+            makeDefault: function(theme) {
+                if (vm.globalTheme) {
+                    api.global_preferences.save(vm.globalTheme, {'key': 'theme', 'value': theme.name}).then(function(data) {
                         notify.pop();
-                        notify.info('Theme uploaded and added');
+                        notify.info(gettext('Default theme saved'));
+                        vm.globalTheme = data;
                     });
+                } else {
+                    api.global_preferences.save({'key': 'theme', 'value': theme.name}).then(function(data) {
+                        notify.pop();
+                        notify.info(gettext('Default theme saved'));
+                        vm.globalTheme = data;
+                    });
+                }
+            },
+            removeTheme: function(theme) {
+                api.themes.remove(angular.copy(theme)).then(function(message) {
+                    notify.pop();
+                    notify.info(gettext('Theme "' + theme.label + '" removed.'));
+                    loadThemes();
                 }, function(error) {
                     notify.pop();
-                    notify.error(error.data.error);
+                    notify.error('An error occured. ' + error.data.error);
+                    loadThemes();
                 });
-            });
-        };
+            },
+            switchBlogPreview: function(blog) {
+                vm.selectedBlog = blog;
+                vm.selectedBlog.iframe_url = $sce.trustAsResourceUrl(
+                    blog.public_url || config.server.url.replace('/api', '/embed/' + blog._id
+                ));
+            },
+            save: function() {
+                notify.pop();
+                notify.info(gettext('Saving changes'));
+            },
+            close: function() {
+                //return to blog list page
+                $location.path('/liveblog/');
+            },
+            uploadThemeFile: function(e) {
+                notify.pop();
+                notify.info('Uploading the theme...');
+                api.themes.getUrl().then(function(url) {
+                    upload.start({
+                        method: 'POST',
+                        url: url.replace('themes', 'theme-upload'),
+                        data: {media: e.files[0]}
+                    })
+                    .then(function(response) {
+                        loadThemes().then(function() {
+                            notify.pop();
+                            notify.info('Theme uploaded and added');
+                        });
+                    }, function(error) {
+                        notify.pop();
+                        notify.error(error.data.error);
+                    });
+                });
+            },
+            themePreviewModal: false,
+            openThemePreview: function(theme) {
+                if (!theme.screenshot_url) {
+                    return false;
+                }
+                vm.themePreviewModal = true;
+                vm.themePreviewModalTheme = theme;
+            }
+        });
 
         loadThemes();
     }
@@ -226,6 +227,7 @@
             .activity('/themes/', {
                 label: gettext('Theme Manager'),
                 controller: LiveblogThemesController,
+                controllerAs: 'vm',
                 category: superdesk.MENU_MAIN,
                 privileges: {'global_preferences': 1},
                 templateUrl: 'scripts/liveblog-themes/views/list.html'
