@@ -48,10 +48,10 @@ define([
         }
 
         // remove and clean every items from the editor
-        function cleanEditor(val) {
-            val = (typeof val === 'boolean') ? val : true;
+        function cleanEditor(publishDisabled) {
+            publishDisabled = (typeof publishDisabled === 'boolean') ? publishDisabled : true;
             vm.editor.reinitialize();
-            $scope.publishDisabled = val;
+            $scope.publishDisabled = publishDisabled;
             $scope.currentPost = undefined;
         }
         var vm = this;
@@ -137,8 +137,8 @@ define([
                 $route.updateParams({panel: $scope.panelState});
             },
             stParams: {
-                disableSubmit: function(value) {
-                    $scope.publishDisabled = value;
+                disableSubmit: function(publishDisabled) {
+                    $scope.publishDisabled = publishDisabled;
                     // because this is called outside of angular scope from sir-trevor.
                     if (!$scope.$$phase) {
                         $scope.$digest();
