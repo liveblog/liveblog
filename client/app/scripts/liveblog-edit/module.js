@@ -59,6 +59,7 @@ define([
         // define the $scope
         angular.extend($scope, {
             blog: blog,
+            iframe_url: blogService.getIframe(blog),
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
@@ -271,9 +272,7 @@ define([
                 }
                 vm.tab = tab;
             },
-            // take the public url (from s3) or the local address
-            // FIXME: The local address shouldn't be given on production mode
-            iframe_url: blog.public_url || config.server.url.replace('/api', '/embed/' + blog._id),
+            iframe_url: blogService.getIframe(blog),
             setFormsPristine: function() {
                 if (vm.forms.dirty) {
                     vm.forms.dirty = false;
