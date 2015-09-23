@@ -535,7 +535,7 @@ function BlogSettingsPage(blog) {
     };
 
     self.changeToOwner = function(index) {
-        index = index || 1;
+        index = index || 2;
         element(by.repeater('user in settings.avUsers').row(index).column('user.display_name')).click();
         return self;
     };

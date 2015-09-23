@@ -484,7 +484,7 @@ define([
             return $rootScope.currentUser.user_type === 'administrator';
         }
         function isUserOwnerOrAdmin(archive) {
-            return $rootScope.currentUser._id === archive.original_creator || isAdmin();
+            return ($rootScope.currentUser._id === archive.original_creator && privileges.userHasPrivileges({'blogs': 1})) || isAdmin();
         }
         function goToSettings() {
             var def = $q.defer();
