@@ -29,8 +29,11 @@ define([
                     angular.extend(vm, {
                         isLoading: true,
                         blogId: $scope.lbPostsBlogId,
-                        allowUnpublish: $scope.lbPostsAllowUnpublish,
+                        allowUnpublishing: $scope.lbPostsAllowUnpublishing,
                         allowReordering: $scope.lbPostsAllowReordering,
+                        allowEditing: $scope.lbPostsAllowEditing,
+                        allowDeleting: $scope.lbPostsAllowDeleting,
+                        allowPublishing: $scope.lbPostsAllowPublishing,
                         onPostSelected: $scope.lbPostsOnPostSelected,
                         showReorder: false,
                         hideAllPosts: false,
@@ -128,8 +131,11 @@ define([
                         lbPostsBlogId: '=',
                         lbPostsStatus: '@',
                         lbPostsOrderBy: '@',
-                        lbPostsAllowUnpublish: '=',
+                        lbPostsAllowUnpublishing: '=',
                         lbPostsAllowReordering: '=',
+                        lbPostsAllowEditing: '=',
+                        lbPostsAllowDeleting: '=',
+                        lbPostsAllowPublishing: '=',
                         lbPostsOnPostSelected: '=',
                         lbPostsInstance: '='
                     },
@@ -152,19 +158,37 @@ define([
                         reorderPost: '=',
                         //the order property of the post that was reordered and should stay highlighted a bit more
                         keepHighlighted: '=',
-                        allowUnpublish: '=',
-                        allowReordering: '=',
                         //call when the user clicks on the reorder icon
                         startReorder: '&',
                         //call when the user has chosen a new place for the post
                         reorder: '&',
                         //the index of the post in the list
-                        index: '='
+                        index: '=',
+                        // the controller of parent posts list directive
+                        postsListCtrl: '='
                     },
                     restrict: 'E',
                     templateUrl: 'scripts/liveblog-edit/views/post.html',
                     link: function(scope, elem, attrs) {
+
+                        function changePostStatus(post, status) {
+                            // don't save the original post coming for the posts list, because it needs
+                            // to conserve its original update date in the posts list directive
+                            // in order to retrieve updates from this date (if latest)
+                            post = angular.copy(post);
+                            // save the post with the new status
+                            return postsService.savePost(post.blog, post, undefined, {post_status: status});
+                        }
+
                         angular.extend(scope, {
+                            functionize: function (obj) {
+                                if (typeof(obj) !== 'function') {
+                                    return function() {
+                                        return obj;
+                                    };
+                                }
+                                return obj;
+                            },
                             isAbleToEditContribution: function(post) {
                                 return blogSecurityService.canPublishAPost() || blogSecurityService.isUserOwner(post);
                             },
@@ -193,14 +217,18 @@ define([
                                     });
                             },
                             unpublishPost: function(post) {
-                                // don't save the original post coming for the posts list, because it needs
-                                // to conserve its original update date in the posts list directive
-                                // in order to retrieve updates from this date (if latest)
-                                post = angular.copy(post);
-                                // save the post as draft
-                                postsService.saveDraft(post.blog, post).then(function(post) {
+                                changePostStatus(post, 'submitted').then(function(post) {
                                     notify.pop();
-                                    notify.info(gettext('Post saved as draft'));
+                                    notify.info(gettext('Post saved as contribution'));
+                                }, function() {
+                                    notify.pop();
+                                    notify.error(gettext('Something went wrong. Please try again later'));
+                                });
+                            },
+                            publishPost: function(post) {
+                                changePostStatus(post, 'open').then(function(post) {
+                                    notify.pop();
+                                    notify.info(gettext('Post published'));
                                 }, function() {
                                     notify.pop();
                                     notify.error(gettext('Something went wrong. Please try again later'));
@@ -334,12 +362,16 @@ define([
         .directive('fullHeight', ['$timeout', '$window', 'lodash', function($timeout, $window, _) {
             return {
                 restrict: 'A',
-                link: function($scope, $element) {
+                link: function($scope, $element, $attributes) {
                     // update the element height to the window height minus its vertical offset
                     function setHeight() {
                         $timeout(function() {
                             var height = $window.innerHeight - $element.offset().top;
-                            $element.css('height', height);
+                            if ($attributes.fullHeightOffsetBottom) {
+                                height -= $attributes.fullHeightOffsetBottom;
+                            }
+                            var css_name = $attributes.fullHeightUseMaxHeight ? 'max-height' : 'height';
+                            $element.css(css_name, height);
                             $element[0].focus();
                         });
                     }
