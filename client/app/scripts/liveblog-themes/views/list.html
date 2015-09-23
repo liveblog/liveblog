@@ -41,7 +41,7 @@
                                 </dd>
                                 <dt>{{ ::'No. of blogs using theme' | translate }}:</dt>
                                 <dd>
-                                    <a ng-click="openThemeBlogsModal(theme)" ng-if="theme.blogs_count > 0">
+                                    <a ng-click="vm.openThemeBlogsModal(theme)" ng-if="theme.blogs_count > 0">
                                         <span translate translate-n="::theme.blogs_count" translate-plural="{{::theme.blogs_count}} blogs">1 blog</span>
                                     </a>
                                     <span ng-if="theme.blogs_count === 0">0 <span translate>blogs</span></span>
