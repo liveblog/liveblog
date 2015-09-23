@@ -20,6 +20,8 @@
             <i class="big-icon-editor" alt="editor"></i>
         </button>
         <button class="navbtn" ng-click="openPanel('contributions')" ng-class="{'active': panelState === 'contributions'}">
+        {{ panelState }}
+            <span class="label label-info circle small notification-counter" ng-if="unreadContributions > 0">{{ ::unreadContributions }}</span>
             <i class="big-icon-contributions" alt="contributions"></i>
         </button>
         <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}">
@@ -44,6 +46,8 @@
                           lb-posts-allow-editing="true"
                           lb-posts-allow-deleting="true"
                           lb-posts-on-post-selected="openPostInEditor"
+                          lb-panel-state="panelState"
+                          lb-unread-contributions="unreadContributions"
                         >
                             <p>You don't have any draft yet.</p>
                             <p>
