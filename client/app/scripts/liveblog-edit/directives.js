@@ -189,9 +189,6 @@ define([
                                 }
                                 return obj;
                             },
-                            isAbleToEditContribution: function(post) {
-                                return blogSecurityService.canPublishAPost() || blogSecurityService.isUserOwner(post);
-                            },
                             toggleMultipleItems: function() {
                                 scope.show_all = !scope.show_all;
                             },
