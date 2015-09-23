@@ -41,9 +41,11 @@
                                 </dd>
                                 <dt>{{ ::'No. of blogs using theme' | translate }}:</dt>
                                 <dd>
-                                    <a ng-click="vm.openThemeBlogsModal(theme)">
-                                        {{ ::theme.blogs_count }}
+                                    <a ng-click="vm.openThemeBlogsModal(theme)" ng-if="theme.blogs_count > 0">
+                                        <span translate translate-n="::theme.blogs_count" translate-plural="<span data-name='noOfBlogs'>{{::theme.blogs_count}}</span> blogs">
+                                        <span data-name='noOfBlogs'>1 blog</span></span>
                                     </a>
+                                    <span ng-if="theme.blogs_count === 0"><span data-name='noOfBlogs'>0</span> <span translate>blogs</span></span>
                                 </dd>
                                 <dt>{{ ::'Copyright' | translate }}:</dt>
                                 <dd>{{ ::theme.license }}</dd>
