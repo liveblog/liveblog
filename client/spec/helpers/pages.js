@@ -137,9 +137,10 @@ function BlogsPage() {
 function ThemesManagerPage() {
     var self = this;
     self.themes = element.all(by.css('.theme'));
-    self.blogsRows = element.all(by.repeater('blog in selectedTheme.blogs'));
+    self.blogsRows = element.all(by.repeater('blog in vm.selectedTheme.blogs'));
     self.fileThemeElement = element(by.css('#uploadAThemeFile'));
-    self.byRemove = by.css('[ng-click="removeTheme(theme)"]');
+    self.byRemove = by.css('[ng-click="vm.removeTheme(theme)"]');
+    self.byPreview = by.css('[ng-click="vm.openThemePreview(theme)"]');
 
     self.openThemesManager = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
@@ -151,7 +152,7 @@ function ThemesManagerPage() {
     };
 
     self.setAsDefault = function(theme_index) {
-        return self.themes.get(theme_index).element(by.css('[ng-click="makeDefault(theme)"]')).click();
+        return self.themes.get(theme_index).element(by.css('[ng-click="vm.makeDefault(theme)"]')).click();
     };
 
     self.remove = function(theme_index) {
@@ -159,9 +160,17 @@ function ThemesManagerPage() {
         return self;
     };
 
+    self.openPreview = function(theme_index) {
+        self.themes.get(theme_index).element(self.byPreview).click().then(function() {
+            expect(element(by.css('.theme-preview-modal .modal-dialog')).isDisplayed()).toBe(true);
+            element(by.css('.theme-preview-modal .close')).click();
+        });
+        return self;
+    };
+
     self.expectTheme = function(index, params) {
         var theme = self.themes.get(index);
-        var number_of_blog_elmt = theme.element(by.css('[ng-click="openThemeBlogsModal(theme)"]'));
+        var number_of_blog_elmt = theme.element(by.css('[ng-click="vm.openThemeBlogsModal(theme)"]'));
         // check if it is the default theme
         expect(theme.element(by.css('.default-theme')).isDisplayed()).toBe(params.is_default_theme);
         // check if the name match
@@ -178,7 +187,7 @@ function ThemesManagerPage() {
         }
         // check if the number of row matchs
         expect(self.blogsRows.count()).toBe(params.number_of_blogs_expected);
-        var close_modal = element(by.css('[ng-click="closeThemeBlogsModal()"]'));
+        var close_modal = element(by.css('[ng-click="vm.closeThemeBlogsModal()"]'));
         close_modal.isPresent().then(function(is_present) {
             if (is_present) {
                 close_modal.click();
@@ -232,6 +241,7 @@ function AbstractPanelPage(blog) {
     self.column = element(by.css(self._class_name));
     self.byPosts = by.repeater('post in postsList.pagesManager.allPosts()');
     self.byEditButton = by.css('[ng-click="onEditClick(post)"]');
+    self.byPublishButton = by.css('[ng-click="publishPost(post)"]');
 
     self.get = function(index) {
         return self.column.element(self.byPosts.row(index));
@@ -254,30 +264,51 @@ function AbstractPanelPage(blog) {
         return self;
     };
 
+    self.publish = function(draft) {
+        draft.element(self.byPublishButton).click();
+        return self;
+    };
+
     self.expectPost = function(index, data) {
         expect(self.get(index).element(by.css('[html-content]')).getText()).toContain(data);
         return self;
     };
 }
 
+DraftsPage.prototype = Object.create(AbstractPanelPage.prototype);
 function DraftsPage(blog) {
     var self = this;
     self._class_name = '.panel--draft';
     AbstractPanelPage.call(self);
 }
-DraftsPage.prototype = Object.create(AbstractPanelPage.prototype);
 
+ContributionsPage.prototype = Object.create(AbstractPanelPage.prototype);
 function ContributionsPage(blog) {
     var self = this;
     self._class_name = '.panel--contribution';
+    self.byFilterBox = by.css('.dropdown-content');
+    self.validFilterButton = element(self.byFilterBox).element(by.buttonText('SELECT'));
     AbstractPanelPage.call(self);
+
+    self.openFiterByMember = function() {
+        return self.column.element(by.css('.btn--plus')).click();
+    };
+
+    self.filterByMember = function(member_name) {
+        return self.openFiterByMember().then(function() {
+            element(self.byFilterBox)
+            .element(by.css('[data-username="' + member_name + '"]'))
+            .click().then(function() {
+                return self.validFilterButton.click();
+            });
+        });
+    };
 }
-ContributionsPage.prototype = Object.create(AbstractPanelPage.prototype);
 
 function TimelinePage(blog) {
     var self = this;
     self.blog = blog;
-    self.column = element(by.css('.column-timeline'));
+    self.column = element(by.css('.column--timeline'));
     self.byPosts = by.repeater('post in posts');
     self.byEdit = by.css('[ng-click="onEditClick(post)"]');
     self.byUnpublish = by.css('[ng-click="unpublishPost(post)"]');
@@ -522,6 +553,12 @@ function BlogSettingsPage(blog) {
     self.doneTeamEdit = function() {
         element(by.css('[ng-click="settings.doneTeamEdit()"')).click();
         return self;
+    };
+
+    self.removeBlog = function() {
+        element(by.buttonText('REMOVE BLOG')).click().then(function() {
+            element(by.css('.btn-primary')).click();
+        });
     };
 }
 

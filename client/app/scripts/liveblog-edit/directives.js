@@ -19,38 +19,6 @@ define([
     'use strict';
 
     angular.module('liveblog.edit')
-        // * SLIDEABLE
-        // *  used for left side bar
-        // *   - slideable: take a boolean, true to be opened
-        // *   - slideableMove: take the other element to be right-moved
-        .directive('slideable', function() {
-            return {
-                restrict: 'A',
-                scope: {
-                    'slideableMove': '@',
-                    'slideable': '='
-                },
-                link: function(scope, element, attrs) {
-                    var old_left = parseInt(element.css('left'), 10);
-                    var to_be_moved = angular.element(document.querySelectorAll(scope.slideableMove));
-                    var panel_width = element.width();
-                    function toggleSlide() {
-                        if (scope.slideable) {
-                            element.show();
-                            to_be_moved.css({
-                                left: panel_width + old_left
-                            });
-                        } else {
-                            element.hide();
-                            to_be_moved.css({
-                                left: old_left
-                            });
-                        }
-                    }
-                    scope.$watch('slideable', toggleSlide);
-                }
-            };
-        })
         .directive('lbPostsList', [
             'postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager',
             function(postsService, notify, $q, $timeout, session, PagesManager) {
@@ -61,9 +29,11 @@ define([
                     angular.extend(vm, {
                         isLoading: true,
                         blogId: $scope.lbPostsBlogId,
-                        emptyMessage: $scope.lbPostsEmptyMessage,
-                        allowUnpublish: $scope.lbPostsAllowUnpublish,
+                        allowUnpublishing: $scope.lbPostsAllowUnpublishing,
                         allowReordering: $scope.lbPostsAllowReordering,
+                        allowEditing: $scope.lbPostsAllowEditing,
+                        allowDeleting: $scope.lbPostsAllowDeleting,
+                        allowPublishing: $scope.lbPostsAllowPublishing,
                         onPostSelected: $scope.lbPostsOnPostSelected,
                         showReorder: false,
                         hideAllPosts: false,
@@ -127,6 +97,16 @@ define([
                         },
                         isPostsEmpty: function() {
                             return vm.pagesManager.count() < 1 && !vm.isLoading;
+                        },
+                        isFilterEnable: function() {
+                            return vm.pagesManager.authors.length > 0;
+                        },
+                        setAuthorFilter: function(users) {
+                            vm.authorFilters = users;
+                            vm.isLoading = true;
+                            return vm.pagesManager.setAuthors(users.map(function(user) {return user._id;})).then(function() {
+                                vm.isLoading = false;
+                            });
                         }
                     });
                     $scope.lbPostsInstance = vm;
@@ -151,13 +131,16 @@ define([
                         lbPostsBlogId: '=',
                         lbPostsStatus: '@',
                         lbPostsOrderBy: '@',
-                        lbPostsEmptyMessage: '@',
-                        lbPostsAllowUnpublish: '=',
+                        lbPostsAllowUnpublishing: '=',
                         lbPostsAllowReordering: '=',
+                        lbPostsAllowEditing: '=',
+                        lbPostsAllowDeleting: '=',
+                        lbPostsAllowPublishing: '=',
                         lbPostsOnPostSelected: '=',
                         lbPostsInstance: '='
                     },
                     restrict: 'EA',
+                    transclude: true,
                     templateUrl: 'scripts/liveblog-edit/views/posts.html',
                     controllerAs: 'postsList',
                     controller: LbPostsListCtrl
@@ -175,19 +158,37 @@ define([
                         reorderPost: '=',
                         //the order property of the post that was reordered and should stay highlighted a bit more
                         keepHighlighted: '=',
-                        allowUnpublish: '=',
-                        allowReordering: '=',
                         //call when the user clicks on the reorder icon
                         startReorder: '&',
                         //call when the user has chosen a new place for the post
                         reorder: '&',
                         //the index of the post in the list
-                        index: '='
+                        index: '=',
+                        // the controller of parent posts list directive
+                        postsListCtrl: '='
                     },
                     restrict: 'E',
                     templateUrl: 'scripts/liveblog-edit/views/post.html',
                     link: function(scope, elem, attrs) {
+
+                        function changePostStatus(post, status) {
+                            // don't save the original post coming for the posts list, because it needs
+                            // to conserve its original update date in the posts list directive
+                            // in order to retrieve updates from this date (if latest)
+                            post = angular.copy(post);
+                            // save the post with the new status
+                            return postsService.savePost(post.blog, post, undefined, {post_status: status});
+                        }
+
                         angular.extend(scope, {
+                            functionize: function (obj) {
+                                if (typeof(obj) !== 'function') {
+                                    return function() {
+                                        return obj;
+                                    };
+                                }
+                                return obj;
+                            },
                             isAbleToEditContribution: function(post) {
                                 return blogSecurityService.canPublishAPost() || blogSecurityService.isUserOwner(post);
                             },
@@ -216,14 +217,18 @@ define([
                                     });
                             },
                             unpublishPost: function(post) {
-                                // don't save the original post coming for the posts list, because it needs
-                                // to conserve its original update date in the posts list directive
-                                // in order to retrieve updates from this date (if latest)
-                                post = angular.copy(post);
-                                // save the post as draft
-                                postsService.saveDraft(post.blog, post).then(function(post) {
+                                changePostStatus(post, 'submitted').then(function(post) {
                                     notify.pop();
-                                    notify.info(gettext('Post saved as draft'));
+                                    notify.info(gettext('Post saved as contribution'));
+                                }, function() {
+                                    notify.pop();
+                                    notify.error(gettext('Something went wrong. Please try again later'));
+                                });
+                            },
+                            publishPost: function(post) {
+                                changePostStatus(post, 'open').then(function(post) {
+                                    notify.pop();
+                                    notify.info(gettext('Post published'));
                                 }, function() {
                                     notify.pop();
                                     notify.error(gettext('Something went wrong. Please try again later'));
@@ -268,6 +273,116 @@ define([
                             elem.html(attrs.htmlContent);
                         }
                     });
+                }
+            };
+        }])
+        .directive('lbFilterByMember', ['api', function(api) {
+            return {
+                restrict: 'E',
+                scope: {
+                    blogId: '=',
+                    onFilterChange: '='
+                },
+                templateUrl: 'scripts/liveblog-edit/views/filter-by-member.html',
+                controllerAs: 'vm',
+                controller: ['$scope', function($scope) {
+                    var vm = this;
+                    angular.extend(vm, {
+                        members: [],
+                        openSelector: false,
+                        preselectedUsers: [],
+                        selectedUsers: [],
+                        findUserInPreselection: function(user_id) {
+                            return _.find(vm.preselectedUsers, function(user) {
+                                return user._id === user_id;
+                            });
+                        },
+                        toggleUserInPreselection: function(user) {
+                            var old_user = vm.findUserInPreselection(user._id);
+                            if (old_user) {
+                                vm.preselectedUsers.splice(vm.preselectedUsers.indexOf(old_user), 1);
+                            } else {
+                                vm.preselectedUsers.push(user);
+                            }
+                        },
+                        isUserInPreselection: function(user) {
+                            return vm.findUserInPreselection(user._id);
+                        },
+                        confirmPreselection: function() {
+                            vm.updateFilters(angular.copy(vm.preselectedUsers));
+                        },
+                        updateFilters: function(fitlers) {
+                            vm.selectedUsers = fitlers;
+                            $scope.onFilterChange(vm.selectedUsers);
+                        },
+                        clearSelection: function() {
+                            vm.updateFilters([]);
+                        },
+                        removeUserFromSelection: function(user) {
+                            var filters = angular.copy(vm.selectedUsers);
+                            filters.splice(vm.selectedUsers.indexOf(user), 1);
+                            vm.updateFilters(filters);
+                        },
+                        toggleSelector: function() {
+                            vm.openSelector = !vm.openSelector;
+                            if (vm.openSelector) {
+                                // clear the search input
+                                vm.search = '';
+                                // preset the preselection to the current selection
+                                vm.preselectedUsers = angular.copy(vm.selectedUsers);
+                                // retrieve blog information to know the owner and the members
+                                api('blogs').getById($scope.blogId).then(function(blog) {
+                                    // add the owner
+                                    var ids = [blog.original_creator];
+                                    // add the members
+                                    if (blog.members) {
+                                        ids.push.apply(ids, blog.members.map(function(member) {return member.user;}));
+                                    }
+                                    // retrieve information about these users and list them in the view
+                                    api('users').query({where: {_id: {$in: ids}}}).then(function(data) {
+                                        vm.members = data._items;
+                                    });
+                                });
+                            }
+                        }
+                    });
+                }]
+            };
+        }])
+        .directive('autofocus', ['$timeout', function($timeout) {
+            return {
+                restrict: 'A',
+                link: function($scope, $element) {
+                    $timeout(function() {
+                        $element[0].focus();
+                    });
+                }
+            };
+        }])
+        .directive('fullHeight', ['$timeout', '$window', 'lodash', function($timeout, $window, _) {
+            return {
+                restrict: 'A',
+                link: function($scope, $element, $attributes) {
+                    // update the element height to the window height minus its vertical offset
+                    function setHeight() {
+                        $timeout(function() {
+                            var height = $window.innerHeight - $element.offset().top;
+                            if ($attributes.fullHeightOffsetBottom) {
+                                height -= $attributes.fullHeightOffsetBottom;
+                            }
+                            var css_name = $attributes.fullHeightUseMaxHeight ? 'max-height' : 'height';
+                            $element.css(css_name, height);
+                            $element[0].focus();
+                        });
+                    }
+                    // initialize
+                    setHeight();
+                    // update when the window size changes
+                    angular.element($window).on('resize', _.debounce(setHeight, 500));
+                    // update when offset changes
+                    $scope.$watch(function() {
+                        return $element.offset().top;
+                    }, _.debounce(setHeight, 500));
                 }
             };
         }]);

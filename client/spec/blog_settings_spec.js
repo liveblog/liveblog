@@ -5,20 +5,7 @@ var login = require('../app/scripts/bower_components/superdesk/client/spec/helpe
 describe('Blog settings', function() {
     'use strict';
 
-    // FIXME: must be uncommented after release (LBSD-546) * must change to support pageObject
-    // var DEFAULT_LANGUAGE = 'english';
-    // var NEW_LANGUAGE = 'french';
-
     beforeEach(function(done) {login('editor', 'editor').then(done);});
-
-    // FIXME: must be uncommented after release (LBSD-546) * must change to support pageObject
-    // function expectSelectedLanguageIs(language) {
-    //     expect(element(by.model('settings.blogPreferences.language')).$('option:checked').getText()).toEqual(language);
-    // }
-
-    // function setLanguage(language) {
-    //     element(by.model('settings.blogPreferences.language')).sendKeys(language);
-    // }
 
     it('should modify title and description for blog', function() {
         var blog = blogs.cloneBlog(0);
@@ -62,55 +49,6 @@ describe('Blog settings', function() {
             .expectBlog(blog);
     });
 
-    // FIXME: must be uncommented after release (LBSD-546) * must change to support pageObject
-    // it('shows the default language selected', function() {
-    //     openBlog(0);
-    //     openSettings();
-    //     expectSelectedLanguageIs(DEFAULT_LANGUAGE);
-    // });
-
-    // it('shows the default language selected', function() {
-    //     openBlog(0);
-    //     openSettings();
-    //     expectSelectedLanguageIs(DEFAULT_LANGUAGE);
-    // });
-
-    // it('save a new value for language', function() {
-    //     openBlog(0);
-    //     openSettings();
-    //     setLanguage(NEW_LANGUAGE);
-    //     // save
-    //     element(by.css('[ng-click="settings.saveAndClose()"]')).click();
-    //     openSettings();
-    //     expectSelectedLanguageIs(NEW_LANGUAGE);
-    // });
-
-    // it('reset default language value', function() {
-    //     openBlog(0);
-    //     openSettings();
-    //     setLanguage(NEW_LANGUAGE);
-    //     // save a new value
-    //     element(by.css('[ng-click="settings.saveAndClose()"]')).click();
-    //     openSettings();
-    //     expectSelectedLanguageIs(NEW_LANGUAGE);
-    //     // reset
-    //     element(by.css('[ng-click="settings.reset()"]')).click();
-    //     expectSelectedLanguageIs(DEFAULT_LANGUAGE);
-    // });
-
-    // it('cancel changed language', function() {
-    //     openBlog(0);
-    //     openSettings();
-    //     setLanguage(NEW_LANGUAGE);
-    //     // cancel
-    //     element(by.css('[ng-click="settings.close()"]')).click();
-    //     browser.wait(function() {
-    //         return element(by.css('.modal-footer.ng-scope')).isDisplayed();
-    //     });
-    //     element(by.css('button[ng-click="ok()"')).sendKeys(protractor.Key.ENTER);
-    //     openSettings();
-    //     expectSelectedLanguageIs(DEFAULT_LANGUAGE);
-    // });
     it('shows original creator full name and username', function() {
         blogs.openBlog(0).openSettings().openTeam();
         blogs.blog.settings.displayName.getText().then(function(text) {
@@ -156,29 +94,29 @@ describe('Blog settings', function() {
             .expectBlog(blog);
     });
 
-    it('changes blog ownership', function() {
+    it('changes blog ownership and admin can open settings for any blog', function() {
         blogs.openBlog(0).openSettings().openTeam()
                             .changeOwner()
                             .changeToOwner()
                             .selectOwner()
                             .done();
-
-        browser.driver.manage().window().setSize(1280, 1024);
+        browser.waitForAngular();
         browser.get('/');
-        element(by.css('button.current-user')).click();
-        browser.waitForAngular();
-        element(by.buttonText('SIGN OUT')).click();
         browser.sleep(2000); // it reloads page
+        var blog = blogs.openBlog(0);
         browser.waitForAngular();
-        browser.sleep(2000); // it reloads page
-        login('test_user', 'test_password').then(function() {
-            browser.waitForAngular();
-            var blog = blogs.openBlog(0);
-            browser.waitForAngular();
-            blog.openSettings().openTeam();
-            blogs.blog.settings.userName.getText().then(function(text) {
-                expect(text).toEqual('test_user');
-            });
+        blog.openSettings().openTeam();
+        blogs.blog.settings.userName.getText().then(function(text) {
+            expect(text).toEqual('test_user');
         });
+    });
+
+    it('remove a blog', function() {
+        blogs.expectCount(4);
+        blogs.openBlog(0).openSettings().removeBlog();
+        browser.waitForAngular();
+        browser.get('/');
+        browser.sleep(2000); // it reloads page
+        blogs.expectCount(3);
     });
 });

@@ -661,3 +661,31 @@ Feature: Post operations
         """
         {"post_status": "draft", "published_date": "", "blog": "#blogs._id#", "headline": "my draft will be published", "unpublished_date":""}
         """
+        
+	@auth
+    Scenario: Published date on posts comming from submitted contributions
+        Given "roles"
+        """
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
+        """
+        Given we have "Editor" role
+        Given we have "user" as type of user
+        Given "blogs"
+        """
+        [{"title": "test_blog3"}]
+        """
+        Given "posts"
+        """
+        [{"headline": "my contribution will be published", "post_status": "submitted", "blog": "#blogs._id#"}]
+        """
+        When we patch given
+        """
+        {
+            "post_status": "open"
+        }
+        """
+        Then we get new resource
+        """
+        {"post_status": "open", "published_date": "", "blog": "#blogs._id#", "headline": "my contribution will be published"}
+        """
+

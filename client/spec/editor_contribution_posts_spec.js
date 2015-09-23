@@ -25,6 +25,17 @@ describe('Contributions Posts', function() {
             .expectPost(1, contrib1.quote);
     });
 
+    it('can publish a contribution', function() {
+        var blog = blogs.openBlog(0);
+        blog.editor.createContribution();
+        var contributions = blog.openContributions();
+        var first_contrib = contributions.get(0);
+        contributions.publish(first_contrib);
+        expect(blogs.blog.timeline.get(0).isPresent()).toBe(true);
+        blog.openContributions();
+        expect(contributions.all().count()).toBe(0);
+    });
+
     it('can open a contributions in the editor and publish it', function() {
         var blog = blogs.openBlog(0);
         var contrib = blog.editor.createContribution();
@@ -75,9 +86,18 @@ describe('Contributions Posts', function() {
             var contributions = blogs.openBlog(0).openContributions();
             browser.wait(function() {
                 return element(contributions.byPosts).isPresent();
-            });
+            }, 5000);
             contributions.expectPost(0, contrib.quote);
             expect(contributions.editButtonIsPresent(contributions.get(0))).toBe(false);
+        });
+    });
+
+    it('filter contributions by member', function() {
+        var contributions = blogs.openBlog(3).openContributions();
+        contributions.expectPost(0, 'admin\'s contribution');
+        contributions.expectPost(1, 'editor\'s contribution');
+        contributions.filterByMember('editor').then(function() {
+            contributions.expectPost(0, 'editor\'s contribution');
         });
     });
 });

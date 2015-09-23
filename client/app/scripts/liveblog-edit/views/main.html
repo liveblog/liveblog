@@ -5,7 +5,7 @@
         </a>
     </div>
     <h3 class="page-nav-title">{{ blog.title }}</h3>
-    <div class="button-stack right-stack" ng-if="blogSecurityService.isUserOwner(blog)">
+    <div class="button-stack right-stack" ng-if="blogSecurityService.isUserOwnerOrAdmin(blog)">
         <a class="navbtn settings-link" ng-href="#/liveblog/settings/{{::blog._id}}">
             <i class="svg-icon-settings"></i>
         </a>
@@ -39,28 +39,53 @@
                           lb-posts-blog-id="blog._id"
                           lb-posts-status="draft"
                           lb-posts-order-by="updated_first"
-                          lb-posts-empty-message="<p>You don't have any draft yet.</p><p>To create one, start to compose your post and click on the &#34;SAVE AS DRAFT&#34; button. You will be able to re-open it later in the editor.</p>"
-                          lb-posts-allow-unpublish="false"
+                          lb-posts-allow-unpublishing="false"
                           lb-posts-allow-reordering="false"
+                          lb-posts-allow-editing="true"
+                          lb-posts-allow-deleting="true"
                           lb-posts-on-post-selected="openPostInEditor"
                         >
+                            <p>You don't have any draft yet.</p>
+                            <p>
+                                To create one, start to compose your post and click on the &#34;SAVE AS DRAFT&#34; button.
+                                You will be able to re-open it later in the editor.
+                            </p>
                         </lb-posts-list>
                     </div>
                 </div>
                 <!-- contributions -->
                 <div class="panel panel--contribution" ng-if="panelState === 'contributions'">
                     <header>Contributions</header>
-                    <div class="content" lr-infinite-scroll="fetchNewContributionPage">
+                    <div class="panel--contribution__filters">
+                        <span class="panel--contribution__filters__title">Filter by user</span>
+                        <lb-filter-by-member
+                            on-filter-change="blogEdit.contributionsPostsInstance.setAuthorFilter"
+                            blog-id="blog._id">
+                        </lb-filter-by-member>
+                    </div>
+                    <div class="content" lr-infinite-scroll="fetchNewContributionPage" full-height>
                         <lb-posts-list
                           lb-posts-instance="blogEdit.contributionsPostsInstance"
                           lb-posts-blog-id="blog._id"
                           lb-posts-status="submitted"
                           lb-posts-order-by="updated_first"
-                          lb-posts-empty-message="<p>There is no contribution yet.</p><p>To create one, start to compose your post and click on the &#34;SUBMIT&#34; button. You will be able to re-open it later in the editor.</p>"
-                          lb-posts-allow-unpublish="false"
+                          lb-posts-allow-unpublishing="false"
                           lb-posts-allow-reordering="false"
+                          lb-posts-allow-editing="blogSecurityService.isUserOwnerOrAdmin"
+                          lb-posts-allow-deleting="blogSecurityService.isUserOwnerOrAdmin"
+                          lb-posts-allow-publishing="blogSecurityService.canPublishAPost"
                           lb-posts-on-post-selected="openPostInEditor"
                         >
+                            <div ng-if="!blogEdit.contributionsPostsInstance.isFilterEnable()">
+                                <p>There is no contribution yet.</p>
+                                <p>
+                                    To create one, start to compose your post and click on the &#34;SUBMIT&#34; button.
+                                    You will be able to re-open it later in the editor.
+                                </p>
+                            </div>
+                            <div ng-if="blogEdit.contributionsPostsInstance.isFilterEnable()">
+                                <p>No contributions from the selected users</p>
+                            </div>
                         </lb-posts-list>
                     </div>
                 </div>
@@ -97,7 +122,7 @@
             </span>
         </div>
         <!-- timeline column -->
-        <div class="column column-timeline">
+        <div class="column column--timeline">
             <header>Timeline</header>
             <div class="content" lr-infinite-scroll="fetchNewTimelinePage">
                 <div>
@@ -107,11 +132,13 @@
                       lb-posts-list
                       lb-posts-blog-id="blog._id"
                       lb-posts-status="open"
-                      lb-posts-empty-message="There are no posts yet for this blog! "
-                      lb-posts-allow-unpublish="true"
-                      lb-posts-allow-reordering="true"
+                      lb-posts-allow-unpublishing="blogSecurityService.canPublishAPost"
+                      lb-posts-allow-reordering="blogSecurityService.canPublishAPost"
+                      lb-posts-allow-editing="blogSecurityService.canPublishAPost"
+                      lb-posts-allow-deleting="blogSecurityService.canPublishAPost"
                       lb-posts-on-post-selected="openPostInEditor"
                     >
+                    There are no posts yet for this blog!
                     </div>
                 </div>
             </div>

@@ -57,6 +57,7 @@ define([
         // define the $scope
         angular.extend($scope, {
             blog: blog,
+            selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
             preview: false,
@@ -363,6 +364,23 @@ define([
                     });
                 });
             },
+            askRemoveBlog: function() {
+                                modal.confirm(gettext('Are you sure you want to delete the blog?'))
+                                    .then(function() {
+                                        vm.removeBlog();
+                                    });
+            },
+            removeBlog: function() {
+                api.blogs.remove(angular.copy(vm.blog)).then(function(message) {
+                    notify.pop();
+                    notify.info(gettext('Blog removed'));
+                    $location.path('/liveblog');
+                }, function () {
+                    notify.pop();
+                    notify.error(gettext('Something went wrong'));
+                    $location.path('/liveblog/edit/' + vm.blog._id);
+                    });
+            },
             close: function() {
                 // return to blog edit page
                 $location.path('/liveblog/edit/' + vm.blog._id);
@@ -453,7 +471,8 @@ define([
         'ngRoute',
         'superdesk.services.modal',
         'superdesk.upload',
-        'liveblog.pages-manager'
+        'liveblog.pages-manager',
+        'lrInfiniteScroll'
     ]);
     app.service('blogSecurityService',
         ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges',
@@ -461,18 +480,17 @@ define([
         function canPublishAPost(blog) {
             return privileges.userHasPrivileges({'publish_post': 1});
         }
-        function isUserOwner(archive) {
-            if ($rootScope.currentUser._id !== archive.original_creator) {
-                return false;
-            } else {
-                return true;
-            }
+        function isAdmin() {
+            return $rootScope.currentUser.user_type === 'administrator';
+        }
+        function isUserOwnerOrAdmin(archive) {
+            return $rootScope.currentUser._id === archive.original_creator || isAdmin();
         }
         function goToSettings() {
             var def = $q.defer();
             blogService.get($route.current.params._id)
             .then(function(response) {
-                if (isUserOwner(response)) {
+                if (isUserOwnerOrAdmin(response)) {
                     def.resolve();
                 } else {
                     def.reject();
@@ -486,7 +504,7 @@ define([
         }
         return {
             goToSettings: goToSettings,
-            isUserOwner: isUserOwner,
+            isUserOwnerOrAdmin: isUserOwnerOrAdmin,
             canPublishAPost: canPublishAPost
         };
     }]);
