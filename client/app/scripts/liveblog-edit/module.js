@@ -484,13 +484,16 @@ define([
             return $rootScope.currentUser.user_type === 'administrator';
         }
         function isUserOwnerOrAdmin(archive) {
-            return ($rootScope.currentUser._id === archive.original_creator && privileges.userHasPrivileges({'blogs': 1})) || isAdmin();
+            return $rootScope.currentUser._id === archive.original_creator || isAdmin();
+        }
+        function canAccessSettings(archive) {
+            return privileges.userHasPrivileges({'blogs': 1}) && isUserOwnerOrAdmin(archive);
         }
         function goToSettings() {
             var def = $q.defer();
             blogService.get($route.current.params._id)
             .then(function(response) {
-                if (isUserOwnerOrAdmin(response)) {
+                if (canAccessSettings(response)) {
                     def.resolve();
                 } else {
                     def.reject();
@@ -505,6 +508,7 @@ define([
         return {
             goToSettings: goToSettings,
             isUserOwnerOrAdmin: isUserOwnerOrAdmin,
+            canAccessSettings: canAccessSettings,
             canPublishAPost: canPublishAPost
         };
     }]);
