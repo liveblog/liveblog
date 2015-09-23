@@ -383,6 +383,7 @@ function EditPostPage() {
     self.errorElement = element(by.css('.st-msg'));
     self.embedElement = element(by.css('.embed-input'));
     self.iframe = element(by.css('.liveblog--card iframe'));
+    self.publishElement = element(by.css('[ng-click="publish()"]'));
 
     self.addTop = function() {
         // click on the "+" bar
@@ -418,15 +419,27 @@ function EditPostPage() {
         return self;
     };
 
-    self.publish = function() {
-        return element(by.css('[ng-click="publish()"]')).click();
+    self.waitForPublish = function() {
+        browser.wait(function() {
+            return self.publishElement.isEnabled();
+        }, 200);
     };
 
-    self.publishText = function() {
-        var data = randomString(10);
+    self.publish = function() {
+        self.waitForPublish();
+        return self.publishElement.click();
+    };
+
+    self.publishText = function(data) {
+        data = (typeof data === 'string') ? data : randomString(10);
         self.textElement.clear().sendKeys(data);
         self.publish();
         return data;
+    };
+
+    self.getPublishStatus = function(data) {
+        self.textElement.clear().sendKeys(data);
+        return self.publishElement.isEnabled();
     };
 
     self.writeMultiplePost = function() {

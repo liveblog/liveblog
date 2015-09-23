@@ -6,6 +6,13 @@ describe('timeline add to top and edit', function() {
 
     beforeEach(function(done) {login().then(done);});
 
+    it('can\'t add blank item in timeline', function() {
+        var blog = blogs.openBlog(0);
+        blog.editor.getPublishStatus(' ').then(function(value) {
+            expect(value).toBe(false);
+        });
+    });
+
     it('can add item to top of the timeline', function() {
         var blog = blogs.openBlog(0),
             text = blog.editor.publishText();

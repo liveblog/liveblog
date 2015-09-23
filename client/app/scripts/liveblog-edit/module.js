@@ -48,14 +48,17 @@ define([
         }
 
         // remove and clean every items from the editor
-        function cleanEditor() {
+        function cleanEditor(publishDisabled) {
+            publishDisabled = (typeof publishDisabled === 'boolean') ? publishDisabled : true;
             vm.editor.reinitialize();
+            $scope.publishDisabled = publishDisabled;
             $scope.currentPost = undefined;
         }
         var vm = this;
 
         // define the $scope
         angular.extend($scope, {
+            publishDisabled: true,
             blog: blog,
             selectedUsersFilter: [],
             currentPost: undefined,
@@ -66,7 +69,7 @@ define([
             },
             openPostInEditor: function (post) {
                 function fillEditor(post) {
-                    cleanEditor();
+                    cleanEditor(false);
                     $scope.currentPost = angular.copy(post);
                     var items = post.groups[1].refs;
                     items.forEach(function(item) {
@@ -134,6 +137,13 @@ define([
                 $route.updateParams({panel: $scope.panelState});
             },
             stParams: {
+                disableSubmit: function(publishDisabled) {
+                    $scope.publishDisabled = publishDisabled;
+                    // because this is called outside of angular scope from sir-trevor.
+                    if (!$scope.$$phase) {
+                        $scope.$digest();
+                    }
+                },
                 coverMaxWidth: 350,
                 embedService: embedService,
                 // provide an uploader to the editor for media (custom sir-trevor image block uses it)
