@@ -15,7 +15,7 @@ describe('Contributions Posts', function() {
         });
     });
 
-    iit('can create contributions and respect the order and show the notifications', function() {
+    it('can create contributions and respect the order and show the notifications', function() {
         var blog = blogs.openBlog(0);
         var contrib1 = blog.editor.createContribution();
         var contrib2 = blog.editor.createContribution();
