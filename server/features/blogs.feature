@@ -184,3 +184,15 @@ Feature: Blog operations
             """
             [{"event": "blog", "extra": {"created": 1, "blog_id": "#blogs._id#"}}]
             """
+
+	@auth
+    Scenario: Permission to open blogs
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "first blog", "members": []}
+        ]
+        """
+        When we switch to user of type user
+        And we get "/blogs/#blogs._id#"
+        Then we get response code 403

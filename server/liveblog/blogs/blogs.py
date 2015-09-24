@@ -123,9 +123,11 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
             if not safe:
                 raise e
 
+
 def check_for_permissions():
     if not is_admin(get_user()):
-        raise SuperdeskApiError.forbiddenError(message ='you do not have permission to open this blog')
+        raise SuperdeskApiError.forbiddenError(message='you do not have permission to open this blog')
+
 
 class BlogService(BaseService):
     notification_key = 'blog'
@@ -171,8 +173,11 @@ class BlogService(BaseService):
         if not doc.get('members'):
             check_for_permissions()
         else:
+            members_ids = []
             members = doc.get('members')
-            if not user in members:
+            for m in members:
+                members_ids.append(str(m['user']))
+            if not user in members_ids:
                 check_for_permissions()
         return doc
 
