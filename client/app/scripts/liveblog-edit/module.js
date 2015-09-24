@@ -55,15 +55,6 @@ define([
             $scope.currentPost = undefined;
         }
         var vm = this;
-
-        $scope.$on('posts', function(e, event_params) {
-            console.log('event from controller ', event_params);
-             if ($scope.panelState !== 'contributions' && event_params.post_status === 'submitted') {
-                $scope.unreadContributions ++;
-                console.log('increasing the contrib num to ', $scope.unreadContributions);
-            }
-        });
-
         // define the $scope
         angular.extend($scope, {
             publishDisabled: true,
@@ -71,6 +62,9 @@ define([
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
+            postsService: {
+                getUnreadContributtions: postsService.getUnreadContributtions
+            },
             preview: false,
             unreadContributions:39,
             askAndResetEditor: function() {
@@ -141,15 +135,14 @@ define([
             // retrieve panel status from url
             panelState: angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor',
             openPanel: function(panel) {
-                console.log('panel is ', panel);
                 $scope.panelState = panel;
                 // update url for deeplinking
                 $route.updateParams({panel: $scope.panelState});
                 //clear the new contribution notification
                 if (panel === 'contributions') {
-                    console.log('$scope.unreadContributions ', $scope.unreadContributions);
-                    $scope.unreadContributions = 0;
+                    postsService.resetUnreadContributtions(panel);
                 }
+                postsService.setPanelState(panel);
             },
             stParams: {
                 disableSubmit: function(publishDisabled) {
@@ -225,6 +218,7 @@ define([
                 $scope.preview = !$scope.preview;
             }
         });
+        postsService.setPanelState($scope.panelState);
     }
 
     BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',

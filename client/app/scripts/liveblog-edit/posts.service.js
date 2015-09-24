@@ -18,10 +18,28 @@ define([
     PostsService.$inject = [
         'api',
         '$q',
-        'userList'
+        'userList',
+        '$rootScope'
     ];
-    function PostsService(api, $q, userList) {
+    function PostsService(api, $q, userList, $rootScope) {
 
+        var panelState = 'default', unreadContributions = 0;
+        //set get editor panel
+        function setPanelState(newPanelState) {
+            panelState = newPanelState;
+        }
+        function getUnreadContributtions() {
+            return unreadContributions;
+        }
+        function resetUnreadContributtions() {
+            unreadContributions = 0;
+        }
+        //increase the number of unread contributions
+        $rootScope.$on('posts', function(e, event_params) {
+            if (panelState !== 'contributions' && event_params.post_status === 'submitted') {
+                unreadContributions ++;
+            }
+        });
         /**
          * Fetch a page of posts
          * @param {string} blog_id - The id of the blog
@@ -217,7 +235,10 @@ define([
             saveContribution: function(blog_id, post, items) {
                 return savePost(blog_id, post, items, {post_status: 'submitted'});
             },
-            remove: removePost
+            remove: removePost,
+            setPanelState: setPanelState,
+            getUnreadContributtions: getUnreadContributtions,
+            resetUnreadContributtions: resetUnreadContributtions
         };
     }
 

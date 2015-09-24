@@ -110,15 +110,11 @@ define([
                         }
                     });
                     $scope.lbPostsInstance = vm;
-                    console.log('scope ', $scope);
-                    console.log('lbUnreadContributions ', $scope.lbUnreadContributions);
-                    console.log('lbPanelState ', $scope.lbPanelState);
                     // retrieve first page
                     vm.fetchNewPage()
                     // retrieve updates when event is recieved
                     .then(function() {
                         $scope.$on('posts', function(e, event_params) {
-                            //console.log('event params ', event_params, $scope.lbPanelState, ' ', $scope.lbUnreadContributions);
                             vm.isLoading = true;
                             vm.pagesManager.retrieveUpdate(true).then(function() {
                                 if (event_params.deleted === true) {
@@ -127,11 +123,6 @@ define([
                                 }
                                 vm.isLoading = false;
                             });
-                            // if ( $scope.lbPanelState && $scope.lbPanelState !== 'contributions' && event_params.post_status === 'submitted') {
-                            //     $scope.lbUnreadContributions ++;
-                            //     console.log('increasing the contrib num to ', $scope.lbUnreadContributions);
-
-                            // }
                         });
                     });
                 }
