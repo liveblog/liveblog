@@ -94,7 +94,8 @@ describe('Blog settings', function() {
             .expectBlog(blog);
     });
 
-    it('changes blog ownership and admin can open settings for any blog', function() {
+    it('changes blog ownership & admin can open settings for any blog & contributor can\'t access blog settings even if owner',
+        function() {
         blogs.openBlog(0).openSettings().openTeam()
                             .changeOwner()
                             .changeToOwner()
@@ -107,8 +108,21 @@ describe('Blog settings', function() {
         browser.waitForAngular();
         blog.openSettings().openTeam();
         blogs.blog.settings.userName.getText().then(function(text) {
-            expect(text).toEqual('test_user');
+            expect(text).toEqual('contributor');
         });
+
+        browser.get('/');
+        element(by.css('button.current-user')).click();
+        browser.waitForAngular();
+        element(by.buttonText('SIGN OUT')).click();
+        browser.sleep(2000); // it reloads page
+        browser.waitForAngular();
+        browser.sleep(2000); // it reloads page
+        login('contributor', 'contributor').then(function() {
+            browser.waitForAngular();
+            expect(element(by.css('.settings-link')).isPresent()).toBeFalsy();
+        });
+
     });
 
     it('remove a blog', function() {
