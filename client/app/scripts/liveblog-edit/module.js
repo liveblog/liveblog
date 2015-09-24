@@ -48,22 +48,26 @@ define([
         }
 
         // remove and clean every items from the editor
-        function cleanEditor(publishDisabled) {
-            publishDisabled = (typeof publishDisabled === 'boolean') ? publishDisabled : true;
+        function cleanEditor(actionDisabled) {
+            actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
             vm.editor.reinitialize();
-            $scope.publishDisabled = publishDisabled;
+            $scope.actionDisabled = actionDisabled;
             $scope.currentPost = undefined;
         }
         var vm = this;
 
         // define the $scope
         angular.extend($scope, {
-            publishDisabled: true,
             blog: blog,
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
             preview: false,
+            actionPending: false,
+            actionDisabled: true,
+            actionStatus: function() {
+                return $scope.actionDisabled || $scope.actionPending;
+            },
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
             },
@@ -137,8 +141,8 @@ define([
                 $route.updateParams({panel: $scope.panelState});
             },
             stParams: {
-                disableSubmit: function(publishDisabled) {
-                    $scope.publishDisabled = publishDisabled;
+                disableSubmit: function(actionDisabled) {
+                    $scope.actionDisabled = actionDisabled;
                     // because this is called outside of angular scope from sir-trevor.
                     if (!$scope.$$phase) {
                         $scope.$digest();
