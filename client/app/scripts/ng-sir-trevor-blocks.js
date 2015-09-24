@@ -68,8 +68,10 @@ define([
                         var input = $(this).text().trim();
                         // exit if the input field is empty
                         if (_.isEmpty(input)) {
+                            that.getOptions().disableSubmit(true);
                             return false;
                         }
+                        that.getOptions().disableSubmit(false);
                         // reset error messages
                         that.resetMessages();
                         // start a loader over the block, it will be stopped in the loadData function
@@ -270,6 +272,31 @@ define([
                     ].join('\n'));
                     return template(this);
                 },
+                onBlockRender: function() {
+                    var that = this;
+                    this.$('.quote-input .js-cite-input')
+                    this.$editor.filter('[contenteditable]').on('focus', function(ev) {
+                        var $this = $(this);
+                        $this.data('before', $this.html());
+                    });
+                    this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
+                        var $this = $(this);
+                        if ($this.data('before') !== $this.html()) {
+                            $this.data('before', $this.html());
+                            $this.trigger('change');
+                        }
+                    });
+                    // when the link field changes
+                    this.$editor.on('change', _.debounce(function () {
+                        var data = that.retrieveData(),
+                            input = (data.quote + data.credit);
+                        if (_.isEmpty(input)) {
+                            that.getOptions().disableSubmit(true);
+                            return false;
+                        }
+                        that.getOptions().disableSubmit(false);
+                    }, 200));
+                },
                 focus: function() {
                     this.$('.quote-input').focus();
                 },
@@ -345,6 +372,7 @@ define([
                     }).html(data.credit));
                 },
                 onBlockRender: function() {
+                    var that = this;
                     // assert we have an uploader function in options
                     if (typeof(this.getOptions().uploader) !== 'function') {
                         throw 'Image block need an `uploader` function in options.';
@@ -354,6 +382,7 @@ define([
                         ev.preventDefault();
                     });
                     this.$inputs.find('input').on('change', _.bind(function(ev) {
+                        that.getOptions().disableSubmit(false);
                         this.onDrop(ev.currentTarget);
                     }, this));
                 },
@@ -408,6 +437,32 @@ define([
                     return this.retrieveData();
                 }
             });
+
+            SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
+                    var that = this;
+                    // create and trigger a 'change' event for the $editor which is a contenteditable
+                    this.$editor.filter('[contenteditable]').on('focus', function(ev) {
+                        var $this = $(this);
+                        $this.data('before', $this.html());
+                    });
+                    this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
+                        var $this = $(this);
+                        if ($this.data('before') !== $this.html()) {
+                            $this.data('before', $this.html());
+                            $this.trigger('change');
+                        }
+                    });
+                    // when the link field changes
+                    this.$editor.on('change', _.debounce(function () {
+                        var input = $(this).text().trim();
+                        if (_.isEmpty(input)) {
+                            that.getOptions().disableSubmit(true);
+                            return false;
+                        } else {
+                            that.getOptions().disableSubmit(false);
+                        }
+                    }, 200));
+            };
 
             // Add toHTML to existing Text Block.
             SirTrevor.Blocks.Text.prototype.toHTML = function(html) {

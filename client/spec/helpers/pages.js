@@ -137,9 +137,10 @@ function BlogsPage() {
 function ThemesManagerPage() {
     var self = this;
     self.themes = element.all(by.css('.theme'));
-    self.blogsRows = element.all(by.repeater('blog in selectedTheme.blogs'));
+    self.blogsRows = element.all(by.repeater('blog in vm.selectedTheme.blogs'));
     self.fileThemeElement = element(by.css('#uploadAThemeFile'));
-    self.byRemove = by.css('[ng-click="removeTheme(theme)"]');
+    self.byRemove = by.css('[ng-click="vm.removeTheme(theme)"]');
+    self.byPreview = by.css('[ng-click="vm.openThemePreview(theme)"]');
 
     self.openThemesManager = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
@@ -151,7 +152,7 @@ function ThemesManagerPage() {
     };
 
     self.setAsDefault = function(theme_index) {
-        return self.themes.get(theme_index).element(by.css('[ng-click="makeDefault(theme)"]')).click();
+        return self.themes.get(theme_index).element(by.css('[ng-click="vm.makeDefault(theme)"]')).click();
     };
 
     self.remove = function(theme_index) {
@@ -159,31 +160,42 @@ function ThemesManagerPage() {
         return self;
     };
 
+    self.openPreview = function(theme_index) {
+        self.themes.get(theme_index).element(self.byPreview).click().then(function() {
+            expect(element(by.css('.theme-preview-modal .modal-dialog')).isDisplayed()).toBe(true);
+            element(by.css('.theme-preview-modal .close')).click();
+        });
+        return self;
+    };
+
     self.expectTheme = function(index, params) {
         var theme = self.themes.get(index);
-        var number_of_blog_elmt = theme.element(by.css('[ng-click="openThemeBlogsModal(theme)"]'));
         // check if it is the default theme
         expect(theme.element(by.css('.default-theme')).isDisplayed()).toBe(params.is_default_theme);
         // check if the name match
         if (params.name) {
             expect(theme.element(by.css('h3')).getText()).toBe(params.name);
         }
-        // check if the number shown match
-        expect(number_of_blog_elmt.getText()).toBe(params.number_of_blogs_expected.toString());
-        // open the modal
-        number_of_blog_elmt.click();
-        // check if first row is displayed
+        //this only makes sense if the theme has at least one blog using it
         if (params.number_of_blogs_expected > 0) {
-            expect(self.blogsRows.get(0).isDisplayed()).toBe(true);
-        }
-        // check if the number of row matchs
-        expect(self.blogsRows.count()).toBe(params.number_of_blogs_expected);
-        var close_modal = element(by.css('[ng-click="closeThemeBlogsModal()"]'));
-        close_modal.isPresent().then(function(is_present) {
-            if (is_present) {
-                close_modal.click();
+            var number_of_blog_elmt = theme.element(by.css('span[data-name=\'noOfBlogs\']'));
+            // check if the number shown match
+            expect(number_of_blog_elmt.getText()).toBe(params.number_of_blogs_expected.toString());
+            // open the modal
+            number_of_blog_elmt.click();
+            // check if first row is displayed
+            if (params.number_of_blogs_expected > 0) {
+                expect(self.blogsRows.get(0).isDisplayed()).toBe(true);
             }
-        });
+            // check if the number of row matchs
+            expect(self.blogsRows.count()).toBe(params.number_of_blogs_expected);
+            var close_modal = element(by.css('[ng-click="vm.closeThemeBlogsModal()"]'));
+            close_modal.isPresent().then(function(is_present) {
+                if (is_present) {
+                    close_modal.click();
+                }
+            });
+        }
     };
 }
 
@@ -374,6 +386,7 @@ function EditPostPage() {
     self.errorElement = element(by.css('.st-msg'));
     self.embedElement = element(by.css('.embed-input'));
     self.iframe = element(by.css('.liveblog--card iframe'));
+    self.publishElement = element(by.css('[ng-click="publish()"]'));
 
     self.addTop = function() {
         // click on the "+" bar
@@ -409,15 +422,27 @@ function EditPostPage() {
         return self;
     };
 
-    self.publish = function() {
-        return element(by.css('[ng-click="publish()"]')).click();
+    self.waitForPublish = function() {
+        browser.wait(function() {
+            return self.publishElement.isEnabled();
+        }, 200);
     };
 
-    self.publishText = function() {
-        var data = randomString(10);
+    self.publish = function() {
+        self.waitForPublish();
+        return self.publishElement.click();
+    };
+
+    self.publishText = function(data) {
+        data = (typeof data === 'string') ? data : randomString(10);
         self.textElement.clear().sendKeys(data);
         self.publish();
         return data;
+    };
+
+    self.getPublishStatus = function(data) {
+        self.textElement.clear().sendKeys(data);
+        return self.publishElement.isEnabled();
     };
 
     self.writeMultiplePost = function() {
@@ -526,7 +551,7 @@ function BlogSettingsPage(blog) {
     };
 
     self.changeToOwner = function(index) {
-        index = index || 1;
+        index = index || 2;
         element(by.repeater('user in settings.avUsers').row(index).column('user.display_name')).click();
         return self;
     };
