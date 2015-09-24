@@ -137,9 +137,7 @@ define([
                         lbPostsAllowDeleting: '=',
                         lbPostsAllowPublishing: '=',
                         lbPostsOnPostSelected: '=',
-                        lbPostsInstance: '=',
-                        lbPanelState: '=',
-                        lbUnreadContributions: '='
+                        lbPostsInstance: '='
                     },
                     restrict: 'EA',
                     transclude: true,

@@ -24,7 +24,6 @@ define([
     function PostsService(api, $q, userList, $rootScope) {
 
         var panelState = 'default', unreadContributions = 0;
-        //set get editor panel
         function setPanelState(newPanelState) {
             panelState = newPanelState;
         }
