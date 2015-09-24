@@ -15,14 +15,18 @@ describe('Contributions Posts', function() {
         });
     });
 
-    it('can create contributions and respect the order', function() {
+    it('can create contributions and respect the order and show the notifications', function() {
         var blog = blogs.openBlog(0);
         var contrib1 = blog.editor.createContribution();
         var contrib2 = blog.editor.createContribution();
+
+        blog.expectNotificationsNo(2);
+
         // check
         blog.openContributions()
             .expectPost(0, contrib2.quote)
             .expectPost(1, contrib1.quote);
+
     });
 
     it('can publish a contribution', function() {
