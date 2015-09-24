@@ -66,7 +66,6 @@ define([
                 getUnreadContributtions: postsService.getUnreadContributtions
             },
             preview: false,
-            unreadContributions:39,
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
             },

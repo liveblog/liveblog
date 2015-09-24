@@ -2,7 +2,7 @@
 
 exports.config = {
     allScriptsTimeout: 30000,
-    baseUrl: 'http://localhost:9090',
+    baseUrl: 'http://localhost:9000',
     params: {
         baseBackendUrl: 'http://localhost:5000/api/',
         username: 'admin',
