@@ -6,14 +6,19 @@ Feature: Post operations
         Given empty "items"
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given we have "Editor" role
-        Given we have "user" as type of user
-        Given "blogs"
+        Given "users"
         """
-        [{"title": "TEST_BLOG"}]
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
         When we post to "items" with success
         """
         [{"text": "test", "blog": "#blogs._id#"}]
@@ -67,12 +72,17 @@ Feature: Post operations
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
         """
-        Given we have "Contributor" role
-        Given we have "user" as type of user
-        Given "blogs"
+        Given "users"
         """
-        [{"title": "TEST_BLOG"}]
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
         When we post to "items"
         """
         [{"text": "test", "blog": "#blogs._id#"}]
@@ -110,14 +120,19 @@ Feature: Post operations
         Given empty "items"
         Given "roles"
         """
-        [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1}}]
+        [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
         """
-        Given we have "Contributor" role
-        Given we have "user" as type of user
-        Given "blogs"
+        Given "users"
         """
-        [{"title": "TEST_BLOG"}]
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
         When we post to "items"
         """
         [{"text": "test", "blog": "#blogs._id#"}]
@@ -157,14 +172,19 @@ Feature: Post operations
         Given empty "items"
         Given "roles"
         """
-        [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1}}]
+        [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
         """
-        Given we have "Contributor" role
-        Given we have "user" as type of user
-        Given "blogs"
+        Given "users"
         """
-        [{"title": "TEST_BLOG"}]
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
         When we post to "items"
         """
         [{"text": "test", "blog": "#blogs._id#"}]
@@ -203,14 +223,19 @@ Feature: Post operations
         Given empty "items"
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given we have "Editor" role
-        Given we have "user" as type of user
-        Given "blogs"
+        Given "users"
         """
-        [{"title": "test_blog1"}]
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
         When we post to "items"
         """
         [{"text": "test", "blog": "#blogs._id#"}]
@@ -272,14 +297,19 @@ Feature: Post operations
         Given empty "items"
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given we have "Editor" role
-        Given we have "user" as type of user
-        Given "blogs"
+        Given "users"
         """
-        [{"title": "test_blog1"}]
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
         When we post to "items"
         """
         [{"text": "test", "blog": "#blogs._id#"}]
@@ -363,14 +393,19 @@ Feature: Post operations
         Given empty "items"
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given we have "Editor" role
-        Given we have "user" as type of user
-        Given "blogs"
+        Given "users"
         """
-        [{"title": "test_blog1", "cid": 1}]
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
         When we post to "items"
         """
         [{"text": "test", "blog": "#blogs._id#"}]
@@ -438,14 +473,19 @@ Feature: Post operations
         Given empty "posts"
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given we have "Editor" role
-        Given we have "user" as type of user
-        Given "blogs"
+        Given "users"
         """
-        [{"title": "test_blog1"}]
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
         When we post to "items"
         """
         [{"text": "test item", "blog": "#blogs._id#"}]
@@ -479,14 +519,19 @@ Feature: Post operations
         Given empty "items"
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given we have "Editor" role
-        Given we have "user" as type of user
-        Given "blogs"
+        Given "users"
         """
-        [{"title": "test_blog3"}]
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
         When we post to "items"
         """
         [{"text": "test", "blog": "#blogs._id#"}]
@@ -588,14 +633,19 @@ Feature: Post operations
         Given empty "items"
         Given "roles"
         """
-        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        Given we have "Editor" role
-        Given we have "user" as type of user
-        Given "blogs"
+        Given "users"
         """
-        [{"title": "test_blog3"}]
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
         When we post to "items"
         """
         [{"text": "test one", "blog": "#blogs._id#"}]

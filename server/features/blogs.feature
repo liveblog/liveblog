@@ -37,17 +37,21 @@ Feature: Blog operations
 
     @auth
     Scenario: Update blog without being the owner
-        When we post to "blogs"
-        """
-        [{"title": "Update blog without being the owner"}]
-        """
         Given "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        When we login as user "foo" with password "bar"
-        Given we have "Editor" role
-        Given we have "user" as type of user
+        Given "users"
+        """
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
+        """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Update blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
         When we patch "/blogs/#blogs._id#"
         """
         {"description": "this is a test blog"}
@@ -121,17 +125,21 @@ Feature: Blog operations
         
 		@auth
     	Scenario: Delete blog without being the owner
-        When we post to "blogs"
-        """
-        [{"title": "Update blog without being the owner"}]
-        """
-        Given "roles"
+    	Given "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
         """
-        When we login as user "foo" with password "bar"
-        Given we have "Editor" role
-        Given we have "user" as type of user
+        Given "users"
+        """
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
+        """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
         When we delete "/blogs/#blogs._id#"
         Then we get deleted response
 
