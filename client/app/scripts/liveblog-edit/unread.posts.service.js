@@ -16,10 +16,8 @@ define([
         '$rootScope'
     ];
     function UnreadPostsService($rootScope) {
-        var panelState = 'default', unreadContributions = 0;
-        function setPanelState(newPanelState) {
-            panelState = newPanelState;
-        }
+        var listener;
+        var unreadContributions = 0;
         function getUnreadContributions() {
             return unreadContributions;
         }
@@ -27,15 +25,25 @@ define([
             unreadContributions = 0;
         }
         //increase the number of unread contributions
-        $rootScope.$on('posts', function(e, event_params) {
-            if (panelState !== 'contributions' && event_params.post_status === 'submitted') {
+        function onPostReceive(e, event_params) {
+            if (event_params.post_status === 'submitted') {
                 unreadContributions ++;
             }
-        });
+        }
         return {
-            setPanelState: setPanelState,
             getUnreadContributions: getUnreadContributions,
-            resetUnreadContributions: resetUnreadContributions
+            startListening: function() {
+                if (!listener) {
+                    listener = $rootScope.$on('posts', onPostReceive);
+                }
+            },
+            stopListening: function() {
+                resetUnreadContributions();
+                if (listener) {
+                    listener();
+                    listener = undefined;
+                }
+            }
         };
     }
     angular.module('liveblog.posts')

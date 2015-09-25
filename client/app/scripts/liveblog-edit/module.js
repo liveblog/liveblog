@@ -133,16 +133,17 @@ define([
                 });
             },
             // retrieve panel status from url
-            panelState: angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor',
+            panelState: undefined,
             openPanel: function(panel) {
                 $scope.panelState = panel;
                 // update url for deeplinking
                 $route.updateParams({panel: $scope.panelState});
                 //clear the new contribution notification
                 if (panel === 'contributions') {
-                    unreadPostsService.resetUnreadContributions(panel);
+                    unreadPostsService.stopListening();
+                } else {
+                    unreadPostsService.startListening();
                 }
-                unreadPostsService.setPanelState(panel);
             },
             stParams: {
                 disableSubmit: function(publishDisabled) {
@@ -218,7 +219,8 @@ define([
                 $scope.preview = !$scope.preview;
             }
         });
-        unreadPostsService.setPanelState($scope.panelState);
+        // initalize the view with the editor panel
+        $scope.openPanel('editor');
     }
 
     BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
