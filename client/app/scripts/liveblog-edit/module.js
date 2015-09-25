@@ -63,7 +63,7 @@ define([
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
             postsService: {
-                getUnreadContributtions: postsService.getUnreadContributtions
+                getUnreadContributions: postsService.getUnreadContributions
             },
             preview: false,
             askAndResetEditor: function() {
@@ -139,7 +139,7 @@ define([
                 $route.updateParams({panel: $scope.panelState});
                 //clear the new contribution notification
                 if (panel === 'contributions') {
-                    postsService.resetUnreadContributtions(panel);
+                    postsService.resetUnreadContributions(panel);
                 }
                 postsService.setPanelState(panel);
             },

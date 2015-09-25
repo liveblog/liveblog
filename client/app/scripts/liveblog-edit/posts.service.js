@@ -27,10 +27,10 @@ define([
         function setPanelState(newPanelState) {
             panelState = newPanelState;
         }
-        function getUnreadContributtions() {
+        function getUnreadContributions() {
             return unreadContributions;
         }
-        function resetUnreadContributtions() {
+        function resetUnreadContributions() {
             unreadContributions = 0;
         }
         //increase the number of unread contributions
@@ -236,8 +236,8 @@ define([
             },
             remove: removePost,
             setPanelState: setPanelState,
-            getUnreadContributtions: getUnreadContributtions,
-            resetUnreadContributtions: resetUnreadContributtions
+            getUnreadContributions: getUnreadContributions,
+            resetUnreadContributions: resetUnreadContributions
         };
     }
 
