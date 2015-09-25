@@ -11,6 +11,7 @@
 define([
     'angular',
     'lodash',
+    './unread.posts.service',
     'ng-sir-trevor',
     'ng-sir-trevor-blocks',
     'angular-embed'
@@ -18,11 +19,11 @@ define([
     'use strict';
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext',
-        'upload', 'config', 'embedService', 'postsService', 'modal',
+        'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'modal',
         'blogService', '$route', '$routeParams', 'blogSecurityService'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext,
-        upload, config, embedService, postsService, modal, blogService, $route, $routeParams, blogSecurityService) {
+        upload, config, embedService, postsService, unreadPostsService, modal, blogService, $route, $routeParams, blogSecurityService) {
 
         // return the list of items from the editor
         function getItemsFromEditor() {
@@ -62,8 +63,8 @@ define([
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
-            postsService: {
-                getUnreadContributions: postsService.getUnreadContributions
+            unreadPostsService: {
+                getUnreadContributions: unreadPostsService.getUnreadContributions
             },
             preview: false,
             askAndResetEditor: function() {
@@ -139,9 +140,9 @@ define([
                 $route.updateParams({panel: $scope.panelState});
                 //clear the new contribution notification
                 if (panel === 'contributions') {
-                    postsService.resetUnreadContributions(panel);
+                    unreadPostsService.resetUnreadContributions(panel);
                 }
-                postsService.setPanelState(panel);
+                unreadPostsService.setPanelState(panel);
             },
             stParams: {
                 disableSubmit: function(publishDisabled) {
@@ -217,7 +218,7 @@ define([
                 $scope.preview = !$scope.preview;
             }
         });
-        postsService.setPanelState($scope.panelState);
+        unreadPostsService.setPanelState($scope.panelState);
     }
 
     BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
