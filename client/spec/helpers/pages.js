@@ -236,6 +236,10 @@ function BlogPage(blogs) {
         element(by.css('.settings-link')).click();
         return self.settings;
     };
+
+    self.expectNotificationsNo = function(notifsNo) {
+        expect(element(by.css('span.notification-counter')).getText()).toBe(notifsNo.toString());
+    };
 }
 
 function AbstractPanelPage(blog) {
