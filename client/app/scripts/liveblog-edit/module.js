@@ -220,7 +220,7 @@ define([
             }
         });
         // initalize the view with the editor panel
-        $scope.openPanel('editor');
+        $scope.openPanel(angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor');
     }
 
     BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
