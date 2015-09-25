@@ -9,7 +9,7 @@ describe('Contributions Posts', function() {
     it('can open contributions panel from url', function() {
         var contributions = blogs.openBlog(0).contributions;
         browser.getCurrentUrl().then(function(url) {
-            browser.get(url + '?panel=contributions').then(function() {
+            browser.get(url.split('?')[0] + '?panel=contributions').then(function() {
                 expect(contributions.column.isPresent()).toBe(true);
             });
         });
