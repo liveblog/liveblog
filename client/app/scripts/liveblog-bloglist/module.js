@@ -170,7 +170,7 @@
         $scope.$on('$routeUpdate', fetchBlogs);
     }
 
-    var app = angular.module('liveblog.bloglist', []);
+    var app = angular.module('liveblog.bloglist', ['liveblog.security']);
     app.config(['apiProvider', function(apiProvider) {
         apiProvider.api('blogs', {
             type: 'http',
