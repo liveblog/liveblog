@@ -418,8 +418,7 @@ function EditPostPage() {
     };
 
     self.saveContribution = function() {
-        element(by.css('[ng-click="saveAsContribution()"]')).click();
-        return self;
+        return element(by.css('[ng-click="saveAsContribution()"]')).click();
     };
 
     self.waitForPublish = function() {
@@ -465,8 +464,7 @@ function EditPostPage() {
 
     self.createContribution = function() {
         var data = self.writeMultiplePost();
-        self.saveContribution();
-        return data;
+        return self.saveContribution().then(function() {return data;});
     };
 
     self.resetEditor = function() {
