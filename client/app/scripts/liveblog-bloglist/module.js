@@ -1,8 +1,10 @@
 (function() {
     'use strict';
 
-    BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload', 'isArchivedFilterSelected', '$q', 'privileges'];
-    function BlogListController($scope, $location, api, gettext, upload, isArchivedFilterSelected, $q, privileges) {
+    BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload',
+        'isArchivedFilterSelected', '$q', 'blogSecurityService'];
+    function BlogListController($scope, $location, api, gettext, upload,
+        isArchivedFilterSelected, $q, blogSecurityService) {
         $scope.maxResults = 25;
         $scope.states = [
             {name: 'active', code: 'open', text: gettext('Active blogs')},
@@ -30,9 +32,7 @@
             $scope.blogMembers = [];
         }
         clearCreateBlogForm();
-        $scope.isUserAllowedToCreateABlog = function () {
-            return privileges.userHasPrivileges({'blogs': 1});
-        };
+        $scope.isUserAllowedToCreateABlog = blogSecurityService.canCreateABlog;
         $scope.cancelCreate = function() {
             clearCreateBlogForm();
             $scope.newBlogModalActive = false;

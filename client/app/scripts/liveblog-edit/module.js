@@ -501,6 +501,9 @@ define([
         function canPublishAPost(blog) {
             return privileges.userHasPrivileges({'publish_post': 1});
         }
+        function canCreateABlog() {
+            return privileges.userHasPrivileges({'blogs': 1});
+        }
         function isAdmin() {
             return $rootScope.currentUser.user_type === 'administrator';
         }
@@ -508,7 +511,7 @@ define([
             return $rootScope.currentUser._id === archive.original_creator || isAdmin();
         }
         function canAccessSettings(archive) {
-            return privileges.userHasPrivileges({'blogs': 1}) && isUserOwnerOrAdmin(archive);
+            return canCreateABlog() && isUserOwnerOrAdmin(archive);
         }
         function goToSettings() {
             var def = $q.defer();
@@ -530,7 +533,8 @@ define([
             goToSettings: goToSettings,
             isUserOwnerOrAdmin: isUserOwnerOrAdmin,
             canAccessSettings: canAccessSettings,
-            canPublishAPost: canPublishAPost
+            canPublishAPost: canPublishAPost,
+            canCreateABlog: canCreateABlog
         };
     }]);
     app.config(['superdeskProvider', function(superdesk) {
