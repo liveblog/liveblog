@@ -124,12 +124,6 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
                 raise e
 
 
-def check_for_permissions():
-    if not get_user() == {}:
-        if not is_admin(get_user()):
-            raise SuperdeskApiError.forbiddenError(message='you do not have permission to open this blog')
-
-
 class BlogService(BaseService):
     notification_key = 'blog'
 
@@ -169,17 +163,16 @@ class BlogService(BaseService):
         return docs
 
     def find_one(self, req, **lookup):
-        user = str(get_user().get('_id'))
         doc = super().find_one(req, **lookup)
-        if not doc.get('members'):
-            check_for_permissions()
-        else:
-            members_ids = []
-            members = doc.get('members')
-            for m in members:
-                members_ids.append(str(m['user']))
-            if user not in members_ids:
-                check_for_permissions()
+        # check if the current user has permission to open a blog
+        if not is_admin(get_user()):
+            # get members ids
+            members = [str(m['user']) for m in doc.get('members', [])]
+            # add owner id to members
+            members.append(doc.get('original_creator'))
+            # check if current user belongs to members, and raise an exeption if not
+            if str(get_user().get('_id')) not in members:
+                raise SuperdeskApiError.forbiddenError(message='you do not have permission to open this blog')
         return doc
 
     def on_update(self, updates, original):

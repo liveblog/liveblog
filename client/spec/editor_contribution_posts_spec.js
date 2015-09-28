@@ -66,7 +66,7 @@ describe('Contributions Posts', function() {
     });
 
     it('can\'t open a contributions from other in the editor', function() {
-        var blog = blogs.openBlog(0);
+        var blog = blogs.openBlog(3);
         var contrib = blog.editor.createContribution();
         browser.driver.manage().window().setSize(1280, 1024);
         browser.get('/');
@@ -83,7 +83,7 @@ describe('Contributions Posts', function() {
         browser.executeScript('window.localStorage.clear();');
         browser.sleep(2000); // it reloads page
         login('contributor', 'contributor').then(function() {
-            var contributions = blogs.openBlog(0).openContributions();
+            var contributions = blogs.openBlog(3).openContributions();
             browser.wait(function() {
                 return element(contributions.byPosts).isPresent();
             }, 5000);
