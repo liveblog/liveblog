@@ -9,16 +9,17 @@ describe('Contributions Posts', function() {
     it('can open contributions panel from url', function() {
         var contributions = blogs.openBlog(0).contributions;
         browser.getCurrentUrl().then(function(url) {
-            browser.get(url + '?panel=contributions').then(function() {
+            browser.get(url.split('?')[0] + '?panel=contributions').then(function() {
                 expect(contributions.column.isPresent()).toBe(true);
             });
         });
     });
 
-    it('can create contributions and respect the order', function() {
+    it('can create contributions and respect the order and show the notifications', function() {
         var blog = blogs.openBlog(0);
         blog.editor.createContribution().then(function(contrib1) {
             blog.editor.createContribution().then(function(contrib2) {
+                blog.expectNotificationsNo(2);
                 blog.openContributions()
                     .expectPost(0, contrib2.quote)
                     .expectPost(1, contrib1.quote);
