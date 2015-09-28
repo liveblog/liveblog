@@ -92,7 +92,7 @@
                     // create criteria to load blogs with the theme.
                     var criteria = {
                             source: {
-                                query: {filtered: {filter: {term: {'theme._id': theme._id}}}}
+                                query: {match: {'blog_preferences.theme': theme.name}}
                             }
                         };
                     api.blogs.query(criteria).then(function(data) {

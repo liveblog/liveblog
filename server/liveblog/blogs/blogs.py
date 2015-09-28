@@ -25,16 +25,12 @@ from superdesk.emails import send_email
 import liveblog.embed
 from bson.objectid import ObjectId
 import superdesk
-import eve.io.base
 from apps.users.services import is_admin
 from superdesk.errors import SuperdeskApiError
 
 blogs_schema = {
     'title': metadata_schema['headline'],
     'description': metadata_schema['description'],
-    'theme': {
-        'type': 'dict'
-    },
     'picture_url': {
         'type': 'string',
         'nullable': True
@@ -114,7 +110,7 @@ def send_members_email(recipients, user_name, doc, title, url):
 @celery.task(soft_time_limit=1800)
 def publish_blog_embed_on_s3(blog_id, safe=True):
     blog = get_resource_service('blogs').find_one(req=None, _id=blog_id)
-    if blog.get('theme', False):
+    if blog['blog_preferences'].get('theme', False):
         try:
             public_url = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
             get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
@@ -127,12 +123,6 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
 class BlogService(BaseService):
     notification_key = 'blog'
 
-    def get_theme_snapshot(self, theme_name):
-        theme = get_resource_service('themes').find_one(req=None, name=theme_name)
-        if theme is not None:
-            theme['_id'] = str(theme['_id'])
-        return theme
-
     def on_create(self, docs):
         for doc in docs:
             update_dates_for(doc)
@@ -142,9 +132,6 @@ class BlogService(BaseService):
             prefs = global_prefs.copy()
             prefs.update(doc.get('blog_preferences', {}))
             doc['blog_preferences'] = prefs
-            # save a snapshot of the theme in the `theme` field
-            if 'theme' in prefs:
-                doc['theme'] = self.get_theme_snapshot(prefs['theme'])
 
     def on_created(self, docs):
         # Publish on s3 if possible and save the public_url in the blog
@@ -176,23 +163,6 @@ class BlogService(BaseService):
         return doc
 
     def on_update(self, updates, original):
-        # if the theme changed, we republish the blog with the new one
-        if 'blog_preferences' in updates and 'theme' in updates['blog_preferences']:
-            if updates['blog_preferences']['theme'] != original['blog_preferences'].get('theme'):
-                new_theme = self.get_theme_snapshot(updates['blog_preferences']['theme'])
-                if new_theme:
-                    if 'theme' in original:
-                        updates['theme'] = original.get('theme')
-                        for key in original['theme'].keys():
-                            if key not in new_theme:
-                                # remove fields that are not in new_theme
-                                updates['theme'][key] = None
-                        for key, value in new_theme.items():
-                            # add or update fields that are new
-                            updates['theme'][key] = value
-                    else:
-                        updates['theme'] = new_theme
-
         updates['versioncreated'] = utcnow()
         updates['version_creator'] = str(get_user().get('_id'))
 
@@ -228,41 +198,20 @@ class UserBlogsService(BaseService):
         return super().get(req, lookup)
 
 
-class UpdateThemesBlogsCommand(superdesk.Command):
+class PublishBlogsCommand(superdesk.Command):
     """
-    Update the themes from local files in database, set the new value to blogs and
-    republish theme on s3 if --republish is given.
+    Republish blogs on s3 with the right theme
     """
-    option_list = [
-        superdesk.Option('--republish', dest='republish', action='store_true',
-                         default=False, help='Republish the blog on S3')
-    ]
 
-    def run(self, republish):
-        # update themes
-        theme_service = get_resource_service('themes')
-        created, updated = theme_service.update_registered_theme_with_local_files()
-        print('\n* %d themes updated from local files\n' % (len(created) + len(updated)))
+    def run(self):
         # retrieves all opened blogs
         blogs_service = get_resource_service('blogs')
         blogs = blogs_service.get(req=None, lookup=dict(blog_status='open'))
-        print('* Update the theme for every blog\n')
-        for blog in blogs:
-            theme = blogs_service.get_theme_snapshot(blog['blog_preferences']['theme'])
-            try:
-                blogs_service.system_update(ObjectId(blog['_id']), {'theme': theme}, blog)
-            except eve.io.base.DataLayer.OriginalChangedError:
-                print(u'! an error occured during saving blog "%s".' % (blog['title']),
-                      'Can be a broken relationship (with user for instance)')
-            else:
-                print('- Blog "%s"\'s theme was updated to %s %s' % (
-                    blog['title'], theme['name'], theme['version']))
         # republish on s3
-        if republish:
-            print('\n* Republishing blogs:\n')
-            for blog in blogs:
-                url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
-                print('  - Blog "%s" republished: %s' % (blog['title'], url))
+        print('\n* Republishing blogs:\n')
+        for blog in blogs:
+            url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
+            print('  - Blog "%s" republished: %s' % (blog['title'], url))
 
 
-superdesk.command('update_blogs_themes', UpdateThemesBlogsCommand())
+superdesk.command('publish_blogs', PublishBlogsCommand())
