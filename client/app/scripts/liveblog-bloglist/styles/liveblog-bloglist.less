@@ -25,7 +25,12 @@
         padding: 30px;
         .row-list {
             tr {
-                cursor: pointer;
+                &.can-access {
+                    cursor: pointer;
+                    opacity: 1;
+                }
+                cursor: default;
+                opacity: .5;
                 .content {
                     .time {
                         font-size: 13px;
@@ -37,11 +42,17 @@
         }
         .card-list {
             > li {
+                &:not(.can-access):hover {.box-shadow(none);}
+                &.can-access {
+                    cursor: pointer;
+                    opacity: 1;
+                }
+                cursor: default;
+                opacity: .5;
                 border: 1px solid #d4d4d4;
                 background-color: white;
                 margin: 0 0 20px 20px;
                 padding: 10px;
-                cursor: pointer;
                 width: 260px;
                 .border-box();
                 float: left;
@@ -91,7 +102,6 @@
                         overflow: hidden;
                     }
                 }
-
                 .footer {
                     height: 65px;
                     border-top: 1px solid #ebebeb;

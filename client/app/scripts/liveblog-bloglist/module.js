@@ -33,6 +33,7 @@
         }
         clearCreateBlogForm();
         $scope.isUserAllowedToCreateABlog = blogSecurityService.canCreateABlog;
+        $scope.isUserAllowedToOpenBlog = blogSecurityService.canAccessBlog;
         $scope.cancelCreate = function() {
             clearCreateBlogForm();
             $scope.newBlogModalActive = false;

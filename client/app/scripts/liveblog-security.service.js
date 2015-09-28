@@ -10,6 +10,18 @@ angular.module('liveblog.security', [])
         function canCreateABlog() {
             return privileges.userHasPrivileges({'blogs': 1});
         }
+        function isMemberOfBlog(blog) {
+            // add the owner
+            var ids = [blog.original_creator._id];
+            // add the members
+            if (blog.members) {
+                ids.push.apply(ids, blog.members.map(function(member) {return member.user;}));
+            }
+            return ids.indexOf($rootScope.currentUser._id) > -1;
+        }
+        function canAccessBlog(blog) {
+            return isAdmin() || isMemberOfBlog(blog);
+        }
         function isAdmin() {
             return $rootScope.currentUser.user_type === 'administrator';
         }
@@ -40,7 +52,8 @@ angular.module('liveblog.security', [])
             isUserOwnerOrAdmin: isUserOwnerOrAdmin,
             canAccessSettings: canAccessSettings,
             canPublishAPost: canPublishAPost,
-            canCreateABlog: canCreateABlog
+            canCreateABlog: canCreateABlog,
+            canAccessBlog: canAccessBlog
         };
     }
 ]);
