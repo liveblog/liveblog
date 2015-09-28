@@ -32,9 +32,18 @@
                                     <i class="icon-archive" alt="contributions posts"></i>
                                 </a>
                             </li>
-                            <li ng-if="functionize(postsListCtrl.allowReordering)(post)">
-                                <a ng-click="preMovePost(post);" tooltip-placement="bottom" tooltip="{{ 'Change order' | translate }}">
-                                    <i class="icon-move"></i>
+                            <li ng-if="functionize(postsListCtrl.allowReordering)(post)" ng-disable="functionize(postsListCtrl.disableReordering)(post)">
+                                <div class="reorder-disabled" 
+                                     ng-if="functionize(postsListCtrl.isSinglePost)(post)"
+                                     tooltip-placement="bottom"
+                                     tooltip="{{ 'Change order' | translate }}">
+                                        <i class="icon-move"></i>
+                                </div>
+                                <a  ng-if="!functionize(postsListCtrl.isSinglePost)(post)" 
+                                    ng-click="preMovePost(post);"
+                                    tooltip-placement="bottom"
+                                    tooltip="{{ 'Change order' | translate }}">
+                                        <i class="icon-move"></i>
                                 </a>
                             </li>
                             <li ng-if="functionize(postsListCtrl.allowPublishing)(post)">

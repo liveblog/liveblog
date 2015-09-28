@@ -98,6 +98,9 @@ define([
                         isPostsEmpty: function() {
                             return vm.pagesManager.count() < 1 && !vm.isLoading;
                         },
+                        isSinglePost: function() {
+                            return vm.pagesManager.count() === 1 && !vm.isLoading;
+                        },
                         isFilterEnable: function() {
                             return vm.pagesManager.authors.length > 0;
                         },
