@@ -390,6 +390,12 @@
                                         border: 1px solid @sd-blue;
                                     }
                                 }
+                                .st-placeholder {
+                                    &:empty:after {
+                                        content: attr(placeholder);
+                                        color: gray;
+                                    }
+                                }
                                 // make a contenteditable div looking like a custom input
                                 .inline-field() {
                                     .box-sizing(border-box); // width and height doesn't include the margin

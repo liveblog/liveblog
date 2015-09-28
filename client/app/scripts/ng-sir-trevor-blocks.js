@@ -37,7 +37,6 @@ define([
             SirTrevor.Block.prototype.getOptions = function() {
                 return SirTrevor.$get().getInstance(this.instanceID).options;
             };
-
             SirTrevor.Blocks.Embed =  SirTrevor.Block.extend({
                 type: 'embed',
                 data: {},
@@ -258,7 +257,7 @@ define([
                     return this.retrieveData();
                 }
             });
-
+    
             SirTrevor.Blocks.Quote =  SirTrevor.Block.extend({
                 type: 'quote',
                 title: function() { return window.i18n.t('blocks:quote:title'); },
@@ -437,9 +436,12 @@ define([
                     return this.retrieveData();
                 }
             });
-
+            
             SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
                     var that = this;
+
+                    //add placeholder class and placeholder text
+                    this.$editor.attr('placeholder', window.gettext('Start writing here…')).addClass('st-placeholder');
                     // create and trigger a 'change' event for the $editor which is a contenteditable
                     this.$editor.filter('[contenteditable]').on('focus', function(ev) {
                         var $this = $(this);
@@ -472,7 +474,6 @@ define([
                     return html;
                 }
             };
-
             SirTrevor.Blocks.Text.prototype.onContentPasted = _.debounce(function(event) {
                 // Content pasted. Delegate to the drop parse method
                 var input = $(event.target).closest('[contenteditable]'),
