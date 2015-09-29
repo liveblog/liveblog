@@ -1,0 +1,13 @@
+Hi there,
+
+User {{name_of_user}} asks you to add him/her to the team of blog {{title}}.
+
+Please go to {{link}} to add him as a member.
+
+Thanks,
+
+The {{app_name}} Team
+
+{{app_name}} is developed by Sourcefabric and the {{app_name}} community.
+
+http://sourcefabric.org
