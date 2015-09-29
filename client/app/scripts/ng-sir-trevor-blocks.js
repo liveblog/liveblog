@@ -270,7 +270,6 @@ define([
                     return this.retrieveData();
                 }
             });
-    
             SirTrevor.Blocks.Quote =  SirTrevor.Block.extend({
                 type: 'quote',
                 title: function() { return window.i18n.t('blocks:quote:title'); },
