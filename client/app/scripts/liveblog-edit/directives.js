@@ -99,7 +99,7 @@ define([
                             return vm.pagesManager.count() < 1 && !vm.isLoading;
                         },
                         isSinglePost: function() {
-                            return vm.pagesManager.count() === 1 && !vm.isLoading;
+                            return vm.pagesManager.count() === 1;
                         },
                         isFilterEnable: function() {
                             return vm.pagesManager.authors.length > 0;
