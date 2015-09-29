@@ -32,6 +32,19 @@ define([
     angular
     .module('SirTrevorBlocks', [])
         .config(['SirTrevorProvider', function(SirTrevor) {
+
+            //replace the plus symbol with text description
+            SirTrevor.FloatingBlockControls.prototype.attributes = function() {
+                return {
+                  'data-icon': 'ADD BLOCK HERE'
+                };
+            }
+            SirTrevor.Block.prototype.attributes = function() {
+                return _.extend(SirTrevor.SimpleBlock.fn.attributes.call(this), {
+                    'data-icon-after' : "ADD BLOCK HERE"
+                });
+            }
+        
             // Add toMeta method to all blocks.
             SirTrevor.Block.prototype.toMeta = function() {return;};
             SirTrevor.Block.prototype.getOptions = function() {
