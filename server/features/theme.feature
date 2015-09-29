@@ -33,23 +33,6 @@ Feature: Themes operations
         {"_items": [{"name": "angular-base"}, {"name": "actual-dog"}]}
         """
 
-
-    @auth
-    Scenario: Assign a theme to a blog
-        Given "themes"
-        """
-        [{"name": "forest"}]
-        """
-        When we post to "blogs"
-        """
-        [{"title": "foo_blog", "blog_preferences": {"theme": "forest"}}]
-        """
-        Then we get existing resource
-        """
-        {"title": "foo_blog", "theme": {"name": "forest"}, "blog_preferences": {"theme": "forest"}}
-        """
-
-
         @auth
         Scenario: Delete a theme
         Given "global_preferences"
@@ -72,17 +55,17 @@ Feature: Themes operations
         When we post to "/blogs"
         """
         [
-         {"title": "foo blog", "blog_status": "open", "theme": {"name": "default-theme"}, "blog_preferences": {"theme": "default-theme"}}
+         {"title": "foo blog", "blog_status": "open", "blog_preferences": {"theme": "default-theme"}}
         ]
         """
         And we get "/blogs"
         Then we get list with 1 items
         """
-        {"_items": [{"title": "foo blog", "theme": {"name": "default-theme"}}]}
+        {"_items": [{"title": "foo blog", "blog_preferences": {"theme": "default-theme"}}]}
         """
         When we patch "/blogs/#blogs._id#"
         """
-        {"theme": {"_id": "#my-theme#"}}
+        {"blog_preferences": {"theme": "other-theme"}}
         """
         Then we get updated response
         When we delete "themes/#my-default-theme#"
@@ -94,5 +77,5 @@ Feature: Themes operations
         When we get "/blogs"
         Then we get list with 1 items
         """
-        {"_items": [{"title": "foo blog", "theme": {"name": "default-theme"}}]}
+        {"_items": [{"title": "foo blog", "blog_preferences": {"theme": "other-theme"}}]}
         """

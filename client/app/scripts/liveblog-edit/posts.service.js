@@ -21,7 +21,6 @@ define([
         'userList'
     ];
     function PostsService(api, $q, userList) {
-
         /**
          * Fetch a page of posts
          * @param {string} blog_id - The id of the blog

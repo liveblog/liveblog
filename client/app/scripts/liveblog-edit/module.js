@@ -11,6 +11,7 @@
 define([
     'angular',
     'lodash',
+    './unread.posts.service',
     'ng-sir-trevor',
     'ng-sir-trevor-blocks',
     'angular-embed'
@@ -18,11 +19,11 @@ define([
     'use strict';
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext',
-        'upload', 'config', 'embedService', 'postsService', 'modal',
+        'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'modal',
         'blogService', '$route', '$routeParams', 'blogSecurityService'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext,
-        upload, config, embedService, postsService, modal, blogService, $route, $routeParams, blogSecurityService) {
+        upload, config, embedService, postsService, unreadPostsService, modal, blogService, $route, $routeParams, blogSecurityService) {
 
         // return the list of items from the editor
         function getItemsFromEditor() {
@@ -48,22 +49,28 @@ define([
         }
 
         // remove and clean every items from the editor
-        function cleanEditor(publishDisabled) {
-            publishDisabled = (typeof publishDisabled === 'boolean') ? publishDisabled : true;
+        function cleanEditor(actionDisabled) {
+            actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
             vm.editor.reinitialize();
-            $scope.publishDisabled = publishDisabled;
+            $scope.actionDisabled = actionDisabled;
             $scope.currentPost = undefined;
         }
         var vm = this;
-
         // define the $scope
         angular.extend($scope, {
-            publishDisabled: true,
             blog: blog,
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
+            unreadPostsService: {
+                getUnreadContributions: unreadPostsService.getUnreadContributions
+            },
             preview: false,
+            actionPending: false,
+            actionDisabled: true,
+            actionStatus: function() {
+                return $scope.actionDisabled || $scope.actionPending;
+            },
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
             },
@@ -130,15 +137,21 @@ define([
                 });
             },
             // retrieve panel status from url
-            panelState: angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor',
+            panelState: undefined,
             openPanel: function(panel) {
                 $scope.panelState = panel;
                 // update url for deeplinking
                 $route.updateParams({panel: $scope.panelState});
+                //clear the new contribution notification
+                if (panel === 'contributions') {
+                    unreadPostsService.stopListening();
+                } else {
+                    unreadPostsService.startListening();
+                }
             },
             stParams: {
-                disableSubmit: function(publishDisabled) {
-                    $scope.publishDisabled = publishDisabled;
+                disableSubmit: function(actionDisabled) {
+                    $scope.actionDisabled = actionDisabled;
                     // because this is called outside of angular scope from sir-trevor.
                     if (!$scope.$$phase) {
                         $scope.$digest();
@@ -210,6 +223,8 @@ define([
                 $scope.preview = !$scope.preview;
             }
         });
+        // initalize the view with the editor panel
+        $scope.openPanel(angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor');
     }
 
     BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',

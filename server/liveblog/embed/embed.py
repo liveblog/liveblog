@@ -107,28 +107,23 @@ def embed(blog_id, api_host=None, theme=None):
     except RuntimeError:
         # this method can be called outside from a request context
         theme_name = theme
+    # collect static assets to load them in the template
+    theme = get_resource_service('themes').find_one(req=None, name=blog['blog_preferences'].get('theme'))
     # if a theme is provided, overwrite the default theme
     if theme_name:
         theme_package = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
-        blog['theme'] = json.loads(open(theme_package).read())
-    # collect static assets to load them in the template
+        theme = json.loads(open(theme_package).read())
     try:
-        assets, template_file = collect_theme_assets(blog['theme'])
+        assets, template_file = collect_theme_assets(theme)
     except UnknownTheme as e:
         return str(e), 500
-    # delete assets from theme object
-    for asset_type in ('scripts', 'styles'):
-        try:
-            del blog['theme'][asset_type]
-        except KeyError:
-            pass
     scope = {
         'blog': blog,
-        'settings': get_default_settings(blog.get('theme')),
+        'settings': get_default_settings(theme),
         'assets': assets,
         'api_host': api_host,
         'template': template_file,
-        'assets_root': '/%s/' % ('/'.join((THEMES_ASSETS_DIR, blog['theme']['name'])))
+        'assets_root': '/%s/' % ('/'.join((THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme'))))
     }
     return render_template('embed.html', **scope)
 
