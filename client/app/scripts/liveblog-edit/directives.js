@@ -172,6 +172,7 @@ define([
                     restrict: 'E',
                     templateUrl: 'scripts/liveblog-edit/views/post.html',
                     link: function(scope, elem, attrs) {
+                        // if the escape key is press then clear the reorder action.
                         function escClearReorder(e) {
                             if (e.keyCode === 27) {
                                 scope.clearReorder();
@@ -187,7 +188,6 @@ define([
                         }
 
                         angular.extend(scope, {
-                            // if the escape key is press then clear the reorder action.
                             functionize: function (obj) {
                                 if (typeof(obj) !== 'function') {
                                     return function() {
