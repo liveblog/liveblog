@@ -124,7 +124,12 @@
         </div>
         <!-- timeline column -->
         <div class="column column--timeline">
-            <header>Timeline</header>
+            <header>
+                <div translate class="header--timeline">Timeline</div>
+                <div class="header--live">
+                    <a href="{{ iframe_url }}" target="_blank" translate>Live</a>
+                </div>
+            </header>
             <div class="content content--timeline" lr-infinite-scroll="fetchNewTimelinePage">
                 <div>
                     <div
