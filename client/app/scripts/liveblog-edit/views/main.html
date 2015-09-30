@@ -108,8 +108,8 @@
                                     <span ng-switch-when="true"  translate>Update</span>
                                     <span ng-switch-when="false" translate>Publish</span>
                                 </button></div>
-                                <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished() || actionPending" translate>Submit</button></div>
-                                <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished() || actionPending" translate>Save draft</button></div>
+                                <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Submit</button></div>
+                                <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Save draft</button></div>
                             </div>
                         </div>
                     </div>
