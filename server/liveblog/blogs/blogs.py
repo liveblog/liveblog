@@ -27,6 +27,9 @@ from bson.objectid import ObjectId
 import superdesk
 from apps.users.services import is_admin
 from superdesk.errors import SuperdeskApiError
+import logging
+
+logger = logging.getLogger('superdesk')
 
 blogs_schema = {
     'title': metadata_schema['headline'],
@@ -83,9 +86,12 @@ def notify_members(docs, origin):
 
 
 def notify_the_owner(doc, origin):
-    owner = doc.get('original_creator')
-    add_activity('notify', 'one user requested liveblogb membership', resource=None, item=doc, notify=owner)
-    send_email_to_owner(doc, owner, origin)
+    if not get_user():
+        logger.info('there is no logged in user so no membership is allowed')
+    else:
+        owner = doc.get('original_creator')
+        add_activity('notify', 'one user requested liveblogb membership', resource=None, item=doc, notify=owner)
+        send_email_to_owner(doc, owner, origin)
 
 
 def send_email_to_owner(doc, owner, origin):
