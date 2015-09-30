@@ -356,6 +356,10 @@ function TimelinePage(blog) {
         return self;
     };
 
+    self.canBeMoved = function(index) {
+        return self.column.element(self.byPosts.row(index)).element(self.byStartMoving).isPresent();
+    };
+
     self.moveTo = function(index) {
         self.column.element(self.byPosts.row(index)).element(self.byMoveTo).click();
         return self;
