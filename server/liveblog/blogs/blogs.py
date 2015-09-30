@@ -11,7 +11,6 @@
 
 from superdesk.notification import push_notification
 from superdesk.utc import utcnow
-from eve.utils import ParsedRequest
 from superdesk.services import BaseService
 from liveblog.common import get_user, update_dates_for
 from apps.content import metadata_schema
@@ -153,12 +152,6 @@ class BlogService(BaseService):
             push_notification(self.notification_key, created=1, blog_id=str(doc.get('_id')))
         # and members with emails
         notify_members(docs, app.config['CLIENT_URL'])
-
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        docs = super().get(req, lookup)
-        return docs
 
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
