@@ -9,10 +9,11 @@
       index=$index
       posts-list-ctrl="postsList"
       start-reorder="postsList.startReorder(post)"
+      clear-reorder-action="postsList.clearReorder"
       reorder="postsList.reorder(index, location)"
       reorder-post="postsList.reorderPost"
       keep-highlighted="postsList.keepHighlighted"
-      on-edit-click="postsList.onPostSelected">
+      on-edit-action="postsList.onPostSelected">
     </lb-post>
 </ul>
 <div ng-if="postsList.reorderPost" class="cancel-reorder">

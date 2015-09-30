@@ -17,82 +17,84 @@ describe('Contributions Posts', function() {
 
     it('can create contributions and respect the order and show the notifications', function() {
         var blog = blogs.openBlog(0);
-        var contrib1 = blog.editor.createContribution();
-        var contrib2 = blog.editor.createContribution();
-
-        blog.expectNotificationsNo(2);
-
-        // check
-        blog.openContributions()
-            .expectPost(0, contrib2.quote)
-            .expectPost(1, contrib1.quote);
-
+        blog.editor.createContribution().then(function(contrib1) {
+            blog.editor.createContribution().then(function(contrib2) {
+                blog.expectNotificationsNo(2);
+                blog.openContributions()
+                    .expectPost(0, contrib2.quote)
+                    .expectPost(1, contrib1.quote);
+            });
+        });
     });
 
     it('can publish a contribution', function() {
         var blog = blogs.openBlog(0);
-        blog.editor.createContribution();
-        var contributions = blog.openContributions();
-        var first_contrib = contributions.get(0);
-        contributions.publish(first_contrib);
-        expect(blogs.blog.timeline.get(0).isPresent()).toBe(true);
-        blog.openContributions();
-        expect(contributions.all().count()).toBe(0);
-    });
-
-    it('can open a contributions in the editor and publish it', function() {
-        var blog = blogs.openBlog(0);
-        var contrib = blog.editor.createContribution();
-        var contributions = blog.openContributions();
-        var draft = contributions.get(0);
-        contributions.edit(draft);
-        var editor = blog.openEditor();
-        expect(editor.textElement.getText()).toEqual(contrib.body);
-        editor.publish().then(function() {
+        blog.editor.createContribution().then(function() {
+            var contributions = blog.openContributions();
+            var first_contrib = contributions.get(0);
+            contributions.publish(first_contrib);
             expect(blogs.blog.timeline.get(0).isPresent()).toBe(true);
             blog.openContributions();
             expect(contributions.all().count()).toBe(0);
         });
     });
 
+    it('can open a contributions in the editor and publish it', function() {
+        var blog = blogs.openBlog(0);
+        blog.editor.createContribution().then(function(contrib) {
+            var contributions = blog.openContributions();
+            var draft = contributions.get(0);
+            contributions.edit(draft);
+            var editor = blog.openEditor();
+            expect(editor.textElement.getText()).toEqual(contrib.body);
+            editor.publish().then(function() {
+                expect(blogs.blog.timeline.get(0).isPresent()).toBe(true);
+                blog.openContributions();
+                expect(contributions.all().count()).toBe(0);
+            });
+        });
+    });
+
     it('can open a contributions in the editor and update it', function() {
         var blog = blogs.openBlog(0);
-        var contrib = blog.editor.createContribution();
-        var contributions = blog.openContributions();
-        var draft = contributions.get(0);
-        contributions.edit(draft);
-        var editor = blog.openEditor();
-        expect(editor.textElement.getText()).toEqual(contrib.body);
-        editor.quoteElement.clear().sendKeys('update');
-        editor.saveContribution();
-        blog.openContributions().expectPost(0, 'update');
-        expect(contributions.all().count()).toBe(1);
+        blog.editor.createContribution().then(function(contrib) {
+            var contributions = blog.openContributions();
+            var draft = contributions.get(0);
+            contributions.edit(draft);
+            var editor = blog.openEditor();
+            expect(editor.textElement.getText()).toEqual(contrib.body);
+            editor.quoteElement.clear().sendKeys('update');
+            editor.saveContribution();
+            blog.openContributions().expectPost(0, 'update');
+            expect(contributions.all().count()).toBe(1);
+        });
     });
 
     it('can\'t open a contributions from other in the editor', function() {
-        var blog = blogs.openBlog(0);
-        var contrib = blog.editor.createContribution();
-        browser.driver.manage().window().setSize(1280, 1024);
-        browser.get('/');
-        element(by.css('button.current-user')).click();
-        // wait for sidebar animation to finish
-        browser.wait(function() {
-            return element(by.buttonText('SIGN OUT')).isDisplayed();
-        }, 1000);
-        element(by.buttonText('SIGN OUT')).click();
-        browser.wait(function() {
-            return browser.driver.isElementPresent(by.id('login-btn'));
-        }, 5000);
-        browser.executeScript('window.sessionStorage.clear();');
-        browser.executeScript('window.localStorage.clear();');
-        browser.sleep(2000); // it reloads page
-        login('contributor', 'contributor').then(function() {
-            var contributions = blogs.openBlog(0).openContributions();
+        var blog = blogs.openBlog(3);
+        blog.editor.createContribution().then(function(contrib) {
+            browser.driver.manage().window().setSize(1280, 1024);
+            browser.get('/');
+            element(by.css('button.current-user')).click();
+            // wait for sidebar animation to finish
             browser.wait(function() {
-                return element(contributions.byPosts).isPresent();
+                return element(by.buttonText('SIGN OUT')).isDisplayed();
+            }, 1000);
+            element(by.buttonText('SIGN OUT')).click();
+            browser.wait(function() {
+                return browser.driver.isElementPresent(by.id('login-btn'));
             }, 5000);
-            contributions.expectPost(0, contrib.quote);
-            expect(contributions.editButtonIsPresent(contributions.get(0))).toBe(false);
+            browser.executeScript('window.sessionStorage.clear();');
+            browser.executeScript('window.localStorage.clear();');
+            browser.sleep(2000); // it reloads page
+            login('contributor', 'contributor').then(function() {
+                var contributions = blogs.openBlog(3).openContributions();
+                browser.wait(function() {
+                    return element(contributions.byPosts).isPresent();
+                }, 5000);
+                contributions.expectPost(0, contrib.quote);
+                expect(contributions.editButtonIsPresent(contributions.get(0))).toBe(false);
+            });
         });
     });
 

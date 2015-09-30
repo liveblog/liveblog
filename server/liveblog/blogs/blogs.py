@@ -25,6 +25,8 @@ from superdesk.emails import send_email
 import liveblog.embed
 from bson.objectid import ObjectId
 import superdesk
+from apps.users.services import is_admin
+from superdesk.errors import SuperdeskApiError
 
 blogs_schema = {
     'title': metadata_schema['headline'],
@@ -178,8 +180,16 @@ class BlogService(BaseService):
 
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
-        # this notification will make sense after LBDS-663 will be merged
         notify_the_owner(doc, app.config['CLIENT_URL'])
+        # check if the current user has permission to open a blog
+        if not is_admin(get_user()):
+            # get members ids
+            members = [str(m['user']) for m in doc.get('members', [])]
+            # add owner id to members
+            members.append(doc.get('original_creator'))
+            # check if current user belongs to members, and raise an exeption if not
+            if str(get_user().get('_id')) not in members:
+                raise SuperdeskApiError.forbiddenError(message='you do not have permission to open this blog')
         return doc
 
     def on_update(self, updates, original):
