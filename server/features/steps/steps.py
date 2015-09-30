@@ -1035,6 +1035,14 @@ def when_we_switch_user(context):
     set_placeholder(context, 'USERS_ID', str(context.user['_id']))
 
 
+@when('we switch to user of type user')
+def when_we_switch_user_of_type_user(context):
+    user = {'username': 'test-user-2', 'password': 'pwd', 'is_active': True, 'needs_activation': False,
+            'user_type': 'user'}
+    tests.setup_auth_user(context, user)
+    set_placeholder(context, 'USERS_ID', str(context.user['_id']))
+
+
 @when('we setup test user')
 def when_we_setup_test_user(context):
     tests.setup_auth_user(context, test_user)

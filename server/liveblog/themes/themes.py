@@ -88,6 +88,11 @@ class ThemesResource(Resource):
         'source': 'themes',
         'default_sort': [('_updated', -1)]
     }
+    additional_lookup = {
+        'url': 'regex("[\w\-]+")',
+        'field': 'name'
+    }
+    # point accessible at '/themes/<theme_name>'.
     ITEM_METHODS = ['GET', 'POST', 'DELETE']
     privileges = {'GET': 'global_preferences', 'POST': 'global_preferences',
                   'PATCH': 'global_preferences', 'DELETE': 'global_preferences'}
@@ -149,11 +154,11 @@ class ThemesService(BaseService):
             raise SuperdeskApiError.forbiddenError('This theme has children. It can\'t be removed')
         # update all the blogs using the removed theme and assign the default theme
         blogs_service = get_resource_service('blogs')
-        default_theme = blogs_service.get_theme_snapshot(global_default_theme)
         blogs = blogs_service.get(req=None, lookup={'theme._id': deleted_theme['_id']})
         for blog in blogs:
             # will assign the default theme to this blog
-            blogs_service.system_update(ObjectId(blog['_id']), {'theme': default_theme}, blog)
+            blog['blog_preferences']['theme'] = global_default_theme.get('name')
+            blogs_service.system_update(ObjectId(blog['_id']), {'blog_preferences': blog['blog_preferences']}, blog)
 
     def get_dependencies(self, theme_name, deps=[]):
         ''' return a list of the dependencies names '''
