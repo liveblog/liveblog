@@ -9,17 +9,21 @@ Feature: Items operations
 
     @auth
     Scenario: Add item
-		Given "roles"
+    	Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
         """
-        Given we have "Contributor" role
-        Given empty "items"
-        Given we have "user" as type of user
-        Given "blogs"
-		"""
-		[{"title": "test_blog1"}]
-		"""
+        Given "users"
+        """
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
+        """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
         When we post to "items"
         """
         [{"text": "test item for an open blog", "blog": "#blogs._id#"}]
@@ -37,17 +41,22 @@ Feature: Items operations
 
 	@auth
     Scenario: Update item
-		Given "roles"
-		"""
-		[{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
-		"""
-		Given we have "Contributor" role
-		Given we have "user" as type of user
-    	Given "blogs"
-		"""
-		[{"title": "test_blog1"}]
-		"""
-       When we post to "items"
+    	Given "roles"
+        """
+        [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
+        """
+        Given "users"
+        """
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
+        """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
+       	When we post to "items"
         """
         [{"text": "test item for an open blog", "blog": "#blogs._id#"}]
         """
@@ -63,17 +72,22 @@ Feature: Items operations
 
 	@auth
     Scenario: Delete item
-		Given "roles"
+    	Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
         """
-        Given we have "Contributor" role
-		Given we have "user" as type of user
+        Given "users"
+        """
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
+        """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
         Given empty "items"
-        Given "blogs"
-		"""
-		[{"title": "test_blog1"}]
-		"""
         When we post to "items"
         """
         [{"text": "test item", "blog": "#blogs._id#"}]

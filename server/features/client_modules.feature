@@ -16,7 +16,7 @@ Feature: Client modules operations
         {"_items": [{"title": "testBlog one", "blog_status": "open"}, {"title": "testBlog two"}]}
         """
 
-    Scenario: List a single client_blog
+	Scenario: List a single client_blog
         Given "blogs"
         """
         [{"guid": "blog-1", "title": "test_blog"}]
