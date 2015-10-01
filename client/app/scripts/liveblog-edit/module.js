@@ -199,9 +199,6 @@ define([
             fetchNewTimelinePage: function() {
                 vm.timelineInstance.fetchNewPage();
             },
-            isTimelineLoading: function() {
-                return vm.timelineInstance.isLoading;
-            },
             isTimelineReordering: function() {
                 return vm.timelineInstance.reorderPost;
             },
