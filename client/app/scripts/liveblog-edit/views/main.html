@@ -126,6 +126,11 @@
         <div class="column column--timeline">
             <header>
                 <div translate class="header--timeline">Timeline</div>
+                <div class="loading-indicator" ng-show="isTimelineLoading()"><span translate>loading</span></div>
+                <div ng-if="isTimelineReordering()" class="cancel-reorder">
+                    <i class="svg-icon-move fix-cancel-move-icon"></i>
+                    <button class="btn fix-cancel-move-button" tranlate ng-click="clearTimelineReordering();">Cancel</button>
+                </div>
                 <div class="header--live">
                     <a href="{{ iframe_url }}" target="_blank" translate>Live</a>
                 </div>

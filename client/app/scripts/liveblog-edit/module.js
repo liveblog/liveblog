@@ -199,6 +199,15 @@ define([
             fetchNewTimelinePage: function() {
                 vm.timelineInstance.fetchNewPage();
             },
+            isTimelineLoading: function() {
+                return vm.timelineInstance.isLoading;
+            },
+            isTimelineReordering: function() {
+                return vm.timelineInstance.reorderPost;
+            },
+            clearTimelineReordering: function() {
+                return vm.timelineInstance.clearReorder();
+            },
             isBlogOpened: function() {
                 return $scope.blog.blog_status === 'open';
             },
