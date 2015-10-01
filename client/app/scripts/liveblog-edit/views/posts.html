@@ -1,4 +1,3 @@
-<div class="loading-indicator" ng-show="postsList.isLoading || 1"><span translate>loading</span></div>
 <div ng-if="postsList.isPostsEmpty()" class="alert alert-info" role="alert">
     <ng-transclude></ng-transclude>
 </div>
@@ -16,7 +15,3 @@
       on-edit-action="postsList.onPostSelected">
     </lb-post>
 </ul>
-<div ng-if="postsList.reorderPost" class="cancel-reorder">
-    <i class="svg-icon-move fix-cancel-move-icon"></i>
-    <button class="btn fix-cancel-move-button" tranlate ng-click="postsList.clearReorder();">Cancel</button>
-</div>
