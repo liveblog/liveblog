@@ -34,7 +34,9 @@
         <!-- LIST VIEW -->
         <table class="row-list table table-striped" ng-if="!gridview">
             <tbody>
-                <tr ng-repeat="blog in blogs._items track by blog._id" ng-click="edit(blog)">
+                <tr ng-repeat="blog in blogs._items track by blog._id"
+                    ng-click="!isUserAllowedToOpenBlog(blog) || edit(blog)"
+                    ng-class="{'can-access': isUserAllowedToOpenBlog(blog)}">
                     <td class="content">
                         <h3>{{ ::blog.title }} <small>by {{ ::blog.original_creator | username }}</small></h3>
                         <div class="description">{{ ::blog.description }}</div>
@@ -48,7 +50,9 @@
         </table>
         <!-- GRID VIEW -->
         <ul class="card-list" ng-if="gridview">
-            <li ng-repeat="blog in blogs._items track by blog._id" ng-click="edit(blog)">
+            <li ng-repeat="blog in blogs._items track by blog._id"
+                ng-click="!isUserAllowedToOpenBlog(blog) || edit(blog)"
+                ng-class="{'can-access': isUserAllowedToOpenBlog(blog)}">
                 <figure class="media">
                     <div ng-if="blog.picture_url" if-background-image="{{blog.picture_url}}"></div>
                 </figure>

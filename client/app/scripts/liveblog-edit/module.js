@@ -59,6 +59,7 @@ define([
         // define the $scope
         angular.extend($scope, {
             blog: blog,
+            iframe_url: blogService.getIframe(blog),
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
@@ -228,9 +229,9 @@ define([
     }
 
     BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
-        'gettext', 'config', 'modal', '$q', 'upload'];
+        'gettext', 'modal', '$q', 'upload'];
     function BlogSettingsController($scope, blog, api, blogService, $location, notify,
-        gettext, config, modal, $q, upload) {
+        gettext, modal, $q, upload) {
         // set view's model
         var vm = this;
         angular.extend(vm, {
@@ -271,9 +272,7 @@ define([
                 }
                 vm.tab = tab;
             },
-            // take the public url (from s3) or the local address
-            // FIXME: The local address shouldn't be given on production mode
-            iframe_url: blog.public_url || config.server.url.replace('/api', '/embed/' + blog._id),
+            iframe_url: blogService.getIframe(blog),
             setFormsPristine: function() {
                 if (vm.forms.dirty) {
                     vm.forms.dirty = false;
@@ -497,47 +496,10 @@ define([
         'superdesk.services.modal',
         'superdesk.upload',
         'liveblog.pages-manager',
-        'lrInfiniteScroll'
-    ]);
-    app.service('blogSecurityService',
-        ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges',
-        function($q, $rootScope, $route, blogService, $location, privileges) {
-        function canPublishAPost(blog) {
-            return privileges.userHasPrivileges({'publish_post': 1});
-        }
-        function isAdmin() {
-            return $rootScope.currentUser.user_type === 'administrator';
-        }
-        function isUserOwnerOrAdmin(archive) {
-            return $rootScope.currentUser._id === archive.original_creator || isAdmin();
-        }
-        function canAccessSettings(archive) {
-            return privileges.userHasPrivileges({'blogs': 1}) && isUserOwnerOrAdmin(archive);
-        }
-        function goToSettings() {
-            var def = $q.defer();
-            blogService.get($route.current.params._id)
-            .then(function(response) {
-                if (canAccessSettings(response)) {
-                    def.resolve();
-                } else {
-                    def.reject();
-                    $location.path('/liveblog/edit/' + $route.current.params._id);
-                }
-            }, function() {
-                $location.path('/liveblog');
-                def.reject('You do not have permission to change the settings of this blog');
-            });
-            return def.promise;
-        }
-        return {
-            goToSettings: goToSettings,
-            isUserOwnerOrAdmin: isUserOwnerOrAdmin,
-            canAccessSettings: canAccessSettings,
-            canPublishAPost: canPublishAPost
-        };
-    }]);
-    app.config(['superdeskProvider', function(superdesk) {
+        'lrInfiniteScroll',
+        'liveblog.security'
+    ])
+    .config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/liveblog/edit/:_id', {
             label: gettext('Blog Edit'),
             auth: true,

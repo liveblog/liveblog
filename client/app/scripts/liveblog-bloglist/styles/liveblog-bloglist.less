@@ -5,127 +5,137 @@
 @import 'variables.less';
 
 .bloglist {
-	header {
-		position: absolute;
-		top: 0; left: 0; right: 0;
-		height: @nav-height;
-		border-bottom: 1px solid #e0e0e0;
-		.view-select {
-			button {
-				border: 0;
-				background: none;
-				padding: 10px;
-			}
-		}
-	}
-	.list-container {
-		position: absolute;
-		top: @nav-height;
-		left: 0; right: 0; bottom: 0;
-		padding: 30px;
-		.row-list {
-			tr {
-				cursor: pointer;
-				.content {
-					.time {
-						font-size: 13px;
-						font-style: italic;
-						color: #bcbcbc;
-					}
-				}
-			}
-		}
-		.card-list {
-			> li {
-				border: 1px solid #d4d4d4;
-				background-color: white;
-				margin: 0 0 20px 20px;
-				padding: 10px;
-				cursor: pointer;
-				width: 260px;
-				.border-box();
-				float: left;
-				.close {
-					position: absolute;
-					right: 10px;
-					top: 10px;
-				}
+    header {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: @nav-height;
+        border-bottom: 1px solid #e0e0e0;
+        .view-select {
+            button {
+                border: 0;
+                background: none;
+                padding: 10px;
+            }
+        }
+    }
+    .list-container {
+        position: absolute;
+        top: @nav-height;
+        left: 0; right: 0; bottom: 0;
+        padding: 30px;
+        .row-list {
+            tr {
+                &.can-access {
+                    cursor: pointer;
+                    opacity: 1;
+                }
+                cursor: default;
+                opacity: .5;
+                .content {
+                    .time {
+                        font-size: 13px;
+                        font-style: italic;
+                        color: #bcbcbc;
+                    }
+                }
+            }
+        }
+        .card-list {
+            > li {
+                &:not(.can-access):hover {.box-shadow(none);}
+                &.can-access {
+                    cursor: pointer;
+                    opacity: 1;
+                }
+                cursor: default;
+                opacity: .5;
+                border: 1px solid #d4d4d4;
+                background-color: white;
+                margin: 0 0 20px 20px;
+                padding: 10px;
+                width: 260px;
+                .border-box();
+                float: left;
+                .close {
+                    position: absolute;
+                    right: 10px;
+                    top: 10px;
+                }
                 .media {
                     max-width: 100%;
-                    height: 140px;                    
+                    height: 140px;
                     .border-box();
                     background: #f8f8f8 url('../../images/blog-default-img.png') no-repeat center center;
                     div {
-                    	width: 238px;
-                    	height: 140px;
-                    	background-position: center center;
-                    	background-size: cover;
+                        width: 238px;
+                        height: 140px;
+                        background-position: center center;
+                        background-size: cover;
                     }
                 }
-				.content {
-					height: 70px;
-					.border-box();
-					padding: 0;
-					overflow: hidden;
-					margin: 10px 0 0;
-					.time {
-						font-size: 13px;
-						font-style: italic;
-						color: #bcbcbc;
-					}
-					h3 {
-						color: @sd-blue;
-						padding: 0 0 5px 0;
-						max-height: 54px;
-						font-size: 16px;
-						line-height: 20px;
-						white-space: nowrap;
-  						overflow: hidden;
-  						text-overflow: ellipsis;
-					}
-					.description {
-						max-height: 30px;
-						font-size: 12px;
-						line-height: 15px;
-						color: @gray;
-						overflow: hidden;
-					}
-				}
-
-				.footer {
-					height: 65px;
-					border-top: 1px solid #ebebeb;
-					padding: 10px 10px 5px 10px;
-					margin: 0 -10px;
-					.border-box();
-					dl {
-						margin: 0;
-						font-size: 11px;
-						dt {
-							.text-light();
-							clear: both;
-							float: left;
-							color: #b4b4b4;
-							font-weight: 400;
-							line-height: 16px;
-							min-width: 82px;
-							text-transform: uppercase;
-						}
-						dd {
-							.text-light();
-							float: left;
-							font-weight: 400;
-							line-height: 16px;
-						}
-					}
-				};
-			}
-		}
-	}
+                .content {
+                    height: 70px;
+                    .border-box();
+                    padding: 0;
+                    overflow: hidden;
+                    margin: 10px 0 0;
+                    .time {
+                        font-size: 13px;
+                        font-style: italic;
+                        color: #bcbcbc;
+                    }
+                    h3 {
+                        color: @sd-blue;
+                        padding: 0 0 5px 0;
+                        max-height: 54px;
+                        font-size: 16px;
+                        line-height: 20px;
+                        white-space: nowrap;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                    }
+                    .description {
+                        max-height: 30px;
+                        font-size: 12px;
+                        line-height: 15px;
+                        color: @gray;
+                        overflow: hidden;
+                    }
+                }
+                .footer {
+                    height: 65px;
+                    border-top: 1px solid #ebebeb;
+                    padding: 10px 10px 5px 10px;
+                    margin: 0 -10px;
+                    .border-box();
+                    dl {
+                        margin: 0;
+                        font-size: 11px;
+                        dt {
+                            .text-light();
+                            clear: both;
+                            float: left;
+                            color: #b4b4b4;
+                            font-weight: 400;
+                            line-height: 16px;
+                            min-width: 82px;
+                            text-transform: uppercase;
+                        }
+                        dd {
+                            .text-light();
+                            float: left;
+                            font-weight: 400;
+                            line-height: 16px;
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 .creation-steps {
-	margin-top: 50px;
+    margin-top: 50px;
 }
 .team_settings {
 	.search-result {
@@ -179,4 +189,3 @@
 		filter: alpha(opacity=60);
 	}
 }
-
