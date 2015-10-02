@@ -200,7 +200,8 @@ define([
                 vm.timelineInstance.fetchNewPage();
             },
             isTimelineReordering: function() {
-                return vm.timelineInstance.reorderPost;
+                //vm.timelineInstance may not be instantiated yet when isTimelineReordering is first checked
+                return vm.timelineInstance ? vm.timelineInstance.reorderPost: false;
             },
             clearTimelineReordering: function() {
                 return vm.timelineInstance.clearReorder();
