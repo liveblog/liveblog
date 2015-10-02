@@ -108,7 +108,7 @@ def send_members_email(recipients, user_name, doc, title, url):
 
 @celery.task(soft_time_limit=1800)
 def publish_blog_embed_on_s3(blog_id, safe=True):
-    blog = get_resource_service('blogs').find_one(req=None, _id=blog_id)
+    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if blog['blog_preferences'].get('theme', False):
         try:
             public_url = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
