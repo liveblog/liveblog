@@ -199,6 +199,8 @@
                             border-radius: 0;
                             padding: 5px 0;
                             line-height: 1;
+                            font-family: 'Roboto';
+                            font-size: 13px;
                         }
                         .st-block-controls__top:hover:before, .st-block--with-plus:after {
                             cursor: pointer;
@@ -392,6 +394,12 @@
                                     .border-radius(3px);
                                     &:focus, &:hover {
                                         border: 1px solid @sd-blue;
+                                    }
+                                }
+                                .st-placeholder {
+                                    &:empty:after {
+                                        content: attr(placeholder);
+                                        color: gray;
                                     }
                                 }
                                 // make a contenteditable div looking like a custom input

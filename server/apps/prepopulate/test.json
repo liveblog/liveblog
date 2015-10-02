@@ -198,7 +198,8 @@
         "title": "title: end to end two",
         "versioncreated" : "2014-02-03T19:35:00+0000",
         "description": "description: end to end two"
-    }
+    },
+    "id_name": "-id blog two-"
 },
 {
     "resource": "blogs",
@@ -885,6 +886,37 @@
                 "id": "main",
                 "refs": [{
                     "residRef": "-id post nineteen item one-"
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
+},
+{
+    "resource": "items",
+    "username": "editor",
+    "data": {
+        "firstcreated": "2013-11-11T11:11:12+00:00",
+        "text": "text post one: end to end item one",
+        "item_type": "text"
+    },
+    "id_name": "-blog two id post one item one-"
+},
+{
+    "resource": "posts",
+    "username": "editor",
+    "data": {
+        "firstcreated": "2013-11-11T11:11:21+00:00",
+        "blog": "-id blog two-",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-blog two id post one item one-"
                 }],
                 "role": "grpRole:Main"
             }]
