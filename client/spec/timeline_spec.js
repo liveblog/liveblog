@@ -50,4 +50,8 @@ describe('timeline', function() {
         blog.timeline.moveTo(0);
         blog.timeline.expectPost(0, posts[1][0]);
     });
+    it('can\'t reorder a single post on the timeline', function() {
+        var blog = blogs.openBlog(2);
+        expect(blog.timeline.canBeMoved(0)).toEqual(false);
+    });
 });

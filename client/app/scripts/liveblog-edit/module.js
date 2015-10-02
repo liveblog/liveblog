@@ -11,6 +11,7 @@
 define([
     'angular',
     'lodash',
+    './unread.posts.service',
     'ng-sir-trevor',
     'ng-sir-trevor-blocks',
     'angular-embed'
@@ -18,11 +19,11 @@ define([
     'use strict';
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext',
-        'upload', 'config', 'embedService', 'postsService', 'modal',
+        'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'modal',
         'blogService', '$route', '$routeParams', 'blogSecurityService'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext,
-        upload, config, embedService, postsService, modal, blogService, $route, $routeParams, blogSecurityService) {
+        upload, config, embedService, postsService, unreadPostsService, modal, blogService, $route, $routeParams, blogSecurityService) {
 
         // return the list of items from the editor
         function getItemsFromEditor() {
@@ -48,25 +49,35 @@ define([
         }
 
         // remove and clean every items from the editor
-        function cleanEditor() {
+        function cleanEditor(actionDisabled) {
+            actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
             vm.editor.reinitialize();
+            $scope.actionDisabled = actionDisabled;
             $scope.currentPost = undefined;
         }
         var vm = this;
-
         // define the $scope
         angular.extend($scope, {
             blog: blog,
+            iframe_url: blogService.getIframe(blog),
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
+            unreadPostsService: {
+                getUnreadContributions: unreadPostsService.getUnreadContributions
+            },
             preview: false,
+            actionPending: false,
+            actionDisabled: true,
+            actionStatus: function() {
+                return $scope.actionDisabled || $scope.actionPending;
+            },
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
             },
             openPostInEditor: function (post) {
                 function fillEditor(post) {
-                    cleanEditor();
+                    cleanEditor(false);
                     $scope.currentPost = angular.copy(post);
                     var items = post.groups[1].refs;
                     items.forEach(function(item) {
@@ -127,13 +138,26 @@ define([
                 });
             },
             // retrieve panel status from url
-            panelState: angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor',
+            panelState: undefined,
             openPanel: function(panel) {
                 $scope.panelState = panel;
                 // update url for deeplinking
                 $route.updateParams({panel: $scope.panelState});
+                //clear the new contribution notification
+                if (panel === 'contributions') {
+                    unreadPostsService.stopListening();
+                } else {
+                    unreadPostsService.startListening();
+                }
             },
             stParams: {
+                disableSubmit: function(actionDisabled) {
+                    $scope.actionDisabled = actionDisabled;
+                    // because this is called outside of angular scope from sir-trevor.
+                    if (!$scope.$$phase) {
+                        $scope.$digest();
+                    }
+                },
                 coverMaxWidth: 350,
                 embedService: embedService,
                 // provide an uploader to the editor for media (custom sir-trevor image block uses it)
@@ -175,6 +199,13 @@ define([
             fetchNewTimelinePage: function() {
                 vm.timelineInstance.fetchNewPage();
             },
+            isTimelineReordering: function() {
+                //vm.timelineInstance may not be instantiated yet when isTimelineReordering is first checked
+                return vm.timelineInstance ? vm.timelineInstance.reorderPost: false;
+            },
+            clearTimelineReordering: function() {
+                return vm.timelineInstance.clearReorder();
+            },
             isBlogOpened: function() {
                 return $scope.blog.blog_status === 'open';
             },
@@ -200,12 +231,14 @@ define([
                 $scope.preview = !$scope.preview;
             }
         });
+        // initalize the view with the editor panel
+        $scope.openPanel(angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor');
     }
 
     BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
-        'gettext', 'config', 'modal', '$q', 'upload'];
+        'gettext', 'modal', '$q', 'upload'];
     function BlogSettingsController($scope, blog, api, blogService, $location, notify,
-        gettext, config, modal, $q, upload) {
+        gettext, modal, $q, upload) {
         // set view's model
         var vm = this;
         angular.extend(vm, {
@@ -246,9 +279,7 @@ define([
                 }
                 vm.tab = tab;
             },
-            // take the public url (from s3) or the local address
-            // FIXME: The local address shouldn't be given on production mode
-            iframe_url: blog.public_url || config.server.url.replace('/api', '/embed/' + blog._id),
+            iframe_url: blogService.getIframe(blog),
             setFormsPristine: function() {
                 if (vm.forms.dirty) {
                     vm.forms.dirty = false;
@@ -472,43 +503,10 @@ define([
         'superdesk.services.modal',
         'superdesk.upload',
         'liveblog.pages-manager',
-        'lrInfiniteScroll'
-    ]);
-    app.service('blogSecurityService',
-        ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges',
-        function($q, $rootScope, $route, blogService, $location, privileges) {
-        function canPublishAPost(blog) {
-            return privileges.userHasPrivileges({'publish_post': 1});
-        }
-        function isAdmin() {
-            return $rootScope.currentUser.user_type === 'administrator';
-        }
-        function isUserOwnerOrAdmin(archive) {
-            return $rootScope.currentUser._id === archive.original_creator || isAdmin();
-        }
-        function goToSettings() {
-            var def = $q.defer();
-            blogService.get($route.current.params._id)
-            .then(function(response) {
-                if (isUserOwnerOrAdmin(response)) {
-                    def.resolve();
-                } else {
-                    def.reject();
-                    $location.path('/liveblog/edit/' + $route.current.params._id);
-                }
-            }, function() {
-                $location.path('/liveblog');
-                def.reject('You do not have permission to change the settings of this blog');
-            });
-            return def.promise;
-        }
-        return {
-            goToSettings: goToSettings,
-            isUserOwnerOrAdmin: isUserOwnerOrAdmin,
-            canPublishAPost: canPublishAPost
-        };
-    }]);
-    app.config(['superdeskProvider', function(superdesk) {
+        'lrInfiniteScroll',
+        'liveblog.security'
+    ])
+    .config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/liveblog/edit/:_id', {
             label: gettext('Blog Edit'),
             auth: true,

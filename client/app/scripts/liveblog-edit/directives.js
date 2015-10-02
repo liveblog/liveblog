@@ -98,6 +98,9 @@ define([
                         isPostsEmpty: function() {
                             return vm.pagesManager.count() < 1 && !vm.isLoading;
                         },
+                        isSinglePost: function() {
+                            return vm.pagesManager.count() === 1;
+                        },
                         isFilterEnable: function() {
                             return vm.pagesManager.authors.length > 0;
                         },
@@ -148,18 +151,20 @@ define([
             }
         ])
         .directive('lbPost', [
-            'notify', 'gettext', 'asset', 'postsService', 'modal', 'blogSecurityService',
-            function(notify, gettext, asset, postsService, modal, blogSecurityService) {
+            'notify', 'gettext', 'asset', 'postsService', 'modal', 'blogSecurityService', '$document',
+            function(notify, gettext, asset, postsService, modal, blogSecurityService, $document) {
                 return {
                     scope: {
                         post: '=',
-                        onEditClick: '=',
+                        onEditAction: '=',
                         //the post that is in the process of being reordered
                         reorderPost: '=',
                         //the order property of the post that was reordered and should stay highlighted a bit more
                         keepHighlighted: '=',
                         //call when the user clicks on the reorder icon
                         startReorder: '&',
+                        //call when the user escaped the reorder action
+                        clearReorderAction: '=',
                         //call when the user has chosen a new place for the post
                         reorder: '&',
                         //the index of the post in the list
@@ -170,7 +175,12 @@ define([
                     restrict: 'E',
                     templateUrl: 'scripts/liveblog-edit/views/post.html',
                     link: function(scope, elem, attrs) {
-
+                        // if the escape key is press then clear the reorder action.
+                        function escClearReorder(e) {
+                            if (e.keyCode === 27) {
+                                scope.clearReorder();
+                            }
+                        }
                         function changePostStatus(post, status) {
                             // don't save the original post coming for the posts list, because it needs
                             // to conserve its original update date in the posts list directive
@@ -189,9 +199,6 @@ define([
                                 }
                                 return obj;
                             },
-                            isAbleToEditContribution: function(post) {
-                                return blogSecurityService.canPublishAPost() || blogSecurityService.isUserOwner(post);
-                            },
                             toggleMultipleItems: function() {
                                 scope.show_all = !scope.show_all;
                             },
@@ -205,18 +212,29 @@ define([
                                 });
                             },
                             preMovePost: function(post) {
+                                $document.bind('keypress', escClearReorder);
                                 scope.startReorder({post: post});
                             },
                             movePost: function(index, location) {
                                 scope.reorder({index: index, location: location});
                             },
+                            clearReorder: function() {
+                                $document.unbind('keypress', escClearReorder);
+                                scope.clearReorderAction();
+                            },
+                            onEditClick: function(post) {
+                                scope.clearReorder();
+                                scope.onEditAction(post);
+                            },
                             askRemovePost: function(post) {
+                                scope.clearReorder();
                                 modal.confirm(gettext('Are you sure you want to delete the post?'))
                                     .then(function() {
                                         scope.removePost(post);
                                     });
                             },
                             unpublishPost: function(post) {
+                                scope.clearReorder();
                                 changePostStatus(post, 'submitted').then(function(post) {
                                     notify.pop();
                                     notify.info(gettext('Post saved as contribution'));
@@ -226,6 +244,7 @@ define([
                                 });
                             },
                             publishPost: function(post) {
+                                scope.clearReorder();
                                 changePostStatus(post, 'open').then(function(post) {
                                     notify.pop();
                                     notify.info(gettext('Post published'));

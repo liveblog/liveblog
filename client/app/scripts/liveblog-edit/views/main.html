@@ -5,7 +5,7 @@
         </a>
     </div>
     <h3 class="page-nav-title">{{ blog.title }}</h3>
-    <div class="button-stack right-stack" ng-if="blogSecurityService.isUserOwnerOrAdmin(blog)">
+    <div class="button-stack right-stack" ng-if="blogSecurityService.canAccessSettings(blog)">
         <a class="navbtn settings-link" ng-href="#/liveblog/settings/{{::blog._id}}">
             <i class="svg-icon-settings"></i>
         </a>
@@ -20,6 +20,7 @@
             <i class="big-icon-editor" alt="editor"></i>
         </button>
         <button class="navbtn" ng-click="openPanel('contributions')" ng-class="{'active': panelState === 'contributions'}">
+            <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.getUnreadContributions() > 0">{{ unreadPostsService.getUnreadContributions() }}</span>
             <i class="big-icon-contributions" alt="contributions"></i>
         </button>
         <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}">
@@ -92,7 +93,8 @@
                 <!-- editor -->
                 <div class="panel--editor" ng-show="panelState === 'editor'">
                     <header>
-                        Editor<button class="btn btn-info pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
+                        Editor<button class="btn pull-right" ng-click="togglePreview()" translate>{{ preview? 'Edit': 'Preview' }}</button>
+                        <button class="btn btn-info pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
                     </header>
                     <div class="content">
                         <div class="editor-holder" ng-class="{'preview': preview}">
@@ -102,13 +104,12 @@
                         </div>
                         <div class="actions">
                             <div style="display:table-row">
-                                <div style="display:table-cell"><button class="btn" ng-click="togglePreview()" translate>{{ preview? 'Edit': 'Preview' }}</button></div>
-                                <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished() || actionPending" translate>Save draft</button></div>
-                                <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished() || actionPending" translate>Submit</button></div>
-                                <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell"><button class="btn btn-info" ng-disabled="actionPending" ng-click="publish()" ng-switch="isCurrentPostPublished()">
+                                <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell"><button class="btn btn-info" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
                                     <span ng-switch-when="true"  translate>Update</span>
                                     <span ng-switch-when="false" translate>Publish</span>
                                 </button></div>
+                                <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Submit</button></div>
+                                <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Save draft</button></div>
                             </div>
                         </div>
                     </div>
@@ -123,8 +124,17 @@
         </div>
         <!-- timeline column -->
         <div class="column column--timeline">
-            <header>Timeline</header>
-            <div class="content" lr-infinite-scroll="fetchNewTimelinePage">
+            <header>
+                <div translate class="header--timeline">Timeline</div>
+                <div ng-if="isTimelineReordering()" class="cancel-reorder">
+                    <i class="svg-icon-move fix-cancel-move-icon"></i>
+                    <button class="btn fix-cancel-move-button" tranlate ng-click="clearTimelineReordering();">Cancel</button>
+                </div>
+                <div class="header--live">
+                    <a href="{{ iframe_url }}" target="_blank" translate>Live</a>
+                </div>
+            </header>
+            <div class="content content--timeline" lr-infinite-scroll="fetchNewTimelinePage">
                 <div>
                     <div
                       class="timeline-posts-list"

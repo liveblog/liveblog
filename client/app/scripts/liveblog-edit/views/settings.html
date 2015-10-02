@@ -17,7 +17,6 @@
         <div class="subnav">
             <h3 class="page-nav-title">Settings</h3>
             <button ng-click="settings.reset()" class="btn btn-default reset-default" type="button" translate>Reset to default</button>
-            <button ng-click="settings.askRemoveBlog()" class="btn btn-default pull-right" type="button" translate> Remove blog</button>
             <button ng-click="settings.saveAndClose()" class="btn btn-info pull-right" type="button" translate ng-disabled="!(settings.forms.dirty || settings.forms[settings.tab].$dirty)">Done</button>
             <button ng-click="settings.save()"  class="btn btn-info pull-right" type="button" translate ng-disabled="!(settings.forms.dirty || settings.forms[settings.tab].$dirty)">Save</button>
             <button ng-click="settings.close()" class="btn btn-default pull-right" type="button" translate>Cancel</button>
@@ -112,6 +111,12 @@
                                 <div class="form-input">
                                     <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click><iframe width="100%" height="715" src="{{ settings.iframe_url }}" frameborder="0" allowfullscreen></iframe></textarea>
                                     <a href="{{ settings.iframe_url }}" target="_blank"><span ng-bind="settings.iframe_url"></span> <i class="icon-external"></i></a>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="removeBlog" class="control-label" translate>Blog removal</label>
+                                <div class="form-input">
+                                    <button ng-click="settings.askRemoveBlog()" class="btn btn-default pull-left" type="button" translate>Remove blog</button>   
                                 </div>
                             </div>
                         </form>

@@ -14,8 +14,8 @@ define([
     'use strict';
 
     angular.module('liveblog.blog', [])
-        .service('blogService', ['api', '$cacheFactory',
-            function(api, $cacheFactory) {
+        .service('blogService', ['api', '$cacheFactory', 'config',
+            function(api, $cacheFactory, config) {
 
                 function update(blog, updated) {
                     return api.blogs.update(blog, updated);
@@ -29,10 +29,17 @@ define([
                     return api.blogs.getById(_id);
                 }
 
+                // take the public url (from s3) or the local address
+                // FIXME: The local address shouldn't be given on production mode
+                function getIframe(blog) {
+                    return blog.public_url || config.server.url.replace('/api', '/embed/' + blog._id);
+                }
+
                 return {
                     get: get,
                     update: update,
-                    save: save
+                    save: save,
+                    getIframe: getIframe
                 };
             }]);
 });

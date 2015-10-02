@@ -32,12 +32,24 @@ define([
     angular
     .module('SirTrevorBlocks', [])
         .config(['SirTrevorProvider', function(SirTrevor) {
+
+            //replace the plus symbol with text description
+            SirTrevor.FloatingBlockControls.prototype.attributes = function() {
+                return {
+                  'data-icon': 'ADD BLOCK HERE'
+                };
+            }
+            SirTrevor.Block.prototype.attributes = function() {
+                return _.extend(SirTrevor.SimpleBlock.fn.attributes.call(this), {
+                    'data-icon-after' : "ADD BLOCK HERE"
+                });
+            }
+        
             // Add toMeta method to all blocks.
             SirTrevor.Block.prototype.toMeta = function() {return;};
             SirTrevor.Block.prototype.getOptions = function() {
                 return SirTrevor.$get().getInstance(this.instanceID).options;
             };
-
             SirTrevor.Blocks.Embed =  SirTrevor.Block.extend({
                 type: 'embed',
                 data: {},
@@ -68,8 +80,10 @@ define([
                         var input = $(this).text().trim();
                         // exit if the input field is empty
                         if (_.isEmpty(input)) {
+                            that.getOptions().disableSubmit(true);
                             return false;
                         }
+                        that.getOptions().disableSubmit(false);
                         // reset error messages
                         that.resetMessages();
                         // start a loader over the block, it will be stopped in the loadData function
@@ -256,7 +270,6 @@ define([
                     return this.retrieveData();
                 }
             });
-
             SirTrevor.Blocks.Quote =  SirTrevor.Block.extend({
                 type: 'quote',
                 title: function() { return window.i18n.t('blocks:quote:title'); },
@@ -269,6 +282,31 @@ define([
                         ' class="js-cite-input st-quote-block"></div>'
                     ].join('\n'));
                     return template(this);
+                },
+                onBlockRender: function() {
+                    var that = this;
+                    this.$('.quote-input .js-cite-input')
+                    this.$editor.filter('[contenteditable]').on('focus', function(ev) {
+                        var $this = $(this);
+                        $this.data('before', $this.html());
+                    });
+                    this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
+                        var $this = $(this);
+                        if ($this.data('before') !== $this.html()) {
+                            $this.data('before', $this.html());
+                            $this.trigger('change');
+                        }
+                    });
+                    // when the link field changes
+                    this.$editor.on('change', _.debounce(function () {
+                        var data = that.retrieveData(),
+                            input = (data.quote + data.credit);
+                        if (_.isEmpty(input)) {
+                            that.getOptions().disableSubmit(true);
+                            return false;
+                        }
+                        that.getOptions().disableSubmit(false);
+                    }, 200));
                 },
                 focus: function() {
                     this.$('.quote-input').focus();
@@ -345,6 +383,7 @@ define([
                     }).html(data.credit));
                 },
                 onBlockRender: function() {
+                    var that = this;
                     // assert we have an uploader function in options
                     if (typeof(this.getOptions().uploader) !== 'function') {
                         throw 'Image block need an `uploader` function in options.';
@@ -354,6 +393,7 @@ define([
                         ev.preventDefault();
                     });
                     this.$inputs.find('input').on('change', _.bind(function(ev) {
+                        that.getOptions().disableSubmit(false);
                         this.onDrop(ev.currentTarget);
                     }, this));
                 },
@@ -408,6 +448,35 @@ define([
                     return this.retrieveData();
                 }
             });
+            
+            SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
+                    var that = this;
+
+                    //add placeholder class and placeholder text
+                    this.$editor.attr('placeholder', window.gettext('Start writing here…')).addClass('st-placeholder');
+                    // create and trigger a 'change' event for the $editor which is a contenteditable
+                    this.$editor.filter('[contenteditable]').on('focus', function(ev) {
+                        var $this = $(this);
+                        $this.data('before', $this.html());
+                    });
+                    this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
+                        var $this = $(this);
+                        if ($this.data('before') !== $this.html()) {
+                            $this.data('before', $this.html());
+                            $this.trigger('change');
+                        }
+                    });
+                    // when the link field changes
+                    this.$editor.on('change', _.debounce(function () {
+                        var input = $(this).text().trim();
+                        if (_.isEmpty(input)) {
+                            that.getOptions().disableSubmit(true);
+                            return false;
+                        } else {
+                            that.getOptions().disableSubmit(false);
+                        }
+                    }, 200));
+            };
 
             // Add toHTML to existing Text Block.
             SirTrevor.Blocks.Text.prototype.toHTML = function(html) {
@@ -417,7 +486,6 @@ define([
                     return html;
                 }
             };
-
             SirTrevor.Blocks.Text.prototype.onContentPasted = _.debounce(function(event) {
                 // Content pasted. Delegate to the drop parse method
                 var input = $(event.target).closest('[contenteditable]'),

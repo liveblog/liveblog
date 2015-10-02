@@ -11,6 +11,7 @@
         "//code.angularjs.org/1.4.2/angular-resource.js",
         "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js",
         "vendors/lodash.min.js",
+        "vendors/iframeResizer.contentWindow.min.js",
         "liveblog-embed/main.js",
         "liveblog-embed/resources.service.js",
         "liveblog-embed/pages-manager.service.js",

@@ -170,29 +170,32 @@ function ThemesManagerPage() {
 
     self.expectTheme = function(index, params) {
         var theme = self.themes.get(index);
-        var number_of_blog_elmt = theme.element(by.css('[ng-click="vm.openThemeBlogsModal(theme)"]'));
         // check if it is the default theme
         expect(theme.element(by.css('.default-theme')).isDisplayed()).toBe(params.is_default_theme);
         // check if the name match
         if (params.name) {
             expect(theme.element(by.css('h3')).getText()).toBe(params.name);
         }
-        // check if the number shown match
-        expect(number_of_blog_elmt.getText()).toBe(params.number_of_blogs_expected.toString());
-        // open the modal
-        number_of_blog_elmt.click();
-        // check if first row is displayed
+        //this only makes sense if the theme has at least one blog using it
         if (params.number_of_blogs_expected > 0) {
-            expect(self.blogsRows.get(0).isDisplayed()).toBe(true);
-        }
-        // check if the number of row matchs
-        expect(self.blogsRows.count()).toBe(params.number_of_blogs_expected);
-        var close_modal = element(by.css('[ng-click="vm.closeThemeBlogsModal()"]'));
-        close_modal.isPresent().then(function(is_present) {
-            if (is_present) {
-                close_modal.click();
+            var number_of_blog_elmt = theme.element(by.css('span[data-name=\'noOfBlogs\']'));
+            // check if the number shown match
+            expect(number_of_blog_elmt.getText()).toBe(params.number_of_blogs_expected.toString());
+            // open the modal
+            number_of_blog_elmt.click();
+            // check if first row is displayed
+            if (params.number_of_blogs_expected > 0) {
+                expect(self.blogsRows.get(0).isDisplayed()).toBe(true);
             }
-        });
+            // check if the number of row matchs
+            expect(self.blogsRows.count()).toBe(params.number_of_blogs_expected);
+            var close_modal = element(by.css('[ng-click="vm.closeThemeBlogsModal()"]'));
+            close_modal.isPresent().then(function(is_present) {
+                if (is_present) {
+                    close_modal.click();
+                }
+            });
+        }
     };
 }
 
@@ -232,6 +235,10 @@ function BlogPage(blogs) {
     self.openSettings = function() {
         element(by.css('.settings-link')).click();
         return self.settings;
+    };
+
+    self.expectNotificationsNo = function(notifsNo) {
+        expect(element(by.css('span.notification-counter')).getText()).toBe(notifsNo.toString());
     };
 }
 
@@ -349,6 +356,10 @@ function TimelinePage(blog) {
         return self;
     };
 
+    self.canBeMoved = function(index) {
+        return self.column.element(self.byPosts.row(index)).element(self.byStartMoving).isPresent();
+    };
+
     self.moveTo = function(index) {
         self.column.element(self.byPosts.row(index)).element(self.byMoveTo).click();
         return self;
@@ -383,6 +394,7 @@ function EditPostPage() {
     self.errorElement = element(by.css('.st-msg'));
     self.embedElement = element(by.css('.embed-input'));
     self.iframe = element(by.css('.liveblog--card iframe'));
+    self.publishElement = element(by.css('[ng-click="publish()"]'));
 
     self.addTop = function() {
         // click on the "+" bar
@@ -414,19 +426,30 @@ function EditPostPage() {
     };
 
     self.saveContribution = function() {
-        element(by.css('[ng-click="saveAsContribution()"]')).click();
-        return self;
+        return element(by.css('[ng-click="saveAsContribution()"]')).click();
+    };
+
+    self.waitForPublish = function() {
+        browser.wait(function() {
+            return self.publishElement.isEnabled();
+        }, 200);
     };
 
     self.publish = function() {
-        return element(by.css('[ng-click="publish()"]')).click();
+        self.waitForPublish();
+        return self.publishElement.click();
     };
 
-    self.publishText = function() {
-        var data = randomString(10);
+    self.publishText = function(data) {
+        data = (typeof data === 'string') ? data : randomString(10);
         self.textElement.clear().sendKeys(data);
         self.publish();
         return data;
+    };
+
+    self.getPublishStatus = function(data) {
+        self.textElement.clear().sendKeys(data);
+        return self.publishElement.isEnabled();
     };
 
     self.writeMultiplePost = function() {
@@ -449,8 +472,7 @@ function EditPostPage() {
 
     self.createContribution = function() {
         var data = self.writeMultiplePost();
-        self.saveContribution();
-        return data;
+        return self.saveContribution().then(function() {return data;});
     };
 
     self.resetEditor = function() {
@@ -535,7 +557,7 @@ function BlogSettingsPage(blog) {
     };
 
     self.changeToOwner = function(index) {
-        index = index || 1;
+        index = index || 2;
         element(by.repeater('user in settings.avUsers').row(index).column('user.display_name')).click();
         return self;
     };
