@@ -59,6 +59,14 @@
         .then(function() {
             vm.permalinkScroll();
             $interval(retrieveUpdate, UPDATE_EVERY);
+            // listen events from parent
+            var fetchNewPageDebounced = _.debounce(vm.fetchNewPage, 1000);
+            function receiveMessage(event) {
+                if (event.data === 'loadMore') {
+                    fetchNewPageDebounced();
+                }
+            }
+            window.addEventListener('message', receiveMessage, false);
         });
     }
 

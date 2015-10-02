@@ -1,4 +1,5 @@
-from liveblog.blogs.blogs import BlogsResource, BlogService
+from liveblog.blogs.blogs import BlogsResource
+from superdesk.services import BaseService
 from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, BlogPostsResource
 from apps.users.users import UsersResource
 from apps.users.services import UsersService
@@ -36,7 +37,7 @@ class ClientBlogsResource(BlogsResource):
     schema.update(BlogsResource.schema)
 
 
-class ClientBlogsService(BlogService):
+class ClientBlogsService(BaseService):
     pass
 
 
