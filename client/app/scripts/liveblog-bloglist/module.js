@@ -12,6 +12,7 @@
         ];
         $scope.activeState = isArchivedFilterSelected ? $scope.states[1] : $scope.states[0];
         $scope.creationStep = 'Details';
+        $scope.requestAccessMessage = gettext('Click to request access');
         $scope.blogMembers = [];
         $scope.changeState = function(state) {
             $scope.activeState = state;
@@ -98,6 +99,20 @@
 
         $scope.edit = function(blog) {
             $location.path('/liveblog/edit/' + blog._id);
+        };
+
+        $scope.openAccessRequest = function(blog) {
+            $scope.accessRequestedTo = blog;
+            $scope.showBlogAccessModal = true;
+        };
+
+        $scope.closeAccessRequest = function() {
+            $scope.accessRequestedTo = false;
+            $scope.showBlogAccessModal = false;
+        };
+
+        $scope.requestAccess = function(blog) {
+            $scope.closeAccessRequest();
         };
 
         $scope.switchTab = function(newTab) {
