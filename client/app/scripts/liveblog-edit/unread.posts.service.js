@@ -9,36 +9,49 @@
  */
 define([
     'angular',
+    'lodash',
     './module'
-], function(angular) {
+], function(angular, _) {
     'use strict';
     UnreadPostsService.$inject = [
         '$rootScope'
     ];
     function UnreadPostsService($rootScope) {
         var listener;
-        var unreadContributions = 0;
-        function getUnreadContributions() {
-            return unreadContributions;
+        var contributions = [], prevContributions = [];
+
+        // check if the post is an unread contribution.
+        function isContribution(post) {
+            return _.indexOf(prevContributions, post._id) !== -1;
         }
-        function resetUnreadContributions() {
-            unreadContributions = 0;
+
+        // get the count of current contribution.
+        function countContributions() {
+            return contributions.length;
         }
-        //increase the number of unread contributions
+
+        // reset the current contribution and keep the previous vector.
+        function resetContributions() {
+            prevContributions = contributions;
+            contributions = [];
+        }
+
+        // add the post in the contributions vector.
         function onPostReceive(e, event_params) {
             if (event_params.post_status === 'submitted') {
-                unreadContributions ++;
+                contributions = contributions.concat(event_params.post_ids);
             }
         }
         return {
-            getUnreadContributions: getUnreadContributions,
+            isContribution: isContribution,
+            countContributions: countContributions,
             startListening: function() {
                 if (!listener) {
                     listener = $rootScope.$on('posts', onPostReceive);
                 }
             },
             stopListening: function() {
-                resetUnreadContributions();
+                resetContributions();
                 if (listener) {
                     listener();
                     listener = undefined;

@@ -63,9 +63,7 @@ define([
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
-            unreadPostsService: {
-                getUnreadContributions: unreadPostsService.getUnreadContributions
-            },
+            unreadPostsService: unreadPostsService,
             preview: false,
             actionPending: false,
             actionDisabled: true,
