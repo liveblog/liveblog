@@ -2,9 +2,9 @@
     'use strict';
 
     BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload',
-        'isArchivedFilterSelected', '$q', 'blogSecurityService'];
+        'isArchivedFilterSelected', '$q', 'blogSecurityService', 'notify'];
     function BlogListController($scope, $location, api, gettext, upload,
-        isArchivedFilterSelected, $q, blogSecurityService) {
+        isArchivedFilterSelected, $q, blogSecurityService, notify) {
         $scope.maxResults = 25;
         $scope.states = [
             {name: 'active', code: 'open', text: gettext('Active blogs')},
@@ -112,6 +112,17 @@
         };
 
         $scope.requestAccess = function(blog) {
+            notify.info(gettext('Sending request'));
+            api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/request_membership', {_id: blog._id}).query().then(
+                function(data) {
+                    notify.pop();
+                    notify.info(gettext('Request sent'));
+                },
+                function(data) {
+                    notify.pop();
+                    notify.error(gettext('Something went wrong, plase try again later!'));
+                }
+            )
             $scope.closeAccessRequest();
         };
 
