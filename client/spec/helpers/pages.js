@@ -280,6 +280,11 @@ function AbstractPanelPage(blog) {
         expect(self.get(index).element(by.css('[html-content]')).getText()).toContain(data);
         return self;
     };
+
+    self.expectUnreadPost = function(index) {
+        expect(self.get(index).element(by.css('.unread')).isPresent()).toBe(true);
+        return self;
+    };
 }
 
 DraftsPage.prototype = Object.create(AbstractPanelPage.prototype);

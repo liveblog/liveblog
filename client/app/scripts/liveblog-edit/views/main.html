@@ -20,7 +20,7 @@
             <i class="big-icon-editor" alt="editor"></i>
         </button>
         <button class="navbtn" ng-click="openPanel('contributions')" ng-class="{'active': panelState === 'contributions'}">
-            <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.getUnreadContributions() > 0">{{ unreadPostsService.getUnreadContributions() }}</span>
+            <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countContributions() > 0">{{ unreadPostsService.countContributions() }}</span>
             <i class="big-icon-contributions" alt="contributions"></i>
         </button>
         <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}">
@@ -72,6 +72,7 @@
                           lb-posts-order-by="updated_first"
                           lb-posts-allow-unpublishing="false"
                           lb-posts-allow-reordering="false"
+                          lb-posts-is-unread-post="unreadPostsService.isContribution"
                           lb-posts-allow-editing="blogSecurityService.isUserOwnerOrAdmin"
                           lb-posts-allow-deleting="blogSecurityService.isUserOwnerOrAdmin"
                           lb-posts-allow-publishing="blogSecurityService.canPublishAPost"

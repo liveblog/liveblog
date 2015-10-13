@@ -34,6 +34,7 @@ define([
                         allowEditing: $scope.lbPostsAllowEditing,
                         allowDeleting: $scope.lbPostsAllowDeleting,
                         allowPublishing: $scope.lbPostsAllowPublishing,
+                        isUnreadPost: $scope.lbPostsIsUnreadPost,
                         onPostSelected: $scope.lbPostsOnPostSelected,
                         showReorder: false,
                         hideAllPosts: false,
@@ -140,6 +141,7 @@ define([
                         lbPostsAllowDeleting: '=',
                         lbPostsAllowPublishing: '=',
                         lbPostsOnPostSelected: '=',
+                        lbPostsIsUnreadPost: '=',
                         lbPostsInstance: '='
                     },
                     restrict: 'EA',

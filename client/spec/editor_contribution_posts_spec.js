@@ -22,7 +22,8 @@ describe('Contributions Posts', function() {
                 blog.expectNotificationsNo(2);
                 blog.openContributions()
                     .expectPost(0, contrib2.quote)
-                    .expectPost(1, contrib1.quote);
+                    .expectPost(1, contrib1.quote)
+                    .expectUnreadPost(0);
             });
         });
     });
