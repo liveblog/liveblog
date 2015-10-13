@@ -8,14 +8,34 @@
 
 // modal fix
 .modal {
+    align-items: stretch;
+    flex-direction: column;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    .modal-dialog {
+        flex: 0 1 auto;        
+        margin: 0 auto;
+        justify-content: center;
+        width: auto;
+    }
     .modal-content {
+        display: flex;
+        flex-direction: column;
+        flex: 0 0 530px;
+        .modal-header {
+            box-sizing: border-box;
+            flex: 0 0 auto;
+        }
+        .modal-body {
+            flex: 0 1 auto;
+            overflow-y: auto; // inner scroll is set here
+        }
+        .modal-footer {
+            box-sizing: border-box;
+            flex: 0 0 auto;
+        }
         form {
             width: 100%;
         }
     }
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    padding: 40px;
 }

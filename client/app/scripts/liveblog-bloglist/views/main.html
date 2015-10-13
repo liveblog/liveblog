@@ -81,8 +81,7 @@
         </ul>
     </div>
 
-    <div sd-modal="" data-model="newBlogModalActive">
-        <form ng-submit="createBlog()" name="createBlogForm">
+    <div sd-modal="" data-model="newBlogModalActive">        
             <div class="modal-header">
                 <button class="close" ng-click="cancelCreate()"><i class="icon-close-small"></i></button>
                 <h3 translate>Create New Blog</h3>
@@ -90,7 +89,8 @@
             <div class="upload-progress" ng-show="progress.width">
                 <div class="bar" style="width: {{ progress.width }}%;"></div>
             </div>
-            <div class="modal-body" style="height: 470px; max-height:470px;">
+            <div class="modal-body" style="min-height: 300px;">
+            <form ng-submit="createBlog()" name="createBlogForm">
                 <ul class="nav nav-tabs">
                     <li ng-class="{active: creationStep == 'Details'}">
                         <button type="button" translate>Details</button>
@@ -159,6 +159,7 @@
                         </div>
                     </div>
                 </div>
+            </form>
             </div>
 
             <div class="modal-footer">
@@ -169,10 +170,9 @@
                 </div>
                 <div ng-if="creationStep === 'Team'">
                     <button type="button" class="btn btn-default pull-left" translate ng-click="switchTab('Details')">Back</button>
-                    <button type="submit" class="btn btn-primary btn-info" translate>Create</button>
+                    <button type="button" class="btn btn-primary btn-info" translate ng-click="createBlog()">Create</button>
                 </div>
             </div>
-        </form>
     </div>
 
 
