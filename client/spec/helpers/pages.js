@@ -57,7 +57,7 @@ function BlogsPage() {
     self.gridElement = element(by.css('.list-container table'));
 
     self.switchView = function() {
-        element(by.css('button[ng-show="gridview"]')).click();
+        element(by.css('button[ng-show="blogsView === \'grid\'"]')).click();
     };
 
     self.getActiveBlogs = function() {
