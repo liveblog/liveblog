@@ -112,6 +112,21 @@
             $scope.blogMembers.splice($scope.blogMembers.indexOf(user), 1);
         };
 
+        //set grid or list view
+        $scope.setBlogsView = function(blogsView) {
+            if (typeof blogsView !== 'undefined') {
+                $scope.blogsView = blogsView;
+                localStorage.setItem('blogsView', blogsView);
+            } else {
+                if (typeof (localStorage.getItem('blogsView')) === 'undefined' || (localStorage.getItem('blogsView')) === null) {
+                    $scope.blogsView = 'grid';
+                } else {
+                    $scope.blogsView = localStorage.getItem('blogsView');
+                }
+            }
+        };
+        $scope.setBlogsView();
+
         function getCriteria() {
             var params = $location.search(),
                 criteria = {

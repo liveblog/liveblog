@@ -11,7 +11,6 @@
 
 from superdesk.notification import push_notification
 from superdesk.utc import utcnow
-from eve.utils import ParsedRequest
 from superdesk.services import BaseService
 from liveblog.common import get_user, update_dates_for
 from apps.content import metadata_schema
@@ -144,7 +143,7 @@ def send_members_email(recipients, user_name, doc, title, url):
 
 @celery.task(soft_time_limit=1800)
 def publish_blog_embed_on_s3(blog_id, safe=True):
-    blog = get_resource_service('blogs').find_one(req=None, _id=blog_id)
+    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if blog['blog_preferences'].get('theme', False):
         try:
             public_url = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
@@ -177,12 +176,6 @@ class BlogService(BaseService):
             push_notification(self.notification_key, created=1, blog_id=str(doc.get('_id')))
         # and members with emails
         notify_members(docs, app.config['CLIENT_URL'])
-
-    def get(self, req, lookup):
-        if req is None:
-            req = ParsedRequest()
-        docs = super().get(req, lookup)
-        return docs
 
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)

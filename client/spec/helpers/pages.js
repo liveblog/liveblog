@@ -57,7 +57,7 @@ function BlogsPage() {
     self.gridElement = element(by.css('.list-container table'));
 
     self.switchView = function() {
-        element(by.css('button[ng-show="gridview"]')).click();
+        element(by.css('button[ng-show="blogsView === \'grid\'"]')).click();
     };
 
     self.getActiveBlogs = function() {
@@ -278,6 +278,11 @@ function AbstractPanelPage(blog) {
 
     self.expectPost = function(index, data) {
         expect(self.get(index).element(by.css('[html-content]')).getText()).toContain(data);
+        return self;
+    };
+
+    self.expectUnreadPost = function(index) {
+        expect(self.get(index).element(by.css('.unread')).isPresent()).toBe(true);
         return self;
     };
 }

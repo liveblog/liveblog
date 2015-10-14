@@ -63,9 +63,7 @@ define([
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
-            unreadPostsService: {
-                getUnreadContributions: unreadPostsService.getUnreadContributions
-            },
+            unreadPostsService: unreadPostsService,
             preview: false,
             actionPending: false,
             actionDisabled: true,
@@ -198,6 +196,13 @@ define([
             },
             fetchNewTimelinePage: function() {
                 vm.timelineInstance.fetchNewPage();
+            },
+            isTimelineReordering: function() {
+                //vm.timelineInstance may not be instantiated yet when isTimelineReordering is first checked
+                return vm.timelineInstance ? vm.timelineInstance.reorderPost: false;
+            },
+            clearTimelineReordering: function() {
+                return vm.timelineInstance.clearReorder();
             },
             isBlogOpened: function() {
                 return $scope.blog.blog_status === 'open';
