@@ -1,0 +1,76 @@
+
+<div class="lb-timeline" ng-app="theme" ng-controller="TimelineCtrl as timeline">
+    <div class="content">
+        <h1 ng-bind="timeline.blog.title">
+        </h1>
+        <div class="illustration">
+            <img ng-src="{{ timeline.blog.picture_url }}"/>
+        </div>
+        <p class="description" ng-bind="timeline.blog.description"></p>
+    </div>
+    <div class="sorting-bar">
+        <div class="sorting-bar__title">Sort by:</div>
+        <div class="sorting-bar__orders">
+            <div
+                class="sorting-bar__order"
+                ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='editorial'}"
+                ng-click="timeline.orderBy('editorial')">Editorial</div>
+            <div
+                class="sorting-bar__order"
+                ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='newest_first'}"
+                ng-click="timeline.orderBy('newest_first')">Newest first</div>
+            <div
+                class="sorting-bar__order"
+                ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
+                ng-click="timeline.orderBy('oldest_first')">Oldest first</div>
+        </div>
+        <div class="sorting-bar__logo">
+            <a href="https://www.sourcefabric.org/liveblog/" target="_blank">
+                <img ng-src="{{ timeline.templateDir}}images/lb-logo.png"/>
+            </a>
+        </div>
+    </div>
+    <div
+        class="lb-post emtpy-message ng-cloak"
+        ng-show="timeline.pagesManager.allPosts().length < 1 && !timeline.loading">
+        <div class="content">No post for now.</div>
+    </div>
+    <ul
+        class="lb-posts list-group"
+        infinite-scroll="timeline.fetchNewPage()"
+        infinite-scroll-disabled="!timeline.isAllowedToLoadMore()"
+        infinite-scroll-immediate-check="false">
+        <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item ng-cloak">
+            <div class="content" ng-class="{'show-author': timeline.showAuthor, 'lb-post-permalink-selected': post._id === timeline.permalink._id}">
+                <figure class="lb-avatar" ng-if="timeline.showAuthor"><img ng-src="{{ post.original_creator.picture_url }}"/></figure>
+                <div class="lb-creator">
+                    <div class="lb-post-permalink">
+                        <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
+                            <i class="fa fa-link fa-2"></i>
+                        </a>
+                    </div>
+                    <lb-permalink post-id="{{ post._id }}"></lb-permalink>
+                    <div class="lb-post-date" ng-bind="post.published_date | prettifyIsoDate"></div>
+                    <div class="lb-user-info" ng-bind="post.original_creator.display_name"></div>
+                </div>
+                <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
+                    <div ng-switch="item.item_type">
+                        <div ng-switch-when="embed">
+                            <div ng-switch="item.meta.provider_name">
+                                <div ng-switch-when="Twitter">
+                                    <lb-twitter-card lb-twitter-content="{{ item.meta.html }}"></lb-twitter-card>
+                                </div>
+                                <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
+                            </div>
+                        </div>
+                        <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
+                    </div>
+                </div>
+                <div class="lb-updated-date" ng-show="post._updated !== post.published_date">
+                    Updated <span ng-bind="post._updated | prettifyIsoDate"></span>
+                </div>
+            </div>
+        </li>
+    </ul>
+    <div class="loading" ng-show="timeline.loading">Loading</div>
+</div>
