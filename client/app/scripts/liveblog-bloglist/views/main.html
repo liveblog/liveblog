@@ -16,14 +16,14 @@
     </div>
 </div>
 
-<section class="main-section bloglist" ng-init="gridview = true">
+<section class="main-section bloglist">
     <header>
         <div sd-searchbar></div>
         <div class="view-select pull-right">
-            <button title="{{ 'switch to grid view' | translate}}" ng-show="!gridview" ng-click="gridview = true">
+            <button title="{{ 'switch to grid view' | translate}}" ng-show="blogsView === 'list'" ng-click="setBlogsView('grid');">
                 <i class="icon-th"></i>
             </button>
-            <button title="{{ 'switch to list view' | translate}}" ng-show="gridview" ng-click="gridview = false">
+            <button title="{{ 'switch to list view' | translate}}" ng-show="blogsView === 'grid'" ng-click="setBlogsView('list');">
                 <i class="icon-th-list"></i>
             </button>
         </div>
@@ -32,7 +32,7 @@
     <div class="list-container">
         <div ng-if="blogsLoading" class="loading-indicator" style="margin-top: 30px;"><span translate>Loading blogs...</span></div>
         <!-- LIST VIEW -->
-        <table class="row-list table table-striped" ng-if="!gridview">
+        <table class="row-list table table-striped" ng-if="blogsView === 'list'">
             <tbody>
                 <tr ng-repeat="blog in blogs._items track by blog._id"
                     ng-click="!isUserAllowedToOpenBlog(blog) || edit(blog)"
@@ -49,7 +49,7 @@
             </tbody>
         </table>
         <!-- GRID VIEW -->
-        <ul class="card-list" ng-if="gridview">
+        <ul class="card-list" ng-if="blogsView === 'grid'">
             <li ng-repeat="blog in blogs._items track by blog._id"
                 ng-click="!isUserAllowedToOpenBlog(blog) || edit(blog)"
                 ng-class="{'can-access': isUserAllowedToOpenBlog(blog)}">
