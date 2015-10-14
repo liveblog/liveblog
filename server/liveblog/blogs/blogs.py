@@ -84,38 +84,6 @@ def notify_members(docs, origin):
         send_email_to_added_members(doc, members, origin)
 
 
-# def notify_the_owner(doc, origin):
-#     if not get_user():
-#         logger.info('there is no logged in user so no membership is allowed')
-#     else:
-#         owner = doc.get('original_creator')
-#         add_activity('notify', 'one user requested liveblogb membership', resource=None, item=doc, notify=owner)
-#         send_email_to_owner(doc, owner, origin)
-#  
-#  
-# def send_email_to_owner(doc, owner, origin):
-#     prefs_service = get_resource_service('preferences')
-#     send_email = prefs_service.email_notification_is_enabled(user_id=doc['original_creator'])
-#     if send_email:
-#             user_doc = get_resource_service('users').find_one(req=None, _id=doc['original_creator'])
-#             recipients = user_doc['email']
-#     if recipients:
-#         username = g.user.get('display_name') or g.user.get('username')
-#         url = '{}/#/liveblog/settings/{}'.format(origin, doc['_id'])
-#         title = doc['title']
-#         send_owner_email(recipients, username, doc, title, url)
-#  
-#  
-# def send_owner_email(recipients, user_name, doc, title, url):
-#     admins = app.config['ADMINS']
-#     app_name = app.config['APPLICATION_NAME']
-#     subject = render_template("owner_email_subject.txt", app_name=app_name)
-#     text_body = render_template("owner_request.txt", app_name=app_name, link=url, name_of_user=user_name, title=title)
-#     html_body = render_template("owner_request.html", app_name=app_name, link=url, name_of_user=user_name, title=title)
-#     send_email.delay(subject=subject, sender=admins[0], recipients=recipients,
-#                      text_body=text_body, html_body=html_body)
-
-
 def send_email_to_added_members(doc, members, origin):
     prefs_service = get_resource_service('preferences')
     recipients = []
@@ -226,9 +194,6 @@ class UserBlogsService(BaseService):
             del lookup['user_id']
         return super().get(req, lookup)
 
-class MembershipResource(Resource):
-    url = 'blogs/<regex("[a-f0-9]{24}"):user_id>/membership'
-    
 
 class PublishBlogsCommand(superdesk.Command):
     """

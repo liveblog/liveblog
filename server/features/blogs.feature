@@ -204,3 +204,40 @@ Feature: Blog operations
         When we switch to user of type user
         And we get "/blogs/#blogs._id#"
         Then we get response code 403
+        
+	@auth
+    @notification
+    Scenario: Create new request for blog access and get notification
+        Given empty "users"
+        Given empty "blogs"
+        When we post to "users"
+            """
+            {"username": "foo", "email": "foo@bar.com", "is_active": true, "sign_off": "abc"}
+            """
+        When we post to "/blogs"
+            """
+            {"title": "Sports blog", "members": [{"user": "#users._id#"}]}
+            """
+        And we get "/blogs"
+        Then we get list with 1 items
+            """
+            {"_items": [{"title": "Sports blog", "members": [{"user": "#users._id#"}]}]}
+            """
+        Then we get notifications
+            """
+            [{"event": "blog", "extra": {"created": 1, "blog_id": "#blogs._id#"}}]
+            """
+		When we get "blogs/#blogs._id#/request_membership"
+		Then we get list with 0 items
+		When we post to "blogs/#blogs._id#/request_membership"
+		"""
+            {"blog": "#blogs._id#"}
+        """
+        Then we get new resource
+        """
+        {"message": "Please add me as a contributor to your blog"}
+        """
+        Then we get notifications
+        """
+        [{"event": "request", "extra": {"created": 1, "request_id": ""}}]
+        """
