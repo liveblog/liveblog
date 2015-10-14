@@ -440,7 +440,7 @@ define([
                     return [
                         '<figure>',
                         '    <img src="' + data.media._url + '" alt="' + data.caption + '"/>',
-                        '    <figcaption>' + data.caption + (data.credit === '' ? '' : ' from ' + data.credit) + '</figcaption>',
+                        '    <figcaption>' + data.caption + (data.credit === '' ? '' : ' Credit: ' + data.credit) + '</figcaption>',
                         '</figure>'
                     ].join('');
                 },
