@@ -233,6 +233,36 @@
                 templateUrl: 'scripts/liveblog-themes/views/list.html'
             });
     }])
+    .filter('githubUrlFromGit', function() {
+        return function(string) {
+            function githubUrlFromGit(url, opts) {
+                // from https://github.com/tj/node-github-url-from-git
+                // generate the git:// parsing regex
+                // with options, e.g., the ability
+                // to specify multiple GHE domains.
+                var github_re = function(opts) {
+                    opts = opts || {};
+                    // whitelist of URLs that should be treated as GitHub repos.
+                    var baseUrls = ['gist.github.com', 'github.com'].concat(opts.extraBaseUrls || []);
+                    // build regex from whitelist.
+                    return new RegExp(
+                        /^(?:https?:\/\/|git:\/\/|git\+ssh:\/\/|git\+https:\/\/)?(?:[^@]+@)?/.source +
+                        '(' + baseUrls.join('|') + ')' +
+                        /[:\/]([^\/]+\/[^\/]+?|[0-9]+)$/.source
+                    );
+                };
+                try {
+                    var m = github_re(opts).exec(url.replace(/\.git(#.*)?$/, ''));
+                    var host = m[1];
+                    var path = m[2];
+                    return 'https://' + host + '/' + path;
+                } catch (err) {
+                    // ignore
+                }
+            }
+            return githubUrlFromGit(string);
+        };
+    })
     .config(['apiProvider', function(apiProvider) {
         apiProvider.api('global_preferences', {
             type: 'http',

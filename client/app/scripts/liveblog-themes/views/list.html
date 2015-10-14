@@ -39,6 +39,16 @@
                                         {{ ::theme.author.name }}
                                     </div>
                                 </dd>
+                                <dt>{{ ::'Sources' | translate }}:</dt>
+                                <dd>
+                                    <div ng-if="!theme.repository.url">unavailable</div>
+                                    <a href="{{::theme.repository.url | githubUrlFromGit}}/archive/master.zip"
+                                       ng-if="theme.repository.url"
+                                       target="_blank"> <i class="icon-download"></i></a>
+                                    <a href="{{::theme.repository.url | githubUrlFromGit}}"
+                                       ng-if="theme.repository.url"
+                                       target="_blank">({{ ::theme.repository.url | githubUrlFromGit }})</a>
+                                </dd>
                                 <dt>{{ ::'No. of blogs using theme' | translate }}:</dt>
                                 <dd>
                                     <a ng-click="vm.openThemeBlogsModal(theme)" ng-if="theme.blogs_count > 0">
