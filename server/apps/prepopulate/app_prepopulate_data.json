@@ -30,17 +30,17 @@
     "resource": "global_preferences",
     "data": {
         "key": "theme",
-        "value": "default-theme"
+        "value": "classic"
     }
 },
 {
     "resource": "themes",
     "id_name": "-id theme default-",
     "data": {
-        "name": "default-theme",
-        "label": "Default Theme",
+        "name": "classic",
+        "label": "Classic Theme",
         "version": "2.1.0",
-        "extends": "angular-base",
+        "extends": "angular",
         "styles": [
             "styles/reset.css",
             "styles/embed.css",
