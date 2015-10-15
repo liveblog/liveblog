@@ -12,7 +12,7 @@ def init_app(app):
     service = UserBlogsService(endpoint_name, backend=superdesk.get_backend())
     UserBlogsResource(endpoint_name, app=app, service=service)
 
-    endpoint_name = 'blog_membership'
+    endpoint_name = 'request_membership'
     service = MembershipService(endpoint_name, backend=superdesk.get_backend())
     MembershipResource(endpoint_name, app=app, service=service)
 

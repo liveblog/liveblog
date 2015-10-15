@@ -147,7 +147,6 @@ class BlogService(BaseService):
 
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
-#         notify_the_owner(doc, app.config['CLIENT_URL'])
         # check if the current user has permission to open a blog
         if not is_admin(get_user()):
             # get members ids
