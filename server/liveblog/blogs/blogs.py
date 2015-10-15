@@ -26,6 +26,9 @@ from bson.objectid import ObjectId
 import superdesk
 from apps.users.services import is_admin
 from superdesk.errors import SuperdeskApiError
+import logging
+
+logger = logging.getLogger('superdesk')
 
 blogs_schema = {
     'title': metadata_schema['headline'],
@@ -100,8 +103,8 @@ def send_members_email(recipients, user_name, doc, title, url):
     admins = app.config['ADMINS']
     app_name = app.config['APPLICATION_NAME']
     subject = render_template("invited_members_subject.txt", app_name=app_name)
-    text_body = render_template("invited_members.txt", link=url, title=title)
-    html_body = render_template("invited_members.html", link=url, title=title)
+    text_body = render_template("invited_members.txt", app_name=app_name, link=url, title=title)
+    html_body = render_template("invited_members.html", app_name=app_name, link=url, title=title)
     send_email.delay(subject=subject, sender=admins[0], recipients=recipients,
                      text_body=text_body, html_body=html_body)
 

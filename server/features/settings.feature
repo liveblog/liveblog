@@ -37,9 +37,15 @@ Feature: Settings operations
         """
         [{"key": "language", "value": "fr"}, {"key": "theme", "value": "theme1"}]
         """
-        Given "blogs"
+        Given "users"
         """
-        [{"title": "abc"}]
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
+        """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "abc", "original_creator": "#user_foo#"}]
         """
         When we get "/blogs/#blogs._id#"
         Then we get existing resource
