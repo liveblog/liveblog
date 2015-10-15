@@ -24,51 +24,51 @@ Feature: Themes operations
     Scenario: Upload a theme with satisfied dependencies
         Given "themes"
         """
-        [{"name": "angular-base"}]
+        [{"name": "angular"}]
         """
         When we upload a file "dog-theme.zip" to "theme-upload"
         When we get "/themes"
         Then we get list with 2 items
         """
-        {"_items": [{"name": "angular-base"}, {"name": "actual-dog"}]}
+        {"_items": [{"name": "angular"}, {"name": "actual-dog"}]}
         """
 
         @auth
         Scenario: Delete a theme
         Given "global_preferences"
         """
-        [{"key": "theme", "value": "default-theme"}]
+        [{"key": "theme", "value": "classic"}]
         """
         When we get "/global_preferences"
         Then we get list with 1 items
         """
-        {"_items": [{"key": "theme", "value": "default-theme"}]}
+        {"_items": [{"key": "theme", "value": "classic"}]}
         """
         Given "themes"
         """
-        [{"name": "forest-theme", "version": "1.0.1", "extends": "ocean-theme"}, {"name": "ocean-theme", "version": "2.0.1"}, {"name": "default-theme", "version": "1.0.1", "extends": "forest-theme"}]
+        [{"name": "forest-theme", "version": "1.0.1", "extends": "ocean-theme"}, {"name": "ocean-theme", "version": "2.0.1"}, {"name": "classic", "version": "1.0.1", "extends": "forest-theme"}]
         """
         When we find for "themes" the id as "my-forest-theme" by "{"name": "forest-theme"}"
         When we find for "themes" the id as "my-ocean-theme" by "{"name": "ocean-theme"}"
-        When we find for "themes" the id as "my-default-theme" by "{"name": "default-theme"}"
+        When we find for "themes" the id as "my-classic" by "{"name": "classic"}"
         Given empty "blogs"
         When we post to "/blogs"
         """
         [
-         {"title": "foo blog", "blog_status": "open", "blog_preferences": {"theme": "default-theme"}}
+         {"title": "foo blog", "blog_status": "open", "blog_preferences": {"theme": "classic"}}
         ]
         """
         And we get "/blogs"
         Then we get list with 1 items
         """
-        {"_items": [{"title": "foo blog", "blog_preferences": {"theme": "default-theme"}}]}
+        {"_items": [{"title": "foo blog", "blog_preferences": {"theme": "classic"}}]}
         """
         When we patch "/blogs/#blogs._id#"
         """
         {"blog_preferences": {"theme": "other-theme"}}
         """
         Then we get updated response
-        When we delete "themes/#my-default-theme#"
+        When we delete "themes/#my-classic#"
         Then we get response code 403
         When we delete "/themes/#my-forest-theme#"
         Then we get response code 403

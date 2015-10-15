@@ -69,7 +69,7 @@
     "resource": "global_preferences",
     "data": {
         "key": "theme",
-        "value": "default-theme"
+        "value": "classic"
     }
 },
 {
@@ -98,8 +98,8 @@
 {
     "resource": "themes",
     "data": {
-        "label": "Angular Base",
-        "name": "angular-base",
+        "label": "Angular Based Theme",
+        "name": "angular",
         "abstract": true,
         "version": "1.1.0",
         "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
@@ -141,12 +141,12 @@
 },
 {
     "resource": "themes",
-    "id_name": "-id theme default-",
+    "id_name": "-id theme classic-",
     "data": {
-        "name": "default-theme",
-        "label": "Default Theme",
+        "name": "classic",
+        "label": "Classic Theme",
         "version": "2.1.0",
-        "extends": "angular-base",
+        "extends": "angular",
         "styles": [
             "styles/reset.css",
             "styles/embed.css",
