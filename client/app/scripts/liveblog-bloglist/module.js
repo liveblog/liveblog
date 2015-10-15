@@ -122,7 +122,7 @@
                     notify.pop();
                     notify.error(gettext('Something went wrong, plase try again later!'));
                 }
-            )
+            );
             $scope.closeAccessRequest();
         };
 
