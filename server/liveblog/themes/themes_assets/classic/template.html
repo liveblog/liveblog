@@ -60,6 +60,10 @@
                                 <div ng-switch-when="Twitter">
                                     <lb-twitter-card lb-twitter-content="{{ item.meta.html }}"></lb-twitter-card>
                                 </div>
+                                <!-- fluid layout for Youtube video -->
+                                <div ng-switch-when="YouTube">
+                                    <div lb-fluid-iframe lb-bind-html html-content="{{ item.meta.html }}"></div>
+                                </div>
                                 <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
                             </div>
                         </div>
