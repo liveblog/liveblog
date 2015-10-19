@@ -36,12 +36,12 @@ define([
             //replace the plus symbol with text description
             SirTrevor.FloatingBlockControls.prototype.attributes = function() {
                 return {
-                  'data-icon': 'ADD BLOCK HERE'
+                  'data-icon': 'ADD CONTENT HERE'
                 };
             }
             SirTrevor.Block.prototype.attributes = function() {
                 return _.extend(SirTrevor.SimpleBlock.fn.attributes.call(this), {
-                    'data-icon-after' : "ADD BLOCK HERE"
+                    'data-icon-after' : "ADD CONTENT HERE"
                 });
             }
         
@@ -239,7 +239,7 @@ define([
                     var $cover_handler = this.$('.cover-preview-handler');
                     if ($cover_handler.length > 0 && !$cover_handler.hasClass('hidden')) {
                         var $cover_preview = $cover_handler.find('.cover-preview');
-                        var $remove_link = $('<a href="#">').text('remove the illustration');
+                        var $remove_link = $('<a href="#">').text('hide the illustration');
                         var $show_link = $('<a href="#">').text('show the illustration').addClass('hidden');
                         $remove_link.on('click', function removeCoverAndDisillustrationplayShowLink(e) {
                             that.saved_cover_url = that.data.thumbnail_url;
@@ -440,7 +440,7 @@ define([
                     return [
                         '<figure>',
                         '    <img src="' + data.media._url + '" alt="' + data.caption + '"/>',
-                        '    <figcaption>' + data.caption + (data.credit === '' ? '' : ' from ' + data.credit) + '</figcaption>',
+                        '    <figcaption>' + data.caption + (data.credit === '' ? '' : ' Credit: ' + data.credit) + '</figcaption>',
                         '</figure>'
                     ].join('');
                 },
