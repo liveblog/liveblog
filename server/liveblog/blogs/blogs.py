@@ -18,7 +18,6 @@ from superdesk.celery_app import celery
 from superdesk import get_resource_service
 from superdesk.resource import Resource
 from superdesk.activity import add_activity
-from flask.globals import g
 from flask import current_app as app, render_template
 from superdesk.emails import send_email
 import liveblog.embed
@@ -77,36 +76,31 @@ class BlogsResource(Resource):
     schema = blogs_schema
 
 
-def notify_members(docs, origin):
-    for doc in docs:
-        members = doc.get('members', {})
-        add_activity('notify', 'you have been added as a member', resource=None, item=doc, notify=members)
-        send_email_to_added_members(doc, members, origin)
+def notify_members(blog, origin):
+    members = blog.get('members', {})
+    add_activity('notify', 'you have been added as a member', resource=None, item=blog, notify=members)
+    send_email_to_added_members(blog, members, origin)
 
 
-def send_email_to_added_members(doc, members, origin):
+def send_email_to_added_members(blog, members, origin):
     prefs_service = get_resource_service('preferences')
     recipients = []
     for user in members:
-        send_email = prefs_service.email_notification_is_enabled(user_id=user['user'])
-        if send_email:
+        # if user want to receive email notification, we add him as recipient
+        if prefs_service.email_notification_is_enabled(user_id=user['user']):
             user_doc = get_resource_service('users').find_one(req=None, _id=user['user'])
             recipients.append(user_doc['email'])
     if recipients:
-        username = g.user.get('display_name') or g.user.get('username')
-        url = '{}/#/liveblog/edit/{}'.format(origin, doc['_id'])
-        title = doc['title']
-        send_members_email(recipients, username, doc, title, url)
-
-
-def send_members_email(recipients, user_name, doc, title, url):
-    admins = app.config['ADMINS']
-    app_name = app.config['APPLICATION_NAME']
-    subject = render_template("invited_members_subject.txt", app_name=app_name)
-    text_body = render_template("invited_members.txt", app_name=app_name, link=url, title=title)
-    html_body = render_template("invited_members.html", app_name=app_name, link=url, title=title)
-    send_email.delay(subject=subject, sender=admins[0], recipients=recipients,
-                     text_body=text_body, html_body=html_body)
+        # send emails
+        url = '{}/#/liveblog/edit/{}'.format(origin, blog['_id'])
+        title = blog['title']
+        admins = app.config['ADMINS']
+        app_name = app.config['APPLICATION_NAME']
+        subject = render_template("invited_members_subject.txt", app_name=app_name)
+        text_body = render_template("invited_members.txt", app_name=app_name, link=url, title=title)
+        html_body = render_template("invited_members.html", app_name=app_name, link=url, title=title)
+        send_email.delay(subject=subject, sender=admins[0], recipients=recipients,
+                         text_body=text_body, html_body=html_body)
 
 
 @celery.task(soft_time_limit=1800)
@@ -136,14 +130,13 @@ class BlogService(BaseService):
             doc['blog_preferences'] = prefs
 
     def on_created(self, docs):
-        # Publish on s3 if possible and save the public_url in the blog
         for blog in docs:
+            # Publish on s3 if possible and save the public_url in the blog
             publish_blog_embed_on_s3.delay(str(blog['_id']))
-        # notify client with websocket
-        for doc in docs:
-            push_notification(self.notification_key, created=1, blog_id=str(doc.get('_id')))
-        # and members with emails
-        notify_members(docs, app.config['CLIENT_URL'])
+            # notify client with websocket
+            push_notification(self.notification_key, created=1, blog_id=str(blog.get('_id')))
+            # and members with emails
+            notify_members(blog, app.config['CLIENT_URL'])
 
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
@@ -168,6 +161,10 @@ class BlogService(BaseService):
         app.blog_cache.invalidate(original.get('_id'))
         # send notifications
         push_notification('blogs', updated=1)
+        # notify newly added members
+        post = original.copy()
+        post.update(updates)
+        notify_members(post, app.config['CLIENT_URL'])
 
     def on_deleted(self, doc):
         # invalidate cache for updated blog
