@@ -2,9 +2,9 @@
     'use strict';
 
     BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload',
-        'isArchivedFilterSelected', '$q', 'blogSecurityService'];
+        'isArchivedFilterSelected', '$q', 'blogSecurityService', 'notify'];
     function BlogListController($scope, $location, api, gettext, upload,
-        isArchivedFilterSelected, $q, blogSecurityService) {
+        isArchivedFilterSelected, $q, blogSecurityService, notify) {
         $scope.maxResults = 25;
         $scope.states = [
             {name: 'active', code: 'open', text: gettext('Active blogs')},
@@ -12,6 +12,7 @@
         ];
         $scope.activeState = isArchivedFilterSelected ? $scope.states[1] : $scope.states[0];
         $scope.creationStep = 'Details';
+        $scope.requestAccessMessage = gettext('Click to request access');
         $scope.blogMembers = [];
         $scope.changeState = function(state) {
             $scope.activeState = state;
@@ -100,6 +101,31 @@
             $location.path('/liveblog/edit/' + blog._id);
         };
 
+        $scope.openAccessRequest = function(blog) {
+            $scope.accessRequestedTo = blog;
+            $scope.showBlogAccessModal = true;
+        };
+
+        $scope.closeAccessRequest = function() {
+            $scope.accessRequestedTo = false;
+            $scope.showBlogAccessModal = false;
+        };
+
+        $scope.requestAccess = function(blog) {
+            notify.info(gettext('Sending request'));
+            api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/request_membership', {_id: blog._id}).query().then(
+                function(data) {
+                    notify.pop();
+                    notify.info(gettext('Request sent'));
+                },
+                function(data) {
+                    notify.pop();
+                    notify.error(gettext('Something went wrong, plase try again later!'));
+                }
+            );
+            $scope.closeAccessRequest();
+        };
+
         $scope.switchTab = function(newTab) {
             $scope.creationStep = newTab;
         };
@@ -111,6 +137,21 @@
         $scope.removeMember = function(user) {
             $scope.blogMembers.splice($scope.blogMembers.indexOf(user), 1);
         };
+
+        //set grid or list view
+        $scope.setBlogsView = function(blogsView) {
+            if (typeof blogsView !== 'undefined') {
+                $scope.blogsView = blogsView;
+                localStorage.setItem('blogsView', blogsView);
+            } else {
+                if (typeof (localStorage.getItem('blogsView')) === 'undefined' || (localStorage.getItem('blogsView')) === null) {
+                    $scope.blogsView = 'grid';
+                } else {
+                    $scope.blogsView = localStorage.getItem('blogsView');
+                }
+            }
+        };
+        $scope.setBlogsView();
 
         function getCriteria() {
             var params = $location.search(),

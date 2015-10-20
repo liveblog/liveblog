@@ -82,6 +82,9 @@ class ThemesResource(Resource):
             'schema': {
                 'type': 'dict'
             }
+        },
+        'repository': {
+            'type': 'dict'
         }
     }
     datasource = {

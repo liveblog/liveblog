@@ -134,10 +134,12 @@ class PostsService(ArchiveService):
     def on_created(self, docs):
         super().on_created(docs)
         # invalidate cache for updated blog
+        post_ids = []
         for doc in docs:
+            post_ids.append(doc.get('_id'))
             app.blog_cache.invalidate(doc.get('blog'))
         # send notifications
-        push_notification('posts', created=True, post_status=doc['post_status'])
+        push_notification('posts', created=True, post_status=doc['post_status'], post_ids=post_ids)
 
     def on_update(self, updates, original):
         # check permission

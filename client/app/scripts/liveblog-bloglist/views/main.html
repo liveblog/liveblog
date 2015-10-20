@@ -16,14 +16,14 @@
     </div>
 </div>
 
-<section class="main-section bloglist" ng-init="gridview = true">
+<section class="main-section bloglist">
     <header>
         <div sd-searchbar></div>
         <div class="view-select pull-right">
-            <button title="{{ 'switch to grid view' | translate}}" ng-show="!gridview" ng-click="gridview = true">
+            <button title="{{ 'switch to grid view' | translate}}" ng-show="blogsView === 'list'" ng-click="setBlogsView('grid');">
                 <i class="icon-th"></i>
             </button>
-            <button title="{{ 'switch to list view' | translate}}" ng-show="gridview" ng-click="gridview = false">
+            <button title="{{ 'switch to list view' | translate}}" ng-show="blogsView === 'grid'" ng-click="setBlogsView('list');">
                 <i class="icon-th-list"></i>
             </button>
         </div>
@@ -32,10 +32,10 @@
     <div class="list-container">
         <div ng-if="blogsLoading" class="loading-indicator" style="margin-top: 30px;"><span translate>Loading blogs...</span></div>
         <!-- LIST VIEW -->
-        <table class="row-list table table-striped" ng-if="!gridview">
+        <table class="row-list table table-striped" ng-if="blogsView === 'list'">
             <tbody>
                 <tr ng-repeat="blog in blogs._items track by blog._id"
-                    ng-click="!isUserAllowedToOpenBlog(blog) || edit(blog)"
+                    ng-click="isUserAllowedToOpenBlog(blog) ? edit(blog): openAccessRequest(blog)"
                     ng-class="{'can-access': isUserAllowedToOpenBlog(blog)}">
                     <td class="content">
                         <h3>{{ ::blog.title }} <small>by {{ ::blog.original_creator | username }}</small></h3>
@@ -49,9 +49,10 @@
             </tbody>
         </table>
         <!-- GRID VIEW -->
-        <ul class="card-list" ng-if="gridview">
+        <ul class="card-list" ng-if="blogsView === 'grid'">
             <li ng-repeat="blog in blogs._items track by blog._id"
-                ng-click="!isUserAllowedToOpenBlog(blog) || edit(blog)"
+                title="{{ !isUserAllowedToOpenBlog(blog) ? requestAccessMessage: '' }}"
+                ng-click="isUserAllowedToOpenBlog(blog) ? edit(blog): openAccessRequest(blog)"
                 ng-class="{'can-access': isUserAllowedToOpenBlog(blog)}">
                 <figure class="media">
                     <div ng-if="blog.picture_url" if-background-image="{{blog.picture_url}}"></div>
@@ -81,8 +82,7 @@
         </ul>
     </div>
 
-    <div sd-modal="" data-model="newBlogModalActive">
-        <form ng-submit="createBlog()" name="createBlogForm">
+    <div sd-modal="" data-model="newBlogModalActive">        
             <div class="modal-header">
                 <button class="close" ng-click="cancelCreate()"><i class="icon-close-small"></i></button>
                 <h3 translate>Create New Blog</h3>
@@ -90,7 +90,8 @@
             <div class="upload-progress" ng-show="progress.width">
                 <div class="bar" style="width: {{ progress.width }}%;"></div>
             </div>
-            <div class="modal-body" style="height: 470px; max-height:470px;">
+            <div class="modal-body" style="min-height: 300px;">
+            <form ng-submit="createBlog()" name="createBlogForm">
                 <ul class="nav nav-tabs">
                     <li ng-class="{active: creationStep == 'Details'}">
                         <button type="button" translate>Details</button>
@@ -159,6 +160,7 @@
                         </div>
                     </div>
                 </div>
+            </form>
             </div>
 
             <div class="modal-footer">
@@ -169,10 +171,27 @@
                 </div>
                 <div ng-if="creationStep === 'Team'">
                     <button type="button" class="btn btn-default pull-left" translate ng-click="switchTab('Details')">Back</button>
-                    <button type="submit" class="btn btn-primary btn-info" translate>Create</button>
+                    <button type="button" class="btn btn-primary btn-info" translate ng-click="createBlog()">Create</button>
                 </div>
             </div>
-        </form>
+    </div>
+
+
+    <div sd-modal="" data-model="showBlogAccessModal">
+        <div class="modal-header">
+            <button class="close" ng-click="closeAccessRequest()"><i class="icon-close-small"></i></button>
+            <h3 translate><strong>{{ ::accessRequestedTo.title }}</strong></h3>
+        </div>
+        <div class="modal-body">
+            <p translate>
+                Sorry, you are not allowed to access this blog.<br />
+                Ask the blog owner to add you to the team.
+            </p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" translate ng-click="closeAccessRequest()">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-info pull-left" translate ng-click="requestAccess(accessRequestedTo)">Request Access</button>
+        </div>
     </div>
 
 

@@ -1,0 +1,50 @@
+{
+    "label": "Classic Theme",
+    "name": "classic",
+    "version": "2.1.0",
+    "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
+    "repository": {
+        "type" : "git",
+        "url" : "git@github.com:liveblog/lb-theme-classic.git"
+    },
+    "license": "AGPL-3.0",
+    "extends": "angular",
+    "styles": [
+        "styles/reset.css",
+        "styles/embed.css",
+        "//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic",
+        "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
+    ],
+    "scripts": [
+        "//code.angularjs.org/1.4.2/angular-animate.js",
+        "vendors/ng-infinite-scroll.min.js",
+        "main.js"
+    ],
+    "options": [
+        {
+            "name": "postsPerPage",
+            "label": "Number of posts per page",
+            "type": "number",
+            "default": 20,
+            "help": "Set the number of posts you want to see at the initialization"
+        },
+        {
+            "name": "permalinkDelimiter",
+            "label": "Permalink delimiter",
+            "type": "select",
+            "options": [
+                {"value": "?", "label": "Query delimiter"},
+                {"value": "#", "label": " Fragment identifier delimiter"}
+            ],
+            "default": "?",
+            "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
+        },
+        {
+            "name": "showAuthor",
+            "label": "Show author",
+            "type": "checkbox",
+            "default": true,
+            "help": "Show the author information on posts"
+        }
+    ]
+}

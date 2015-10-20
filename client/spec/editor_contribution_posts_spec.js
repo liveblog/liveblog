@@ -22,7 +22,8 @@ describe('Contributions Posts', function() {
                 blog.expectNotificationsNo(2);
                 blog.openContributions()
                     .expectPost(0, contrib2.quote)
-                    .expectPost(1, contrib1.quote);
+                    .expectPost(1, contrib1.quote)
+                    .expectUnreadPost(0);
             });
         });
     });
@@ -73,6 +74,11 @@ describe('Contributions Posts', function() {
     it('can\'t open a contributions from other in the editor', function() {
         var blog = blogs.openBlog(3);
         blog.editor.createContribution().then(function(contrib) {
+            var contributions = blog.openContributions();
+            browser.wait(function() {
+                return element(contributions.byPosts).isPresent();
+            }, 5000);
+            contributions.expectPost(0, contrib.quote);
             browser.driver.manage().window().setSize(1280, 1024);
             browser.get('/');
             element(by.css('button.current-user')).click();

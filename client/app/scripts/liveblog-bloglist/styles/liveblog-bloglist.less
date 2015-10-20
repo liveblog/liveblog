@@ -26,7 +26,6 @@
         .row-list {
             tr {
                 &.can-access {
-                    cursor: pointer;
                     opacity: 1;
                 }
                 cursor: default;
@@ -56,6 +55,7 @@
                 width: 260px;
                 .border-box();
                 float: left;
+                cursor: pointer;
                 .close {
                     position: absolute;
                     right: 10px;
@@ -128,7 +128,7 @@
                             line-height: 16px;
                         }
                     }
-                };
+                }
             }
         }
     }
@@ -141,7 +141,7 @@
     .search-result {
         background: #fff none repeat scroll 0 0;
         border: 1px solid #ddd;
-        bottom: 80px;
+        bottom: 20px;
         left: 40px;
         overflow: auto;
         padding: 10px;
