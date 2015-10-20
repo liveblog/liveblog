@@ -64,12 +64,20 @@
         &--first {
             left: 0;
             width: 540px;
+            // tablet 
+            @media only screen and (max-width: 1024px) {
+                width: 50%;
+            }
             .box-shadow(3px 0 0 @grayLight);
             z-index: 1;
         }
         &--timeline {
             right: 0;
             left: 540px;
+            // tablet
+            @media only screen and (max-width: 1024px) {
+                left: 50%;
+            }
             background: #f0f0f0;
             header {
                 background: #fff;
@@ -620,5 +628,4 @@
     .js-cite-input.st-quote-block {
         font-size:13px!important;
     }
-
 }
