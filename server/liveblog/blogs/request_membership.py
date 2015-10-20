@@ -19,6 +19,7 @@ from flask import current_app as app, render_template
 from liveblog.blogs.blogs import BlogService
 from bson.objectid import ObjectId
 from superdesk.notification import push_notification
+from superdesk.services import BaseService
 
 logger = logging.getLogger('superdesk')
 
@@ -58,8 +59,8 @@ def send_email_to_owner(doc, owner, origin):
 
 
 request_schema = {
-    'original_creator': Resource.rel('users', True),
     'blog': Resource.rel('blogs', True),
+    'user': Resource.rel('users', True),
     'message': {
         'type': 'string'
     }
@@ -91,9 +92,19 @@ class MembershipService(BlogService):
         # and members with emails
         notify_the_owner(docs, app.config['CLIENT_URL'])
 
+
+class MemberListResource(Resource):
+    url = 'users/<regex("[a-f0-9]{24}"):user_id>/request_membership'
+    schema = request_schema
+    datasource = {
+        'source': 'request_membership'
+    }
+    resource_methods = ['GET']
+
+
+class MemberListService(BaseService):
     def get(self, req, lookup):
-        if lookup.get('blog_id'):
-            lookup['blog'] = ObjectId(lookup['blog_id'])
-            del lookup['blog_id']
-        docs = super().get(req, lookup)
-        return docs
+        if lookup.get('user_id'):
+            lookup['user'] = ObjectId(lookup['user_id'])
+            del lookup['user_id']
+        return super().get(req, lookup)
