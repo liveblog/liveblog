@@ -64,12 +64,20 @@
         &--first {
             left: 0;
             width: 540px;
+            // tablet 
+            @media only screen and (max-width: 1024px) {
+                width: 50%;
+            }
             .box-shadow(3px 0 0 @grayLight);
             z-index: 1;
         }
         &--timeline {
             right: 0;
             left: 540px;
+            // tablet
+            @media only screen and (max-width: 1024px) {
+                left: 50%;
+            }
             background: #f0f0f0;
             header {
                 background: #fff;
@@ -211,6 +219,10 @@
                             padding: 0;
                             // [block types bar]
                             &--active {
+                                display: -webkit-box;
+                                display: -moz-box;
+                                display: -ms-flexbox;
+                                display: -webkit-flex;
                                 display: flex; // for easy adding additional button
                                 flex-direction: row;
                                 flex-wrap: wrap;
@@ -221,6 +233,10 @@
                                     margin: 0 10px 0 0;
                                     padding: 0 10px 0 20px;
                                     font-size: 14px;
+                                    -webkit-box-flex: 1 auto;
+                                    -moz-box-flex: 1 auto;
+                                    -webkit-flex: 1 auto;
+                                    -ms-flex: 1 auto;
                                     flex: 1 auto;
                                     height: 40px;
                                     line-height: 40px;
@@ -620,5 +636,4 @@
     .js-cite-input.st-quote-block {
         font-size:13px!important;
     }
-
 }
