@@ -135,7 +135,7 @@ class BlogService(BaseService):
             # notify client with websocket
             push_notification(self.notification_key, created=1, blog_id=str(blog.get('_id')))
             # and members with emails
-            recipients = blog.get('members', {})
+            recipients = blog.get('members', [])
             notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def find_one(self, req, **lookup):
@@ -167,7 +167,7 @@ class BlogService(BaseService):
         members = updates.get('members', {})
         recipients = []
         for user in members:
-            if user not in original.get('members', {}):
+            if user not in original.get('members', []):
                 recipients.append(user)
         notify_members(blog, app.config['CLIENT_URL'], recipients)
 
