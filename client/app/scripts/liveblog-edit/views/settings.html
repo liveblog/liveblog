@@ -208,6 +208,33 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Pending member -->
+                                <div class="inline-content first-block members-bottom">
+                                    <div class="pending-member-message">
+                                        <span class="label label-default" translate>PENDING</span>
+                                    </div>
+                                    <div class="pending-blog-member">
+                                        <div class="inline-content padded-right">
+                                            <div class="form-input profile-pic">
+                                                 <figure class="avatar large"><img sd-user-avatar data-src=""></figure>
+                                            </div>
+                                        </div>
+                                        <div class="inline-content">
+                                            <div style="margin-top: 25px;">
+                                                <div class="form-input" data="original-creator-display-name">
+                                                   <strong>Pendind Display Name</strong>
+                                                </div>
+                                                <div class="form-input" data="original-creator-username">
+                                                    Pending username
+                                                </div>
+                                                <div class="form-input accept-blog-membership" data="original-creator-username">
+                                                    <a ng-click="settings.acceptMember();" data-button="CHANGE OWNER" translate>ACCEPT</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- end pending member -->
                             </div>
                             <div sd-modal="" data-model="settings.editTeamModal" class="team-edit" macro-team="">
                                 <div class="modal-header">
