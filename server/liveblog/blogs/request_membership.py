@@ -71,8 +71,8 @@ class MembershipResource(Resource):
         'source': 'request_membership',
         'default_sort': [('_updated', -1)]
     }
-    resource_methods = ['GET', 'POST']
-    privileges = {'GET': 'blogs', 'POST': 'blogs'}
+    resource_methods = ['POST']
+    privileges = {'POST': 'blogs'}
 
 
 class MembershipService(BlogService):
@@ -87,7 +87,6 @@ class MembershipService(BlogService):
         for doc in docs:
             push_notification(self.notification_key, created=1, request_id=str(doc.get('_id')))
         # and members with emails
-#             recipients = doc.get('original_creator', [])
             notify_the_owner(doc, app.config['CLIENT_URL'])
 
 
