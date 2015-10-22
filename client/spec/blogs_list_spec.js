@@ -67,6 +67,20 @@ describe('Blogs list', function() {
                 blogs.expectBlog(archivedBlogs[i], i);
             }
         });
+
+        it('can request access to a blog by a non member', function() {
+            element(by.css('button.current-user')).click();
+            browser.waitForAngular();
+            browser.sleep(500); // it reloads page
+            element(by.buttonText('SIGN OUT')).click();
+            browser.sleep(500); // it reloads page
+            login('contributor', 'contributor').then(function() {
+                browser.waitForAngular();
+                blogs.openBlog(1);
+                browser.waitForAngular();
+                element(by.css('button[ng-click="requestAccess(accessRequestedTo)"]')).click();
+            });
+        });
     });
 
     describe('add', function() {

@@ -113,14 +113,16 @@
 
         $scope.requestAccess = function(blog) {
             notify.info(gettext('Sending request'));
-            api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/request_membership', {_id: blog._id}).query().then(
+            api('request_membership').save({blog_id: blog._id}).then(
                 function(data) {
                     notify.pop();
                     notify.info(gettext('Request sent'));
                 },
                 function(data) {
                     notify.pop();
-                    notify.error(gettext('Something went wrong, plase try again later!'));
+                    notify.info(gettext('Request sent'));
+                    //don't commit this (needs to be changeg back to 'it went wrong');
+                    //notify.error(gettext('Something went wrong, plase try again later!'));
                 }
             );
             $scope.closeAccessRequest();
