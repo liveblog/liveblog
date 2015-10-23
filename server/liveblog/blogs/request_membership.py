@@ -72,7 +72,7 @@ class MembershipResource(Resource):
         'default_sort': [('_updated', -1)]
     }
     resource_methods = ['POST']
-    privileges = {'POST': 'blogs'}
+    privileges = {'POST': 'request_membership'}
 
 
 class MembershipService(BlogService):
