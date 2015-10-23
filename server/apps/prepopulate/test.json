@@ -5,7 +5,7 @@
     "data": {
         "description": "Editor can control and publish content to the liveblog and invite people to contribute",
         "name": "Editor",
-        "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}
+        "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1, "request_membership": 1}
     }
 },
 {
@@ -14,7 +14,7 @@
     "data": {
         "description": "Contributor can submit post to be approved by the Editor",
         "name": "Contributor",
-        "privileges": {"submit_post": 1, "posts": 1, "archive": 1}
+        "privileges": {"submit_post": 1, "posts": 1, "archive": 1, "request_membership": 1}
     }
 },
 {
