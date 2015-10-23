@@ -37,13 +37,12 @@ backend:
     - postfix
   environment:
     - SUPERDESK_URL=http://localhost:5000/api
-    - SUPERDESK_CLIENT_URL=http://localhost:5000
+    - SUPERDESK_CLIENT_URL=http://localhost:9000
     - SUPERDESK_TESTING=True
     - SUPERDESK_RELOAD=True
   ports:
     - "5000:5000"
     - "5100:5100"
   volumes:
-   - ../server:/opt/superdesk
-   - ../results/server/unit:/opt/superdesk/results-unit/
-   - ../results/server/behave:/opt/superdesk/results-behave/
+   - ../server:/opt/superdesk/
+   - ./Procfile:/opt/superdesk/Procfile
