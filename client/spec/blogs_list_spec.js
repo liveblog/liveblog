@@ -1,4 +1,5 @@
 var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
+    logout = require('./helpers/utils').logout,
     blogs = require('./helpers/pages').blogs;
 
 describe('Blogs list', function() {
@@ -69,16 +70,21 @@ describe('Blogs list', function() {
         });
 
         it('can request access to a blog by a non member', function() {
-            element(by.css('button.current-user')).click();
-            browser.waitForAngular();
-            browser.sleep(500); // it reloads page
-            element(by.buttonText('SIGN OUT')).click();
-            browser.sleep(500); // it reloads page
+            logout();
             login('contributor', 'contributor').then(function() {
-                browser.waitForAngular();
+                //request for blog dialog opens instead of the the blog
                 blogs.openBlog(1);
-                browser.waitForAngular();
                 element(by.css('button[ng-click="requestAccess(accessRequestedTo)"]')).click();
+                logout();
+                login('admin', 'admin').then(function() {
+                    blogs.openBlog(1).openSettings().openTeam();
+                    //before accepting the new user
+                    var teamMembersNo = blogs.blog.settings.contributors.count();
+                    element(by.css('.pending-blog-member')).click();
+                    element(by.css('[data-button="ACCEPT-NEW-MEMBER"]')).click();
+                    browser.waitForAngular();
+                    expect(blogs.blog.settings.contributors.count()).toBe(teamMembersNo + 1);
+                });
             });
         });
     });

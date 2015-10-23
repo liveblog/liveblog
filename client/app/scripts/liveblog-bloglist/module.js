@@ -120,9 +120,7 @@
                 },
                 function(data) {
                     notify.pop();
-                    notify.info(gettext('Request sent'));
-                    //don't commit this (needs to be changeg back to 'it went wrong');
-                    //notify.error(gettext('Something went wrong, plase try again later!'));
+                    notify.error(gettext('Something went wrong, plase try again later!'));
                 }
             );
             $scope.closeAccessRequest();
