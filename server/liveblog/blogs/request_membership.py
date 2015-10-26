@@ -72,8 +72,9 @@ class MembershipResource(Resource):
     }
     resource_methods = ['POST']
     privileges = {'POST': 'request_membership'}
-  
-  
+
+
+
 class MembershipService(BaseService):
     notification_key = 'request'
   
