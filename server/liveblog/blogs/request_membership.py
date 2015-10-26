@@ -74,16 +74,14 @@ class MembershipResource(Resource):
     privileges = {'POST': 'request_membership'}
 
 
-
 class MembershipService(BaseService):
     notification_key = 'request'
-  
+
     def on_create(self, docs):
         for doc in docs:
             doc['original_creator'] = str(get_user().get('_id'))
-            doc['message'] = "Please add me as a contributor to your blog"
         super().on_create(docs)
-  
+
     def on_created(self, docs):
         for doc in docs:
             push_notification(self.notification_key, created=1, request_id=str(doc.get('_id')))

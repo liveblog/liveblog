@@ -26,7 +26,6 @@ import superdesk
 from apps.users.services import is_admin
 from superdesk.errors import SuperdeskApiError
 import logging
-from liveblog.blogs.request_membership import MembershipService
 
 logger = logging.getLogger('superdesk')
 
