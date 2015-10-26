@@ -224,15 +224,9 @@ Feature: Blog operations
         When we login as user "foo" with password "barbar"
         And we get "/blogs"
         Then we get list with 1 items
-<<<<<<< HEAD
         """
         {"_items": [{"title": "Sports blog"}]}
         """
-=======
-            """
-            {"_items": [{"title": "Sports blog"}]}
-            """
->>>>>>> ca310fea9c8fcbe380daacb95774c83bb87ebb5f
         Given empty "request_membership"
 		When we post to "/request_membership"
 		"""
