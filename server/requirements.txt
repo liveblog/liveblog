@@ -2,10 +2,6 @@ Flask-Cache==0.13.1
 Flask-Cors==2.1.0
 # Flask-S3 with support for python3
 git+git://github.com/joehand/flask-s3@8fe9f27ebb5251b7cf53a6684595d41dc4af2fbf#egg=Flask-S3==0.1.7
-# hachoir3 and eve come from SD requirements
-# They are added here because they are retrieved from git and hg protocols. (This is not possible with setuptool)
-# -e hg+http://bitbucket.org/haypo/hachoir3/#egg=hachoir3
-# git+git://github.com/superdesk/eve@sync-develop-24-june#egg=Eve==0.6.0-dev
--e git+git://github.com/superdesk/superdesk-core@d67417a#egg=Superdesk-Core==0.0.1-dev
--e git+git://github.com/superdesk/superdesk@a5de755#egg=Superdesk-Server
-# git+git://github.com/liveblog/superdesk@1.0.20#egg=Superdesk-Server
+# Superdesk
+-e git+git://github.com/superdesk/superdesk-core@e2a3e7f#egg=Superdesk-Core==0.0.1-dev
+-e git+git://github.com/superdesk/superdesk@5f75b8a#egg=Superdesk-Server

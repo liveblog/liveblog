@@ -121,8 +121,8 @@ Feature: Blog operations
                     {"title": "test_blog1", "blog_status": "open"}
                    ]}
         """
-        
-        
+
+
 		@auth
     	Scenario: Delete blog without being the owner
     	Given "roles"
@@ -205,7 +205,7 @@ Feature: Blog operations
         And we get "/blogs/#blogs._id#"
         Then we get response code 403
 
-        
+
 	@auth
     @notification
     Scenario: Create new request for blog access and get notification
