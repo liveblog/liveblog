@@ -224,13 +224,13 @@ Feature: Blog operations
         When we login as user "foo" with password "barbar"
         And we get "/blogs"
         Then we get list with 1 items
-            """
-            {"_items": [{"title": "Sports blog"}]}
-            """
+        """
+        {"_items": [{"title": "Sports blog"}]}
+        """
         Given empty "request_membership"
 		When we post to "/request_membership"
 		"""
-            {"blog": "#blogs._id#"}
+        {"blog": "#blogs._id#"}
         """
         Then we get new resource
         """

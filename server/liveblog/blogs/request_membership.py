@@ -15,7 +15,6 @@ import logging
 from superdesk.activity import add_activity
 from superdesk import get_resource_service
 from flask import current_app as app, render_template
-from liveblog.blogs.blogs import BlogService
 from bson.objectid import ObjectId
 from superdesk.notification import push_notification
 from superdesk.services import BaseService
@@ -73,16 +72,17 @@ class MembershipResource(Resource):
     }
     resource_methods = ['POST']
     privileges = {'POST': 'request_membership'}
-
-
-class MembershipService(BlogService):
+  
+  
+class MembershipService(BaseService):
     notification_key = 'request'
-
+  
     def on_create(self, docs):
         for doc in docs:
+            doc['original_creator'] = str(get_user().get('_id'))
             doc['message'] = "Please add me as a contributor to your blog"
         super().on_create(docs)
-
+  
     def on_created(self, docs):
         for doc in docs:
             push_notification(self.notification_key, created=1, request_id=str(doc.get('_id')))

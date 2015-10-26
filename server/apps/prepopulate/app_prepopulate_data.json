@@ -20,6 +20,13 @@
     }
 },
 {
+    "resource": "roles",
+    "data": {
+        "name": "Contributor",
+        "id_name": "-id Editor role-"
+    }
+},
+{
     "resource": "global_preferences",
     "data": {
         "key": "language",
