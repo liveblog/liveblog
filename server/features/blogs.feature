@@ -234,7 +234,7 @@ Feature: Blog operations
         """
         Then we get new resource
         """
-        {"message": "Please add me as a contributor to your blog"}
+        {"blog": "#blogs._id#"}
         """
         Then we get notifications
         """
