@@ -12,6 +12,7 @@ module.exports = function (grunt) {
         appDir: 'app',
         tmpDir: '.tmp',
         distDir: 'dist',
+        bowerDir: 'bower',
         poDir: 'po',
         livereloadPort: 35729
     };
@@ -28,13 +29,45 @@ module.exports = function (grunt) {
 
     grunt.registerTask('test', ['karma:unit']);
     grunt.registerTask('hint', ['jshint', 'jscs']);
-    grunt.registerTask('ci', ['hint']);
-    grunt.registerTask('ci:travis', ['hint']);
+    grunt.registerTask('hint:docs', ['jshint:docs', 'jscs:docs']);
+    grunt.registerTask('ci', ['test', 'hint']);
+    grunt.registerTask('ci:travis', ['karma:travis', 'hint']);
+    grunt.registerTask('bamboo', ['karma:bamboo']);
 
-    grunt.registerTask('server', ['clean', 'style', 'template:test', 'connect:test', 'open:test', 'watch']);
-    grunt.registerTask('server:liveblog', ['clean', 'style', 'template:test', 'connect:test', 'open:liveblog', 'watch']);
-    grunt.registerTask('server:e2e', ['clean', 'style', 'template:mock', 'connect:mock', 'watch']);
+    grunt.registerTask('docs', [
+        'clean',
+        'less:docs',
+        'cssmin',
+        'template:docs',
+        'connect:test',
+        'open:docs',
+        'ngtemplates',
+        'watch'
+    ]);
 
+    grunt.registerTask('server', [
+        'clean',
+        'style',
+        'template:test',
+        'connect:test',
+        'open:test',
+        'ngtemplates',
+        'watch'
+    ]);
+    grunt.registerTask('server:e2e', [
+        'clean',
+        'style',
+        'template:mock',
+        'connect:mock',
+        'ngtemplates',
+        'watch'
+    ]);
+    grunt.registerTask('server:travis', ['clean', 'style', 'template:travis', 'connect:travis']);
+
+    grunt.registerTask('bower', [
+        'build',
+        'copy:bower'
+    ]);
     grunt.registerTask('build', [
         'clean',
         'less:dev',
@@ -43,8 +76,12 @@ module.exports = function (grunt) {
         'requirejs', // must go after concat
         'uglify',
         'cssmin',
-        'copy',
+        'copy:assets',
+        'copy:js',
+        'copy:fonts',
+        'copy:docs',
         'template:test',
+        'ngtemplates',
         'nggettext_compile',
         'filerev',
         'usemin'

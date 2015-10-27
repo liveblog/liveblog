@@ -96,8 +96,8 @@ SENTRY_DSN = env('SENTRY_DSN')
 SENTRY_INCLUDE_PATHS = ['superdesk']
 
 INSTALLED_APPS = [
-    'apps.preferences',
     'apps.auth',
+    'apps.preferences',
     'superdesk.roles',
     'superdesk.users',
     'superdesk.upload',

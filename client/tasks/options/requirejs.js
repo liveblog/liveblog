@@ -12,7 +12,7 @@ module.exports = function(grunt) {
         });
     }
 
-    var include = ['main', 'liveblog-edit/directives'];
+    var include = ['main'];
     include.push.apply(include, getModules());
 
     return {
@@ -20,10 +20,20 @@ module.exports = function(grunt) {
             options: {
                 name: 'main',
                 baseUrl: '<%= appDir %>/scripts/',
-                out: '<%= tmpDir %>/concat/scripts/main.js',
                 mainConfigFile: '<%= appDir %>/scripts/config.js',
-                include: include,
-                optimize: 'none'
+                out: '<%= tmpDir %>/concat/scripts/main.js',
+                optimize: 'none',
+                include: include
+            }
+        },
+        compileDocs: {
+            options: {
+                name: 'superdesk/superdesk-docs',
+                baseUrl: '<%= appDir %>/scripts/',
+                mainConfigFile: '<%= appDir %>/scripts/config.js',
+                out: '<%= tmpDir %>/concat/scripts/superdesk-docs-main.js',
+                optimize: 'none',
+                include: ['superdesk/superdesk-docs']
             }
         }
     };
