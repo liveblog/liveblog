@@ -226,10 +226,12 @@ define([
                 }
             },
             togglePreview: function() {
+                console.log('$scope.preview:....', $scope.preview)
                 $scope.preview = !$scope.preview;
             }
         });
         // initalize the view with the editor panel
+        console.log('here', $routeParams)
         $scope.openPanel(angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor');
     }
 
