@@ -92,17 +92,17 @@
                     </div>
                 </div>
                 <!-- editor -->
-                <div class="panel--editor" ng-show="panelState === 'editor'">
-                    <header>
-                        Editor<button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Preview
-                            </button>
-                            <!-- //////////////////////////////////////////// -->
-                        Preview<a ng-click="togglePreview()">
-                        <i class="icon-remove pull-right" tooltip="{{ 'Remove' | translate }}"></i>
-                        </a>
-                            <!-- /////////////////////////////////////////////// -->
-                        <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
-                    </header>  
+                <div ng-if="!isCurrentPostPublished()">
+                    <!-- <header>AAAA</header> -->
+                    <div class="panel--editor" ng-show="panelState === 'editor'">
+                        <header>
+                            Editor<button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Preview
+                                </button>
+                            Preview<a ng-click="togglePreview()">
+                            <i class="icon-remove pull-right" tooltip="{{ 'Remove' | translate }}"></i>
+                            </a>
+                            <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
+                        </header>  
                     <div class="content">
                         <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">
