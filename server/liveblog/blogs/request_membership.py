@@ -71,8 +71,9 @@ class MembershipResource(Resource):
         'source': 'request_membership',
         'default_sort': [('_updated', -1)]
     }
-    resource_methods = ['POST']
-    privileges = {'POST': 'request_membership'}
+    resource_methods = ['POST', 'GET']
+    item_methods = ['GET', 'DELETE']
+    privileges = {'POST': 'request_membership', 'DELETE': 'request_membership'}
 
 
 class MembershipService(BaseService):
@@ -85,7 +86,8 @@ class MembershipService(BaseService):
             if request_service:
                 for r in request_service:
                     if (str(get_user().get('_id')) == r['original_creator']):
-                        raise SuperdeskApiError.badRequestError(message='A request has already been sent')
+                        if r['blog'] == doc['blog']:
+                            raise SuperdeskApiError.badRequestError(message='A request has already been sent')
         super().on_create(docs)
 
     def on_created(self, docs):
