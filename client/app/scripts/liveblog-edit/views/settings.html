@@ -239,12 +239,12 @@
                             <div sd-modal="" data-model="settings.editTeamModal" class="team-edit" macro-team="">
                                 <div class="modal-header">
                                     <button class="close" ng-click="settings.cancelTeamEdit()"><i class="icon-close-small"></i></button>
-                                    <h3 translate>Contributors</h3>
+                                    <h3 translate>Team members</h3>
                                 </div>
                                 <div class="modal-body">
                                     <div translate class="add-label">ADD PEOPLE</div>
                                     <div class="team_settings edit-contributors">
-                                        <div lb-user-select-list data-members="settings.blogMembers" data-onchoose="settings.addMember(user)"></div>
+                                        <div lb-user-select-list data-members="settings.posibleMembers" data-onchoose="settings.addMember(user)"></div>
                                         <div class="content">
                                             <p ng-if="message">{{ message }}</p>
                                             <div class="member-list clearfix">

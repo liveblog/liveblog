@@ -248,8 +248,11 @@ define([
             availableThemes: [],
             //used as an aux var to be able to change members and safely cancel the changes
             blogMembers: [],
-            //users to remove from the pending queue one the changes are saved
+            //users to remove from the pending queue once the changes are saved
             acceptedMembers: [],
+            memberRequests: [],
+            //concat of blogMembers and membership requested members
+            posibleMembers: [],
             isSaved: true,
             editTeamModal: false,
             forms: {},
@@ -257,13 +260,12 @@ define([
             progress: {width: 0},
             tab: false,
             userNotInMembers:function(user) {
-                var filter = true;
                 for (var i = 0; i < vm.members.length; i ++) {
                     if (user._id === vm.members[i]._id) {
                         return false;
                     }
                 }
-                return filter;
+                return true;
             },
             openUploadModal: function() {
                 vm.uploadModal = true;
@@ -337,6 +339,7 @@ define([
             },
             editTeam: function() {
                 vm.blogMembers = _.clone(vm.members);
+                vm.posibleMembers = vm.blogMembers.concat(vm.memberRequests);
                 //close the change owner dropdown if open
                 if (vm.openOwner === true) {
                     vm.openOwner = false;
