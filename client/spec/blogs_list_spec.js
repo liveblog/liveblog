@@ -79,11 +79,10 @@ describe('Blogs list', function() {
                 login('admin', 'admin').then(function() {
                     blogs.openBlog(1).openSettings().openTeam();
                     //before accepting the new user
-                    var teamMembersNo = blogs.blog.settings.contributors.count();
                     element(by.css('.pending-blog-member')).click();
                     element(by.css('[data-button="ACCEPT-NEW-MEMBER"]')).click();
                     browser.waitForAngular();
-                    expect(blogs.blog.settings.contributors.count()).toBe(teamMembersNo + 1);
+                    expect(blogs.blog.settings.contributors.count()).toBe(1);
                 });
             });
         });

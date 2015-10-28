@@ -190,7 +190,7 @@
                                 <a ng-click="settings.editTeam()" class="open-modal" data-button="EDIT TEAM" translate>EDIT</a>
                             </div>
                             <div class="subsettings-content">
-                                <div ng-if="settings.members.length === 0" translate>No members in the blog team</div>
+                                <div ng-if="settings.members.length === 0 && settings.memberRequests.length === 0" translate>No members in the blog team</div>
                                 <div class="inline-content first-block members-bottom" ng-repeat="member in settings.members track by member._id">
                                     <div class="inline-content padded-right">
                                         <div class="form-input profile-pic">
@@ -209,26 +209,26 @@
                                     </div>
                                 </div>
                                 <!-- Pending member -->
-                                <div class="inline-content first-block members-bottom">
+                                <div class="inline-content first-block members-bottom" ng-repeat="member in settings.memberRequests track by member._id">
                                     <div class="pending-member-message">
                                         <span class="label label-default" translate>PENDING</span>
                                     </div>
                                     <div class="pending-blog-member">
                                         <div class="inline-content padded-right">
                                             <div class="form-input profile-pic">
-                                                 <figure class="avatar large"><img sd-user-avatar data-src=""></figure>
+                                                 <figure class="avatar large"><img sd-user-avatar data-src="member.picture_url"></figure>
                                             </div>
                                         </div>
                                         <div class="inline-content">
                                             <div style="margin-top: 25px;">
                                                 <div class="form-input" data="original-creator-display-name">
-                                                   <strong>Pendind Display Name</strong>
+                                                   <strong>{{ member.display_name }}</strong>
                                                 </div>
                                                 <div class="form-input" data="original-creator-username">
-                                                    Pending username
+                                                    {{ member.username }}
                                                 </div>
                                                 <div class="form-input accept-blog-membership" data="original-creator-username">
-                                                    <a ng-click="settings.acceptMember();" data-button="ACCEPT-NEW-MEMBER" translate>ACCEPT</a>
+                                                    <a ng-click="settings.acceptMember(member);" data-button="ACCEPT-NEW-MEMBER" translate>ACCEPT</a>
                                                 </div>
                                             </div>
                                         </div>

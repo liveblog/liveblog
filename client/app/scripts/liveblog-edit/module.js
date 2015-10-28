@@ -248,6 +248,8 @@ define([
             availableThemes: [],
             //used as an aux var to be able to change members and safely cancel the changes
             blogMembers: [],
+            //users to remove from the pending queue one the changes are saved
+            acceptedMembers: [],
             isSaved: true,
             editTeamModal: false,
             forms: {},
@@ -352,6 +354,12 @@ define([
             addMember: function(user) {
                 vm.blogMembers.push(user);
             },
+            acceptMember: function(user) {
+                vm.addMember(user);
+                vm.memberRequests.splice(vm.memberRequests.indexOf(user), 1);
+                vm.acceptedMembers.push(user);
+                vm.doneTeamEdit();
+            },
             removeMember: function(user) {
                 vm.blogMembers.splice(vm.blogMembers.indexOf(user), 1);
             },
@@ -378,6 +386,23 @@ define([
                     vm.blog = blog;
                     vm.newBlog = angular.copy(blog);
                     vm.blogPreferences = angular.copy(blog.blog_preferences);
+                    //remove accepted users from the queue
+                    if (vm.acceptedMembers.length) {
+                        _.each(vm.acceptedMembers, function(member) {
+                            var item = {
+                                _links: {
+                                    self: {
+                                        href: 'request_membership/' + member._id
+                                    }
+                                }
+                            };
+                            api('request_membership').remove(item).then(function() {}, function(error) {
+                                notify.pop();
+                                notify.error(gettext('Something went wrong'));
+                                deferred.reject();
+                            });
+                        });
+                    }
                     notify.pop();
                     notify.info(gettext('blog settings saved'));
                     vm.setFormsPristine();
@@ -421,12 +446,10 @@ define([
                     vm.temp_selected_owner = vm.original_creator = data;
                 });
             },
-            getMembers: function() {
-                //contributors
-                vm.members = [];
-                _.each(blog.members, function(member) {
-                    api('users').getById(member.user).then(function(data) {
-                        vm.members.push(data);
+            getUsers: function(details, ids) {
+                _.each(ids, function(user) {
+                    api('users').getById(user.user).then(function(data) {
+                        details.push(data);
                     });
                 });
             }
@@ -448,7 +471,19 @@ define([
             vm.avUsers = data._items;
         });
         vm.buildOwner(blog.original_creator);
-        vm.getMembers();
+
+        //get details for the users that have requested blog membership
+        vm.memberRequests = [];
+        api('blogs/<regex("[a-f0-9]{24}"):blog_id>/request_membership', {_id: vm.blog._id}).query().then(function(data) {
+            vm.getUsers(vm.memberRequests, _.map(data._items, function(request) {
+                return {user: request.original_creator};
+            }));
+        });
+
+        //get team members details
+        vm.members = [];
+        vm.getUsers(vm.members, blog.members);
+
         //check if form is dirty before leaving the page
         var deregisterPreventer = $scope.$on('$locationChangeStart', routeChange);
         function routeChange (event, next, current) {

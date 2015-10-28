@@ -113,14 +113,18 @@
 
         $scope.requestAccess = function(blog) {
             notify.info(gettext('Sending request'));
-            api('request_membership').save({blog_id: blog._id}).then(
+            api('request_membership').save({blog: blog._id}).then(
                 function(data) {
                     notify.pop();
                     notify.info(gettext('Request sent'));
                 },
                 function(data) {
                     notify.pop();
-                    notify.error(gettext('Something went wrong, plase try again later!'));
+                    var message = gettext('Something went wrong, plase try again later!');
+                    if (data.data._message === 'A request has already been sent') {
+                        message = gettext('A request has already been sent');
+                    }
+                    notify.error(message, 5000);
                 }
             );
             $scope.closeAccessRequest();
