@@ -237,6 +237,7 @@ define([
         'gettext', 'modal', '$q', 'upload'];
     function BlogSettingsController($scope, blog, api, blogService, $location, notify,
         gettext, modal, $q, upload) {
+
         // set view's model
         var vm = this;
         angular.extend(vm, {
@@ -358,10 +359,10 @@ define([
                 vm.blogMembers.push(user);
             },
             acceptMember: function(user) {
-                vm.addMember(user);
+                vm.members.push(user);
+                vm.forms.dirty = true;
                 vm.memberRequests.splice(vm.memberRequests.indexOf(user), 1);
                 vm.acceptedMembers.push(user);
-                vm.doneTeamEdit();
             },
             removeMember: function(user) {
                 vm.blogMembers.splice(vm.blogMembers.indexOf(user), 1);
@@ -392,17 +393,12 @@ define([
                     //remove accepted users from the queue
                     if (vm.acceptedMembers.length) {
                         _.each(vm.acceptedMembers, function(member) {
-                            var item = {
-                                _links: {
-                                    self: {
-                                        href: 'request_membership/' + member._id
-                                    }
-                                }
-                            };
-                            api('request_membership').remove(item).then(function() {}, function(error) {
-                                notify.pop();
-                                notify.error(gettext('Something went wrong'));
-                                deferred.reject();
+                            api('request_membership').getById(member.request_id).then(function(item) {
+                                api('request_membership').remove(item).then(function() {}, function() {
+                                    notify.pop();
+                                    notify.error(gettext('Something went wrong'));
+                                    deferred.reject();
+                                });
                             });
                         });
                     }
@@ -452,6 +448,9 @@ define([
             getUsers: function(details, ids) {
                 _.each(ids, function(user) {
                     api('users').getById(user.user).then(function(data) {
+                        if (user.request_id) {
+                            data.request_id = user.request_id;
+                        }
                         details.push(data);
                     });
                 });
@@ -479,7 +478,7 @@ define([
         vm.memberRequests = [];
         api('blogs/<regex("[a-f0-9]{24}"):blog_id>/request_membership', {_id: vm.blog._id}).query().then(function(data) {
             vm.getUsers(vm.memberRequests, _.map(data._items, function(request) {
-                return {user: request.original_creator};
+                return {user: request.original_creator, request_id: request._id};
             }));
         });
 
