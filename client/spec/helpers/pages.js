@@ -89,12 +89,12 @@ function BlogsPage() {
     };
 
     self.createBlogNext = function() {
-        element(by.buttonText('NEXT')).click();
+        element(by.buttonText('Next')).click();
         return self;
     };
 
     self.createBlogCreate = function() {
-        element(by.buttonText('CREATE')).click();
+        element(by.buttonText('Create')).click();
         return self.blog;
     };
 
