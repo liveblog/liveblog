@@ -112,18 +112,38 @@
         };
 
         $scope.requestAccess = function(blog) {
-            notify.info(gettext('Sending request'));
-            api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/request_membership', {_id: blog._id}).query().then(
-                function(data) {
-                    notify.pop();
-                    notify.info(gettext('Request sent'));
-                },
-                function(data) {
-                    notify.pop();
-                    notify.error(gettext('Something went wrong, plase try again later!'));
-                }
-            );
-            $scope.closeAccessRequest();
+
+            var showRequestDialog = true;
+            //check to see if the current user hasn't been accepted during this session (before refreshing)
+            if (blog.members) {
+                _.each(blog.members, function(member) {
+                    if (member.user === $scope.$root.currentUser._id) {
+                        showRequestDialog = false;
+                    }
+                });
+            }
+
+            if (showRequestDialog) {
+                notify.info(gettext('Sending request'));
+                api('request_membership').save({blog: blog._id}).then(
+                    function(data) {
+                        notify.pop();
+                        notify.info(gettext('Request sent'));
+                    },
+                    function(data) {
+                        notify.pop();
+                        var message = gettext('Something went wrong, plase try again later!');
+                        if (data.data._message === 'A request has already been sent') {
+                            message = gettext('A request has already been sent');
+                        }
+                        notify.error(message, 5000);
+                    }
+                );
+                $scope.closeAccessRequest();
+            } else {
+                notify.pop();
+                notify.error(gettext('You are already member of this blog\'s team'));
+            }
         };
 
         $scope.switchTab = function(newTab) {

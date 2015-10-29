@@ -25,10 +25,10 @@ Feature: Prepopulate
         """
 
         When we get "/roles"
-        Then we get list with 1 items
+        Then we get list with 2 items
         """
         {"_items": [
-            {"name": "Editor"}
+            {"name": "Editor"}, {"name": "Contributor"}
         ]}
         """
 

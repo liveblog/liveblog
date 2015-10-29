@@ -209,35 +209,40 @@ Feature: Blog operations
 	@auth
     @notification
     Scenario: Create new request for blog access and get notification
-        Given empty "users"
-        Given empty "blogs"
-        Given empty "request_membership"
-        When we post to "users"
-            """
-            {"username": "foo", "email": "foo@bar.com", "is_active": true, "sign_off": "abc"}
-            """
-        When we post to "/blogs"
-            """
-            {"title": "Sports blog", "members": [{"user": "#users._id#"}]}
-            """
+    	Given "blogs"
+        """
+        [{"title": "Sports blog"}]
+        """
+    	Given "roles"
+        """
+        [{"name": "Contributor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "request_membership": 1}}]
+        """
+        Given "users"
+        """
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
+        """
+        When we login as user "foo" with password "barbar"
         And we get "/blogs"
         Then we get list with 1 items
-            """
-            {"_items": [{"title": "Sports blog", "members": [{"user": "#users._id#"}]}]}
-            """
-        Then we get notifications
-            """
-            [{"event": "blog", "extra": {"created": 1, "blog_id": "#blogs._id#"}}]
-            """
+        """
+        {"_items": [{"title": "Sports blog"}]}
+        """
+        Given empty "request_membership"
 		When we post to "/request_membership"
 		"""
-            {"blog": "#blogs._id#"}
+        {"blog": "#blogs._id#"}
         """
         Then we get new resource
         """
-        {"message": "Please add me as a contributor to your blog"}
+        {"blog": "#blogs._id#"}
         """
         Then we get notifications
         """
         [{"event": "request", "extra": {"created": 1, "request_id": ""}}]
         """
+        When we post to "/request_membership"
+        """
+        {"blog": "#blogs._id#"}
+        """
+        Then we get response code 400
+

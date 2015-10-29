@@ -4,7 +4,7 @@ angular.module('liveblog.security', [])
 .service('blogSecurityService',
     ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges',
     function($q, $rootScope, $route, blogService, $location, privileges) {
-        function canPublishAPost(blog) {
+        function canPublishAPost() {
             return privileges.userHasPrivileges({'publish_post': 1});
         }
         function canCreateABlog() {
@@ -28,6 +28,9 @@ angular.module('liveblog.security', [])
         function isUserOwnerOrAdmin(archive) {
             return $rootScope.currentUser._id === archive.original_creator || isAdmin();
         }
+        function isUserOwnerOrCanPublishAPost(archive) {
+            return $rootScope.currentUser._id === archive.original_creator || canPublishAPost();
+        }
         function canAccessSettings(archive) {
             return canCreateABlog() && isUserOwnerOrAdmin(archive);
         }
@@ -50,6 +53,7 @@ angular.module('liveblog.security', [])
         return {
             goToSettings: goToSettings,
             isUserOwnerOrAdmin: isUserOwnerOrAdmin,
+            isUserOwnerOrCanPublishAPost: isUserOwnerOrCanPublishAPost,
             canAccessSettings: canAccessSettings,
             canPublishAPost: canPublishAPost,
             canCreateABlog: canCreateABlog,
