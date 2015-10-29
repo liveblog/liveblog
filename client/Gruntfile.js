@@ -30,8 +30,8 @@ module.exports = function (grunt) {
     grunt.registerTask('test', ['karma:unit']);
     grunt.registerTask('hint', ['jshint', 'jscs']);
     grunt.registerTask('hint:docs', ['jshint:docs', 'jscs:docs']);
-    grunt.registerTask('ci', ['test', 'hint']);
-    grunt.registerTask('ci:travis', ['karma:travis', 'hint']);
+    grunt.registerTask('ci', ['hint']);
+    grunt.registerTask('ci:travis', ['hint']);
     grunt.registerTask('bamboo', ['karma:bamboo']);
 
     grunt.registerTask('docs', [
