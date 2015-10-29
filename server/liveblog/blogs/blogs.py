@@ -148,7 +148,9 @@ class BlogService(BaseService):
             members.append(doc.get('original_creator'))
             # check if current user belongs to members, and raise an exeption if not
             if str(get_user().get('_id')) not in members:
-                raise SuperdeskApiError.forbiddenError(message='you do not have permission to open this blog')
+                roles = get_resource_service('roles').find_one(req=None, _id=get_user().get('role'))
+                if not roles:
+                    raise SuperdeskApiError.forbiddenError(message='you do not have permission to open this blog')
         return doc
 
     def on_update(self, updates, original):
