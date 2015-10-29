@@ -92,17 +92,21 @@
                     </div>
                 </div>
                 <!-- editor -->
-                <div ng-if="!isCurrentPostPublished()">
-                    <!-- <header>AAAA</header> -->
                     <div class="panel--editor" ng-show="panelState === 'editor'">
+                        <div ng-if="!preview">
                         <header>
                             Editor<button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Preview
                                 </button>
+                                <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
+                        </header>
+                        </div>
+                        <div ng-if="preview">
+                        <header>
                             Preview<a ng-click="togglePreview()">
-                            <i class="icon-remove pull-right" tooltip="{{ 'Remove' | translate }}"></i>
+                            <i class="icon-remove pull-right" tooltip="{{ 'Back to edit' | translate }}"></i>
                             </a>
-                            <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
-                        </header>  
+                        </header>
+                        </div>
                     <div class="content">
                         <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">
@@ -111,12 +115,12 @@
                         </div>
                         <div class="actions">
                             <div style="display:table-row">
-                                <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell"><button class="btn btn-info" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
+                                <div ng-if="!preview" ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell"><button class="btn btn-info" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
                                     <span ng-switch-when="true"  translate>Update</span>
                                     <span ng-switch-when="false" translate>Publish</span>
                                 </button></div>
-                                <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Submit</button></div>
-                                <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Save draft</button></div>
+                                <div ng-if="!preview" style="display:table-cell"><button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Submit</button></div>
+                                <div ng-if="!preview" style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Save draft</button></div>
                             </div>
                         </div>
                     </div>
