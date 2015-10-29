@@ -114,6 +114,7 @@ describe('Blog settings', function() {
         browser.get('/');
         element(by.css('button.current-user')).click();
         browser.waitForAngular();
+        browser.sleep(1000); // it reloads page
         element(by.buttonText('SIGN OUT')).click();
         browser.sleep(2000); // it reloads page
         browser.waitForAngular();

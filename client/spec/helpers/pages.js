@@ -547,7 +547,7 @@ function BlogSettingsPage(blog) {
     };
 
     self.upload = function() {
-        element(by.buttonText('UPLOAD')).click();
+        element(by.buttonText('Upload')).click();
         return self;
     };
 
@@ -568,7 +568,8 @@ function BlogSettingsPage(blog) {
     };
 
     self.selectOwner = function() {
-        element(by.buttonText('SELECT')).click();
+        browser.sleep(1000);
+        element(by.buttonText('Select')).click();
         return self;
     };
 
@@ -583,7 +584,7 @@ function BlogSettingsPage(blog) {
     };
 
     self.removeBlog = function() {
-        element(by.buttonText('REMOVE BLOG')).click().then(function() {
+        element(by.buttonText('Remove blog')).click().then(function() {
             element(by.css('.btn-primary')).click();
         });
     };

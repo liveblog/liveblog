@@ -24,8 +24,10 @@
             }
             > .content {
                 padding: @PADDING;
-                width: @SUBSETTINGS_WIDTH;
                 .box-sizing(border-box);
+                > * {
+                    width: @SUBSETTINGS_WIDTH;
+                }
                 .form-group {
                     display: table;
                     content: " ";
