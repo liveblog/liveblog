@@ -51,7 +51,6 @@ frontend:
     service: frontend
   links:
    - backend
-   - pubapi
   ports:
    - "443:443"
    - "80:80"
