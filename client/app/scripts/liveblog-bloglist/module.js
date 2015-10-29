@@ -225,6 +225,7 @@
                 controller: BlogListController,
                 templateUrl: 'scripts/liveblog-bloglist/views/main.html',
                 category: superdesk.MENU_MAIN,
+                adminTools: false,
                 resolve: {isArchivedFilterSelected: function() {return false;}}
             }).activity('/liveblog/active', {
                 label: gettext('Blog List'),

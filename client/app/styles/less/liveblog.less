@@ -46,9 +46,12 @@
 
 // Hide the link to desks in the menu.
 // Needed since we import superdesk.desks in the modules
-#main-menu .content > ul > li > a[href="#/desks/"],
-.nav-tabs > li > a[href="#/settings/desks"],
-.nav-tabs > li > a[href="#/settings/user-roles"] {
+#main-menu li > a[href="#/workspace"],
+#main-menu li > a[href="#/desks/"],
+#main-menu li > a[href="#/legal_archive/"],
+#main-menu li > a[href="#/settings"],
+#main-menu li > a[href="#/ingest_dashboard"]
+{
     display: none !important;
 }
 
