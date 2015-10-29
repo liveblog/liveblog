@@ -299,7 +299,7 @@ function ContributionsPage(blog) {
     var self = this;
     self._class_name = '.panel--contribution';
     self.byFilterBox = by.css('.dropdown-content');
-    self.validFilterButton = element(self.byFilterBox).element(by.buttonText('SELECT'));
+    self.validFilterButton = element(self.byFilterBox).element(by.buttonText('Select'));
     AbstractPanelPage.call(self);
 
     self.openFiterByMember = function() {
