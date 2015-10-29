@@ -437,7 +437,7 @@ function EditPostPage() {
     self.waitForPublish = function() {
         browser.wait(function() {
             return self.publishElement.isEnabled();
-        }, 200);
+        }, 2000);
     };
 
     self.publish = function() {
