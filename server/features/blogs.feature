@@ -238,5 +238,5 @@ Feature: Blog operations
         """
         Then we get notifications
         """
-        [{"event": "request", "extra": {"created": 1, "request_id": ""}}]
+        [{"event": "request", "extra": {"created": 1}}]
         """
