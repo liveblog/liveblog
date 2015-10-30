@@ -18,6 +18,14 @@ function expectBlogsLength(len) {
     expect(element.all(by.repeater('blog in blogs._items')).count()).toEqual(len);
 }
 
+function logout() {
+    element(by.css('button.current-user')).click();
+    browser.waitForAngular();
+    browser.sleep(500); // it reloads page
+    element(by.buttonText('SIGN OUT')).click();
+    browser.sleep(500); // it reloads page
+}
+
 function expectBlog(blog, index) {
     index = index || 0;
     var allBlogs = element.all(by.repeater('blog in blogs._items')),
@@ -44,3 +52,4 @@ exports.expectBlog = expectBlog;
 exports.expectBlogsLength = expectBlogsLength;
 exports.randomString = randomString;
 exports.blogs = blogs;
+exports.logout = logout;
