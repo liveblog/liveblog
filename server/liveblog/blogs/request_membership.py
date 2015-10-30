@@ -21,6 +21,7 @@ from superdesk.services import BaseService
 from superdesk.emails import send_email
 from flask import g
 from superdesk.errors import SuperdeskApiError
+from bson.objectid import ObjectId
 
 logger = logging.getLogger('superdesk')
 
@@ -81,13 +82,9 @@ class MembershipService(BaseService):
 
     def on_create(self, docs):
         for doc in docs:
-            doc['original_creator'] = str(get_user().get('_id'))
-            request_service = get_resource_service('request_membership').get(req=None, lookup={})
-            if request_service:
-                for r in request_service:
-                    if (str(get_user().get('_id')) == r['original_creator']):
-                        if r['blog'] == doc['blog']:
-                            raise SuperdeskApiError.badRequestError(message='A request has already been sent')
+            doc['original_creator'] = get_user().get('_id')
+            if(self.find_one(req=None, original_creator=get_user().get('_id'))):
+                raise SuperdeskApiError.badRequestError(message='A request has already been sent')
         super().on_create(docs)
 
     def on_created(self, docs):
