@@ -1,8 +1,6 @@
 var Login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/pages').login;
 var waitForSuperdesk = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').waitForSuperdesk;
 
-var ptor = browser;
-
 describe('login', function() {
     'use strict';
 
