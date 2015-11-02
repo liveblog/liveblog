@@ -229,7 +229,9 @@ function BlogPage(blogs) {
     };
 
     self.openList = function() {
-        element(by.css('[class="icon-th-large"]')).click();
+        element(by.css('[class="icon-th-large"]')).waitReady(function(elm) {
+            return elm.click();
+        });
         return self.blogs;
     };
 
