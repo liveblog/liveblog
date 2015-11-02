@@ -16,8 +16,9 @@ describe('Blog settings', function() {
         blogs.blog.settings.title.clear().sendKeys(blog.title);
         blogs.blog.settings.description.clear().sendKeys(blog.description);
         blogs.blog.settings.done()
-                .openList()
-            .expectBlog(blog, 0);
+                .openList().then(function() {
+                    blogs.expectBlog(blog, 0);
+                });
     });
 
     it('should change the image for blog', function() {
@@ -31,8 +32,9 @@ describe('Blog settings', function() {
         blogs.blog.settings
                     .upload()
                     .done()
-                .openList()
-            .expectBlog(blog);
+                .openList().then(function() {
+                    blogs.expectBlog(blog);
+                });
     });
 
     it('should remove the image from blog', function() {
@@ -45,8 +47,9 @@ describe('Blog settings', function() {
                         .okModal()
                         .waitDone()
                         .done()
-                .openList()
-            .expectBlog(blog);
+                .openList().then(function() {
+                    blogs.expectBlog(blog);
+                });
     });
 
     it('shows original creator full name and username', function() {
@@ -79,8 +82,10 @@ describe('Blog settings', function() {
                             .switchStatus()
                             .done()
                 .openList()
-            .selectState('archived')
-            .expectBlog(blog);
+                .then(function() {
+                    blogs.selectState('archived')
+                    .expectBlog(blog);
+                });
     });
 
     it('should activate a blog', function() {
@@ -90,8 +95,10 @@ describe('Blog settings', function() {
                             .switchStatus()
                             .done()
                 .openList()
-            .selectState('active')
-            .expectBlog(blog);
+                .then(function() {
+                    blogs.selectState('active')
+                    .expectBlog(blog);
+                });
     });
 
     it('changes blog ownership & admin can open settings for any blog & contributor can\'t access blog settings even if owner',

@@ -73,12 +73,12 @@ describe('Blogs list', function() {
 
         it('should add a blog', function() {
             blogs.openCreateBlog().waitForModal();
-
             blogs.title.sendKeys(newBlog.title);
             blogs.description.sendKeys(newBlog.description);
-            blogs.createBlogNext().createBlogCreate()
-                    .openList()
-                .expectBlog(newBlog);
+            blogs.createBlogNext().createBlogCreate().openList()
+            .then(function() {
+                blogs.expectBlog(newBlog);
+            });
         });
 
         it('should add blog with a image', function() {
@@ -87,9 +87,10 @@ describe('Blogs list', function() {
             blogs.title.sendKeys(newBlog.title);
             blogs.description.sendKeys(newBlog.description);
             blogs.file.sendKeys(path.resolve(__dirname, newBlogImage.picture_url));
-            blogs.createBlogNext().createBlogCreate()
-                    .openList()
-                .expectBlog(newBlogImage);
+            blogs.createBlogNext().createBlogCreate().openList()
+            .then(function() {
+                blogs.expectBlog(newBlogImage);
+            });
         });
 
         it('should add a blog with members', function() {

@@ -111,9 +111,8 @@ function BlogsPage() {
 
     self.expectBlog = function(blog, index) {
         index = index || 0;
-        var allBlogs = element.all(by.repeater('blog in blogs._items')),
-            currentBlog = allBlogs.get(index);
-
+        browser.waitForAngular();
+        var currentBlog = element.all(by.repeater('blog in blogs._items')).get(index);
         expect(currentBlog.element(by.binding('blog.title')).getText()).toBe(blog.title);
         expect(currentBlog.element(by.binding('blog.description')).getText()).toBe(blog.description);
         if (blog.picture_url) {
@@ -126,6 +125,7 @@ function BlogsPage() {
     };
 
     self.expectCount = function(count) {
+        browser.waitForAngular();
         expect(element.all(by.repeater('blog in blogs._items')).count()).toEqual(count);
     };
 
@@ -134,7 +134,8 @@ function BlogsPage() {
         if (parseInt(state, 10) !== state){
             state = stateMap[state];
         }
-        element(by.repeater('state in states').row(state).column('state.text')).click();
+        browser.waitForAngular();
+        element.all(by.repeater('state in states').row(state).column('state.text')).click();
         return self;
     };
 }
@@ -229,10 +230,9 @@ function BlogPage(blogs) {
     };
 
     self.openList = function() {
-        element(by.css('[class="icon-th-large"]')).waitReady(function(elm) {
-            return elm.click();
+        return element(by.css('[class="icon-th-large"]')).waitReady().then(function(elm) {
+            return elm.click().then(function() {return self.blogs;});
         });
-        return self.blogs;
     };
 
     self.openArchive =  function() {
