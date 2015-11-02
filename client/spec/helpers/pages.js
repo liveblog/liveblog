@@ -1,5 +1,7 @@
 'use strict';
 
+var waitAndClick = require('./utils').waitAndClick;
+
 var blogs = [
     [
         {
@@ -153,7 +155,7 @@ function ThemesManagerPage() {
         browser.wait(function() {
             return element(by.css('[href="#/themes/"]')).isDisplayed();
         });
-        element(by.css('[href="#/themes/"]')).click();
+        waitAndClick(by.css('[href="#/themes/"]'));
         return self;
     };
 
@@ -240,8 +242,7 @@ function BlogPage(blogs) {
     };
 
     self.openSettings = function() {
-        element(by.css('.settings-link')).click();
-        return self.settings;
+        return waitAndClick(by.css('.settings-link')).then(function() {return self.settings;});
     };
 
     self.expectNotificationsNo = function(notifsNo) {
@@ -539,8 +540,10 @@ function BlogSettingsPage(blog) {
         return self;
     };
     self.openTeam = function() {
-        element(by.css('[data="blog-settings-team"]')).click();
-        return self;
+        return element(by.css('[data="blog-settings-team"]')).click().then(function() {
+            browser.waitForAngular();
+            return self;
+        });
     };
 
     self.switchStatus = function() {

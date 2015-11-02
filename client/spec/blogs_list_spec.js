@@ -1,5 +1,6 @@
 var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
     logout = require('./helpers/utils').logout,
+    waitAndClick = require('./helpers/utils').waitAndClick,
     blogs = require('./helpers/pages').blogs;
 
 describe('Blogs list', function() {
@@ -74,15 +75,25 @@ describe('Blogs list', function() {
             login('contributor', 'contributor').then(function() {
                 //request for blog dialog opens instead of the the blog
                 blogs.openBlog(1);
+                browser.wait(function() {
+                    return element(by.css('button[ng-click="requestAccess(accessRequestedTo)"]')).isDisplayed();
+                });
                 element(by.css('button[ng-click="requestAccess(accessRequestedTo)"]')).click();
                 logout();
                 login('admin', 'admin').then(function() {
-                    blogs.openBlog(1).openSettings().openTeam();
-                    //before accepting the new user
-                    element(by.css('.pending-blog-member')).click();
-                    element(by.css('[data-button="ACCEPT-NEW-MEMBER"]')).click();
-                    browser.waitForAngular();
-                    expect(blogs.blog.settings.contributors.count()).toBe(1);
+                    blogs.openBlog(1).openSettings().then(function(settingsPage) {
+                        return settingsPage.openTeam();
+                    })
+                    .then(function() {
+                        return waitAndClick(by.css('.pending-blog-member'));
+                    })
+                    .then(function() {
+                        return waitAndClick(by.css('[data-button="ACCEPT-NEW-MEMBER"]'));
+                    })
+                    .then(function() {
+                        browser.waitForAngular();
+                        expect(blogs.blog.settings.contributors.count()).toBe(1);
+                    });
                 });
             });
         });
@@ -121,8 +132,12 @@ describe('Blogs list', function() {
             blogs.team.searchUser('s')
                     .waitChooseUser()
                     .changeToUser();
-            blogs.createBlogCreate().openSettings().openTeam();
-            expect(blogs.blog.settings.contributors.count()).toBe(1);
+            blogs.createBlogCreate().openSettings().then(function(settingsPage) {
+                return settingsPage.openTeam();
+            })
+            .then(function() {
+                expect(blogs.blog.settings.contributors.count()).toBe(1);
+            });
         });
     });
 
