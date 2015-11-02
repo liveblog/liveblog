@@ -196,9 +196,12 @@ SUPPORTED_LANGUAGES = {
 
 RENDITIONS = {
     'picture': {
-        'thumbnail': {'width': 220, 'height': 120},
-        'viewImage': {'width': 640, 'height': 640},
-        'baseImage': {'width': 1400, 'height': 1400},
+        #  The resolution for small displays.
+        'thumbnail': {'width': 480, 'height': 320},
+        # The resolution for full hd and retina.
+        'viewImage': {'width': 1280, 'height': 720},
+        # The original image is resize to this resolution.
+        'baseImage': {'width': 1920, 'height': 1080},
     },
     'avatar': {
         'thumbnail': {'width': 60, 'height': 60},
@@ -244,7 +247,7 @@ if LDAP_SERVER:
 else:
     INSTALLED_APPS.append('apps.auth.db')
 
-SUPERDESK_TESTING = (env('SUPERDESK_TESTING', 'false').lower() == 'true')
+SUPERDESK_TESTING = (env('SUPERDESK_TESTING', 'true').lower() == 'true')
 # The number of minutes since the last update of the Mongo auth object after which it will be deleted
 SESSION_EXPIRY_MINUTES = 240
 

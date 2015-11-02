@@ -240,3 +240,9 @@ Feature: Blog operations
         """
         [{"event": "request", "extra": {"created": 1}}]
         """
+        When we post to "/request_membership"
+        """
+        {"blog": "#blogs._id#"}
+        """
+        Then we get response code 400
+

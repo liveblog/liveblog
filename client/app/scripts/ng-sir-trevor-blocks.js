@@ -437,9 +437,15 @@ define([
                 },
                 toHTML: function() {
                     var data = this.retrieveData();
+                    var srcset = '';
+                    _.forEach(data.media.renditions, function(value) {
+                        srcset += ', ' + value.href + ' ' + value.width + 'w';
+                    });
                     return [
                         '<figure>',
-                        '    <img src="' + data.media._url + '" alt="' + data.caption + '"/>',
+                        '    <img src="' + data.media._url + '" alt="' + data.caption + '"',
+                        srcset? ' srcset="' + srcset.substring(2) + '"' : '',
+                        '/>',
                         '    <figcaption>' + data.caption + (data.credit === '' ? '' : ' Credit: ' + data.credit) + '</figcaption>',
                         '</figure>'
                     ].join('');
@@ -448,7 +454,6 @@ define([
                     return this.retrieveData();
                 }
             });
-            
             SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
                     var that = this;
 
