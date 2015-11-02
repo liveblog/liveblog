@@ -69,16 +69,21 @@ function BlogsPage() {
     };
 
     self.searchBlogs = function(search) {
-        element(by.css('[ng-click="flags.extended = !flags.extended"]')).click();
-        element(by.model('q')).clear().sendKeys(search.search);
-        browser.getCurrentUrl().then(function(url) {
-            expect(url.indexOf('q=' + search.search)).toBeGreaterThan(-1);
-        }
-        ).then(function () {
-            self.expectCount(search.blogs.length);
-            for (var j = 0, countj = search.blogs.length; j < countj; j++) {
-                self.expectBlog(self.blogs[0][search.blogs[j]], j);
-            }
+        element(by.css('[ng-click="flags.extended = !flags.extended"]')).click()
+        .then(function() {
+            element(by.model('q')).waitReady()
+            .then(function(elem) {
+                elem.clear().sendKeys(search.search);
+                browser.getCurrentUrl().then(function(url) {
+                    expect(url.indexOf('q=' + search.search)).toBeGreaterThan(-1);
+                })
+                .then(function () {
+                    self.expectCount(search.blogs.length);
+                    for (var j = 0, countj = search.blogs.length; j < countj; j++) {
+                        self.expectBlog(self.blogs[0][search.blogs[j]], j);
+                    }
+                });
+            });
         });
         return self;
     };
