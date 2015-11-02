@@ -73,8 +73,8 @@
                           lb-posts-allow-unpublishing="false"
                           lb-posts-allow-reordering="false"
                           lb-posts-is-unread-post="unreadPostsService.isContribution"
-                          lb-posts-allow-editing="blogSecurityService.isUserOwnerOrAdmin"
-                          lb-posts-allow-deleting="blogSecurityService.isUserOwnerOrAdmin"
+                          lb-posts-allow-editing="blogSecurityService.canPublishAPost"
+                          lb-posts-allow-deleting="blogSecurityService.canPublishAPost"
                           lb-posts-allow-publishing="blogSecurityService.canPublishAPost"
                           lb-posts-on-post-selected="openPostInEditor"
                         >
