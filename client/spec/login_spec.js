@@ -15,14 +15,22 @@ describe('login', function() {
     });
 
     it('form renders modal on load', function() {
-        expect(modal.btn.isPresent()).toBe(true);
+        expect(modal.btn.isDisplayed()).toBe(true);
     });
 
     it('user can log in', function() {
         modal.login('admin', 'admin');
-        expect(browser.getCurrentUrl()).toBe(ptor.baseUrl + '/#/liveblog');
+        waitForSuperdesk();
+        expect(modal.btn.isDisplayed()).toBe(false);
+        expect(browser.getCurrentUrl()).toBe(browser.baseUrl + '/#/liveblog');
         element(by.css('button.current-user')).click();
-        expect(element(by.css('.user-info .displayname')).getText()).toBe('admin');
+        expect(
+            element(by.css('.user-info .displayname'))
+                .waitReady()
+                .then(function(elem) {
+                    return elem.getText();
+                })
+        ).toBe('admin');
     });
 
     it('user can log out', function() {
@@ -41,9 +49,9 @@ describe('login', function() {
 
     it('unknown user can\'t log in', function() {
         modal.login('foo', 'bar');
-        expect(modal.btn.isPresent()).toBe(true);
-        expect(browser.getCurrentUrl()).not.toBe(ptor.baseUrl + '/#/liveblog');
-        expect(modal.error.isPresent()).toBe(true);
+        expect(modal.btn.isDisplayed()).toBe(true);
+        expect(browser.getCurrentUrl()).not.toBe(browser.baseUrl + '/#/liveblog');
+        expect(modal.error.isDisplayed()).toBe(true);
     });
 
 });
