@@ -179,7 +179,8 @@ define([
                             var media_meta = {
                                 _info: config.server.url + response.data._links.self.href,
                                 _id: response.data._id,
-                                _url: response.data.renditions.viewImage.href
+                                _url: response.data.renditions.thumbnail.href,
+                                renditions: response.data.renditions
                             };
                             // media will be added latter in the `meta` if this item in this callback
                             success_callback({media: media_meta});

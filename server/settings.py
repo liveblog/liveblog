@@ -145,9 +145,12 @@ SUPPORTED_LANGUAGES = {
 
 RENDITIONS = {
     'picture': {
-        'thumbnail': {'width': 220, 'height': 120},
-        'viewImage': {'width': 640, 'height': 640},
-        'baseImage': {'width': 1400, 'height': 1400},
+        #  The resolution for small displays.
+        'thumbnail': {'width': 480, 'height': 320},
+        # The resolution for full hd and retina.
+        'viewImage': {'width': 1280, 'height': 720},
+        # The original image is resize to this resolution.
+        'baseImage': {'width': 1920, 'height': 1080},
     },
     'avatar': {
         'thumbnail': {'width': 60, 'height': 60},
