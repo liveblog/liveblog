@@ -232,9 +232,7 @@ function BlogPage(blogs) {
     };
 
     self.openList = function() {
-        return element(by.css('[class="icon-th-large"]')).waitReady().then(function(elm) {
-            return elm.click().then(function() {return self.blogs;});
-        });
+        return waitAndClick(by.css('[class="icon-th-large"]')).then(function() {return self.blogs;});
     };
 
     self.openArchive =  function() {
