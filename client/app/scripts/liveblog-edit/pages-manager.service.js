@@ -4,8 +4,8 @@
     // TODO: Factorize this file with
     // server/liveblog/embed/embed_assets/scripts/liveblog-embed/pages-manager.service.js
 
-    PagesManagerFactory.$inject = ['postsService', '$q', 'lodash'];
-    function PagesManagerFactory(postsService, $q, _) {
+    PagesManagerFactory.$inject = ['postsService', '$q', 'lodash', 'moment'];
+    function PagesManagerFactory(postsService, $q, _, moment) {
 
         function PagesManager (blog_id, status, max_results, sort) {
             var SORTS = {

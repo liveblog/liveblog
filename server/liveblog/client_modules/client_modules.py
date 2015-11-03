@@ -1,9 +1,9 @@
 from liveblog.blogs.blogs import BlogsResource
 from superdesk.services import BaseService
 from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, BlogPostsResource
-from apps.users.users import UsersResource
-from apps.users.services import UsersService
-from apps.archive.common import item_url
+from superdesk.users.users import UsersResource
+from superdesk.users.services import UsersService
+from superdesk.metadata.utils import item_url
 from flask import current_app as app
 
 

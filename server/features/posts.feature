@@ -671,7 +671,7 @@ Feature: Post operations
         """
         Then we get new resource
         """
-        {"firstcreated": "", "post_status": "open", "published_date": "", "blog": "#blogs._id#", "headline": "first post"}
+        {"firstcreated": "__any_value__", "post_status": "open", "blog": "#blogs._id#", "headline": "first post"}
         """
 
     @auth
@@ -698,7 +698,7 @@ Feature: Post operations
         """
         Then we get new resource
         """
-        {"post_status": "open", "published_date": "", "blog": "#blogs._id#", "headline": "my draft will be published"}
+        {"post_status": "open", "published_date": "__any_value__", "blog": "#blogs._id#", "headline": "my draft will be published"}
         """
         When we patch latest
         """
@@ -709,9 +709,9 @@ Feature: Post operations
         """
         Then we get new resource
         """
-        {"post_status": "draft", "published_date": "", "blog": "#blogs._id#", "headline": "my draft will be published", "unpublished_date":""}
+        {"post_status": "draft", "published_date": "__any_value__", "blog": "#blogs._id#", "headline": "my draft will be published", "unpublished_date":"__any_value__"}
         """
-        
+
 	@auth
     Scenario: Published date on posts comming from submitted contributions
         Given "roles"
@@ -736,6 +736,5 @@ Feature: Post operations
         """
         Then we get new resource
         """
-        {"post_status": "open", "published_date": "", "blog": "#blogs._id#", "headline": "my contribution will be published"}
+        {"post_status": "open", "blog": "#blogs._id#", "headline": "my contribution will be published"}
         """
-

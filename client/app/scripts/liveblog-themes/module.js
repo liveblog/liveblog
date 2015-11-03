@@ -229,6 +229,7 @@
                 controller: LiveblogThemesController,
                 controllerAs: 'vm',
                 category: superdesk.MENU_MAIN,
+                adminTools: true,
                 privileges: {'global_preferences': 1},
                 templateUrl: 'scripts/liveblog-themes/views/list.html'
             });

@@ -4,53 +4,33 @@ logstash:
     service: logstash
   links:
   - elastic
+  ports:
+  - "5555:5555"
 
 mongodb:
   extends:
     file: common.yml
     service: mongodb
+  ports:
+  - "27017:27017"
 
 redis:
   extends:
     file: common.yml
     service: redis
-
-kibana:
-  extends:
-    file: common.yml
-    service: kibana
-  links:
-  - elastic
   ports:
-  - "5601:5601"
+  - "6379:6379"
 
 elastic:
   extends:
     file: common.yml
     service: elastic
+  ports:
+  - "9200:9200"
 
 postfix:
   extends:
     file: common.yml
     service: postfix
-
-backend:
-  extends:
-    file: common.yml
-    service: backend
-  links:
-   - mongodb
-   - redis
-   - elastic
-   - logstash
-   - postfix
-
-frontend:
-  extends:
-    file: common.yml
-    service: frontend
-  links:
-   - backend
   ports:
-   - "443:443"
-   - "80:80"
+  - "25:25"

@@ -45,7 +45,7 @@ describe('timeline add to top and edit', function() {
             // unpublish the first post of the timeline and
             // check if it appears on the top of the draft posts list
             blog.timeline.unpublish(0);
-            expect(blog.timeline.getFull(0)).toNotBe(text);
+            expect(blog.timeline.getFull(0)).not.toBe(text);
             expect(blog.contributions.getFull(0)).toBe(text);
         });
         // twice to ensure the order
@@ -53,7 +53,7 @@ describe('timeline add to top and edit', function() {
             // unpublish the first post of the timeline and
             // check if it appears on the top of the draft posts list
             blog.timeline.unpublish(0);
-            expect(blog.timeline.getFull(0)).toNotBe(text);
+            expect(blog.timeline.getFull(0)).not.toBe(text);
             expect(blog.contributions.getFull(0)).toBe(text);
         });
     });
