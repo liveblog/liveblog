@@ -95,15 +95,15 @@
                     <div class="panel--editor" ng-show="panelState === 'editor'">
                         <div ng-if="!preview">
                         <header>
-                            Editor<button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Preview
+                            Editor<button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate>Preview
                                 </button>
                                 <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
                         </header>
                         </div>
                         <div ng-if="preview">
                         <header>
-                            Preview<a ng-click="togglePreview()">
-                            <i class="icon-remove pull-right" tooltip-placement="bottom" tooltip="{{ 'Back to edit' | translate }}"></i>
+                            Preview<a ng-click="togglePreview()" class="close-preview pull-right" tooltip-placement="bottom" tooltip="{{ 'Back to edit' | translate }}">
+                            ⨯
                             </a>
                         </header>
                         </div>
