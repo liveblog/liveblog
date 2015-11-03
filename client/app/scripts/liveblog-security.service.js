@@ -28,6 +28,9 @@ angular.module('liveblog.security', [])
         function isUserOwnerOrAdmin(archive) {
             return $rootScope.currentUser._id === archive.original_creator || isAdmin();
         }
+        function isUserOwnerOrCanPublishAPost(archive) {
+            return $rootScope.currentUser._id === archive.original_creator || canPublishAPost(archive);
+        }
         function canAccessSettings(archive) {
             return canCreateABlog() && isUserOwnerOrAdmin(archive);
         }
@@ -50,6 +53,7 @@ angular.module('liveblog.security', [])
         return {
             goToSettings: goToSettings,
             isUserOwnerOrAdmin: isUserOwnerOrAdmin,
+            isUserOwnerOrCanPublishAPost: isUserOwnerOrCanPublishAPost,
             canAccessSettings: canAccessSettings,
             canPublishAPost: canPublishAPost,
             canCreateABlog: canCreateABlog,
