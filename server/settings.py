@@ -111,8 +111,8 @@ INSTALLED_APPS = [
     'apps.groups',
     'apps.privilege',
     'apps.legal_archive',
-    'apps.prepopulate',
 
+    'liveblog.prepopulate',
     'liveblog.blogs',
     'liveblog.posts',
     'liveblog.items',

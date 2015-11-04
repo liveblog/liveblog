@@ -53,7 +53,7 @@ class AppInitializeWithDataCommand(superdesk.Command):
             return 0
 
         for name, (file_name, index_params, do_patch) in __entities__.items():
-            print('name')
+            print('name', name)
             try:
                 self.import_file(name, file_name, index_params, do_patch)
             except Exception as ex:

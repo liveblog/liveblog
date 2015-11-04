@@ -9,10 +9,10 @@
 # at https://www.sourcefabric.org/superdesk/license
 
 import superdesk
+from apps.prepopulate import PrepopulateService, PrepopulateResource, AppScaffoldDataCommand
+from .app_initialize import AppInitializeWithDataCommand
 
-from .app_prepopulate import PrepopulateService, PrepopulateResource
-from .app_initialize import AppInitializeWithDataCommand  # NOQA
-# from .app_scaffold_data import AppScaffoldDataCommand  # NOQA
+__all__ = ['PrepopulateService', 'PrepopulateResource', 'AppScaffoldDataCommand', 'AppInitializeWithDataCommand']
 
 
 def init_app(app):
@@ -20,5 +20,4 @@ def init_app(app):
         endpoint_name = 'prepopulate'
         service = PrepopulateService(endpoint_name, backend=superdesk.get_backend())
         PrepopulateResource(endpoint_name, app=app, service=service)
-
         superdesk.intrinsic_privilege(resource_name=endpoint_name, method=['POST'])
