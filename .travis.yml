@@ -28,10 +28,12 @@ before_install:
         npm install -g grunt-cli bower ;
       fi
     - if [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        chromium-browser --version ;
-        export CHROME_BIN=chromium-browser &&
+        pip install requests &&
         export DISPLAY=:99.0 &&
-        /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1080x16 ;
+        /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1080x24 ;
+        ./scripts/get-chrome-url | wget -N --no-verbose -i - && unzip chrome-linux.zip &&
+        export CHROME_BIN=`pwd`/chrome-linux/chrome &&
+        $CHROME_BIN --version ;
       fi
 
 install:
@@ -45,9 +47,6 @@ install:
       fi
     - if [ "${TARGET}" = "client" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
         cd client && bower install && cd .. ;
-      fi
-    - if [ "${TARGET}" = "e2e_chrome" ]; then
-        (cd client && npm install "actionless/protractor#1.6.1-old" && cd .. );
       fi
 
 before_script:

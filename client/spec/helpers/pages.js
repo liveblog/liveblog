@@ -1,5 +1,7 @@
 'use strict';
 
+var waitAndClick = require('./utils').waitAndClick;
+
 var blogs = [
     [
         {
@@ -69,16 +71,21 @@ function BlogsPage() {
     };
 
     self.searchBlogs = function(search) {
-        element(by.css('[ng-click="flags.extended = !flags.extended"]')).click();
-        element(by.model('q')).clear().sendKeys(search.search);
-        browser.getCurrentUrl().then(function(url) {
-            expect(url.indexOf('q=' + search.search)).toBeGreaterThan(-1);
-        }
-        ).then(function () {
-            self.expectCount(search.blogs.length);
-            for (var j = 0, countj = search.blogs.length; j < countj; j++) {
-                self.expectBlog(self.blogs[0][search.blogs[j]], j);
-            }
+        element(by.css('[ng-click="flags.extended = !flags.extended"]')).click()
+        .then(function() {
+            element(by.model('q')).waitReady()
+            .then(function(elem) {
+                elem.clear().sendKeys(search.search);
+                browser.getCurrentUrl().then(function(url) {
+                    expect(url.indexOf('q=' + search.search)).toBeGreaterThan(-1);
+                })
+                .then(function () {
+                    self.expectCount(search.blogs.length);
+                    for (var j = 0, countj = search.blogs.length; j < countj; j++) {
+                        self.expectBlog(self.blogs[0][search.blogs[j]], j);
+                    }
+                });
+            });
         });
         return self;
     };
@@ -89,12 +96,12 @@ function BlogsPage() {
     };
 
     self.createBlogNext = function() {
-        element(by.buttonText('NEXT')).click();
+        element(by.buttonText('Next')).click();
         return self;
     };
 
     self.createBlogCreate = function() {
-        element(by.buttonText('CREATE')).click();
+        element(by.buttonText('Create')).click();
         return self.blog;
     };
 
@@ -106,9 +113,8 @@ function BlogsPage() {
 
     self.expectBlog = function(blog, index) {
         index = index || 0;
-        var allBlogs = element.all(by.repeater('blog in blogs._items')),
-            currentBlog = allBlogs.get(index);
-
+        browser.waitForAngular();
+        var currentBlog = element.all(by.repeater('blog in blogs._items')).get(index);
         expect(currentBlog.element(by.binding('blog.title')).getText()).toBe(blog.title);
         expect(currentBlog.element(by.binding('blog.description')).getText()).toBe(blog.description);
         if (blog.picture_url) {
@@ -121,6 +127,7 @@ function BlogsPage() {
     };
 
     self.expectCount = function(count) {
+        browser.waitForAngular();
         expect(element.all(by.repeater('blog in blogs._items')).count()).toEqual(count);
     };
 
@@ -129,7 +136,8 @@ function BlogsPage() {
         if (parseInt(state, 10) !== state){
             state = stateMap[state];
         }
-        element(by.repeater('state in states').row(state).column('state.text')).click();
+        browser.waitForAngular();
+        element.all(by.repeater('state in states').row(state).column('state.text')).click();
         return self;
     };
 }
@@ -147,7 +155,7 @@ function ThemesManagerPage() {
         browser.wait(function() {
             return element(by.css('[href="#/themes/"]')).isDisplayed();
         });
-        element(by.css('[href="#/themes/"]')).click();
+        waitAndClick(by.css('[href="#/themes/"]'));
         return self;
     };
 
@@ -224,8 +232,7 @@ function BlogPage(blogs) {
     };
 
     self.openList = function() {
-        element(by.css('[class="icon-th-large"]')).click();
-        return self.blogs;
+        return waitAndClick(by.css('[class="icon-th-large"]')).then(function() {return self.blogs;});
     };
 
     self.openArchive =  function() {
@@ -233,8 +240,7 @@ function BlogPage(blogs) {
     };
 
     self.openSettings = function() {
-        element(by.css('.settings-link')).click();
-        return self.settings;
+        return waitAndClick(by.css('.settings-link')).then(function() {return self.settings;});
     };
 
     self.expectNotificationsNo = function(notifsNo) {
@@ -299,7 +305,7 @@ function ContributionsPage(blog) {
     var self = this;
     self._class_name = '.panel--contribution';
     self.byFilterBox = by.css('.dropdown-content');
-    self.validFilterButton = element(self.byFilterBox).element(by.buttonText('SELECT'));
+    self.validFilterButton = element(self.byFilterBox).element(by.buttonText('Select'));
     AbstractPanelPage.call(self);
 
     self.openFiterByMember = function() {
@@ -437,7 +443,7 @@ function EditPostPage() {
     self.waitForPublish = function() {
         browser.wait(function() {
             return self.publishElement.isEnabled();
-        }, 200);
+        }, 2000);
     };
 
     self.publish = function() {
@@ -532,8 +538,10 @@ function BlogSettingsPage(blog) {
         return self;
     };
     self.openTeam = function() {
-        element(by.css('[data="blog-settings-team"]')).click();
-        return self;
+        return element(by.css('[data="blog-settings-team"]')).click().then(function() {
+            browser.waitForAngular();
+            return self;
+        });
     };
 
     self.switchStatus = function() {
@@ -547,7 +555,7 @@ function BlogSettingsPage(blog) {
     };
 
     self.upload = function() {
-        element(by.buttonText('UPLOAD')).click();
+        element(by.buttonText('Upload')).click();
         return self;
     };
 
@@ -568,7 +576,8 @@ function BlogSettingsPage(blog) {
     };
 
     self.selectOwner = function() {
-        element(by.buttonText('SELECT')).click();
+        browser.sleep(1000);
+        element(by.buttonText('Select')).click();
         return self;
     };
 
@@ -583,7 +592,7 @@ function BlogSettingsPage(blog) {
     };
 
     self.removeBlog = function() {
-        element(by.buttonText('REMOVE BLOG')).click().then(function() {
+        element(by.buttonText('Remove blog')).click().then(function() {
             element(by.css('.btn-primary')).click();
         });
     };

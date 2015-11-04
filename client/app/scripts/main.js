@@ -24,8 +24,9 @@ define('main', [
     'gettext',
     'angular',
     'superdesk/superdesk',
-    'lodash'
-], function(gettext, angular, superdesk, _) {
+    'lodash',
+    'moment'
+], function(gettext, angular, superdesk, _, moment) {
     'use strict';
 
     return function bootstrap(config, apps) {
@@ -33,6 +34,7 @@ define('main', [
         apps.unshift(superdesk.name);
         superdesk.constant('config', config);
         superdesk.constant('lodash', _);
+        superdesk.constant('moment', moment);
         // liveblog list must be the default page
         superdesk.config(['$routeProvider', function($routeProvider) {
             $routeProvider.when('/', {redirectTo: '/liveblog'});
@@ -40,7 +42,7 @@ define('main', [
         // load apps & bootstrap
         var body = angular.element('body');
         body.ready(function() {
-            angular.bootstrap(body, apps);
+            angular.bootstrap(body, apps, {strictDi: true});
             window.superdeskIsReady = true;
         });
     };

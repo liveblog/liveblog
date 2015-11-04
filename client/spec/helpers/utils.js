@@ -24,6 +24,9 @@ function logout() {
     browser.sleep(500); // it reloads page
     element(by.buttonText('SIGN OUT')).click();
     browser.sleep(500); // it reloads page
+    browser.wait(function() {
+        return browser.driver.isElementPresent(by.id('login-btn'));
+    }, 5000);
 }
 
 function expectBlog(blog, index) {
@@ -47,9 +50,17 @@ var blogs = [
     {title: 'title: end to end One', description: 'description: end to end one', username: 'first name last name'}
 ];
 
+function waitAndClick(elmBy) {
+    browser.wait(function() {
+        return browser.driver.isElementPresent(elmBy);
+    }, 5000);
+    return element(elmBy).click();
+}
+
 exports.openBlog = openBlog;
 exports.expectBlog = expectBlog;
 exports.expectBlogsLength = expectBlogsLength;
 exports.randomString = randomString;
 exports.blogs = blogs;
 exports.logout = logout;
+exports.waitAndClick = waitAndClick;
