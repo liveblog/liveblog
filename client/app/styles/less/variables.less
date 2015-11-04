@@ -20,20 +20,24 @@
 
 // Accent colors
 // -------------------------
-@blue:                  #0088CC; //#049cdb;
+@blue:                  #5d9bc0; //#049cdb;
 @blueDark:              #0064cd;
 @green:                 #46a546;
 @red:                   #9d261d;
 @yellow:                #ffc40d;
 @orange:                #f89406;
+@purple:                #9c5e96;
 
-
-@sd-background: 		#f8f8f8; 
+@sd-background: 		#f8f8f8;
 @sd-text:             	@grayDark;
 @sd-blue: 				#5ea9c8;
 @sd-blue-text: 			#3599b6;
 @sd-hover:				#eff7fa;
 @sd-keyword:            #216278;
+
+@label-light:			#dedede;
+@label-medium:			#bababa;
+@label-prime:			#61a9c6;
 
 
 @todo-color : 			#b70000;
@@ -44,14 +48,14 @@
 
 // Links
 // -------------------------
-@linkColor:             #08c;
-@linkColorHover:        darken(@linkColor, 15%);
+@linkColor:             #5d9bc0;
+@linkColorHover:        lighten(@linkColor, 15%);
 
 
 // Typography
 // -------------------------
 @baseFontSize:          13px;
-@baseFontFamily:        "Open Sans", Helvetica, Arial, sans-serif;
+@baseFontFamily:        "Roboto", Helvetica, Arial, sans-serif;
 @baseLineHeight:        18px;
 @altFontFamily:         Georgia, "Times New Roman", Times, serif;
 
@@ -62,7 +66,7 @@
 
 // Tables
 // -------------------------
-@tableBackground:                   white; // overall background-color
+@tableBackground:                   transparent; // overall background-color
 @tableBackgroundAccent:             #f9f9f9; // for striping
 @tableBackgroundHover:              #f5f5f5; // for hover
 @tableBorder:                       #ddd; // table and cell border
@@ -93,9 +97,10 @@
 // Try to avoid customizing these :)
 @zindexDropdown:          1000;
 @zindexPopover:           1010;
-@zindexTooltip:           1020;
 @zindexFixedNavbar:       1030;
-@zindexModalBackdrop:     1040;
+@zindexSlidePane:         1035;
+@zindexTooltip:           1040;
+@zindexModalBackdrop:     1045;
 @zindexModal:             1050;
 
 
@@ -103,7 +108,6 @@
 // -------------------------
 @iconSpritePath:          "../../images/glyphicons-halflings.png";
 @iconWhiteSpritePath:     "../../images/glyphicons-halflings-white.png";
-@iconWarningSpritePath:     "../../images/glyphicons-halflings-warning.png";
 
 
 // Input placeholder text color
@@ -161,7 +165,7 @@
 // Positioning
 // -------------------------
 @topspace : @nav-height;
-@subnav-height: 49px;  /*was 65*/
+@subnav-height: 48px;  /*was 65*/
 @subnav-mobile-height: 45px;
 
 @subnav-level2: 40px;
@@ -169,30 +173,29 @@
 
 // Tablists and Tabpanes
 // -------------------------
-@tablist-width :            48px;
-@tablist-background:        #a1a1a1;
+@tablist-width: 		48px;
+@tablist-background:  		#a1a1a1;
 
-@tabpane-background:        #f5f5f5;
-@tabpane-border:            #7c7c7c;
-@tabpane-width:             330px;
-@tabpane-extended-width:    460px;
-@tabcontent-padding:        15px;
-@article-tabpane-padding:   10px;
+@tabpane-background:  		#f5f5f5;
+@tabpane-border:      		#7c7c7c;
+@tabpane-width:       		330px;
+@tabpane-extended-width: 	460px;
+@tabcontent-padding:  		15px;
+@article-tabpane-padding: 	10px;
+
+// Positioning
+// -------------------------
+@sidebar-width:         48px;
+@sidebar-background:    #dedede;
 
 
-
-@sidepreview-width : 440px;
+@sidepreview-width : 400px;
 
 @notification-pane-width: 300px;
 
 // Scratchpad
-// @scratchpad-closed : 36px; /* when scratchpad enabled */
 @scratchpad-closed : 0px;
-@scratchpad-content-height : 285px;
-
-
-//Layout 
-@bottom-view-padding: @scratchpad-closed;
+@scratchpad-content-height : 0px;
 
 // Article edit screen
 @authoring-opened-articles: 30px;
@@ -212,6 +215,8 @@
 @state-color-orange: rgb(218, 138, 51);
 @state-color-navy: rgb(0, 0, 128);
 @state-color-red: rgb(206, 69, 51);
+@state-color-embargo: rgb(255, 51, 129);
+
 
 //Search
 @generic-searchbar: 320px;
@@ -219,3 +224,27 @@
 //Box shadows
 @block-shadow-depth-1: 0px 1px 2px 0 rgba(0, 0, 0, 0.12);
 @block-shadow-depth-2: 0px 1px 4px 0 rgba(0, 0, 0, 0.2);
+
+// Widgets
+@widget_world-clock:           #03a9f4;
+@widget_ingest-stats:          #00bcd4;
+@widget_aggregate:             #8bc34a;
+@widget_archive:               #3f51b5;
+@widget_ingest:                #673ab7;
+@widget_activity:              #009688;
+
+// Monitoring view
+@subnav-authoring:             #dedede;
+@embeded-auth-shadow:          inset 7px 0px 9px -5px rgba(0,0,0,.25);
+
+//--------------------- SHADOW BOXES ---------------------------------
+.shadow-box {
+	background-color: @white;
+	border-radius: 2px;
+	box-shadow: 0 2px 2px 0 rgba(0,0,0,.14),0 3px 1px -2px rgba(0,0,0,.1),0 1px 4px 0 rgba(0,0,0,.12);
+	box-sizing: border-box;
+}
+
+// Monitoring view
+@subnav-authoring:              #dedede;
+@embeded-auth-shadow:           inset 7px 0px 9px -5px rgba(0,0,0,.25);

@@ -31,12 +31,16 @@ def env(variable, fallback_value=None):
         else:
             return env_value
 
-
+ABS_PATH = os.path.abspath(os.path.dirname(__file__))
+BEHAVE_TESTS_FIXTURES_PATH = os.path.join(ABS_PATH, 'features', 'steps', 'fixtures')
 XML = False
 IF_MATCH = True
 BANDWIDTH_SAVER = False
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S+00:00'
 PAGINATION_LIMIT = 200
+
+LOG_SERVER_ADDRESS = env('LOG_SERVER_ADDRESS', 'localhost')
+LOG_SERVER_PORT = int(env('LOG_SERVER_PORT', 5555))
 
 APPLICATION_NAME = env('APP_NAME', 'Live Blog')
 server_url = urlparse(env('SUPERDESK_URL', 'http://localhost:5000/api'))
@@ -94,20 +98,21 @@ SENTRY_INCLUDE_PATHS = ['superdesk']
 
 INSTALLED_APPS = [
     'apps.auth',
-    'apps.users',
+    'apps.preferences',
+    'superdesk.roles',
+    'superdesk.users',
     'superdesk.upload',
     'superdesk.notification',
     'superdesk.activity',
 
     'apps.archive',
-    'apps.preferences',
     'apps.desks',
     'apps.stages',
     'apps.groups',
     'apps.privilege',
     'apps.legal_archive',
-    'apps.prepopulate',
 
+    'liveblog.prepopulate',
     'liveblog.blogs',
     'liveblog.posts',
     'liveblog.items',
@@ -116,6 +121,52 @@ INSTALLED_APPS = [
     'liveblog.global_preferences',
     'liveblog.client_modules',
 ]
+
+# INSTALLED_APPS = [
+#     'apps.auth',
+#     'superdesk.roles',
+#     'superdesk.users',
+#     'apps.auth.db',
+#     'superdesk.upload',
+#     'superdesk.notification',
+#     'superdesk.activity',
+#     'apps.comments',
+#
+#     'superdesk.io',
+#     'superdesk.io.subjectcodes',
+#     'apps.io',
+#     'superdesk.io.ftp',
+#     'superdesk.io.rss',
+#     'superdesk.publish',
+#     'superdesk.commands',
+#     'superdesk.locators.locators',
+#     'apps.stages',
+#     'apps.desks',
+#     'apps.planning',
+#     'apps.coverages',
+#     'apps.tasks',
+#     'apps.preferences',
+#     'apps.spikes',
+#     'apps.groups',
+#     'apps.prepopulate',
+#     'apps.vocabularies',
+#     'apps.legal_archive',
+#     'apps.privilege',
+#     'apps.rules',
+#     'apps.highlights',
+#     'apps.publish',
+#     'apps.publish.publish_filters',
+#     'apps.dictionaries',
+#     'apps.duplication',
+#     'apps.aap_mm',
+#     'apps.spellcheck',
+#     'apps.templates',
+#     'apps.archived',
+#     'apps.validators',
+#     'apps.validate',
+#     'apps.workspace',
+#     'apps.macros',
+# ]
 
 RESOURCE_METHODS = ['GET', 'POST']
 ITEM_METHODS = ['GET', 'PATCH', 'PUT', 'DELETE']
@@ -145,9 +196,12 @@ SUPPORTED_LANGUAGES = {
 
 RENDITIONS = {
     'picture': {
-        'thumbnail': {'width': 220, 'height': 120},
-        'viewImage': {'width': 640, 'height': 640},
-        'baseImage': {'width': 1400, 'height': 1400},
+        #  The resolution for small displays.
+        'thumbnail': {'width': 480, 'height': 320},
+        # The resolution for full hd and retina.
+        'viewImage': {'width': 1280, 'height': 720},
+        # The original image is resize to this resolution.
+        'baseImage': {'width': 1920, 'height': 1080},
     },
     'avatar': {
         'thumbnail': {'width': 60, 'height': 60},
@@ -193,7 +247,7 @@ if LDAP_SERVER:
 else:
     INSTALLED_APPS.append('apps.auth.db')
 
-SUPERDESK_TESTING = (env('SUPERDESK_TESTING', 'false').lower() == 'true')
+SUPERDESK_TESTING = (env('SUPERDESK_TESTING', 'true').lower() == 'true')
 # The number of minutes since the last update of the Mongo auth object after which it will be deleted
 SESSION_EXPIRY_MINUTES = 240
 
@@ -221,5 +275,11 @@ WS_PORT = env('WSPORT', '5100')
 # Defines default value for Source to be set for manually created articles
 DEFAULT_SOURCE_VALUE_FOR_MANUAL_ARTICLES = env('DEFAULT_SOURCE_VALUE_FOR_MANUAL_ARTICLES', 'Liveblog')
 
-OrganizationName = "Liveblog"
-OrganizationNameAbbreviation = "LB"
+# Defines default value for Priority to be set for manually created articles
+DEFAULT_PRIORITY_VALUE_FOR_MANUAL_ARTICLES = env('DEFAULT_PRIORITY_VALUE_FOR_MANUAL_ARTICLES', 3)
+
+# Defines default value for Urgency to be set for manually created articles
+DEFAULT_URGENCY_VALUE_FOR_MANUAL_ARTICLES = env('DEFAULT_URGENCY_VALUE_FOR_MANUAL_ARTICLES', 3)
+
+ORGANIZATION_NAME = "Sourcefabric"
+ORGANIZATION_NAME_ABBREVIATION = "SF"

@@ -9,7 +9,7 @@ redis:
    - ../data/redis:/data
 
 logstash:
-  image: logstash
+  image: logstash:1.5
   command: logstash -f /usr/share/logstash/logstash.conf
   volumes:
   - logstash:/usr/share/logstash
@@ -58,6 +58,9 @@ backend:
    - SUPERDESK_URL=http://127.0.0.1/api
    - SUPERDESK_CLIENT_URL=http://127.0.0.1
    - SUPERDESK_TESTING=True
+  volumes:
+   - ../results/server/unit:/opt/superdesk/results-unit/
+   - ../results/server/behave:/opt/superdesk/results-behave/
 
 frontend:
   build: ../client

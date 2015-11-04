@@ -13,7 +13,7 @@ from superdesk.notification import push_notification
 from superdesk.utc import utcnow
 from superdesk.services import BaseService
 from liveblog.common import get_user, update_dates_for
-from apps.content import metadata_schema
+from superdesk.metadata.item import metadata_schema
 from superdesk.celery_app import celery
 from superdesk import get_resource_service
 from superdesk.resource import Resource
@@ -23,7 +23,7 @@ from superdesk.emails import send_email
 import liveblog.embed
 from bson.objectid import ObjectId
 import superdesk
-from apps.users.services import is_admin
+from superdesk.users.services import is_admin
 from superdesk.errors import SuperdeskApiError
 import logging
 
@@ -148,7 +148,9 @@ class BlogService(BaseService):
             members.append(doc.get('original_creator'))
             # check if current user belongs to members, and raise an exeption if not
             if str(get_user().get('_id')) not in members:
-                raise SuperdeskApiError.forbiddenError(message='you do not have permission to open this blog')
+                roles = get_resource_service('roles').find_one(req=None, _id=get_user().get('role'))
+                if not roles:
+                    raise SuperdeskApiError.forbiddenError(message='you do not have permission to open this blog')
         return doc
 
     def on_update(self, updates, original):

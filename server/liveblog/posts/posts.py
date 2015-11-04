@@ -6,12 +6,12 @@ from superdesk import get_resource_service
 from apps.archive import ArchiveVersionsResource
 from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
-from apps.content import LINKED_IN_PACKAGES
+from superdesk.metadata.packages import LINKED_IN_PACKAGES
 from superdesk.celery_app import update_key
 from flask import current_app as app
 import flask
 from superdesk.utc import utcnow
-from apps.users.services import current_user_has_privilege
+from superdesk.users.services import current_user_has_privilege
 from superdesk.errors import SuperdeskApiError
 
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]

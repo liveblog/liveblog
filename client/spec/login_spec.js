@@ -1,6 +1,5 @@
 var Login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/pages').login;
-
-var ptor = browser;
+var waitForSuperdesk = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').waitForSuperdesk;
 
 describe('login', function() {
     'use strict';
@@ -14,33 +13,43 @@ describe('login', function() {
     });
 
     it('form renders modal on load', function() {
-        expect(modal.btn.isPresent()).toBe(true);
+        expect(modal.btn.isDisplayed()).toBe(true);
     });
 
     it('user can log in', function() {
         modal.login('admin', 'admin');
-        expect(browser.getCurrentUrl()).toBe(ptor.baseUrl + '/#/liveblog');
+        waitForSuperdesk();
+        expect(modal.btn.isDisplayed()).toBe(false);
+        expect(browser.getCurrentUrl()).toBe(browser.baseUrl + '/#/liveblog');
         element(by.css('button.current-user')).click();
-        expect(element(by.css('.user-info .displayname')).getText()).toBe('admin');
+        expect(
+            element(by.css('.user-info .displayname'))
+                .waitReady()
+                .then(function(elem) {
+                    return elem.getText();
+                })
+        ).toBe('admin');
     });
 
     it('user can log out', function() {
         modal.login('admin', 'admin');
+        waitForSuperdesk();
         element(by.css('button.current-user')).click();
-        browser.waitForAngular();
+        // wait for sidebar animation to finish
+        browser.wait(function() {
+            return element(by.buttonText('SIGN OUT')).isDisplayed();
+        }, 200);
         element(by.buttonText('SIGN OUT')).click();
-        browser.sleep(2000); // it reloads page
-        browser.waitForAngular();
-        expect(modal.btn.isPresent()).toBe(true);
-        expect(modal.username.isPresent()).toBe(true);
-        expect(modal.username.getAttribute('value')).toBe('');
+        browser.wait(function() {
+            return browser.driver.isElementPresent(by.id('login-btn'));
+        }, 5000);
     });
 
     it('unknown user can\'t log in', function() {
         modal.login('foo', 'bar');
-        expect(modal.btn.isPresent()).toBe(true);
-        expect(browser.getCurrentUrl()).not.toBe(ptor.baseUrl + '/#/liveblog');
-        expect(modal.error.isPresent()).toBe(true);
+        expect(modal.btn.isDisplayed()).toBe(true);
+        expect(browser.getCurrentUrl()).not.toBe(browser.baseUrl + '/#/liveblog');
+        expect(modal.error.isDisplayed()).toBe(true);
     });
 
 });

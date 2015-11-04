@@ -32,7 +32,7 @@
             </ul>
             <div>
                 <!-- GENERAL -->
-                <div class="tab-content outer" ng-if="(settings.tab === 'general')">
+                <div class="split-content tab-content outer" ng-if="(settings.tab === 'general')">
                     <div class="header">
                         <h2 translate>General</h2>
                     </div>
@@ -116,14 +116,14 @@
                             <div class="form-group">
                                 <label for="removeBlog" class="control-label" translate>Blog removal</label>
                                 <div class="form-input">
-                                    <button ng-click="settings.askRemoveBlog()" class="btn btn-default pull-left" type="button" translate>Remove blog</button>   
+                                    <button ng-click="settings.askRemoveBlog()" class="btn btn-default pull-left" type="button" translate>Remove blog</button>
                                 </div>
                             </div>
                         </form>
                     </div>
                 </div>
                 <!-- Users -->
-                <div class="tab-content outer" ng-if="(settings.tab === 'team')">
+                <div class="split-content tab-content outer" ng-if="(settings.tab === 'team')">
                     <div class="header">
                         <h2 translate>Team</h2>
                     </div>
@@ -190,7 +190,7 @@
                                 <a ng-click="settings.editTeam()" class="open-modal" data-button="EDIT TEAM" translate>EDIT</a>
                             </div>
                             <div class="subsettings-content">
-                                <div ng-if="settings.members.length === 0" translate>No members in the blog team</div>
+                                <div ng-if="settings.members.length === 0 && settings.memberRequests.length === 0" translate>No members in the blog team</div>
                                 <div class="inline-content first-block members-bottom" ng-repeat="member in settings.members track by member._id">
                                     <div class="inline-content padded-right">
                                         <div class="form-input profile-pic">
@@ -208,16 +208,43 @@
                                         </div>
                                     </div>
                                 </div>
+                                <!-- Pending member -->
+                                <div class="inline-content first-block members-bottom" ng-repeat="member in settings.memberRequests track by member._id">
+                                    <div class="pending-member-message">
+                                        <span class="label label-default" translate>PENDING</span>
+                                    </div>
+                                    <div class="pending-blog-member">
+                                        <div class="inline-content padded-right">
+                                            <div class="form-input profile-pic">
+                                                 <figure class="avatar large"><img sd-user-avatar data-src="member.picture_url"></figure>
+                                            </div>
+                                        </div>
+                                        <div class="inline-content">
+                                            <div style="margin-top: 25px;">
+                                                <div class="form-input" data="original-creator-display-name">
+                                                   <strong>{{ member.display_name }}</strong>
+                                                </div>
+                                                <div class="form-input" data="original-creator-username">
+                                                    {{ member.username }}
+                                                </div>
+                                                <div class="form-input accept-blog-membership" data="original-creator-username">
+                                                    <a ng-click="settings.acceptMember(member);" data-button="ACCEPT-NEW-MEMBER" translate>ACCEPT</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- end pending member -->
                             </div>
                             <div sd-modal="" data-model="settings.editTeamModal" class="team-edit" macro-team="">
                                 <div class="modal-header">
                                     <button class="close" ng-click="settings.cancelTeamEdit()"><i class="icon-close-small"></i></button>
-                                    <h3 translate>Contributors</h3>
+                                    <h3 translate>Team members</h3>
                                 </div>
                                 <div class="modal-body">
                                     <div translate class="add-label">ADD PEOPLE</div>
                                     <div class="team_settings edit-contributors">
-                                        <div lb-user-select-list data-members="settings.blogMembers" data-onchoose="settings.addMember(user)"></div>
+                                        <div lb-user-select-list data-members="settings.posibleMembers" data-onchoose="settings.addMember(user)"></div>
                                         <div class="content">
                                             <p ng-if="message">{{ message }}</p>
                                             <div class="member-list clearfix">

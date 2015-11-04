@@ -16,15 +16,14 @@ require.config({
         'angular-mocks': 'bower_components/angular-mocks/angular-mocks',
         'angular-file-upload': 'bower_components/ng-file-upload/angular-file-upload',
         'angular-file-upload-shim': 'bower_components/ng-file-upload/angular-file-upload-shim',
-        'angular-slider': 'bower_components/angular-slider-royale/angular-slider',
+        'moment-timezone': 'bower_components/moment-timezone/builds/moment-timezone-with-data-2010-2020',
         'angular-embed': 'bower_components/angular-embed/dist/angular-embed',
         'angular-embedly': 'bower_components/angular-embedly/em-minified/angular-embedly.min',
-
         'superdesk': 'bower_components/superdesk/client/app/scripts/superdesk',
         'superdesk-settings': 'bower_components/superdesk/client/app/scripts/superdesk-settings',
         'superdesk-dashboard': 'bower_components/superdesk/client/app/scripts/superdesk-dashboard',
-
-        'moment-timezone': 'bower_components/moment-timezone/builds/moment-timezone-with-data-2010-2020',
+        'superdesk-ingest': 'bower_components/superdesk/client/app/scripts/superdesk-ingest',
+        'superdesk-archive': 'bower_components/superdesk/client/app/scripts/superdesk-archive',
 
         'raven-js': 'bower_components/raven-js/dist/raven',
         'jquery-ui': 'bower_components/jquery-ui/jquery-ui',
@@ -56,12 +55,12 @@ require.config({
         'angular-file-upload': ['angular', 'angular-file-upload-shim'],
 
         'translations': ['angular-gettext'],
-        'angular-ui': ['angular', 'bootstrap'],
-        'angular-slider': ['angular'],
+        'angular-ui': ['angular'],
+        // 'angular-slider': ['angular'],
         'angular-embed': ['angular', 'angular-embedly'],
 
-        'bootstrap': ['jquery'],
-        'jquery-ui': ['jquery'],
+        // 'bootstrap': ['jquery'],
+        // 'jquery-ui': ['jquery'],
         'bower_components/jcrop/js/jquery.Jcrop': ['jquery']
     }
 });

@@ -157,10 +157,10 @@ class ThemesService(BaseService):
             raise SuperdeskApiError.forbiddenError('This theme has children. It can\'t be removed')
         # update all the blogs using the removed theme and assign the default theme
         blogs_service = get_resource_service('blogs')
-        blogs = blogs_service.get(req=None, lookup={'theme._id': deleted_theme['_id']})
+        blogs = blogs_service.get(req=None, lookup={'blog_preferences.theme': deleted_theme['name']})
         for blog in blogs:
             # will assign the default theme to this blog
-            blog['blog_preferences']['theme'] = global_default_theme.get('name')
+            blog['blog_preferences']['theme'] = global_default_theme
             blogs_service.system_update(ObjectId(blog['_id']), {'blog_preferences': blog['blog_preferences']}, blog)
 
     def get_dependencies(self, theme_name, deps=[]):
