@@ -32,9 +32,29 @@ blog image uploader
 .upload-form {
     .main {
         overflow: auto;
-
+        .notify-info {
+            color: white;
+            border-color: #5ea9c8;
+        }
+        .notify-error {
+            border-color: red;
+        }
+        .notify-message {
+            max-width: 90%;
+            padding: 0.3em 0.5em;
+            position: relative;
+            border-width: medium 2px 2px medium;
+            border-style: none solid solid none;
+            top: 30px;
+            font-size: 16px;
+        }
         .computer {
             height: 100%;
+            .info {
+                font-size: 12px;
+                color: #5ea9c8;
+                padding: 10xpx;
+            }            
             .dropzone {
                 height: 100%;
                 .box-sizing(border-box);

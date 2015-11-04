@@ -23,6 +23,7 @@
 
         function clearCreateBlogForm() {
             $scope.preview = {};
+            $scope.notify = {message:'', code: ''};
             $scope.progress = {width: 0};
             $scope.newBlog = {
                 title: '',
@@ -87,7 +88,10 @@
                     var picture_url = response.data.renditions.viewImage.href;
                     $scope.newBlog.picture_url = picture_url;
                     $scope.newBlog.picture = response.data._id;
-                }, null, function(progress) {
+                }, function(error) {
+                    $scope.notify.message = (error.statusText !== '') ? error.statusText : gettext('There was a problem with your upload');
+                    $scope.notify.code = 'error';
+                }, function(progress) {
                     $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
                 });
             });
@@ -268,15 +272,22 @@
             return user ? user.display_name || user.username : null;
         };
     }]);
-    app.directive('sdPlainImage', ['notify', function(notify) {
+    app.directive('sdPlainImage', ['gettext', function(gettext) {
         return {
             scope: {
                 src: '=',
+                file: '=',
+                notifyMessage: '=',
+                notifyCode: '=',
                 progressWidth: '='
             },
             link: function(scope, elem) {
                 scope.$watch('src', function(src) {
                     elem.empty();
+                    if ((scope.file.size / 1048576) > 2) {
+                        scope.notifyMessage = gettext('Image is bigger then 2MB, upload file size could be limited!')
+                        scope.notifyCode = 'info';
+                    }
                     if (src) {
                         var img = new Image();
                         img.onload = function() {
@@ -284,8 +295,8 @@
 
                             if (this.width < 320 || this.height < 240) {
                                 scope.$apply(function() {
-                                    notify.pop();
-                                    notify.error(gettext('Sorry, but blog image must be at least 320x240 pixels big.'));
+                                    scope.notifyMessage = gettext('Sorry, but blog image must be at least 320x240 pixels big!')
+                                    scope.notifyCode = 'error';
                                     scope.src = null;
                                     scope.progressWidth = 0;
                                 });
