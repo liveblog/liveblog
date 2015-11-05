@@ -285,7 +285,7 @@
                 scope.$watch('src', function(src) {
                     elem.empty();
                     if ((scope.file.size / 1048576) > 2) {
-                        scope.notifyMessage = gettext('Image is bigger then 2MB, upload file size could be limited!')
+                        scope.notifyMessage = gettext('Image is bigger then 2MB, upload file size may be limited!');
                         scope.notifyCode = 'info';
                     }
                     if (src) {
@@ -295,7 +295,7 @@
 
                             if (this.width < 320 || this.height < 240) {
                                 scope.$apply(function() {
-                                    scope.notifyMessage = gettext('Sorry, but blog image must be at least 320x240 pixels big!')
+                                    scope.notifyMessage = gettext('Sorry, but blog image must be at least 320x240 pixels big!');
                                     scope.notifyCode = 'error';
                                     scope.src = null;
                                     scope.progressWidth = 0;
