@@ -43,7 +43,7 @@ def collect_theme_assets(theme, assets=None, template=None):
     if not template:
         template_file_name = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme['name'], 'template.html')
         if os.path.isfile(template_file_name):
-            template = open(template_file_name).read()
+            template = open(template_file_name, encoding='utf-8').read()
     # add assets from parent theme
     if theme.get('extends', None):
         parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
