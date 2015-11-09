@@ -1,46 +1,50 @@
 'use strict';
 
+function getChromeOptions() {
+    var chromeOptions = {
+        args: ['no-sandbox']
+    };
+
+    if (process.env.CHROME_BIN) {
+        chromeOptions.binary = process.env.CHROME_BIN;
+    }
+
+    return chromeOptions;
+}
+
 exports.config = {
-    allScriptsTimeout: 30000,
     baseUrl: 'http://localhost:9090',
     params: {
         baseBackendUrl: 'http://localhost:5000/api/',
         username: 'admin',
         password: 'admin'
     },
+
     specs: ['spec/**/*[Ss]pec.js'],
-    capabilities: {
-        browserName: 'chrome',
-        chromeOptions: {
-            args: ['--no-sandbox']
-        }
-    },
-    directConnect: true,
-    framework: 'jasmine',
+
+    framework: 'jasmine2',
     jasmineNodeOpts: {
         showColors: true,
-        isVerbose: true,
-        includeStackTrace: true,
-        defaultTimeoutInterval: 240000
+        defaultTimeoutInterval: 120000
     },
-    /* global jasmine */
+
+    capabilities: {
+        browserName: 'chrome',
+        chromeOptions: getChromeOptions()
+    },
+
+    directConnect: true,
+
     onPrepare: function() {
-        /*
-        var ScreenShotReporter = require('protractor-screenshot-reporter');
-        jasmine.getEnv().addReporter(new ScreenShotReporter({
-            baseDirectory: './screenshots',
-            pathBuilder:
-                function pathBuilder(spec, descriptions, results, capabilities) {
-                    return results.passed() + '_' + descriptions.reverse().join('-');
-                },
-            takeScreenShotsOnlyForFailedSpecs: true
-        }));
-        */
         var setup = require('./app/scripts/bower_components/superdesk/client/spec/helpers/setup');
         setup({fixture_profile: 'test'});
-        require('jasmine-reporters');
+
+        var reporters = require('jasmine-reporters');
         jasmine.getEnv().addReporter(
-            new jasmine.JUnitXmlReporter('e2e-test-results', true, true)
+            new reporters.JUnitXmlReporter({
+                savePath: 'e2e-test-results',
+                consolidateAll: true
+            })
         );
     }
 };

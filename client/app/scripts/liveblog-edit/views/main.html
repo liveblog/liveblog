@@ -73,8 +73,8 @@
                           lb-posts-allow-unpublishing="false"
                           lb-posts-allow-reordering="false"
                           lb-posts-is-unread-post="unreadPostsService.isContribution"
-                          lb-posts-allow-editing="blogSecurityService.isUserOwnerOrAdmin"
-                          lb-posts-allow-deleting="blogSecurityService.isUserOwnerOrAdmin"
+                          lb-posts-allow-editing="blogSecurityService.isUserOwnerOrCanPublishAPost"
+                          lb-posts-allow-deleting="blogSecurityService.isUserOwnerOrCanPublishAPost"
                           lb-posts-allow-publishing="blogSecurityService.canPublishAPost"
                           lb-posts-on-post-selected="openPostInEditor"
                         >
@@ -92,11 +92,21 @@
                     </div>
                 </div>
                 <!-- editor -->
-                <div class="panel--editor" ng-show="panelState === 'editor'">
-                    <header>
-                        Editor<button class="btn btn-info pull-right" ng-click="togglePreview()" translate>{{ preview? 'Edit': 'Preview' }}</button>
-                        <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
-                    </header>
+                    <div class="panel--editor" ng-show="panelState === 'editor'">
+                        <div ng-if="!preview">
+                        <header>
+                            Editor<button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate>Preview
+                                </button>
+                                <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
+                        </header>
+                        </div>
+                        <div ng-if="preview">
+                        <header>
+                            Preview<span ng-click="togglePreview()" class="close-preview pull-right" tooltip-placement="bottom" tooltip="{{ 'Back to edit' | translate }}">
+                            ⨯
+                            </span>
+                        </header>
+                        </div>
                     <div class="content">
                         <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">

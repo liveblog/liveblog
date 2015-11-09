@@ -121,8 +121,8 @@ Feature: Blog operations
                     {"title": "test_blog1", "blog_status": "open"}
                    ]}
         """
-        
-        
+
+
 		@auth
     	Scenario: Delete blog without being the owner
     	Given "roles"
@@ -205,7 +205,7 @@ Feature: Blog operations
         And we get "/blogs/#blogs._id#"
         Then we get response code 403
 
-        
+
 	@auth
     @notification
     Scenario: Create new request for blog access and get notification
@@ -238,5 +238,11 @@ Feature: Blog operations
         """
         Then we get notifications
         """
-        [{"event": "request", "extra": {"created": 1, "request_id": ""}}]
+        [{"event": "request", "extra": {"created": 1}}]
         """
+        When we post to "/request_membership"
+        """
+        {"blog": "#blogs._id#"}
+        """
+        Then we get response code 400
+

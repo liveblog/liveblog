@@ -13,7 +13,7 @@ from superdesk.notification import push_notification
 from superdesk.utc import utcnow
 from superdesk.services import BaseService
 from liveblog.common import get_user, update_dates_for
-from apps.content import metadata_schema
+from superdesk.metadata.item import metadata_schema
 from superdesk.celery_app import celery
 from superdesk import get_resource_service
 from superdesk.resource import Resource
@@ -23,7 +23,7 @@ from superdesk.emails import send_email
 import liveblog.embed
 from bson.objectid import ObjectId
 import superdesk
-from apps.users.services import is_admin
+from superdesk.users.services import is_admin
 from superdesk.errors import SuperdeskApiError
 import logging
 

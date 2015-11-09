@@ -1,14 +1,9 @@
+
 module.exports = {
     target: {
-        files: [
-            {
-                dest: '<%= distDir %>/styles/css/sd-app.css',
-                src: ['<%= tmpDir %>/superdesk*/**/*.css']
-            },
-            {
-                dest: '<%= distDir %>/styles/css/app.css',
-                src: ['<%= tmpDir %>/liveblog*/**/*.css']
-            }
-        ]
+        files: {
+            '<%= distDir %>/styles/css/app.css': ['<%= tmpDir %>/**/*.css'],
+            '<%= distDir %>/styles/css/docs.css': ['<%= tmpDir %>/docs/styles/*.css']
+        }
     }
 };

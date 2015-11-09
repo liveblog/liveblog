@@ -20,6 +20,8 @@ from superdesk.notification import push_notification
 from superdesk.services import BaseService
 from superdesk.emails import send_email
 from flask import g
+from superdesk.errors import SuperdeskApiError
+from bson.objectid import ObjectId
 
 logger = logging.getLogger('superdesk')
 
@@ -70,8 +72,9 @@ class MembershipResource(Resource):
         'source': 'request_membership',
         'default_sort': [('_updated', -1)]
     }
-    resource_methods = ['POST']
-    privileges = {'POST': 'request_membership'}
+    resource_methods = ['POST', 'GET']
+    item_methods = ['GET', 'DELETE']
+    privileges = {'POST': 'request_membership', 'DELETE': 'request_membership'}
 
 
 class MembershipService(BaseService):
@@ -79,7 +82,9 @@ class MembershipService(BaseService):
 
     def on_create(self, docs):
         for doc in docs:
-            doc['original_creator'] = str(get_user().get('_id'))
+            doc['original_creator'] = get_user().get('_id')
+            if(self.find_one(req=None, blog=doc['blog'], original_creator=get_user().get('_id'))):
+                raise SuperdeskApiError.badRequestError(message='A request has already been sent')
         super().on_create(docs)
 
     def on_created(self, docs):
