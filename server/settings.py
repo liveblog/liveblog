@@ -202,6 +202,7 @@ RENDITIONS = {
         'viewImage': {'width': 1280, 'height': 720},
         # The original image is resize to this resolution.
         'baseImage': {'width': 1920, 'height': 1080},
+        'mediumImage': {'width': 800, 'height': 480},
     },
     'avatar': {
         'thumbnail': {'width': 60, 'height': 60},
