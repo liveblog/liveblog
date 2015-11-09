@@ -14,7 +14,7 @@ describe('Contributions Posts', function() {
             });
         });
     });
-    
+
     it('can create contributions and respect the order and show the notifications', function() {
         var blog = blogs.openBlog(0);
         blog.editor.createContribution().then(function(contrib1) {
@@ -72,7 +72,7 @@ describe('Contributions Posts', function() {
 
         //editor can open admin's contribution and edit it
         blog.openList();
-        var blog = blogs.openBlog(3);
+        blog = blogs.openBlog(3);
         var contributions = blog.openContributions();
         browser.wait(function() {
             return element(contributions.byPosts).isPresent();
