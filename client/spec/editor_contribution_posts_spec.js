@@ -4,7 +4,7 @@ var login = require('../app/scripts/bower_components/superdesk/client/spec/helpe
 describe('Contributions Posts', function() {
     'use strict';
 
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {login('editor', 'editor').then(done);});
 
     it('can open contributions panel from url', function() {
         var contributions = blogs.openBlog(0).contributions;
@@ -69,9 +69,18 @@ describe('Contributions Posts', function() {
             blog.openContributions().expectPost(0, 'update');
             expect(contributions.all().count()).toBe(1);
         });
+
+        //editor can open admin's contribution and edit it
+        blog.openList();
+        blog = blogs.openBlog(3);
+        var contributions = blog.openContributions();
+        browser.wait(function() {
+            return element(contributions.byPosts).isPresent();
+        }, 5000);
+        expect(contributions.editButtonIsPresent(contributions.get(0))).toBe(true);
     });
 
-    it('can\'t open a contributions from other in the editor', function() {
+    it('a contributor can\'t open contributions from other in the editor', function() {
         var blog = blogs.openBlog(3);
         blog.editor.createContribution().then(function(contrib) {
             var contributions = blog.openContributions();

@@ -466,6 +466,9 @@ define([
         api('themes').query().then(function(data) {
             // filter theme with label (without label are `generic` from inheritance)
             vm.availableThemes = data._items.filter(function(theme) {return !theme['abstract'];});
+            vm.selectedTheme = _.find(vm.availableThemes, function(theme) {
+                return theme.name === vm.blogPreferences.theme;
+            });
         });
         api('users').getById(blog.original_creator).then(function(data) {
             vm.original_creator = data;
