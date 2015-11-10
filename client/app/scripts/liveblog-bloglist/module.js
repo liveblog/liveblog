@@ -74,7 +74,7 @@
                 return;
             }
             // return a promise of upload which will call the success/error callback
-            return api.archive.getUrl().then(function(url) {
+            return api.upload.getUrl().then(function(url) {
                 return upload.start({
                     method: 'POST',
                     url: url,
@@ -238,10 +238,6 @@
             type: 'http',
             backend: {rel: 'blogs'}
         });
-        apiProvider.api('archive', {
-            type: 'http',
-            backend: {rel: 'archive'}
-        });
     }]).config(['superdeskProvider', function(superdesk) {
         superdesk
             .activity('/liveblog', {

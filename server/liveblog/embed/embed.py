@@ -99,6 +99,7 @@ def publish_embed(blog_id, api_host=None, theme=None):
 def embed(blog_id, api_host=None, theme=None):
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    blog['picture'] = get_resource_service('upload').find_one(req=None, _id=blog['picture'])
     if not blog:
         return 'blog not found', 404
     # retrieve the wanted theme and add it to blog['theme'] if is not the registered one
