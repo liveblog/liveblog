@@ -72,6 +72,7 @@ class BlogsResource(Resource):
 
     item_methods = ['GET', 'PATCH', 'PUT', 'DELETE']
     privileges = {'POST': 'blogs', 'PATCH': 'blogs', 'PUT': 'blogs', 'DELETE': 'blogs'}
+    embedded_fields = ['picture']
 
     schema = blogs_schema
 

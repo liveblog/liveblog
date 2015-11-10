@@ -33,6 +33,7 @@ class ClientBlogsResource(BlogsResource):
     public_item_methods = ['GET']
     item_methods = ['GET']
     resource_methods = ['GET']
+    embedded_fields = ['picture']
     schema = {}
     schema.update(BlogsResource.schema)
 
