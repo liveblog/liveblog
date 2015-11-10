@@ -165,7 +165,7 @@ define([
                         error_callback(response.data? response.data._message : undefined);
                     };
                     // return a promise of upload which will call the success/error callback
-                    return api.upload.getUrl().then(function(url) {
+                    return api.archive.getUrl().then(function(url) {
                         upload.start({
                             method: 'POST',
                             url: url,
@@ -578,6 +578,10 @@ define([
         apiProvider.api('upload', {
             type: 'http',
             backend: {rel: 'upload'}
+        });
+        apiProvider.api('archive', {
+            type: 'http',
+            backend: {rel: 'archive'}
         });
     }]).config(['SirTrevorOptionsProvider', 'SirTrevorProvider', function(SirTrevorOptions, SirTrevor) {
         // here comes all the sir trevor customization (except custom blocks which are in the SirTrevorBlocks module)
