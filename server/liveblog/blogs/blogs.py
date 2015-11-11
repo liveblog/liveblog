@@ -127,6 +127,7 @@ class BlogService(BaseService):
             prefs = global_prefs.copy()
             prefs.update(doc.get('blog_preferences', {}))
             doc['blog_preferences'] = prefs
+            doc['picture'] = None
 
     def on_created(self, docs):
         for blog in docs:
