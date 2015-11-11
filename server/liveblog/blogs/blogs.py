@@ -36,7 +36,7 @@ blogs_schema = {
         'type': 'string',
         'nullable': True
     },
-    'picture': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
+    'picture': Resource.rel('archive', embeddable=True, nullable=True),
     'original_creator': metadata_schema['original_creator'],
     'version_creator': metadata_schema['version_creator'],
     'versioncreated': metadata_schema['versioncreated'],
@@ -72,7 +72,6 @@ class BlogsResource(Resource):
 
     item_methods = ['GET', 'PATCH', 'PUT', 'DELETE']
     privileges = {'POST': 'blogs', 'PATCH': 'blogs', 'PUT': 'blogs', 'DELETE': 'blogs'}
-    embedded_fields = ['picture']
 
     schema = blogs_schema
 
