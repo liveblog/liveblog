@@ -41,7 +41,7 @@ define('main', [
         }]);
         superdesk.config(['$provide', function($provide) {
             $provide.decorator('sdItemGlobalsearchDirective', ['$delegate', function($delegate) {
-                //remove from Liveblog the SD directive that is doing the ctrl+0 binding 
+                //remove from Liveblog the SD directive that is doing the ctrl+0 binding
                 $delegate.shift();
                 return $delegate;
             }]);
