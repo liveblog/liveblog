@@ -113,7 +113,9 @@ def embed(blog_id, api_host=None, theme=None):
         # this method can be called outside from a request context
         theme_name = theme
     # collect static assets to load them in the template
-    theme = get_resource_service('themes').find_one(req=None, name=blog['blog_preferences'].get('theme'))
+
+    if theme is None:
+        theme = get_resource_service('themes').find_one(req=None, name=blog['blog_preferences'].get('theme'))
     # if a theme is provided, overwrite the default theme
     if theme_name:
         theme_package = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
