@@ -8,6 +8,7 @@
 # For the full copyright and license information, please see the
 # AUTHORS and LICENSE files distributed with this source code, or
 # at https://www.sourcefabric.org/superdesk/license
+from superdesk.errors import SuperdeskApiError
 
 """Embed module"""
 import superdesk
@@ -104,6 +105,10 @@ def embed(blog_id, api_host=None, theme=None):
     # retrieve the wanted theme and add it to blog['theme'] if is not the registered one
     try:
         theme_name = request.args.get('theme', theme)
+        theme = get_resource_service('themes').find_one(req=None, name=blog['blog_preferences'].get('theme'))
+        if theme is None:
+            raise SuperdeskApiError.badRequestError(
+                message='You will be able to access the embed after you register the themes')
     except RuntimeError:
         # this method can be called outside from a request context
         theme_name = theme
