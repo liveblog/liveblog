@@ -39,6 +39,13 @@ define('main', [
         superdesk.config(['$routeProvider', function($routeProvider) {
             $routeProvider.when('/', {redirectTo: '/liveblog'});
         }]);
+        superdesk.config(['$provide', function($provide) {
+            $provide.decorator('sdItemGlobalsearchDirective', ['$delegate', function($delegate) {
+                //remove from Liveblog the SD directive that is doing the ctrl+0 binding            
+                $delegate.shift();
+                return $delegate;
+            }]);
+        }]);
         // load apps & bootstrap
         var body = angular.element('body');
         body.ready(function() {

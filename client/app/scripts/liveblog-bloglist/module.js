@@ -259,13 +259,6 @@
                 resolve: {isArchivedFilterSelected: function() {return true;}}
             });
     }]);
-    app.config(['$provide', function($provide) {
-        $provide.decorator('sdItemGlobalsearchDirective', ['$delegate', function($delegate) {
-            //remove from Liveblog the SD directive that is doing the ctrl+0 binding            
-            $delegate.shift();
-            return $delegate;
-        }]);
-    }]);
     app.filter('username', ['session', function usernameFilter(session) {
         return function getUsername(user) {
             return user ? user.display_name || user.username : null;
