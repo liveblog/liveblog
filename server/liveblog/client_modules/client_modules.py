@@ -55,6 +55,24 @@ class ClientPostsResource(PostsResource):
     schema.update(PostsResource.schema)
 
 
+class ClientCommentsService(PostsService):
+    pass
+
+
+class ClientCommentsResource(PostsResource):
+    datasource = {
+        'source': 'archive',
+        'elastic_filter': {'term': {'post_status': 'comment'}},
+        'default_sort': [('order', -1)]
+    }
+    public_methods = ['GET']
+    public_item_methods = ['GET']
+    item_methods = ['GET']
+    resource_methods = ['GET']
+    schema = {}
+    schema.update(PostsResource.schema)
+
+
 class ClientPostsService(PostsService):
     pass
 
