@@ -1,6 +1,6 @@
-'use strict';
-
 function getChromeOptions() {
+    'use strict';
+
     var chromeOptions = {
         args: ['no-sandbox']
     };
@@ -36,6 +36,8 @@ exports.config = {
     directConnect: true,
 
     onPrepare: function() {
+        'use strict';
+
         var setup = require('./app/scripts/bower_components/superdesk/client/spec/helpers/setup');
         setup({fixture_profile: 'test'});
 
