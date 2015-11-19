@@ -455,14 +455,26 @@ define([
                 }
             });
             SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
-                    var that = this;
+                    var that = this, placeHolderText = window.gettext('Start writing here…');
 
                     //add placeholder class and placeholder text
-                    this.$editor.attr('placeholder', window.gettext('Start writing here…')).addClass('st-placeholder');
+                    this.$editor.attr('placeholder', placeHolderText).addClass('st-placeholder');
                     // create and trigger a 'change' event for the $editor which is a contenteditable
                     this.$editor.filter('[contenteditable]').on('focus', function(ev) {
                         var $this = $(this);
                         $this.data('before', $this.html());
+                    });
+                    this.$editor.filter('[contenteditable]').on('click', function(ev) {
+                        var $this = $(this);
+                        if (_.trim($this.html()) === '') {
+                            $this.attr('placeholder', '');
+                        }
+                    });
+                    this.$editor.filter('[contenteditable]').on('focusout', function(ev) {
+                        var $this = $(this);
+                        if (_.trim($this.html()) === '') {
+                            $this.attr('placeholder', placeHolderText);
+                        }
                     });
                     this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
                         var $this = $(this);
