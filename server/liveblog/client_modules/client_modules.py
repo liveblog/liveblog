@@ -5,6 +5,7 @@ from superdesk.users.users import UsersResource
 from superdesk.users.services import UsersService
 from superdesk.metadata.utils import item_url
 from flask import current_app as app
+from liveblog.items.items import ItemsResource, ItemsService
 
 
 class ClientUsersResource(UsersResource):
@@ -55,7 +56,25 @@ class ClientPostsResource(PostsResource):
     schema.update(PostsResource.schema)
 
 
-class ClientCommentsService(PostsService):
+class ClientPostsService(PostsService):
+    pass
+
+
+class ClientItemsResource(ItemsResource):
+    datasource = {
+        'source': 'archive',
+        'elastic_filter': {'term': {'particular_type': 'item'}},
+        'default_sort': [('order', -1)]
+    }
+    public_methods = ['GET', 'POST']
+    public_item_methods = ['GET', 'POST']
+    item_methods = ['GET']
+    resource_methods = ['GET', 'POST']
+    schema = {}
+    schema.update(ItemsResource.schema)
+
+
+class ClientItemsService(ItemsService):
     pass
 
 
@@ -65,15 +84,15 @@ class ClientCommentsResource(PostsResource):
         'elastic_filter': {'term': {'post_status': 'comment'}},
         'default_sort': [('order', -1)]
     }
-    public_methods = ['GET']
-    public_item_methods = ['GET']
+    public_methods = ['GET', 'POST']
+    public_item_methods = ['GET', 'POST']
     item_methods = ['GET']
-    resource_methods = ['GET']
+    resource_methods = ['GET', 'POST']
     schema = {}
     schema.update(PostsResource.schema)
 
 
-class ClientPostsService(PostsService):
+class ClientCommentsService(PostsService):
     pass
 
 
