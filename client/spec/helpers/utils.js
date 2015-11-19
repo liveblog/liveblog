@@ -1,11 +1,11 @@
-'use strict';
-
 function openBlog(index) {
+    'use strict';
     index = index || 0;
     element(by.repeater('blog in blogs._items').row(index).column('blog.title')).click();
 }
 
 function randomString(maxLen) {
+    'use strict';
     var text = '';
     var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     for (var i = 0; i < maxLen; i ++) {
@@ -15,10 +15,12 @@ function randomString(maxLen) {
 }
 
 function expectBlogsLength(len) {
+    'use strict';
     expect(element.all(by.repeater('blog in blogs._items')).count()).toEqual(len);
 }
 
 function logout() {
+    'use strict';
     element(by.css('button.current-user')).click();
     browser.waitForAngular();
     browser.sleep(500); // it reloads page
@@ -30,6 +32,7 @@ function logout() {
 }
 
 function expectBlog(blog, index) {
+    'use strict';
     index = index || 0;
     var allBlogs = element.all(by.repeater('blog in blogs._items')),
         currentBlog = allBlogs.get(index);
@@ -51,6 +54,7 @@ var blogs = [
 ];
 
 function waitAndClick(elmBy) {
+    'use strict';
     browser.wait(function() {
         return browser.driver.isElementPresent(elmBy);
     }, 5000);
