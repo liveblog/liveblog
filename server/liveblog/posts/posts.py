@@ -105,6 +105,8 @@ class PostsService(ArchiveService):
         return doc
 
     def get_next_order_sequence(self, blog_id):
+        if blog_id is None:
+            return 0
         # get next order sequence and increment it
         blog = get_resource_service('blogs').find_and_modify(
             query={'_id': blog_id},
