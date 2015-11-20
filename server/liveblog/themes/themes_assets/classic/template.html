@@ -64,7 +64,7 @@
                                 <div ng-switch-when="YouTube">
                                     <div lb-fluid-iframe lb-bind-html html-content="{{ item.meta.html }}"></div>
                                 </div>
-                                <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
+                                <div ng-switch-default lb-generic-embed item="item"></div>
                             </div>
                         </div>
                         <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>

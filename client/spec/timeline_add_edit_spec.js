@@ -1,8 +1,8 @@
-'use strict';
 var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
     blogs = require('./helpers/pages').blogs;
 
 describe('timeline add to top and edit', function() {
+    'use strict';
 
     beforeEach(function(done) {login().then(done);});
 
