@@ -112,6 +112,7 @@ def embed(blog_id, api_host=None, theme=None):
 
     theme = get_resource_service('themes').find_one(req=None, name=blog['blog_preferences'].get('theme'))
     if theme is None:
+        if theme_name is None:
             raise SuperdeskApiError.badRequestError(
                 message='You will be able to access the embed after you register the themes')
     # if a theme is provided, overwrite the default theme
