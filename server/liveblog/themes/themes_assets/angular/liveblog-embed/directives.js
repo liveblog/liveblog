@@ -56,7 +56,8 @@
                     item: '='
                 },
                 template: [
-                    '<article class="item--embed" ng-click="item.meta.url">',
+                    '<div ng-if="isEmbedCode" class="item--embed" lb-bind-html html-content="{{item.meta.html}}"></div>',
+                    '<article ng-if="!isEmbedCode" class="item--embed" ng-click="item.meta.url">',
                     '    <img ng-if="item.meta.thumbnail_url" ng-src="{{ item.meta.thumbnail_url }}" class="item--embed__illustration"/>',
                     '    <div class="item--embed__title">',
                     '        <a ng-href="{{ item.meta.url }}" target="_blank" ng-bind="item.meta.title"></a>',
@@ -65,14 +66,17 @@
                     '</article>'
                 ].join(''),
                 link: function(scope, element) {
-                    // update the min-height, depending of the image ratio
-                    $timeout(function() {
-                        var imageWidth = element.find('.item--embed__illustration').width();
-                        if (imageWidth) {
-                            var minHeight = (scope.item.meta.thumbnail_height / scope.item.meta.thumbnail_width) * imageWidth;
-                            element.find('.item--embed').css('min-height', minHeight);
-                        }
-                    });
+                    scope.isEmbedCode = angular.isDefined(scope.item.meta.html);
+                    if (!scope.isEmbedCode) {
+                        // update the min-height, depending of the image ratio
+                        $timeout(function() {
+                            var imageWidth = element.find('.item--embed__illustration').width();
+                            if (imageWidth) {
+                                var minHeight = (scope.item.meta.thumbnail_height / scope.item.meta.thumbnail_width) * imageWidth;
+                                element.find('.item--embed').css('min-height', minHeight);
+                            }
+                        });
+                    }
                 }
             };
         }])
