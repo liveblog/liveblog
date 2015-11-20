@@ -1,5 +1,3 @@
-'use strict';
-
 var waitAndClick = require('./utils').waitAndClick;
 
 var blogs = [
@@ -22,6 +20,7 @@ var blogs = [
 };
 
 function waitForModal() {
+    'use strict';
      /*jshint validthis: true */
     browser.wait(function() {
         return element(by.css('.modal-footer')).isDisplayed();
@@ -29,11 +28,13 @@ function waitForModal() {
     return this;
 }
 function okModal() {
+    'use strict';
      /*jshint validthis: true */
     element(by.css('[ng-click="ok()"]')).click();
     return this;
 }
 function BlogsPage() {
+    'use strict';
     var self = this;
 
     self.blog = new BlogPage(self);
@@ -143,6 +144,7 @@ function BlogsPage() {
 }
 
 function ThemesManagerPage() {
+    'use strict';
     var self = this;
     self.themes = element.all(by.css('.theme'));
     self.blogsRows = element.all(by.repeater('blog in vm.selectedTheme.blogs'));
@@ -208,6 +210,7 @@ function ThemesManagerPage() {
 }
 
 function BlogPage(blogs) {
+    'use strict';
     var self = this;
     self.blogs = blogs;
     self.drafts = new DraftsPage(self);
@@ -249,6 +252,7 @@ function BlogPage(blogs) {
 }
 
 function AbstractPanelPage(blog) {
+    'use strict';
     var self = this;
     self.blog = blog;
     self.column = element(by.css(self._class_name));
@@ -295,6 +299,7 @@ function AbstractPanelPage(blog) {
 
 DraftsPage.prototype = Object.create(AbstractPanelPage.prototype);
 function DraftsPage(blog) {
+    'use strict';
     var self = this;
     self._class_name = '.panel--draft';
     AbstractPanelPage.call(self);
@@ -302,6 +307,7 @@ function DraftsPage(blog) {
 
 ContributionsPage.prototype = Object.create(AbstractPanelPage.prototype);
 function ContributionsPage(blog) {
+    'use strict';
     var self = this;
     self._class_name = '.panel--contribution';
     self.byFilterBox = by.css('.dropdown-content');
@@ -324,6 +330,7 @@ function ContributionsPage(blog) {
 }
 
 function TimelinePage(blog) {
+    'use strict';
     var self = this;
     self.blog = blog;
     self.column = element(by.css('.column--timeline'));
@@ -396,6 +403,7 @@ function TimelinePage(blog) {
 }
 
 function EditPostPage() {
+    'use strict';
     var self = this;
 
     self.textElement = element(by.css('.editor .st-text-block'));
@@ -505,6 +513,7 @@ function EditPostPage() {
 }
 
 function BlogSettingsPage(blog) {
+    'use strict';
     var self = this;
 
     self.team = new TeamPage();
@@ -599,6 +608,7 @@ function BlogSettingsPage(blog) {
 }
 
 function TeamPage() {
+    'use strict';
     var self = this;
     self.searchUser = function(search) {
         element(by.model('search')).sendKeys(search);
@@ -620,6 +630,7 @@ function TeamPage() {
 }
 
 function GeneralSettingsPage() {
+    'use strict';
     var self = this;
 
     self.themeModel = 'liveblogSettings.theme.value';
@@ -664,6 +675,7 @@ function GeneralSettingsPage() {
 }
 
 function randomString(maxLen) {
+    'use strict';
     maxLen = maxLen || 15;
     var text = '';
     var possible = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
