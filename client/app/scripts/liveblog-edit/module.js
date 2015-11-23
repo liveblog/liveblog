@@ -199,6 +199,9 @@ define([
             fetchNewDraftPage: function() {
                 vm.draftPostsInstance.fetchNewPage();
             },
+            fetchNewCommenttPage: function() {
+                vm.commentPostsInstance.fetchNewPage();
+            },
             fetchNewTimelinePage: function() {
                 vm.timelineInstance.fetchNewPage();
             },

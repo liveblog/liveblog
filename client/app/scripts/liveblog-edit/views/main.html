@@ -26,6 +26,9 @@
         <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}">
             <i class="big-icon-archive" alt="draft posts"></i>
         </button>
+        <button class="navbtn" ng-click="openPanel('comments')" ng-class="{'active': panelState === 'comments'}">
+            <i class="big-icon-archive" alt="comments posts"></i>
+        </button>        
     </div>
 
     <div class="columns-holder">
@@ -33,7 +36,7 @@
             <span ng-if="isBlogOpened()">
                 <!-- drafts -->
                 <div class="panel panel--draft" ng-if="panelState === 'drafts'">
-                    <header>Drafts</header>
+                    <header translate>Drafts</header>
                     <div class="content" lr-infinite-scroll="fetchNewDraftPage">
                         <lb-posts-list
                           lb-posts-instance="blogEdit.draftPostsInstance"
@@ -56,7 +59,7 @@
                 </div>
                 <!-- contributions -->
                 <div class="panel panel--contribution" ng-if="panelState === 'contributions'">
-                    <header>Contributions</header>
+                    <header translate>Contributions</header>
                     <div class="panel--contribution__filters">
                         <span class="panel--contribution__filters__title">Filter by user</span>
                         <lb-filter-by-member
@@ -91,6 +94,25 @@
                         </lb-posts-list>
                     </div>
                 </div>
+                <!-- comments -->
+                <div class="panel panel--comments" ng-if="panelState === 'comments'">
+                    <header translate>Comments</header>
+                    <div class="content" lr-infinite-scroll="fetchNewCommentsPage">
+                        <lb-posts-list
+                          lb-posts-instance="blogEdit.commentPostsInstance"
+                          lb-posts-blog-id="blog._id"
+                          lb-posts-status="comment"
+                          lb-posts-order-by="updated_first"
+                          lb-posts-allow-unpublishing="false"
+                          lb-posts-allow-reordering="false"
+                          lb-posts-allow-editing="true"
+                          lb-posts-allow-deleting="true"
+                          lb-posts-on-post-selected="openPostInEditor"
+                        >
+                            <p translate>There aren't any comments.</p>
+                        </lb-posts-list>
+                    </div>
+                </div>                
                 <!-- editor -->
                     <div class="panel--editor" ng-show="panelState === 'editor'">
                         <div ng-if="!preview">
