@@ -29,6 +29,24 @@ define([
         }
         return string;
     }
+    function handlePlaceholder(selector, placeHolderText, options) {
+        var onEvents = 'click';
+        if (options && options.tabbedOrder) {
+            onEvents += ' focus';
+        }
+        selector.on(onEvents, function(ev) {
+            var $this = $(this);
+            if (_.trim($this.html()) === '') {
+                $this.attr('placeholder', '');
+            }
+        });
+        selector.on('focusout', function(ev) {
+            var $this = $(this);
+            if (_.trim($this.html()) === '') {
+                $this.attr('placeholder', placeHolderText);
+            }
+        });
+    }
     angular
     .module('SirTrevorBlocks', [])
         .config(['SirTrevorProvider', function(SirTrevor) {
@@ -76,18 +94,7 @@ define([
                             $this.trigger('change');
                         }
                     });
-                    this.$editor.filter('[contenteditable]').on('click', function(ev) {
-                        var $this = $(this);
-                        if (_.trim($this.html()) === '') {
-                            $this.attr('placeholder', '');
-                        }
-                    });
-                    this.$editor.filter('[contenteditable]').on('focusout', function(ev) {
-                        var $this = $(this);
-                        if (_.trim($this.html()) === '') {
-                            $this.attr('placeholder', that.embedPlaceholder);
-                        }
-                    });
+                    handlePlaceholder(this.$editor.filter('[contenteditable]'), that.embedPlaceholder);
                     // when the link field changes
                     this.$editor.on('change', _.debounce(function callServiceAndLoadData() {
                         var input = $(this).text().trim();
@@ -287,11 +294,13 @@ define([
                 type: 'quote',
                 title: function() { return window.i18n.t('blocks:quote:title'); },
                 icon_name: 'quote',
+                quotePlaceholder: window.gettext('quote'),
+                creditPlaceholder: window.i18n.t('blocks:quote:credit_field'),
                 editorHTML: function() {
                     var template = _.template([
                         '<div class="st-required st-quote-block quote-input" ',
-                        ' placeholder="quote" contenteditable="true"></div>',
-                        '<div contenteditable="true" name="cite" placeholder="<%= i18n.t("blocks:quote:credit_field") %>"',
+                        ' placeholder="' + this.quotePlaceholder + '" contenteditable="true"></div>',
+                        '<div contenteditable="true" name="cite" placeholder="' + this.creditPlaceholder + '"',
                         ' class="js-cite-input st-quote-block"></div>'
                     ].join('\n'));
                     return template(this);
@@ -310,6 +319,8 @@ define([
                             $this.trigger('change');
                         }
                     });
+                    handlePlaceholder(this.$editor.filter('.quote-input'), that.quotePlaceholder);
+                    handlePlaceholder(this.$('[name=cite]'), that.creditPlaceholder, {tabbedOrder: true});
                     // when the link field changes
                     this.$editor.on('change', _.debounce(function () {
                         var data = that.retrieveData(),
@@ -320,6 +331,7 @@ define([
                         }
                         that.getOptions().disableSubmit(false);
                     }, 200));
+                    //
                 },
                 focus: function() {
                     this.$('.quote-input').focus();
@@ -396,31 +408,9 @@ define([
                         contenteditable: true,
                         placeholder: that.authorPlaceholder
                     }).html(data.credit));
-                    //remove placeholders on click
-                    this.$('[name=caption]').on('click', function(ev) {
-                        var $this = $(this);
-                        if (_.trim($this.html()) === '') {
-                            $this.attr('placeholder', '');
-                        }
-                    });
-                    this.$('[name=caption]').on('focusout', function(ev) {
-                        var $this = $(this);
-                        if (_.trim($this.html()) === '') {
-                            $this.attr('placeholder', that.authorPlaceholder);
-                        }
-                    });
-                    this.$('[name=credit]').on('click', function(ev) {
-                        var $this = $(this);
-                        if (_.trim($this.html()) === '') {
-                            $this.attr('placeholder', '');
-                        }
-                    });
-                    this.$('[name=credit]').on('focusout', function(ev) {
-                        var $this = $(this);
-                        if (_.trim($this.html()) === '') {
-                            $this.attr('placeholder', that.descriptionPlaceholder);
-                        }
-                    });
+                    //remove placeholders
+                    handlePlaceholder(this.$('[name=caption]'), that.authorPlaceholder)
+                    handlePlaceholder(this.$('[name=credit]'), that.descriptionPlaceholder, {tabbedOrder: true})
                 },
                 onBlockRender: function() {
                     var that = this;
