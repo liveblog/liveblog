@@ -23,6 +23,14 @@
             loading: true,
             finished: false,
             showAuthor: SHOW_AUTHOR,
+            comment: {
+                backdrop: false,
+                box: false
+            },
+            toggleCommentBox: function() {
+                vm.comment.backdrop = !vm.comment.backdrop;
+                vm.comment.box = !vm.comment.box;
+            },
             orderBy: function(order_by) {
                 vm.loading = true;
                 vm.finished = false;

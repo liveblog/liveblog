@@ -8,23 +8,31 @@
         </div>
         <p class="description" ng-bind="timeline.blog.description"></p>
     </div>
-    <div class="sorting-bar">
-        <div class="sorting-bar__title">Sort by:</div>
-        <div class="sorting-bar__orders">
-            <div
-                class="sorting-bar__order"
-                ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='editorial'}"
-                ng-click="timeline.orderBy('editorial')">Editorial</div>
-            <div
-                class="sorting-bar__order"
-                ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='newest_first'}"
-                ng-click="timeline.orderBy('newest_first')">Newest first</div>
-            <div
-                class="sorting-bar__order"
-                ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
-                ng-click="timeline.orderBy('oldest_first')">Oldest first</div>
+    <div class="header-bar">
+        <div class="sorting-bar">
+            <div class="sorting-bar__title">Sort by:</div>
+            <div class="sorting-bar__orders">
+                <div
+                    class="sorting-bar__order"
+                    ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='editorial'}"
+                    ng-click="timeline.orderBy('editorial')">Editorial</div>
+                <div
+                    class="sorting-bar__order"
+                    ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='newest_first'}"
+                    ng-click="timeline.orderBy('newest_first')">Newest first</div>
+                <div
+                    class="sorting-bar__order"
+                    ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
+                    ng-click="timeline.orderBy('oldest_first')">Oldest first</div>
+            </div>
         </div>
-        <div class="sorting-bar__logo">
+        <div class="header-bar__actions">
+            <button
+                class="btn"
+                ng-class="{'active': timeline.comment.box'}"
+                ng-click="timeline.toggleCommentBox();">Comment</button>
+        </div>
+        <div class="header-bar__logo">
             <a href="https://www.sourcefabric.org/liveblog/" target="_blank">
                 <img ng-src="{{ timeline.templateDir}}images/lb-logo.png"/>
             </a>
@@ -40,6 +48,25 @@
         infinite-scroll="timeline.fetchNewPage()"
         infinite-scroll-disabled="!timeline.isAllowedToLoadMore()"
         infinite-scroll-immediate-check="false">
+        <div class="comment-backdrop" ng-if="timeline.comment.backdrop"></div>
+        <div class="comment-box" ng-if="timeline.comment.box">
+            <form name="comment">
+                <div class="content">
+                    <fieldset>
+                        <div class="field">
+                            <label for="comment-name">Name *</label>
+                            <input name="comment-name" ng-model="timeline.comment.name"/>
+                            <div class="comment-name-notify">Please fill in your Nickname.</div>
+                        </div>
+                        <div class="field">
+                            <label for="comment-content">Comment *</label>
+                            <textarea name="comment-content" ng-model="timeline.comment.content"></textarea></textarea>
+                            <div class="error">Please fill in your Nickname.</div>
+                        </div>
+                    </fieldset>
+                </div>
+            </form>
+        </div>
         <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item ng-cloak">
             <div class="content" ng-class="{'show-author': timeline.showAuthor, 'lb-post-permalink-selected': post._id === timeline.permalink._id}">
                 <figure class="lb-avatar" ng-if="timeline.showAuthor"><img ng-src="{{ post.original_creator.picture_url }}"/></figure>

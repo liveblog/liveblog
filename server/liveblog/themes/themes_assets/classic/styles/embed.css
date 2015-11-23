@@ -41,7 +41,7 @@ a:hover {
 .description {
     font-size: 16px;
 }
-.sorting-bar {
+.header-bar {
     background-color: #FAFAFA;
     border-top: 2px solid #CBCBCB;
     border-bottom: 1px solid #CBCBCB;
@@ -50,6 +50,99 @@ a:hover {
     margin: 10px 0;
     position: relative;
 }
+.header-bar__actions {
+    position: absolute;
+    right: 100px;
+    top: 5px; 
+}
+.btn {
+    background-color: rgba(0, 0, 0, 0.15);
+    border: 0 none;
+    border-radius: 2px;
+    box-sizing: border-box;
+    color: #333333;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 12px;
+    height: 28px;
+    line-height: 12px;
+    margin-bottom: 0;
+    outline: medium none !important;
+    padding: 8px 10px;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+.btn:hover, .header-bar__btn:focus {
+  background-color: rgba(0, 0, 0, 0.8);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  text-decoration: none;
+  color: #333333;
+}
+.btn:active{
+    outline: none;
+    border: none;
+    outline-offset: -2px;
+}
+.comment-backdrop {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.8);
+    top: -15px;
+    left: 0;
+    bottom: 0px;
+    right: 0;
+    z-index: 2;    
+}
+.comment-box {
+    border: 1px solid #C8C8C8;
+    border-radius: 3px;
+    box-shadow: 0 0 25px 0 rgba(0, 0, 0, 0.3);
+    position: absolute;
+    top: 0px;
+    right: 55px;
+    left: 55px;
+    height: 350px;
+    z-index: 3;
+}
+.comment-box .content {
+    position: relative;
+    border-radius: 3px;
+    background: #fff;
+    padding: 0px !important;
+    margin: 0px !important;
+    width: 100%;
+    height: 350px;
+    box-sizing: border-box;
+}
+.comment-box .content label {
+    padding: 10px;
+    width: 100%;
+    display: block;
+    flaot: left;
+}
+.comment-box .content input, .comment-box .content textarea {
+    padding-left: 30px;
+    padding-bottom: 10px;
+    width: 100%;
+    display: block;
+    flaot: left;
+    border-top: 0;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 1px solid #C8C8C8;
+}
+.comment-box .content::before {
+    content: ' ';
+    height: 0;
+    position: absolute;
+    width: 0;
+    border: 15px solid transparent;
+    border-bottom-color: #FFF;
+    top:-30px;
+    right: 80px;
+}
+
 .sorting-bar__title {
     float: left;
     text-transform: uppercase;
@@ -75,13 +168,14 @@ a:hover {
     color: #333333;
     border-bottom: 2px solid #5ea9c8;
 }
-.sorting-bar__logo {
+.header-bar__logo {
     position: absolute;
     right: 10px;
     top: 5px;
 }
 .lb-posts {
     clear: both;
+    position: relative;
 }
 .lb-post {
     border-bottom: 1px solid #CBCBCB;
