@@ -331,7 +331,6 @@ define([
                         }
                         that.getOptions().disableSubmit(false);
                     }, 200));
-                    //
                 },
                 focus: function() {
                     this.$('.quote-input').focus();
