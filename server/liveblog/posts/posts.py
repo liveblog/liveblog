@@ -7,7 +7,6 @@ from apps.archive import ArchiveVersionsResource
 from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
 from superdesk.metadata.packages import LINKED_IN_PACKAGES
-from superdesk.celery_app import update_key
 from flask import current_app as app
 import flask
 from superdesk.utc import utcnow
@@ -105,8 +104,29 @@ class PostsService(ArchiveService):
             pass
         return doc
 
-    def get_next_order_sequence(self):
-        return update_key('post_order_sequence', True)
+    def get_next_order_sequence(self, blog_id):
+        if blog_id is None:
+            return 0
+        # get next order sequence and increment it
+        blog = get_resource_service('blogs').find_and_modify(
+            query={'_id': blog_id},
+            update={'$inc': {'posts_order_sequence': 1}},
+            upsert=False)
+        order = blog.get('posts_order_sequence')
+        # support previous LB version when the sequence was not save into the blog
+        if order is None:
+            # find the highest order in the blog
+            req = ParsedRequest()
+            req.sort = '-order'
+            req.max_results = 1
+            posts = self.get_from_mongo(req=req, lookup={'blog': blog_id})
+            if posts and posts[0].get('order') is not None:
+                order = posts[0].get('order') + 1
+                # save the order into the blog
+                get_resource_service('blogs').update(blog_id, {'posts_order_sequence': order + 1}, blog)
+            else:
+                order = 0
+        return order
 
     def check_post_permission(self, post):
         to_be_checked = (
@@ -124,7 +144,7 @@ class PostsService(ArchiveService):
             # check permission
             self.check_post_permission(doc)
             doc['type'] = 'composite'
-            doc['order'] = self.get_next_order_sequence()
+            doc['order'] = self.get_next_order_sequence(doc.get('blog'))
             # if you publish a post directly which is not a draft it will have a published_date assigned
             if doc['post_status'] == 'open':
                 doc['published_date'] = utcnow()
@@ -148,7 +168,7 @@ class PostsService(ArchiveService):
         self.check_post_permission(post)
         # when publishing, put the published item from drafts and contributions at the top of the timeline
         if updates.get('post_status') == 'open' and original.get('post_status') in ('draft', 'submitted'):
-            updates['order'] = self.get_next_order_sequence()
+            updates['order'] = self.get_next_order_sequence(original.get('blog'))
             # if you publish a post it will save a published date and register who did it
             updates['published_date'] = utcnow()
             updates['publisher'] = getattr(flask.g, 'user', None)

@@ -40,6 +40,10 @@ blogs_schema = {
     'original_creator': metadata_schema['original_creator'],
     'version_creator': metadata_schema['version_creator'],
     'versioncreated': metadata_schema['versioncreated'],
+    'posts_order_sequence': {
+        'type': 'number',
+        'default': 0
+    },
     'blog_status': {
         'type': 'string',
         'allowed': ['open', 'closed'],
