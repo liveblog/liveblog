@@ -377,8 +377,10 @@ define([
                 droppable: true,
                 uploadable: true,
                 icon_name: 'image',
+                descriptionPlaceholder: window.gettext('Add a description'),
+                authorPlaceholder: window.gettext('Add author / photographer'),
                 loadData: function(data) {
-                    var file_url = (typeof(data.file) !== 'undefined') ? data.file.url : data.media._url;
+                    var file_url = (typeof(data.file) !== 'undefined') ? data.file.url : data.media._url, that = this;
                     this.$editor.html($('<img>', {
                         src: file_url
                     })).show();
@@ -386,14 +388,39 @@ define([
                         name: 'caption',
                         class: 'st-image-block',
                         contenteditable: true,
-                        placeholder: 'Add a description'
+                        placeholder: that.descriptionPlaceholder
                     }).html(data.caption));
                     this.$editor.append($('<div>', {
                         name: 'credit',
                         class: 'st-image-block',
                         contenteditable: true,
-                        placeholder: 'Add author / photographer'
+                        placeholder: that.authorPlaceholder
                     }).html(data.credit));
+                    //remove placeholders on click
+                    this.$('[name=caption]').on('click', function(ev) {
+                        var $this = $(this);
+                        if (_.trim($this.html()) === '') {
+                            $this.attr('placeholder', '');
+                        }
+                    });
+                    this.$('[name=caption]').on('focusout', function(ev) {
+                        var $this = $(this);
+                        if (_.trim($this.html()) === '') {
+                            $this.attr('placeholder', that.authorPlaceholder);
+                        }
+                    });
+                    this.$('[name=credit]').on('click', function(ev) {
+                        var $this = $(this);
+                        if (_.trim($this.html()) === '') {
+                            $this.attr('placeholder', '');
+                        }
+                    });
+                    this.$('[name=credit]').on('focusout', function(ev) {
+                        var $this = $(this);
+                        if (_.trim($this.html()) === '') {
+                            $this.attr('placeholder', that.descriptionPlaceholder);
+                        }
+                    });
                 },
                 onBlockRender: function() {
                     var that = this;
