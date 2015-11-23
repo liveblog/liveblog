@@ -55,10 +55,11 @@ define([
                 data: {},
                 title: function() { return 'Embed'; },
                 icon_name: 'embed',
+                embedPlaceholder: window.gettext('url or embed code'),
                 editorHTML: function() {
                     return [
                         '<div class="st-required st-embed-block embed-input"',
-                        ' placeholder="url or embed code" contenteditable="true"></div>'
+                        ' placeholder="' + this.embedPlaceholder + '" contenteditable="true"></div>'
                     ].join('\n');
                 },
                 onBlockRender: function() {
@@ -73,6 +74,18 @@ define([
                         if ($this.data('before') !== $this.html()) {
                             $this.data('before', $this.html());
                             $this.trigger('change');
+                        }
+                    });
+                    this.$editor.filter('[contenteditable]').on('click', function(ev) {
+                        var $this = $(this);
+                        if (_.trim($this.html()) === '') {
+                            $this.attr('placeholder', '');
+                        }
+                    });
+                    this.$editor.filter('[contenteditable]').on('focusout', function(ev) {
+                        var $this = $(this);
+                        if (_.trim($this.html()) === '') {
+                            $this.attr('placeholder', that.embedPlaceholder);
                         }
                     });
                     // when the link field changes
