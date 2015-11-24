@@ -1,5 +1,3 @@
-'use strict';
-
 module.exports = {
     app: {
         cwd: 'app',
@@ -14,6 +12,7 @@ module.exports = {
                 collapseBooleanAttributes: true
             },
             bootstrap:  function(module, script) {
+                'use strict';
                 return '"use strict";' +
                     'var lbtemplates = angular.module("lb.templates", []);' +
                     'lbtemplates.run([\'$templateCache\', function($templateCache) {' +

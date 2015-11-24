@@ -1,6 +1,5 @@
-'use strict';
-
 module.exports = function (grunt) {
+    'use strict';
 
     // util for grunt.template
     grunt.toJSON = function(input) {
