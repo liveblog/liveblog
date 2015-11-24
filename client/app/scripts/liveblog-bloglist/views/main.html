@@ -123,11 +123,6 @@
                                         <div class="upload-progress" ng-show="progress.width">
                                             <div class="bar" style="width: {{ progress.width }}%;"></div>
                                         </div>
-                                        <div ng-if="notify.message"
-                                             class="notify-message"
-                                             ng-class="{'notify-error': notify.code === 'error', 'notify-info': notify.code === 'info'}">
-                                                    {{ notify.message }}
-                                        </div>
                                         <div class="computer" ng-if="!preview.url" ng-hide="progress.width">
                                             <div class="dropzone" ng-file-drop="preview.img = $files[0]">
                                                 <div class="text" translate>Drop it here</div>
@@ -144,8 +139,6 @@
                                                     data-src="preview.url"
                                                     data-file="preview.img"
                                                     data-progress-width="progress.width"
-                                                    data-notify-message="notify.message"
-                                                    data-notify-code="notify.code"
                                                     ></div>
                                             </div>
                                         </div>
