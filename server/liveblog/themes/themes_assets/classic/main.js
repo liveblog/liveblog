@@ -16,6 +16,11 @@
         function retrieveUpdate() {
             return vm.pagesManager.retrieveUpdate(true);
         }
+        var srcset = '';
+        angular.forEach(config.blog.picture.renditions, function(value) {
+            srcset += ', ' + value.href + ' ' + value.width + 'w';
+        });
+        config.blog.picture_srcset = srcset.substring(2);
         // define view model
         angular.extend(vm, {
             templateDir: config.assets_root,
