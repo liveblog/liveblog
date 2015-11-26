@@ -8,7 +8,10 @@
 
     Users.$inject = ['$resource', 'config'];
     function Users($resource, config) {
-        return $resource(config.api_host + 'api/client_users/:userId');
+        return $resource(config.api_host + 'api/client_users/:userId', {'userId':'@id'}, {
+            'get': { method:'GET', cache: true}
+
+        });
     }
 
     Posts.$inject = ['$resource', 'config', 'users'];
