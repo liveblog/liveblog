@@ -61,9 +61,21 @@
         });
     }
 
+    Comments.$inject = ['$resource', 'config'];
+    function Comments($resource, config) {
+        return $resource(config.api_host + 'api/client_comments/');
+    }
+
+    Items.$inject = ['$resource', 'config'];
+    function Items($resource, config) {
+        return $resource(config.api_host + 'api/client_items/');
+    }
+
     angular.module('liveblog-embed')
         .service('users', Users)
         .service('posts', Posts)
-        .service('blogs', Blogs);
+        .service('blogs', Blogs)
+        .service('comments', Comments)
+        .service('items', Items);
 
 })(angular);

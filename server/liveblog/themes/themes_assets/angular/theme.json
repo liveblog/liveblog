@@ -19,6 +19,7 @@
         "vendors/iframeResizer.contentWindow.min.js",
         "liveblog-embed/main.js",
         "liveblog-embed/resources.service.js",
+        "liveblog-embed/comments.service.js",
         "liveblog-embed/pages-manager.service.js",
         "liveblog-embed/permalink.service.js",
         "liveblog-embed/directives.js",
