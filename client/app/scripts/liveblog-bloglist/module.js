@@ -87,7 +87,9 @@
                     var picture_url = response.data.renditions.viewImage.href;
                     $scope.newBlog.picture_url = picture_url;
                     $scope.newBlog.picture = response.data._id;
-                }, null, function(progress) {
+                }, function(error) {
+                    notify.error((error.statusText !== '') ? error.statusText : gettext('There was a problem with your upload'));
+                }, function(progress) {
                     $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
                 });
             });
@@ -104,7 +106,7 @@
         $scope.openAccessRequest = function(blog) {
             $scope.accessRequestedTo = blog;
             $scope.showBlogAccessModal = true;
-        };
+        }
 
         $scope.closeAccessRequest = function() {
             $scope.accessRequestedTo = false;
@@ -268,15 +270,19 @@
             return user ? user.display_name || user.username : null;
         };
     }]);
-    app.directive('sdPlainImage', ['notify', function(notify) {
+    app.directive('sdPlainImage', ['gettext', 'notify', function(gettext, notify) {
         return {
             scope: {
                 src: '=',
+                file: '=',
                 progressWidth: '='
             },
             link: function(scope, elem) {
                 scope.$watch('src', function(src) {
                     elem.empty();
+                    if ((scope.file.size / 1048576) > 2) {
+                        notify.info(gettext('Image is bigger then 2MB, upload file size may be limited!'));
+                    }
                     if (src) {
                         var img = new Image();
                         img.onload = function() {
@@ -284,8 +290,7 @@
 
                             if (this.width < 320 || this.height < 240) {
                                 scope.$apply(function() {
-                                    notify.pop();
-                                    notify.error(gettext('Sorry, but blog image must be at least 320x240 pixels big.'));
+                                    notify.error(gettext('Sorry, but blog image must be at least 320x240 pixels big!'));
                                     scope.src = null;
                                     scope.progressWidth = 0;
                                 });
