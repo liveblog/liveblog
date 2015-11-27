@@ -201,6 +201,7 @@
 
         function fetchBlogs() {
             $scope.blogsLoading = true;
+            $scope.noBlogsFound = false;
             api.blogs.query(getCriteria(), false).then(function(blogs) {
                 $scope.blogs = blogs;
                 blogs._items.forEach(function(blog) {
@@ -219,11 +220,12 @@
                         blog.last_posted = post.published_date;
                         });
                     });
-
+                });
                 $scope.blogsLoading = false;
-
+                if (blogs._items.length === 0) {
+                    $scope.noBlogsFound = true;
+                }
             });
-        });
         }
 
         // initialize blogs list
