@@ -55,6 +55,16 @@ define([
             $scope.actionDisabled = actionDisabled;
             $scope.currentPost = undefined;
         }
+
+        //show messages on websocket disconnect and connect
+        $scope.$on('disconnected', function(event) {
+            notify.pop();
+            notify.error(gettext('Disconnected from the Notification Server, attempting to reconnect ...'), 20000);
+        });
+        $scope.$on('connected', function(event) {
+            notify.pop();
+            notify.success(gettext('Connected to Notification Server!'));
+        });
         var vm = this;
         // define the $scope
         angular.extend($scope, {
