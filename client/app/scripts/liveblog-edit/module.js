@@ -56,10 +56,13 @@ define([
             $scope.currentPost = undefined;
         }
         var vm = this;
+        // retieve the blog's public url
+        blogService.getPublicUrl(blog).then(function(url) {
+            $scope.publicUrl = url;
+        });
         // define the $scope
         angular.extend($scope, {
             blog: blog,
-            iframe_url: blogService.getIframe(blog),
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
@@ -283,7 +286,6 @@ define([
                 }
                 vm.tab = tab;
             },
-            iframe_url: blogService.getIframe(blog),
             setFormsPristine: function() {
                 if (vm.forms.dirty) {
                     vm.forms.dirty = false;
@@ -457,6 +459,10 @@ define([
                 });
             }
 
+        });
+        // retieve the blog's public url
+        blogService.getPublicUrl(blog).then(function(url) {
+            vm.publicUrl = url;
         });
         // load available languages
         api('languages').query().then(function(data) {
