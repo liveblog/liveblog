@@ -206,12 +206,12 @@
                 blogs._items.forEach(function(blog) {
                     var criteria = {
                         source: {
-                            query: {filtered: {filter: {and: [{term: {'post_status': 'open'}},
-                            {term: {'blog': blog._id}}
-                            ]}}
+                            query: {
+                                filtered: {filter: {and: [
+                                    {term: {'post_status': 'open'}}, {term: {'blog': blog._id}}
+                                ]}}
                             }, sort: [{'published_date': 'asc'}]}
                     };
-
                     api.posts.query(criteria).then(function(data) {
                     blog.posts_count = data._meta.total;
                     var posts = data._items;
@@ -219,11 +219,9 @@
                         blog.last_posted = post.published_date;
                         });
                     });
-
+                });
                 $scope.blogsLoading = false;
-
             });
-        });
         }
 
         // initialize blogs list
