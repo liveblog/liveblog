@@ -46,7 +46,7 @@ define('main', [
                 return $delegate;
             }]);
         }])
-        //show messages on websocket disconnect and connect\
+        //show messages on websocket disconnect and connect
         .run(['$rootScope', '$timeout', 'notify', 'gettext', function($rootScope, $timeout, notify, gettext) {
             var alertTimeout;
             $rootScope.$on('disconnected', function(event) {
@@ -58,7 +58,7 @@ define('main', [
             $rootScope.$on('connected', function(event) {
                 $timeout.cancel(alertTimeout);
                 alertTimeout = $timeout(function() {
-                    notify.success(gettext('Connected to Notification Server!'), 20000);
+                    notify.success(gettext('Connected to Notification Server!'));
                 }, 100);
             });
         }]);
