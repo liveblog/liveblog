@@ -31,6 +31,14 @@
     </header>
     <div class="list-container">
         <div ng-if="blogsLoading" class="loading-indicator" style="margin-top: 30px;"><span translate>Loading blogs...</span></div>
+        <!-- empty state -->
+        <div ng-if="blogs._meta.total === 0" class="empty-state">
+            <div translate>No blogs found.</div>
+            <button ng-if="activeState.code === 'open'" class="btn btn-info btn-large" ng-click="openNewBlog();">
+                <i class="svg-icon-add inverse"></i>
+                <span class="title" translate>Create a Blog</span>
+            </button>
+        </div>
         <!-- LIST VIEW -->
         <table class="row-list table table-striped" ng-if="blogsView === 'list'">
             <tbody>
@@ -82,7 +90,7 @@
         </ul>
     </div>
 
-    <div sd-modal="" data-model="newBlogModalActive">        
+    <div sd-modal="" data-model="newBlogModalActive">
             <div class="modal-header">
                 <button class="close" ng-click="cancelCreate()"><i class="icon-close-small"></i></button>
                 <h3 translate>Create New Blog</h3>
@@ -134,7 +142,7 @@
                                         </div>
                                         <div class="preview" ng-if="preview.url" ng-hide="progress.width">
                                             <div class="original">
-                                                <div 
+                                                <div
                                                     sd-plain-image
                                                     data-src="preview.url"
                                                     data-file="preview.img"
