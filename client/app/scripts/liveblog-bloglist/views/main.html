@@ -31,6 +31,7 @@
     </header>
     <div class="list-container">
         <div ng-if="blogsLoading" class="loading-indicator" style="margin-top: 30px;"><span translate>Loading blogs...</span></div>
+        <div ng-if="noBlogsFound" class="loading-indicator" style="margin-top: 30px;"><span translate>No blogs found...</span></div>
         <!-- LIST VIEW -->
         <table class="row-list table table-striped" ng-if="blogsView === 'list'">
             <tbody>
