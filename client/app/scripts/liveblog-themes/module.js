@@ -1,8 +1,10 @@
 (function() {
     'use strict';
 
-    LiveblogThemesController.$inject = ['api', '$location', 'notify', 'gettext', '$q', '$sce', 'config', 'lodash', 'upload'];
-    function LiveblogThemesController(api, $location, notify, gettext, $q, $sce, config, _, upload) {
+    LiveblogThemesController.$inject = ['api', '$location', 'notify', 'gettext',
+    '$q', '$sce', 'config', 'lodash', 'upload', 'blogService'];
+    function LiveblogThemesController(api, $location, notify, gettext,
+    $q, $sce, config, _, upload, blogService) {
         var vm = this;
         /**
          * Return a collection that represent the hierachy of the themes
@@ -175,10 +177,14 @@
                 });
             },
             switchBlogPreview: function(blog) {
-                vm.selectedBlog = blog;
-                vm.selectedBlog.iframe_url = $sce.trustAsResourceUrl(
-                    blog.public_url || config.server.url.replace('/api', '/embed/' + blog._id
-                ));
+                // copy the selected blog
+                vm.selectedBlog = angular.copy(blog);
+                // if there is no public url, hide the iframe
+                vm.selectedBlog.iframe_url = false;
+                // retrieve the public url to set the iframe src
+                blogService.getPublicUrl(blog).then(function(url) {
+                    vm.selectedBlog.iframe_url = $sce.trustAsResourceUrl(url);
+                });
             },
             save: function() {
                 notify.pop();
