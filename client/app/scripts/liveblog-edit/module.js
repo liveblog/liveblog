@@ -55,6 +55,7 @@ define([
             $scope.actionDisabled = actionDisabled;
             $scope.currentPost = undefined;
         }
+
         var vm = this;
         // retieve the blog's public url
         blogService.getPublicUrl(blog).then(function(url) {
