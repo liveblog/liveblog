@@ -91,7 +91,7 @@
             <ul>
         </div>
         <div ng-show="vm.selectedBlog">
-            <iframe width="100%" height="715" ng-src="{{ vm.selectedBlog.iframe_url }}" frameborder="0" allowfullscreen></iframe>
+            <iframe width="100%" height="715" ng-if="vm.selectedBlog.iframe_url" ng-src="{{ vm.selectedBlog.iframe_url }}" frameborder="0" allowfullscreen></iframe>
         </div>
     </div>
     <div class="modal-footer">
