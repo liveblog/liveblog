@@ -213,6 +213,19 @@ article blockquote li:before {
 .loading.ng-hide {
     opacity: 0;
 }
+/* adapt embed card to small screens
+ * Remove the two cols layout
+*/
+@media (max-width: 650px) {
+    .item--embed__illustration {
+        position: relative;
+        width: auto;
+    }
+    .item--embed__illustration ~ .item--embed__title,
+    .item--embed__illustration ~ .item--embed__description {
+        margin-left: 0;
+    }
+}
 @media (max-width: 600px) {
     .lb-timeline {
         margin-top: 0;
