@@ -188,15 +188,21 @@ article blockquote li:before {
     width: 200px;
 }
 /* if there is an image, leave space on the left */
-.item--embed__illustration ~ .item--embed__title,
-.item--embed__illustration ~ .item--embed__description {
+.item--embed__illustration ~ * {
     margin-left: 220px;
+}
+.item--embed__description,
+.item--embed__credit {
+    padding-top: 10px;
 }
 .item--embed__title {
     font-size: 1.25em;
     font-weight: 700;
     line-height: 1.25em;
     margin-bottom: .25em;
+}
+.item--embed__credit {
+    text-align: right;
 }
 /* loading */
 .loading {
@@ -221,8 +227,7 @@ article blockquote li:before {
         position: relative;
         width: auto;
     }
-    .item--embed__illustration ~ .item--embed__title,
-    .item--embed__illustration ~ .item--embed__description {
+    .item--embed__illustration ~ * {
         margin-left: 0;
     }
 }

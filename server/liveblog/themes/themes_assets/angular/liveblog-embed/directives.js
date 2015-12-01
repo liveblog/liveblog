@@ -57,12 +57,13 @@
                 },
                 template: [
                     '<div ng-if="isEmbedCode" class="item--embed" lb-bind-html html-content="{{item.meta.html}}"></div>',
-                    '<article ng-if="!isEmbedCode" class="item--embed" ng-click="item.meta.url">',
-                    '    <img ng-if="item.meta.thumbnail_url" ng-src="{{ item.meta.thumbnail_url }}" class="item--embed__illustration"/>',
-                    '    <div class="item--embed__title">',
+                    '<article class="item--embed">',
+                    '    <img ng-if="!isEmbedCode && item.meta.thumbnail_url" ng-src="{{ item.meta.thumbnail_url }}" class="item--embed__illustration"/>',
+                    '    <div class="item--embed__title" ng-if="item.meta.title">',
                     '        <a ng-href="{{ item.meta.url }}" target="_blank" ng-bind="item.meta.title"></a>',
                     '    </div>',
-                    '    <div class="item--embed__description" ng-bind="item.meta.description"></div>',
+                    '    <div class="item--embed__description" ng-if="item.meta.description" ng-bind="item.meta.description"></div>',
+                    '    <div class="item--embed__credit" ng-if="item.meta.credit" ng-bind="item.meta.credit"></div>',
                     '</article>'
                 ].join(''),
                 link: function(scope, element) {
