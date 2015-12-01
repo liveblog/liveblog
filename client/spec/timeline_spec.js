@@ -1,4 +1,3 @@
-'use strict';
 var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
     blogs = require('./helpers/pages').blogs;
 
@@ -36,6 +35,7 @@ var posts = [
     ];
 
 describe('timeline', function() {
+    'use strict';
     beforeEach(function(done) {login().then(done);});
     it('can show items on the timeline', function() {
         var blog = blogs.openBlog(3);

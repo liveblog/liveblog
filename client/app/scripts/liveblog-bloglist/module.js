@@ -74,7 +74,7 @@
                 return;
             }
             // return a promise of upload which will call the success/error callback
-            return api.upload.getUrl().then(function(url) {
+            return api.archive.getUrl().then(function(url) {
                 return upload.start({
                     method: 'POST',
                     url: url,
@@ -87,7 +87,9 @@
                     var picture_url = response.data.renditions.viewImage.href;
                     $scope.newBlog.picture_url = picture_url;
                     $scope.newBlog.picture = response.data._id;
-                }, null, function(progress) {
+                }, function(error) {
+                    notify.error((error.statusText !== '') ? error.statusText : gettext('There was a problem with your upload'));
+                }, function(progress) {
                     $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
                 });
             });
@@ -104,7 +106,7 @@
         $scope.openAccessRequest = function(blog) {
             $scope.accessRequestedTo = blog;
             $scope.showBlogAccessModal = true;
-        };
+        }
 
         $scope.closeAccessRequest = function() {
             $scope.accessRequestedTo = false;
@@ -204,12 +206,12 @@
                 blogs._items.forEach(function(blog) {
                     var criteria = {
                         source: {
-                            query: {filtered: {filter: {and: [{term: {'post_status': 'open'}},
-                            {term: {'blog': blog._id}}
-                            ]}}
+                            query: {
+                                filtered: {filter: {and: [
+                                    {term: {'post_status': 'open'}}, {term: {'blog': blog._id}}
+                                ]}}
                             }, sort: [{'published_date': 'asc'}]}
                     };
-
                     api.posts.query(criteria).then(function(data) {
                     blog.posts_count = data._meta.total;
                     var posts = data._items;
@@ -217,11 +219,9 @@
                         blog.last_posted = post.published_date;
                         });
                     });
-
+                });
                 $scope.blogsLoading = false;
-
             });
-        });
         }
 
         // initialize blogs list
@@ -238,6 +238,10 @@
             type: 'http',
             backend: {rel: 'blogs'}
         });
+        apiProvider.api('archive', {
+            type: 'http',
+            backend: {rel: 'archive'}
+        });
     }]).config(['superdeskProvider', function(superdesk) {
         superdesk
             .activity('/liveblog', {
@@ -264,15 +268,19 @@
             return user ? user.display_name || user.username : null;
         };
     }]);
-    app.directive('sdPlainImage', ['notify', function(notify) {
+    app.directive('sdPlainImage', ['gettext', 'notify', function(gettext, notify) {
         return {
             scope: {
                 src: '=',
+                file: '=',
                 progressWidth: '='
             },
             link: function(scope, elem) {
                 scope.$watch('src', function(src) {
                     elem.empty();
+                    if ((scope.file.size / 1048576) > 2) {
+                        notify.info(gettext('Image is bigger then 2MB, upload file size may be limited!'));
+                    }
                     if (src) {
                         var img = new Image();
                         img.onload = function() {
@@ -280,8 +288,7 @@
 
                             if (this.width < 320 || this.height < 240) {
                                 scope.$apply(function() {
-                                    notify.pop();
-                                    notify.error(gettext('Sorry, but blog image must be at least 320x240 pixels big.'));
+                                    notify.error(gettext('Sorry, but blog image must be at least 320x240 pixels big!'));
                                     scope.src = null;
                                     scope.progressWidth = 0;
                                 });

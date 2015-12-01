@@ -29,6 +29,24 @@ define([
         }
         return string;
     }
+    function handlePlaceholder(selector, placeHolderText, options) {
+        var onEvents = 'click';
+        if (options && options.tabbedOrder) {
+            onEvents += ' focus';
+        }
+        selector.on(onEvents, function(ev) {
+            var $this = $(this);
+            if (_.trim($this.html()) === '') {
+                $this.attr('placeholder', '');
+            }
+        });
+        selector.on('focusout', function(ev) {
+            var $this = $(this);
+            if (_.trim($this.html()) === '') {
+                $this.attr('placeholder', placeHolderText);
+            }
+        });
+    }
     angular
     .module('SirTrevorBlocks', [])
         .config(['SirTrevorProvider', function(SirTrevor) {
@@ -55,10 +73,11 @@ define([
                 data: {},
                 title: function() { return 'Embed'; },
                 icon_name: 'embed',
+                embedPlaceholder: window.gettext('url or embed code'),
                 editorHTML: function() {
                     return [
                         '<div class="st-required st-embed-block embed-input"',
-                        ' placeholder="url or embed code" contenteditable="true"></div>'
+                        ' placeholder="' + this.embedPlaceholder + '" contenteditable="true"></div>'
                     ].join('\n');
                 },
                 onBlockRender: function() {
@@ -75,6 +94,7 @@ define([
                             $this.trigger('change');
                         }
                     });
+                    handlePlaceholder(this.$editor.filter('[contenteditable]'), that.embedPlaceholder);
                     // when the link field changes
                     this.$editor.on('change', _.debounce(function callServiceAndLoadData() {
                         var input = $(this).text().trim();
@@ -274,11 +294,13 @@ define([
                 type: 'quote',
                 title: function() { return window.i18n.t('blocks:quote:title'); },
                 icon_name: 'quote',
+                quotePlaceholder: window.gettext('quote'),
+                creditPlaceholder: window.i18n.t('blocks:quote:credit_field'),
                 editorHTML: function() {
                     var template = _.template([
                         '<div class="st-required st-quote-block quote-input" ',
-                        ' placeholder="quote" contenteditable="true"></div>',
-                        '<div contenteditable="true" name="cite" placeholder="<%= i18n.t("blocks:quote:credit_field") %>"',
+                        ' placeholder="' + this.quotePlaceholder + '" contenteditable="true"></div>',
+                        '<div contenteditable="true" name="cite" placeholder="' + this.creditPlaceholder + '"',
                         ' class="js-cite-input st-quote-block"></div>'
                     ].join('\n'));
                     return template(this);
@@ -297,6 +319,8 @@ define([
                             $this.trigger('change');
                         }
                     });
+                    handlePlaceholder(this.$editor.filter('.quote-input'), that.quotePlaceholder);
+                    handlePlaceholder(this.$('[name=cite]'), that.creditPlaceholder, {tabbedOrder: true});
                     // when the link field changes
                     this.$editor.on('change', _.debounce(function () {
                         var data = that.retrieveData(),
@@ -364,8 +388,10 @@ define([
                 droppable: true,
                 uploadable: true,
                 icon_name: 'image',
+                descriptionPlaceholder: window.gettext('Add a description'),
+                authorPlaceholder: window.gettext('Add author / photographer'),
                 loadData: function(data) {
-                    var file_url = (typeof(data.file) !== 'undefined') ? data.file.url : data.media._url;
+                    var file_url = (typeof(data.file) !== 'undefined') ? data.file.url : data.media._url, that = this;
                     this.$editor.html($('<img>', {
                         src: file_url
                     })).show();
@@ -373,14 +399,17 @@ define([
                         name: 'caption',
                         class: 'st-image-block',
                         contenteditable: true,
-                        placeholder: 'Add a description'
+                        placeholder: that.descriptionPlaceholder
                     }).html(data.caption));
                     this.$editor.append($('<div>', {
                         name: 'credit',
                         class: 'st-image-block',
                         contenteditable: true,
-                        placeholder: 'Add author / photographer'
+                        placeholder: that.authorPlaceholder
                     }).html(data.credit));
+                    //remove placeholders
+                    handlePlaceholder(this.$('[name=caption]'), that.authorPlaceholder)
+                    handlePlaceholder(this.$('[name=credit]'), that.descriptionPlaceholder, {tabbedOrder: true})
                 },
                 onBlockRender: function() {
                     var that = this;
@@ -455,14 +484,26 @@ define([
                 }
             });
             SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
-                    var that = this;
+                    var that = this, placeHolderText = window.gettext('Start writing here…');
 
                     //add placeholder class and placeholder text
-                    this.$editor.attr('placeholder', window.gettext('Start writing here…')).addClass('st-placeholder');
+                    this.$editor.attr('placeholder', placeHolderText).addClass('st-placeholder');
                     // create and trigger a 'change' event for the $editor which is a contenteditable
                     this.$editor.filter('[contenteditable]').on('focus', function(ev) {
                         var $this = $(this);
                         $this.data('before', $this.html());
+                    });
+                    this.$editor.filter('[contenteditable]').on('click', function(ev) {
+                        var $this = $(this);
+                        if (_.trim($this.html()) === '') {
+                            $this.attr('placeholder', '');
+                        }
+                    });
+                    this.$editor.filter('[contenteditable]').on('focusout', function(ev) {
+                        var $this = $(this);
+                        if (_.trim($this.html()) === '') {
+                            $this.attr('placeholder', placeHolderText);
+                        }
                     });
                     this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
                         var $this = $(this);
