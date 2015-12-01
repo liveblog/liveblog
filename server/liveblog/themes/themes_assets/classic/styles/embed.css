@@ -183,21 +183,6 @@ article blockquote li:before {
     margin-left: -20px;
     padding-right: 5px;
 }
-.item--embed__illustration {
-    position: absolute;
-    width: 200px;
-}
-/* if there is an image, leave space on the left */
-.item--embed__illustration ~ .item--embed__title,
-.item--embed__illustration ~ .item--embed__description {
-    margin-left: 220px;
-}
-.item--embed__title {
-    font-size: 1.25em;
-    font-weight: 700;
-    line-height: 1.25em;
-    margin-bottom: .25em;
-}
 /* loading */
 .loading {
     color: #5ea9c8;
@@ -214,6 +199,9 @@ article blockquote li:before {
     opacity: 0;
 }
 @media (max-width: 600px) {
+    .lb-timeline {
+        margin-top: 0;
+    }
     .lb-avatar  {
         width: 40px;
         height: 40px;
@@ -221,12 +209,18 @@ article blockquote li:before {
     .lb-post-date {
         float: none;
     }
-    .lb-creator {
-        margin-left: 50px;
+    .sorting-bar__title {
+        display: none;
+    }
+    .sorting-bar__orders {
+        padding-left: 0;
+    }
+    .show-author .lb-creator {
+        margin-left: 55px;
         margin-bottom: 20px;
         padding-top: 0;
     }
-    .lb-item {
+    .show-author .lb-item {
         margin-left: 0;
     }
 }
