@@ -4,22 +4,16 @@ logstash:
     service: logstash
   links:
   - elastic
-  ports:
-  - "5555:5555"
 
 mongodb:
   extends:
     file: common.yml
     service: mongodb
-  ports:
-  - "27017:27017"
 
 redis:
   extends:
     file: common.yml
     service: redis
-  ports:
-  - "6379:6379"
 
 kibana:
   extends:
@@ -29,17 +23,29 @@ kibana:
   - elastic
   ports:
   - "5601:5601"
+  image: sourcefabric/kibana:master
 
 elastic:
   extends:
     file: common.yml
     service: elastic
-  ports:
-  - "9200:9200"
 
 postfix:
   extends:
     file: common.yml
     service: postfix
+
+superdesk:
+  extends:
+    file: common.yml
+    service: superdesk
+  image: sourcefabric/superdesk:master
+  links:
+   - mongodb
+   - redis
+   - elastic
+   - logstash
+   - postfix
   ports:
-  - "25:25"
+   - "443:443"
+   - "80:80"
