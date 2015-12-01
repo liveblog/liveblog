@@ -44,6 +44,18 @@ superdesk:
    - elastic
    - logstash
    - postfix
+  environment:
+   - SUPERDESK_RELOAD=True
+   - SUPERDESK_URL=http://localhost:5000/api
+   - SUPERDESK_WS_URL=ws://localhost:5050
+   - SUPERDESK_CLIENT_URL=http://localhost:9000
   ports:
-   - "443:443"
-   - "80:80"
+   - "5000:5000"
+   - "5100:5100"
+   - "9000:9000"
+   - "35729:35729"
+  volumes:
+   - ../server:/opt/superdesk/
+   - ../client:/opt/superdesk/client/
+   - ./Procfile-dev:/opt/superdesk/Procfile
+   - ./start-dev.sh:/opt/superdesk/start.sh
