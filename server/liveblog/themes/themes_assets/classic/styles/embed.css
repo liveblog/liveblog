@@ -183,6 +183,21 @@ article blockquote li:before {
     margin-left: -20px;
     padding-right: 5px;
 }
+.item--embed__illustration {
+    position: absolute;
+    width: 200px;
+}
+/* if there is an image, leave space on the left */
+.item--embed__illustration ~ .item--embed__title,
+.item--embed__illustration ~ .item--embed__description {
+    margin-left: 220px;
+}
+.item--embed__title {
+    font-size: 1.25em;
+    font-weight: 700;
+    line-height: 1.25em;
+    margin-bottom: .25em;
+}
 /* loading */
 .loading {
     color: #5ea9c8;
