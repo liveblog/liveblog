@@ -26,11 +26,7 @@ import superdesk
 from superdesk.users.services import is_admin
 from superdesk.errors import SuperdeskApiError
 import logging
-import os
 
-
-ASSETS_DIR = 'themes_assets'
-CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 logger = logging.getLogger('superdesk')
 
