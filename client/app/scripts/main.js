@@ -52,14 +52,19 @@ define('main', [
             $rootScope.$on('disconnected', function(event) {
                 $timeout.cancel(alertTimeout);
                 alertTimeout = $timeout(function() {
-                    notify.error(gettext('Disconnected to Notification Server, attempting to reconnect ...'), 20000);
+                    notify.pop();
+                    notify.error(gettext('Disconnected from Notification Server, attempting to reconnect ...'), 20000);
                 }, 100);
             });
             $rootScope.$on('connected', function(event) {
-                $timeout.cancel(alertTimeout);
-                alertTimeout = $timeout(function() {
-                    notify.success(gettext('Connected to Notification Server!'));
-                }, 100);
+                //only show the 'coonected' message if there was a disconnect event
+                if (alertTimeout) {
+                    $timeout.cancel(alertTimeout);
+                    alertTimeout = $timeout(function() {
+                        notify.pop();
+                        notify.success(gettext('Connected to Notification Server!'));
+                    }, 100);
+                }
             });
         }]);
         // load apps & bootstrap
