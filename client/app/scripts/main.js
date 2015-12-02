@@ -57,7 +57,7 @@ define('main', [
                 }, 100);
             });
             $rootScope.$on('connected', function(event) {
-                //only show the 'coonected' message if there was a disconnect event
+                //only show the 'connected' message if there was a disconnect event
                 if (alertTimeout) {
                     $timeout.cancel(alertTimeout);
                     alertTimeout = $timeout(function() {
