@@ -15,7 +15,7 @@
   "regexp": true,
   "undef": true,
   "unused": "vars",
-  "strict": true,
+  "strict": "func",
   "trailing": true,
   "globals": {
     "JSON": false,

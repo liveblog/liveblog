@@ -129,7 +129,7 @@
             <span ng-if="!isBlogOpened()">
                 <div class="alert alert-danger margin15px" role="alert">
                     <span><strong translate>This blog is closed!</strong></span><br />
-                    <span translate >No posts allowed on closed blogs. Reopen the blogs in order to make any changes</span>
+                    <span translate >To add or edit the content please <a ng-href="#/liveblog/settings/{{::blog._id}}">change the blog status</a> to "Active".</span>
                 </div>
             </span>
         </div>
@@ -142,7 +142,7 @@
                     <button class="btn fix-cancel-move-button" tranlate ng-click="clearTimelineReordering();">Cancel</button>
                 </div>
                 <div class="header--live">
-                    <a href="{{ iframe_url }}" target="_blank" translate>Live</a>
+                    <a href="{{ publicUrl }}" target="_blank" ng-disabled="!publicUrl" translate>Live</a>
                 </div>
             </header>
             <div class="content content--timeline" lr-infinite-scroll="fetchNewTimelinePage">

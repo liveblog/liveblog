@@ -1,14 +1,29 @@
 (function(angular) {
     'use strict';
-
-    Blogs.$inject = ['$resource', 'config'];
-    function Blogs($resource, config) {
-        return $resource(config.api_host + 'api/client_blogs/:blogId', {blogId: config.blog._id});
+    var CACHE_OPTIONS = {
+        deleteOnExpire: 'aggressive',
+        recycleFreq: 3600000, // 1h
+        storageMode: 'localStorage'
+    };
+    Blogs.$inject = ['$resource', 'config', 'CacheFactory'];
+    function Blogs($resource, config, CacheFactory) {
+        if (!CacheFactory.get('blogsCache')) {
+            CacheFactory.createCache('blogsCache', CACHE_OPTIONS);
+        }
+        return $resource(config.api_host + 'api/client_blogs/:blogId', {blogId: config.blog._id},{
+            'get': { method:'GET', cache: CacheFactory.get('blogsCache')}
+        });
     }
 
-    Users.$inject = ['$resource', 'config'];
-    function Users($resource, config) {
-        return $resource(config.api_host + 'api/client_users/:userId');
+    Users.$inject = ['$resource', 'config', 'CacheFactory'];
+    function Users($resource, config, CacheFactory) {
+        if (!CacheFactory.get('usersCache')) {
+            CacheFactory.createCache('usersCache', CACHE_OPTIONS);
+        }
+        return $resource(config.api_host + 'api/client_users/:userId', {'userId':'@id'}, {
+            'get': { method:'GET', cache: CacheFactory.get('usersCache')}
+
+        });
     }
 
     Posts.$inject = ['$resource', 'config', 'users'];

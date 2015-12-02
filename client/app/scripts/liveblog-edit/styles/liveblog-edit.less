@@ -64,7 +64,7 @@
         &--first {
             left: 0;
             width: 540px;
-            // tablet 
+            // tablet
             @media only screen and (max-width: 1024px) {
                 width: 50%;
             }
@@ -203,17 +203,17 @@
                         // ["+" bars]
                         .st-block-controls__top:before, .st-icon--add:after {
                             background-color: transparent;
-                            color: #CBCBCB;
-                            border-radius: 0;
-                            padding: 5px 0;
-                            line-height: 1;
+                            color: @blue;
+                            padding: 0;
+                            line-height: 40px;
+                            height: 40px;
                             font-family: 'Roboto';
                             font-size: 13px;
                         }
                         .st-block-controls__top:hover:before, .st-block--with-plus:after {
                             cursor: pointer;
-                            background-color: #E5E5E5;
-                            color: #666666;
+                            background-color: #d9d9d9;
+                            color: #333;
                         }
                         .st-block-controls {
                             padding: 0;
@@ -231,7 +231,7 @@
                                     .btn;
                                     position: relative;
                                     margin: 0 10px 0 0;
-                                    padding: 0 10px 0 20px;
+                                    padding: 0 10px 0 36px;
                                     font-size: 14px;
                                     -webkit-box-flex: 1 auto;
                                     -moz-box-flex: 1 auto;
@@ -389,7 +389,7 @@
                             }
                             &__inner {
                                 border: 0;
-                                margin: 10px 0;
+                                margin: 8px 0;
                                 ::selection {
                                     background: @sd-blue;
                                     color: @white;
