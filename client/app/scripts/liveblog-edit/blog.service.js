@@ -23,8 +23,8 @@ define([
             return api.blogs.save(blog, data);
         }
 
-        function get(_id, param, cache) {
-            return api.blogs.getById(_id, param, cache);
+        function get(_id, cache) {
+            return api.blogs.getById(_id, cache);
         }
 
         /**
