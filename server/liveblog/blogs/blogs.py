@@ -26,6 +26,11 @@ import superdesk
 from superdesk.users.services import is_admin
 from superdesk.errors import SuperdeskApiError
 import logging
+import os
+
+
+ASSETS_DIR = 'themes_assets'
+CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 
 logger = logging.getLogger('superdesk')
 
@@ -118,6 +123,8 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
         except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:
                 raise e
+    else:
+        print('alalala')
 
 
 class BlogService(BaseService):
@@ -219,4 +226,21 @@ class PublishBlogsCommand(superdesk.Command):
             print('  - Blog "%s" republished: %s' % (blog['title'], url))
 
 
+class UpdateBlogsCommand(superdesk.Command):
+    """
+    Update the blogs when a theme is updated
+    """
+
+    def run(self):
+        blogs_service = get_resource_service('blogs')
+        blogs = blogs_service.get(req=None, lookup=dict(blog_status='open'))
+        print('\n* Republishing blogs:\n')
+        for blog in blogs:
+
+            # here we should check if the theme has been updated...
+
+            url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
+            print('  - Blog "%s" republished: %s' % (blog['title'], url))
+
 superdesk.command('publish_blogs', PublishBlogsCommand())
+superdesk.command('update_blogs', UpdateBlogsCommand())
