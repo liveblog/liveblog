@@ -123,8 +123,6 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
         except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:
                 raise e
-    else:
-        print('alalala')
 
 
 class BlogService(BaseService):
@@ -225,22 +223,4 @@ class PublishBlogsCommand(superdesk.Command):
             url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
             print('  - Blog "%s" republished: %s' % (blog['title'], url))
 
-
-class UpdateBlogsCommand(superdesk.Command):
-    """
-    Update the blogs when a theme is updated
-    """
-
-    def run(self):
-        blogs_service = get_resource_service('blogs')
-        blogs = blogs_service.get(req=None, lookup=dict(blog_status='open'))
-        print('\n* Republishing blogs:\n')
-        for blog in blogs:
-
-            # here we should check if the theme has been updated...
-
-            url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
-            print('  - Blog "%s" republished: %s' % (blog['title'], url))
-
 superdesk.command('publish_blogs', PublishBlogsCommand())
-superdesk.command('update_blogs', UpdateBlogsCommand())
