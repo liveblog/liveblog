@@ -279,7 +279,7 @@
                 scope.$watch('src', function(src) {
                     elem.empty();
                     if ((scope.file.size / 1048576) > 2) {
-                        notify.info(gettext('Image is bigger then 2MB, upload file size may be limited!'));
+                        notify.info(gettext('Blog image is big, upload can take some time!'));
                     }
                     if (src) {
                         var img = new Image();
