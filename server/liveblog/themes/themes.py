@@ -139,11 +139,11 @@ class ThemesService(BaseService):
                         theme['screenshot_url'] = superdesk.upload.url_for_media(file_id)
         previous_theme = self.find_one(req=None, name=theme.get('name'))
         if previous_theme:
-            blogs_service = get_resource_service('blogs')
-            blogs = blogs_service.get(req=None, lookup={'blog_preferences.theme': theme['name']})
-            for blog in blogs:
-                publish_blog_embed_on_s3.delay(str(blog['_id']))
             if force_update:
+                blogs_service = get_resource_service('blogs')
+                blogs = blogs_service.get(req=None, lookup={'blog_preferences.theme': theme['name']})
+                for blog in blogs:
+                    publish_blog_embed_on_s3.delay(str(blog['_id']))
                 self.replace(previous_theme['_id'], theme, previous_theme)
                 return dict(status='updated', theme=theme)
             else:
