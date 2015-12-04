@@ -45,6 +45,27 @@ define('main', [
                 $delegate.shift();
                 return $delegate;
             }]);
+        }])
+        //show messages on websocket disconnect and connect
+        .run(['$rootScope', '$timeout', 'notify', 'gettext', function($rootScope, $timeout, notify, gettext) {
+            var alertTimeout;
+            $rootScope.$on('disconnected', function(event) {
+                $timeout.cancel(alertTimeout);
+                alertTimeout = $timeout(function() {
+                    notify.pop();
+                    notify.error(gettext('Disconnected from Notification Server, attempting to reconnect ...'), 20000);
+                }, 100);
+            });
+            $rootScope.$on('connected', function(event) {
+                //only show the 'connected' message if there was a disconnect event
+                if (alertTimeout) {
+                    $timeout.cancel(alertTimeout);
+                    alertTimeout = $timeout(function() {
+                        notify.pop();
+                        notify.success(gettext('Connected to Notification Server!'));
+                    }, 100);
+                }
+            });
         }]);
         // load apps & bootstrap
         var body = angular.element('body');

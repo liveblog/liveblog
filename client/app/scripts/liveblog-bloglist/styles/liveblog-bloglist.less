@@ -23,7 +23,20 @@
         top: @nav-height;
         left: 0; right: 0; bottom: 0;
         padding: 30px;
-        overflow-y: auto; 
+        overflow-y: auto;
+        .empty-state {
+            > div {
+                font-size: 1.25em;
+            }
+            button {
+                margin: 20px 0;
+                .title {
+                    top: -4px;
+                    position: relative;
+                    left: 4px;
+                }
+            }
+        }
         .row-list {
             tr {
                 &.can-access {

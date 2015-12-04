@@ -55,11 +55,15 @@ define([
             $scope.actionDisabled = actionDisabled;
             $scope.currentPost = undefined;
         }
+
         var vm = this;
+        // retieve the blog's public url
+        blogService.getPublicUrl(blog).then(function(url) {
+            $scope.publicUrl = url;
+        });
         // define the $scope
         angular.extend($scope, {
             blog: blog,
-            iframe_url: blogService.getIframe(blog),
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
@@ -283,7 +287,6 @@ define([
                 }
                 vm.tab = tab;
             },
-            iframe_url: blogService.getIframe(blog),
             setFormsPristine: function() {
                 if (vm.forms.dirty) {
                     vm.forms.dirty = false;
@@ -458,6 +461,10 @@ define([
             }
 
         });
+        // retieve the blog's public url
+        blogService.getPublicUrl(blog).then(function(url) {
+            vm.publicUrl = url;
+        });
         // load available languages
         api('languages').query().then(function(data) {
             vm.availableLanguages = data._items;
@@ -523,7 +530,7 @@ define([
     BlogResolver.$inject = ['api', '$route', '$location', 'notify', 'gettext', 'blogService'];
     function BlogResolver(api, $route, $location, notify, gettext, blogService) {
 
-        return blogService.get($route.current.params._id)
+        return blogService.get($route.current.params._id, false)
             .then(null, function(response) {
                 if (response.status === 404) {
                     notify.error(gettext('Blog was not found, sorry.'), 5000);
@@ -619,7 +626,7 @@ define([
             }
         });
     }]).config(['embedlyServiceProvider', 'embedServiceProvider', 'config', function(embedlyServiceProvider, embedServiceProvider, config) {
-        embedlyServiceProvider.setKey(config.embedly);
+        embedlyServiceProvider.setKey(config.embedly.key);
         embedServiceProvider.setConfig('facebookAppId', config.facebookAppId);
     }]).run(['$q', 'embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',
             'ngEmbedYoutubeHandler', 'ngEmbedInstagramHandler', 'ngEmbedPictureHandler',

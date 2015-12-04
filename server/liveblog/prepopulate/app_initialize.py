@@ -26,6 +26,7 @@ Alternatively index param can be specified as
 """
 __entities__ = {
     'roles': ('roles.json', ['name'], True),
+    'global_preferences': ('global_preferences.json', ['key'], False),
     'users': ('users.json', [[('first_name', pymongo.ASCENDING),
                              ('last_name', pymongo.DESCENDING)],
                              'username'], False)

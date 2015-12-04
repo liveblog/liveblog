@@ -1,6 +1,6 @@
 (function(angular) {
     'use strict';
-    angular.module('liveblog-embed', ['ngResource'])
+    angular.module('liveblog-embed', ['ngResource', 'angular-cache'])
         .constant('config', {
             blog: window.LB.blog,
             settings: window.LB.settings,

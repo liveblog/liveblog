@@ -113,6 +113,7 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
         try:
             public_url = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
             get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
+            push_notification('blog', published=1, blog_id=str(blog.get('_id')), public_url=public_url)
             return public_url
         except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:

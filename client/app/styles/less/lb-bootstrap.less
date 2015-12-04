@@ -6,6 +6,12 @@
     padding: 8px 20px;
 }
 
+a[disabled] {
+    cursor: default;
+    opacity: .5;
+    pointer-events: none;
+}
+
 // modal fix
 .modal {
     align-items: stretch;
@@ -13,7 +19,7 @@
     justify-content: flex-start;
     box-sizing: border-box;
     .modal-dialog {
-        flex: 0 1 auto;        
+        flex: 0 1 auto;
         margin: 0 auto;
         justify-content: center;
         width: auto;
