@@ -98,8 +98,8 @@ Feature: Client modules operations
         """
         When we post to "/client_comments"
         """
-        {	"post_status": "comment",
-            "groups": [
+        {	"blog": "#blogs._id#",
+        	"groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
                     "id": "main",
@@ -118,3 +118,6 @@ Feature: Client modules operations
         """
         When we get "/client_comments"
         Then we get list with 1 items
+        """
+        {"_items": [{"original_creator": "", "post_status": "comment", "blog": "#blogs._id#"}]}
+        """
