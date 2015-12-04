@@ -6,9 +6,6 @@ from superdesk.users.services import UsersService
 from superdesk.metadata.utils import item_url
 from flask import current_app as app
 from liveblog.items.items import ItemsResource, ItemsService
-from flask import request
-from recaptcha.client import captcha
-from superdesk.errors import SuperdeskApiError
 
 
 class ClientUsersResource(UsersResource):
@@ -78,23 +75,13 @@ class ClientItemsResource(ItemsResource):
 
 
 class ClientItemsService(ItemsService):
-    def on_create(self, docs):
-        for doc in docs:
-            if request.method == 'POST':
-                response = captcha.submit(
-                    doc.get('recaptcha_challenge_field'),
-                    doc.get('recaptcha_response_field'),
-                    '[[ MY PRIVATE KEY ]]',
-                    request.environ.get('REMOTE_ADDR'),)
-                print('cap', response.is_valid)
-                if not response.is_valid:
-                    raise SuperdeskApiError(400, 'The captcha code does not match')
+    pass
 
 
 class ClientCommentsResource(PostsResource):
     datasource = {
         'source': 'archive',
-        'elastic_filter': {'term': {'post_status': 'comment'}},
+        'elastic_filter': {'term': {'particular_type': 'post'}},
         'default_sort': [('order', -1)]
     }
     public_methods = ['GET', 'POST']
@@ -106,7 +93,10 @@ class ClientCommentsResource(PostsResource):
 
 
 class ClientCommentsService(PostsService):
-    pass
+    def on_create(self, docs):
+        for doc in docs:
+            doc['post_status'] = 'comment'
+        super().on_create(docs)
 
 
 class ClientBlogPostsResource(BlogPostsResource):
