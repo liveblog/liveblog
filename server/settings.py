@@ -122,52 +122,6 @@ INSTALLED_APPS = [
     'liveblog.client_modules',
 ]
 
-# INSTALLED_APPS = [
-#     'apps.auth',
-#     'superdesk.roles',
-#     'superdesk.users',
-#     'apps.auth.db',
-#     'superdesk.upload',
-#     'superdesk.notification',
-#     'superdesk.activity',
-#     'apps.comments',
-#
-#     'superdesk.io',
-#     'superdesk.io.subjectcodes',
-#     'apps.io',
-#     'superdesk.io.ftp',
-#     'superdesk.io.rss',
-#     'superdesk.publish',
-#     'superdesk.commands',
-#     'superdesk.locators.locators',
-#     'apps.stages',
-#     'apps.desks',
-#     'apps.planning',
-#     'apps.coverages',
-#     'apps.tasks',
-#     'apps.preferences',
-#     'apps.spikes',
-#     'apps.groups',
-#     'apps.prepopulate',
-#     'apps.vocabularies',
-#     'apps.legal_archive',
-#     'apps.privilege',
-#     'apps.rules',
-#     'apps.highlights',
-#     'apps.publish',
-#     'apps.publish.publish_filters',
-#     'apps.dictionaries',
-#     'apps.duplication',
-#     'apps.aap_mm',
-#     'apps.spellcheck',
-#     'apps.templates',
-#     'apps.archived',
-#     'apps.validators',
-#     'apps.validate',
-#     'apps.workspace',
-#     'apps.macros',
-# ]
-
 RESOURCE_METHODS = ['GET', 'POST']
 ITEM_METHODS = ['GET', 'PATCH', 'PUT', 'DELETE']
 EXTENDED_MEDIA_INFO = ['content_type', 'name', 'length']
@@ -184,6 +138,7 @@ AWS_SECRET_ACCESS_KEY = AMAZON_SECRET_ACCESS_KEY
 S3_BUCKET_NAME = AMAZON_CONTAINER_NAME
 S3_USE_HTTPS = False
 FLASK_ASSETS_USE_S3 = False
+S3_THEMES_PREFIX = env('S3_THEMES_PREFIX', None)
 USE_S3 = FLASK_ASSETS_USE_S3
 RECAPTCHA_PUBLIC_KEY = ''
 RECAPTCHA_PRIVATE_KEY = ''
