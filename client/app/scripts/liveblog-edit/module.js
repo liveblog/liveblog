@@ -530,7 +530,7 @@ define([
     BlogResolver.$inject = ['api', '$route', '$location', 'notify', 'gettext', 'blogService'];
     function BlogResolver(api, $route, $location, notify, gettext, blogService) {
 
-        return blogService.get($route.current.params._id)
+        return blogService.get($route.current.params._id, {timestamp: new Date()}, false)
             .then(null, function(response) {
                 if (response.status === 404) {
                     notify.error(gettext('Blog was not found, sorry.'), 5000);
@@ -626,7 +626,7 @@ define([
             }
         });
     }]).config(['embedlyServiceProvider', 'embedServiceProvider', 'config', function(embedlyServiceProvider, embedServiceProvider, config) {
-        embedlyServiceProvider.setKey(config.embedly);
+        embedlyServiceProvider.setKey(config.embedly.key);
         embedServiceProvider.setConfig('facebookAppId', config.facebookAppId);
     }]).run(['$q', 'embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',
             'ngEmbedYoutubeHandler', 'ngEmbedInstagramHandler', 'ngEmbedPictureHandler',
