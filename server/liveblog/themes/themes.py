@@ -131,6 +131,8 @@ class ThemesService(BaseService):
                     if content_type == 'text/plain' and name.endswith(tuple(CONTENT_TYPES.keys())):
                         content_type = CONTENT_TYPES[os.path.splitext(name)[1]]
                     final_file_name = os.path.relpath(name, CURRENT_DIRECTORY)
+                    if app.config.get('S3_THEMES_PREFIX', None):
+                        final_file_name = '/'.join((app.config.get('S3_THEMES_PREFIX').strip('/'), final_file_name))
                     # remove existing first
                     app.media.delete(final_file_name)
                     # upload
