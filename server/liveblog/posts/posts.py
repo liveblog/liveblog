@@ -120,9 +120,9 @@ class PostsService(ArchiveService):
                 req = ParsedRequest()
                 req.sort = '-order'
                 req.max_results = 1
-                posts = self.get_from_mongo(req=req, lookup={'blog': blog_id})
-                if posts and posts[0].get('order') is not None:
-                    order = posts[0].get('order') + 1
+                post = next(self.get_from_mongo(req=req, lookup={'blog': blog_id}), None)
+                if post and post.get('order') is not None:
+                    order = post.get('order') + 1
                     # save the order into the blog
                     get_resource_service('blogs').update(blog_id, {'posts_order_sequence': order + 1}, blog)
                 else:
