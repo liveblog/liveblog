@@ -122,52 +122,6 @@ INSTALLED_APPS = [
     'liveblog.client_modules',
 ]
 
-# INSTALLED_APPS = [
-#     'apps.auth',
-#     'superdesk.roles',
-#     'superdesk.users',
-#     'apps.auth.db',
-#     'superdesk.upload',
-#     'superdesk.notification',
-#     'superdesk.activity',
-#     'apps.comments',
-#
-#     'superdesk.io',
-#     'superdesk.io.subjectcodes',
-#     'apps.io',
-#     'superdesk.io.ftp',
-#     'superdesk.io.rss',
-#     'superdesk.publish',
-#     'superdesk.commands',
-#     'superdesk.locators.locators',
-#     'apps.stages',
-#     'apps.desks',
-#     'apps.planning',
-#     'apps.coverages',
-#     'apps.tasks',
-#     'apps.preferences',
-#     'apps.spikes',
-#     'apps.groups',
-#     'apps.prepopulate',
-#     'apps.vocabularies',
-#     'apps.legal_archive',
-#     'apps.privilege',
-#     'apps.rules',
-#     'apps.highlights',
-#     'apps.publish',
-#     'apps.publish.publish_filters',
-#     'apps.dictionaries',
-#     'apps.duplication',
-#     'apps.aap_mm',
-#     'apps.spellcheck',
-#     'apps.templates',
-#     'apps.archived',
-#     'apps.validators',
-#     'apps.validate',
-#     'apps.workspace',
-#     'apps.macros',
-# ]
-
 RESOURCE_METHODS = ['GET', 'POST']
 ITEM_METHODS = ['GET', 'PATCH', 'PUT', 'DELETE']
 EXTENDED_MEDIA_INFO = ['content_type', 'name', 'length']
