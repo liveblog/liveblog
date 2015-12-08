@@ -23,6 +23,9 @@ from superdesk.errors import SuperdeskError
 import zipfile
 import os
 import magic
+from liveblog.blogs.blogs import publish_blog_embed_on_s3
+from eve.utils import ParsedRequest
+import superdesk
 
 
 ASSETS_DIR = 'themes_assets'
@@ -34,7 +37,6 @@ CONTENT_TYPES = {
 }
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
 themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=ASSETS_DIR)
-mime = magic.Magic(mime=True)
 
 
 class ThemesResource(Resource):
@@ -125,10 +127,12 @@ class ThemesService(BaseService):
             with open(name, 'rb') as file:
                 if name.endswith('screenshot.png') or type(app.media).__name__ is 'AmazonMediaStorage':
                     # set the content type
-                    content_type = mime.from_file(name).decode('utf8')
+                    content_type = magic.from_file(name).decode('utf8')
                     if content_type == 'text/plain' and name.endswith(tuple(CONTENT_TYPES.keys())):
                         content_type = CONTENT_TYPES[os.path.splitext(name)[1]]
                     final_file_name = os.path.relpath(name, CURRENT_DIRECTORY)
+                    if app.config.get('S3_THEMES_PREFIX', None):
+                        final_file_name = '/'.join((app.config.get('S3_THEMES_PREFIX').strip('/'), final_file_name))
                     # remove existing first
                     app.media.delete(final_file_name)
                     # upload
@@ -139,8 +143,18 @@ class ThemesService(BaseService):
         previous_theme = self.find_one(req=None, name=theme.get('name'))
         if previous_theme:
             if force_update:
+                blogs_service = get_resource_service('blogs')
+                terms = []
+                for t in self.get_children(theme['name']) + [theme['name']]:
+                    terms.append({'term': {'blog_preferences.theme': t}})
+                query_filter = superdesk.json.dumps({'bool': {'should': terms}})
+                req = ParsedRequest()
+                req.args = {'filter': query_filter}
+                blogs = blogs_service.get(req, None)
+                for blog in blogs:
+                    publish_blog_embed_on_s3.delay(str(blog['_id']))
                 self.replace(previous_theme['_id'], theme, previous_theme)
-                return dict(status='updated', theme=theme)
+                return dict(status='updated', theme=theme, blogs_updated=blogs)
             else:
                 return dict(status='unchanged', theme=theme)
         else:
@@ -172,6 +186,12 @@ class ThemesService(BaseService):
         if theme and theme.get('extends', False):
             self.get_dependencies(theme.get('extends'), deps)
         return deps
+
+    def get_children(self, theme_name, response=[]):
+        for theme in self.get(req=None, lookup={'extends': theme_name}):
+            response.append(theme.get('name'))
+            self.get_children(theme.get('name'))
+        return list(set(response))
 
 
 @upload_theme_blueprint.route('/theme-upload', methods=['POST'])
