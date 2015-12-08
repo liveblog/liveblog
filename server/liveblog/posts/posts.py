@@ -112,20 +112,23 @@ class PostsService(ArchiveService):
             query={'_id': blog_id},
             update={'$inc': {'posts_order_sequence': 1}},
             upsert=False)
-        order = blog.get('posts_order_sequence')
-        # support previous LB version when the sequence was not save into the blog
-        if order is None:
-            # find the highest order in the blog
-            req = ParsedRequest()
-            req.sort = '-order'
-            req.max_results = 1
-            posts = self.get_from_mongo(req=req, lookup={'blog': blog_id})
-            if posts and posts[0].get('order') is not None:
-                order = posts[0].get('order') + 1
-                # save the order into the blog
-                get_resource_service('blogs').update(blog_id, {'posts_order_sequence': order + 1}, blog)
-            else:
-                order = 0
+        if blog:
+            order = blog and blog.get('posts_order_sequence') or None
+            # support previous LB version when the sequence was not save into the blog
+            if order is None:
+                # find the highest order in the blog
+                req = ParsedRequest()
+                req.sort = '-order'
+                req.max_results = 1
+                post = next(self.get_from_mongo(req=req, lookup={'blog': blog_id}), None)
+                if post and post.get('order') is not None:
+                    order = post.get('order') + 1
+                    # save the order into the blog
+                    get_resource_service('blogs').update(blog_id, {'posts_order_sequence': order + 1}, blog)
+                else:
+                    order = 0
+        else:
+            order = 0
         return order
 
     def check_post_permission(self, post):

@@ -16,6 +16,7 @@ from flask import render_template, json, request, current_app as app
 from eve.io.mongo import MongoJSONEncoder
 from superdesk import get_resource_service
 from liveblog.themes import ASSETS_DIR as THEMES_ASSETS_DIR
+from flask import url_for
 import io
 import os
 import json
@@ -38,7 +39,7 @@ def is_relative_to_current_folder(url):
     return not (url.startswith('/') or url.startswith('http://') or url.startswith('https://'))
 
 
-def collect_theme_assets(theme, assets=None, template=None):
+def collect_theme_assets(theme, assets_prefix=None, assets=None, template=None):
     assets = assets or {'scripts': [], 'styles': []}
     # load the template
     if not template:
@@ -49,7 +50,7 @@ def collect_theme_assets(theme, assets=None, template=None):
     if theme.get('extends', None):
         parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
         if parent_theme:
-            assets, template = collect_theme_assets(parent_theme, assets, template)
+            assets, template = collect_theme_assets(parent_theme, assets_prefix, assets=assets, template=template)
         else:
             error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
                 % (theme.get('name'), theme.get('extends'))
@@ -58,10 +59,12 @@ def collect_theme_assets(theme, assets=None, template=None):
     # add assets from theme
     for asset_type in ('scripts', 'styles'):
         theme_folder = theme['name']
-        assets[asset_type].extend(
-            map(lambda url: '%s/%s' % (theme_folder, url) if is_relative_to_current_folder(url) else url,
-                theme.get(asset_type) or list())
-        )
+        for url in theme.get(asset_type, []):
+            if is_relative_to_current_folder(url):
+                url = url_for('themes_assets.static', filename=os.path.join(theme_folder, url), _external=False)
+                if assets_prefix:
+                    url = '/%s%s' % (assets_prefix.strip('/'), url)
+            assets[asset_type].append(url)
     return assets, template
 
 
@@ -83,7 +86,7 @@ def get_default_settings(theme, settings=None):
 
 
 def publish_embed(blog_id, api_host=None, theme=None):
-    html = embed(blog_id, api_host, theme)
+    html = embed(blog_id, api_host, theme, assets_prefix=app.config.get('S3_THEMES_PREFIX'))
     if type(app.media).__name__ is not 'AmazonMediaStorage':
         raise MediaStorageUnsupportedForBlogPublishing()
     file_path = 'blogs/%s/index.html' % (blog_id)
@@ -97,9 +100,10 @@ def publish_embed(blog_id, api_host=None, theme=None):
 
 
 @bp.route('/embed/<blog_id>')
-def embed(blog_id, api_host=None, theme=None):
+def embed(blog_id, api_host=None, theme=None, assets_prefix=None):
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    # retrieve picture url from relationship
     if blog.get('picture', None):
         blog['picture'] = get_resource_service('archive').find_one(req=None, _id=blog['picture'])
     if not blog:
@@ -107,31 +111,34 @@ def embed(blog_id, api_host=None, theme=None):
     # retrieve the wanted theme and add it to blog['theme'] if is not the registered one
     try:
         theme_name = request.args.get('theme', theme)
-
     except RuntimeError:
         # this method can be called outside from a request context
         theme_name = theme
-
     theme = get_resource_service('themes').find_one(req=None, name=blog['blog_preferences'].get('theme'))
-    if theme is None:
-        if theme_name is None:
-            raise SuperdeskApiError.badRequestError(
-                message='You will be able to access the embed after you register the themes')
+    if theme is None and theme_name is None:
+        raise SuperdeskApiError.badRequestError(
+            message='You will be able to access the embed after you register the themes')
     # if a theme is provided, overwrite the default theme
     if theme_name:
         theme_package = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
         theme = json.loads(open(theme_package).read())
     try:
-        assets, template_file = collect_theme_assets(theme)
+        assets, template_file = collect_theme_assets(theme, assets_prefix=assets_prefix)
     except UnknownTheme as e:
         return str(e), 500
+    # compute the assets root
+    assets_root = [THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme')]
+    # prefix the assets root if needed (to isolate s3 bucket for instance)
+    if assets_prefix:
+        assets_root = [assets_prefix.strip('/')] + assets_root
+    assets_root = '/%s/' % ('/'.join(assets_root))
     scope = {
         'blog': blog,
         'settings': get_default_settings(theme),
         'assets': assets,
         'api_host': api_host,
         'template': template_file,
-        'assets_root': '/%s/' % ('/'.join((THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme'))))
+        'assets_root': assets_root
     }
     return render_template('embed.html', **scope)
 
