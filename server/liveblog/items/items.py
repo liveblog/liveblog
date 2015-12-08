@@ -55,12 +55,6 @@ class ItemsResource(ArchiveResource):
             'minlength': 1,
             'maxlength': 300
         },
-        'recaptcha_challenge_field': {
-            'type': 'string'
-        },
-        'recaptcha_response_field': {
-            'type': 'string'
-        },
         'meta': {
             'type': 'dict'
         },

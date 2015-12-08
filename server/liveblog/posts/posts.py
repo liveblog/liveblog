@@ -88,6 +88,12 @@ class PostsResource(ArchiveResource):
             'type': 'datetime'
         },
         'publisher': Resource.rel('users', True),
+        'recaptcha_challenge_field': {
+            'type': 'string'
+        },
+        'recaptcha_response_field': {
+            'type': 'string'
+        },
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
 
