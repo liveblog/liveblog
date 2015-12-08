@@ -127,7 +127,8 @@ class ThemesService(BaseService):
             with open(name, 'rb') as file:
                 if name.endswith('screenshot.png') or type(app.media).__name__ is 'AmazonMediaStorage':
                     # set the content type
-                    content_type = magic.from_file(name).decode('utf8')
+                    mime = magic.Magic(mime=True)
+                    content_type = mime.from_file(name).decode('utf8')
                     if content_type == 'text/plain' and name.endswith(tuple(CONTENT_TYPES.keys())):
                         content_type = CONTENT_TYPES[os.path.splitext(name)[1]]
                     final_file_name = os.path.relpath(name, CURRENT_DIRECTORY)
