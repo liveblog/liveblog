@@ -149,7 +149,7 @@
                             removePost(post);
                         } else {
                             // post updated
-                            if (post.post_status === 'draft') {
+                            if (post.post_status !== 'open') {
                                removePost(post);
                             } else {
                                 // update
