@@ -24,6 +24,12 @@ a {
 a:hover {
     text-decoration: none;
 }
+ul {
+    list-style-type: disc;
+}
+ol {
+    list-style-type: decimal;
+}
 .lb-timeline {
     clear: both;
     background-color: white;
