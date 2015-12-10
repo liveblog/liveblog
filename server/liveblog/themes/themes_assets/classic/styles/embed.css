@@ -189,6 +189,10 @@ article blockquote li:before {
     margin-left: -20px;
     padding-right: 5px;
 }
+/* tweets */
+lb-twitter-card iframe {
+    margin: auto;
+}
 .item--embed__illustration {
     position: absolute;
     width: 200px;
