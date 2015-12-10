@@ -3,7 +3,7 @@
     <div class="content">
         <h1 ng-bind="timeline.blog.title">
         </h1>
-        <div class="illustration">
+        <div class="illustration" ng-if="timeline.blog.picture_url">
             <img ng-src="{{ timeline.blog.picture_url }}" srcset="{{ timeline.blog.picture_srcset }}" sizes="100vw"/>
         </div>
         <p class="description" ng-bind="timeline.blog.description"></p>
@@ -35,12 +35,12 @@
         ng-show="timeline.pagesManager.allPosts().length < 1 && !timeline.loading">
         <div class="content">No post for now.</div>
     </div>
-    <ul
+    <section
         class="lb-posts list-group"
         infinite-scroll="timeline.fetchNewPage()"
         infinite-scroll-disabled="!timeline.isAllowedToLoadMore()"
         infinite-scroll-immediate-check="false">
-        <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item ng-cloak">
+        <article lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item ng-cloak">
             <div class="content" ng-class="{'show-author': timeline.showAuthor, 'lb-post-permalink-selected': post._id === timeline.permalink._id}">
                 <figure class="lb-avatar" ng-if="timeline.showAuthor"><img ng-src="{{ post.original_creator.picture_url }}"/></figure>
                 <div class="lb-creator">
@@ -70,7 +70,7 @@
                     Updated <span ng-bind="post._updated | prettifyIsoDate"></span>
                 </div>
             </div>
-        </li>
-    </ul>
+        </article>
+    </section>
     <div class="loading" ng-show="timeline.loading">Loading</div>
 </div>
