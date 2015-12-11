@@ -7,11 +7,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
         {% for style in assets.styles %}
-            {% if style | is_relative_to_current_folder %}
-                <link rel="stylesheet" href="{{ url_for('themes_assets.static', filename=style, _external=False) }}">
-            {% else %}
-                <link rel="stylesheet" href="{{ style }}">
-            {% endif %}
+            <link rel="stylesheet" href="{{ style }}">
         {% endfor %}
     </head>
 
@@ -29,11 +25,7 @@
         </script>
 
         {% for script in assets.scripts %}
-            {% if script | is_relative_to_current_folder %}
-                <script type="text/javascript" src="{{ url_for('themes_assets.static', filename=script, _external=False) }}"></script>
-            {% else %}
-                <script type="text/javascript" src="{{ script }}"></script>
-            {% endif %}
+            <script type="text/javascript" src="{{ script }}"></script>
         {% endfor %}
 
     </body>

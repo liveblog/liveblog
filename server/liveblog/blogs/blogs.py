@@ -27,6 +27,7 @@ from superdesk.users.services import is_admin
 from superdesk.errors import SuperdeskApiError
 import logging
 
+
 logger = logging.getLogger('superdesk')
 
 blogs_schema = {
@@ -219,6 +220,5 @@ class PublishBlogsCommand(superdesk.Command):
         for blog in blogs:
             url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
             print('  - Blog "%s" republished: %s' % (blog['title'], url))
-
 
 superdesk.command('publish_blogs', PublishBlogsCommand())
