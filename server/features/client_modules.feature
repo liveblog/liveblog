@@ -94,7 +94,7 @@ Feature: Client modules operations
         """
         When we post to "client_items"
         """
-        [{"name": "Foo Bar", "contents": ["just a small comment"], "blog": "#blogs._id#"}]
+        [{"name": "Foo Bar", "content": "just a small comment", "blog": "#blogs._id#"}]
         """
         When we post to "/client_comments"
         """
@@ -121,37 +121,3 @@ Feature: Client modules operations
         """
         {"_items": [{"original_creator": "", "post_status": "comment", "blog": "#blogs._id#"}]}
         """
-
-	@auth
-    Scenario: Posting a comment with recaptcha
-        Given empty "posts"
-        Given empty "items"
-        Given "blogs"
-        """
-        [{"guid": "blog-1", "title": "test_blog_comment"}]
-        """
-        When we post to "client_items"
-        """
-        [{"name": "Foo Bar", "contents": ["recaptcha comment"], "blog": "#blogs._id#"}]
-        """
-        When we post to "/client_comments"
-        """
-        {	"blog": "#blogs._id#",
-        	"groups": [
-                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
-                {
-                    "id": "main",
-                    "refs": [
-                        {
-                            "headline": "comment post",
-                            "residRef": "#client_items._id#",
-                            "slugline": "awesome comment"
-                        }
-                    ],
-                    "role": "grpRole:Main"
-                }
-            ],
-            "recaptcha_response_field": "abc"
-        }
-        """
-        Then we get response code 0

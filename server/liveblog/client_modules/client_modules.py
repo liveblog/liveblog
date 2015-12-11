@@ -6,9 +6,7 @@ from superdesk.users.services import UsersService
 from superdesk.metadata.utils import item_url
 from flask import current_app as app
 from liveblog.items.items import ItemsResource, ItemsService
-from superdesk.errors import SuperdeskApiError
 from flask import request
-from norecaptcha3.captcha import submit
 
 
 class ClientUsersResource(UsersResource):
@@ -100,12 +98,6 @@ class ClientCommentsService(PostsService):
         for doc in docs:
             if request.method == 'POST':
                 doc['post_status'] = 'comment'
-                response = submit(
-                    doc['recaptcha_response_field'],
-                    '[[ RECAPTCHA_PRIVATE_KEY ]]',
-                    request.environ.get('REMOTE_ADDR'),)
-                if not response.is_valid:
-                    raise SuperdeskApiError(400, 'The captcha code does not match')
         super().on_create(docs)
 
 
