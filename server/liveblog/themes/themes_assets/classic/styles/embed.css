@@ -24,6 +24,9 @@ a {
 a:hover {
     text-decoration: none;
 }
+ul, ol {
+    margin-left: 20px;
+}
 ul {
     list-style-type: disc;
 }
@@ -256,7 +259,7 @@ lb-twitter-card iframe {
         display: none;
     }
     .sorting-bar__orders {
-        padding-left: 0;
+        padding-left: 0 !important;
     }
     .show-author .lb-creator {
         margin-left: 55px;
