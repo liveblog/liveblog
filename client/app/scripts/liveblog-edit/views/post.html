@@ -8,16 +8,16 @@
         'active': (post.order === reorderPost.order || post.order === keepHighlighted),
         'unread': functionize(postsListCtrl.isUnreadPost)(post)
     }">
-        <div class="lb-post__holder">
+        <div class="lb-post__holder lb-mainitem-{{ post.mainItem.item.item_type}}">
             <div class="lb-post__figure">
-                <figure class="avatar">
-                    <img class="ng-isolate-scope" data-src="post.user.picture_url" sd-user-avatar="">
+                <figure class="avatar main-avatar">
+                    <img class="ng-isolate-scope" data-src="post.mainItem.item.user.picture_url" sd-user-avatar="">
                 </figure>
             </div>
             <div class="lb-post__content">
                 <div class="lb-post__header">
                     <div class="inline">
-                        <span class="name">{{ ::post.user.display_name }}</span> | <time>{{ post.published_date | reldate }}</time>
+                        <span class="name">{{ ::post.mainItem.item.user.display_name }}</span> | <time>{{ post.published_date | reldate }}</time>
                     </div>
                     <div class="inline" ng-if="post.published_date && post._updated !== post.published_date">
                         <span class="updated-label" translate>&nbsp;Updated</span> <time class="updated-time">{{ post._updated | reldate }}</time>
@@ -66,8 +66,8 @@
                         <div lb-bind-html html-content="{{ post.mainItem.item.text }}"></div>
                     </div>
                     <div ng-if="show_all">
-                         <div ng-repeat="item in post.items track by item.item._id" class="lb-{{ item.item.item_type }}">
-                           <div class="lb-post__holder" ng-if="item.item.item_type === 'comment'">
+                         <div ng-repeat="item in post.items track by item.item._id" class="lb-item-{{ item.item.item_type }}">
+                           <div class="lb-post__holder" ng-if="post.fullDetails && !$first">
                                <div class="lb-post__figure">
                                     <figure class="avatar">
                                         <img class="ng-isolate-scope" data-src="post.user.picture_url" sd-user-avatar="">
@@ -86,7 +86,7 @@
                                 </div>
                             </div>
                             <div 
-                                ng-if="item.item.item_type !== 'comment'"
+                                ng-if="!post.fullDetails || $first"
                                 lb-bind-html
                                 html-content="{{ item.item.text }}"
                                 class="lb-post__item"
