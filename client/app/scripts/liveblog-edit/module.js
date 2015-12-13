@@ -78,6 +78,7 @@ define([
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
             },
             openPostInEditor: function (post) {
+                console.log(post);
                 function fillEditor(post) {
                     cleanEditor(false);
                     $scope.currentPost = angular.copy(post);
@@ -85,7 +86,7 @@ define([
                     items.forEach(function(item) {
                         item = item.item;
                         if (angular.isDefined(item)) {
-                            var data = _.extend({text: item.text}, item.meta);
+                            var data = _.extend(item, item.meta);
                             vm.editor.createBlock(item.item_type, data);
                         }
                     });
@@ -609,7 +610,7 @@ define([
                 SirTrevor.EventBus.on('block:create:existing', removeEmptyBlockExceptTheBlock);
                 SirTrevor.EventBus.on('block:create:new', removeEmptyBlockExceptTheBlock);
             },
-            blockTypes: ['Text', 'Image', 'Embed', 'Quote'],
+            blockTypes: ['Text', 'Image', 'Embed', 'Quote', 'Comment'],
             // render a default block when the editor is loaded
             defaultType: 'Text',
             transform: {

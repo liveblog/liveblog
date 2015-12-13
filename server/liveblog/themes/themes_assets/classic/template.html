@@ -29,7 +29,7 @@
         <div class="header-bar__actions">
             <button
                 class="btn"
-                ng-class="{'active': timeline.comment.modal'}"
+                ng-class="{'active': timeline.comment.modal}"
                 ng-click="timeline.comment.toggle();">Comment</button>
         </div>
         <div class="header-bar__logo">
@@ -44,6 +44,7 @@
         <div class="content">No post for now.</div>
     </div>
     <section
+        ng-class="{'comment-active': timeline.comment.modal}"
         class="lb-posts list-group"
         infinite-scroll="timeline.fetchNewPage()"
         infinite-scroll-disabled="!timeline.isAllowedToLoadMore()"

@@ -1,5 +1,9 @@
 <li>
-    <div ng-if="functionize(postsListCtrl.allowReordering)(post)" ng-class="{'active top': post.order > reorderPost.order}" class="timeline-reorder" ng-click="movePost(index, 'above');" translate>Click to place the item here</div>
+    <div ng-if="functionize(postsListCtrl.allowReordering)(post)" 
+        ng-class="{'active top': post.order > reorderPost.order}"
+        class="timeline-reorder {{ post.post_type }}"
+        ng-click="movePost(index, 'above');"
+        translate>Click to place the item here</div>
     <div class="lb-post" ng-class="{
         'active': (post.order === reorderPost.order || post.order === keepHighlighted),
         'unread': functionize(postsListCtrl.isUnreadPost)(post)
@@ -59,18 +63,42 @@
                 </div>
                 <div ng-if="post.multiple_items" class="lb-post__list">
                     <div ng-if="!show_all" title="Click to show all items" ng-click="toggleMultipleItems()" class="multiple-item lb-post__item">
+                        <div> {{ post.mainItem.item.item_type }}</div>
                         <div lb-bind-html html-content="{{ post.mainItem.item.text }}"></div>
                     </div>
                     <div ng-if="show_all">
-                         <div ng-repeat="item in post.items track by item.item._id">
-                            <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item" ng-class="{'lb-post__item--even': !$first}"></div>
-                        </div>
-                    </div>
+                         <div ng-repeat="item in post.items track by item.item._id" class="item_{{ item.item.item_type }}">
+                           <div class="lb-post__holder" ng-if="item.item.item_type === 'comment'">
+                               <div class="lb-post__figure">
+                                    <figure class="avatar">
+                                        <img class="ng-isolate-scope" data-src="post.user.picture_url" sd-user-avatar="">
+                                    </figure>
+                                </div>
+                                <div class="lb-post__content">
+                                    <div class="lb-post__header">
+                                        <div class="inline">
+                                            <span class="name">{{ ::post.user.display_name }}</span> | <time>{{ post.published_date | reldate }}</time>
+                                        </div>
+                                        <div class="inline" ng-if="post.published_date && post._updated !== post.published_date">
+                                            <span class="updated-label" translate>Updated</span> <time class="updated-time">{{ post._updated | reldate }}</time>
+                                        </div>
+                                    </div>
+                                    <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item"></div>
+                                </div>
+                            </div>
+                            <div 
+                                ng-if="item.item.item_type !== 'comment'"
+                                lb-bind-html
+                                html-content="{{ item.item.text }}"
+                                class="lb-post__item"
+                                ng-class="{'lb-post__item--even': !$first}"></div>
+                         </div>
                 </div>
-                <div ng-if="!post.multiple_items" class="lb-post__list">
-                    <div ng-repeat="item in post.items track by item.item._id">
+            </div>
+            <div ng-if="!post.multiple_items" class="lb-post__list">
+                    <div ng-repeat="item in post.items track by item.item._id" class="item_{{ item.item.item_type }}">
                         <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item" ng-class-even="'lb-post__item--even'"></div>
-                    </div>
+                     </div>
                 </div>
             </div>
         </div>

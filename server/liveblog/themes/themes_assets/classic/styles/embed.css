@@ -217,7 +217,9 @@ ol {
     color: #b82f00;
     font-size: 11px;
 }
-
+.comment-active {
+    min-height: 250px;
+}
 .sorting-bar__title {
     float: left;
     text-transform: uppercase;
