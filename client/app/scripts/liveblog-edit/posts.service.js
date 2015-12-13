@@ -83,7 +83,16 @@ define([
             }
             return retrievePosts(blog_id, posts_criteria);
         }
-
+        function _completeUser(obj) {
+            if (obj.name) {
+                obj.user = {display_name: obj.name};
+            } else {
+                userList.getUser(obj.original_creator).then(function(user) {
+                    obj.user = user;
+                });
+            }
+            return obj;
+        }
         function _completePost(post) {
             angular.extend(post, {
                 // add a `multiple_items` field. Can be false or a positive integer.
@@ -91,25 +100,20 @@ define([
                 multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
                 // add a `mainItem` field containing the first item
                 mainItem: post.groups[1].refs[0],
-                items: post.groups[1].refs
+                items: post.groups[1].refs,
+                fullDetails: _.reduce(post.groups[1].refs, function(is, val) {
+                    return is || _.isUndefined(val.item.name);
+                }, false)
             });
-            var commentator = false;
             angular.forEach(post.items, function(val) {
-                if (val.item.name) {
-                    commentator = val.item.name;
-                    val.item.text = val.item.contents ? val.item.contents[0] : val.item.text;
-                    val.item.item_type = 'comment';
+                if (val.item.contents) {
+                    val.item.text = val.item.contents[0];
+                }
+                if (post.fullDetails) {
+                    _completeUser(val.item);
                 }
             });
-            if (commentator) {
-                post.post_user = post.user;
-                post.user = {display_name: commentator};
-            } else {
-                // complete Post With User Information
-                userList.getUser(post.original_creator).then(function(user) {
-                    post.user = user;
-                });
-            }
+            _completeUser(post.mainItem.item);
             return post;
         }
 

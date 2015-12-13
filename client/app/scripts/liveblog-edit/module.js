@@ -78,7 +78,6 @@ define([
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
             },
             openPostInEditor: function (post) {
-                console.log(post);
                 function fillEditor(post) {
                     cleanEditor(false);
                     $scope.currentPost = angular.copy(post);
