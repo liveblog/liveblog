@@ -102,6 +102,7 @@ define([
                 }
             });
             if (commentator) {
+                post.post_user = post.user;
                 post.user = {display_name: commentator};
             } else {
                 // complete Post With User Information
