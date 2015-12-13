@@ -13,6 +13,7 @@
             this.send = function(data) {
                 var deferred = $q.defer();
                 data.blog = config.blog._id;
+                data.item_type = 'comment';
                 itemsService.save(data).$promise.then(function(dataItem) {
                     if (dataItem._status === 'ERR'){
                         deferred.reject('Try again later!')

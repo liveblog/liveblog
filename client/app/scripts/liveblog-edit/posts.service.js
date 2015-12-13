@@ -93,10 +93,22 @@ define([
                 mainItem: post.groups[1].refs[0],
                 items: post.groups[1].refs
             });
-            // complete Post With User Information
-            userList.getUser(post.original_creator).then(function(user) {
-                post.user = user;
+            var commentator = false;
+            angular.forEach(post.items, function(val) {
+                if (val.item.name) {
+                    commentator = val.item.name;
+                    val.item.text = val.item.contents ? val.item.contents[0] : val.item.text;
+                    val.item.item_type = 'comment';
+                }
             });
+            if (commentator) {
+                post.user = {display_name: commentator};
+            } else {
+                // complete Post With User Information
+                userList.getUser(post.original_creator).then(function(user) {
+                    post.user = user;
+                });
+            }
             return post;
         }
 
@@ -157,7 +169,8 @@ define([
                             blog: blog_id,
                             text: item.text,
                             meta: item.meta,
-                            item_type: item.item_type
+                            item_type: item.item_type,
+                            name: item.meta && item.meta.name
                         };
                     }
                     dfds.push(api.items.save(item));
