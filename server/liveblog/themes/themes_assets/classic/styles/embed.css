@@ -277,6 +277,11 @@ ol {
     width: 50px;
     height: 50px;
 }
+.lb-mainitem-comment .lb-avatar {
+    border-radius: 0 !important;
+    background-image: url("../images/comment.svg");
+    background-color: rgba(255, 255, 255, 1) !important;
+}
 .lb-user-info {
     display: none;
 }

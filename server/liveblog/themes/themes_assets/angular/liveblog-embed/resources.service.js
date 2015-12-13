@@ -40,20 +40,37 @@
 
     Posts.$inject = ['$resource', 'config', 'users'];
     function Posts($resource, config, users) {
+        function _completeUser(obj) {
+            if (obj.name) {
+                obj.original_creator = {display_name: obj.name};
+            } else {
+                users.get({userId: obj.original_creator}, function(user) {
+                    obj.original_creator = user;
+                });
+            }
+            return obj;
+        }
         return $resource(config.api_host + 'api/client_blogs/:blogId/posts', {blogId: config.blog._id}, {
             get: {
                 transformResponse: function(posts) {
                     // decode json
                     posts = angular.fromJson(posts);
                     posts._items.forEach(function(post) {
-                        // add all the items directly in a `items` property
+                        post.mainItem = post.groups[1].refs[0].item;
+                        post.fullDetails = _.reduce(post.groups[1].refs, function(is, val) {
+                            return is || _.isUndefined(val.item.name);
+                        }, false);
+                        // add all the items directly in a `items` pmainroperty
                         if (angular.isDefined(post.groups[1])) {
-                            post.items = post.groups[1].refs.map(function(item) {return item.item;});
+                            post.items = post.groups[1].refs.map(function(item) {
+                                if(post.fullDetails) {
+                                    _completeUser(item.item);
+                                }
+                                return item.item;
+                            });
                         }
                         // replace the creator id by the user object
-                        users.get({userId: post.original_creator}, function(user) {
-                            post.original_creator = user;
-                        });
+                        _completeUser(post);
                     });
                     return posts;
                 }
