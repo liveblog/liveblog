@@ -7,8 +7,8 @@
         function PagesManager (max_results, sort) {
             var SORTS = {
                 'editorial' : {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
-                'newest_first' : {_created: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
-                'oldest_first' : {_created: {order: 'asc', missing:'_last', unmapped_type: 'long'}}
+                'newest_first' : {published_date: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
+                'oldest_first' : {published_date: {order: 'asc', missing:'_last', unmapped_type: 'long'}}
             };
             var self = this;
 
@@ -149,7 +149,7 @@
                             removePost(post);
                         } else {
                             // post updated
-                            if (post.post_status === 'draft') {
+                            if (post.post_status !== 'open') {
                                removePost(post);
                             } else {
                                 // update
