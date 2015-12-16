@@ -175,9 +175,9 @@ class ThemesService(BaseService):
         previous_theme = self.find_one(req=None, name=theme.get('name'))
         if previous_theme:
             if force_update:
-                self.publish_related_blogs(theme)
+                blogs_updated = self.publish_related_blogs(theme)
                 self.replace(previous_theme['_id'], theme, previous_theme)
-                return dict(status='updated', theme=theme, blogs_updated=blogs)
+                return dict(status='updated', theme=theme, blogs_updated=blogs_updated)
             else:
                 return dict(status='unchanged', theme=theme)
         else:
@@ -194,6 +194,7 @@ class ThemesService(BaseService):
         blogs = get_resource_service('blogs').get(req, None)
         for blog in blogs:
             publish_blog_embed_on_s3.delay(str(blog['_id']))
+        return blogs
 
     def on_updated(self, updates, original):
         # Republish the related blogs if the settings have been changed
