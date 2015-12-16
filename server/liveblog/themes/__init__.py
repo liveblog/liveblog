@@ -2,8 +2,9 @@ import superdesk
 from .themes import ThemesService, ThemesResource
 from .themes import upload_theme_blueprint, themes_assets_blueprint
 from .themes import ASSETS_DIR
+from .themes import UnknownTheme
 
-__all__ = ['upload_theme_blueprint', 'ThemesService', 'ThemesResource', 'ASSETS_DIR']
+__all__ = ['upload_theme_blueprint', 'ThemesService', 'ThemesResource', 'ASSETS_DIR', 'UnknownTheme']
 
 
 def init_app(app):

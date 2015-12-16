@@ -33,8 +33,8 @@
             "label": "Permalink delimiter",
             "type": "select",
             "options": [
-                {"value": "?", "label": "Query delimiter"},
-                {"value": "#", "label": " Fragment identifier delimiter"}
+                {"value": "?", "label": "Query delimiter (?)"},
+                {"value": "#", "label": " Fragment identifier delimiter (#)"}
             ],
             "default": "?",
             "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."

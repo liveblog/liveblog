@@ -221,6 +221,10 @@
                 }
                 vm.themePreviewModal = true;
                 vm.themePreviewModalTheme = theme;
+            },
+            openThemeSettings: function(theme) {
+                vm.themeSettingsModal = true;
+                vm.themeSettingsModalTheme = theme;
             }
         });
 

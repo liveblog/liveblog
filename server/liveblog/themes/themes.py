@@ -26,8 +26,9 @@ import magic
 from liveblog.blogs.blogs import publish_blog_embed_on_s3
 from eve.utils import ParsedRequest
 import superdesk
+import logging
 
-
+logger = logging.getLogger('superdesk')
 ASSETS_DIR = 'themes_assets'
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 CONTENT_TYPES = {
@@ -87,6 +88,9 @@ class ThemesResource(Resource):
         },
         'repository': {
             'type': 'dict'
+        },
+        'settings': {
+            'type': 'dict'
         }
     }
     datasource = {
@@ -103,7 +107,34 @@ class ThemesResource(Resource):
                   'PATCH': 'global_preferences', 'DELETE': 'global_preferences'}
 
 
+class UnknownTheme(Exception):
+    pass
+
+
 class ThemesService(BaseService):
+
+    def get_options(self, theme, options=None):
+        options = options or []
+        if theme.get('extends', False):
+            parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
+            if parent_theme:
+                options = self.get_options(parent_theme, options)
+            else:
+                error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
+                    % (theme.get('name'), theme.get('extends'))
+                logger.info(error_message)
+                raise UnknownTheme(error_message)
+        if theme.get('options', False):
+            options += theme.get('options')
+        return options
+
+    def get_default_settings(self, theme):
+        settings = {}
+        options = self.get_options(theme)
+        for option in options:
+            settings[option.get('name')] = option.get('default')
+        settings.update(theme.get('settings', {}))
+        return settings
 
     def get_local_themes_packages(self):
         theme_folder = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR)

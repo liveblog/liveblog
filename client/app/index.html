@@ -89,6 +89,7 @@
     <script src="scripts/bower_components/bootstrap/dist/js/bootstrap.js"></script>
 
     <script src="scripts/bower_components/angular/angular.js"></script>
+    <script src="scripts/bower_components/angular-messages/angular-messages.min.js"></script>
     <script src="scripts/bower_components/gridster/dist/jquery.gridster.with-extras.js"></script>
     <script src="scripts/bower_components/medium-editor/dist/js/medium-editor.js"></script>
     <script src="scripts/bower_components/ment.io/dist/mentio.js"></script>
@@ -164,6 +165,8 @@
     <script src="scripts/liveblog-bloglist/module.js"></script>
     <script src="scripts/liveblog-settings/module.js"></script>
     <script src="scripts/liveblog-themes/module.js"></script>
+    <script src="scripts/liveblog-themes/theme-settings-modal.js"></script>
+
     <!-- endbuild -->
 
     <!-- build:js scripts/templates.js -->
@@ -217,7 +220,8 @@
             'superdesk.monitoring',
             'superdesk.loading',
             'superdesk.templates-cache',
-            'lb.templates'
+            'lb.templates',
+            'ngMessages'
         ];
 
         require([

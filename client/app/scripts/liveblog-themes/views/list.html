@@ -66,6 +66,7 @@
                                 <button ng-disabled="vm.hasChildren(theme)" ng-click="vm.removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
                                 <button ng-if="!theme.abstract" ng-click="vm.makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
                             </div>
+                            <button ng-click="vm.openThemeSettings(theme)" class="btn btn-info pull-right" type="button" translate>Settings</button>
                         </div>
                         <div class="default-theme" ng-show="vm.isDefaultTheme(theme)"></div>
                     </div>
@@ -110,3 +111,5 @@
             full-height-offset-bottom="50"/>
     </div>
 </div>
+
+<theme-settings-modal theme="vm.themeSettingsModalTheme" ng-if="vm.themeSettingsModalTheme"></theme-settings-modal>
