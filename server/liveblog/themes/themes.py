@@ -175,16 +175,7 @@ class ThemesService(BaseService):
         previous_theme = self.find_one(req=None, name=theme.get('name'))
         if previous_theme:
             if force_update:
-                blogs_service = get_resource_service('blogs')
-                terms = []
-                for t in self.get_children(theme['name']) + [theme['name']]:
-                    terms.append({'term': {'blog_preferences.theme': t}})
-                query_filter = superdesk.json.dumps({'bool': {'should': terms}})
-                req = ParsedRequest()
-                req.args = {'filter': query_filter}
-                blogs = blogs_service.get(req, None)
-                for blog in blogs:
-                    publish_blog_embed_on_s3.delay(str(blog['_id']))
+                self.publish_related_blogs(theme)
                 self.replace(previous_theme['_id'], theme, previous_theme)
                 return dict(status='updated', theme=theme, blogs_updated=blogs)
             else:
@@ -192,6 +183,22 @@ class ThemesService(BaseService):
         else:
             self.create([theme])
             return dict(status='created', theme=theme)
+
+    def publish_related_blogs(self, theme):
+        terms = []
+        for t in self.get_children(theme['name']) + [theme['name']]:
+            terms.append({'term': {'blog_preferences.theme': t}})
+        query_filter = superdesk.json.dumps({'bool': {'should': terms}})
+        req = ParsedRequest()
+        req.args = {'filter': query_filter}
+        blogs = get_resource_service('blogs').get(req, None)
+        for blog in blogs:
+            publish_blog_embed_on_s3.delay(str(blog['_id']))
+
+    def on_updated(self, updates, original):
+        # Republish the related blogs if the settings have been changed
+        if 'settings' in updates:
+            self.publish_related_blogs(original)
 
     def on_delete(self, deleted_theme):
         global_default_theme = get_resource_service('global_preferences').get_global_prefs()['theme']
