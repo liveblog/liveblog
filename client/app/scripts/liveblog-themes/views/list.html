@@ -62,7 +62,7 @@
                             </dl>
                         </div>
                         <div class="side">
-                            <div ng-hide="vm.isDefaultTheme(theme)">
+                            <div ng-style="{'visibility': (vm.isDefaultTheme(theme) && 'hidden') || 'visible'}">
                                 <button ng-disabled="vm.hasChildren(theme)" ng-click="vm.removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
                                 <button ng-if="!theme.abstract" ng-click="vm.makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
                             </div>
