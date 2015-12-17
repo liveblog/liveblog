@@ -46,8 +46,8 @@ def get_app(config=None):
     app = superdesk_app(config, media_storage)
 
     custom_loader = jinja2.ChoiceLoader([
-        app.jinja_loader,
-        jinja2.FileSystemLoader(['superdesk/templates'])
+        jinja2.FileSystemLoader('superdesk/templates'),
+        app.jinja_loader
     ])
     app.jinja_loader = custom_loader
 
