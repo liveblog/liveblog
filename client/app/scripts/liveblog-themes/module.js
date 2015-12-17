@@ -101,6 +101,12 @@
                         theme.blogs_count = data._meta.total;
                         // TODO: Pagination. Will only show the first results page
                         theme.blogs = data._items;
+                        // retrieve the public url for each blog
+                        theme.blogs.forEach(function(blog) {
+                            blogService.getPublicUrl(blog).then(function(url) {
+                                blog.iframe_url = $sce.trustAsResourceUrl(url);
+                            });
+                        });
                     });
                     parseTheme(theme);
                 });
@@ -179,12 +185,6 @@
             switchBlogPreview: function(blog) {
                 // copy the selected blog
                 vm.selectedBlog = angular.copy(blog);
-                // if there is no public url, hide the iframe
-                vm.selectedBlog.iframe_url = false;
-                // retrieve the public url to set the iframe src
-                blogService.getPublicUrl(blog).then(function(url) {
-                    vm.selectedBlog.iframe_url = $sce.trustAsResourceUrl(url);
-                });
             },
             save: function() {
                 notify.pop();
