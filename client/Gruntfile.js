@@ -57,9 +57,8 @@ module.exports = function (grunt) {
         'clean',
         'style',
         'template:mock',
-        'connect:mock',
         'ngtemplates',
-        'watch'
+        'connect:mock' // nothing will be run after that
     ]);
     grunt.registerTask('server:travis', ['clean', 'style', 'template:travis', 'connect:travis']);
 
@@ -70,17 +69,18 @@ module.exports = function (grunt) {
     grunt.registerTask('build', [
         'clean',
         'less:dev',
+        'ngtemplates',
         'useminPrepare',
         'concat',
         'requirejs', // must go after concat
         'uglify',
         'cssmin',
         'copy:assets',
+        'copy:tmp',
         'copy:js',
         'copy:fonts',
         'copy:docs',
         'template:test',
-        'ngtemplates',
         'nggettext_compile',
         'filerev',
         'usemin'

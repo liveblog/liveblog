@@ -15,7 +15,7 @@ import superdesk
 from flask import render_template, json, request, current_app as app
 from eve.io.mongo import MongoJSONEncoder
 from superdesk import get_resource_service
-from liveblog.themes import ASSETS_DIR as THEMES_ASSETS_DIR
+from liveblog.themes import UnknownTheme, ASSETS_DIR as THEMES_ASSETS_DIR
 from flask import url_for
 import io
 import os
@@ -28,10 +28,6 @@ bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates'
 
 
 class MediaStorageUnsupportedForBlogPublishing(Exception):
-    pass
-
-
-class UnknownTheme(Exception):
     pass
 
 
@@ -68,23 +64,6 @@ def collect_theme_assets(theme, assets_prefix=None, assets=None, template=None):
     return assets, template
 
 
-def get_default_settings(theme, settings=None):
-    settings = settings or {}
-    if theme.get('extends', False):
-        parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
-        if parent_theme:
-            settings = get_default_settings(parent_theme, settings)
-        else:
-            error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
-                % (theme.get('name'), theme.get('extends'))
-            logger.info(error_message)
-            raise UnknownTheme(error_message)
-    if theme.get('options', False):
-        for option in theme.get('options', []):
-            settings[option.get('name')] = option.get('default')
-    return settings
-
-
 def publish_embed(blog_id, api_host=None, theme=None):
     html = embed(blog_id, api_host, theme, assets_prefix=app.config.get('S3_THEMES_PREFIX'))
     if type(app.media).__name__ is not 'AmazonMediaStorage':
@@ -103,11 +82,11 @@ def publish_embed(blog_id, api_host=None, theme=None):
 def embed(blog_id, api_host=None, theme=None, assets_prefix=None):
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    if not blog:
+        return 'blog not found', 404
     # retrieve picture url from relationship
     if blog.get('picture', None):
         blog['picture'] = get_resource_service('archive').find_one(req=None, _id=blog['picture'])
-    if not blog:
-        return 'blog not found', 404
     # retrieve the wanted theme and add it to blog['theme'] if is not the registered one
     try:
         theme_name = request.args.get('theme', theme)
@@ -126,6 +105,9 @@ def embed(blog_id, api_host=None, theme=None, assets_prefix=None):
         assets, template_file = collect_theme_assets(theme, assets_prefix=assets_prefix)
     except UnknownTheme as e:
         return str(e), 500
+    if not template_file:
+        logger.error('Template file not found for theme "%s". Theme: %s' % (theme.get('name'), theme))
+        return 'Template file not found', 500
     # compute the assets root
     assets_root = [THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme')]
     # prefix the assets root if needed (to isolate s3 bucket for instance)
@@ -134,7 +116,7 @@ def embed(blog_id, api_host=None, theme=None, assets_prefix=None):
     assets_root = '/%s/' % ('/'.join(assets_root))
     scope = {
         'blog': blog,
-        'settings': get_default_settings(theme),
+        'settings': get_resource_service('themes').get_default_settings(theme),
         'assets': assets,
         'api_host': api_host,
         'template': template_file,

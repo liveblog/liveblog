@@ -18,6 +18,7 @@ img {
 .content {
     margin: 15px 10px;
 }
+i {font-style: italic;}
 a {
     color: #3394bc !important;
 }
@@ -170,6 +171,7 @@ article .liveblog--card {
 /* quote */
 article blockquote {
     position: relative;
+    margin: 30px 0 0 16px;
 }
 article blockquote p {
     font-size: 1.25em;
@@ -191,10 +193,6 @@ article blockquote li:before {
     content: "—";
     margin-left: -20px;
     padding-right: 5px;
-}
-/* tweets */
-lb-twitter-card iframe {
-    margin: auto;
 }
 .item--embed__illustration {
     position: absolute;

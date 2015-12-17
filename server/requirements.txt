@@ -3,6 +3,6 @@ Flask-Cors==2.1.0
 # Flask-S3 with support for python3
 git+git://github.com/joehand/flask-s3@8fe9f27ebb5251b7cf53a6684595d41dc4af2fbf#egg=Flask-S3==0.1.7
 # Superdesk
--e git+git://github.com/liveblog/superdesk-core@a117d79e7fa10c92acf17aff957d05fdf2ac3f9b#egg=Superdesk-Core==0.0.1-dev
+-e git+git://github.com/liveblog/superdesk-core@5807048bd1e21cbf283c07941bb2bca2573e8533#egg=Superdesk-Core==0.0.1-dev
 -e git+git://github.com/liveblog/superdesk@33029d9fd55f7c7047a60abdac1f1911f044a27a#egg=Superdesk-Server
 norecaptcha-python3
