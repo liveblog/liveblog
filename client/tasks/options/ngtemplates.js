@@ -1,11 +1,11 @@
 module.exports = {
     app: {
-        cwd: 'app',
+        cwd: '<%= appDir %>',
         src: [
             'scripts/bower_components/superdesk/client/app/scripts/superdesk*/**/*.html',
             'scripts/liveblog*/**/*.html'
         ],
-        dest: 'app/scripts/lb-templates.js',
+        dest: '<%= tmpDir %>/scripts/lb-templates.js',
         options: {
             htmlmin: {
                 collapseWhitespace: true,
