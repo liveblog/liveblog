@@ -1,7 +1,7 @@
 (function(angular) {
     'use strict';
 
-    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink', 'CommentsManager'];
+    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink'];
     function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, CommentsManager) {
 
         var POSTS_PER_PAGE = config.settings.postsPerPage;
@@ -11,8 +11,7 @@
         var UPDATE_EVERY = 10*1000; // retrieve update interval in millisecond
         var vm = this;
         var pagesManager = new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER),
-            permalink = new Permalink(pagesManager, PERMALINK_DELIMITER),
-            commentsManager = new CommentsManager();
+            permalink = new Permalink(pagesManager, PERMALINK_DELIMITER);
 
         function retrieveUpdate() {
             return vm.pagesManager.retrieveUpdate(true);
@@ -33,30 +32,6 @@
             loading: true,
             finished: false,
             showAuthor: SHOW_AUTHOR,
-            comment: {
-                modal: false,
-                notify: false,
-                form: false,
-                toggle: function() {
-                    vm.comment.modal = !vm.comment.modal;
-                    vm.comment.form = !vm.comment.form;
-                },
-                send: function() {
-                    commentsManager.send({
-                        name: vm.comment.name,
-                        contents: [vm.comment.content]
-                    }).then(function(){
-                        vm.comment.notify = 'sended';
-                        vm.comment.form = false;
-                        vm.comment.name = '';
-                        vm.comment.content = '';
-                        $timeout(function(){
-                            vm.comment.notify = false;
-                            vm.comment.modal = false;
-                        }, 2500);
-                    });
-                }
-            },
             orderBy: function(order_by) {
                 vm.loading = true;
                 vm.finished = false;

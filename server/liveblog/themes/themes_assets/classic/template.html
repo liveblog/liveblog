@@ -29,8 +29,8 @@
         <div class="header-bar__actions">
             <button
                 class="btn"
-                ng-class="{'active': timeline.comment.modal}"
-                ng-click="timeline.comment.toggle();">Comment</button>
+                ng-class="{'active': timeline.comment}"
+                ng-click="timeline.comment = !timeline.comment">Comment</button>
         </div>
         <div class="header-bar__logo">
             <a href="https://www.sourcefabric.org/liveblog/" target="_blank">
@@ -44,54 +44,12 @@
         <div class="content">No post for now.</div>
     </div>
     <section
-        ng-class="{'comment-active': timeline.comment.modal}"
+        ng-class="{'comment-active': timeline.comment}"
         class="lb-posts list-group"
         infinite-scroll="timeline.fetchNewPage()"
         infinite-scroll-disabled="!timeline.isAllowedToLoadMore()"
         infinite-scroll-immediate-check="false">
-        <div class="modal-backdrop ng-cloak" ng-if="timeline.comment.modal"></div>
-        <div class="modal ng-cloak" ng-if="timeline.comment.modal">
-            <div class="modal-dialog">
-                <div ng-if="timeline.comment.notify" class="notify">
-                    <div class="content">
-                        <div class="modal-header">
-                            <h3>Your comment was sent for approval.</h3>
-                        </div>
-                    </div>
-                </div>
-                <div ng-if="timeline.comment.form">
-                    <form name="comment">
-                        <div class="content">
-                            <div class="modal-header">
-                                <h2>Post a comment</h2>
-                            </div>
-                            <div class="modal-body">
-                                <fieldset>
-                                    <div class="field">
-                                        <label for="comment-name">Name *</label>
-                                        <input name="commentName" ng-model="timeline.comment.name" minlength="3" maxlength="30" required>
-                                        <div role="alert">
-                                            <span class="error" ng-show="comment.commentName.$error.minlength">Please fill in your Name.</span>
-                                        </div>
-                                    </div>
-                                    <div class="field">
-                                        <label for="comment-content">Comment *</label>
-                                        <textarea minlength="3" maxlength="300" name="commentContent" ng-model="timeline.comment.content"  required></textarea>
-                                        <div role="alert">
-                                            <span class="error" ng-show="comment.commentContent.$error.minlength">Please fill in your Comment.</span>
-                                        </div>
-                                    </div>
-                                </fieldset>
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn" ng-click="timeline.comment.toggle();"><span>Cancel</span></button>
-                                <button class="btn btn-primary" ng-click="timeline.comment.send();"><span>Send</span></button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+        <acticle lb-comments data-comment="timeline.comment"></acticle>
         <article lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id"
             class="lb-post list-group-item ng-cloak">
             <div class="content lb-mainitem-{{ post.mainItem.item_type }}"

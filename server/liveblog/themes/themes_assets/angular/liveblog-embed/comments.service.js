@@ -40,6 +40,89 @@
     }
 
     angular.module('liveblog-embed')
-        .factory('CommentsManager', CommentsManagerFactory);
+        .factory('CommentsManager', CommentsManagerFactory)
+        .directive('lbComments', ['CommentsManager', '$timeout', function(CommentsManager, $timeout) {
+            var commentsManager = new CommentsManager();
+            return {
+                scope: {
+                    comment: '='
+                },
+                template: [
+                    '<div class="modal-backdrop ng-cloak" ng-if="modal"></div>',
+                    '<div class="modal ng-cloak" ng-if="modal">',
+                    '    <div class="modal-dialog">',
+                    '        <div ng-if="notify" class="notify">',
+                    '            <div class="content">',
+                    '                <div class="modal-header">',
+                    '                    <h3>Your comment was sent for approval.</h3>',
+                    '                </div>',
+                    '            </div>',
+                    '        </div>',
+                    '        <div ng-if="form">',
+                    '            <form name="comment">',
+                    '                <div class="content">',
+                    '                    <div class="modal-header">',
+                    '                        <h2>Post a comment</h2>',
+                    '                    </div>',
+                    '                    <div class="modal-body">',
+                    '                        <fieldset>',
+                    '                            <div class="field">',
+                    '                                <label for="comment-name">Name *</label>',
+                    '                                <input name="commentName" ng-model="name" minlength="3" maxlength="30" required>',
+                    '                                <div role="alert">',
+                    '                                    <span class="error" ng-show="comment.commentName.$error.minlength">Please fill in your Name.</span>',
+                    '                                </div>',
+                    '                            </div>',
+                    '                            <div class="field">',
+                    '                                <label for="comment-content">Comment *</label>',
+                    '                                <textarea minlength="3" maxlength="300" name="commentContent" ng-model="content"  required></textarea>',
+                    '                                <div role="alert">',
+                    '                                    <span class="error" ng-show="comment.commentContent.$error.minlength">Please fill in your Comment.</span>',
+                    '                                </div>',
+                    '                            </div>',
+                    '                        </fieldset>',
+                    '                    </div>',
+                    '                    <div class="modal-footer">',
+                    '                        <button class="btn" ng-click="toggle();"><span>Cancel</span></button>',
+                    '                        <button class="btn btn-primary" ng-click="send();"><span>Send</span></button>',
+                    '                    </div>',
+                    '                </div>',
+                    '            </form>',
+                    '        </div>',
+                    '    </div>',
+                    '</div>'
+                ].join(''),
+                controller: function($scope) {
+                    var vm = $scope;
+                    angular.extend(vm, {
+                        modal: true,
+                        notify: false,
+                        form: true,
+                        toggle: function() {
+                            vm.modal = !vm.modal;
+                            vm.form = !vm.form;
+                        },
+                        send: function() {
+                            commentsManager.send({
+                                name: vm.name,
+                                contents: [vm.content]
+                            }).then(function(){
+                                vm.notify = 'sended';
+                                vm.form = false;
+                                vm.name = '';
+                                vm.content = '';
+                                $timeout(function(){
+                                    vm.notify = false;
+                                    vm.modal = false;
+                                }, 2500);
+                            });
+                        }
+                    });
+                },
+                link: function(scope, elem, attrs) {
+                    scope.$watch('comment', scope.toggle);
+                }
+            };
+        }]);
 
 })(angular);
