@@ -1,10 +1,19 @@
 @import 'mixins.less';
 @import 'variables.less';
 
-.lb-mainitem-comment .main-avatar, .lb-item-comment .avatar{
-    background-image: url("../../images/comments-timeline.svg") !important;
-    border-radius: 0px !important;
-    background-color: rgba(255, 255, 255, 1) !important;
+.avatar-comment {
+    background: transparent url("../../images/comments-timeline.svg") no-repeat;
+    background-size: 100%;
+    display: block;
+    float: left;
+    height: 30px;
+    overflow: hidden;
+    width: 30px;
+    img {
+        width: 100%;
+        height: auto;
+        display: block;
+    }    
 }
 .lb-post {
     .reorder-disabled {

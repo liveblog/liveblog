@@ -10,7 +10,8 @@
     }">
         <div class="lb-post__holder lb-mainitem-{{ post.mainItem.item.item_type}}">
             <div class="lb-post__figure">
-                <figure class="avatar main-avatar">
+                <figure ng-class="{'avatar': (post.mainItem.item.item_type !== 'comment'),
+                                   'avatar-comment': (post.mainItem.item.item_type === 'comment')}">
                     <img class="ng-isolate-scope" data-src="post.mainItem.item.user.picture_url" sd-user-avatar="">
                 </figure>
             </div>
@@ -69,7 +70,10 @@
                          <div ng-repeat="item in post.items track by item.item._id" class="lb-item-{{ item.item.item_type }}">
                            <div class="lb-post__holder" ng-if="post.fullDetails && !$first">
                                <div class="lb-post__figure">
-                                    <figure class="avatar">
+                                    <figure ng-class="{
+                                        'active': (post.order === reorderPost.order || post.order === keepHighlighted),
+                                        'unread': functionize(postsListCtrl.isUnreadPost)(post)
+                                    }">
                                         <img class="ng-isolate-scope" data-src="post.user.picture_url" sd-user-avatar="">
                                     </figure>
                                 </div>
