@@ -37,7 +37,7 @@ define([
         function getPublicUrl(blog) {
             var deferred = $q.defer();
             // for debug purpose
-            if (!blog.public_url && config.server.url === 'http://localhost:5000/api') {
+            if (!blog.public_url && config.debug) {
                 deferred.resolve('http://localhost:5000/embed/' + blog._id);
             } else {
                 // if the blog contains the url, returns it
