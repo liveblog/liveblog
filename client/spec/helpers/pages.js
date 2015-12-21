@@ -175,9 +175,6 @@ function ThemesManagerPage() {
     };
 
     self.saveSettings = function() {
-        // browser.wait(function() {
-        //     return element(by.css('[name="themeSettingsForm"]')).element(by.buttonText('Submit')).isDisplayed();
-        // }, 2000);
         element(by.css('[name="themeSettingsForm"]')).element(by.buttonText('Submit')).click();
         return self;
     };
