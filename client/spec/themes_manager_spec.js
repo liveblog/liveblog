@@ -63,7 +63,7 @@ describe('Themes Manager', function() {
         });
     });
 
-    fit('can change theme settings', function() {
+    it('can change theme settings', function() {
         themeManager.openThemesManager()
         .themes
         .then(function(themes) {
