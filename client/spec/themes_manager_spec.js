@@ -62,4 +62,17 @@ describe('Themes Manager', function() {
             });
         });
     });
+
+    fit('can change theme settings', function() {
+        themeManager.openThemesManager()
+        .themes
+        .then(function(themes) {
+            themeManager.openSettingsForTheme(0);
+            element(by.css('[name="postsPerPage"]')).clear().sendKeys('111');
+            themeManager.saveSettings();
+            browser.waitForAngular();
+            themeManager.openSettingsForTheme(0);
+            expect(element(by.css('[name="postsPerPage"]')).getAttribute('value')).toEqual('111');
+        });
+    });
 });
