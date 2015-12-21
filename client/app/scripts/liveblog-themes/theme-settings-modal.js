@@ -1,8 +1,8 @@
 (function() {
     'use strict';
 
-    ThemeSettingsModalController.$inject = ['$scope', 'api', '$q', 'lodash'];
-    function ThemeSettingsModalController($scope, api, $q, _) {
+    ThemeSettingsModalController.$inject = ['$scope', 'api', '$q', 'lodash', 'notify'];
+    function ThemeSettingsModalController($scope, api, $q, _, notify) {
         var vm = this;
         angular.extend(vm, {
             optionsAreloading: true,
@@ -13,7 +13,7 @@
                 api.themes.update(vm.theme, {settings: vm.settings}).then(function(data) {
                     vm.closeModal();
                 }, function(error) {
-                    console.log('error!', error);
+                    notify.error(error.data._error.message);
                 });
             },
             closeModal: function() {
