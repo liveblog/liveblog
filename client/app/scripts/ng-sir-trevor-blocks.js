@@ -536,10 +536,14 @@ define([
                 // Content pasted. Delegate to the drop parse method
                 var input = $(event.target).closest('[contenteditable]'),
                     val = input.html();
-                val = val.replace(/(<style\b[^>]*>)[^<>]*(<\/style>)/ig, '');
-                val = val.replace(/(<script\b[^>]*>)[^<>]*(<\/script>)/ig, '');
-                val = val.replace(/<(br|p|b|i|strike|ul|ol|li|a)[^\/>]+>/ig, '<$1>');
-                val = val.replace(/<(?!\s*\/?(br|p|b|i|strike|ul|ol|li|a)\b)[^>]+>/ig, '');
+                if (val) {
+                    val = val.replace(/(<style\b[^>]*>)[^<>]*(<\/style>)/ig, '');
+                    val = val.replace(/(<script\b[^>]*>)[^<>]*(<\/script>)/ig, '');
+                    // use paragraph tag `p` instead of `div` witch isn't supported.
+                    val = val.replace(/<(\/)?div\b[^\/>]*>/ig, '<$1p>');
+                    val = val.replace(/<(br|p|b|i|strike|ul|ol|li|a)\b[^\/>]+>/ig, '<$1>');
+                    val = val.replace(/<(?!\s*\/?(br|p|b|i|strike|ul|ol|li|a)\b)[^>]+>/ig, '');
+                }
                 input.html(val);
             }, 0);
 
