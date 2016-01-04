@@ -41,7 +41,7 @@ describe('Themes Manager', function() {
             return themeManager.themes.count().then(function(count) {
                 return count === 4;
             });
-        });
+        }, 10000);
         themeManager.themes.then(function(themes) {
             expect(themes.length).toBe(4);
             // actual-dog
