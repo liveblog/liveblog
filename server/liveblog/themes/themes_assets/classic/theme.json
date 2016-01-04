@@ -29,6 +29,31 @@
             "help": "Set the number of posts you want to see at the initialization"
         },
         {
+            "name": "showImage",
+            "label": "Show the blog image",
+            "type": "checkbox",
+            "default": true
+        },
+        {
+            "name": "showTitle",
+            "label": "Show the blog title",
+            "type": "checkbox",
+            "default": true
+        },
+        {
+            "name": "showDescription",
+            "label": "Show the blog description",
+            "type": "checkbox",
+            "default": true
+        },
+        {
+            "name": "showAuthor",
+            "label": "Show author",
+            "type": "checkbox",
+            "default": true,
+            "help": "Show the author information on posts"
+        },
+        {
             "name": "permalinkDelimiter",
             "label": "Permalink delimiter",
             "type": "select",
@@ -38,13 +63,6 @@
             ],
             "default": "?",
             "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
-        },
-        {
-            "name": "showAuthor",
-            "label": "Show author",
-            "type": "checkbox",
-            "default": true,
-            "help": "Show the author information on posts"
         }
     ]
 }

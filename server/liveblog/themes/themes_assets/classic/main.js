@@ -31,6 +31,7 @@
             blog: config.blog,
             loading: true,
             finished: false,
+            settings: config.settings,
             showAuthor: SHOW_AUTHOR,
             orderBy: function(order_by) {
                 vm.loading = true;
