@@ -19,6 +19,21 @@
             closeModal: function() {
                 vm.modalOpened = false;
                 vm.theme = undefined;
+            },
+            /**
+             * Check if the option requirements are satified through the `dependsOn` property
+             * @param {object} option
+             * @returns {boolean} true if the option `dependsOn` are satisfied
+             */
+            optionRequirementIsSatisfied: function(option) {
+                if (!angular.isDefined(option.dependsOn)) {
+                    return true;
+                }
+                var isSatisfied = true;
+                angular.forEach(option.dependsOn, function(value, key) {
+                    isSatisfied = isSatisfied && vm.settings[key] === value;
+                });
+                return isSatisfied;
             }
         });
         // Initialization

@@ -6,7 +6,7 @@
     <div class="modal-body">
         <div ng-if="vm.optionsAreloading" trans>Options are loading...</div>
         <form ng-if="!vm.optionsAreloading" name="themeSettingsForm">
-            <div ng-repeat="option in vm.options">
+            <div ng-repeat="option in vm.options" ng-if="vm.optionRequirementIsSatisfied(option)">
                 <div class="form-group">
                     <label ng-bind="option.label"></label>
                     <div ng-switch="option.type">
