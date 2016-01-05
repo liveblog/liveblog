@@ -54,6 +54,16 @@
             "help": "Show the author information on posts"
         },
         {
+            "name": "showAuthorAvatar",
+            "label": "Show author avatar",
+            "type": "checkbox",
+            "default": true,
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "help": "Show the author avatar on posts"
+        },
+        {
             "name": "permalinkDelimiter",
             "label": "Permalink delimiter",
             "type": "select",
