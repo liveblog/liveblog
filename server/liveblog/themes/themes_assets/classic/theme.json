@@ -79,6 +79,16 @@
             "help": "How to show the author name"
         },
         {
+            "name": "authorNameLinksToEmail",
+            "label": "The author name links to email",
+            "type": "checkbox",
+            "default": false,
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "help": "A click to the author name will create a new mail to be sent to the author."
+        },
+        {
             "name": "permalinkDelimiter",
             "label": "Permalink delimiter",
             "type": "select",

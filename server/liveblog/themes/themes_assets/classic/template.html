@@ -49,7 +49,15 @@
                      class="lb-author__avatar"
                      ng-src="{{ post.original_creator.picture_url }}" />
                 <div class="lb-author__date" ng-bind="post.published_date | prettifyIsoDate"></div>
-                <div class="lb-author__name" ng-bind="post.original_creator[timeline.settings.authorNameFormat]"></div>
+                <!-- author name, with or without mailto link  -->
+                <div ng-if="!timeline.settings.authorNameLinksToEmail"
+                     class="lb-author__name"
+                     ng-bind="post.original_creator[timeline.settings.authorNameFormat]"></div>
+                <div ng-if="timeline.settings.authorNameLinksToEmail"
+                     class="lb-author__name">
+                    <a href="mailto:{{post.original_creator.email}}"
+                       ng-bind="post.original_creator[timeline.settings.authorNameFormat]"></a>
+                </div>
             </div>
             <div class="lb-post-permalink">
                 <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
