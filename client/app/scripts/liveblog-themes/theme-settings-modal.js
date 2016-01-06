@@ -9,9 +9,14 @@
             modalOpened: angular.isDefined(vm.theme),
             settings: angular.copy(vm.theme.settings) || {},
             options: [],
-            submitSettings: function() {
+            submitSettings: function(shouldClose) {
                 api.themes.update(vm.theme, {settings: vm.settings}).then(function(data) {
-                    vm.closeModal();
+                    vm.settings = angular.copy(data.settings);
+                    // reset the dirty state to false
+                    vm.themeSettingsForm.$setPristine();
+                    if (shouldClose) {
+                        vm.closeModal();
+                    }
                 }, function(error) {
                     notify.error(error.data._error.message);
                 });
