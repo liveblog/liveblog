@@ -15,7 +15,7 @@ import superdesk
 from flask import render_template, json, request, current_app as app
 from eve.io.mongo import MongoJSONEncoder
 from superdesk import get_resource_service
-from liveblog.themes import ASSETS_DIR as THEMES_ASSETS_DIR
+from liveblog.themes import UnknownTheme, ASSETS_DIR as THEMES_ASSETS_DIR
 from flask import url_for
 import io
 import os
@@ -28,10 +28,6 @@ bp = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates'
 
 
 class MediaStorageUnsupportedForBlogPublishing(Exception):
-    pass
-
-
-class UnknownTheme(Exception):
     pass
 
 
@@ -66,23 +62,6 @@ def collect_theme_assets(theme, assets_prefix=None, assets=None, template=None):
                     url = '/%s%s' % (assets_prefix.strip('/'), url)
             assets[asset_type].append(url)
     return assets, template
-
-
-def get_default_settings(theme, settings=None):
-    settings = settings or {}
-    if theme.get('extends', False):
-        parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
-        if parent_theme:
-            settings = get_default_settings(parent_theme, settings)
-        else:
-            error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
-                % (theme.get('name'), theme.get('extends'))
-            logger.info(error_message)
-            raise UnknownTheme(error_message)
-    if theme.get('options', False):
-        for option in theme.get('options', []):
-            settings[option.get('name')] = option.get('default')
-    return settings
 
 
 def publish_embed(blog_id, api_host=None, theme=None):
@@ -137,7 +116,7 @@ def embed(blog_id, api_host=None, theme=None, assets_prefix=None):
     assets_root = '/%s/' % ('/'.join(assets_root))
     scope = {
         'blog': blog,
-        'settings': get_default_settings(theme),
+        'settings': get_resource_service('themes').get_default_settings(theme),
         'assets': assets,
         'api_host': api_host,
         'template': template_file,

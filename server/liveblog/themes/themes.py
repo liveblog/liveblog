@@ -26,8 +26,9 @@ import magic
 from liveblog.blogs.blogs import publish_blog_embed_on_s3
 from eve.utils import ParsedRequest
 import superdesk
+import logging
 
-
+logger = logging.getLogger('superdesk')
 ASSETS_DIR = 'themes_assets'
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 CONTENT_TYPES = {
@@ -87,6 +88,9 @@ class ThemesResource(Resource):
         },
         'repository': {
             'type': 'dict'
+        },
+        'settings': {
+            'type': 'dict'
         }
     }
     datasource = {
@@ -103,7 +107,34 @@ class ThemesResource(Resource):
                   'PATCH': 'global_preferences', 'DELETE': 'global_preferences'}
 
 
+class UnknownTheme(Exception):
+    pass
+
+
 class ThemesService(BaseService):
+
+    def get_options(self, theme, options=None):
+        options = options or []
+        if theme.get('extends', False):
+            parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
+            if parent_theme:
+                options = self.get_options(parent_theme, options)
+            else:
+                error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
+                    % (theme.get('name'), theme.get('extends'))
+                logger.info(error_message)
+                raise UnknownTheme(error_message)
+        if theme.get('options', False):
+            options += theme.get('options')
+        return options
+
+    def get_default_settings(self, theme):
+        settings = {}
+        options = self.get_options(theme)
+        for option in options:
+            settings[option.get('name')] = option.get('default')
+        settings.update(theme.get('settings', {}))
+        return settings
 
     def get_local_themes_packages(self):
         theme_folder = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR)
@@ -144,23 +175,31 @@ class ThemesService(BaseService):
         previous_theme = self.find_one(req=None, name=theme.get('name'))
         if previous_theme:
             if force_update:
-                blogs_service = get_resource_service('blogs')
-                terms = []
-                for t in self.get_children(theme['name']) + [theme['name']]:
-                    terms.append({'term': {'blog_preferences.theme': t}})
-                query_filter = superdesk.json.dumps({'bool': {'should': terms}})
-                req = ParsedRequest()
-                req.args = {'filter': query_filter}
-                blogs = blogs_service.get(req, None)
-                for blog in blogs:
-                    publish_blog_embed_on_s3.delay(str(blog['_id']))
+                blogs_updated = self.publish_related_blogs(theme)
                 self.replace(previous_theme['_id'], theme, previous_theme)
-                return dict(status='updated', theme=theme, blogs_updated=blogs)
+                return dict(status='updated', theme=theme, blogs_updated=blogs_updated)
             else:
                 return dict(status='unchanged', theme=theme)
         else:
             self.create([theme])
             return dict(status='created', theme=theme)
+
+    def publish_related_blogs(self, theme):
+        terms = []
+        for t in self.get_children(theme['name']) + [theme['name']]:
+            terms.append({'term': {'blog_preferences.theme': t}})
+        query_filter = superdesk.json.dumps({'bool': {'should': terms}})
+        req = ParsedRequest()
+        req.args = {'filter': query_filter}
+        blogs = get_resource_service('blogs').get(req, None)
+        for blog in blogs:
+            publish_blog_embed_on_s3.delay(str(blog['_id']))
+        return blogs
+
+    def on_updated(self, updates, original):
+        # Republish the related blogs if the settings have been changed
+        if 'settings' in updates:
+            self.publish_related_blogs(original)
 
     def on_delete(self, deleted_theme):
         global_default_theme = get_resource_service('global_preferences').get_global_prefs()['theme']
