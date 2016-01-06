@@ -1,6 +1,6 @@
 
 <div class="lb-timeline" ng-app="theme" ng-controller="TimelineCtrl as timeline">
-    <div class="content">
+    <div class="lb-timeline__header">
         <h1 ng-if="timeline.settings.showTitle" ng-bind="timeline.blog.title"></h1>
         <div class="illustration" ng-if="timeline.blog.picture_url && timeline.settings.showImage">
             <img ng-src="{{ timeline.blog.picture_url }}" srcset="{{ timeline.blog.picture_srcset }}" sizes="100vw"/>
@@ -32,42 +32,45 @@
     <div
         class="lb-post emtpy-message ng-cloak"
         ng-show="timeline.pagesManager.allPosts().length < 1 && !timeline.loading">
-        <div class="content">No post for now.</div>
+        <div>No post for now.</div>
     </div>
     <section
         class="lb-posts list-group"
         infinite-scroll="timeline.fetchNewPage()"
         infinite-scroll-disabled="!timeline.isAllowedToLoadMore()"
         infinite-scroll-immediate-check="false">
-        <article lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item ng-cloak">
-            <div class="content" ng-class="{'show-author': timeline.showAuthor, 'lb-post-permalink-selected': post._id === timeline.permalink._id}">
-                <figure class="lb-avatar" ng-if="timeline.showAuthor"><img ng-src="{{ post.original_creator.picture_url }}"/></figure>
-                <div class="lb-creator">
-                    <div class="lb-post-permalink">
-                        <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
-                            <i class="fa fa-link fa-2"></i>
-                        </a>
-                    </div>
-                    <lb-permalink post-id="{{ post._id }}"></lb-permalink>
-                    <div class="lb-post-date" ng-bind="post.published_date | prettifyIsoDate"></div>
-                    <div class="lb-user-info" ng-bind="post.original_creator.display_name"></div>
-                </div>
-                <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
-                    <div ng-switch="item.item_type">
-                        <div ng-switch-when="embed">
-                            <div ng-switch="item.meta.provider_name">
-                                <div ng-switch-when="Twitter">
-                                    <lb-twitter-card lb-twitter-content="{{ item.meta.html }}"></lb-twitter-card>
-                                </div>
-                                <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
+        <article lb-post
+                 ng-repeat="post in timeline.pagesManager.allPosts() track by post._id"
+                 class="lb-post list-group-item ng-cloak"
+                 ng-class="{'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
+                            'lb-post-permalink-selected': post._id === timeline.permalink._id}">
+            <div class="lb-author" ng-if="timeline.settings.showAuthor">
+                <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar"
+                     class="lb-author__avatar"
+                     ng-src="{{ post.original_creator.picture_url }}" />
+                <div class="lb-author__date" ng-bind="post.published_date | prettifyIsoDate"></div>
+                <div class="lb-author__name" ng-bind="post.original_creator[timeline.settings.authorNameFormat]"></div>
+            </div>
+            <div class="lb-post-permalink">
+                <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
+                    <i class="fa fa-link fa-2"></i>
+                </a>
+            </div>
+            <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
+                <div ng-switch="item.item_type">
+                    <div ng-switch-when="embed">
+                        <div ng-switch="item.meta.provider_name">
+                            <div ng-switch-when="Twitter">
+                                <lb-twitter-card lb-twitter-content="{{ item.meta.html }}"></lb-twitter-card>
                             </div>
+                            <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
                         </div>
-                        <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
                     </div>
+                    <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
                 </div>
-                <div class="lb-updated-date" ng-show="post._updated !== post.published_date">
-                    Updated <span ng-bind="post._updated | prettifyIsoDate"></span>
-                </div>
+            </div>
+            <div class="lb-updated-date ng-cloak" ng-show="post._updated !== post.published_date">
+                Updated <span ng-bind="post._updated | prettifyIsoDate"></span>
             </div>
         </article>
     </section>

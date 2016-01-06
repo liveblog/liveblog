@@ -5,7 +5,6 @@
     function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink) {
 
         var POSTS_PER_PAGE = config.settings.postsPerPage;
-        var SHOW_AUTHOR = config.settings.showAuthor;
         var PERMALINK_DELIMITER = config.settings.permalinkDelimiter || '?';
         var DEFAULT_ORDER = 'editorial'; // newest_first, oldest_first or editorial
         var UPDATE_EVERY = 10*1000; // retrieve update interval in millisecond
@@ -32,7 +31,6 @@
             loading: true,
             finished: false,
             settings: config.settings,
-            showAuthor: SHOW_AUTHOR,
             orderBy: function(order_by) {
                 vm.loading = true;
                 vm.finished = false;

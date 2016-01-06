@@ -64,6 +64,21 @@
             "help": "Show the author avatar on posts"
         },
         {
+            "name": "authorNameFormat",
+            "label": "Author name format",
+            "type": "select",
+            "default": "display_name",
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "options": [
+                {"value": "display_name", "label": "Full name"},
+                {"value": "byline", "label": "Byline"},
+                {"value": "sign_off", "label": "Sign off"}
+            ],
+            "help": "How to show the author name"
+        },
+        {
             "name": "permalinkDelimiter",
             "label": "Permalink delimiter",
             "type": "select",
