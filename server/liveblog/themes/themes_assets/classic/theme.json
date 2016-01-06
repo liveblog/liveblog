@@ -29,6 +29,13 @@
             "help": "Set the number of posts you want to see at the initialization"
         },
         {
+            "name": "infinitScroll",
+            "label": "Use infinit scroll to load more pages",
+            "type": "checkbox",
+            "default": true,
+            "help": "if true, more pages are automatically loaded when the bottom of the page is reached. Otherwise a button is added at the bottom of the posts list"
+        },
+        {
             "name": "showImage",
             "label": "Show the blog image",
             "type": "checkbox",

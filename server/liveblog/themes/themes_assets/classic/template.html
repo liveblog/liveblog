@@ -37,7 +37,7 @@
     <section
         class="lb-posts list-group"
         infinite-scroll="timeline.fetchNewPage()"
-        infinite-scroll-disabled="!timeline.isAllowedToLoadMore()"
+        infinite-scroll-disabled="!timeline.settings.infinitScroll && timeline.isAllowedToLoadMore()"
         infinite-scroll-immediate-check="false">
         <article lb-post
                  ng-repeat="post in timeline.pagesManager.allPosts() track by post._id"
@@ -82,5 +82,7 @@
             </div>
         </article>
     </section>
+    <button ng-click="timeline.fetchNewPage()"
+            ng-if="!timeline.settings.infinitScroll && timeline.isAllowedToLoadMore()" trans>Load more posts</button>
     <div class="loading" ng-show="timeline.loading">Loading</div>
 </div>

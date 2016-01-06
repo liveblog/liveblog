@@ -31,6 +31,31 @@ ul {
 ol {
     list-style-type: decimal;
 }
+button {
+    display: table;
+    margin: auto;
+    padding: 15px 45px;
+    font-size: 18px;
+    font-family: "Roboto";
+    line-height: 1;
+    appearance: none;
+    box-shadow: none;
+    color: #5ea9c8;
+    background: rgba(0,0,0,0);
+    cursor: pointer;
+    border: solid 3px #5ea9c8;
+}
+button:focus {outline: none}
+button:hover,
+button.hover {
+    border-color: #346392;
+    color: #346392;
+}
+button:active,
+button.active {
+    border-color: #27496d;
+    color: #27496d;
+}
 .lb-timeline {
     clear: both;
     background-color: white;
@@ -92,6 +117,7 @@ ol {
 }
 .lb-posts {
     clear: both;
+    margin-bottom: 20px;
 }
 .lb-post {
     position: relative;
