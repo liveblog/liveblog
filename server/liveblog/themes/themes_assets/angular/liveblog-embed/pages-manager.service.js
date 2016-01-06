@@ -310,7 +310,7 @@
                 /**
                  * Set the initial order (see self.SORTS)
                  */
-                sort: sort || 'editorial',
+                sort: sort || config.settings.postOrder,
                 /**
                  * Change the order in the future posts request, remove exising post and load a new page
                  */

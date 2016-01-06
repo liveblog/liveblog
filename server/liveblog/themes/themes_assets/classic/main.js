@@ -6,7 +6,7 @@
 
         var POSTS_PER_PAGE = config.settings.postsPerPage;
         var PERMALINK_DELIMITER = config.settings.permalinkDelimiter || '?';
-        var DEFAULT_ORDER = 'editorial'; // newest_first, oldest_first or editorial
+        var DEFAULT_ORDER = config.settings.postOrder; // newest_first, oldest_first or editorial
         var UPDATE_EVERY = 10*1000; // retrieve update interval in millisecond
         var vm = this;
         var pagesManager = new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER),

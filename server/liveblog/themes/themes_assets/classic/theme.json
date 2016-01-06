@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "2.1.6",
+    "version": "2.2.0",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type" : "git",
@@ -27,6 +27,17 @@
             "type": "number",
             "default": 20,
             "help": "Set the number of posts you want to see at the initialization"
+        },
+        {
+            "name": "postOrder",
+            "label": "Default posts order of the timeline",
+            "type": "select",
+            "options": [
+                {"value": "editorial", "label": "Editorial"},
+                {"value": "newest_first", "label": "Newest first"},
+                {"value": "oldest_first", "label": "Oldest first"}
+            ],
+            "default": "editorial"
         },
         {
             "name": "infinitScroll",
