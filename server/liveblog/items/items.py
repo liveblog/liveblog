@@ -53,13 +53,12 @@ class ItemsResource(ArchiveResource):
         'name': {
             'type': 'string',
             'minlength': 1,
+            'maxlength': 30
+        },
+        'content': {
+            'type': 'string',
+            'minlength': 1,
             'maxlength': 300
-        },
-        'recaptcha_challenge_field': {
-            'type': 'string'
-        },
-        'recaptcha_response_field': {
-            'type': 'string'
         },
         'meta': {
             'type': 'dict'

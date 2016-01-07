@@ -94,7 +94,7 @@ Feature: Client modules operations
         """
         When we post to "client_items"
         """
-        [{"name": "Foo Bar", "contents": ["just a small comment"], "blog": "#blogs._id#"}]
+        [{"name": "Foo Bar", "content": "just a small comment", "blog": "#blogs._id#"}]
         """
         When we post to "/client_comments"
         """

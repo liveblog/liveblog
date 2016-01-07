@@ -18,7 +18,7 @@
         }
 
         // set the value of illustration "srcset" attribute
-        if (angular.isDefined(config.blog.picture)) {
+        if (config.blog.picture) {
             config.blog.picture_srcset = _.values(config.blog.picture.renditions).map(
                 function(r) {
                     return r.href + ' ' + r.width + 'w';

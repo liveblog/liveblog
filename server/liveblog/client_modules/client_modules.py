@@ -6,6 +6,7 @@ from superdesk.users.services import UsersService
 from superdesk.metadata.utils import item_url
 from flask import current_app as app
 from liveblog.items.items import ItemsResource, ItemsService
+from flask import request
 
 
 class ClientUsersResource(UsersResource):
@@ -95,7 +96,8 @@ class ClientCommentsResource(PostsResource):
 class ClientCommentsService(PostsService):
     def on_create(self, docs):
         for doc in docs:
-            doc['post_status'] = 'comment'
+            if request.method == 'POST':
+                doc['post_status'] = 'comment'
         super().on_create(docs)
 
 

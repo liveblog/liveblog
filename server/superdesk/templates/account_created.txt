@@ -1,15 +1,17 @@
-Hi there,
+Dear {{first_name}},
 
-Someone created a {{app_name}} user account for you. Your username is {{username}}.
-Please go to {{url}} and complete your profile.
+Someone has created a {{app_name}} user account for you with username {{user.username}} and this email address.
+Please visit {{url}} to choose your password.
 
-This link expires after 7 days.
+The above link expires in one week (168 hours).
 
-Please ignore this email if you think your {{app_name}} account was created in error.
+Next time you want to use {{app_name}}, please go to {{instance_url}} and log in as {{username}} with your password.
+See our User manual on http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/ to help you get started.
 
-Thanks,
+Please ignore this email if you think your {{app_name}} account was created by mistake.
+
+Happy blogging,
 The {{app_name}} Team
 
 {{app_name}} is developed by Sourcefabric and the {{app_name}} community.
-
-http://sourcefabric.org
+Learn more: https://www.sourcefabric.org/en/liveblog/

@@ -14,7 +14,7 @@ define([
     'use strict';
 
     angular.module('liveblog.blog', [])
-    .service('blogService', ['api', '$q', '$rootScope', function(api, $q, $rootScope) {
+    .service('blogService', ['api', '$q', '$rootScope', 'config', function(api, $q, $rootScope, config) {
         function update(blog, updated) {
             return api.blogs.update(blog, updated);
         }
@@ -36,21 +36,26 @@ define([
         **/
         function getPublicUrl(blog) {
             var deferred = $q.defer();
-            // if the blog contains the url, returns it
-            if (blog.public_url) {
-                deferred.resolve(blog.public_url);
+            // for debug purpose
+            if (!blog.public_url && config.debug) {
+                deferred.resolve('http://localhost:5000/embed/' + blog._id);
             } else {
-                // otherwise, listen for websocket notifications regarding publication
-                var notif_listener = $rootScope.$on('blog', function updateBlogAndResolve(e, data) {
-                    if (data.blog_id === blog._id && data.published === 1) {
-                        // update the blog property
-                        blog.public_url = data.public_url;
-                        // unbind the listener
-                        notif_listener();
-                        // return the url
-                        deferred.resolve(blog.public_url);
-                    }
-                });
+                // if the blog contains the url, returns it
+                if (blog.public_url) {
+                    deferred.resolve(blog.public_url);
+                } else {
+                    // otherwise, listen for websocket notifications regarding publication
+                    var notif_listener = $rootScope.$on('blog', function updateBlogAndResolve(e, data) {
+                        if (data.blog_id === blog._id && data.published === 1) {
+                            // update the blog property
+                            blog.public_url = data.public_url;
+                            // unbind the listener
+                            notif_listener();
+                            // return the url
+                            deferred.resolve(blog.public_url);
+                        }
+                    });
+                }
             }
             return deferred.promise;
         }

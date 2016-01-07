@@ -41,7 +41,7 @@ describe('Themes Manager', function() {
             return themeManager.themes.count().then(function(count) {
                 return count === 4;
             });
-        });
+        }, 10000);
         themeManager.themes.then(function(themes) {
             expect(themes.length).toBe(4);
             // actual-dog
@@ -60,6 +60,19 @@ describe('Themes Manager', function() {
             .themes.then(function(newThemes) {
                 expect(newThemes.length).toEqual(themes.length - 1);
             });
+        });
+    });
+
+    it('can change theme settings', function() {
+        themeManager.openThemesManager()
+        .themes
+        .then(function(themes) {
+            themeManager.openSettingsForTheme(0);
+            element(by.css('[name="postsPerPage"]')).clear().sendKeys('111');
+            themeManager.saveSettings();
+            browser.waitForAngular();
+            themeManager.openSettingsForTheme(0);
+            expect(element(by.css('[name="postsPerPage"]')).getAttribute('value')).toEqual('111');
         });
     });
 });
