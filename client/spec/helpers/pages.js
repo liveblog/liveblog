@@ -169,13 +169,13 @@ function ThemesManagerPage() {
     self.openSettingsForTheme = function(themeIndex) {
         self.themes.get(themeIndex).element(self.bySettings).click();
         browser.wait(function() {
-            return element(by.css('[name="themeSettingsForm"]')).isDisplayed();
+            return element(by.css('[name="vm.themeSettingsForm"]')).isDisplayed();
         });
         return self;
     };
 
     self.saveSettings = function() {
-        element(by.css('[name="themeSettingsForm"]')).element(by.buttonText('Submit')).click();
+        element(by.css('[name="vm.themeSettingsForm"]')).element(by.buttonText('Done')).click();
         return self;
     };
 

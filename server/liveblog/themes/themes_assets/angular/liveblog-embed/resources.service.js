@@ -11,7 +11,7 @@
             CacheFactory.createCache('blogsCache', CACHE_OPTIONS);
         }
         return $resource(config.api_host + 'api/client_blogs/:blogId', {blogId: config.blog._id},{
-            'get': { 
+            'get': {
                 method:'GET',
                 cache: CacheFactory.get('blogsCache'),
                 transformResponse: function(blog) {
