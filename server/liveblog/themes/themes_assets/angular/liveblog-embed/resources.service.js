@@ -56,7 +56,7 @@
                     // decode json
                     posts = angular.fromJson(posts);
                     posts._items.forEach(function(post) {
-                        post.mainItem = post.groups[1].refs[0].item;
+                        post.mainItem = _completeUser(post.groups[1].refs[0].item);
                         post.fullDetails = _.reduce(post.groups[1].refs, function(is, val) {
                             return is || _.isUndefined(val.item.name);
                         }, false);
