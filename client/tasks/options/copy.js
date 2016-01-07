@@ -13,6 +13,17 @@ module.exports = {
             ]
         }]
     },
+    tmp: {
+        files: [{
+            expand: true,
+            dot: true,
+            cwd: '<%= tmpDir %>',
+            dest: '<%= distDir %>',
+            src: [
+                'scripts/lb-templates.js'
+            ]
+        }]
+    },
     docs: {
         files: [{
             expand: true,

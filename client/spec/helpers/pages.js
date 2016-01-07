@@ -150,6 +150,7 @@ function ThemesManagerPage() {
     self.blogsRows = element.all(by.repeater('blog in vm.selectedTheme.blogs'));
     self.fileThemeElement = element(by.css('#uploadAThemeFile'));
     self.byRemove = by.css('[ng-click="vm.removeTheme(theme)"]');
+    self.bySettings = by.css('[ng-click="vm.openThemeSettings(theme)"]');
     self.byPreview = by.css('[ng-click="vm.openThemePreview(theme)"]');
 
     self.openThemesManager = function() {
@@ -163,6 +164,19 @@ function ThemesManagerPage() {
 
     self.setAsDefault = function(theme_index) {
         return self.themes.get(theme_index).element(by.css('[ng-click="vm.makeDefault(theme)"]')).click();
+    };
+
+    self.openSettingsForTheme = function(themeIndex) {
+        self.themes.get(themeIndex).element(self.bySettings).click();
+        browser.wait(function() {
+            return element(by.css('[name="vm.themeSettingsForm"]')).isDisplayed();
+        });
+        return self;
+    };
+
+    self.saveSettings = function() {
+        element(by.css('[name="vm.themeSettingsForm"]')).element(by.buttonText('Done')).click();
+        return self;
     };
 
     self.remove = function(theme_index) {

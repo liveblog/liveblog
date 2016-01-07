@@ -33,6 +33,7 @@
             $scope.blogMembers = [];
         }
         clearCreateBlogForm();
+        $scope.isAdmin = blogSecurityService.isAdmin;
         $scope.isUserAllowedToCreateABlog = blogSecurityService.canCreateABlog;
         $scope.isUserAllowedToOpenBlog = blogSecurityService.canAccessBlog;
         $scope.cancelCreate = function() {

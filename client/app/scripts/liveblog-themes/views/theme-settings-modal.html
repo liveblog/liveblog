@@ -1,0 +1,34 @@
+<div sd-modal="" data-model="vm.modalOpened" class="theme-settings-modal" macro-team="">
+    <div class="modal-header">
+        {{ 'Theme Settings' | translate }} : {{ vm.theme.label }}
+        <button class="close" ng-click="vm.modalOpened = false">⨯</button>
+    </div>
+    <div class="modal-body">
+        <div ng-if="vm.optionsAreloading" trans>Options are loading...</div>
+        <form ng-if="!vm.optionsAreloading" name="vm.themeSettingsForm">
+            <div ng-repeat="option in vm.options" ng-if="vm.optionRequirementIsSatisfied(option)">
+                <div class="form-group">
+                    <label ng-bind="option.label"></label>
+                    <div ng-switch="option.type">
+                        <div ng-switch-when="select">
+                            <select class="form-control"
+                                    name="{{ option.name }}"
+                                    ng-model="vm.settings[option.name]"
+                                    ng-options="option.value as option.label for option in option.options">
+                            </select>
+                        </div>
+                        <div ng-switch-default>
+                            <input type="{{ option.type }}" name="{{ option.name }}" ng-model="vm.settings[option.name]" />
+                        </div>
+                    </div>
+                    <div ng-messages="vm.themeSettingsForm[option.name].$error" style="color:maroon" role="alert">
+                        <div ng-message="number" trans>You did not enter a number</div>
+                    </div>
+                    <p class="help-block" ng-bind="option.help"></p>
+                </div>
+            </div>
+            <button ng-click="vm.submitSettings()" type="submit" class="btn btn-primary" ng-disabled="vm.themeSettingsForm.$invalid || !vm.themeSettingsForm.$dirty">Save</button>
+            <button ng-click="vm.submitSettings(true)" type="submit" class="btn btn-primary" ng-disabled="vm.themeSettingsForm.$invalid || !vm.themeSettingsForm.$dirty">Done</button>
+        </form>
+    </div>
+</div>

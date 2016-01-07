@@ -54,10 +54,10 @@
             <div class="about-page-text">
                 <p>
                     <div style="font-weight: 700" translate>
-                        Live Blog 3.0.2
+                        Live Blog 3.0.3
                     </div>
                     <div translate>
-                        Released on 14/12/2015
+                        Released on 07/01/2016
                     </div>
                 </p>
                 <p translate>
@@ -89,6 +89,7 @@
     <script src="scripts/bower_components/bootstrap/dist/js/bootstrap.js"></script>
 
     <script src="scripts/bower_components/angular/angular.js"></script>
+    <script src="scripts/bower_components/angular-messages/angular-messages.min.js"></script>
     <script src="scripts/bower_components/gridster/dist/jquery.gridster.with-extras.js"></script>
     <script src="scripts/bower_components/medium-editor/dist/js/medium-editor.js"></script>
     <script src="scripts/bower_components/ment.io/dist/mentio.js"></script>
@@ -164,12 +165,13 @@
     <script src="scripts/liveblog-bloglist/module.js"></script>
     <script src="scripts/liveblog-settings/module.js"></script>
     <script src="scripts/liveblog-themes/module.js"></script>
+    <script src="scripts/liveblog-themes/theme-settings-modal.js"></script>
     <!-- endbuild -->
 
     <!-- build:js scripts/templates.js -->
     <script src="scripts/bower_components/superdesk/client/app/scripts/templates-cache.js"></script>
-    <script src="scripts/lb-templates.js"></script>
     <!-- endbuild -->
+    <script src="scripts/lb-templates.js"></script>
 
     <!-- build:js scripts/config.js -->
     <script src="scripts/config.js"></script>
@@ -217,7 +219,8 @@
             'superdesk.monitoring',
             'superdesk.loading',
             'superdesk.templates-cache',
-            'lb.templates'
+            'lb.templates',
+            'ngMessages'
         ];
 
         require([

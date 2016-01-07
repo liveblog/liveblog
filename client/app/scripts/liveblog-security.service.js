@@ -52,6 +52,7 @@ angular.module('liveblog.security', [])
         }
         return {
             goToSettings: goToSettings,
+            isAdmin: isAdmin,
             isUserOwnerOrAdmin: isUserOwnerOrAdmin,
             isUserOwnerOrCanPublishAPost: isUserOwnerOrCanPublishAPost,
             canAccessSettings: canAccessSettings,
