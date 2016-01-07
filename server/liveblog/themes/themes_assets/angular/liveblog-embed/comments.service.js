@@ -120,6 +120,7 @@
                     });
                 },
                 link: function(scope, elem, attrs) {
+                    scope.comment = false;
                     scope.$watch('comment', scope.toggle);
                 }
             };

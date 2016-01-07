@@ -70,17 +70,16 @@
                          <div ng-repeat="item in post.items track by item.item._id" class="lb-item-{{ item.item.item_type }}">
                            <div class="lb-post__holder" ng-if="post.fullDetails && !$first">
                                <div class="lb-post__figure">
-                                    <figure ng-class="{
-                                        'active': (post.order === reorderPost.order || post.order === keepHighlighted),
-                                        'unread': functionize(postsListCtrl.isUnreadPost)(post)
-                                    }">
-                                        <img class="ng-isolate-scope" data-src="post.user.picture_url" sd-user-avatar="">
+                                    <figure ng-class="{'avatar': (item.item.item_type !== 'comment'),
+                                                       'avatar-comment': (item.item.item_type === 'comment')}"
+                                    >
+                                        <img class="ng-isolate-scope" data-src="item.item.user.picture_url" sd-user-avatar="">
                                     </figure>
                                 </div>
                                 <div class="lb-post__content">
                                     <div class="lb-post__header">
                                         <div class="inline">
-                                            <span class="name">{{ ::post.user.display_name }}</span> | <time>{{ post.published_date | reldate }}</time>
+                                            <span class="name">{{ ::item.item.user.display_name }}</span> | <time>{{ item.item.published_date | reldate }}</time>
                                         </div>
                                         <div class="inline" ng-if="post.published_date && post._updated !== post.published_date">
                                             <span class="updated-label" translate>Updated</span> <time class="updated-time">{{ post._updated | reldate }}</time>
