@@ -34,8 +34,8 @@ ol {
 button {
     display: table;
     margin: auto;
-    padding: 15px 45px;
-    font-size: 18px;
+    padding: 5px 25px;
+    font-size: 16px;
     font-family: "Roboto";
     line-height: 1;
     appearance: none;
@@ -114,6 +114,15 @@ button.active {
     position: absolute;
     right: 10px;
     top: 5px;
+}
+.load-new-posts {
+    font-size: 1.2em;
+    text-align: center;
+    color: #5ea9c8;
+    cursor: pointer;
+}
+.load-new-posts:hover {
+    background-color: rgba(94, 169, 200, 0.11);
 }
 .lb-posts {
     clear: both;

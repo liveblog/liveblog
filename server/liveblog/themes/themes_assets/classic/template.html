@@ -37,8 +37,16 @@
     <section
         class="lb-posts list-group"
         infinite-scroll="timeline.fetchNewPage()"
-        infinite-scroll-disabled="!timeline.settings.infinitScroll && timeline.isAllowedToLoadMore()"
+        infinite-scroll-disabled="!timeline.settings.infinitScroll || !timeline.isAllowedToLoadMore()"
         infinite-scroll-immediate-check="false">
+        <div class="lb-post load-new-posts"
+             ng-click="timeline.applyUpdates()"
+             ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0">
+            <ng-pluralize count="timeline.newPosts.length"
+                when="{'one': 'See one new post',
+                'other': 'See {} new posts'}">
+            </ng-pluralize>
+        </div>
         <article lb-post
                  ng-repeat="post in timeline.pagesManager.allPosts() track by post._id"
                  class="lb-post list-group-item ng-cloak"
@@ -83,6 +91,7 @@
         </article>
     </section>
     <button ng-click="timeline.fetchNewPage()"
+            class="ng-cloak"
             ng-if="!timeline.settings.infinitScroll && timeline.isAllowedToLoadMore()" trans>Load more posts</button>
     <div class="loading" ng-show="timeline.loading">Loading</div>
 </div>

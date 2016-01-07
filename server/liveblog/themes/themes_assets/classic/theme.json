@@ -40,6 +40,13 @@
             "default": "editorial"
         },
         {
+            "name": "loadNewPostsManually",
+            "label": "User needs to click a button to retrieve the new posts",
+            "type": "checkbox",
+            "default": true,
+            "help": "Otherwise they will be loaded periodically"
+        },
+        {
             "name": "infinitScroll",
             "label": "Use infinit scroll to load more pages",
             "type": "checkbox",

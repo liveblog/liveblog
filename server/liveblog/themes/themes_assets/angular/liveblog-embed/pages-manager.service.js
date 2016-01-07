@@ -336,6 +336,10 @@
                  */
                 retrieveUpdate: retrieveUpdate,
                 /**
+                 * Apply the given updates to the posts list
+                 */
+                applyUpdates: applyUpdates,
+                /**
                  * Return all the posts from the local pages
                  */
                 allPosts: function () {
