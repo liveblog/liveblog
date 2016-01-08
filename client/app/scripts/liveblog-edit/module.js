@@ -625,7 +625,17 @@ define([
                 }
             }
         });
-    }]).config(['embedlyServiceProvider', 'embedServiceProvider', 'config', function(embedlyServiceProvider, embedServiceProvider, config) {
+    }])
+    .filter('fix_http_protocol', ['config', function fixProtocol(config) {
+        return function getRelativeProtocol(text) {
+            var absoluteProtocol = RegExp(/http(s)?:\/\//ig);
+            var serverpath = config.server.url.split('//').pop();
+            config.server.url.replace(absoluteProtocol, '//');
+            text.replace(absoluteProtocol, '//')
+            return text.replace(absoluteProtocol, '//')
+        };
+        }])
+    .config(['embedlyServiceProvider', 'embedServiceProvider', 'config', function(embedlyServiceProvider, embedServiceProvider, config) {
         embedlyServiceProvider.setKey(config.embedly.key);
         embedServiceProvider.setConfig('facebookAppId', config.facebookAppId);
     }]).run(['$q', 'embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',

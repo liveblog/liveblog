@@ -466,7 +466,6 @@ define([
                 },
                 toHTML: function() {
                     var data = this.retrieveData();
-                    data.media._url = data.media._url.replace(/^http:\/\//i, 'https://');
                     var srcset = '';
                     _.forEach(data.media.renditions, function(value) {
                         srcset += ', ' + value.href + ' ' + value.width + 'w';
