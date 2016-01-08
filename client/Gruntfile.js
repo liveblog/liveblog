@@ -57,9 +57,8 @@ module.exports = function (grunt) {
         'clean',
         'style',
         'template:mock',
-        'connect:mock',
         'ngtemplates',
-        'watch'
+        'connect:mock' // nothing will be run after that
     ]);
     grunt.registerTask('server:travis', ['clean', 'style', 'template:travis', 'connect:travis']);
 

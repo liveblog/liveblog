@@ -62,10 +62,11 @@
                             </dl>
                         </div>
                         <div class="side">
-                            <div ng-hide="vm.isDefaultTheme(theme)">
+                            <div ng-style="{'visibility': (vm.isDefaultTheme(theme) && 'hidden') || 'visible'}">
                                 <button ng-disabled="vm.hasChildren(theme)" ng-click="vm.removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
                                 <button ng-if="!theme.abstract" ng-click="vm.makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
                             </div>
+                            <button ng-click="vm.openThemeSettings(theme)" class="btn btn-info pull-right" type="button" translate>Settings</button>
                         </div>
                         <div class="default-theme" ng-show="vm.isDefaultTheme(theme)"></div>
                     </div>
@@ -87,7 +88,10 @@
     <div class="modal-body">
         <div  ng-hide="vm.selectedBlog">
             <ul class="theme-blogs">
-                <li ng-repeat="blog in vm.selectedTheme.blogs" ng-click="vm.switchBlogPreview(blog)">{{blog.title}}</li>
+                <li ng-repeat="blog in vm.selectedTheme.blogs" ng-click="vm.switchBlogPreview(blog)">
+                    {{ blog.title }}
+                    <a ng-href="{{ blog.iframe_url }}" target="_blank"><i class="icon-share"></i></a>
+                </li>
             <ul>
         </div>
         <div ng-show="vm.selectedBlog">
@@ -110,3 +114,5 @@
             full-height-offset-bottom="50"/>
     </div>
 </div>
+
+<theme-settings-modal theme="vm.themeSettingsModalTheme" ng-if="vm.themeSettingsModalTheme"></theme-settings-modal>

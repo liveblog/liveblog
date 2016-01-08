@@ -10,10 +10,10 @@ module.exports = function(grunt) {
         if (forceUrl) {
             server = url;
         }
-
         var config = {
             raven: {dsn: process.env.SUPERDESK_RAVEN_DSN || ''},
             server: {url: server, ws: ws},
+            debug: grunt.option('debug-mode') || false,
             embedly: {
                 key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
             },

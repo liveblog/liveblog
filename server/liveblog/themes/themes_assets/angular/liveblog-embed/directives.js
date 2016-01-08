@@ -36,7 +36,7 @@
                         var newWidth = elem.innerWidth();
                         iframe
                             .width(newWidth)
-                            .height(newWidth * iframe.data('aspectRatio'))
+                            .height(newWidth * iframe.data('aspectRatio'));
                     }
                     angular.element($window).bind('resize', _.debounce(resize, 1000));
                 }
@@ -50,7 +50,7 @@
                 }
             };
         }])
-        .directive('lbGenericEmbed', ['$timeout', function($timeout) {
+        .directive('lbGenericEmbed', ['$timeout', '$window', function($timeout, $window) {
             return {
                 scope: {
                     item: '='
@@ -67,8 +67,7 @@
                     '</article>'
                 ].join(''),
                 link: function(scope, element) {
-                    scope.isEmbedCode = angular.isDefined(scope.item.meta.html);
-                    if (!scope.isEmbedCode) {
+                    var resize = function resize() {
                         // update the min-height, depending of the image ratio
                         $timeout(function() {
                             var imageWidth = element.find('.item--embed__illustration').width();
@@ -77,8 +76,13 @@
                                 element.find('.item--embed').css('min-height', minHeight);
                             }
                         });
+                    };
+                    scope.isEmbedCode = angular.isDefined(scope.item.meta.html);
+                    if (!scope.isEmbedCode) {
+                        resize();
+                        angular.element($window).bind('resize', _.debounce(resize, 1000));
                     }
                 }
             };
-        }])
+        }]);
 })(angular);
