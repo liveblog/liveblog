@@ -83,3 +83,41 @@ Feature: Client modules operations
         """
         {"username": "foo"}
         """
+
+	@auth
+    Scenario: Posting a comment
+        Given empty "posts"
+        Given empty "items"
+        Given "blogs"
+        """
+        [{"guid": "blog-1", "title": "test_blog_comment"}]
+        """
+        When we post to "client_items"
+        """
+        [{"name": "Foo Bar", "content": "just a small comment", "blog": "#blogs._id#"}]
+        """
+        When we post to "/client_comments"
+        """
+        {	"blog": "#blogs._id#",
+        	"groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "headline": "comment post",
+                            "residRef": "#client_items._id#",
+                            "slugline": "awesome comment"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ],
+            "guid": "tag:example.com,0000:newsml_BRE9A605"
+        }
+        """
+        When we get "/client_comments"
+        Then we get list with 1 items
+        """
+        {"_items": [{"original_creator": "", "post_status": "comment", "blog": "#blogs._id#"}]}
+        """
