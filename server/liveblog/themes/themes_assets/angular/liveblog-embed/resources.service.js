@@ -57,10 +57,17 @@
                     posts = angular.fromJson(posts);
                     posts._items.forEach(function(post) {
                         post.mainItem = _completeUser(post.groups[1].refs[0].item);
-                        post.fullDetails = _.reduce(post.groups[1].refs, function(is, val) {
+                        post.comments = _.reduce(post.groups[1].refs, function(is, val) {
                             return is || _.isUndefined(val.item.name);
                         }, false);
-                        // add all the items directly in a `items` pmainroperty
+                        // check if `fullDetails` flag is needed
+                        // comments items set falg to true.
+                        post.fullDetails = post.comments;
+                        // special cases for comments.
+                        post.showUpdate = (post._updated !== post.published_date) && 
+                                           !post.comments && (post.mainItem.item_type !== 'comment');
+
+                        // add all the items directly in a `items` property
                         if (angular.isDefined(post.groups[1])) {
                             post.items = post.groups[1].refs.map(function(item) {
                                 if(post.fullDetails) {
