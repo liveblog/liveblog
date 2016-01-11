@@ -626,7 +626,7 @@ define([
             }
         });
     }])
-    .filter('fix_http_protocol', ['config', function fixProtocol(config) {
+    .filter('convertLinksWithRelativeProtocol', ['config', function fixProtocol(config) {
         return function getRelativeProtocol(text) {
             var absoluteProtocol = RegExp(/http(s)?:\/\//ig);
             var serverpath = config.server.url.split('//').pop();
