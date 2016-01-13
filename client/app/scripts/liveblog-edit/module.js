@@ -634,7 +634,7 @@ define([
             text.replace(absoluteProtocol, '//')
             return text.replace(absoluteProtocol, '//')
         };
-        }])
+    }])
     .config(['embedlyServiceProvider', 'embedServiceProvider', 'config', function(embedlyServiceProvider, embedServiceProvider, config) {
         embedlyServiceProvider.setKey(config.embedly.key);
         embedServiceProvider.setConfig('facebookAppId', config.facebookAppId);
