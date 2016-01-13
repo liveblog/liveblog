@@ -59,7 +59,7 @@
                     '            </div>',
                     '        </div>',
                     '        <div ng-show="form">',
-                    '            <form name="comment">',
+                    '            <form name="comment" novalidate ng-submit="send();">',
                     '                <div class="content">',
                     '                    <div class="modal-header">',
                     '                        <h2>Post a comment</h2>',
@@ -67,24 +67,24 @@
                     '                    <div class="modal-body">',
                     '                        <fieldset>',
                     '                            <div class="field">',
-                    '                                <label for="comment-name">Name *</label>',
-                    '                                <input name="commentName" ng-model="name" minlength="3" maxlength="30" required>',
+                    '                                <label for="comment-name">Name *{{ name.length }}</label>',
+                    '                                <input name="commentName" ng-model="name">',
                     '                                <div role="alert">',
-                    '                                    <span class="error" ng-show="comment.commentName.$error.minlength">Please fill in your Name.</span>',
+                    '                                    <span class="error" ng-show="name.length < 3">Please fill in your Name.</span>',
                     '                                </div>',
                     '                            </div>',
                     '                            <div class="field">',
                     '                                <label for="comment-content">Comment *</label>',
-                    '                                <textarea minlength="3" maxlength="300" name="commentContent" ng-model="content"  required></textarea>',
+                    '                                <textarea maxlength="300" name="commentContent" ng-model="content"></textarea>',
                     '                                <div role="alert">',
-                    '                                    <span class="error" ng-show="comment.commentContent.$error.minlength">Please fill in your Comment.</span>',
+                    '                                    <span class="error" ng-show="content.length < 3">Please fill in your Comment.</span>',
                     '                                </div>',
                     '                            </div>',
                     '                        </fieldset>',
                     '                    </div>',
                     '                    <div class="modal-footer">',
                     '                        <button class="btn" ng-click="toggle();"><span>Cancel</span></button>',
-                    '                        <button class="btn btn-primary" ng-click="send();"><span>Send</span></button>',
+                    '                        <button type="submit" class="btn btn-primary"><span>Send</span></button>',
                     '                    </div>',
                     '                </div>',
                     '            </form>',
@@ -98,19 +98,30 @@
                         modal: true,
                         notify: false,
                         form: true,
+                        reset: function() {
+                            if (!vm.form) {
+                                vm.name = undefined;
+                                vm.content = undefined;
+                            };
+                        },
                         toggle: function() {
                             vm.modal = !vm.modal;
                             vm.form = !vm.form;
+                            vm.reset();
                         },
                         send: function() {
+                            if( !vm.name || vm.name.length < 3 || !vm.content || vm.content.length <3) {
+                                vm.name = (vm.name === undefined)? '' : vm.name;
+                                vm.content = (vm.content === undefined)? '' : vm.content;
+                                return false;
+                            }
                             commentsManager.send({
                                 name: vm.name,
                                 contents: [vm.content]
                             }).then(function(){
                                 vm.notify = 'sended';
                                 vm.form = false;
-                                vm.name = '';
-                                vm.content = '';
+                                vm.reset();
                                 $timeout(function(){
                                     vm.notify = false;
                                     vm.modal = false;

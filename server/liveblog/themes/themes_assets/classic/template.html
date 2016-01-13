@@ -73,7 +73,7 @@
                 </div>
                 <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
                     <div ng-if="post.fullDetails && !$first" class="list-group-item">
-                        <div class="content-item" ng-class="{show-author': timeline.showAuthor">
+                        <div class="content-item" ng-class="{'show-author': timeline.showAuthor}">
                             <figure ng-class="{'lb-avatar': (item.item_type !== 'comment'),
                                                'lb-avatar-comment': (item.item_type === 'comment')}"
                                     ng-if="timeline.showAuthor">

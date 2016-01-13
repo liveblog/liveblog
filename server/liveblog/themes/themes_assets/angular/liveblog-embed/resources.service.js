@@ -43,9 +43,9 @@
         function _completeUser(obj) {
             if (obj.name) {
                 obj.original_creator = {display_name: obj.name};
-            } else {
+            } else if(obj.original_creator !== "" && obj.original_creator !== 'None'){
                 users.get({userId: obj.original_creator}, function(user) {
-                    obj.original_creator = user;
+                    obj.original_creator = user._items? user._items[0] : user;
                 });
             }
             return obj;
