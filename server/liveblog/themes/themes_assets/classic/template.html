@@ -80,7 +80,7 @@
                                 <img ng-src="{{ item.original_creator.picture_url }}"/>
                             </figure>
                             <div class="lb-creator">
-                                <div class="lb-post-date" ng-bind="item.created_date | prettifyIsoDate"></div>
+                                <div class="lb-post-date" ng-bind="item._created | prettifyIsoDate"></div>
                                 <div class="lb-user-info" ng-bind="item.original_creator.display_name"></div>
                             </div>
                             <div class="lb-item">

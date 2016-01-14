@@ -32,7 +32,7 @@
                     deferred.reject('Try again later!');
                 });
                 return deferred.promise;
-            }
+            };
         }
 
         // return the Comments Manager constructor
@@ -115,12 +115,12 @@
                                 vm.content = (vm.content === undefined)? '' : vm.content;
                                 return false;
                             }
+                            vm.notify = 'sended';
+                            vm.form = false;
                             commentsManager.send({
                                 name: vm.name,
                                 contents: [vm.content]
                             }).then(function(){
-                                vm.notify = 'sended';
-                                vm.form = false;
                                 vm.reset();
                                 $timeout(function(){
                                     vm.notify = false;
