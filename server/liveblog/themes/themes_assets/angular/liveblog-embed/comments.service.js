@@ -67,7 +67,7 @@
                     '                    <div class="modal-body">',
                     '                        <fieldset>',
                     '                            <div class="field">',
-                    '                                <label for="comment-name">Name *{{ name.length }}</label>',
+                    '                                <label for="comment-name">Name *</label>',
                     '                                <input name="commentName" ng-model="name">',
                     '                                <div role="alert">',
                     '                                    <span class="error" ng-show="name.length < 3">Please fill in your Name.</span>',
