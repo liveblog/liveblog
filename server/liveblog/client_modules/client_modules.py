@@ -7,6 +7,7 @@ from superdesk.metadata.utils import item_url
 from flask import current_app as app
 from liveblog.items.items import ItemsResource, ItemsService
 from flask import request
+from superdesk.utc import utcnow
 
 
 class ClientUsersResource(UsersResource):
@@ -98,6 +99,7 @@ class ClientCommentsService(PostsService):
         for doc in docs:
             if request.method == 'POST':
                 doc['post_status'] = 'comment'
+                doc['published_date'] = utcnow()
         super().on_create(docs)
 
 
