@@ -171,7 +171,7 @@ class PostsService(ArchiveService):
         post.update(updates)
         self.check_post_permission(post)
         # when publishing, put the published item from drafts and contributions at the top of the timeline
-        if updates.get('post_status') == 'open' and original.get('post_status') in ('draft', 'submitted'):
+        if updates.get('post_status') == 'open' and original.get('post_status') in ('draft', 'submitted', 'comment'):
             updates['order'] = self.get_next_order_sequence(original.get('blog'))
             # if you publish a post it will save a published date and register who did it
             updates['published_date'] = utcnow()
