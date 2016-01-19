@@ -310,7 +310,7 @@
                 /**
                  * Set the initial order (see self.SORTS)
                  */
-                sort: sort || 'editorial',
+                sort: sort || config.settings.postOrder,
                 /**
                  * Change the order in the future posts request, remove exising post and load a new page
                  */
@@ -335,6 +335,10 @@
                  * Return the latest available updates
                  */
                 retrieveUpdate: retrieveUpdate,
+                /**
+                 * Apply the given updates to the posts list
+                 */
+                applyUpdates: applyUpdates,
                 /**
                  * Return all the posts from the local pages
                  */

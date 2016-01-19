@@ -9,9 +9,14 @@
             modalOpened: angular.isDefined(vm.theme),
             settings: angular.copy(vm.theme.settings) || {},
             options: [],
-            submitSettings: function() {
+            submitSettings: function(shouldClose) {
                 api.themes.update(vm.theme, {settings: vm.settings}).then(function(data) {
-                    vm.closeModal();
+                    vm.settings = angular.copy(data.settings);
+                    // reset the dirty state to false
+                    vm.themeSettingsForm.$setPristine();
+                    if (shouldClose) {
+                        vm.closeModal();
+                    }
                 }, function(error) {
                     notify.error(error.data._error.message);
                 });
@@ -19,6 +24,21 @@
             closeModal: function() {
                 vm.modalOpened = false;
                 vm.theme = undefined;
+            },
+            /**
+             * Check if the option requirements are satified through the `dependsOn` property
+             * @param {object} option
+             * @returns {boolean} true if the option `dependsOn` are satisfied
+             */
+            optionRequirementIsSatisfied: function(option) {
+                if (!angular.isDefined(option.dependsOn)) {
+                    return true;
+                }
+                var isSatisfied = true;
+                angular.forEach(option.dependsOn, function(value, key) {
+                    isSatisfied = isSatisfied && vm.settings[key] === value;
+                });
+                return isSatisfied;
             }
         });
         // Initialization
