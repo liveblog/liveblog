@@ -20,7 +20,7 @@
                     <div class="inline">
                         <span class="name">{{ ::post.mainItem.item.user.display_name }}</span> | <time>{{ post.published_date | reldate }}</time>
                     </div>
-                    <div class="inline" ng-if="post.published_date && post._updated !== post.published_date">
+                    <div class="inline" ng-if="post.showUpdate">
                         <span class="updated-label" translate>&nbsp;Updated</span> <time class="updated-time">{{ post._updated | reldate }}</time>
                     </div>
                     <div class="lb-post__actions">
@@ -79,10 +79,7 @@
                                 <div class="lb-post__content">
                                     <div class="lb-post__header">
                                         <div class="inline">
-                                            <span class="name">{{ ::item.item.user.display_name }}</span> | <time>{{ item.item.published_date | reldate }}</time>
-                                        </div>
-                                        <div class="inline" ng-if="post.published_date && post._updated !== post.published_date">
-                                            <span class="updated-label" translate>Updated</span> <time class="updated-time">{{ post._updated | reldate }}</time>
+                                            <span class="name">{{ ::item.item.user.display_name }}</span> | <time>{{ ::(item.item.meta._created || item.item._created) | reldate }}</time>
                                         </div>
                                     </div>
                                     <div lb-bind-html html-content="{{ item.item.text }}" class="lb-post__item"></div>

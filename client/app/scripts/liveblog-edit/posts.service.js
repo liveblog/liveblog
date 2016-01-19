@@ -100,11 +100,17 @@ define([
                 multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
                 // add a `mainItem` field containing the first item
                 mainItem: post.groups[1].refs[0],
-                items: post.groups[1].refs,
-                fullDetails: _.reduce(post.groups[1].refs, function(is, val) {
-                    return is || _.isUndefined(val.item.name);
-                }, false)
+                items: post.groups[1].refs
             });
+            post.comments = _.reduce(post.groups[1].refs, function(is, val) {
+                return is || _.isUndefined(val.item.name);
+            }, false);
+            // check if `fullDetails` flag is needed
+            // comments items set falg to true.
+            post.fullDetails = post.comments;
+            // special cases for comments.
+            post.showUpdate = (post._updated !== post.published_date) &&
+                               !post.comments && (post.mainItem.item.item_type !== 'comment');
             angular.forEach(post.items, function(val) {
                 if (val.item.contents) {
                     val.item.text = val.item.contents[0];

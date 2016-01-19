@@ -581,7 +581,8 @@ define([
                     var data = this.getData();
                     return {
                         text: data.text,
-                        name: data.name
+                        name: data.name,
+                        _created: data._created
                     }
                 }
             });
