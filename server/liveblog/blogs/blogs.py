@@ -62,6 +62,12 @@ blogs_schema = {
     'blog_preferences': {
         'type': 'dict'
     },
+    'theme-settings': {
+        'type': 'list',
+            'schema': {
+                'type': 'dict'
+            }
+    },
     'public_url': {
         'type': 'string'
     }
@@ -133,6 +139,11 @@ class BlogService(BaseService):
             prefs = global_prefs.copy()
             prefs.update(doc.get('blog_preferences', {}))
             doc['blog_preferences'] = prefs
+            my_theme = get_resource_service('themes').find_one(req=None, name=doc['blog_preferences']['theme'])
+            doc['theme-settings'] = []
+            for option in my_theme['options']:
+                doc['theme-settings'].append(option.copy())
+
 
     def on_created(self, docs):
         for blog in docs:
