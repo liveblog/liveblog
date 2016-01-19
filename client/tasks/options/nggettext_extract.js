@@ -1,7 +1,7 @@
 module.exports = {
     pot: {
         files: {
-            '<%= poDir %>/superdesk.pot': '<%= appDir %>/scripts/superdesk*/**/*.{html,js}'
+            '<%= poDir %>/liveblog.pot': '<%= appDir %>/scripts/liveblog*/**/*.{html,js}'
         }
     }
 };
