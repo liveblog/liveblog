@@ -174,6 +174,16 @@ class ThemesService(BaseService):
                         theme['screenshot_url'] = superdesk.upload.url_for_media(file_id)
         previous_theme = self.find_one(req=None, name=theme.get('name'))
         if previous_theme:
+            blogs = get_resource_service('blogs').get(req=None, lookup={'blog_preferences.theme': previous_theme['name']})
+            default_theme_settings = get_resource_service('themes').get_default_settings(theme)
+            default_prev_theme_settings = get_resource_service('themes').get_default_settings(previous_theme)
+            for blog in blogs:
+                for value in set(blog['theme_settings']):
+                    for value in default_prev_theme_settings:
+                        if blog['theme_settings'][value] != default_prev_theme_settings[value]:
+                            blog['theme_settings'][value] = blog['theme_settings'][value]
+                        else:
+                            blog['theme_settings'][value] = default_theme_settings[value]
             if force_update:
                 blogs_updated = self.publish_related_blogs(theme)
                 self.replace(previous_theme['_id'], theme, previous_theme)
@@ -199,6 +209,10 @@ class ThemesService(BaseService):
     def on_updated(self, updates, original):
         # Republish the related blogs if the settings have been changed
         if 'settings' in updates:
+#             blogs = get_resource_service('blogs').get(req=None, lookup={'blog_preferences.theme': original['name']})
+#             updated_theme = get_resource_service('themes').find_one(req=None, name = original['name'])
+#             for blog in blogs:
+#                 blog['theme_settings'] = updated_theme['settings']
             self.publish_related_blogs(original)
 
     def on_delete(self, deleted_theme):

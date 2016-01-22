@@ -62,11 +62,8 @@ blogs_schema = {
     'blog_preferences': {
         'type': 'dict'
     },
-    'theme-settings': {
-        'type': 'list',
-            'schema': {
-                'type': 'dict'
-            }
+    'theme_settings': {
+        'type': 'dict'
     },
     'public_url': {
         'type': 'string'
@@ -115,7 +112,7 @@ def send_email_to_added_members(blog, recipients, origin):
 
 @celery.task(soft_time_limit=1800)
 def publish_blog_embed_on_s3(blog_id, safe=True):
-    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)  
     if blog['blog_preferences'].get('theme', False):
         try:
             public_url = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
@@ -139,11 +136,13 @@ class BlogService(BaseService):
             prefs = global_prefs.copy()
             prefs.update(doc.get('blog_preferences', {}))
             doc['blog_preferences'] = prefs
+            doc['theme_settings'] = {}
+            # find the theme that is assigned to the blog
             my_theme = get_resource_service('themes').find_one(req=None, name=doc['blog_preferences']['theme'])
-            doc['theme-settings'] = []
-            for option in my_theme['options']:
-                doc['theme-settings'].append(option.copy())
-
+            # retrieve the default settings of the theme
+            default_theme_settings = get_resource_service('themes').get_default_settings(my_theme)
+            # save the theme settings on the blog level
+            doc['theme_settings'] = default_theme_settings
 
     def on_created(self, docs):
         for blog in docs:
