@@ -164,6 +164,7 @@ define([
                 embedService: embedService,
                 // provide an uploader to the editor for media (custom sir-trevor image block uses it)
                 uploader: function(file, success_callback, error_callback) {
+                    $scope.actionPending = true;
                     var handleError = function(response) {
                         // call the uploader callback with the error message as parameter
                         error_callback(response.data? response.data._message : undefined);
@@ -179,6 +180,7 @@ define([
                             if (response.data._issues) {
                                 return handleError(response);
                             }
+                            $scope.actionPending = false;
                             // used in `SirTrevor.Blocks.Image` to fill in the block content.
                             var media_meta = {
                                 _info: config.server.url + response.data._links.self.href,
