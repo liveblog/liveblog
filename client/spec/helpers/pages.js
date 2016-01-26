@@ -228,6 +228,7 @@ function BlogPage(blogs) {
     var self = this;
     self.blogs = blogs;
     self.drafts = new DraftsPage(self);
+    self.comments = new CommentsPage(self);
     self.contributions = new ContributionsPage(self);
     self.settings = new BlogSettingsPage(self);
     self.timeline = new TimelinePage(self);
@@ -237,6 +238,11 @@ function BlogPage(blogs) {
         element(by.css('[ng-click="openPanel(\'drafts\')"]')).click();
         return self.drafts;
     };
+
+    self.openComments = function() {
+        element(by.css('[ng-click="openPanel(\'comments\')"]')).click();
+        return self.comments;
+    }
 
     self.openEditor = function() {
         element(by.css('[ng-click="openPanel(\'editor\')"]')).click();
@@ -316,6 +322,14 @@ function DraftsPage(blog) {
     'use strict';
     var self = this;
     self._class_name = '.panel--draft';
+    AbstractPanelPage.call(self);
+}
+
+CommentsPage.prototype = Object.create(AbstractPanelPage.prototype);
+function CommentsPage(blog) {
+    'use strict';
+    var self = this;
+    self._class_name = '.panel--comments';
     AbstractPanelPage.call(self);
 }
 
