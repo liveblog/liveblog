@@ -195,7 +195,7 @@ class ThemesService(BaseService):
                             new_blog_settings[key] = value
                 # save the blog with the new settings
                 blogs_service.system_update(ObjectId(blog['_id']),
-                                    {'theme_settings': new_blog_settings}, blog)
+                                            {'theme_settings': new_blog_settings}, blog)
             if force_update:
                 blogs_updated = self.publish_related_blogs(theme)
                 self.replace(previous_theme['_id'], theme, previous_theme)
@@ -205,7 +205,6 @@ class ThemesService(BaseService):
         else:
             self.create([theme])
             return dict(status='created', theme=theme)
-
 
     def publish_related_blogs(self, theme):
         terms = []
