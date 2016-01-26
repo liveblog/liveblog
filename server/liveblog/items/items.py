@@ -50,16 +50,6 @@ class ItemsResource(ArchiveResource):
         'item_type': {
             'type': 'string'
         },
-        'name': {
-            'type': 'string',
-            'minlength': 1,
-            'maxlength': 30
-        },
-        'content': {
-            'type': 'string',
-            'minlength': 1,
-            'maxlength': 300
-        },
         'meta': {
             'type': 'dict'
         },

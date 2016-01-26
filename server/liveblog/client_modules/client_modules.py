@@ -71,8 +71,20 @@ class ClientItemsResource(ItemsResource):
     public_item_methods = ['GET', 'POST']
     item_methods = ['GET']
     resource_methods = ['GET', 'POST']
-    schema = {}
-    schema.update(ItemsResource.schema)
+    schema = ItemsResource.schema
+    schema.update(schema)
+    schema.update({
+        'name': {
+            'type': 'string',
+            'minlength': 1,
+            'maxlength': 30
+        },
+        'content': {
+            'type': 'string',
+            'minlength': 1,
+            'maxlength': 300
+        }
+    })
 
 
 class ClientItemsService(ItemsService):
