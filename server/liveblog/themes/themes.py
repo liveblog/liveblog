@@ -185,12 +185,14 @@ class ThemesService(BaseService):
             for blog in blogs:
                 new_theme_settings = {}
                 for key, value in blog['theme_settings'].items():
-                    new_theme_settings = {key: value}
                     # if the values of theme setting from blog level are the same as the settings
                     # from previous theme update the settings we keep them in a new variable
-                if value == default_prev_theme_settings[key]:
-                    new_theme_settings = default_theme_settings
-               
+                    if value == default_prev_theme_settings[key]:
+                        new_theme_settings[key] = value
+                    # otherwise we keep the settings that are already on the blog
+                    else:
+                        default_theme_settings[key] = value
+                new_theme_settings.update(default_theme_settings)
                 blogs_service.system_update(ObjectId(blog['_id']),
                                     {'theme_settings': new_theme_settings}, blog)
             if force_update:
