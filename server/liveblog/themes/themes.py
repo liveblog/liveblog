@@ -181,20 +181,21 @@ class ThemesService(BaseService):
             default_theme_settings = get_resource_service('themes').get_default_settings(theme)
             # retrieve the default settings of the previous theme
             default_prev_theme_settings = get_resource_service('themes').get_default_settings(previous_theme)
-
+            # loops over blogs to update settings and keep custom values
             for blog in blogs:
-                new_theme_settings = {}
+                # initialize the new settings values for the blog based on the new settings
+                new_blog_settings = default_theme_settings.copy()
+                # loop over blog settings
                 for key, value in blog['theme_settings'].items():
-                    # if the values of theme setting from blog level are the same as the settings
-                    # from previous theme update the settings we keep them in a new variable
-                    if value == default_prev_theme_settings[key]:
-                        new_theme_settings[key] = value
-                    # otherwise we keep the settings that are already on the blog
-                    else:
-                        default_theme_settings[key] = value
-                new_theme_settings.update(default_theme_settings)
+                    # if the setting name is part of the new settings
+                    if key in new_blog_settings:
+                        # and if the value is different from the previous theme value (value has been changed)
+                        if value is not default_prev_theme_settings[key]:
+                            # we keep the custom value in the blog settings
+                            new_blog_settings[key] = value
+                # save the blog with the new settings
                 blogs_service.system_update(ObjectId(blog['_id']),
-                                    {'theme_settings': new_theme_settings}, blog)
+                                    {'theme_settings': new_blog_settings}, blog)
             if force_update:
                 blogs_updated = self.publish_related_blogs(theme)
                 self.replace(previous_theme['_id'], theme, previous_theme)
