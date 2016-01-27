@@ -7,6 +7,7 @@ from superdesk.metadata.utils import item_url
 from flask import current_app as app
 from liveblog.items.items import ItemsResource, ItemsService
 from flask import request
+from liveblog.common import check_comment_length
 
 
 class ClientUsersResource(UsersResource):
@@ -71,24 +72,15 @@ class ClientItemsResource(ItemsResource):
     public_item_methods = ['GET', 'POST']
     item_methods = ['GET']
     resource_methods = ['GET', 'POST']
-    schema = ItemsResource.schema
-    schema.update(schema)
-    schema.update({
-        'name': {
-            'type': 'string',
-            'minlength': 1,
-            'maxlength': 30
-        },
-        'content': {
-            'type': 'string',
-            'minlength': 1,
-            'maxlength': 300
-        }
-    })
+    schema = {}
+    schema.update(ItemsResource.schema)
 
 
 class ClientItemsService(ItemsService):
-    pass
+    def on_create(self, docs):
+        for doc in docs:
+            check_comment_length(doc['text'])
+        super().on_create(docs)
 
 
 class ClientCommentsResource(PostsResource):

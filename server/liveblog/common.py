@@ -3,6 +3,7 @@ import superdesk
 from superdesk.utc import utcnow
 from superdesk.celery_app import update_key
 import unittest
+from superdesk.errors import SuperdeskApiError
 
 
 def get_user(required=False):
@@ -15,6 +16,11 @@ def get_user(required=False):
 def update_dates_for(doc):
     for item in ['firstcreated', 'versioncreated']:
         doc.setdefault(item, utcnow())
+
+
+def check_comment_length(text):
+    if not 1 <= len(text) <= 5:
+        raise SuperdeskApiError(payload='Allowed length: between 1 and 300. You exceeded the allowed length')
 
 
 class BlogCache(object):
