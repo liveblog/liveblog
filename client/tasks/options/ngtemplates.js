@@ -11,6 +11,10 @@ module.exports = {
                 collapseWhitespace: true,
                 collapseBooleanAttributes: true
             },
+            url: function(url) {
+                'use strict';
+                return url.replace('bower_components/superdesk/client/app/scripts/', '');
+            },
             bootstrap:  function(module, script) {
                 'use strict';
                 return '"use strict";' +

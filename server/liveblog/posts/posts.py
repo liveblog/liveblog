@@ -12,6 +12,8 @@ import flask
 from superdesk.utc import utcnow
 from superdesk.users.services import current_user_has_privilege
 from superdesk.errors import SuperdeskApiError
+from liveblog.common import check_comment_length
+
 
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
@@ -166,6 +168,10 @@ class PostsService(ArchiveService):
         push_notification('posts', created=True, post_status=doc['post_status'], post_ids=post_ids)
 
     def on_update(self, updates, original):
+        # in the case we have a comment
+        if original['post_status'] == 'comment':
+            # if the length of the comment is not between 1 and 300 then we get an error
+            check_comment_length(original['groups'][1]['refs'][0]['item']['text'])
         # check permission
         post = original.copy()
         post.update(updates)
