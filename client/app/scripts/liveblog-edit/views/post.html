@@ -12,7 +12,10 @@
             </div>
             <div class="lb-post__content">
                 <div class="lb-post__header">
-                    <div class="inline">
+                    <div ng-if="post.post_status != 'open'">
+                        <span class="name">{{ ::post.user.display_name }}</span> | <time>{{ post._created | reldate }}</time>
+                    </div>
+                    <div ng-if="post.post_status == 'open'">
                         <span class="name">{{ ::post.user.display_name }}</span> | <time>{{ post.published_date | reldate }}</time>
                     </div>
                     <div class="inline" ng-if="post.published_date && post._updated !== post.published_date">
