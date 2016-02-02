@@ -291,6 +291,7 @@ button.active {
 .lb-posts {
     clear: both;
     margin-bottom: 20px;
+    position: relative;
 }
 .lb-post {
     position: relative;
