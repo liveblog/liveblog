@@ -147,18 +147,16 @@ class BlogService(BaseService):
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
         # check if the current user has permission to open a blog
-        user = get_user()
-        if user:
-            if not is_admin(get_user()):
-                # get members ids
-                members = [str(m['user']) for m in doc.get('members', [])]
-                # add owner id to members
-                members.append(doc.get('original_creator'))
-                # check if current user belongs to members, and raise an exeption if not
-                if str(get_user().get('_id')) not in members:
-                    roles = get_resource_service('roles').find_one(req=None, _id=get_user().get('role'))
-                    if not roles:
-                        raise SuperdeskApiError.forbiddenError(message='you do not have permission to open this blog')
+        if not is_admin(get_user()):
+            # get members ids
+            members = [str(m['user']) for m in doc.get('members', [])]
+            # add owner id to members
+            members.append(doc.get('original_creator'))
+            # check if current user belongs to members, and raise an exeption if not
+            if str(get_user().get('_id')) not in members:
+                roles = get_resource_service('roles').find_one(req=None, _id=get_user().get('role'))
+                if not roles:
+                    raise SuperdeskApiError.forbiddenError(message='you do not have permission to open this blog')
         return doc
 
     def on_update(self, updates, original):

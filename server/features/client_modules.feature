@@ -84,21 +84,26 @@ Feature: Client modules operations
         {"username": "foo"}
         """
 
-	@auth
     Scenario: Posting a comment
-        Given empty "posts"
-        Given empty "items"
-        Given "blogs"
+        Given "client_blogs"
         """
         [{"guid": "blog-1", "title": "test_blog_comment"}]
         """
-        When we post to "client_items"
+        Given empty "client_items"
+       	When we post to "/client_items"
         """
-        [{"name": "Foo Bar", "content": "just a small comment", "blog": "#blogs._id#"}]
+        [
+         {"text": "test item comment", "nickname": "ana", "blog_id": "#client_blogs._id#"}
+        ]
+        """
+        And we get "/client_items/#client_items._id#"
+        Then we get existing resource
+        """
+        {"text": "test item comment", "nickname": "ana"}
         """
         When we post to "/client_comments"
         """
-        {	"blog": "#blogs._id#",
+        {	"blog_id": "#client_blogs._id#",
         	"groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
@@ -119,5 +124,5 @@ Feature: Client modules operations
         When we get "/client_comments"
         Then we get list with 1 items
         """
-        {"_items": [{"original_creator": "", "post_status": "comment", "blog": "#blogs._id#"}]}
+        {"_items": [{"original_creator": "", "post_status": "comment", "blog_id": "#client_blogs._id#"}]}
         """
