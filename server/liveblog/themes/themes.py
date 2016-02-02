@@ -196,6 +196,19 @@ class ThemesService(BaseService):
                 # save the blog with the new settings
                 blogs_service.system_update(ObjectId(blog['_id']),
                                             {'theme_settings': new_blog_settings}, blog)
+            # if there was a customization for the theme settings
+            if 'settings' in previous_theme:
+                # one initialize the new settings based on the new theme settings
+                new_theme_settings = default_theme_settings.copy()
+                # loop over the customized settings
+                for key, value in previous_theme['settings'].items():
+                    if key in previous_theme['settings']:
+                        # if the value has changed
+                        if value is not new_theme_settings[key]:
+                            # one keep the customized settings
+                            new_theme_settings[key] = value
+                theme['settings'] = new_theme_settings
+
             if force_update:
                 blogs_updated = self.publish_related_blogs(theme)
                 self.replace(previous_theme['_id'], theme, previous_theme)
