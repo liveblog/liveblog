@@ -164,6 +164,7 @@ define([
                 embedService: embedService,
                 // provide an uploader to the editor for media (custom sir-trevor image block uses it)
                 uploader: function(file, success_callback, error_callback) {
+                    $scope.actionPending = true;
                     var handleError = function(response) {
                         // call the uploader callback with the error message as parameter
                         error_callback(response.data? response.data._message : undefined);
@@ -179,6 +180,7 @@ define([
                             if (response.data._issues) {
                                 return handleError(response);
                             }
+                            $scope.actionPending = false;
                             // used in `SirTrevor.Blocks.Image` to fill in the block content.
                             var media_meta = {
                                 _info: config.server.url + response.data._links.self.href,
@@ -625,7 +627,17 @@ define([
                 }
             }
         });
-    }]).config(['embedlyServiceProvider', 'embedServiceProvider', 'config', function(embedlyServiceProvider, embedServiceProvider, config) {
+    }])
+    .filter('convertLinksWithRelativeProtocol', ['config', function fixProtocol(config) {
+        return function getRelativeProtocol(text) {
+            var absoluteProtocol = RegExp(/http(s)?:\/\//ig);
+            var serverpath = config.server.url.split('//').pop();
+            config.server.url.replace(absoluteProtocol, '//');
+            text.replace(absoluteProtocol, '//')
+            return text.replace(absoluteProtocol, '//')
+        };
+    }])
+    .config(['embedlyServiceProvider', 'embedServiceProvider', 'config', function(embedlyServiceProvider, embedServiceProvider, config) {
         embedlyServiceProvider.setKey(config.embedly.key);
         embedServiceProvider.setConfig('facebookAppId', config.facebookAppId);
     }]).run(['$q', 'embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',

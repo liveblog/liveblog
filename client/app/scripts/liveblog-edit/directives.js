@@ -152,6 +152,14 @@ define([
                 };
             }
         ])
+        .directive('lbItem', [function() {
+            return {
+                scope: {
+                    item: '='
+                },
+                templateUrl: 'scripts/liveblog-edit/views/item.html',
+            }
+        }])
         .directive('lbPost', [
             'notify', 'gettext', 'asset', 'postsService', 'modal', 'blogSecurityService', '$document',
             function(notify, gettext, asset, postsService, modal, blogSecurityService, $document) {
