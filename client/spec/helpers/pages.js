@@ -242,7 +242,7 @@ function BlogPage(blogs) {
     self.openComments = function() {
         element(by.css('[ng-click="openPanel(\'comments\')"]')).click();
         return self.comments;
-    }
+    };
 
     self.openEditor = function() {
         element(by.css('[ng-click="openPanel(\'editor\')"]')).click();

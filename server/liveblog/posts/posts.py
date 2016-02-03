@@ -230,7 +230,7 @@ class BlogPostsService(ArchiveService):
 
     def get(self, req, lookup):
         if lookup.get('blog_id'):
-            lookup['blog'] = ObjectId(lookup['blog_id'])
+            lookup['blog_id'] = ObjectId(lookup['blog_id'])
             del lookup['blog_id']
         docs = super().get(req, lookup)
         for doc in docs:
