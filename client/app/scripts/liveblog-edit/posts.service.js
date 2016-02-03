@@ -84,8 +84,8 @@ define([
             return retrievePosts(blog_id, posts_criteria);
         }
         function _completeUser(obj) {
-            if (obj.name) {
-                obj.user = {display_name: obj.name};
+            if (obj.commenter) {
+                obj.user = {display_name: obj.commenter};
             } else {
                 userList.getUser(obj.original_creator).then(function(user) {
                     obj.user = user;
@@ -102,19 +102,16 @@ define([
                 mainItem: post.groups[1].refs[0],
                 items: post.groups[1].refs
             });
-            post.comments = _.reduce(post.groups[1].refs, function(is, val) {
-                return is || _.isUndefined(val.item.name);
+            // if an item has a commenter then that post hasComments.
+            post.hasComments = _.reduce(post.groups[1].refs, function(is, val) {
+                return is || _.isUndefined(val.item.commenter);
             }, false);
-            // check if `fullDetails` flag is needed
-            // comments items set falg to true.
-            post.fullDetails = post.comments;
+            // `fullDetails` is a business logic that can be compiled from other objects.
+            post.fullDetails = post.hasComments;
             // special cases for comments.
             post.showUpdate = (post._updated !== post.published_date) &&
-                               !post.comments && (post.mainItem.item.item_type !== 'comment');
+                               !post.hasComments && (post.mainItem.item.item_type !== 'comment');
             angular.forEach(post.items, function(val) {
-                if (val.item.contents) {
-                    val.item.text = val.item.contents[0];
-                }
                 if (post.fullDetails) {
                     _completeUser(val.item);
                 }
@@ -181,7 +178,7 @@ define([
                             text: item.text,
                             meta: item.meta,
                             item_type: item.item_type,
-                            name: item.meta && item.meta.name
+                            commenter: item.meta && item.meta.commenter
                         };
                     }
                     dfds.push(api.items.save(item));

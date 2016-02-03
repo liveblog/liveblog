@@ -41,8 +41,8 @@
     Posts.$inject = ['$resource', 'config', 'users'];
     function Posts($resource, config, users) {
         function _completeUser(obj) {
-            if (obj.name) {
-                obj.original_creator = {display_name: obj.name};
+            if (obj.commenter) {
+                obj.original_creator = {display_name: obj.commenter};
             } else if(obj.original_creator !== "" && obj.original_creator !== 'None'){
                 users.get({userId: obj.original_creator}, function(user) {
                     obj.original_creator = user._items? user._items[0] : user;
@@ -57,15 +57,15 @@
                     posts = angular.fromJson(posts);
                     posts._items.forEach(function(post) {
                         post.mainItem = _completeUser(post.groups[1].refs[0].item);
-                        post.comments = _.reduce(post.groups[1].refs, function(is, val) {
-                            return is || _.isUndefined(val.item.name);
+                        // if an item has a commenter then that post hasComments.
+                        post.hasComments = _.reduce(post.groups[1].refs, function(is, val) {
+                            return is || _.isUndefined(val.item.commenter);
                         }, false);
-                        // check if `fullDetails` flag is needed
-                        // comments items set falg to true.
-                        post.fullDetails = post.comments;
+                        // `fullDetails` is a business logic that can be compiled from other objects.
+                        post.fullDetails = post.hasComments;
                         // special cases for comments.
                         post.showUpdate = (post._updated !== post.published_date) && 
-                                           !post.comments && (post.mainItem.item_type !== 'comment');
+                                           !post.hasComments && (post.mainItem.item_type !== 'comment');
 
                         // add all the items directly in a `items` property
                         if (angular.isDefined(post.groups[1])) {
