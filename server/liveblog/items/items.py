@@ -56,7 +56,7 @@ class ItemsResource(ArchiveResource):
         'deleted': {
             'type': 'string'
         },
-        'name': {
+        'nickname': {
             'type': 'string',
             'minlength': 1,
             'maxlength': 30

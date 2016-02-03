@@ -8,6 +8,7 @@ from flask import current_app as app
 from liveblog.items.items import ItemsResource, ItemsService
 from flask import request
 from liveblog.common import check_comment_length
+from superdesk.resource import Resource
 
 
 class ClientUsersResource(UsersResource):
@@ -72,7 +73,9 @@ class ClientItemsResource(ItemsResource):
     public_item_methods = ['GET', 'POST']
     item_methods = ['GET']
     resource_methods = ['GET', 'POST']
-    schema = {}
+    schema = {
+        'blog_id': Resource.rel('client_blogs', True)
+    }
     schema.update(ItemsResource.schema)
 
 
@@ -93,7 +96,9 @@ class ClientCommentsResource(PostsResource):
     public_item_methods = ['GET', 'POST']
     item_methods = ['GET']
     resource_methods = ['GET', 'POST']
-    schema = {}
+    schema = {
+        'blog_id': Resource.rel('client_blogs', True)
+    }
     schema.update(PostsResource.schema)
 
 
