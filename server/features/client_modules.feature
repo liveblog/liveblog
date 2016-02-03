@@ -93,13 +93,13 @@ Feature: Client modules operations
        	When we post to "/client_items"
         """
         [
-         {"text": "test item comment", "nickname": "ana", "blog_id": "#client_blogs._id#"}
+         {"text": "test item comment", "commenter": "ana", "blog_id": "#client_blogs._id#"}
         ]
         """
         And we get "/client_items/#client_items._id#"
         Then we get existing resource
         """
-        {"text": "test item comment", "nickname": "ana"}
+        {"text": "test item comment", "commenter": "ana"}
         """
         When we post to "/client_comments"
         """

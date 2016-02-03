@@ -12,14 +12,26 @@
              */
             this.send = function(data) {
                 var deferred = $q.defer();
-                data.blog = config.blog._id;
+                data.blog_id = config.blog._id;
                 data.item_type = 'comment';
                 itemsService.save(data).$promise.then(function(dataItem) {
                     if (dataItem._status === 'ERR'){
                         deferred.reject('Try again later!')
                         return;
                     }
-                    var comment = {"post_status":"comment","blog":config.blog._id,"groups":[{"id":"root","refs":[{"idRef":"main"}],"role":"grpRole:NEP"},{"id":"main","refs":[{"residRef":dataItem._id}],"role":"grpRole:Main"}]};
+                    var comment = {
+                            "post_status": "comment",
+                            "blog_id": config.blog._id,
+                            "groups": [{
+                                "id": "root",
+                                "refs": [{"idRef":"main"}],
+                                "role": "grpRole:NEP"
+                            },{
+                                "id": "main",
+                                "refs": [{"residRef": dataItem._id}],
+                                "role":"grpRole:Main"}
+                            ]
+                        };
                     commentsService.save(comment).$promise.then(function(dataComment) {
                         if (dataComment._status === 'ERR'){
                             deferred.reject('Try again later!')
@@ -67,15 +79,15 @@
                     '                    <div class="modal-body">',
                     '                        <fieldset>',
                     '                            <div class="field">',
-                    '                                <label for="comment-name">Name *</label>',
-                    '                                <input name="commentName" ng-model="name">',
+                    '                                <label for="commenter">Name *</label>',
+                    '                                <input name="commenter" ng-model="commenter">',
                     '                                <div role="alert">',
                     '                                    <span class="error" ng-show="name.length < 3">Please fill in your Name.</span>',
                     '                                </div>',
                     '                            </div>',
                     '                            <div class="field">',
-                    '                                <label for="comment-content">Comment *</label>',
-                    '                                <textarea maxlength="300" name="commentContent" ng-model="content"></textarea>',
+                    '                                <label for="content">Comment *</label>',
+                    '                                <textarea name="content" ng-model="content"></textarea>',
                     '                                <div role="alert">',
                     '                                    <span class="error" ng-show="content.length < 3">Please fill in your Comment.</span>',
                     '                                </div>',
@@ -100,7 +112,7 @@
                         form: true,
                         reset: function() {
                             if (!vm.form) {
-                                vm.name = undefined;
+                                vm.commenter = undefined;
                                 vm.content = undefined;
                             };
                         },
@@ -110,16 +122,16 @@
                             vm.reset();
                         },
                         send: function() {
-                            if( !vm.name || vm.name.length < 3 || !vm.content || vm.content.length <3) {
-                                vm.name = (vm.name === undefined)? '' : vm.name;
+                            if( !vm.commenter || vm.commenter.length < 3 || !vm.content || vm.content.length <3) {
+                                vm.commenter = (vm.commenter === undefined)? '' : vm.commenter;
                                 vm.content = (vm.content === undefined)? '' : vm.content;
                                 return false;
                             }
                             vm.notify = 'sended';
                             vm.form = false;
                             commentsManager.send({
-                                name: vm.name,
-                                contents: [vm.content]
+                                commenter: vm.commenter,
+                                text: vm.content
                             }).then(function(){
                                 vm.reset();
                                 $timeout(function(){
