@@ -74,7 +74,7 @@ class ClientItemsResource(ItemsResource):
     item_methods = ['GET']
     resource_methods = ['GET', 'POST']
     schema = {
-        'blog_id': Resource.rel('client_blogs', True)
+        'client_blog': Resource.rel('client_blogs', True)
     }
     schema.update(ItemsResource.schema)
 
@@ -97,7 +97,7 @@ class ClientCommentsResource(PostsResource):
     item_methods = ['GET']
     resource_methods = ['GET', 'POST']
     schema = {
-        'blog_id': Resource.rel('client_blogs', True)
+        'client_blog': Resource.rel('client_blogs', True)
     }
     schema.update(PostsResource.schema)
 

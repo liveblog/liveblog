@@ -229,6 +229,12 @@ class BlogPostsService(ArchiveService):
     custom_hateoas = {'self': {'title': 'Posts', 'href': '/{location}/{_id}'}}
 
     def get(self, req, lookup):
+        imd = req.args.items()
+        for key in imd:
+            if key[1][97:104] == 'comment':
+                if lookup.get('blog_id'):
+                    lookup['client_blog'] = ObjectId(lookup['blog_id'])
+                    del lookup['blog_id']
         if lookup.get('blog_id'):
             lookup['blog'] = ObjectId(lookup['blog_id'])
             del lookup['blog_id']
