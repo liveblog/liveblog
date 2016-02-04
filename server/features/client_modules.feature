@@ -93,17 +93,17 @@ Feature: Client modules operations
        	When we post to "/client_items"
         """
         [
-         {"text": "test item comment", "commenter": "ana", "blog_id": "#client_blogs._id#"}
+         {"text": "test item comment", "commenter": "ana", "client_blog": "#client_blogs._id#"}
         ]
         """
         And we get "/client_items/#client_items._id#"
         Then we get existing resource
         """
-        {"text": "test item comment", "commenter": "ana"}
+        {"text": "test item comment", "commenter": "ana", "client_blog": "#client_blogs._id#"}
         """
         When we post to "/client_comments"
         """
-        {	"blog_id": "#client_blogs._id#",
+        {"client_blog": "#client_blogs._id#",
         	"groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
@@ -124,5 +124,5 @@ Feature: Client modules operations
         When we get "/client_comments"
         Then we get list with 1 items
         """
-        {"_items": [{"original_creator": "", "post_status": "comment", "blog_id": "#client_blogs._id#"}]}
+        {"_items": [{"original_creator": "", "post_status": "comment", "client_blog": "#client_blogs._id#"}]}
         """
