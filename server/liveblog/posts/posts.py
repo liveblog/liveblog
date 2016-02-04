@@ -236,7 +236,7 @@ class BlogPostsService(ArchiveService):
                     lookup['client_blog'] = ObjectId(lookup['blog_id'])
                     del lookup['blog_id']
         if lookup.get('blog_id'):
-            lookup['blog_id'] = ObjectId(lookup['blog_id'])
+            lookup['blog'] = ObjectId(lookup['blog_id'])
             del lookup['blog_id']
         docs = super().get(req, lookup)
         for doc in docs:
