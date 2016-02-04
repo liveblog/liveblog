@@ -927,9 +927,9 @@
     "username": "editor",
     "data": {
         "firstcreated": "2013-11-11T11:11:13+00:00",
-        "blog": "-id blog five-",
-        "contents": ["comment: contents"],
-        "name": "comment: first last",
+        "client_blog": "-id blog five-",
+        "text": "comment: contents",
+        "commenter": "comment: first last",
         "item_type": "comment"
     },
     "id_name": "-blog five id post one item one-"
@@ -939,7 +939,7 @@
     "username": "editor",
     "data": {
         "firstcreated": "2013-11-11T11:11:21+00:00",
-        "blog": "-id blog five-",
+        "client_blog": "-id blog five-",
         "post_status":"comment",
         "groups": [{
                 "id": "root",
