@@ -117,9 +117,16 @@
                             };
                         },
                         toggle: function(status) {
-                            vm.modal = !vm.modal;
-                            vm.form = !vm.form;
-                            vm.reset();
+                            if(vm.notify) {
+                                vm.notify = false;
+                                vm.form = false;
+                                vm.modal = false;
+                                vm.reset();
+                            } else {
+                                vm.modal = !vm.modal;
+                                vm.form = !vm.form;
+                                vm.reset();
+                            }
                         },
                         send: function() {
                             if( !vm.commenter || vm.commenter.length < 3 || !vm.content || vm.content.length <3) {
@@ -135,9 +142,11 @@
                             }).then(function(){
                                 vm.reset();
                                 $timeout(function(){
-                                    vm.notify = false;
-                                    vm.form = true;
-                                    vm.comment = false;
+                                    if(vm.notify) {
+                                        vm.notify = false;
+                                        vm.form = true;
+                                        vm.comment = false;
+                                    }
                                 }, 2500);
                             });
                         }
