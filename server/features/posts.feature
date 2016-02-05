@@ -738,3 +738,52 @@ Feature: Post operations
         """
         {"post_status": "open", "blog": "#blogs._id#", "headline": "my contribution will be published"}
         """
+
+ @auth
+    Scenario: Create a sticky post
+        Given empty "posts"
+        Given empty "items"
+        Given "roles"
+        """
+        [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
+        """
+        Given "users"
+        """
+        [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
+        """
+        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "StickyBlog", "members": [{"user": "#user_foo#"}]}]
+        """
+        When we login as user "foo" with password "barbar"
+        When we post to "items" with success
+        """
+        [{"text": "sticky test", "blog": "#blogs._id#"}]
+        """
+        When we post to "/posts" with success
+        """
+        {
+        "blog": "#blogs._id#",
+        "post_status": "sticky",
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "headline": "sticky post with text",
+                            "residRef": "#items._id#"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+        """
+        And we get "/posts"
+        Then we get list with 1 items
+        """
+        {"_items": [{"highlight": false, "blog": "#blogs._id#", "post_status": "sticky"}]}
+        """
