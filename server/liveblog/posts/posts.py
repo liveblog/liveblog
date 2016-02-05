@@ -170,6 +170,8 @@ class PostsService(ArchiveService):
     def on_update(self, updates, original):
         # in the case we have a comment
         if original['post_status'] == 'comment':
+            original['blog'] = original['groups'][1]['refs'][0]['item']['client_blog']
+            updates['blog'] = original['groups'][1]['refs'][0]['item']['client_blog']
             # if the length of the comment is not between 1 and 300 then we get an error
             check_comment_length(original['groups'][1]['refs'][0]['item']['text'])
         # check permission
