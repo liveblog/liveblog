@@ -82,7 +82,7 @@
                     '                                <label for="commenter">Name *</label>',
                     '                                <input name="commenter" ng-model="commenter">',
                     '                                <div role="alert">',
-                    '                                    <span class="error" ng-show="name.length < 3">Please fill in your Name.</span>',
+                    '                                    <span class="error" ng-show="commenter.length < 3">Please fill in your Name.</span>',
                     '                                </div>',
                     '                            </div>',
                     '                            <div class="field">',
@@ -95,7 +95,7 @@
                     '                        </fieldset>',
                     '                    </div>',
                     '                    <div class="modal-footer">',
-                    '                        <button class="btn" ng-click="toggle();"><span>Cancel</span></button>',
+                    '                        <button class="btn" ng-click="comment=false"><span>Cancel</span></button>',
                     '                        <button type="submit" class="btn btn-primary"><span>Send</span></button>',
                     '                    </div>',
                     '                </div>',
@@ -116,7 +116,7 @@
                                 vm.content = undefined;
                             };
                         },
-                        toggle: function() {
+                        toggle: function(status) {
                             vm.modal = !vm.modal;
                             vm.form = !vm.form;
                             vm.reset();
@@ -136,7 +136,8 @@
                                 vm.reset();
                                 $timeout(function(){
                                     vm.notify = false;
-                                    vm.modal = false;
+                                    vm.form = true;
+                                    vm.comment = false;
                                 }, 2500);
                             });
                         }
