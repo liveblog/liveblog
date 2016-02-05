@@ -79,6 +79,9 @@ button.active {
 .description {
     font-size: 16px;
 }
+.timeline-body {
+    position: relative;
+}   
 .header-bar {
     background-color: #FAFAFA;
     border-top: 2px solid #CBCBCB;
@@ -142,7 +145,7 @@ button.active {
 .modal-backdrop {
     position: absolute;
     background: rgba(255, 255, 255, 0.8);
-    top: -10px;
+    top: 0px;
     left: 0;
     bottom: 0px;
     right: 0;
