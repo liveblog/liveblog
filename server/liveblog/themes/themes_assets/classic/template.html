@@ -64,7 +64,7 @@
                 <div ng-if="timeline.settings.authorNameLinksToEmail"
                      class="lb-author__name">
                     <a href="mailto:{{post.original_creator.email}}"
-                       ng-bind="post.original_creator[timeline.settings.authorNameFormat]"></a>
+                       ng-bind="post.original_creator[timeline.settings.authorNameFormat]" target="_blank"></a>
                 </div>
             </div>
             <div class="lb-post-permalink">
@@ -82,7 +82,7 @@
                             <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
                         </div>
                     </div>
-                    <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
+                    <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
                 </div>
             </div>
             <div class="lb-updated-date ng-cloak" ng-show="post._updated !== post.published_date">
