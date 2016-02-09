@@ -81,7 +81,7 @@ Feature: Themes operations
         """
 
 		@auth
-        Scenario: Overrwrite theme settings 
+        Scenario: Overwrite theme settings 
         Given "themes"
         """
         [{"name": "angular", "version": "1.0.1"}, {"name": "classic", "extends": "angular", "options": [{"name": "postsPerPage", "default": "22"}, {"name": "postOrder", "default": "editorial"}]}]

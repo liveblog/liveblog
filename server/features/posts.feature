@@ -2,6 +2,10 @@ Feature: Post operations
 
     @auth
     Scenario: Create and publish a posts with Editor permissions
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "posts"
         Given empty "items"
         Given "roles"
@@ -16,7 +20,7 @@ Feature: Post operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we post to "items" with success
@@ -48,6 +52,10 @@ Feature: Post operations
 
     @auth
     Scenario: Create posts without permissions
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "posts"
         Given empty "items"
         When we login as user "foo" with password "bar"
@@ -56,7 +64,7 @@ Feature: Post operations
         """
         Given "blogs"
         """
-        [{"title": "TEST_BLOG"}]
+        [{"title": "TEST_BLOG", "blog_preferences": {"theme": "forest", "language": "fr"}}]
         """
         When we post to "items"
         """
@@ -66,6 +74,10 @@ Feature: Post operations
 
     @auth
     Scenario: Create and publish a post with Contributor permissions
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "posts"
         Given empty "items"
         Given "roles"
@@ -80,7 +92,7 @@ Feature: Post operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"title": "Delete blog without being the owner", "blog_preferences": {"theme": "forest", "language": "fr"}, "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we post to "items"
@@ -116,6 +128,10 @@ Feature: Post operations
 
     @auth
     Scenario: Create posts and save it as draft with Contributor permissions
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "posts"
         Given empty "items"
         Given "roles"
@@ -130,7 +146,7 @@ Feature: Post operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we post to "items"
@@ -168,6 +184,10 @@ Feature: Post operations
 
     @auth
     Scenario: Submit posts with Contributor permissions
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "posts"
         Given empty "items"
         Given "roles"
@@ -182,7 +202,7 @@ Feature: Post operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we post to "items"
@@ -219,6 +239,10 @@ Feature: Post operations
 
     @auth
     Scenario: Retrieve posts from blog
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "posts"
         Given empty "items"
         Given "roles"
@@ -233,7 +257,7 @@ Feature: Post operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we post to "items"
@@ -293,6 +317,10 @@ Feature: Post operations
 
     @auth
     Scenario: Patch created post
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "posts"
         Given empty "items"
         Given "roles"
@@ -307,7 +335,7 @@ Feature: Post operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we post to "items"
@@ -389,6 +417,10 @@ Feature: Post operations
 
     @auth
     Scenario: Full scenario to prove cid is working
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "posts"
         Given empty "items"
         Given "roles"
@@ -403,7 +435,7 @@ Feature: Post operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we post to "items"
@@ -470,6 +502,10 @@ Feature: Post operations
 
     @auth
     Scenario: Delete post
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "posts"
         Given "roles"
         """
@@ -483,7 +519,7 @@ Feature: Post operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we post to "items"
@@ -515,6 +551,10 @@ Feature: Post operations
 
     @auth
     Scenario: Delete item from post i.e. update post
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "posts"
         Given empty "items"
         Given "roles"
@@ -529,7 +569,7 @@ Feature: Post operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we post to "items"
@@ -594,9 +634,13 @@ Feature: Post operations
 
 	@auth
     Scenario: Retrieve private drafts
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given "blogs"
     	"""
-        [{"title": "test_blog1"}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "test_blog1"}]
         """
     	Given "users"
     	"""
@@ -629,6 +673,10 @@ Feature: Post operations
 
 	@auth
     Scenario: Post published date
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "posts"
         Given empty "items"
         Given "roles"
@@ -643,7 +691,7 @@ Feature: Post operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we post to "items"
@@ -676,6 +724,10 @@ Feature: Post operations
 
     @auth
     Scenario: Published date on posts that were drafts
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
@@ -684,7 +736,7 @@ Feature: Post operations
         Given we have "user" as type of user
         Given "blogs"
         """
-        [{"title": "test_blog3"}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "test_blog3"}]
         """
         Given "posts"
         """
@@ -714,6 +766,10 @@ Feature: Post operations
 
 	@auth
     Scenario: Published date on posts comming from submitted contributions
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "submit_post": 1}}]
@@ -722,7 +778,7 @@ Feature: Post operations
         Given we have "user" as type of user
         Given "blogs"
         """
-        [{"title": "test_blog3"}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "test_blog3"}]
         """
         Given "posts"
         """

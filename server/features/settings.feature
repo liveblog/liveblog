@@ -32,6 +32,10 @@ Feature: Settings operations
 
     @auth
     Scenario: The blog preference takes the global preferences
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "global_preferences"
         When we post to "/global_preferences"
         """
@@ -45,7 +49,7 @@ Feature: Settings operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "abc", "original_creator": "#user_foo#"}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "abc", "original_creator": "#user_foo#"}]
         """
         When we get "/blogs/#blogs._id#"
         Then we get existing resource
@@ -53,7 +57,7 @@ Feature: Settings operations
         {
             "blog_preferences": {
                 "language": "fr",
-                "theme": "theme1"
+                "theme": "forest"
             }
         }
         """
@@ -61,9 +65,13 @@ Feature: Settings operations
 
     @auth
     Scenario: Update theme preferences for a specific blog
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         When we post to "blogs"
         """
-        [{"title": "abc"}]
+        [{"title": "abc", "blog_preferences": {"theme": "forest", "language": "fr"}}]
         """
         When we patch latest
         """
