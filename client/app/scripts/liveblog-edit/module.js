@@ -637,6 +637,16 @@ define([
             return text.replace(absoluteProtocol, '//')
         };
     }])
+    .filter('outboundAnchors', function() {
+        return function(text) {
+            return text.replace(/<a([^>]*)>/g, function(match, attr) {
+                            if (attr.indexOf('target') === -1) {
+                                return '<a' + attr + ' target="_blank">';
+                            }
+                            return match;
+                        });
+        };
+    })
     .config(['embedlyServiceProvider', 'embedServiceProvider', 'config', function(embedlyServiceProvider, embedServiceProvider, config) {
         embedlyServiceProvider.setKey(config.embedly.key);
         embedServiceProvider.setConfig('facebookAppId', config.facebookAppId);
