@@ -1,0 +1,47 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: Classic Theme\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Language: fr\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: template.html:12
+msgid "Editorial"
+msgstr "Éditorial"
+
+#: template.html:91
+msgid "Load more posts"
+msgstr "Charger plus de messages"
+
+#: template.html:94
+msgid "Loading"
+msgstr "Chargement"
+
+#: template.html:16
+msgid "Newest first"
+msgstr "Le plus récent d'abord"
+
+#: template.html:34
+msgid "No post for now."
+msgstr "Aucun message pour le moment."
+
+#: template.html:20
+msgid "Oldest first"
+msgstr "Plus ancien en premier"
+
+#: template.html:41
+msgid "See one new post"
+msgid_plural "See {{$count}} new posts"
+msgstr[0] "Voir un nouveau poste"
+msgstr[1] "Voir {{$count}} nouveaux messages"
+
+#: template.html:10
+msgid "Sort by:"
+msgstr "Trier par:"

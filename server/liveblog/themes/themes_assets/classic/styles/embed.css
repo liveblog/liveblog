@@ -95,7 +95,6 @@ button.active {
 }
 .sorting-bar__orders {
     float: left;
-    padding-left: 70px;
     margin-right: 90px;
 }
 .sorting-bar__order {
@@ -348,4 +347,14 @@ article blockquote li:before {
        -moz-animation: fadeIt 5s ease-in-out;
          -o-animation: fadeIt 5s ease-in-out;
             animation: fadeIt 5s ease-in-out;
+}
+/* Languages settings */
+.ro .sorting-bar__orders {
+    padding-left: 95px;
+}
+.en .sorting-bar__orders {
+    padding-left: 70px;
+}
+.fr .sorting-bar__orders {
+    padding-left: 50px;
 }

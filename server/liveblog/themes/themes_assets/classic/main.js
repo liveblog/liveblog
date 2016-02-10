@@ -86,7 +86,10 @@
         });
     }
 
-    angular.module('theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll'])
+    angular.module('theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll', 'gettext'])
+        .run(['gettextCatalog', 'config', function (gettextCatalog, config) {
+            gettextCatalog.setCurrentLanguage(config.settings.language);
+        }])
         .controller('TimelineCtrl', TimelineCtrl);
     angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 1000);
 
