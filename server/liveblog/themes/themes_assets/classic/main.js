@@ -19,6 +19,21 @@
             });
         }
 
+        function retrieveBlogSettings() {
+            blogsService.get({}, function(blog) {
+                if (blog.title !== vm.blog.title) {
+                    vm.blog.title = blog.title;
+                }
+                if (blog.description !== vm.blog.description) {
+                    vm.blog.description = blog.description;
+                }
+                //@TODO add the renditions updates once they are provided by the backend
+                if (blog.picture_url !== vm.blog.picture_url) {
+                    vm.blog.picture_url = blog.picture_url;
+                }
+            });
+        }
+
         // set the value of illustration "srcset" attribute
         if (config.blog.picture) {
             config.blog.picture_srcset = _.values(config.blog.picture.renditions).map(
@@ -27,6 +42,7 @@
                 }
             ).join(', ');
         }
+        
         // define view model
         angular.extend(vm, {
             templateDir: config.assets_root,
@@ -75,6 +91,7 @@
         .then(function() {
             vm.permalinkScroll();
             $interval(retrieveUpdate, UPDATE_EVERY);
+            $interval(retrieveBlogSettings, UPDATE_EVERY);
             // listen events from parent
             var fetchNewPageDebounced = _.debounce(vm.fetchNewPage, 1000);
             function receiveMessage(event) {

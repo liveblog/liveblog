@@ -5,22 +5,20 @@
         recycleFreq: 3600000, // 1h
         storageMode: 'localStorage'
     };
-    Blogs.$inject = ['$resource', 'config', 'CacheFactory'];
-    function Blogs($resource, config, CacheFactory) {
-        if (!CacheFactory.get('blogsCache')) {
-            CacheFactory.createCache('blogsCache', CACHE_OPTIONS);
-        }
+    Blogs.$inject = ['$resource', 'config'];
+    function Blogs($resource, config) {
         return $resource(config.api_host + 'api/client_blogs/:blogId', {blogId: config.blog._id},{
             'get': {
                 method:'GET',
-                cache: CacheFactory.get('blogsCache'),
                 transformResponse: function(blog) {
                     blog = angular.fromJson(blog);
-                    var srcset = '';
-                    angular.forEach(blog.picture.renditions, function(value) {
-                        srcset += ', ' + value.href + ' ' + value.width + 'w';
-                    });
-                    blog.picture_srcset = srcset.substring(2);
+                    if (blog.picture) {
+                        var srcset = '';
+                        angular.forEach(blog.picture.renditions, function(value) {
+                            srcset += ', ' + value.href + ' ' + value.width + 'w';
+                        });
+                        blog.picture_srcset = srcset.substring(2); 
+                    }
                     return blog;
                 }
             }
