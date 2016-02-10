@@ -175,7 +175,6 @@ class PostsService(ArchiveService):
         self.check_post_permission(post)
         # when unpining a post from the top of the timeline, it goes in the timeline according to its timestamp
         if updates.get('post_status') == 'open' and original.get('post_status') == 'sticky':
-            print('orig', original)
             updates['published_date'] = original['published_date']
         # when publishing, put the published item from drafts and contributions at the top of the timeline
         if updates.get('post_status') == 'open' and original.get('post_status') in ('draft', 'submitted'):

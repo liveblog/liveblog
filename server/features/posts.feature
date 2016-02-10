@@ -739,7 +739,7 @@ Feature: Post operations
         {"post_status": "open", "blog": "#blogs._id#", "headline": "my contribution will be published"}
         """
 
- @auth
+ 	@auth
     Scenario: Create a sticky post
         Given empty "posts"
         Given empty "items"
@@ -785,5 +785,99 @@ Feature: Post operations
         And we get "/posts"
         Then we get list with 1 items
         """
-        {"_items": [{"highlight": false, "blog": "#blogs._id#", "post_status": "sticky"}]}
+        {"_items": [{"highlight": false, "blog": "#blogs._id#", "post_status": "sticky", "order": 0}]}
         """
+
+    @auth
+    Scenario: Update sticky post and order according to timestamp
+        Given "blogs"
+        """
+        [{"title": "test_blog3"}]
+        """        
+        When we post to "items" with success
+        """
+        [{"text": "open test", "blog": "#blogs._id#"}]
+        """
+        When we post to "/posts" with success
+        """
+        {
+        "blog": "#blogs._id#",
+        "post_status": "open",
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "headline": "open post with text",
+                            "residRef": "#items._id#"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+        """
+        When we post to "items" with success
+        """
+        [{"text": "draft test", "blog": "#blogs._id#"}]
+        """
+        When we post to "/posts" with success
+        """
+        {
+        "blog": "#blogs._id#",
+        "post_status": "draft",
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "headline": "draft post with text",
+                            "residRef": "#items._id#"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+        """
+        When we post to "items" with success
+        """
+        [{"text": "sticky test", "blog": "#blogs._id#"}]
+        """
+         When we post to "/posts" with success
+        """
+        {
+        "blog": "#blogs._id#",
+        "post_status": "sticky",
+            "groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "headline": "sticky post with text",
+                            "residRef": "#items._id#"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ]
+        }
+        """
+        When we get "/posts"
+        Then we get list with 3 items
+        """
+        {"_items": [{"post_status":"sticky", "order": 2}, {"post_status":"open", "order": 0}, {"post_status":"draft", "order": 1}]}
+        """      
+        When we patch "posts/#posts._id#"
+        """
+        {
+            "post_status": "open"
+        }
+        """
+        Then we get new resource
+        """
+        {"post_status": "open", "blog": "#blogs._id#", "order": 2}
+        """   
