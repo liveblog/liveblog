@@ -18,7 +18,7 @@ msgstr "Éditorial"
 
 #: template.html:91
 msgid "Load more posts"
-msgstr "Charger plus de messages"
+msgstr "Afficher plus de messages"
 
 #: template.html:94
 msgid "Loading"
@@ -39,7 +39,7 @@ msgstr "Plus ancien en premier"
 #: template.html:41
 msgid "See one new post"
 msgid_plural "See {{$count}} new posts"
-msgstr[0] "Voir un nouveau poste"
+msgstr[0] "Voir le nouveau message"
 msgstr[1] "Voir {{$count}} nouveaux messages"
 
 #: template.html:10
