@@ -27,9 +27,9 @@
                 if (blog.description !== vm.blog.description) {
                     vm.blog.description = blog.description;
                 }
-                //@TODO add the renditions updates once they are provided by the backend
                 if (blog.picture_url !== vm.blog.picture_url) {
                     vm.blog.picture_url = blog.picture_url;
+                    vm.blog.picture_srcset = blog.picture_srcset;
                 }
             });
         }
@@ -91,7 +91,7 @@
         .then(function() {
             vm.permalinkScroll();
             $interval(retrieveUpdate, UPDATE_EVERY);
-            $interval(retrieveBlogSettings, UPDATE_EVERY);
+            $interval(retrieveBlogSettings, 3 * UPDATE_EVERY);
             // listen events from parent
             var fetchNewPageDebounced = _.debounce(vm.fetchNewPage, 1000);
             function receiveMessage(event) {

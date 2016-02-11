@@ -7,7 +7,7 @@
     };
     Blogs.$inject = ['$resource', 'config'];
     function Blogs($resource, config) {
-        return $resource(config.api_host + 'api/client_blogs/:blogId', {blogId: config.blog._id},{
+        return $resource(config.api_host + 'api/client_blogs/:blogId?embedded={"picture":1}', {blogId: config.blog._id},{
             'get': {
                 method:'GET',
                 transformResponse: function(blog) {
