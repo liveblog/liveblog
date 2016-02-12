@@ -9,7 +9,7 @@
 
 ### Installation
 
-Use [docker-compose](http://fig.sh "") and the config from `docker` folder or build docker images manually from the [Dockerfile](./Dockerfile).
+Use [docker-compose](https://docs.docker.com/compose/ "") and the config from `docker` folder or build docker images manually from the [Dockerfile](./Dockerfile).
 
 ##### install docker
 
