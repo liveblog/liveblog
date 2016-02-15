@@ -79,3 +79,41 @@ Feature: Themes operations
         """
         {"_items": [{"title": "foo blog", "blog_preferences": {"theme": "other-theme"}}]}
         """
+
+        @auth
+        Scenario: Overwrite theme_settings at blog level
+        Given "themes"
+        """
+        [{"name": "angular", "version": "1.0.1"}, {"name": "classic", "extends": "angular", "options": [{"name": "postsPerPage", "default": "22"}, {"name": "postOrder", "default": "editorial"}]}]
+        """
+        When we find for "themes" the id as "my-classic" by "{"name": "classic"}"
+        When we get "/themes"
+        Then we get list with 2 items
+        Given empty "blogs"
+        When we post to "/blogs"
+        """
+        [
+         {"title": "foo blog", "blog_status": "open", "blog_preferences": {"theme": "classic"}}
+        ]
+        """
+        And we get "/blogs"
+        Then we get list with 1 items
+        """
+        {"_items": [{"title": "foo blog", "theme_settings": {"postsPerPage": "22", "postOrder": "editorial"}, "blog_preferences": {"theme": "classic"}}]}
+        """
+        When we patch "/blogs/#blogs._id#"
+        """
+        {"theme_settings": {"postsPerPage": "25"}}
+        """
+        Then we get updated response
+        When we get "/blogs"
+        Then we get list with 1 items
+        """
+        {"_items": [{"title": "foo blog", "theme_settings": {"postsPerPage": "25", "postOrder": "editorial"}}]}
+        """
+        When we register "classic"
+        When we get "/blogs"
+        Then we get list with 1 items
+        """
+        {"_items": [{"title": "foo blog", "theme_settings": {"postsPerPage": "25", "postOrder": "editorial"}}]}
+        """
