@@ -117,3 +117,25 @@ Feature: Themes operations
         """
         {"_items": [{"title": "foo blog", "theme_settings": {"postsPerPage": "25", "postOrder": "editorial"}}]}
         """
+        
+        @auth
+        Scenario: Overwrite default theme_settings
+        Given "themes"
+        """
+        [{"name": "angular", "version": "1.0.1"}, {"name": "classic", "extends": "angular", "options": [{"name": "postsPerPage", "default": "22"}, {"name": "postOrder", "default": "editorial"}]}]
+        """
+        When we find for "themes" the id as "my-classic" by "{"name": "classic"}"
+        When we patch "/themes/#my-classic#"
+        """
+        {"options": [{"name": "postsPerPage", "default": "30"}]}
+        """
+        Then we get new resource
+        """
+        {"name": "classic", "options": [{"name": "postsPerPage", "default": "30"}]}
+        """
+        When we register "classic"
+        And we get "/themes/#my-classic#"
+        Then we get existing resource
+        """
+        {"name": "classic", "options": [{"name": "postsPerPage", "default": "30"}]}
+        """

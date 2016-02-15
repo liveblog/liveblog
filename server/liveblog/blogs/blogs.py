@@ -136,7 +136,6 @@ class BlogService(BaseService):
             prefs = global_prefs.copy()
             prefs.update(doc.get('blog_preferences', {}))
             doc['blog_preferences'] = prefs
-            doc['theme_settings'] = {}
             # find the theme that is assigned to the blog
             my_theme = get_resource_service('themes').find_one(req=None, name=doc['blog_preferences']['theme'])
             # retrieve the default settings of the theme
