@@ -186,7 +186,7 @@ class ThemesService(BaseService):
                 # initialize the new settings values for the blog based on the new settings
                 new_blog_settings = default_theme_settings.copy()
                 # loop over blog settings
-                for key, value in blog['theme_settings'].items():
+                for key, value in blog.get('theme_settings', {}).items():
                     # if the setting name is part of the new settings
                     if key in new_blog_settings:
                         # and if the value is different from the previous theme value (value has been changed)
