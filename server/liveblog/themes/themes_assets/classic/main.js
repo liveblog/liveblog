@@ -21,16 +21,7 @@
 
         function retrieveBlogSettings() {
             blogsService.get({}, function(blog) {
-                if (blog.title !== vm.blog.title) {
-                    vm.blog.title = blog.title;
-                }
-                if (blog.description !== vm.blog.description) {
-                    vm.blog.description = blog.description;
-                }
-                if (blog.picture_url !== vm.blog.picture_url) {
-                    vm.blog.picture_url = blog.picture_url;
-                    vm.blog.picture_srcset = blog.picture_srcset;
-                }
+                angular.extend(vm.blog, blog)
             });
         }
 
