@@ -797,6 +797,10 @@ Feature: Post operations
 
  	@auth
     Scenario: Create a sticky post
+        Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "posts"
         Given empty "items"
         Given "roles"
@@ -811,7 +815,7 @@ Feature: Post operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "StickyBlog", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "StickyBlog", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we post to "items" with success
@@ -846,9 +850,13 @@ Feature: Post operations
 
     @auth
     Scenario: Update sticky post and order according to timestamp
+        Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given "blogs"
         """
-        [{"title": "test_blog3"}]
+        [{"title": "test_blog3", "blog_preferences": {"theme": "forest", "language": "fr"}}]
         """        
         When we post to "items" with success
         """
