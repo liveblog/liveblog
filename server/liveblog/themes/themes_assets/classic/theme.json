@@ -29,8 +29,8 @@
             "type": "select",
             "options": [
                 {"value": "en", "label": "English"},            
-                {"value": "ro", "label": "Romanian"},
-                {"value": "fr", "label": "French"}
+                {"value": "ro", "label": "Română"},
+                {"value": "fr", "label": "Français"}
             ],
             "default": "en"
         },

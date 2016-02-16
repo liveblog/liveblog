@@ -2,48 +2,47 @@ msgid ""
 msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Project-Id-Version: Classic Theme\n"
-"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
-"20)) ? 1 : 2);\n"
+"Project-Id-Version: \n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
-"Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
-"Language: ro\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.8.7\n"
+"Last-Translator: \n"
+"Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
+"Language: cs\n"
 
 #: template.html:12
 msgid "Editorial"
-msgstr "editorial"
+msgstr "podle redakce"
 
 #: template.html:91
 msgid "Load more posts"
-msgstr "Încarcă mai multe posturi"
+msgstr "Načíst další"
 
 #: template.html:94
 msgid "Loading"
-msgstr "Se încarcă"
+msgstr "Načítám"
 
 #: template.html:16
 msgid "Newest first"
-msgstr "cele mai noi"
+msgstr "od nejnovějších"
 
 #: template.html:34
 msgid "No post for now."
-msgstr "Deocamdata nu sunt articole."
+msgstr "Zatím zde nejsou žádné příspěvky."
 
 #: template.html:20
 msgid "Oldest first"
-msgstr "cele mai vechi"
+msgstr "od nejstarších"
 
 #: template.html:41
 msgid "See one new post"
 msgid_plural "See {{$count}} new posts"
-msgstr[0] "Vezi un articol nou"
-msgstr[1] "Vezi {{$count}} articole noi"
-msgstr[2] "Vezi {{$count}} de articole noi"
+msgstr[0] "Zobraz novou aktualizaci"
+msgstr[1] "Zobraz {{$count}} nové aktualizace"
+msgstr[2] "Zobraz {{$count}} nových aktualizací"
 
 #: template.html:10
 msgid "Sort by:"
-msgstr "Ordonează după:"
+msgstr "Řazení:"

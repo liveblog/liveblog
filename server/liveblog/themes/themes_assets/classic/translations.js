@@ -2,6 +2,20 @@
 
 angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
 /* jshint -W100,-W109 */
+  gettextCatalog.setStrings('cs', {
+  "Editorial": "podle redakce",
+  "Load more posts": "Načíst další",
+  "Loading": "Načítám",
+  "Newest first": "od nejnovějších",
+  "No post for now.": "Zatím zde nejsou žádné příspěvky.",
+  "Oldest first": "od nejstarších",
+  "See one new post": [
+    "Zobraz novou aktualizaci",
+    "Zobraz {{$count}} nové aktualizace",
+    "Zobraz {{$count}} nových aktualizací"
+  ],
+  "Sort by:": "Řazení:"
+});
   gettextCatalog.setStrings('fr', {
   "Editorial": "Éditorial",
   "Load more posts": "Charger plus de messages",
@@ -17,15 +31,15 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
 });
   gettextCatalog.setStrings('ro', {
   "Editorial": "editorial",
-  "Load more posts": "Încărca mai multe posturi",
-  "Loading": "Se incarcă",
+  "Load more posts": "Încarcă mai multe posturi",
+  "Loading": "Se încarcă",
   "Newest first": "cele mai noi",
-  "No post for now.": "Deocamdata nu sunt posturi.",
+  "No post for now.": "Deocamdata nu sunt articole.",
   "Oldest first": "cele mai vechi",
   "See one new post": [
-    "Vezi un nou post",
-    "Vezi {{$count}} posturi noi",
-    "Vezi {{$count}} de posturi noi"
+    "Vezi un articol nou",
+    "Vezi {{$count}} articole noi",
+    "Vezi {{$count}} de articole noi"
   ],
   "Sort by:": "Ordonează după:"
 });
