@@ -174,41 +174,57 @@ class ThemesService(BaseService):
                         theme['screenshot_url'] = superdesk.upload.url_for_media(file_id)
         previous_theme = self.find_one(req=None, name=theme.get('name'))
         if previous_theme:
-            blogs_service = get_resource_service('blogs')
-            # retrieve the blog that use the previous theme
-            blogs = blogs_service.get(req=None, lookup={'blog_preferences.theme': previous_theme['name']})
             # retrieve the default settings of the current theme
             default_theme_settings = get_resource_service('themes').get_default_settings(theme)
             # retrieve the default settings of the previous theme
             default_prev_theme_settings = get_resource_service('themes').get_default_settings(previous_theme)
+            # if there was a customization for the theme settings
+            if 'settings' in previous_theme:
+                options = []
+                old_theme_settings = {}
+                # save the existing theme
+                old_theme = previous_theme.copy()
+                # save the old/existing theme settings
+                if old_theme.get('options', False):
+                    options += old_theme.get('options')
+                for option in options:
+                    old_theme_settings[option.get('name')] = option.get('default')
+                    old_theme_settings.update(theme.get('old_theme_settings', {}))
+                # # initialize the theme settings values for the old theme based on the new settings
+                theme_settings = {}
+                # loop over theme settings
+                for key, value in old_theme_settings.items():
+                    # if the settings of previous theme are the same as for the current theme
+                    # we keep them in a new variable
+                    if value == default_prev_theme_settings[key]:
+                        theme_settings[key] = value
+                    # otherwise we keep the settings that are already on the theme
+                    else:
+                        default_theme_settings[key] = value
+                theme_settings.update(default_theme_settings)
+                # save the new theme settings
+                theme['settings'] = theme_settings
+            # theme settings at blog level
+            blogs_service = get_resource_service('blogs')
+            # retrieve the blog that use the previous theme
+            blogs = blogs_service.get(req=None, lookup={'blog_preferences.theme': previous_theme['name']})
             # loops over blogs to update settings and keep custom values
             for blog in blogs:
                 # initialize the new settings values for the blog based on the new settings
-                new_blog_settings = default_theme_settings.copy()
+                new_theme_settings = default_theme_settings.copy()
                 # loop over blog settings
-                for key, value in blog.get('theme_settings', {}).items():
-                    # if the setting name is part of the new settings
-                    if key in new_blog_settings:
-                        # and if the value is different from the previous theme value (value has been changed)
-                        if value is not default_prev_theme_settings[key]:
-                            # we keep the custom value in the blog settings
-                            new_blog_settings[key] = value
+                for key, value in blog['theme_settings'].items():
+                    # if the values of theme setting from blog level are the same as the settings
+                    # from previous theme update the settings we keep them in a new variable
+                    if value == default_prev_theme_settings[key]:
+                        new_theme_settings[key] = value
+                    # otherwise we keep the settings that are already on the blog
+                    else:
+                        default_theme_settings[key] = value
+                new_theme_settings.update(default_theme_settings)
                 # save the blog with the new settings
                 blogs_service.system_update(ObjectId(blog['_id']),
-                                            {'theme_settings': new_blog_settings}, blog)
-            # if there was a customization for the theme settings
-            if 'settings' in previous_theme:
-                # one initialize the new settings based on the new theme settings
-                new_theme_settings = default_theme_settings.copy()
-                # loop over the customized settings
-                for key, value in previous_theme['settings'].items():
-                    if key in previous_theme['settings']:
-                        # if the value has changed
-                        if value is not new_theme_settings[key]:
-                            # one keep the customized settings
-                            new_theme_settings[key] = value
-                theme['settings'] = new_theme_settings
-
+                                            {'theme_settings': new_theme_settings}, blog)
             if force_update:
                 blogs_updated = self.publish_related_blogs(theme)
                 self.replace(previous_theme['_id'], theme, previous_theme)
