@@ -29,6 +29,7 @@ define([
                     angular.extend(vm, {
                         isLoading: true,
                         blogId: $scope.lbPostsBlogId,
+                        status: $scope.lbPostsStatus,
                         allowUnpublishing: $scope.lbPostsAllowUnpublishing,
                         allowReordering: $scope.lbPostsAllowReordering,
                         allowEditing: $scope.lbPostsAllowEditing,
@@ -232,9 +233,25 @@ define([
                                 $document.unbind('keypress', escClearReorder);
                                 scope.clearReorderAction();
                             },
-                            onEditClick: function(post) {
+                            pinPost: function(post) {
                                 scope.clearReorder();
-                                scope.onEditAction(post);
+                                changePostStatus(post, 'sticky').then(function(post) {
+                                    notify.pop();
+                                    notify.info(gettext('Post pinned'));
+                                }, function() {
+                                    notify.pop();
+                                    notify.error(gettext('Something went wrong. Please try again later'));
+                                });
+                            },
+                            unpinPost: function(post) {
+                                scope.clearReorder();
+                                changePostStatus(post, 'open').then(function(post) {
+                                    notify.pop();
+                                    notify.info(gettext('Post unpinned'));
+                                }, function() {
+                                    notify.pop();
+                                    notify.error(gettext('Something went wrong. Please try again later'));
+                                });
                             },
                             askRemovePost: function(post) {
                                 scope.clearReorder();
