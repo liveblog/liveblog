@@ -115,7 +115,7 @@
                                         <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
                                     </div>
                                 </div>
-                                <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
+                                <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
                             </div>
                         </div>
                     </div>                
@@ -128,10 +128,9 @@
                                 <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
                             </div>
                         </div>
-                        <article ng-switch-default lb-bind-html html-content="{{ item.text }}"></article>
+                        <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
                     </div>
                 </div>
-
                 <div class="lb-updated-date ng-cloak" ng-show="post.showUpdate">
                     Updated <span ng-bind="post._updated | prettifyIsoDate"></span>
                 </div>
