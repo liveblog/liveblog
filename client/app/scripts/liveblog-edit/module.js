@@ -25,6 +25,8 @@ define([
     function BlogEditController(api, $q, $scope, blog, notify, gettext,
         upload, config, embedService, postsService, unreadPostsService, modal, blogService, $route, $routeParams, blogSecurityService) {
 
+        // start listening for unread posts.
+        unreadPostsService.startListening();
         // return the list of items from the editor
         function getItemsFromEditor() {
             return _.map(vm.editor.get(), function(block) {
@@ -145,12 +147,7 @@ define([
                 $scope.panelState = panel;
                 // update url for deeplinking
                 $route.updateParams({panel: $scope.panelState});
-                //clear the new contribution notification
-                if (panel === 'contributions') {
-                    unreadPostsService.stopListening();
-                } else {
-                    unreadPostsService.startListening();
-                }
+                unreadPostsService.reset(panel);
             },
             stParams: {
                 disableSubmit: function(actionDisabled) {
