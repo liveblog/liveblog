@@ -26,7 +26,8 @@
         </div>
         <div class="header-bar__actions">
             <button
-                class="btn"
+                ng-if="timeline.settings.canComment"
+                class="btn ng-cloak"
                 ng-class="{'active': timeline.comment}"
                 ng-click="timeline.comment = !timeline.comment">Comment</button>
         </div>
