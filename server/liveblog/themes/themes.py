@@ -200,7 +200,7 @@ class ThemesService(BaseService):
                         theme_settings[key] = value
                     # otherwise we keep the settings that are already on the theme
                     else:
-                        default_theme_settings[key] = value
+                        default_theme_settings[key] = default_prev_theme_settings[key]
                 theme_settings.update(default_theme_settings)
                 # save the new theme settings
                 theme['settings'] = theme_settings
@@ -213,7 +213,7 @@ class ThemesService(BaseService):
                 # initialize the new settings values for the blog based on the new settings
                 new_theme_settings = default_theme_settings.copy()
                 # loop over blog settings
-                for key, value in blog['theme_settings'].items():
+                for key, value in blog.get('theme_settings', {}).items():
                     # if the values of theme setting from blog level are the same as the settings
                     # from previous theme update the settings we keep them in a new variable
                     if value == default_prev_theme_settings[key]:
