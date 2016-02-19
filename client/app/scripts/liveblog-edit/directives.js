@@ -199,6 +199,9 @@ define([
                             // save the post with the new status
                             return postsService.savePost(post.blog, post, undefined, {post_status: status});
                         }
+                        function changeHighlightStatus(post, status) {
+                            return postsService.savePost(post.blog, post, undefined, {highlight: status});
+                        }
 
                         angular.extend(scope, {
                             functionize: function (obj) {
@@ -252,6 +255,26 @@ define([
                                     notify.pop();
                                     notify.error(gettext('Something went wrong. Please try again later'));
                                 });
+                            },
+                            highlightPost: function(post) {
+                                scope.clearReorder();
+                                if (post.highlight == false) {
+                                    changeHighlightStatus(post, true).then(function(post) {
+                                    notify.pop();
+                                    notify.info(gettext('Post was highlighted'));
+                                }, function() {
+                                    notify.pop();
+                                    notify.error(gettext('Something went wrong. Please try again later'));
+                                });
+                                } else {
+                                    changeHighlightStatus(post, false).then(function(post) {
+                                    notify.pop();
+                                    notify.info(gettext('Post was un-highlighted'));
+                                }, function() {
+                                    notify.pop();
+                                    notify.error(gettext('Something went wrong. Please try again later'));
+                                });
+                                }
                             },
                             publishPost: function(post) {
                                 scope.clearReorder();

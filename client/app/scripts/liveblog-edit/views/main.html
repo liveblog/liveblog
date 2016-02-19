@@ -108,6 +108,15 @@
                         </header>
                         </div>
                     <div class="content">
+                        <div class="lb-post__actions">
+                        <ul>
+                            <li>
+                                <a ng-click="highlight()" tooltip-placement="bottom" tooltip="{{ 'Highlight post' | translate }}">
+                                    <i class="icon-unpublish" alt="contributions posts"></i>
+                                </a>
+                            </li>
+                        </ul>
+                        </div>
                         <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">
                                 <div class="editor" ng-sir-trevor st-model="blogEdit.editor" st-params="stParams"></div>

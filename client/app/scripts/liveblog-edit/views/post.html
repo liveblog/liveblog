@@ -23,6 +23,11 @@
                     </div>
                     <div class="lb-post__actions">
                         <ul>
+                            <li>
+                                <a ng-click="highlightPost(post)" tooltip-placement="bottom" tooltip="{{ 'Highlight post' | translate }}">
+                                    <i class="icon-unpublish" alt="contributions posts"></i>
+                                </a>
+                            </li>
                             <li ng-if="functionize(postsListCtrl.allowDeleting)(post)">
                                 <a ng-click="askRemovePost(post)" tooltip-placement="bottom" tooltip="{{ 'Remove' | translate }}">
                                     <i class="icon-remove"></i>
