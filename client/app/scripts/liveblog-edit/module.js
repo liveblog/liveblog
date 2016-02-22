@@ -25,6 +25,17 @@ define([
     function BlogEditController(api, $q, $scope, blog, notify, gettext,
         upload, config, embedService, postsService, unreadPostsService, modal, blogService, $route, $routeParams, blogSecurityService) {
 
+        var vm = this;
+        // @TODO: remove this when theme at blog level.
+        // check the theme setting for comments.
+        (function checkComments() {
+            if (blog.blog_preferences.theme) {
+                api.themes.query({'where': {'name': blog.blog_preferences.theme}}).then(function(data) {
+                    var theme = data._items[0];
+                    $scope.panels.comment = theme.settings.canComment;
+                });
+            }
+        })();
         // start listening for unread posts.
         unreadPostsService.startListening();
         // return the list of items from the editor
@@ -58,14 +69,15 @@ define([
             $scope.currentPost = undefined;
         }
 
-        var vm = this;
         // retieve the blog's public url
         blogService.getPublicUrl(blog).then(function(url) {
             $scope.publicUrl = url;
         });
+
         // define the $scope
         angular.extend($scope, {
             blog: blog,
+            panels: {},
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
@@ -587,6 +599,15 @@ define([
         apiProvider.api('archive', {
             type: 'http',
             backend: {rel: 'archive'}
+        });
+        // @TODO: remove this when theme at blog level.
+        apiProvider.api('global_preferences', {
+            type: 'http',
+            backend: {rel: 'global_preferences'}
+        });
+        apiProvider.api('themes', {
+            type: 'http',
+            backend: {rel: 'themes'}
         });
     }]).config(['SirTrevorOptionsProvider', 'SirTrevorProvider', function(SirTrevorOptions, SirTrevor) {
         // here comes all the sir trevor customization (except custom blocks which are in the SirTrevorBlocks module)

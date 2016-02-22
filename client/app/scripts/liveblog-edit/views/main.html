@@ -27,9 +27,13 @@
         <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}">
             <i class="big-icon-archive" alt="draft posts"></i>
         </button>
-        <button class="navbtn" ng-click="openPanel('comments')" ng-class="{'active': panelState === 'comments'}">
-            <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countComments() > 0">{{ unreadPostsService.countComments() }}</span>
-            <i class="big-icon-comments" alt="comments posts"></i>
+        <button 
+            ng-if="panels.comment"
+            class="navbtn ng-cloak"
+            ng-click="openPanel('comments')"
+            ng-class="{'active': panelState === 'comments'}">
+                <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countComments() > 0">{{ unreadPostsService.countComments() }}</span>
+                <i class="big-icon-comments" alt="comments posts"></i>
         </button>        
     </div>
 
