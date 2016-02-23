@@ -356,6 +356,7 @@ function TimelinePage(blog) {
     self.byRemove = by.css('[ng-click="askRemovePost(post)"]');
     self.waitForModal = waitForModal.bind(self);
     self.okModal = okModal.bind(self);
+    self.byHighlight = by.css('[ng-click="highlightPost(post)"]');
 
     self.get = function(index) {
         return self.column.element(self.byPosts.row(index));
@@ -382,6 +383,11 @@ function TimelinePage(blog) {
         self.column.element(self.byPosts.row(index)).element(self.byUnpublish).click();
         return self;
     };
+
+    self.highlight = function(index) {
+        self.column.element(self.byPosts.row(index)).element(self.byHighlight).click();
+        return self;
+    }
 
     self.startMoving = function(index) {
         self.column.element(self.byPosts.row(index)).element(self.byStartMoving).click();
