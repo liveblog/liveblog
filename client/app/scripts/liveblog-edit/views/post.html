@@ -2,7 +2,8 @@
     <div ng-if="functionize(postsListCtrl.allowReordering)(post)" ng-class="{'active top': post.order > reorderPost.order}" class="timeline-reorder" ng-click="movePost(index, 'above');" translate>Click to place the item here</div>
     <div class="lb-post" ng-class="{
         'active': (post.order === reorderPost.order || post.order === keepHighlighted),
-        'unread': functionize(postsListCtrl.isUnreadPost)(post)
+        'unread': functionize(postsListCtrl.isUnreadPost)(post),
+        'pinned': post.post_status == 'sticky'
     }">
         <div class="lb-post__holder">
             <div class="lb-post__figure">
