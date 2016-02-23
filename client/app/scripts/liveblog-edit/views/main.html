@@ -177,7 +177,7 @@
             </header>
             <div class="content content--timeline" lr-infinite-scroll="fetchNewTimelinePage">
                 <div>
-                    <div style="border: 1px solid green" ng-show="!blogEdit.timelineStickyInstance.isPostsEmpty() &&
+                    <div ng-show="!blogEdit.timelineStickyInstance.isPostsEmpty() &&
                         !blogEdit.timelineStickyInstance.hideSticky"
                         class="timeline-posts-list"
                         lb-posts-instance="blogEdit.timelineStickyInstance"

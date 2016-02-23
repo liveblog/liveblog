@@ -6,7 +6,8 @@
         translate>Click to place the item here</div>
     <div class="lb-post" ng-class="{
         'active': (post.order === reorderPost.order || post.order === keepHighlighted),
-        'unread': functionize(postsListCtrl.isUnreadPost)(post)
+        'unread': functionize(postsListCtrl.isUnreadPost)(post),
+        'pinned': post.post_status == 'sticky'
     }">
         <div class="lb-post__holder lb-mainitem-{{ post.mainItem.item.item_type}}">
             <div class="lb-post__figure">
