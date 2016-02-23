@@ -28,7 +28,7 @@
             <i class="big-icon-archive" alt="draft posts"></i>
         </button>
         <button 
-            ng-if="panels.comment"
+            ng-if="blog.blog_preferences.theme.settings.canComment"
             class="navbtn ng-cloak"
             ng-click="openPanel('comments')"
             ng-class="{'active': panelState === 'comments'}">

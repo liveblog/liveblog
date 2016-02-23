@@ -163,11 +163,17 @@
         "license": "AGPL-3.0",
         "options": [
             {
+                "name": "canComment",
+                "label": "Users can comment",
+                "type": "checkbox",
+                "default": true,
+                "help": "If the users can comment from embed page"
+            },{
                 "name": "showAuthor",
                 "label": "Show Author",
                 "type": "checkbox",
                 "default": true,
-                "help": "Show the author information on posts"
+                "help": "Show the author information on postsed"
             }
         ]
     }

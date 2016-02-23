@@ -20,22 +20,19 @@ define([
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'modal',
-        'blogService', '$route', '$routeParams', 'blogSecurityService'
+        'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext,
-        upload, config, embedService, postsService, unreadPostsService, modal, blogService, $route, $routeParams, blogSecurityService) {
+        upload, config, embedService, postsService, unreadPostsService, modal, blogService, $route, $routeParams, blogSecurityService, themesService) {
 
         var vm = this;
         // @TODO: remove this when theme at blog level.
         // check the theme setting for comments.
-        (function checkComments() {
-            if (blog.blog_preferences.theme) {
-                api.themes.query({'where': {'name': blog.blog_preferences.theme}}).then(function(data) {
-                    var theme = data._items[0];
-                    $scope.panels.comment = theme.settings.canComment;
-                });
-            }
-        })();
+        if (blog.blog_preferences.theme) {
+            themesService.get(blog.blog_preferences.theme).then(function(themes) {
+                blog.blog_preferences.theme = themes[0];
+            });
+        }
         // start listening for unread posts.
         unreadPostsService.startListening();
         // return the list of items from the editor
