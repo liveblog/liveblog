@@ -12,10 +12,10 @@
             </div>
             <div class="lb-post__content">
                 <div class="lb-post__header">
-                    <div ng-if="post.post_status != 'open'">
+                    <div ng-if="post.post_status != 'open'" class="inline">
                         <span class="name">{{ ::post.user.display_name }}</span> | <time>{{ post._created | reldate }}</time>
                     </div>
-                    <div ng-if="post.post_status == 'open'">
+                    <div ng-if="post.post_status == 'open'" class="inline">
                         <span class="name">{{ ::post.user.display_name }}</span> | <time>{{ post.published_date | reldate }}</time>
                     </div>
                     <div class="inline" ng-if="post.published_date && post._updated !== post.published_date">
@@ -25,7 +25,7 @@
                         <ul>
                             <li ng-if="functionize(postsListCtrl.allowDeleting)(post)">
                                 <a ng-click="askRemovePost(post)" tooltip-placement="bottom" tooltip="{{ 'Remove' | translate }}">
-                                    <i class="icon-remove"></i>
+                                    <i class="icon-close-thick"></i>
                                 </a>
                             </li>
                             <li ng-if="functionize(postsListCtrl.allowEditing)(post)">
