@@ -104,13 +104,13 @@ define([
             });
             // if an item has a commenter then that post hasComments.
             post.hasComments = _.reduce(post.groups[1].refs, function(is, val) {
-                return is || _.isUndefined(val.item.commenter);
+                return is || !_.isUndefined(val.item.commenter);
             }, false);
             // `fullDetails` is a business logic that can be compiled from other objects.
             post.fullDetails = post.hasComments;
             // special cases for comments.
             post.showUpdate = (post._updated !== post.published_date) &&
-                               !post.hasComments && (post.mainItem.item.item_type !== 'comment');
+                               (!post.hasComments) && (post.mainItem.item.item_type !== 'comment');
             angular.forEach(post.items, function(val) {
                 if (post.fullDetails) {
                     _completeUser(val.item);
