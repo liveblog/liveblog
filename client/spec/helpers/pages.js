@@ -387,7 +387,7 @@ function TimelinePage(blog) {
     self.highlight = function(index) {
         self.column.element(self.byPosts.row(index)).element(self.byHighlight).click();
         return self;
-    }
+    };
 
     self.startMoving = function(index) {
         self.column.element(self.byPosts.row(index)).element(self.byStartMoving).click();

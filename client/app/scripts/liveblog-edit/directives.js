@@ -257,7 +257,6 @@ define([
                                 });
                             },
                             highlightPost: function(post) {
-                                scope.clearReorder();
                                 if (post.highlight == false) {
                                     changeHighlightStatus(post, true).then(function(post) {
                                     notify.pop();
