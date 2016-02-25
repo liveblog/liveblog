@@ -67,11 +67,15 @@
 
                         // add all the items directly in a `items` property
                         if (angular.isDefined(post.groups[1])) {
-                            post.items = post.groups[1].refs.map(function(item) {
+                            post.items = post.groups[1].refs.map(function(value) {
+                                var item = value.item;
                                 if(post.fullDetails) {
-                                    _completeUser(item.item);
+                                    _completeUser(item);
+                                    item.displayDate = (item.meta && item.meta._created) || item._created;
+                                } else {
+                                    item.displayDate = post.published_date;
                                 }
-                                return item.item;
+                                return item;
                             });
                         }
                         // replace the creator id by the user object

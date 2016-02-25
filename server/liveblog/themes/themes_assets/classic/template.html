@@ -68,8 +68,9 @@
                          class="lb-author__avatar"
                          ng-class="{'lb-author__avatar': (post.mainItem.item_type !== 'comment'),
                                        'lb-author__comment': (post.mainItem.item_type === 'comment')}"
-                         ng-src="{{ post.original_creator.picture_url }}" />
-                    <div class="lb-author__date" ng-bind="post.published_date | prettifyIsoDate"></div>
+                         ng-src="{{ post.mainItem.original_creator.picture_url }}" />
+                    <!-- special case, if the main item is a comment show the `_created` date insted of `published_date` one. !-->
+                    <div class="lb-author__date" ng-bind="post.mainItem.displayDate | prettifyIsoDate"></div>
                     <!-- author name, with or without mailto link  -->
                     <div ng-if="!timeline.settings.authorNameLinksToEmail || post.mainItem.item_type === 'comment'"
                          class="lb-author__name"
@@ -92,11 +93,11 @@
                             <div class="lb-author" ng-if="timeline.settings.showAuthor">
                                 <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar"
                                      class="lb-author__avatar"
-                                     ng-class="{'lb-author__avatar': (pitem.item_type !== 'comment'),
+                                     ng-class="{'lb-author__avatar': (item.item_type !== 'comment'),
                                                    'lb-author__comment': (item.item_type === 'comment')}"
                                      ng-src="{{ item.original_creator.picture_url }}" />
 
-                                <div class="lb-author__date" ng-bind="(item.meta._created || item._created) | prettifyIsoDate"></div>
+                                <div class="lb-author__date" ng-bind="item.displayDate | prettifyIsoDate"></div>
                                 <!-- author name, with or without mailto link  -->
                                 <div ng-if="!timeline.settings.authorNameLinksToEmail || item.item_type === 'comment'"
                                      class="lb-author__name"
