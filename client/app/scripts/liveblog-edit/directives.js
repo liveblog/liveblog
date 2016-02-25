@@ -257,23 +257,13 @@ define([
                                 });
                             },
                             highlightPost: function(post) {
-                                if (post.highlight == false) {
-                                    changeHighlightStatus(post, true).then(function(post) {
-                                    notify.pop();
-                                    notify.info(gettext('Post was highlighted'));
+                                changeHighlightStatus(post, !post.highlight).then(function(post) {
+                                   notify.pop();
+                                   notify.info(post.highlight ? gettext('Post was highlighted') : gettext('Post was un-highlighted'));
                                 }, function() {
-                                    notify.pop();
-                                    notify.error(gettext('Something went wrong. Please try again later'));
+                                   notify.pop();
+                                   notify.error(gettext('Something went wrong. Please try again later'));
                                 });
-                                } else {
-                                    changeHighlightStatus(post, false).then(function(post) {
-                                    notify.pop();
-                                    notify.info(gettext('Post was un-highlighted'));
-                                }, function() {
-                                    notify.pop();
-                                    notify.error(gettext('Something went wrong. Please try again later'));
-                                });
-                                }
                             },
                             publishPost: function(post) {
                                 scope.clearReorder();
