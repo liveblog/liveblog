@@ -766,7 +766,8 @@ Feature: Post operations
         """
         {
         "blog": "#blogs._id#",
-        "post_status": "sticky",
+        "post_status": "open",
+        "sticky": true,
             "groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
@@ -785,7 +786,7 @@ Feature: Post operations
         And we get "/posts"
         Then we get list with 1 items
         """
-        {"_items": [{"highlight": false, "blog": "#blogs._id#", "post_status": "sticky", "order": 0}]}
+        {"_items": [{"highlight": false, "sticky": true, "blog": "#blogs._id#", "post_status": "open", "order": 0}]}
         """
 
     @auth
@@ -850,7 +851,8 @@ Feature: Post operations
         """
         {
         "blog": "#blogs._id#",
-        "post_status": "sticky",
+        "post_status": "open",
+        "sticky": true,
             "groups": [
                 {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
                 {
@@ -869,15 +871,15 @@ Feature: Post operations
         When we get "/posts"
         Then we get list with 3 items
         """
-        {"_items": [{"post_status":"sticky", "order": 2}, {"post_status":"open", "order": 0}, {"post_status":"draft", "order": 1}]}
+        {"_items": [{"post_status":"open", "sticky": true, "order": 2}, {"post_status":"open", "order": 0}, {"post_status":"draft", "order": 1}]}
         """      
         When we patch "posts/#posts._id#"
         """
         {
-            "post_status": "open"
+            "sticky": false
         }
         """
         Then we get new resource
         """
-        {"post_status": "open", "blog": "#blogs._id#", "order": 2}
+        {"post_status": "open", "sticky": false,"blog": "#blogs._id#", "order": 2}
         """   
