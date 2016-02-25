@@ -12,6 +12,8 @@ import flask
 from superdesk.utc import utcnow
 from superdesk.users.services import current_user_has_privilege
 from superdesk.errors import SuperdeskApiError
+from liveblog.common import check_comment_length
+
 
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
@@ -21,7 +23,8 @@ def private_draft_filter():
     As private we treat items where user is creator
     """
     private_filter = {'should': [{'term': {'post_status': 'open'}},
-                                 {'term': {'post_status': 'submitted'}}]}
+                                 {'term': {'post_status': 'submitted'}},
+                                 {'term': {'post_status': 'comment'}}]}
     user = getattr(flask.g, 'user', None)
     if user:
         private_filter['should'].append(
@@ -69,7 +72,7 @@ class PostsResource(ArchiveResource):
         },
         'post_status': {
             'type': 'string',
-            'allowed': ['open', 'draft', 'submitted', 'sticky'],
+            'allowed': ['open', 'draft', 'submitted', 'comment', 'sticky'],
             'default': 'open'
         },
         'highlight': {
@@ -169,6 +172,12 @@ class PostsService(ArchiveService):
         push_notification('posts', created=True, post_status=doc['post_status'], post_ids=post_ids)
 
     def on_update(self, updates, original):
+        # in the case we have a comment
+        if original['post_status'] == 'comment':
+            original['blog'] = original['groups'][1]['refs'][0]['item']['client_blog']
+            updates['blog'] = original['groups'][1]['refs'][0]['item']['client_blog']
+            # if the length of the comment is not between 1 and 300 then we get an error
+            check_comment_length(original['groups'][1]['refs'][0]['item']['text'])
         # check permission
         post = original.copy()
         post.update(updates)
@@ -177,7 +186,7 @@ class PostsService(ArchiveService):
         if updates.get('post_status') == 'open' and original.get('post_status') == 'sticky':
             updates['published_date'] = original['published_date']
         # when publishing, put the published item from drafts and contributions at the top of the timeline
-        if updates.get('post_status') == 'open' and original.get('post_status') in ('draft', 'submitted'):
+        if updates.get('post_status') == 'open' and original.get('post_status') in ('draft', 'submitted', 'comment'):
             updates['order'] = self.get_next_order_sequence(original.get('blog'))
             # if you publish a post it will save a published date and register who did it
             updates['published_date'] = utcnow()
@@ -229,6 +238,12 @@ class BlogPostsService(ArchiveService):
     custom_hateoas = {'self': {'title': 'Posts', 'href': '/{location}/{_id}'}}
 
     def get(self, req, lookup):
+        imd = req.args.items()
+        for key in imd:
+            if key[1][97:104] == 'comment':
+                if lookup.get('blog_id'):
+                    lookup['client_blog'] = ObjectId(lookup['blog_id'])
+                    del lookup['blog_id']
         if lookup.get('blog_id'):
             lookup['blog'] = ObjectId(lookup['blog_id'])
             del lookup['blog_id']

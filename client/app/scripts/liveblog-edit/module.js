@@ -20,11 +20,21 @@ define([
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'modal',
-        'blogService', '$route', '$routeParams', 'blogSecurityService'
+        'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext,
-        upload, config, embedService, postsService, unreadPostsService, modal, blogService, $route, $routeParams, blogSecurityService) {
+        upload, config, embedService, postsService, unreadPostsService, modal, blogService, $route, $routeParams, blogSecurityService, themesService) {
 
+        var vm = this;
+        // @TODO: remove this when theme at blog level.
+        // check the theme setting for comments.
+        if (blog.blog_preferences.theme) {
+            themesService.get(blog.blog_preferences.theme).then(function(themes) {
+                blog.blog_preferences.theme = themes[0];
+            });
+        }
+        // start listening for unread posts.
+        unreadPostsService.startListening();
         // return the list of items from the editor
         function getItemsFromEditor() {
             return _.map(vm.editor.get(), function(block) {
@@ -56,14 +66,15 @@ define([
             $scope.currentPost = undefined;
         }
 
-        var vm = this;
         // retieve the blog's public url
         blogService.getPublicUrl(blog).then(function(url) {
             $scope.publicUrl = url;
         });
+
         // define the $scope
         angular.extend($scope, {
             blog: blog,
+            panels: {},
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
@@ -85,7 +96,7 @@ define([
                     items.forEach(function(item) {
                         item = item.item;
                         if (angular.isDefined(item)) {
-                            var data = _.extend({text: item.text}, item.meta);
+                            var data = _.extend(item, item.meta);
                             vm.editor.createBlock(item.item_type, data);
                         }
                     });
@@ -145,12 +156,7 @@ define([
                 $scope.panelState = panel;
                 // update url for deeplinking
                 $route.updateParams({panel: $scope.panelState});
-                //clear the new contribution notification
-                if (panel === 'contributions') {
-                    unreadPostsService.stopListening();
-                } else {
-                    unreadPostsService.startListening();
-                }
+                unreadPostsService.reset(panel);
             },
             stParams: {
                 disableSubmit: function(actionDisabled) {
@@ -200,6 +206,9 @@ define([
             },
             fetchNewDraftPage: function() {
                 vm.draftPostsInstance.fetchNewPage();
+            },
+            fetchNewCommenttPage: function() {
+                vm.commentPostsInstance.fetchNewPage();
             },
             fetchNewTimelinePage: function() {
                 vm.timelineInstance.fetchNewPage();
@@ -588,6 +597,15 @@ define([
             type: 'http',
             backend: {rel: 'archive'}
         });
+        // @TODO: remove this when theme at blog level.
+        apiProvider.api('global_preferences', {
+            type: 'http',
+            backend: {rel: 'global_preferences'}
+        });
+        apiProvider.api('themes', {
+            type: 'http',
+            backend: {rel: 'themes'}
+        });
     }]).config(['SirTrevorOptionsProvider', 'SirTrevorProvider', function(SirTrevorOptions, SirTrevor) {
         // here comes all the sir trevor customization (except custom blocks which are in the SirTrevorBlocks module)
         SirTrevor = SirTrevor.$get();
@@ -608,7 +626,7 @@ define([
                 SirTrevor.EventBus.on('block:create:existing', removeEmptyBlockExceptTheBlock);
                 SirTrevor.EventBus.on('block:create:new', removeEmptyBlockExceptTheBlock);
             },
-            blockTypes: ['Text', 'Image', 'Embed', 'Quote'],
+            blockTypes: ['Text', 'Image', 'Embed', 'Quote', 'Comment'],
             // render a default block when the editor is loaded
             defaultType: 'Text',
             transform: {

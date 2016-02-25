@@ -20,12 +20,21 @@
             <i class="big-icon-editor" alt="editor"></i>
         </button>
         <button class="navbtn" ng-click="openPanel('contributions')" ng-class="{'active': panelState === 'contributions'}">
-            <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countContributions() > 0">{{ unreadPostsService.countContributions() }}</span>
+            <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countContributions() > 0">
+            {{ unreadPostsService.countContributions() }}</span>
             <i class="big-icon-contributions" alt="contributions"></i>
         </button>
         <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}">
             <i class="big-icon-archive" alt="draft posts"></i>
         </button>
+        <button 
+            ng-if="blog.blog_preferences.theme.settings.canComment"
+            class="navbtn ng-cloak"
+            ng-click="openPanel('comments')"
+            ng-class="{'active': panelState === 'comments'}">
+                <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countComments() > 0">{{ unreadPostsService.countComments() }}</span>
+                <i class="big-icon-comments" alt="comments posts"></i>
+        </button>        
     </div>
 
     <div class="columns-holder">
@@ -33,7 +42,7 @@
             <span ng-if="isBlogOpened()">
                 <!-- drafts -->
                 <div class="panel panel--draft" ng-if="panelState === 'drafts'">
-                    <header>Drafts</header>
+                    <header translate>Drafts</header>
                     <div class="content" lr-infinite-scroll="fetchNewDraftPage">
                         <lb-posts-list
                           lb-posts-instance="blogEdit.draftPostsInstance"
@@ -56,7 +65,7 @@
                 </div>
                 <!-- contributions -->
                 <div class="panel panel--contribution" ng-if="panelState === 'contributions'">
-                    <header>Contributions</header>
+                    <header translate>Contributions</header>
                     <div class="panel--contribution__filters">
                         <span class="panel--contribution__filters__title">Filter by user</span>
                         <lb-filter-by-member
@@ -91,6 +100,27 @@
                         </lb-posts-list>
                     </div>
                 </div>
+                <!-- comments -->
+                <div class="panel panel--comments" ng-if="panelState === 'comments'">
+                    <header translate>Comments</header>
+                    <div class="content" lr-infinite-scroll="fetchNewCommentsPage">
+                        <lb-posts-list
+                          lb-posts-instance="blogEdit.commentPostsInstance"
+                          lb-posts-blog-id="blog._id"
+                          lb-posts-status="comment"
+                          lb-posts-order-by="updated_first"
+                          lb-posts-allow-unpublishing="false"
+                          lb-posts-allow-reordering="false"
+                          lb-posts-is-unread-post="unreadPostsService.isComment"
+                          lb-posts-allow-editing="true"
+                          lb-posts-allow-deleting="true"
+                          lb-posts-allow-publishing="blogSecurityService.canPublishAPost"
+                          lb-posts-on-post-selected="openPostInEditor"
+                        >
+                            <p translate>There aren't any comments.</p>
+                        </lb-posts-list>
+                    </div>
+                </div>                
                 <!-- editor -->
                     <div class="panel--editor" ng-show="panelState === 'editor'">
                         <div ng-if="!preview">

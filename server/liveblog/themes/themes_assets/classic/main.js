@@ -2,7 +2,7 @@
     'use strict';
 
     TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink'];
-    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink) {
+    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, CommentsManager) {
 
         var POSTS_PER_PAGE = config.settings.postsPerPage;
         var PERMALINK_DELIMITER = config.settings.permalinkDelimiter || '?';
