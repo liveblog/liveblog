@@ -16,13 +16,7 @@
                             });
             };
         })        
-        .filter('convertLinksWithRelativeProtocol', ['config', function fixProtocol(config) {
-            return function getRelativeProtocol(text) {
-                var absoluteProtocol = RegExp(/http(s)?:\/\//ig);
-                var serverpath = config.api_host.split('//').pop();
-                config.api_host.replace(absoluteProtocol, '//');
-                text.replace(absoluteProtocol, '//')
-                return text.replace(absoluteProtocol, '//')
-            };
+        .filter('convertLinksWithRelativeProtocol', ['fixProtocol', function (fixProtocol) {
+            return fixProtocol;
         }]);
 })(angular);

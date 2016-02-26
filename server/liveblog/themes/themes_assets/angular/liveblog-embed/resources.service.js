@@ -5,21 +5,30 @@
         recycleFreq: 3600000, // 1h
         storageMode: 'localStorage'
     };
-    Blogs.$inject = ['$resource', 'config'];
+
+    transformBlog.$inject = ['fixProtocol']
+    function transformBlog(fixProtocol) {
+        return function(blog) {
+            if (blog.picture) {
+                var srcset = '';
+                angular.forEach(blog.picture.renditions, function(value) {
+                    srcset += ', ' + fixProtocol(value.href) + ' ' + value.width + 'w';
+                });
+                blog.picture_srcset = srcset.substring(2); 
+                blog.picture_url = fixProtocol(blog.picture_url);
+            }
+            return blog;
+        }
+    }
+
+    Blogs.$inject = ['$resource', 'config', 'transformBlog'];
     function Blogs($resource, config) {
         return $resource(config.api_host + 'api/client_blogs/:blogId?embedded={"picture":1}', {blogId: config.blog._id},{
             'get': {
                 method:'GET',
                 transformResponse: function(blog) {
                     blog = angular.fromJson(blog);
-                    if (blog.picture) {
-                        var srcset = '';
-                        angular.forEach(blog.picture.renditions, function(value) {
-                            srcset += ', ' + value.href + ' ' + value.width + 'w';
-                        });
-                        blog.picture_srcset = srcset.substring(2); 
-                    }
-                    return blog;
+                    return transformBlog(blog);
                 }
             }
         });
@@ -102,6 +111,7 @@
         .service('posts', Posts)
         .service('blogs', Blogs)
         .service('comments', Comments)
-        .service('items', Items);
+        .service('items', Items)
+        .factory('transformBlog',transformBlog);
 
 })(angular);

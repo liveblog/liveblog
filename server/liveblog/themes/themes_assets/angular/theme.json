@@ -2,7 +2,7 @@
     "label": "Angular Liveblog Toolkit",
     "name": "angular",
     "abstract": true,
-    "version": "1.4.2",
+    "version": "1.4.3",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type" : "git",
@@ -22,6 +22,7 @@
         "liveblog-embed/comments.service.js",
         "liveblog-embed/pages-manager.service.js",
         "liveblog-embed/permalink.service.js",
+        "liveblog-embed/services.js",
         "liveblog-embed/directives.js",
         "liveblog-embed/filters.js"
     ],

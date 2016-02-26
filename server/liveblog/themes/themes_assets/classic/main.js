@@ -1,8 +1,8 @@
 (function(angular) {
     'use strict';
 
-    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink'];
-    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, CommentsManager) {
+    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink', 'transformBlog'];
+    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, transformBlog) {
 
         var POSTS_PER_PAGE = config.settings.postsPerPage;
         var PERMALINK_DELIMITER = config.settings.permalinkDelimiter || '?';
@@ -24,20 +24,10 @@
                 angular.extend(vm.blog, blog)
             });
         }
-
-        // set the value of illustration "srcset" attribute
-        if (config.blog.picture) {
-            config.blog.picture_srcset = _.values(config.blog.picture.renditions).map(
-                function(r) {
-                    return r.href + ' ' + r.width + 'w';
-                }
-            ).join(', ');
-        }
-        
         // define view model
         angular.extend(vm, {
             templateDir: config.assets_root,
-            blog: config.blog,
+            blog: transformBlog(config.blog),
             loading: true,
             finished: false,
             settings: config.settings,
