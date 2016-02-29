@@ -1,8 +1,7 @@
-'use strict';
-
 var path = require('path');
 
 function getChromeOptions() {
+    'use strict';
 
     var chromeOptions = {
         args: ['no-sandbox']
