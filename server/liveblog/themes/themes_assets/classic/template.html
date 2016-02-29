@@ -117,6 +117,7 @@
                                         <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
                                     </div>
                                 </div>
+                                <div ng-switch-when="image" lb-bind-html html-content="{{ item.text | convertLinksWithRelativeProtocol }}"></div>
                                 <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
                             </div>
                         </div>
@@ -130,6 +131,7 @@
                                 <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
                             </div>
                         </div>
+                        <div ng-switch-when="image" lb-bind-html html-content="{{ item.text | convertLinksWithRelativeProtocol }}"></div>
                         <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
                     </div>
                 </div>

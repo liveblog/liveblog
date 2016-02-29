@@ -9,6 +9,10 @@ Feature: Items operations
 
     @auth
     Scenario: Add item
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
     	Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
@@ -21,7 +25,7 @@ Feature: Items operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we post to "items"
@@ -41,6 +45,10 @@ Feature: Items operations
 
 	@auth
     Scenario: Update item
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
     	Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
@@ -53,7 +61,7 @@ Feature: Items operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
        	When we post to "items"
@@ -72,6 +80,10 @@ Feature: Items operations
 
 	@auth
     Scenario: Delete item
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
     	Given "roles"
         """
         [{"name": "Contributor", "privileges": {"submit_post": 1, "posts": 1, "archive": 1}}]
@@ -84,7 +96,7 @@ Feature: Items operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         Given empty "items"

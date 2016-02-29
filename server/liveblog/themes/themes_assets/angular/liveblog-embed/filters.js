@@ -15,6 +15,8 @@
                                 return match;
                             });
             };
-        });        
-
+        })        
+        .filter('convertLinksWithRelativeProtocol', ['fixProtocol', function (fixProtocol) {
+            return fixProtocol;
+        }]);
 })(angular);

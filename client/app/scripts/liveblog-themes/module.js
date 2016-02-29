@@ -200,7 +200,7 @@
                 api.themes.getUrl().then(function(url) {
                     upload.start({
                         method: 'POST',
-                        url: url.replace('themes', 'theme-upload'),
+                        url: url.replace('/themes', '/theme-upload'),
                         data: {media: e.files[0]}
                     })
                     .then(function(response) {
