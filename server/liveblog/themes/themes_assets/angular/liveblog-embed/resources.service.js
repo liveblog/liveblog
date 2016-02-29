@@ -9,7 +9,7 @@
     transformBlog.$inject = ['fixProtocol']
     function transformBlog(fixProtocol) {
         return function(blog) {
-            if (blog.picture) {
+            if (blog.picture_url) {
                 var srcset = '';
                 angular.forEach(blog.picture.renditions, function(value) {
                     srcset += ', ' + fixProtocol(value.href) + ' ' + value.width + 'w';
@@ -22,7 +22,7 @@
     }
 
     Blogs.$inject = ['$resource', 'config', 'transformBlog'];
-    function Blogs($resource, config) {
+    function Blogs($resource, config, transformBlog) {
         return $resource(config.api_host + 'api/client_blogs/:blogId?embedded={"picture":1}', {blogId: config.blog._id},{
             'get': {
                 method:'GET',

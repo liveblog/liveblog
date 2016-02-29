@@ -312,7 +312,6 @@ define([
                 modal.confirm(gettext('Are you sure you want to remove the blog image?')).then(function() {
                     deregisterPreventer();
                     vm.newBlog.picture_url = null;
-                    vm.newBlog.picture = null;
                     vm.forms.dirty = true;
                 });
             },
