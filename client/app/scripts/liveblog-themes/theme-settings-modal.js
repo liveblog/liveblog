@@ -10,16 +10,22 @@
             settings: angular.copy(vm.theme.settings) || {},
             options: [],
             submitSettings: function(shouldClose) {
-                api.themes.update(vm.theme, {settings: vm.settings}).then(function(data) {
-                    vm.settings = angular.copy(data.settings);
-                    // reset the dirty state to false
-                    vm.themeSettingsForm.$setPristine();
+                if (!angular.equals(vm.theme.settings, vm.settings)) {
+                    api.themes.update(vm.theme, {settings: vm.settings}).then(function(data) {
+                        vm.settings = angular.copy(data.settings);
+                        // reset the dirty state to false
+                        vm.themeSettingsForm.$setPristine();
+                        if (shouldClose) {
+                            vm.closeModal();
+                        }
+                    }, function(error) {
+                        notify.error(error.data._error.message);
+                    });
+                } else {
                     if (shouldClose) {
                         vm.closeModal();
                     }
-                }, function(error) {
-                    notify.error(error.data._error.message);
-                });
+                }
             },
             closeModal: function() {
                 vm.modalOpened = false;

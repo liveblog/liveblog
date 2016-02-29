@@ -6,9 +6,13 @@ Feature: Client modules operations
         Then we get list with 0 items
 
     Scenario: List blogs without needing auth
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given "blogs"
         """
-        [{"title": "testBlog one"}, {"title": "testBlog two"}]
+        [{"title": "testBlog one", "blog_preferences": {"theme": "forest", "language": "fr"}}, {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "testBlog two"}]
         """
         When we get "/client_blogs"
         Then we get list with 2 items
@@ -17,9 +21,13 @@ Feature: Client modules operations
         """
 
 	Scenario: List a single client_blog
+		Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given "blogs"
         """
-        [{"guid": "blog-1", "title": "test_blog"}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "guid": "blog-1", "title": "test_blog"}]
         """
         When we get "/client_blogs/#blogs._id#"
         Then we get existing resource

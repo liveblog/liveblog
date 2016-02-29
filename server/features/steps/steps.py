@@ -13,6 +13,7 @@ import superdesk.tests as tests
 from behave import given, when  # @UnresolvedImport
 from flask import json
 from superdesk.tests import set_placeholder
+from superdesk import get_resource_service
 
 
 external_url = 'http://thumbs.dreamstime.com/z/digital-nature-10485007.jpg'
@@ -44,3 +45,10 @@ def given_we_login_as_user(context, username, password):
 @when('we login as user "{username}" with password "{password}"')
 def when_we_login_as_user(context, username, password):
     login_as(context, username, password)
+
+
+@when('we register "{theme_name}"')
+def step_impl_register_themes(context, theme_name):
+    with context.app.test_request_context(context.app.config['URL_PREFIX']):
+        theme = get_resource_service('themes').find_one(req=None, name=theme_name)
+        return get_resource_service('themes').save_or_update_theme(theme)
