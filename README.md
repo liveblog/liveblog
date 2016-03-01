@@ -3,13 +3,13 @@
 [Fork](https://github.com/superdesk/liveblog) •
 [License](https://github.com/superdesk/liveblog/blob/master/LICENSE) •
 [Documentation](http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/) •
-*Version 3.0.3*
+*Version 3.0.4*
 
 [![Build Status](https://travis-ci.org/superdesk/liveblog.svg?branch=master)](https://travis-ci.org/superdesk/liveblog)
 
 ### Installation
 
-Use [docker-compose](http://fig.sh "") and the config from `docker` folder or build docker images manually from `Dockerfile`'s from `client` and `server` folders accordingly.
+Use [docker-compose](http://fig.sh "") and the config from `docker` folder or build docker images manually from the [Dockerfile](./Dockerfile).
 
 ##### install docker
 
@@ -33,5 +33,3 @@ $ . env/bin/activate
 $ pip install -r docker/requirements.txt
 $ ./scripts/docker-local-demo.sh
 ```
-
-For manual installation just follow the steps described both [client](./client/Dockerfile) and [server](./server/Dockerfile) Dockerfiles.

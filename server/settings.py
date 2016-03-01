@@ -45,6 +45,10 @@ LOG_SERVER_PORT = int(env('LOG_SERVER_PORT', 5555))
 APPLICATION_NAME = env('APP_NAME', 'Live Blog')
 server_url = urlparse(env('SUPERDESK_URL', 'http://localhost:5000/api'))
 CLIENT_URL = env('SUPERDESK_CLIENT_URL', 'http://localhost:9000')
+# Add absolute url protocol to make sure it work with email clients
+if not CLIENT_URL.startswith('http'):
+    CLIENT_URL = 'http:' + CLIENT_URL
+
 URL_PROTOCOL = server_url.scheme or None
 SERVER_NAME = server_url.netloc or None
 URL_PREFIX = server_url.path.lstrip('/') or ''
@@ -140,6 +144,7 @@ S3_USE_HTTPS = False
 FLASK_ASSETS_USE_S3 = False
 S3_THEMES_PREFIX = env('S3_THEMES_PREFIX', None)
 USE_S3 = FLASK_ASSETS_USE_S3
+
 
 SUPPORTED_LANGUAGES = {
     'languages': {

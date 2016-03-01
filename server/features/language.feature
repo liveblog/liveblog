@@ -31,13 +31,17 @@ Feature: Language operations
 
     @auth
     Scenario: Assign a language to a blog
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given "languages"
         """
         [{"language_code": "fr"}]
         """
         When we post to "blogs"
         """
-        [{"title": "test_blog1", "blog_preferences": {"language": "fr"}}]
+        [{"title": "test_blog1", "blog_preferences": {"theme": "forest", "language": "fr"}}]
         """
         Then we get existing resource
         """

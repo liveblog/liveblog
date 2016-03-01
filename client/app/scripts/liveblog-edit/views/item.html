@@ -1,0 +1,4 @@
+<div ng-switch="item.item_type">
+    <div ng-switch-when="image" lb-bind-html html-content="{{ item.text | convertLinksWithRelativeProtocol }}" class="lb-post__item" ng-class-even="'lb-post__item--even'"></div>
+    <div ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}" class="lb-post__item" ng-class-even="'lb-post__item--even'"></div>
+</div>

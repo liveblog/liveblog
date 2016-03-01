@@ -6,9 +6,13 @@ Feature: Client modules operations
         Then we get list with 0 items
 
     Scenario: List blogs without needing auth
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given "blogs"
         """
-        [{"title": "testBlog one"}, {"title": "testBlog two"}]
+        [{"title": "testBlog one", "blog_preferences": {"theme": "forest", "language": "fr"}}, {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "testBlog two"}]
         """
         When we get "/client_blogs"
         Then we get list with 2 items
@@ -17,9 +21,13 @@ Feature: Client modules operations
         """
 
 	Scenario: List a single client_blog
+		Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given "blogs"
         """
-        [{"guid": "blog-1", "title": "test_blog"}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "guid": "blog-1", "title": "test_blog"}]
         """
         When we get "/client_blogs/#blogs._id#"
         Then we get existing resource
@@ -82,4 +90,47 @@ Feature: Client modules operations
         Then we get existing resource
         """
         {"username": "foo"}
+        """
+
+    Scenario: Posting a comment
+        Given "client_blogs"
+        """
+        [{"guid": "blog-1", "title": "test_blog_comment"}]
+        """
+        Given empty "client_items"
+       	When we post to "/client_items"
+        """
+        [
+         {"text": "test item comment", "commenter": "ana", "client_blog": "#client_blogs._id#"}
+        ]
+        """
+        And we get "/client_items/#client_items._id#"
+        Then we get existing resource
+        """
+        {"text": "test item comment", "commenter": "ana", "client_blog": "#client_blogs._id#"}
+        """
+        When we post to "/client_comments"
+        """
+        {"client_blog": "#client_blogs._id#",
+        	"groups": [
+                {"id": "root", "refs": [{"idRef": "main"}], "role": "grpRole:NEP"},
+                {
+                    "id": "main",
+                    "refs": [
+                        {
+                            "headline": "comment post",
+                            "residRef": "#client_items._id#",
+                            "slugline": "awesome comment"
+                        }
+                    ],
+                    "role": "grpRole:Main"
+                }
+            ],
+            "guid": "tag:example.com,0000:newsml_BRE9A605"
+        }
+        """
+        When we get "/client_comments"
+        Then we get list with 1 items
+        """
+        {"_items": [{"original_creator": "", "post_status": "comment", "client_blog": "#client_blogs._id#"}]}
         """

@@ -55,6 +55,11 @@ class ItemsResource(ArchiveResource):
         },
         'deleted': {
             'type': 'string'
+        },
+        'commenter': {
+            'type': 'string',
+            'minlength': 1,
+            'maxlength': 30
         }
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
