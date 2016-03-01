@@ -21,7 +21,7 @@
 
         function retrieveBlogSettings() {
             blogsService.get({}, function(blog) {
-                angular.extend(vm.blog, blog)
+                angular.extend(vm.blog, blog);
             });
         }
         // define view model
