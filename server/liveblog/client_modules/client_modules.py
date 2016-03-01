@@ -5,6 +5,10 @@ from superdesk.users.users import UsersResource
 from superdesk.users.services import UsersService
 from superdesk.metadata.utils import item_url
 from flask import current_app as app
+from liveblog.items.items import ItemsResource, ItemsService
+from flask import request
+from liveblog.common import check_comment_length
+from superdesk.resource import Resource
 
 
 class ClientUsersResource(UsersResource):
@@ -57,6 +61,53 @@ class ClientPostsResource(PostsResource):
 
 class ClientPostsService(PostsService):
     pass
+
+
+class ClientItemsResource(ItemsResource):
+    datasource = {
+        'source': 'archive',
+        'elastic_filter': {'term': {'particular_type': 'item'}},
+        'default_sort': [('order', -1)]
+    }
+    public_methods = ['GET', 'POST']
+    public_item_methods = ['GET', 'POST']
+    item_methods = ['GET']
+    resource_methods = ['GET', 'POST']
+    schema = {
+        'client_blog': Resource.rel('client_blogs', True)
+    }
+    schema.update(ItemsResource.schema)
+
+
+class ClientItemsService(ItemsService):
+    def on_create(self, docs):
+        for doc in docs:
+            check_comment_length(doc['text'])
+        super().on_create(docs)
+
+
+class ClientCommentsResource(PostsResource):
+    datasource = {
+        'source': 'archive',
+        'elastic_filter': {'term': {'particular_type': 'post'}},
+        'default_sort': [('order', -1)]
+    }
+    public_methods = ['GET', 'POST']
+    public_item_methods = ['GET', 'POST']
+    item_methods = ['GET']
+    resource_methods = ['GET', 'POST']
+    schema = {
+        'client_blog': Resource.rel('client_blogs', True)
+    }
+    schema.update(PostsResource.schema)
+
+
+class ClientCommentsService(PostsService):
+    def on_create(self, docs):
+        for doc in docs:
+            if request.method == 'POST':
+                doc['post_status'] = 'comment'
+        super().on_create(docs)
 
 
 class ClientBlogPostsResource(BlogPostsResource):

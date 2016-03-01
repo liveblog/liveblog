@@ -145,6 +145,7 @@ FLASK_ASSETS_USE_S3 = False
 S3_THEMES_PREFIX = env('S3_THEMES_PREFIX', None)
 USE_S3 = FLASK_ASSETS_USE_S3
 
+
 SUPPORTED_LANGUAGES = {
     'languages': {
         'en': 'english',

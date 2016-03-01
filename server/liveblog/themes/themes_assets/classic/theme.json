@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "2.3.1",
+    "version": "2.3.5",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type" : "git",
@@ -123,6 +123,13 @@
             ],
             "default": "?",
             "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
+        },
+        {
+            "name": "canComment",
+            "label": "Users can comment",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users can comment from embed page"
         }
     ]
 }

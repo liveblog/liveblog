@@ -8,10 +8,14 @@ Feature: Blog operations
 
     @auth
     Scenario: Add blog
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "title One", "description": "description", "blog_status": "open"}]
+        [{"title": "title One", "description": "description", "blog_status": "open", "blog_preferences": {"theme": "forest", "language": "fr"}}]
         """
         And we get "blogs?embedded={"original_creator":1}"
         Then we get list with 1 items
@@ -21,9 +25,13 @@ Feature: Blog operations
 
     @auth
     Scenario: Update blog
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """	
         When we post to "blogs"
         """
-        [{"title": "testBlog"}]
+        [{"title": "testBlog", "blog_preferences": {"theme": "forest", "language": "fr"}}]
         """
         When we patch latest
         """
@@ -37,6 +45,10 @@ Feature: Blog operations
 
     @auth
     Scenario: Update blog without being the owner
+        Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
@@ -49,7 +61,7 @@ Feature: Blog operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Update blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Update blog without being the owner", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we patch "/blogs/#blogs._id#"
@@ -60,9 +72,13 @@ Feature: Blog operations
 
     @auth
     Scenario: Check blog_status
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given "blogs"
         """
-        [{"title": "testBlog", "blog_status": "closed"}, {"title": "testBlog2", "blog_status": "closed"}, {"title": "testBlog3", "blog_status": "open"}]
+        [{"title": "testBlog", "blog_status": "closed", "blog_preferences": {"theme": "forest", "language": "fr"}}, {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "testBlog2", "blog_status": "closed"}, {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "testBlog3", "blog_status": "open"}]
         """
         When we get "/blogs?source={"query": {"filtered": {"filter": {"term": {"blog_status": "closed"}}}}}"
         Then we get list with 2 items
@@ -77,13 +93,17 @@ Feature: Blog operations
 
     @auth
     Scenario: Search for blogs
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given "blogs"
         """
         [
-         {"title": "title One", "description": "Description", "blog_status": "open"},
-         {"title": "title Two", "description": "one", "blog_status": "open"},
-         {"title": "Title three", "blog_status": "open"},
-         {"title": "title one, two, three", "description": "description", "blog_status": "closed"}
+         {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "title One", "description": "Description", "blog_status": "open"},
+         {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "title Two", "description": "one", "blog_status": "open"},
+         {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Title three", "blog_status": "open"},
+         {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "title one, two, three", "description": "description", "blog_status": "closed"}
         ]
         """
 
@@ -104,13 +124,17 @@ Feature: Blog operations
 
        @auth
     	Scenario: Delete blog
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given "blogs"
         """
-        [{"title": "test_blog1"}]
+        [{"title": "test_blog1", "blog_preferences": {"theme": "forest", "language": "fr"}}]
         """
         When we post to "/blogs"
         """
-           [{"title": "test_blog2"}]
+           [{"title": "test_blog2", "blog_preferences": {"theme": "forest", "language": "fr"}}]
          """
         And we delete latest
         Then we get deleted response
@@ -125,6 +149,10 @@ Feature: Blog operations
 
 		@auth
     	Scenario: Delete blog without being the owner
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
     	Given "roles"
         """
         [{"name": "Editor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1}}]
@@ -137,7 +165,7 @@ Feature: Blog operations
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
+        [{"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Delete blog without being the owner", "members": [{"user": "#user_foo#"}]}]
         """
         When we login as user "foo" with password "barbar"
         When we delete "/blogs/#blogs._id#"
@@ -145,6 +173,10 @@ Feature: Blog operations
 
         @auth
         Scenario: Adding blogs with or without members
+        Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "users"
         When we post to "users"
             """
@@ -155,8 +187,8 @@ Feature: Blog operations
         When we post to "/blogs"
         """
         [
-         {"title": "foo blog", "description": "blog with one member", "blog_status": "open", "members": [{"user": "#user_foo#"}]},
-         {"title": "bar blog", "description": "blog without members", "blog_status": "open"}
+         {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "foo blog", "description": "blog with one member", "blog_status": "open", "members": [{"user": "#user_foo#"}]},
+         {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "bar blog", "description": "blog without members", "blog_status": "open"}
         ]
         """
         And we get "/blogs"
@@ -173,6 +205,10 @@ Feature: Blog operations
     @auth
     @notification
     Scenario: Create new blog and get notification
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "users"
         Given empty "blogs"
         When we post to "users"
@@ -181,7 +217,7 @@ Feature: Blog operations
             """
         When we post to "/blogs"
             """
-            {"title": "Sports blog", "members": [{"user": "#users._id#"}]}
+            {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "Sports blog", "members": [{"user": "#users._id#"}]}
             """
         And we get "/blogs"
         Then we get list with 1 items
@@ -195,10 +231,14 @@ Feature: Blog operations
 
 	@auth
     Scenario: Permission to open blogs
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
         Given empty "blogs"
         When we post to "blogs"
         """
-        [{"title": "first blog", "members": []}
+        [{"title": "first blog", "members": [], "blog_preferences": {"theme": "forest", "language": "fr"}}
         ]
         """
         When we switch to user of type user
@@ -209,9 +249,13 @@ Feature: Blog operations
 	@auth
     @notification
     Scenario: Create new request for blog access and get notification
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
     	Given "blogs"
         """
-        [{"title": "Sports blog"}]
+        [{"title": "Sports blog", "blog_preferences": {"theme": "forest", "language": "fr"}}]
         """
     	Given "roles"
         """

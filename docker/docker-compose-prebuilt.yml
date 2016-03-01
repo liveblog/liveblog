@@ -23,7 +23,7 @@ kibana:
   - elastic
   ports:
   - "5601:5601"
-  image: sourcefabric/kibana:master
+  image: sourcefabric/kibana:liveblogmaster
 
 elastic:
   extends:
@@ -39,7 +39,7 @@ superdesk:
   extends:
     file: common.yml
     service: superdesk
-  image: sourcefabric/superdesk:master
+  image: sourcefabric/superdesk:liveblogmaster
   links:
    - mongodb
    - redis

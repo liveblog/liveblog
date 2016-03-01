@@ -1,4 +1,3 @@
-
 <div class="lb-timeline" ng-app="theme" ng-controller="TimelineCtrl as timeline">
     <div class="lb-timeline__header">
         <h1 ng-if="timeline.settings.showTitle" ng-bind="timeline.blog.title"></h1>
@@ -7,91 +6,143 @@
         </div>
         <p class="description" ng-if="timeline.settings.showDescription" ng-bind="timeline.blog.description"></p>
     </div>
-    <div class="sorting-bar">
-        <div class="sorting-bar__title">Sort by:</div>
-        <div class="sorting-bar__orders">
-            <div
-                class="sorting-bar__order"
-                ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='editorial'}"
-                ng-click="timeline.orderBy('editorial')">Editorial</div>
-            <div
-                class="sorting-bar__order"
-                ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='newest_first'}"
-                ng-click="timeline.orderBy('newest_first')">Newest first</div>
-            <div
-                class="sorting-bar__order"
-                ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
-                ng-click="timeline.orderBy('oldest_first')">Oldest first</div>
+    <div class="header-bar">
+        <div class="sorting-bar">
+            <div class="sorting-bar__title">Sort by:</div>
+            <div class="sorting-bar__orders">
+                <div
+                    class="sorting-bar__order"
+                    ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='editorial'}"
+                    ng-click="timeline.orderBy('editorial')">Editorial</div>
+                <div
+                    class="sorting-bar__order"
+                    ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='newest_first'}"
+                    ng-click="timeline.orderBy('newest_first')">Newest first</div>
+                <div
+                    class="sorting-bar__order"
+                    ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
+                    ng-click="timeline.orderBy('oldest_first')">Oldest first</div>
+            </div>
         </div>
-        <div class="sorting-bar__logo">
+        <div class="header-bar__actions">
+            <button
+                ng-if="timeline.settings.canComment"
+                class="btn ng-cloak"
+                ng-class="{'active': timeline.comment}"
+                ng-click="timeline.comment = !timeline.comment">Comment</button>
+        </div>
+        <div class="header-bar__logo">
             <a href="https://www.sourcefabric.org/liveblog/" target="_blank">
                 <img ng-src="{{ timeline.templateDir}}images/lb-logo.png"/>
             </a>
         </div>
     </div>
-    <div
-        class="lb-post emtpy-message ng-cloak"
-        ng-show="timeline.pagesManager.allPosts().length < 1 && !timeline.loading">
-        <div>No post for now.</div>
-    </div>
-    <section
-        class="lb-posts list-group"
-        infinite-scroll="timeline.fetchNewPage()"
-        infinite-scroll-disabled="!timeline.settings.infinitScroll || !timeline.isAllowedToLoadMore()"
-        infinite-scroll-immediate-check="false">
-        <div class="lb-post load-new-posts"
-             ng-click="timeline.applyUpdates()"
-             ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0">
-            <ng-pluralize count="timeline.newPosts.length"
-                when="{'one': 'See one new post',
-                'other': 'See {} new posts'}">
-            </ng-pluralize>
+    <div class="timeline-body">
+        <div lb-comments data-comment="timeline.comment"></div>
+        <div
+            class="lb-post emtpy-message ng-cloak"
+            ng-show="timeline.pagesManager.allPosts().length < 1 && !timeline.loading">
+            <div>No post for now.</div>
         </div>
-        <article lb-post
-                 ng-repeat="post in timeline.pagesManager.allPosts() track by post._id"
-                 class="lb-post list-group-item ng-cloak"
-                 ng-class="{'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
-                            'lb-post-permalink-selected': post._id === timeline.permalink._id}">
-            <div class="lb-author" ng-if="timeline.settings.showAuthor">
-                <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar"
-                     class="lb-author__avatar"
-                     ng-src="{{ post.original_creator.picture_url }}" />
-                <div class="lb-author__date" ng-bind="post.published_date | prettifyIsoDate"></div>
-                <!-- author name, with or without mailto link  -->
-                <div ng-if="!timeline.settings.authorNameLinksToEmail"
-                     class="lb-author__name"
-                     ng-bind="post.original_creator[timeline.settings.authorNameFormat]"></div>
-                <div ng-if="timeline.settings.authorNameLinksToEmail"
-                     class="lb-author__name">
-                    <a href="mailto:{{post.original_creator.email}}"
-                       ng-bind="post.original_creator[timeline.settings.authorNameFormat]" target="_blank"></a>
-                </div>
+        <section
+            ng-class="{'comment-active': timeline.comment}"
+            class="lb-posts list-group"
+            infinite-scroll="timeline.fetchNewPage()"
+            infinite-scroll-disabled="!timeline.settings.infinitScroll || !timeline.isAllowedToLoadMore()"
+            infinite-scroll-immediate-check="false">
+            <div class="lb-post load-new-posts"
+                 ng-click="timeline.applyUpdates()"
+                 ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0">
+                <ng-pluralize count="timeline.newPosts.length"
+                    when="{'one': 'See one new post',
+                    'other': 'See {} new posts'}">
+                </ng-pluralize>
             </div>
-            <div class="lb-post-permalink">
-                <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
-                    <i class="fa fa-link fa-2"></i>
-                </a>
-            </div>
-            <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
-                <div ng-switch="item.item_type">
-                    <div ng-switch-when="embed">
-                        <div ng-switch="item.meta.provider_name">
-                            <div ng-switch-when="Twitter">
-                                <lb-twitter-card lb-twitter-content="{{ item.meta.html }}"></lb-twitter-card>
-                            </div>
-                            <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
-                        </div>
+            <article lb-post
+                     ng-repeat="post in timeline.pagesManager.allPosts() track by post._id"
+                     class="lb-post list-group-item ng-cloak"
+                     ng-class="{'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
+                                'lb-post-permalink-selected': post._id === timeline.permalink._id}">        
+                <div class="lb-author" ng-if="timeline.settings.showAuthor">
+                    <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar"
+                         class="lb-author__avatar"
+                         ng-class="{'lb-author__avatar': (post.mainItem.item_type !== 'comment'),
+                                       'lb-author__comment': (post.mainItem.item_type === 'comment')}"
+                         ng-src="{{ post.mainItem.original_creator.picture_url }}" />
+                    <!-- special case, if the main item is a comment show the `_created` date insted of `published_date` one. !-->
+                    <div class="lb-author__date" ng-bind="post.mainItem.displayDate | prettifyIsoDate"></div>
+                    <!-- author name, with or without mailto link  -->
+                    <div ng-if="!timeline.settings.authorNameLinksToEmail || post.mainItem.item_type === 'comment'"
+                         class="lb-author__name"
+                         ng-bind="post.mainItem.original_creator[timeline.settings.authorNameFormat]"></div>
+                    <div ng-if="timeline.settings.authorNameLinksToEmail && post.mainItem.item_type !== 'comment'"
+                         class="lb-author__name">
+                        <a href="mailto:{{post.mainItem.original_creator.email}}"
+                           ng-bind="post.mainItem.original_creator[timeline.settings.authorNameFormat]"></a>
                     </div>
-                    <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
                 </div>
-            </div>
-            <div class="lb-updated-date ng-cloak" ng-show="post._updated !== post.published_date">
-                Updated <span ng-bind="post._updated | prettifyIsoDate"></span>
-            </div>
-        </article>
-    </section>
-    <button ng-click="timeline.fetchNewPage()"
-            class="ng-cloak"
-            ng-if="!timeline.settings.infinitScroll && timeline.isAllowedToLoadMore()" trans>Load more posts</button>
-    <div class="loading" ng-show="timeline.loading">Loading</div>
+                <div class="lb-post-permalink">
+                    <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
+                        <i class="fa fa-link fa-2"></i>
+                    </a>
+                </div>
+
+                <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
+                    <div ng-if="post.fullDetails && !$first" class="list-group-item">
+                        <div class="lb-timeline__header">
+                            <div class="lb-author" ng-if="timeline.settings.showAuthor">
+                                <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar"
+                                     class="lb-author__avatar"
+                                     ng-class="{'lb-author__avatar': (item.item_type !== 'comment'),
+                                                   'lb-author__comment': (item.item_type === 'comment')}"
+                                     ng-src="{{ item.original_creator.picture_url }}" />
+
+                                <div class="lb-author__date" ng-bind="item.displayDate | prettifyIsoDate"></div>
+                                <!-- author name, with or without mailto link  -->
+                                <div ng-if="!timeline.settings.authorNameLinksToEmail || item.item_type === 'comment'"
+                                     class="lb-author__name"
+                                     ng-bind="item.original_creator[timeline.settings.authorNameFormat]"></div>
+                                <div ng-if="timeline.settings.authorNameLinksToEmail && item.item_type !== 'comment'"
+                                     class="lb-author__name">
+                                    <a href="mailto:{{post.mainItem.original_creator.email}}"
+                                       ng-bind="item.original_creator[timeline.settings.authorNameFormat]"></a>
+                                </div>
+                            </div>
+                            <div class="lb-item" ng-switch="item.item_type">
+                                <div ng-switch-when="embed">
+                                    <div ng-switch="item.meta.provider_name">
+                                        <div ng-switch-when="Twitter">
+                                            <lb-twitter-card lb-twitter-content="{{ item.meta.html }}"></lb-twitter-card>
+                                        </div>
+                                        <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
+                                    </div>
+                                </div>
+                                <div ng-switch-when="image" lb-bind-html html-content="{{ item.text | convertLinksWithRelativeProtocol }}"></div>
+                                <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
+                            </div>
+                        </div>
+                    </div>                
+                    <div ng-if="!post.fullDetails || $first" ng-switch="item.item_type">
+                        <div ng-switch-when="embed">
+                            <div ng-switch="item.meta.provider_name">
+                                <div ng-switch-when="Twitter">
+                                    <lb-twitter-card lb-twitter-content="{{ item.meta.html }}"></lb-twitter-card>
+                                </div>
+                                <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
+                            </div>
+                        </div>
+                        <div ng-switch-when="image" lb-bind-html html-content="{{ item.text | convertLinksWithRelativeProtocol }}"></div>
+                        <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
+                    </div>
+                </div>
+                <div class="lb-updated-date ng-cloak" ng-show="post.showUpdate">
+                    Updated <span ng-bind="post._updated | prettifyIsoDate"></span>
+                </div>
+            </article>
+        </section>
+        <button ng-click="timeline.fetchNewPage()"
+                class="ng-cloak"
+                ng-if="!timeline.settings.infinitScroll && timeline.isAllowedToLoadMore()" trans>Load more posts</button>
+        <div class="loading" ng-show="timeline.loading">Loading</div>
+    </div>
 </div>

@@ -83,7 +83,16 @@ define([
             }
             return retrievePosts(blog_id, posts_criteria);
         }
-
+        function _completeUser(obj) {
+            if (obj.commenter) {
+                obj.user = {display_name: obj.commenter};
+            } else {
+                userList.getUser(obj.original_creator).then(function(user) {
+                    obj.user = user;
+                });
+            }
+            return obj;
+        }
         function _completePost(post) {
             angular.extend(post, {
                 // add a `multiple_items` field. Can be false or a positive integer.
@@ -93,10 +102,21 @@ define([
                 mainItem: post.groups[1].refs[0],
                 items: post.groups[1].refs
             });
-            // complete Post With User Information
-            userList.getUser(post.original_creator).then(function(user) {
-                post.user = user;
+            // if an item has a commenter then that post hasComments.
+            post.hasComments = _.reduce(post.groups[1].refs, function(is, val) {
+                return is || !_.isUndefined(val.item.commenter);
+            }, false);
+            // `fullDetails` is a business logic that can be compiled from other objects.
+            post.fullDetails = post.hasComments;
+            // special cases for comments.
+            post.showUpdate = (post._updated !== post.published_date) &&
+                               (!post.hasComments) && (post.mainItem.item.item_type !== 'comment');
+            angular.forEach(post.items, function(val) {
+                if (post.fullDetails) {
+                    _completeUser(val.item);
+                }
             });
+            _completeUser(post.mainItem.item);
             return post;
         }
 
@@ -157,7 +177,8 @@ define([
                             blog: blog_id,
                             text: item.text,
                             meta: item.meta,
-                            item_type: item.item_type
+                            item_type: item.item_type,
+                            commenter: item.meta && item.meta.commenter
                         };
                     }
                     dfds.push(api.items.save(item));

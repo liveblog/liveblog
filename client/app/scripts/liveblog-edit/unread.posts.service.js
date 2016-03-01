@@ -18,7 +18,14 @@ define([
     ];
     function UnreadPostsService($rootScope) {
         var listener;
-        var contributions = [], prevContributions = [];
+        var contributions = [],
+            prevContributions = [],
+            comments = [],
+            prevComments = [];
+        // check if the post is an unread comment.
+        function isComment(post) {
+            return _.indexOf(prevComments, post._id) !== -1;
+        }
 
         // check if the post is an unread contribution.
         function isContribution(post) {
@@ -30,14 +37,29 @@ define([
             return contributions.length;
         }
 
-        // reset the current contribution and keep the previous vector.
-        function resetContributions() {
-            prevContributions = contributions;
-            contributions = [];
+        // get the count of current comments.
+        function countComments() {
+            return comments.length;
+        }
+
+        // reset the current state and keep the previous vector.
+        function reset(panel) {
+            if (panel === 'contributions') {
+                prevContributions = contributions;
+                contributions = [];
+            }
+            if (panel === 'comments') {
+                prevComments = comments;
+                comments = [];
+            }
         }
 
         // add the post in the contributions vector.
         function onPostReceive(e, event_params) {
+            if (event_params.post_status === 'comment') {
+                comments = comments.concat(event_params.post_ids);
+            }
+
             if (event_params.post_status === 'submitted') {
                 contributions = contributions.concat(event_params.post_ids);
             }
@@ -45,13 +67,16 @@ define([
         return {
             isContribution: isContribution,
             countContributions: countContributions,
+            isComment: isComment,
+            countComments: countComments,
+            reset: reset,
             startListening: function() {
                 if (!listener) {
                     listener = $rootScope.$on('posts', onPostReceive);
                 }
             },
             stopListening: function() {
-                resetContributions();
+                reset();
                 if (listener) {
                     listener();
                     listener = undefined;

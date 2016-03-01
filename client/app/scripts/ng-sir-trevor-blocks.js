@@ -59,10 +59,9 @@ define([
             }
             SirTrevor.Block.prototype.attributes = function() {
                 return _.extend(SirTrevor.SimpleBlock.fn.attributes.call(this), {
-                    'data-icon-after' : "ADD CONTENT HERE"
+                    'data-icon-after': "ADD CONTENT HERE"
                 });
             }
-        
             // Add toMeta method to all blocks.
             SirTrevor.Block.prototype.toMeta = function() {return;};
             SirTrevor.Block.prototype.getOptions = function() {
@@ -483,6 +482,10 @@ define([
                     return this.retrieveData();
                 }
             });
+            SirTrevor.Blocks.Text.prototype.loadData = function(data) {
+                this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
+            };
+
             SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
                     var that = this, placeHolderText = window.gettext('Start writing here…');
 
@@ -547,6 +550,42 @@ define([
                 input.html(val);
             }, 0);
 
+            SirTrevor.Blocks.Comment = SirTrevor.Block.extend({
+                type: "comment",
+
+                title: function() { return  window.i18n.t('blocks:comment:title'); },
+
+                editorHTML: '<div class="st-required st-text-block"></div>',
+
+                icon_name: 'comment',
+
+                loadData: function(data) {
+                    this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
+                },
+                isEmpty: function() {
+                    return _.isEmpty(this.getData().text);
+                },
+                retrieveData: function() {
+                    return {
+                        text: this.$('.st-text-block').text() || undefined,
+                    };
+                },
+                toHTML: function(html) {
+                    if (this.$el) {
+                        return this.getTextBlock().html();
+                    } else {
+                        return html;
+                    }
+                },
+                toMeta: function() {
+                    var data = this.getData();
+                    return {
+                        text: data.text,
+                        commenter: data.commenter,
+                        _created: data._created
+                    }
+                }
+            });
             var Strikethrough = SirTrevor.Formatter.extend({
                 title: 'strikethrough',
                 iconName: 'strikethrough',
