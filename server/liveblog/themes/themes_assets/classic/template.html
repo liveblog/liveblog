@@ -64,6 +64,7 @@
                      ng-class="{'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
                                 'lb-post-permalink-selected': post._id === timeline.permalink._id}">        
                 <div class="lb-author" ng-if="timeline.settings.showAuthor">
+                    <i class="icon-star"></i>
                     <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar"
                          class="lb-author__avatar"
                          ng-class="{'lb-author__avatar': (post.mainItem.item_type !== 'comment'),

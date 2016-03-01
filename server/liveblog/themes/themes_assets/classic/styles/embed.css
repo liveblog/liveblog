@@ -296,6 +296,9 @@ button.active {
     margin-bottom: 20px;
     position: relative;
 }
+.icon-star {
+    background-position: -120px 0;
+ }
 .lb-post {
     position: relative;
     border-bottom: 1px solid #CBCBCB;
