@@ -27,7 +27,7 @@ msgstr "Se încarcă"
 
 #: template.html:16
 msgid "Newest first"
-msgstr "cele mai noi"
+msgstr "Cele mai noi"
 
 #: template.html:34
 msgid "No post for now."
@@ -35,7 +35,7 @@ msgstr "Deocamdata nu sunt articole."
 
 #: template.html:20
 msgid "Oldest first"
-msgstr "cele mai vechi"
+msgstr "Cele mai vechi"
 
 #: template.html:41
 msgid "See one new post"

@@ -18,13 +18,13 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
 });
   gettextCatalog.setStrings('fr', {
   "Editorial": "Éditorial",
-  "Load more posts": "Charger plus de messages",
+  "Load more posts": "Afficher plus de messages",
   "Loading": "Chargement",
   "Newest first": "Le plus récent d'abord",
   "No post for now.": "Aucun message pour le moment.",
   "Oldest first": "Plus ancien en premier",
   "See one new post": [
-    "Voir un nouveau poste",
+    "Voir le nouveau message",
     "Voir {{$count}} nouveaux messages"
   ],
   "Sort by:": "Trier par:"
@@ -33,9 +33,9 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Editorial": "editorial",
   "Load more posts": "Încarcă mai multe posturi",
   "Loading": "Se încarcă",
-  "Newest first": "cele mai noi",
+  "Newest first": "Cele mai noi",
   "No post for now.": "Deocamdata nu sunt articole.",
-  "Oldest first": "cele mai vechi",
+  "Oldest first": "Cele mai vechi",
   "See one new post": [
     "Vezi un articol nou",
     "Vezi {{$count}} articole noi",
