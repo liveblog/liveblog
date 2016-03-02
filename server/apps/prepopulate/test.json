@@ -163,11 +163,17 @@
         "license": "AGPL-3.0",
         "options": [
             {
+                "name": "canComment",
+                "label": "Users can comment",
+                "type": "checkbox",
+                "default": true,
+                "help": "If the users can comment from embed page"
+            },{
                 "name": "showAuthor",
                 "label": "Show Author",
                 "type": "checkbox",
                 "default": true,
-                "help": "Show the author information on posts"
+                "help": "Show the author information on postsed"
             }
         ]
     }
@@ -917,6 +923,40 @@
                 "id": "main",
                 "refs": [{
                     "residRef": "-blog two id post one item one-"
+                }],
+                "role": "grpRole:Main"
+            }]
+    }
+},
+{
+    "resource": "items",
+    "username": "editor",
+    "data": {
+        "firstcreated": "2013-11-11T11:11:13+00:00",
+        "client_blog": "-id blog five-",
+        "text": "comment: contents",
+        "commenter": "comment: first last",
+        "item_type": "comment"
+    },
+    "id_name": "-blog five id post one item one-"
+},
+{
+    "resource": "posts",
+    "username": "editor",
+    "data": {
+        "firstcreated": "2013-11-11T11:11:21+00:00",
+        "client_blog": "-id blog five-",
+        "post_status":"comment",
+        "groups": [{
+                "id": "root",
+                "refs": [{
+                    "idRef": "main"
+                }],
+                "role": "grpRole:NEP"
+            }, {
+                "id": "main",
+                "refs": [{
+                    "residRef": "-blog five id post one item one-"
                 }],
                 "role": "grpRole:Main"
             }]

@@ -3,13 +3,13 @@
 [Fork](https://github.com/superdesk/liveblog) •
 [License](https://github.com/superdesk/liveblog/blob/master/LICENSE) •
 [Documentation](http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/) •
-*Version 3.0.4*
+*Version 3.0.5*
 
 [![Build Status](https://travis-ci.org/superdesk/liveblog.svg?branch=master)](https://travis-ci.org/superdesk/liveblog)
 
 ### Installation
 
-Use [docker-compose](https://docs.docker.com/compose/ "") and the config from `docker` folder or build docker images manually from the [Dockerfile](./Dockerfile).
+Use [docker-compose](http://fig.sh "") and the config from `docker` folder or build docker images manually from the [Dockerfile](./Dockerfile).
 
 ##### install docker
 

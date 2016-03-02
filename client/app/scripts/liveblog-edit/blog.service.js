@@ -42,7 +42,7 @@ define([
             } else {
                 // if the blog contains the url, returns it
                 if (blog.public_url) {
-                    deferred.resolve(blog.public_url);
+                    deferred.resolve(blog.public_url.replace('http://', '//'));
                 } else {
                     // otherwise, listen for websocket notifications regarding publication
                     var notif_listener = $rootScope.$on('blog', function updateBlogAndResolve(e, data) {
@@ -52,7 +52,8 @@ define([
                             // unbind the listener
                             notif_listener();
                             // return the url
-                            deferred.resolve(blog.public_url);
+                            // fix https issue
+                            deferred.resolve(blog.public_url.replace('http://', '//'));
                         }
                     });
                 }

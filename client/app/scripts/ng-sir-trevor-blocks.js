@@ -59,10 +59,9 @@ define([
             }
             SirTrevor.Block.prototype.attributes = function() {
                 return _.extend(SirTrevor.SimpleBlock.fn.attributes.call(this), {
-                    'data-icon-after' : "ADD CONTENT HERE"
+                    'data-icon-after': "ADD CONTENT HERE"
                 });
             }
-        
             // Add toMeta method to all blocks.
             SirTrevor.Block.prototype.toMeta = function() {return;};
             SirTrevor.Block.prototype.getOptions = function() {
@@ -483,6 +482,10 @@ define([
                     return this.retrieveData();
                 }
             });
+            SirTrevor.Blocks.Text.prototype.loadData = function(data) {
+                this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
+            };
+
             SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
                     var that = this, placeHolderText = window.gettext('Start writing here…');
 
@@ -547,6 +550,42 @@ define([
                 input.html(val);
             }, 0);
 
+            SirTrevor.Blocks.Comment = SirTrevor.Block.extend({
+                type: "comment",
+
+                title: function() { return  window.i18n.t('blocks:comment:title'); },
+
+                editorHTML: '<div class="st-required st-text-block"></div>',
+
+                icon_name: 'comment',
+
+                loadData: function(data) {
+                    this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
+                },
+                isEmpty: function() {
+                    return _.isEmpty(this.getData().text);
+                },
+                retrieveData: function() {
+                    return {
+                        text: this.$('.st-text-block').text() || undefined,
+                    };
+                },
+                toHTML: function(html) {
+                    if (this.$el) {
+                        return this.getTextBlock().html();
+                    } else {
+                        return html;
+                    }
+                },
+                toMeta: function() {
+                    var data = this.getData();
+                    return {
+                        text: data.text,
+                        commenter: data.commenter,
+                        _created: data._created
+                    }
+                }
+            });
             var Strikethrough = SirTrevor.Formatter.extend({
                 title: 'strikethrough',
                 iconName: 'strikethrough',
@@ -604,5 +643,34 @@ define([
                 text: 'unlink'
             });
             SirTrevor.Formatters.Unlink = new UnLink();
+
+            var Link = SirTrevor.Formatter.extend({
+                title: 'link',
+                iconName: 'link',
+                cmd: 'CreateLink',
+                text: 'link',
+                onClick: function() {
+                    var selection_text = document.getSelection(),
+                        link = prompt(i18n.t("general:link")),
+                        link_regex = /((ftp|http|https):\/\/.)|mailto(?=\:[-\.\w]+@)/;
+                    if (link && link.length > 0) {
+                        if (!link_regex.test(link)) {
+                            link = "http://" + link;
+                        }
+                    document.execCommand('insertHTML', false, '<a href="' + link + '" target="_blank">' + selection_text + '</a>')
+                    }
+                },
+                isActive: function() {
+                var selection = window.getSelection(),
+                    node;
+                if (selection.rangeCount > 0) {
+                  node = selection.getRangeAt(0)
+                                  .startContainer
+                                  .parentNode;
+                }
+                return (node && node.nodeName == 'A');
+              }
+            });
+            SirTrevor.Formatters.Link = new Link();
         }]);
 });
