@@ -7,6 +7,7 @@ module.exports = {
             dest: '<%= distDir %>',
             src: [
                 'images/**/*',
+                'favicon.ico',
                 'styles/css/*.css',
                 'scripts/**/*.{html,css,jpg,jpeg,png,gif,json}',
                 'scripts/bower_components/requirejs/require.js'
@@ -63,6 +64,10 @@ module.exports = {
             cwd: '<%= appDir %>',
             dest: '<%= distDir %>',
             src: [
+                'fonts/sd_icons.woff',
+                'fonts/sd_icons.eot',
+                'fonts/sd_icons.svg',
+                'fonts/sd_icons.ttf',
                 'scripts/bower_components/**/*.ttf',
                 'scripts/bower_components/**/*.woff',
                 'scripts/bower_components/**/*.woff2'
