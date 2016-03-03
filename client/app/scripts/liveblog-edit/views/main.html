@@ -189,6 +189,8 @@
                 </div>
                 <div class="header--live">
                     <a href="{{ publicUrl }}" target="_blank" ng-disabled="!publicUrl" translate>Live</a>
+                    <button class="btn pull-right" ng-click="retrieveAllPosts()" translate>All</button>
+                    <button class="btn pull-right" ng-click="retrieveHighlightedPosts()" translate>Highlights</button>
                 </div>
             </header>
             <div class="content content--timeline" lr-infinite-scroll="fetchNewTimelinePage">

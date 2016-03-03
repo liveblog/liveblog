@@ -87,6 +87,25 @@ define([
             }
             return retrievePosts(blog_id, posts_criteria);
         }
+        function getOnlyHighlights(blog_id, filters, max_results, page) {
+            filters     = filters     || {};
+            page        = page        || 1;
+            max_results = max_results || 15;
+            // excludeDeleted: default set to true
+            filters.excludeDeleted = angular.isDefined(filters.excludeDeleted) ? filters.excludeDeleted : true;
+            var posts_criteria = {
+                source: {
+                    query: {filtered: {filter: {and: []}}}
+                },
+                page: page,
+                max_results: max_results
+            };
+            // filters.highlight
+            if (angular.isDefined(filters.highlight)) {
+                posts_criteria.source.query.filtered.filter.and.push({term: {highlight:true}});
+            }
+            return retrievePosts(blog_id, posts_criteria);
+        }
         function _completeUser(obj) {
             if (obj.commenter) {
                 obj.user = {display_name: obj.commenter};
@@ -232,6 +251,7 @@ define([
 
         return {
             getPosts: getPosts,
+            getOnlyHighlights: getOnlyHighlights,
             getLatestUpdateDate: getLatestUpdateDate,
             retrievePost: retrievePost,
             savePost: savePost,
