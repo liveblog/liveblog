@@ -26,6 +26,10 @@ define([
                 LbPostsListCtrl.$inject = ['$scope', '$element'];
                 function LbPostsListCtrl($scope, $element) {
                     var vm = this;
+                    console.log('start');
+                    $scope.lbStickyEmpty();
+                    console.log('gata');
+                    console.log('$scope.lbStickyEmpty ', $scope.lbStickyEmpty);
                     angular.extend(vm, {
                         isLoading: true,
                         blogId: $scope.lbPostsBlogId,
@@ -42,8 +46,9 @@ define([
                         originalOrder: 0,
                         pagesManager: new PagesManager($scope.lbPostsBlogId,
                                                        $scope.lbPostsStatus,
-                                                       10,
-                                                       $scope.lbPostsOrderBy || 'editorial'),
+                                                       $scope.lbSticky === 'true'? 100: 10,
+                                                       $scope.lbPostsOrderBy || 'editorial',
+                                                       $scope.lbSticky),
                         fetchNewPage: function() {
                             vm.isLoading = true;
                             return vm.pagesManager.fetchNewPage().then(function() {
@@ -97,6 +102,9 @@ define([
                                 notify.error(gettext('Something went wrong. Please reload and try again later'));
                             });
                         },
+                        removePostFromList: function(post) {
+                            vm.pagesManager.removePost(post);
+                        },
                         isPostsEmpty: function() {
                             return vm.pagesManager.count() < 1 && !vm.isLoading;
                         },
@@ -120,6 +128,7 @@ define([
                     // retrieve updates when event is recieved
                     .then(function() {
                         $scope.$on('posts', function(e, event_params) {
+
                             vm.isLoading = true;
                             vm.pagesManager.retrieveUpdate(true).then(function() {
                                 if (event_params.deleted === true) {
@@ -135,6 +144,8 @@ define([
                     scope: {
                         lbPostsBlogId: '=',
                         lbPostsStatus: '@',
+                        lbSticky: '@',
+                        lbStickyEmpty: '&',
                         lbPostsOrderBy: '@',
                         lbPostsAllowUnpublishing: '=',
                         lbPostsAllowReordering: '=',
@@ -183,9 +194,10 @@ define([
                         // the controller of parent posts list directive
                         postsListCtrl: '='
                     },
+                    require: '^lbPostsList',
                     restrict: 'E',
                     templateUrl: 'scripts/liveblog-edit/views/post.html',
-                    link: function(scope, elem, attrs) {
+                    link: function(scope, elem, attrs, lbPostsListCtrl) {
                         // if the escape key is press then clear the reorder action.
                         function escClearReorder(e) {
                             if (e.keyCode === 27) {
@@ -233,21 +245,15 @@ define([
                                 $document.unbind('keypress', escClearReorder);
                                 scope.clearReorderAction();
                             },
-                            pinPost: function(post) {
-                                scope.clearReorder();
-                                changePostStatus(post, 'sticky').then(function(post) {
-                                    notify.pop();
-                                    notify.info(gettext('Post pinned'));
-                                }, function() {
-                                    notify.pop();
-                                    notify.error(gettext('Something went wrong. Please try again later'));
-                                });
+                            changePinStatus: function (post, status) {
+                                post = angular.copy(post);
+                                return postsService.savePost(post.blog, post, undefined, {sticky: status});
                             },
-                            unpinPost: function(post) {
-                                scope.clearReorder();
-                                changePostStatus(post, 'open').then(function(post) {
+                            togglePinStatus: function(post) {
+                                scope.changePinStatus(post, !post.sticky).then(function(post) {
                                     notify.pop();
-                                    notify.info(gettext('Post unpinned'));
+                                    notify.info(post.sticky ? gettext('Post was pinned') : gettext('Post was unpinned'));
+                                    lbPostsListCtrl.removePostFromList(post);
                                 }, function() {
                                     notify.pop();
                                     notify.error(gettext('Something went wrong. Please try again later'));

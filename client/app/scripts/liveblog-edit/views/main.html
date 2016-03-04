@@ -183,7 +183,8 @@
                         lb-posts-instance="blogEdit.timelineStickyInstance"
                         lb-posts-list
                         lb-posts-blog-id="blog._id"
-                        lb-posts-status="sticky"
+                        lb-posts-status="open"
+                        lb-sticky='true'
                         lb-posts-allow-unpublishing="blogSecurityService.canPublishAPost"
                         lb-posts-allow-reordering="blogSecurityService.canPublishAPost"
                         lb-posts-allow-editing="blogSecurityService.canPublishAPost"
@@ -191,18 +192,22 @@
                         lb-posts-on-post-selected="openPostInEditor"
                         >
                     </div>
+
                     <div ng-if="!blogEdit.timelineStickyInstance.isPostsEmpty()" style="cursor:pointer"
                     ng-click="blogEdit.timelineStickyInstance.hideSticky = !blogEdit.timelineStickyInstance.hideSticky"
                     >
                         <div ng-if="blogEdit.timelineStickyInstance.hideSticky">Show sticky posts</div>
                         <div ng-if="!blogEdit.timelineStickyInstance.hideSticky">Hide sticky posts</div>
                     </div>
+
                     <div
                       class="timeline-posts-list"
                       lb-posts-instance="blogEdit.timelineInstance"
                       lb-posts-list
                       lb-posts-blog-id="blog._id"
                       lb-posts-status="open"
+                      lb-sticky='false'
+                      lb-sticky-empty="blogEdit.isStickyEmpty"
                       lb-posts-allow-unpublishing="blogSecurityService.canPublishAPost"
                       lb-posts-allow-reordering="blogSecurityService.canPublishAPost"
                       lb-posts-allow-editing="blogSecurityService.canPublishAPost"

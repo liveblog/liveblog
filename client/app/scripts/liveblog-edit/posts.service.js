@@ -61,6 +61,10 @@ define([
             if (angular.isDefined(filters.status)) {
                 posts_criteria.source.query.filtered.filter.and.push({term: {post_status: filters.status}});
             }
+            // filters.sticky
+            if (angular.isDefined(filters.sticky)) {
+                posts_criteria.source.query.filtered.filter.and.push({term: {sticky: filters.sticky}});
+            }
             // filters.authors
             if (angular.isDefined(filters.authors) && filters.authors.length > 0) {
                 posts_criteria.source.query.filtered.filter.and.push({

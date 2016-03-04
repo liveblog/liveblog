@@ -7,7 +7,7 @@
     PagesManagerFactory.$inject = ['postsService', '$q', 'lodash', 'moment'];
     function PagesManagerFactory(postsService, $q, _, moment) {
 
-        function PagesManager (blog_id, status, max_results, sort) {
+        function PagesManager (blog_id, status, max_results, sort, sticky) {
             var SORTS = {
                 'editorial': {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
                 'updated_first': {_updated: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
@@ -37,7 +37,8 @@
                 return postsService.getPosts(self.blogId,
                                              {
                                                  status: self.status,
-                                                 authors: self.authors
+                                                 authors: self.authors,
+                                                 sticky: sticky
                                              },
                                              max_results || self.maxResults, page)
                 .then(function(data) {
@@ -92,10 +93,11 @@
              * @returns {promise}
              */
             function retrieveUpdate(should_apply_updates) {
+                
                 should_apply_updates = should_apply_updates === true;
                 var date = self.latestUpdatedDate ? self.latestUpdatedDate.utc().format() : undefined;
                 var page = 1;
-                return postsService.getPosts(self.blogId, {updatedAfter: date, excludeDeleted: false}, undefined, page)
+                return postsService.getPosts(self.blogId, {updatedAfter: date, excludeDeleted: false, sticky: sticky}, undefined, page)
                 .then(function(updates) {
                     var meta = updates._meta;
                     // if
@@ -126,6 +128,7 @@
                     }
                     return updates;
                 });
+                
             }
 
             /**
@@ -136,13 +139,14 @@
                 updates.forEach(function(post) {
                     var existing_post_indexes = getPostPageIndexes(post);
                     if (angular.isDefined(existing_post_indexes)) {
+                        console.log('post is in the list');
                         // post already in the list
                         if (post.deleted) {
                             // post deleted
                             removePost(post);
                         } else {
                             // post updated
-                            if (post.post_status !== self.status) {
+                            if (post.post_status !== self.status || post.sticky !== self.sticky) {
                                removePost(post);
                             } else {
                                 // update
@@ -322,6 +326,11 @@
                  * Number of results per page
                  */
                 maxResults: max_results,
+                /**
+                 *
+                 * Remove a post from the page
+                 */
+                removePost: removePost,
                 /**
                  * Latest updated date. Used for retrieving updates since this date.
                  */

@@ -7,7 +7,7 @@
     <div class="lb-post" ng-class="{
         'active': (post.order === reorderPost.order || post.order === keepHighlighted),
         'unread': functionize(postsListCtrl.isUnreadPost)(post),
-        'pinned': post.post_status == 'sticky'
+        'pinned': post.sticky == true
     }">
         <div class="lb-post__holder lb-mainitem-{{ post.mainItem.item.item_type}}">
             <div class="lb-post__figure">
@@ -30,13 +30,14 @@
                     <div class="lb-post__actions">
                         <ul>
                             <li ng-if="functionize(postsListCtrl.allowEditing)(post)">
-                                <a ng-if="post.post_status == 'open'" ng-click="pinPost(post)" tooltip-placement="bottom" tooltip="{{ 'Pin' | translate }}">
+                            #{{ post.sticky }}#
+                                <a ng-click="togglePinStatus(post)" tooltip-placement="bottom" tooltip="{{ post.sticky ? 'Unpin': 'Pin' | translate }}">
                                     <i class="icon-pin" style="opacity:0.5"></i>
                                 </a>
 
-                                <a ng-if="post.post_status == 'sticky'" ng-click="unpinPost(post)" tooltip-placement="bottom" tooltip="{{ 'Unpin' | translate }}">
+                                <!-- <a ng-if="post.sticky" ng-click="unpinPost(post)" tooltip-placement="bottom" tooltip="{{ 'Unpin' | translate }}">
                                     <i class="icon-pin" style="opacity:1"></i>
-                                </a>
+                                </a> -->
                             </li>
                             <li ng-if="functionize(postsListCtrl.allowDeleting)(post)">
                                 <a ng-click="askRemovePost(post)" tooltip-placement="bottom" tooltip="{{ 'Remove' | translate }}">
