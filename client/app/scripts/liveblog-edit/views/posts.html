@@ -1,5 +1,3 @@
-{{ postsList.isPostsEmpty() && postsList.sticky !== true }}
-{{  }}
 <div class="loading-indicator" ng-show="postsList.isLoading"><span translate>loading</span></div>
 <div ng-if="postsList.isPostsEmpty() && postsList.sticky !== true" class="alert alert-info" role="alert">
     <ng-transclude></ng-transclude>

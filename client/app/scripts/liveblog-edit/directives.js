@@ -26,14 +26,11 @@ define([
                 LbPostsListCtrl.$inject = ['$scope', '$element'];
                 function LbPostsListCtrl($scope, $element) {
                     var vm = this;
-                    console.log('start');
-                    $scope.lbStickyEmpty();
-                    console.log('gata');
-                    console.log('$scope.lbStickyEmpty ', $scope.lbStickyEmpty);
                     angular.extend(vm, {
                         isLoading: true,
                         blogId: $scope.lbPostsBlogId,
                         status: $scope.lbPostsStatus,
+                        sticky: $scope.lbSticky,
                         allowUnpublishing: $scope.lbPostsAllowUnpublishing,
                         allowReordering: $scope.lbPostsAllowReordering,
                         allowEditing: $scope.lbPostsAllowEditing,
@@ -106,7 +103,14 @@ define([
                             vm.pagesManager.removePost(post);
                         },
                         isPostsEmpty: function() {
-                            return vm.pagesManager.count() < 1 && !vm.isLoading;
+                            return vm.pagesManager.count() < 1 && !vm.isLoading && vm.isStickyPostsEmpty();
+                        },
+                        isStickyPostsEmpty: function() {
+                            if ($scope.lbStickyInstance) {
+                                return $scope.lbStickyInstance.isPostsEmpty();
+                            } else {
+                                return true;
+                            }
                         },
                         isSinglePost: function() {
                             return vm.pagesManager.count() === 1;
@@ -145,7 +149,7 @@ define([
                         lbPostsBlogId: '=',
                         lbPostsStatus: '@',
                         lbSticky: '@',
-                        lbStickyEmpty: '&',
+                        lbStickyInstance: '=',
                         lbPostsOrderBy: '@',
                         lbPostsAllowUnpublishing: '=',
                         lbPostsAllowReordering: '=',

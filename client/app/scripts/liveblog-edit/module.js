@@ -213,9 +213,6 @@ define([
             fetchNewTimelinePage: function() {
                 vm.timelineInstance.fetchNewPage();
             },
-            isStickyEmpty: function() {
-                console.log('isStickyEmpty');
-            },
             isTimelineReordering: function() {
                 //vm.timelineInstance may not be instantiated yet when isTimelineReordering is first checked
                 return vm.timelineInstance ? vm.timelineInstance.reorderPost: false;

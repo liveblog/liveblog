@@ -139,7 +139,6 @@
                 updates.forEach(function(post) {
                     var existing_post_indexes = getPostPageIndexes(post);
                     if (angular.isDefined(existing_post_indexes)) {
-                        console.log('post is in the list');
                         // post already in the list
                         if (post.deleted) {
                             // post deleted
