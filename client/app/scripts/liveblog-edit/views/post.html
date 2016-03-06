@@ -30,14 +30,9 @@
                     <div class="lb-post__actions">
                         <ul>
                             <li ng-if="functionize(postsListCtrl.allowEditing)(post)">
-                            #{{ post.sticky }}#
                                 <a ng-click="togglePinStatus(post)" tooltip-placement="bottom" tooltip="{{ post.sticky ? 'Unpin': 'Pin' | translate }}">
                                     <i class="icon-pin" style="opacity:0.5"></i>
                                 </a>
-
-                                <!-- <a ng-if="post.sticky" ng-click="unpinPost(post)" tooltip-placement="bottom" tooltip="{{ 'Unpin' | translate }}">
-                                    <i class="icon-pin" style="opacity:1"></i>
-                                </a> -->
                             </li>
                             <li ng-if="functionize(postsListCtrl.allowDeleting)(post)">
                                 <a ng-click="askRemovePost(post)" tooltip-placement="bottom" tooltip="{{ 'Remove' | translate }}">

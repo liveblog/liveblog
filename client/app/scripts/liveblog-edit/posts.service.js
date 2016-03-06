@@ -235,11 +235,11 @@ define([
             getLatestUpdateDate: getLatestUpdateDate,
             retrievePost: retrievePost,
             savePost: savePost,
-            saveDraft: function(blog_id, post, items) {
-                return savePost(blog_id, post, items, {post_status: 'draft'});
+            saveDraft: function(blog_id, post, items, sticky) {
+                return savePost(blog_id, post, items, {post_status: 'draft', 'sticky': sticky});
             },
-            saveContribution: function(blog_id, post, items) {
-                return savePost(blog_id, post, items, {post_status: 'submitted'});
+            saveContribution: function(blog_id, post, items, sticky) {
+                return savePost(blog_id, post, items, {post_status: 'submitted', 'sticky': sticky});
             },
             remove: removePost
         };

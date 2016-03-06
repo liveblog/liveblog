@@ -145,6 +145,9 @@
                         </div>
                         <div class="actions">
                             <div style="display:table-row">
+                                Sticky <input type="checkbox" ng-model="post.sticky"/> {{ post.sticky }}
+                            </div>
+                            <div style="display:table-row">
                                 <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell"><button class="btn btn-info" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
                                     <span ng-switch-when="true"  translate>Update</span>
                                     <span ng-switch-when="false" translate>Publish</span>

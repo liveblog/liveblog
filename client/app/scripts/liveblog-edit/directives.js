@@ -250,7 +250,6 @@ define([
                                 scope.clearReorderAction();
                             },
                             changePinStatus: function (post, status) {
-                                post = angular.copy(post);
                                 return postsService.savePost(post.blog, post, undefined, {sticky: status});
                             },
                             togglePinStatus: function(post) {
@@ -262,6 +261,10 @@ define([
                                     notify.pop();
                                     notify.error(gettext('Something went wrong. Please try again later'));
                                 });
+                            },
+                            onEditClick: function(post) {
+                                scope.clearReorder();
+                                scope.onEditAction(post);
                             },
                             askRemovePost: function(post) {
                                 scope.clearReorder();

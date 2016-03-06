@@ -82,6 +82,7 @@ define([
             preview: false,
             actionPending: false,
             actionDisabled: true,
+            post: {sticky: false},
             actionStatus: function() {
                 return $scope.actionDisabled || $scope.actionPending;
             },
@@ -89,9 +90,12 @@ define([
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
             },
             openPostInEditor: function (post) {
+                
+                $scope.post = post;
                 function fillEditor(post) {
                     cleanEditor(false);
                     $scope.currentPost = angular.copy(post);
+                    $scope.post.sticky = angular.copy(post.sticky);
                     var items = post.groups[1].refs;
                     items.forEach(function(item) {
                         item = item.item;
@@ -107,11 +111,12 @@ define([
             saveAsContribution: function() {
                 $scope.actionPending = true;
                 notify.info(gettext('Submitting contribution'));
-                postsService.saveContribution(blog._id, $scope.currentPost, getItemsFromEditor()).then(function(post) {
+                    postsService.saveContribution(blog._id, $scope.currentPost, getItemsFromEditor(),$scope.post.sticky).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Contribution submitted'));
                     cleanEditor();
                     $scope.actionPending = false;
+                    $scope.post.sticky = false;
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
@@ -121,11 +126,12 @@ define([
             saveAsDraft: function() {
                 $scope.actionPending = true;
                 notify.info(gettext('Saving draft'));
-                postsService.saveDraft(blog._id, $scope.currentPost, getItemsFromEditor()).then(function(post) {
+                postsService.saveDraft(blog._id, $scope.currentPost, getItemsFromEditor(), $scope.post.sticky).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Draft saved'));
                     cleanEditor();
                     $scope.actionPending = false;
+                    $scope.post.sticky = false;
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
@@ -138,12 +144,13 @@ define([
                 postsService.savePost(blog._id,
                     $scope.currentPost,
                     getItemsFromEditor(),
-                    {post_status: 'open'}
+                    {post_status: 'open', sticky: $scope.post.sticky}
                 ).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
                     cleanEditor();
                     $scope.actionPending = false;
+                    $scope.post.sticky = false;
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
