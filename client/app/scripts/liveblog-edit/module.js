@@ -141,6 +141,7 @@ define([
             publish: function() {
                 $scope.actionPending = true;
                 notify.info(gettext('Saving post'));
+                var needsRemoval = $scope.currentPost && $scope.currentPost.sticky !== $scope.post.sticky;
                 postsService.savePost(blog._id,
                     $scope.currentPost,
                     getItemsFromEditor(),
@@ -148,6 +149,13 @@ define([
                 ).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
+                    if (needsRemoval) {
+                        if ($scope.post.sticky) {
+                            vm.timelineInstance.removePostFromList($scope.post);
+                        } else {
+                            vm.timelineStickyInstance.removePostFromList($scope.post);
+                        }
+                    }
                     cleanEditor();
                     $scope.actionPending = false;
                     $scope.post.sticky = false;
