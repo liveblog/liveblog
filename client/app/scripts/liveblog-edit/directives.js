@@ -105,6 +105,9 @@ define([
                         isPostsEmpty: function() {
                             return vm.pagesManager.count() < 1 && !vm.isLoading && vm.isStickyPostsEmpty();
                         },
+                        numberOfPosts: function() {
+                            return vm.pagesManager.count();
+                        },
                         isStickyPostsEmpty: function() {
                             if ($scope.lbStickyInstance) {
                                 return $scope.lbStickyInstance.isPostsEmpty();
