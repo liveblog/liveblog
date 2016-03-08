@@ -61,11 +61,12 @@
 
 
             <article lb-post
-                        style="background-color: grey"
+                        style="background-color: rgba(94, 169, 200, 0.11);"
                      ng-repeat="post in timeline.stickyPagesManager.allPosts() track by post._id"
                      class="lb-post list-group-item ng-cloak"
                      ng-class="{'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
-                                'lb-post-permalink-selected': post._id === timeline.permalink._id}">        
+                                'lb-post-permalink-selected': post._id === timeline.permalink._id}"
+                    ng-if='!timeline.stickyPagesManager.hideSticky'>        
                 <div class="lb-author" ng-if="timeline.settings.showAuthor">
                     <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar"
                          class="lb-author__avatar"
@@ -145,8 +146,16 @@
 
 
 
-
-
+            <div ng-if="timeline.stickyPagesManager.allPosts().length && !timeline.loading"
+                class="pin-drawer" style="background-color: rgba(94, 169, 200, 0.11);">
+                <ng-pluralize count="timeline.stickyPagesManager.allPosts().length" ng-if="timeline.stickyPagesManager.hideSticky"
+                    when="{'one': '1 PINNED POST',
+                    'other': '{} PINNED POSTS'}" style="color: gray; font-size: small; margin-left: 4px;">
+                </ng-pluralize>
+                <button class="pin-drawer-button" ng-class="{'chevron-active': timeline.stickyPagesManager.hideSticky}"
+                ng-click="timeline.stickyPagesManager.hideSticky = !timeline.stickyPagesManager.hideSticky">
+                <i class="fa fa-chevron-up" style="margin-bottom: 3px; margin-left: 1px;"></i></button>
+            </div>
 
 
 
