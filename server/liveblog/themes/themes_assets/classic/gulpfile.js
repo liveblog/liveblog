@@ -4,7 +4,7 @@ var gulp = require('gulp'),
     $ = require('gulp-load-plugins')();
  
 gulp.task('pot', function () {
-    return gulp.src(['*.html', '*.js'])
+    return gulp.src(['*.html', '*.js', 'views/*.html'])
         .pipe($.angularGettext.extract('classic.pot', {}))
         .pipe(gulp.dest('po/'));
 });
