@@ -1,0 +1,83 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+
+#: comments.html:38
+msgid "Cancel"
+msgstr ""
+
+#: template.html:28
+msgid "Comment"
+msgstr ""
+
+#: comments.html:28
+msgid "Comment *"
+msgstr ""
+
+#: comments.html:32
+msgid "Comment should be maximum 300 characters in length."
+msgstr ""
+
+#: template.html:13
+msgid "Editorial"
+msgstr ""
+
+#: template.html:142
+msgid "Load more posts"
+msgstr ""
+
+#: template.html:145
+msgid "Loading"
+msgstr ""
+
+#: comments.html:20
+msgid "Name *"
+msgstr ""
+
+#: comments.html:24
+msgid "Name should be maximum 30 characters in length."
+msgstr ""
+
+#: template.html:17
+msgid "Newest first"
+msgstr ""
+
+#: template.html:45
+msgid "No post for now."
+msgstr ""
+
+#: template.html:21
+msgid "Oldest first"
+msgstr ""
+
+#: comments.html:31
+msgid "Please fill in your Comment."
+msgstr ""
+
+#: comments.html:23
+msgid "Please fill in your Name."
+msgstr ""
+
+#: comments.html:15
+msgid "Post a comment"
+msgstr ""
+
+#: template.html:53
+msgid "See one new post"
+msgid_plural "See {{$count}} new posts"
+msgstr[0] ""
+msgstr[1] ""
+
+#: comments.html:39
+msgid "Send"
+msgstr ""
+
+#: template.html:11
+msgid "Sort by:"
+msgstr ""
+
+#: comments.html:7
+msgid "Your comment was sent for approval."
+msgstr ""
