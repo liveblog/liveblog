@@ -93,11 +93,10 @@
              * @returns {promise}
              */
             function retrieveUpdate(should_apply_updates) {
-                
                 should_apply_updates = should_apply_updates === true;
                 var date = self.latestUpdatedDate ? self.latestUpdatedDate.utc().format() : undefined;
                 var page = 1;
-                return postsService.getPosts(self.blogId, {updatedAfter: date, excludeDeleted: false, sticky: sticky}, undefined, page)
+                return postsService.getPosts(self.blogId, {updatedAfter: date, excludeDeleted: false}, undefined, page)
                 .then(function(updates) {
                     var meta = updates._meta;
                     // if
@@ -145,7 +144,7 @@
                             removePost(post);
                         } else {
                             // post updated
-                            if (post.post_status !== self.status || post.sticky !== self.sticky) {
+                            if (post.post_status !== self.status || post.sticky !== sticky) {
                                removePost(post);
                             } else {
                                 // update
@@ -155,7 +154,7 @@
                         }
                     } else {
                         // post doesn't exist in the list
-                        if (!post.deleted && post.post_status === self.status) {
+                        if (!post.deleted && post.post_status === self.status && post.sticky === sticky) {
                             addPost(post);
                         }
                     }

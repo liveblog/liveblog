@@ -147,8 +147,8 @@
                             <div style="display:table-row">
                                 <div style="display:table-cell"></div>
                                 <div style="display:table-cell"></div>
-                                <div ng-click="post.sticky = !post.sticky" tooltip-placement="bottom" tooltip="{{ post.sticky ? 'Unpin': 'Pin' | translate }}" ng-class="{'non-stick-post': !post.sticky}" class="pull-right" style="display:table-cell"  ng-disabled="isCurrentPostPublished() || actionStatus()">
-                                    <span translate>PIN POST</span><span><i class="icon-pin rotate" ng-class="{'blue': post.sticky}"></i></span>
+                                <div ng-click="toggleSticky();" tooltip-placement="bottom" tooltip="{{ sticky ? 'Unpin': 'Pin' | translate }}" ng-class="{'non-stick-post': !sticky}" class="pull-right" style="display:table-cell"  ng-disabled="isCurrentPostPublished() || actionStatus()">
+                                    <span translate>PIN POST</span><span><i class="icon-pin rotate" ng-class="{'blue': sticky}"></i></span>
                                 </div>
                             </div>
                             <div style="display:table-row">
@@ -191,7 +191,7 @@
                         lb-posts-list
                         lb-posts-blog-id="blog._id"
                         lb-posts-status="open"
-                        lb-sticky='true'
+                        lb-sticky="true"
                         lb-posts-allow-unpublishing="blogSecurityService.canPublishAPost"
                         lb-posts-allow-reordering="false"
                         lb-posts-allow-editing="blogSecurityService.canPublishAPost"
@@ -200,12 +200,6 @@
                         >
                     </div>
 
-                    <!-- <div ng-if="!blogEdit.timelineStickyInstance.isPostsEmpty()" style="cursor:pointer"
-                    ng-click="blogEdit.timelineStickyInstance.hideSticky = !blogEdit.timelineStickyInstance.hideSticky"
-                    >
-                        <div ng-if="blogEdit.timelineStickyInstance.hideSticky">Show sticky posts</div>
-                        <div ng-if="!blogEdit.timelineStickyInstance.hideSticky">Hide sticky posts</div>
-                    </div> -->
                     <div ng-if="!blogEdit.timelineStickyInstance.isPostsEmpty()"
                         class="pin-drawer"
                         style="margin: 0px 20px 0px 20px;
@@ -219,14 +213,13 @@
                         <i class="icon-chevron-up-thin"></i></button>
                     </div>
                     
-
                     <div
                       class="timeline-posts-list"
                       lb-posts-instance="blogEdit.timelineInstance"
                       lb-posts-list
                       lb-posts-blog-id="blog._id"
                       lb-posts-status="open"
-                      lb-sticky='false'
+                      lb-sticky="false"
                       lb-sticky-instance="blogEdit.timelineStickyInstance"
                       lb-posts-allow-unpublishing="blogSecurityService.canPublishAPost"
                       lb-posts-allow-reordering="blogSecurityService.canPublishAPost"

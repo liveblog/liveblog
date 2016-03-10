@@ -25,6 +25,8 @@ define([
 
                 LbPostsListCtrl.$inject = ['$scope', '$element'];
                 function LbPostsListCtrl($scope, $element) {
+                   
+                    $scope.lbSticky = $scope.lbSticky === 'true';
                     var vm = this;
                     angular.extend(vm, {
                         isLoading: true,
@@ -43,7 +45,8 @@ define([
                         originalOrder: 0,
                         pagesManager: new PagesManager($scope.lbPostsBlogId,
                                                        $scope.lbPostsStatus,
-                                                       $scope.lbSticky === 'true'? 100: 10,
+                                                       //if the list is a list with sticky posts, show them all in the 1st pages
+                                                       $scope.lbSticky === true? 100: 10,
                                                        $scope.lbPostsOrderBy || 'editorial',
                                                        $scope.lbSticky),
                         fetchNewPage: function() {
@@ -201,10 +204,9 @@ define([
                         // the controller of parent posts list directive
                         postsListCtrl: '='
                     },
-                    require: '^lbPostsList',
                     restrict: 'E',
                     templateUrl: 'scripts/liveblog-edit/views/post.html',
-                    link: function(scope, elem, attrs, lbPostsListCtrl) {
+                    link: function(scope, elem, attrs) {
                         // if the escape key is press then clear the reorder action.
                         function escClearReorder(e) {
                             if (e.keyCode === 27) {
@@ -259,7 +261,6 @@ define([
                                 scope.changePinStatus(post, !post.sticky).then(function(post) {
                                     notify.pop();
                                     notify.info(post.sticky ? gettext('Post was pinned') : gettext('Post was unpinned'));
-                                    lbPostsListCtrl.removePostFromList(post);
                                 }, function() {
                                     notify.pop();
                                     notify.error(gettext('Something went wrong. Please try again later'));

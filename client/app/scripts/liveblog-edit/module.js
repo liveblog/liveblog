@@ -64,6 +64,7 @@ define([
             vm.editor.reinitialize();
             $scope.actionDisabled = actionDisabled;
             $scope.currentPost = undefined;
+            $scope.sticky = false;
         }
 
         // retieve the blog's public url
@@ -82,20 +83,21 @@ define([
             preview: false,
             actionPending: false,
             actionDisabled: true,
-            post: {sticky: false},
+            sticky: false, 
             actionStatus: function() {
                 return $scope.actionDisabled || $scope.actionPending;
             },
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
             },
+            toggleSticky: function() {
+                $scope.sticky = !$scope.sticky;
+            }, 
             openPostInEditor: function (post) {
-                
-                $scope.post = post;
                 function fillEditor(post) {
                     cleanEditor(false);
                     $scope.currentPost = angular.copy(post);
-                    $scope.post.sticky = angular.copy(post.sticky);
+                    $scope.sticky = $scope.currentPost.sticky;
                     var items = post.groups[1].refs;
                     items.forEach(function(item) {
                         item = item.item;
@@ -116,7 +118,6 @@ define([
                     notify.info(gettext('Contribution submitted'));
                     cleanEditor();
                     $scope.actionPending = false;
-                    $scope.post.sticky = false;
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
@@ -131,7 +132,6 @@ define([
                     notify.info(gettext('Draft saved'));
                     cleanEditor();
                     $scope.actionPending = false;
-                    $scope.post.sticky = false;
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
@@ -141,24 +141,15 @@ define([
             publish: function() {
                 $scope.actionPending = true;
                 notify.info(gettext('Saving post'));
-                var needsRemoval = $scope.currentPost && $scope.currentPost.sticky !== $scope.post.sticky;
                 postsService.savePost(blog._id,
                     $scope.currentPost,
                     getItemsFromEditor(),
-                    {post_status: 'open', sticky: $scope.post.sticky}
+                    {post_status: 'open', sticky: $scope.sticky}
                 ).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
-                    if (needsRemoval) {
-                        if ($scope.post.sticky) {
-                            vm.timelineInstance.removePostFromList($scope.post);
-                        } else {
-                            vm.timelineStickyInstance.removePostFromList($scope.post);
-                        }
-                    }
                     cleanEditor();
                     $scope.actionPending = false;
-                    $scope.post.sticky = false;
                 }, function() {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
