@@ -72,10 +72,14 @@ class PostsResource(ArchiveResource):
         },
         'post_status': {
             'type': 'string',
-            'allowed': ['open', 'draft', 'submitted', 'comment', 'sticky'],
+            'allowed': ['open', 'draft', 'submitted', 'comment'],
             'default': 'open'
         },
         'highlight': {
+            'type': 'boolean',
+            'default': False
+        },
+        'sticky': {
             'type': 'boolean',
             'default': False
         },
@@ -156,7 +160,7 @@ class PostsService(ArchiveService):
             doc['type'] = 'composite'
             doc['order'] = self.get_next_order_sequence(doc.get('blog'))
             # if you publish a post directly which is not a draft it will have a published_date assigned
-            if doc['post_status'] in ('open', 'sticky'):
+            if doc['post_status'] in ('open'):
                 doc['published_date'] = utcnow()
                 doc['publisher'] = getattr(flask.g, 'user', None)
         super().on_create(docs)
@@ -182,9 +186,6 @@ class PostsService(ArchiveService):
         post = original.copy()
         post.update(updates)
         self.check_post_permission(post)
-        # when unpining a post from the top of the timeline, it goes in the timeline according to its timestamp
-        if updates.get('post_status') == 'open' and original.get('post_status') == 'sticky':
-            updates['published_date'] = original['published_date']
         # when publishing, put the published item from drafts and contributions at the top of the timeline
         if updates.get('post_status') == 'open' and original.get('post_status') in ('draft', 'submitted', 'comment'):
             updates['order'] = self.get_next_order_sequence(original.get('blog'))
