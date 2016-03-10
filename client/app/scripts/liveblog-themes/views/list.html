@@ -5,7 +5,7 @@
             <label class="navbtn navbtn-info" for="uploadAThemeFile">
                 <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
             </label>
-            <input type="file" name="uploadAThemeFile" id="uploadAThemeFile" onchange="angular.element(this).controller().uploadThemeFile(this)"></input>
+            <input type="file" name="uploadAThemeFile" id="uploadAThemeFile" onchange="angular.element(this).controller().uploadThemeFile(this)">
         </form>
     </div>
 </div>
@@ -17,7 +17,7 @@
         <script type="text/ng-template" id="themeTree">
             <ul>
                 <li ng-init="theme=vm.getTheme(themeName)">
-                    <div class="theme card">
+                    <div class="theme card" ng-class="{'default': vm.isDefaultTheme(theme)}">
                         <figure class="media" ng-click="vm.openThemePreview(theme)" ng-class="{'no-screenshot': !theme.screenshot_url}">
                             <div if-background-image="{{theme.screenshot_url}}"></div>
                             <div class="overlay big-icon-search"></div>
@@ -66,7 +66,7 @@
                                 <button ng-disabled="vm.hasChildren(theme)" ng-click="vm.removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
                                 <button ng-if="!theme.abstract" ng-click="vm.makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
                             </div>
-                            <button ng-click="vm.openThemeSettings(theme)" class="btn btn-info pull-right" type="button" translate>Settings</button>
+                            <button ng-click="vm.openThemeSettings(theme)" class="btn btn-default pull-right" type="button" translate>Settings</button>
                         </div>
                         <div class="default-theme" ng-show="vm.isDefaultTheme(theme)"></div>
                     </div>
@@ -82,7 +82,7 @@
         <button class="close" ng-click="vm.closeThemeBlogsModal()"><i class="icon-close-small"></i></button>
         <div ng-hide="vm.selectedBlog">
             <h3 translate>List of blogs using theme</h3>
-            <h2>{{vm.selectedTheme.label}}
+            <h2>{{vm.selectedTheme.label}}</h2>
         </div>
     </div>
     <div class="modal-body">
@@ -92,7 +92,7 @@
                     {{ blog.title }}
                     <a ng-href="{{ blog.iframe_url }}" target="_blank"><i class="icon-share"></i></a>
                 </li>
-            <ul>
+            </ul>
         </div>
         <div ng-show="vm.selectedBlog">
             <iframe width="100%" height="715" ng-if="vm.selectedBlog.iframe_url" ng-src="{{ vm.selectedBlog.iframe_url }}" frameborder="0" allowfullscreen></iframe>

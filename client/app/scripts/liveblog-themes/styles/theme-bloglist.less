@@ -9,15 +9,37 @@
     label {
         display: inline-block;
         max-width: 100%;
-        margin-bottom: 5px;
-        font-weight: 700;
-        font-size: 1.2em;
+        margin-bottom: 4px;
+        font-weight: 400;
+        font-size: 1.1em;
     }
     .help-block {
         display: block;
-        margin-top: 5px;
+        margin-top: 0px;
         margin-bottom: 10px;
         color: #737373;
+        font-size: 12px;
+        line-height: 120%;
+    }
+    .form-group {
+        margin-bottom: 22px;
+        input {
+            float: left;
+            &[type="checkbox"] {
+                .box-shadow(none);
+                margin-right: 8px;
+            }
+            &[type="number"] {
+                max-width: 50px;
+            }
+        }
+        select {
+            margin-bottom: 6px;
+            margin-top: 4px;
+        }
+    }
+    .modal-body {
+        padding: 10px 20px;
     }
 }
 .theme-preview-modal {
@@ -100,6 +122,7 @@
         top: 0px;
         left: 0; right: 0; bottom: 0;
         padding: 30px 30px 30px 0;
+        overflow-y: auto;
         ul {
             li {
                 margin-left: 40px;
@@ -110,11 +133,12 @@
                 width: 100%;
             }
             .card {
-                border: 1px solid #d4d4d4;
+                border: 1px solid #e2e2e2;
+                .box-shadow(0 1px 0 #e2e2e2);
                 background-color: white;
                 padding: 10px;
-                box-shadow: none;
                 cursor: default;
+                margin-bottom: 10px;
                 .border-box();
                 .media {
                     &.no-screenshot {
@@ -197,6 +221,17 @@
                     width: 90px;
                     height: 65px;
                     background: url('../../images/default-icon.png') no-repeat left bottom;
+                }
+                &.default {
+                    background-color: #eff7fa;
+                    border: 1px solid #D1E5ED;
+                    .box-shadow(0 1px 0 #D1E5ED);
+                    .btn-default {
+                        background-color: #d9d9d9;
+                        &:hover {
+                            background-color: #c3c3c3;
+                        }
+                    }
                 }
             }
         }
