@@ -113,7 +113,7 @@ define([
             saveAsContribution: function() {
                 $scope.actionPending = true;
                 notify.info(gettext('Submitting contribution'));
-                    postsService.saveContribution(blog._id, $scope.currentPost, getItemsFromEditor(),$scope.post.sticky).then(function(post) {
+                    postsService.saveContribution(blog._id, $scope.currentPost, getItemsFromEditor(),$scope.sticky).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Contribution submitted'));
                     cleanEditor();
@@ -127,7 +127,7 @@ define([
             saveAsDraft: function() {
                 $scope.actionPending = true;
                 notify.info(gettext('Saving draft'));
-                postsService.saveDraft(blog._id, $scope.currentPost, getItemsFromEditor(), $scope.post.sticky).then(function(post) {
+                postsService.saveDraft(blog._id, $scope.currentPost, getItemsFromEditor(), $scope.sticky).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Draft saved'));
                     cleanEditor();
