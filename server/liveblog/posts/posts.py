@@ -160,7 +160,7 @@ class PostsService(ArchiveService):
             doc['type'] = 'composite'
             doc['order'] = self.get_next_order_sequence(doc.get('blog'))
             # if you publish a post directly which is not a draft it will have a published_date assigned
-            if doc['post_status'] in ('open'):
+            if doc['post_status'] == 'open':
                 doc['published_date'] = utcnow()
                 doc['publisher'] = getattr(flask.g, 'user', None)
         super().on_create(docs)
