@@ -7,7 +7,7 @@
     PagesManagerFactory.$inject = ['postsService', '$q', 'lodash', 'moment'];
     function PagesManagerFactory(postsService, $q, _, moment) {
 
-        function PagesManager (blog_id, status, max_results, sort) {
+        function PagesManager (blog_id, status, max_results, sort, sticky) {
             var SORTS = {
                 'editorial': {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
                 'updated_first': {_updated: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
@@ -37,7 +37,8 @@
                 return postsService.getPosts(self.blogId,
                                              {
                                                  status: self.status,
-                                                 authors: self.authors
+                                                 authors: self.authors,
+                                                 sticky: sticky
                                              },
                                              max_results || self.maxResults, page)
                 .then(function(data) {
@@ -126,6 +127,7 @@
                     }
                     return updates;
                 });
+                
             }
 
             /**
@@ -142,7 +144,7 @@
                             removePost(post);
                         } else {
                             // post updated
-                            if (post.post_status !== self.status) {
+                            if (post.post_status !== self.status || post.sticky !== sticky) {
                                removePost(post);
                             } else {
                                 // update
@@ -152,7 +154,7 @@
                         }
                     } else {
                         // post doesn't exist in the list
-                        if (!post.deleted && post.post_status === self.status) {
+                        if (!post.deleted && post.post_status === self.status && post.sticky === sticky) {
                             addPost(post);
                         }
                     }
@@ -322,6 +324,11 @@
                  * Number of results per page
                  */
                 maxResults: max_results,
+                /**
+                 *
+                 * Remove a post from the page
+                 */
+                removePost: removePost,
                 /**
                  * Latest updated date. Used for retrieving updates since this date.
                  */

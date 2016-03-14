@@ -57,4 +57,13 @@ describe('timeline add to top and edit', function() {
             expect(blog.contributions.getFull(0)).toBe(text);
         });
     });
+    it('can pin a post', function() {
+        var blog = blogs.openBlog(3);
+        //no pinnned items
+        expect(blog.timeline.isPinDrawerVisible()).toBeFalsy();
+        //pin post
+        blog.timeline.togglePin(0);
+        //the pinned drawer should be visible
+        expect(blog.timeline.isPinDrawerVisible()).toBeTruthy();
+    });
 });

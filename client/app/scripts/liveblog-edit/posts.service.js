@@ -61,6 +61,10 @@ define([
             if (angular.isDefined(filters.status)) {
                 posts_criteria.source.query.filtered.filter.and.push({term: {post_status: filters.status}});
             }
+            // filters.sticky
+            if (angular.isDefined(filters.sticky)) {
+                posts_criteria.source.query.filtered.filter.and.push({term: {sticky: filters.sticky}});
+            }
             // filters.authors
             if (angular.isDefined(filters.authors) && filters.authors.length > 0) {
                 posts_criteria.source.query.filtered.filter.and.push({
@@ -231,11 +235,11 @@ define([
             getLatestUpdateDate: getLatestUpdateDate,
             retrievePost: retrievePost,
             savePost: savePost,
-            saveDraft: function(blog_id, post, items) {
-                return savePost(blog_id, post, items, {post_status: 'draft'});
+            saveDraft: function(blog_id, post, items, sticky) {
+                return savePost(blog_id, post, items, {post_status: 'draft', 'sticky': sticky});
             },
-            saveContribution: function(blog_id, post, items) {
-                return savePost(blog_id, post, items, {post_status: 'submitted'});
+            saveContribution: function(blog_id, post, items, sticky) {
+                return savePost(blog_id, post, items, {post_status: 'submitted', 'sticky': sticky});
             },
             remove: removePost
         };
