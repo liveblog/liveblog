@@ -242,7 +242,7 @@ class ThemesService(BaseService):
         query_filter = superdesk.json.dumps({'bool': {'should': terms}})
         req = ParsedRequest()
         req.args = {'filter': query_filter}
-        blogs = get_resource_service('blogs').get(req, None)
+        blogs = get_resource_service('blogs').get(req=None, lookup={})
         for blog in blogs:
             publish_blog_embed_on_s3.delay(str(blog['_id']))
         return blogs
