@@ -243,8 +243,15 @@ class ThemesService(BaseService):
         req = ParsedRequest()
         req.args = {'filter': query_filter}
         blogs = get_resource_service('blogs').get(req=None, lookup={})
+        theme_children = self.get(req=None, lookup={'extends': theme['name']})
         for blog in blogs:
-            publish_blog_embed_on_s3.delay(str(blog['_id']))
+            blog_pref = blog.get('blog_preferences')
+            if theme_children:
+                for child in theme_children:
+                    if blog_pref['theme'] == child['name']:
+                        publish_blog_embed_on_s3.delay(str(blog['_id']))
+            if blog_pref['theme'] == theme['name']:
+                publish_blog_embed_on_s3.delay(str(blog['_id']))
         return blogs
 
     def on_updated(self, updates, original):
