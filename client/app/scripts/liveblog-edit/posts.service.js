@@ -244,11 +244,11 @@ define([
             getLatestUpdateDate: getLatestUpdateDate,
             retrievePost: retrievePost,
             savePost: savePost,
-            saveDraft: function(blog_id, post, items, sticky) {
-                return savePost(blog_id, post, items, {post_status: 'draft', 'sticky': sticky});
+            saveDraft: function(blog_id, post, items, sticky, highlight) {
+                return savePost(blog_id, post, items, {post_status: 'draft', 'sticky': sticky, 'highlight': highlight});
             },
-            saveContribution: function(blog_id, post, items, sticky) {
-                return savePost(blog_id, post, items, {post_status: 'submitted', 'sticky': sticky});
+            saveContribution: function(blog_id, post, items, sticky, highlight) {
+                return savePost(blog_id, post, items, {post_status: 'submitted', 'sticky': sticky, 'highlight': highlight});
             },
             remove: removePost
         };

@@ -40,7 +40,6 @@
                 if (self.status === 'open') {
                     options.sticky = sticky
                 }
-                console.log('options is ', options);
                 return postsService.getPosts(self.blogId, options ,max_results || self.maxResults, page)
                 .then(function(data) {
                     // update posts meta data (used to know the total number of posts and pages)
@@ -318,16 +317,11 @@
                 sort: sort || 'editorial',
                 blogId: blog_id,
                 status: status,
-                highlight: highlight,
-<<<<<<< HEAD
                 /**
                  * Filter by post's highlight field
-=======
-                sticky: sticky,
-                /**
-                 * Some comment here.
->>>>>>> 3cdec811ef5784167473ecfec1ff0f11a8dc90f1
                  */
+                highlight: highlight,
+                sticky: sticky,
                 changeHighlight: changeHighlight,
                 /**
                  * Change the order in the future posts request, remove exising post and load a new page

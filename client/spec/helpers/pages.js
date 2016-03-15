@@ -404,7 +404,6 @@ function TimelinePage(blog) {
         self.column.element(self.byPosts.row(index)).element(self.byHighlight).click();
         return self;
     };
-    
     self.togglePin = function(index) {
         self.column.element(self.byPosts.row(index)).element(self.byTogglePin).click();
         return self;

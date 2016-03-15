@@ -57,7 +57,6 @@ describe('timeline add to top and edit', function() {
             expect(blog.contributions.getFull(0)).toBe(text);
         });
     });
-    
     it('can highlight a post', function() {
         var blog = blogs.openBlog(1);
         blog.editor.publishText();
