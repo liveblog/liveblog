@@ -4,7 +4,7 @@
     PagesManagerFactory.$inject = ['posts', '$q', 'config'];
     function PagesManagerFactory(postsService, $q, config) {
 
-        function PagesManager (max_results, sort) {
+        function PagesManager (max_results, sort, sticky) {
             var SORTS = {
                 'editorial' : {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
                 'newest_first' : {published_date: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
@@ -33,7 +33,7 @@
                 // set request parameters
                 var posts_criteria = {
                     source: {
-                        query: {filtered: {filter: {and: [{term: {post_status: 'open'}}, {not: {term: {deleted: true}}}]}}},
+                        query: {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {not: {term: {deleted: true}}}]}}},
                         sort: [SORTS[self.sort]]
                     },
                     page: page,
@@ -149,7 +149,7 @@
                             removePost(post);
                         } else {
                             // post updated
-                            if (post.post_status !== 'open') {
+                            if (post.post_status !== 'open' || post.sticky !== sticky) {
                                removePost(post);
                             } else {
                                 // update
@@ -159,7 +159,7 @@
                         }
                     } else {
                         // post doesn't exist in the list
-                        if (!post.deleted && post.post_status === 'open') {
+                        if (!post.deleted && post.post_status === 'open' && post.sticky === sticky) {
                             addPost(post);
                         }
                     }

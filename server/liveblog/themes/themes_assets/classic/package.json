@@ -1,0 +1,23 @@
+{
+  "name": "classic",
+  "description": "Classic Theme",
+  "main": "main.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/liveblog/lb-theme-classic.git"
+  },
+  "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
+  "license": "AGPL-3.0",
+  "bugs": {
+    "url": "https://github.com/liveblog/lb-theme-classic/issues"
+  },
+  "homepage": "https://github.com/liveblog/lb-theme-classic",
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-angular-gettext": "^2.1.0",
+    "gulp-extend": "^0.2.0",
+    "gulp-load-plugins": "^1.2.0",
+    "gulp-rename": "^1.2.2",
+    "gulp-wrap": "^0.11.0"
+  }
+}

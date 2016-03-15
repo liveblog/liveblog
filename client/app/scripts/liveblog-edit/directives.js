@@ -25,10 +25,14 @@ define([
 
                 LbPostsListCtrl.$inject = ['$scope', '$element'];
                 function LbPostsListCtrl($scope, $element) {
+                   
+                    $scope.lbSticky = $scope.lbSticky === 'true';
                     var vm = this;
                     angular.extend(vm, {
                         isLoading: true,
                         blogId: $scope.lbPostsBlogId,
+                        status: $scope.lbPostsStatus,
+                        sticky: $scope.lbSticky,
                         allowUnpublishing: $scope.lbPostsAllowUnpublishing,
                         allowReordering: $scope.lbPostsAllowReordering,
                         allowEditing: $scope.lbPostsAllowEditing,
@@ -41,8 +45,10 @@ define([
                         originalOrder: 0,
                         pagesManager: new PagesManager($scope.lbPostsBlogId,
                                                        $scope.lbPostsStatus,
-                                                       10,
-                                                       $scope.lbPostsOrderBy || 'editorial'),
+                                                       //if the list is a list with sticky posts, show them all in the 1st pages
+                                                       $scope.lbSticky === true? 100: 10,
+                                                       $scope.lbPostsOrderBy || 'editorial',
+                                                       $scope.lbSticky),
                         fetchNewPage: function() {
                             vm.isLoading = true;
                             return vm.pagesManager.fetchNewPage().then(function() {
@@ -96,8 +102,21 @@ define([
                                 notify.error(gettext('Something went wrong. Please reload and try again later'));
                             });
                         },
+                        removePostFromList: function(post) {
+                            vm.pagesManager.removePost(post);
+                        },
                         isPostsEmpty: function() {
-                            return vm.pagesManager.count() < 1 && !vm.isLoading;
+                            return vm.pagesManager.count() < 1 && !vm.isLoading && vm.isStickyPostsEmpty();
+                        },
+                        numberOfPosts: function() {
+                            return vm.pagesManager.count();
+                        },
+                        isStickyPostsEmpty: function() {
+                            if ($scope.lbStickyInstance) {
+                                return $scope.lbStickyInstance.isPostsEmpty();
+                            } else {
+                                return true;
+                            }
                         },
                         isSinglePost: function() {
                             return vm.pagesManager.count() === 1;
@@ -119,6 +138,7 @@ define([
                     // retrieve updates when event is recieved
                     .then(function() {
                         $scope.$on('posts', function(e, event_params) {
+
                             vm.isLoading = true;
                             vm.pagesManager.retrieveUpdate(true).then(function() {
                                 if (event_params.deleted === true) {
@@ -134,6 +154,8 @@ define([
                     scope: {
                         lbPostsBlogId: '=',
                         lbPostsStatus: '@',
+                        lbSticky: '@',
+                        lbStickyInstance: '=',
                         lbPostsOrderBy: '@',
                         lbPostsAllowUnpublishing: '=',
                         lbPostsAllowReordering: '=',
@@ -234,6 +256,18 @@ define([
                             clearReorder: function() {
                                 $document.unbind('keypress', escClearReorder);
                                 scope.clearReorderAction();
+                            },
+                            changePinStatus: function (post, status) {
+                                return postsService.savePost(post.blog, post, undefined, {sticky: status});
+                            },
+                            togglePinStatus: function(post) {
+                                scope.changePinStatus(post, !post.sticky).then(function(post) {
+                                    notify.pop();
+                                    notify.info(post.sticky ? gettext('Post was pinned') : gettext('Post was unpinned'));
+                                }, function() {
+                                    notify.pop();
+                                    notify.error(gettext('Something went wrong. Please try again later'));
+                                });
                             },
                             onEditClick: function(post) {
                                 scope.clearReorder();
