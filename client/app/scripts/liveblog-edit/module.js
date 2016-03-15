@@ -156,14 +156,8 @@ define([
                     $scope.actionPending = false;
                 });
             },
-            retrieveAllPosts: function() {
-                var blog_id = vm.timelineInstance.pagesManager.blogId;
-                postsService.getPosts(blog_id);
-
-            },
-            retrieveHighlightedPosts: function() {
-                var blog_id = vm.timelineInstance.pagesManager.blogId;
-                postsService.getOnlyHighlights(blog_id);
+            filterHighlight: function(highlight) {
+               vm.timelineInstance.pagesManager.changeHighlight(highlight);
             },
 
             // retrieve panel status from url
