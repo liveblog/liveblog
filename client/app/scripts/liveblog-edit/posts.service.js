@@ -89,10 +89,6 @@ define([
             if (angular.isDefined(filters.highlight)) {
                 posts_criteria.source.query.filtered.filter.and.push({term: {highlight: filters.highlight}});
             }
-            // filters.sticky
-            if (angular.isDefined(filters.sticky)) {
-                posts_criteria.source.query.filtered.filter.and.push({term: {sticky: filters.sticky}});
-            }
             return retrievePosts(blog_id, posts_criteria);
         }
 

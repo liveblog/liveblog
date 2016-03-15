@@ -48,6 +48,11 @@
                     return data;
                 });
             }
+            /**
+             * Filter the posts in timeline by their highlight attribute
+             * @param {boolean} highlight - The value of the field (true or false)
+             * @returns {promise}
+             */
             function changeHighlight(highlight) {
                 self.highlight = highlight;
                 self.pages = [];
@@ -314,9 +319,8 @@
                 blogId: blog_id,
                 status: status,
                 highlight: highlight,
-                sticky: sticky,
                 /**
-                 * Some comment here.
+                 * Filter by post's highlight field
                  */
                 changeHighlight: changeHighlight,
                 /**

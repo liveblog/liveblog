@@ -4,7 +4,7 @@
     PagesManagerFactory.$inject = ['posts', '$q', 'config'];
     function PagesManagerFactory(postsService, $q, config) {
 
-        function PagesManager (max_results, sort, sticky) {
+        function PagesManager (max_results, sort, sticky, highlight) {
             var SORTS = {
                 'editorial' : {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
                 'newest_first' : {published_date: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
@@ -44,6 +44,16 @@
                     self.meta = data._meta;
                     return data;
                 });
+            }
+            /**
+             * Filter the posts in embed by their highlight attribute
+             * @param {boolean} highlight - The value of the field (true or false)
+             * @returns {promise}
+             */
+            function changeHighlight(highlight) {
+                self.highlight = highlight;
+                self.pages = [];
+                return fetchNewPage();
             }
 
             /**
@@ -311,6 +321,11 @@
                  * Set the initial order (see self.SORTS)
                  */
                 sort: sort || config.settings.postOrder,
+                highlight: highlight,
+                /**
+                 * Filter by post's highlight field
+                 */
+                changeHighlight: changeHighlight,
                 /**
                  * Change the order in the future posts request, remove exising post and load a new page
                  */

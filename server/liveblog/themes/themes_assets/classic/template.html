@@ -22,6 +22,7 @@
                     class="sorting-bar__order"
                     ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
                     ng-click="timeline.orderBy('oldest_first')" translate>Oldest first</div>
+                <button class="btn pull-right" ng-click="changeHighlight(true)">Highlight</button>{{}}
             </div>
         </div>
         <div class="header-bar__actions">
@@ -165,7 +166,9 @@
                      ng-class="{'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
                                 'lb-post-permalink-selected': post._id === timeline.permalink._id}">        
                 <div class="lb-author" ng-if="timeline.settings.showAuthor">
+                    <a ng-click="highlightPost(post)" tooltip-placement="bottom" tooltip="{{ 'Highlight post' | translate }}">
                     <i class="icon-star"></i>
+                </a>
                     <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar"
                          class="lb-author__avatar"
                          ng-class="{'lb-author__avatar': (post.mainItem.item_type !== 'comment'),
