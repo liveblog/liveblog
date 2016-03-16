@@ -175,7 +175,7 @@ function ThemesManagerPage() {
     };
 
     self.saveSettings = function() {
-        element(by.css('[name="vm.themeSettingsForm"]')).element(by.buttonText('Done')).click();
+        element(by.css('[ng-click="vm.submitSettings(true)"]')).click();
         return self;
     };
 
