@@ -66,7 +66,7 @@
                         post.mainItem = _completeUser(post.groups[1].refs[0].item);
                         // if an item has a commenter then that post hasComments.
                         post.hasComments = _.reduce(post.groups[1].refs, function(is, val) {
-                            return is || _.isUndefined(val.item.commenter);
+                            return is || !_.isUndefined(val.item.commenter);
                         }, false);
                         // `fullDetails` is a business logic that can be compiled from other objects.
                         post.fullDetails = post.hasComments;
