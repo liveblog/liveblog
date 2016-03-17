@@ -175,7 +175,7 @@ function ThemesManagerPage() {
     };
 
     self.saveSettings = function() {
-        element(by.css('[name="vm.themeSettingsForm"]')).element(by.buttonText('Done')).click();
+        element(by.css('[ng-click="vm.submitSettings(true)"]')).click();
         return self;
     };
 
@@ -365,6 +365,8 @@ function TimelinePage(blog) {
     self.byPosts = by.repeater('post in posts');
     self.byEdit = by.css('[ng-click="onEditClick(post)"]');
     self.byUnpublish = by.css('[ng-click="unpublishPost(post)"]');
+    self.byTogglePin = by.css('[ng-click="togglePinStatus(post)"]');
+    self.byPinnedDrawer = by.css('div.timeline-posts-list.pinned');
     self.byStartMoving = by.css('[ng-click="preMovePost(post);"]');
     self.byMoveTo = by.css('[ng-click="movePost(index, \'above\');"]');
     self.byRemove = by.css('[ng-click="askRemovePost(post)"]');
@@ -395,6 +397,15 @@ function TimelinePage(blog) {
     self.unpublish = function(index) {
         self.column.element(self.byPosts.row(index)).element(self.byUnpublish).click();
         return self;
+    };
+
+    self.togglePin = function(index) {
+        self.column.element(self.byPosts.row(index)).element(self.byTogglePin).click();
+        return self;
+    };
+
+    self.isPinDrawerVisible = function() {
+        return element(self.byPinnedDrawer).isDisplayed();
     };
 
     self.startMoving = function(index) {

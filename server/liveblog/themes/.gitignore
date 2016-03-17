@@ -1,0 +1,7 @@
+/npm-debug.log
+/.settings
+/.project
+node_modules
+*.swp
+.tmp
+Thumbs.db

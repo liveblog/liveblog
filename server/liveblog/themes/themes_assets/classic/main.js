@@ -5,17 +5,27 @@
     function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, transformBlog) {
 
         var POSTS_PER_PAGE = config.settings.postsPerPage;
+        var STICKY_POSTS_PER_PAGE = 100;
         var PERMALINK_DELIMITER = config.settings.permalinkDelimiter || '?';
         var DEFAULT_ORDER = config.settings.postOrder; // newest_first, oldest_first or editorial
         var UPDATE_MANUALLY = config.settings.loadNewPostsManually;
         var UPDATE_EVERY = 10*1000; // retrieve update interval in millisecond
         var vm = this;
-        var pagesManager = new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER),
+        var pagesManager = new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER, false),
             permalink = new Permalink(pagesManager, PERMALINK_DELIMITER);
+
+        var stickyPagesManager = new PagesManager(STICKY_POSTS_PER_PAGE, DEFAULT_ORDER, true),
+            stickyPermalink = new Permalink(stickyPagesManager, PERMALINK_DELIMITER);
 
         function retrieveUpdate() {
             return vm.pagesManager.retrieveUpdate(!UPDATE_MANUALLY).then(function(data) {
                 vm.newPosts = data._items;
+            });
+        }
+
+        function retrieveStickyUpdate() {
+            return vm.stickyPagesManager.retrieveUpdate(!UPDATE_MANUALLY).then(function(data) {
+                vm.newStickyPosts = data._items;
             });
         }
 
@@ -32,6 +42,7 @@
             finished: false,
             settings: config.settings,
             newPosts: [],
+            newStickyPosts: [],
             orderBy: function(order_by) {
                 vm.loading = true;
                 vm.finished = false;
@@ -41,6 +52,7 @@
             },
             fetchNewPage: function() {
                 vm.loading = true;
+                vm.stickyPagesManager.fetchNewPage();
                 return vm.pagesManager.fetchNewPage().then(function(data){
                     vm.loading = false;
                     vm.finished = data._meta.total <= data._meta.max_results;
@@ -62,9 +74,13 @@
             applyUpdates: function() {
                 pagesManager.applyUpdates(vm.newPosts);
                 vm.newPosts = [];
+                stickyPagesManager.applyUpdates(vm.newStickyPosts);
+                vm.newStickyPosts = [];
             },
             pagesManager: pagesManager,
-            permalink: permalink
+            permalink: permalink,
+            stickyPagesManager: stickyPagesManager,
+            stickyPermalink: stickyPermalink
         });
         // retrieve first page
         vm.fetchNewPage()
@@ -72,6 +88,7 @@
         .then(function() {
             vm.permalinkScroll();
             $interval(retrieveUpdate, UPDATE_EVERY);
+            $interval(retrieveStickyUpdate, UPDATE_EVERY);
             $interval(retrieveBlogSettings, 3 * UPDATE_EVERY);
             // listen events from parent
             var fetchNewPageDebounced = _.debounce(vm.fetchNewPage, 1000);
@@ -84,7 +101,10 @@
         });
     }
 
-    angular.module('theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll'])
+    angular.module('theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll', 'gettext'])
+        .run(['gettextCatalog', 'config', function (gettextCatalog, config) {
+            gettextCatalog.setCurrentLanguage(config.settings.language);
+        }])
         .controller('TimelineCtrl', TimelineCtrl);
     angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 1000);
 

@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "2.3.5",
+    "version": "2.3.7",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type" : "git",
@@ -18,9 +18,22 @@
     "scripts": [
         "//code.angularjs.org/1.4.2/angular-animate.js",
         "vendors/ng-infinite-scroll.min.js",
+        "vendors/angular-gettext.min.js",
+        "translations.js",
         "main.js"
     ],
     "options": [
+        {
+            "name": "language",
+            "label": "Theme language",
+            "type": "select",
+            "options": [
+                {"value": "en", "label": "English"},            
+                {"value": "ro", "label": "Română"},
+                {"value": "fr", "label": "Français"}
+            ],
+            "default": "en"
+        },
         {
             "name": "postsPerPage",
             "label": "Number of posts per page",

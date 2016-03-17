@@ -1,5 +1,8 @@
 (function(angular) {
     'use strict';
+    function stripTags(text) {
+        return text.replace(/(<([^>]+)>)/ig, '');
+    }
 
     CommentsManagerFactory.$inject = ['comments', 'items', '$q', 'config'];
     function CommentsManagerFactory(commentsService, itemsService, $q, config) {
@@ -66,7 +69,7 @@
                     '        <div ng-show="notify" class="notify">',
                     '            <div class="content">',
                     '                <div class="modal-header">',
-                    '                    <h3>Your comment was sent for approval.</h3>',
+                    '                    <h3 translate>Your comment was sent for approval.</h3>',
                     '                </div>',
                     '            </div>',
                     '        </div>',
@@ -74,29 +77,31 @@
                     '            <form name="comment" novalidate ng-submit="send();">',
                     '                <div class="content">',
                     '                    <div class="modal-header">',
-                    '                        <h2>Post a comment</h2>',
+                    '                        <h2 translate>Post a comment</h2>',
                     '                    </div>',
                     '                    <div class="modal-body">',
                     '                        <fieldset>',
                     '                            <div class="field">',
-                    '                                <label for="commenter">Name *</label>',
+                    '                                <label for="commenter" translate>Name *</label>',
                     '                                <input name="commenter" ng-model="commenter">',
                     '                                <div role="alert">',
-                    '                                    <span class="error" ng-show="commenter.length < 3">Please fill in your Name.</span>',
+                    '                                    <span class="error" ng-show="commenter.length < 3" translate>Please fill in your Name.</span>',
+                    '                                    <span class="error" ng-show="commenter.length >30" translate>Name should be maximum 30 characters in length.</span>',
                     '                                </div>',
                     '                            </div>',
                     '                            <div class="field">',
-                    '                                <label for="content">Comment *</label>',
+                    '                                <label for="content" translate>Comment *</label>',
                     '                                <textarea name="content" ng-model="content"></textarea>',
                     '                                <div role="alert">',
-                    '                                    <span class="error" ng-show="content.length < 3">Please fill in your Comment.</span>',
+                    '                                    <span class="error" ng-show="content.length < 3" translate>Please fill in your Comment.</span>',
+                    '                                    <span class="error" ng-show="content.length > 300" translate>Comment should be maximum 300 characters in length.</span>',
                     '                                </div>',
                     '                            </div>',
                     '                        </fieldset>',
                     '                    </div>',
                     '                    <div class="modal-footer">',
-                    '                        <button class="btn" ng-click="comment=false"><span>Cancel</span></button>',
-                    '                        <button type="submit" class="btn btn-primary"><span>Send</span></button>',
+                    '                        <button class="btn" ng-click="comment=false"><span translate>Cancel</span></button>',
+                    '                        <button type="submit" class="btn btn-primary"><span translate>Send</span></button>',
                     '                    </div>',
                     '                </div>',
                     '            </form>',
@@ -129,16 +134,18 @@
                             }
                         },
                         send: function() {
-                            if( !vm.commenter || vm.commenter.length < 3 || !vm.content || vm.content.length <3) {
-                                vm.commenter = (vm.commenter === undefined)? '' : vm.commenter;
-                                vm.content = (vm.content === undefined)? '' : vm.content;
-                                return false;
+                            if( 
+                                !vm.commenter || vm.commenter.length < 3 || vm.commenter.length > 30 ||
+                                !vm.content || vm.content.length <3 || vm.content.length > 300 ) {
+                                    vm.commenter = (vm.commenter === undefined)? '' : vm.commenter;
+                                    vm.content = (vm.content === undefined)? '' : vm.content;
+                                    return false;
                             }
                             vm.notify = 'sended';
                             vm.form = false;
                             commentsManager.send({
-                                commenter: vm.commenter,
-                                text: vm.content
+                                commenter: stripTags(vm.commenter),
+                                text: stripTags(vm.content)
                             }).then(function(){
                                 vm.reset();
                                 $timeout(function(){

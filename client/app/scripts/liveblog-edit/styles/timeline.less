@@ -16,7 +16,7 @@
         }
     }
     .posts {
-        padding: 20px;
+        padding: 20px 20px 7px 20px;
         opacity: 1;
         transition: opacity linear 0.1s;
         > li {
@@ -32,6 +32,10 @@
         .lb-post.active {
             border: 1px solid #5ea9c8!important;
             box-shadow: 0 5px 16px rgba(0,0,0,.23);
+        }
+        .lb-post.pinned {
+            border: 1px solid #a9cad7;
+            box-shadow: 0 2px 0 #a9cad7 ;
         }
 
     }
@@ -99,4 +103,31 @@
     .fix-cancel-move-button {
         margin-top: -14px;
     }
+    .pin-drawer-button {
+        position: absolute;
+        width: 23px;
+        height: 23px;
+        border: 0;
+        padding: 0;
+        left: 50%;
+        margin-left: -11.5px;
+        background-color: #ffffff;
+        z-index: 3;
+        margin-top: -10px;
+        line-height: 0;
+        border-radius: 23px;
+        box-shadow: 0 0 7px 0 rgba(0, 0, 0, 0.3);
+        -webkit-transition: transform 0.5s;
+        -o-transition: transform 0.5s;
+        transition: transform 0.5s;
+        &.active {
+            .rotate(180deg);
+        }
+    }
+    .pin-drawer {
+        box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.25);
+    }
+}
+.opaque {
+    opacity: 1!important;
 }

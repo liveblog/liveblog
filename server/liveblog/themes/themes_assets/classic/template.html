@@ -1,4 +1,4 @@
-<div class="lb-timeline" ng-app="theme" ng-controller="TimelineCtrl as timeline">
+<div class="lb-timeline {{timeline.settings.language}}" ng-app="theme" ng-controller="TimelineCtrl as timeline">
     <div class="lb-timeline__header">
         <h1 ng-if="timeline.settings.showTitle" ng-bind="timeline.blog.title"></h1>
         <div class="illustration" ng-if="timeline.blog.picture_url && timeline.settings.showImage">
@@ -8,20 +8,20 @@
     </div>
     <div class="header-bar">
         <div class="sorting-bar">
-            <div class="sorting-bar__title">Sort by:</div>
+            <div class="sorting-bar__title" translate>Sort by:</div>
             <div class="sorting-bar__orders">
                 <div
                     class="sorting-bar__order"
                     ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='editorial'}"
-                    ng-click="timeline.orderBy('editorial')">Editorial</div>
+                    ng-click="timeline.orderBy('editorial')" translate>Editorial</div>
                 <div
                     class="sorting-bar__order"
                     ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='newest_first'}"
-                    ng-click="timeline.orderBy('newest_first')">Newest first</div>
+                    ng-click="timeline.orderBy('newest_first')" translate>Newest first</div>
                 <div
                     class="sorting-bar__order"
                     ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
-                    ng-click="timeline.orderBy('oldest_first')">Oldest first</div>
+                    ng-click="timeline.orderBy('oldest_first')" translate>Oldest first</div>
             </div>
         </div>
         <div class="header-bar__actions">
@@ -29,7 +29,7 @@
                 ng-if="timeline.settings.canComment"
                 class="btn ng-cloak"
                 ng-class="{'active': timeline.comment}"
-                ng-click="timeline.comment = !timeline.comment">Comment</button>
+                ng-click="timeline.comment = !timeline.comment" translate>Comment</button>
         </div>
         <div class="header-bar__logo">
             <a href="https://www.sourcefabric.org/liveblog/" target="_blank">
@@ -41,8 +41,8 @@
         <div lb-comments data-comment="timeline.comment"></div>
         <div
             class="lb-post emtpy-message ng-cloak"
-            ng-show="timeline.pagesManager.allPosts().length < 1 && !timeline.loading">
-            <div>No post for now.</div>
+            ng-show="timeline.pagesManager.allPosts().length + timeline.stickyPagesManager.allPosts().length< 1 && !timeline.loading">
+            <div>No posts for now.</div>
         </div>
         <section
             ng-class="{'comment-active': timeline.comment}"
@@ -52,12 +52,113 @@
             infinite-scroll-immediate-check="false">
             <div class="lb-post load-new-posts"
                  ng-click="timeline.applyUpdates()"
-                 ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0">
-                <ng-pluralize count="timeline.newPosts.length"
-                    when="{'one': 'See one new post',
-                    'other': 'See {} new posts'}">
-                </ng-pluralize>
+                 ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0"
+                 translate translate-n="timeline.newPosts.length"
+                 translate-plural="See {{$count}} new update">
+                See one new update
             </div>
+
+
+
+            <article lb-post
+                        style="background-color: rgba(94, 169, 200, 0.11);"
+                     ng-repeat="post in timeline.stickyPagesManager.allPosts() track by post._id"
+                     class="lb-post list-group-item ng-cloak"
+                     ng-class="{'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
+                                'lb-post-permalink-selected': post._id === timeline.permalink._id}"
+                    ng-if='!timeline.stickyPagesManager.hideSticky'>        
+                <div class="lb-author" ng-if="timeline.settings.showAuthor">
+                    <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar"
+                         class="lb-author__avatar"
+                         ng-class="{'lb-author__avatar': (post.mainItem.item_type !== 'comment'),
+                                       'lb-author__comment': (post.mainItem.item_type === 'comment')}"
+                         ng-src="{{ post.mainItem.original_creator.picture_url }}" />
+                    <!-- special case, if the main item is a comment show the `_created` date insted of `published_date` one. !-->
+                    <div class="lb-author__date" ng-bind="post.mainItem.displayDate | prettifyIsoDate"></div>
+                    <!-- author name, with or without mailto link  -->
+                    <div ng-if="!timeline.settings.authorNameLinksToEmail || post.mainItem.item_type === 'comment'"
+                         class="lb-author__name"
+                         ng-bind="post.mainItem.original_creator[timeline.settings.authorNameFormat]"></div>
+                    <div ng-if="timeline.settings.authorNameLinksToEmail && post.mainItem.item_type !== 'comment'"
+                         class="lb-author__name">
+                        <a href="mailto:{{post.mainItem.original_creator.email}}"
+                           ng-bind="post.mainItem.original_creator[timeline.settings.authorNameFormat]"></a>
+                    </div>
+                </div>
+                <div class="lb-post-permalink">
+                    <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
+                        <i class="fa fa-link fa-2"></i>
+                    </a>
+                </div>
+
+                <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
+                    <div ng-if="post.fullDetails && !$first" class="list-group-item">
+                        <div class="lb-timeline__header">
+                            <div class="lb-author" ng-if="timeline.settings.showAuthor">
+                                <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar"
+                                     class="lb-author__avatar"
+                                     ng-class="{'lb-author__avatar': (item.item_type !== 'comment'),
+                                                   'lb-author__comment': (item.item_type === 'comment')}"
+                                     ng-src="{{ item.original_creator.picture_url }}" />
+
+                                <div class="lb-author__date" ng-bind="item.displayDate | prettifyIsoDate"></div>
+                                <!-- author name, with or without mailto link  -->
+                                <div ng-if="!timeline.settings.authorNameLinksToEmail || item.item_type === 'comment'"
+                                     class="lb-author__name"
+                                     ng-bind="item.original_creator[timeline.settings.authorNameFormat]"></div>
+                                <div ng-if="timeline.settings.authorNameLinksToEmail && item.item_type !== 'comment'"
+                                     class="lb-author__name">
+                                    <a href="mailto:{{post.mainItem.original_creator.email}}"
+                                       ng-bind="item.original_creator[timeline.settings.authorNameFormat]"></a>
+                                </div>
+                            </div>
+                            <div class="lb-item" ng-switch="item.item_type">
+                                <div ng-switch-when="embed">
+                                    <div ng-switch="item.meta.provider_name">
+                                        <div ng-switch-when="Twitter">
+                                            <lb-twitter-card lb-twitter-content="{{ item.meta.html }}"></lb-twitter-card>
+                                        </div>
+                                        <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
+                                    </div>
+                                </div>
+                                <div ng-switch-when="image" lb-bind-html html-content="{{ item.text | convertLinksWithRelativeProtocol }}"></div>
+                                <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
+                            </div>
+                        </div>
+                    </div>                
+                    <div ng-if="!post.fullDetails || $first" ng-switch="item.item_type">
+                        <div ng-switch-when="embed">
+                            <div ng-switch="item.meta.provider_name">
+                                <div ng-switch-when="Twitter">
+                                    <lb-twitter-card lb-twitter-content="{{ item.meta.html }}"></lb-twitter-card>
+                                </div>
+                                <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
+                            </div>
+                        </div>
+                        <div ng-switch-when="image" lb-bind-html html-content="{{ item.text | convertLinksWithRelativeProtocol }}"></div>
+                        <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
+                    </div>
+                </div>
+                <div class="lb-updated-date ng-cloak" ng-show="post.showUpdate">
+                    Updated <span ng-bind="post._updated | prettifyIsoDate"></span>
+                </div>
+            </article>
+
+
+
+            <div ng-if="timeline.stickyPagesManager.allPosts().length && !timeline.loading"
+                class="pin-drawer" style="background-color: rgba(94, 169, 200, 0.11);">
+                <ng-pluralize count="timeline.stickyPagesManager.allPosts().length" ng-if="timeline.stickyPagesManager.hideSticky"
+                    when="{'one': '1 PINNED POST',
+                    'other': '{} PINNED POSTS'}" style="color: gray; font-size: small; margin-left: 4px;">
+                </ng-pluralize>
+                <button class="pin-drawer-button" ng-class="{'chevron-active': timeline.stickyPagesManager.hideSticky}"
+                ng-click="timeline.stickyPagesManager.hideSticky = !timeline.stickyPagesManager.hideSticky">
+                <i class="fa fa-chevron-up" style="margin-bottom: 3px; margin-left: 1px;"></i></button>
+            </div>
+
+
+
             <article lb-post
                      ng-repeat="post in timeline.pagesManager.allPosts() track by post._id"
                      class="lb-post list-group-item ng-cloak"
@@ -142,7 +243,7 @@
         </section>
         <button ng-click="timeline.fetchNewPage()"
                 class="ng-cloak"
-                ng-if="!timeline.settings.infinitScroll && timeline.isAllowedToLoadMore()" trans>Load more posts</button>
-        <div class="loading" ng-show="timeline.loading">Loading</div>
+                ng-if="!timeline.settings.infinitScroll && timeline.isAllowedToLoadMore()" translate>Load more posts</button>
+        <div class="loading" ng-show="timeline.loading" translate>Loading</div>
     </div>
 </div>
