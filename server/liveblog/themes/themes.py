@@ -238,6 +238,7 @@ class ThemesService(BaseService):
         terms = []
         for t in self.get_children(theme['name']) + [theme['name']]:
             terms.append({'term': {'blog_preferences.theme': t}})
+        # FIXME: retrieve only the blogs who use a specified theme
         blogs = get_resource_service('blogs').get(req=None, lookup={})
         # get all the children for the theme that we modify the settings for
         theme_children = self.get_children(theme.get('name'))
