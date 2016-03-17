@@ -506,7 +506,7 @@ article blockquote li:before {
     left: 50%;
     margin-left: -11.5px;
     background-color: #ffffff;
-    z-index: 3;
+    z-index: 2;
     margin-top: -10px;
     line-height: 0;
     border-radius: 23px;
