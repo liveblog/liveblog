@@ -429,14 +429,6 @@ define([
                 });
                 return deferred.promise;
             },
-            reset: function() {
-                // reset vm.blogPreferences's values with the ones from global_preferences (backend)
-                api('global_preferences').query().then(function(global_preferences) {
-                    global_preferences._items.forEach(function(item) {
-                        vm.blogPreferences[item.key] = item.value;
-                    });
-                });
-            },
             askRemoveBlog: function() {
                                 modal.confirm(gettext('Are you sure you want to delete the blog?'))
                                     .then(function() {
