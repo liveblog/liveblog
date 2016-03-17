@@ -24,7 +24,6 @@ import zipfile
 import os
 import magic
 from liveblog.blogs.blogs import publish_blog_embed_on_s3
-from eve.utils import ParsedRequest
 import superdesk
 import logging
 
@@ -239,16 +238,16 @@ class ThemesService(BaseService):
         terms = []
         for t in self.get_children(theme['name']) + [theme['name']]:
             terms.append({'term': {'blog_preferences.theme': t}})
-        query_filter = superdesk.json.dumps({'bool': {'should': terms}})
-        req = ParsedRequest()
-        req.args = {'filter': query_filter}
         blogs = get_resource_service('blogs').get(req=None, lookup={})
-        theme_children = self.get(req=None, lookup={'extends': theme['name']})
+        # get all the children for the theme that we modify the settings for
+        theme_children = self.get_children(theme.get('name'))
         for blog in blogs:
             blog_pref = blog.get('blog_preferences')
             if theme_children:
+                # if a blog has associated the theme that is a  child of the one
+                # for which we modify the settings, we redeploy the blog on s3
                 for child in theme_children:
-                    if blog_pref['theme'] == child['name']:
+                    if blog_pref['theme'] == child:
                         publish_blog_embed_on_s3.delay(str(blog['_id']))
             if blog_pref['theme'] == theme['name']:
                 publish_blog_embed_on_s3.delay(str(blog['_id']))
