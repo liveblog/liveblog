@@ -22,10 +22,14 @@
                     class="sorting-bar__order"
                     ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
                     ng-click="timeline.orderBy('oldest_first')" translate>Oldest first</div>
-                <button class="btn pull-right" ng-click="changeHighlight(true)">Highlight</button>{{}}
             </div>
+
         </div>
         <div class="header-bar__actions">
+            <div class="toggleHighlights" ng-class="{'active': timeline.highlightsOnly}" ng-click="timeline.toggleHighlighsOnly()"
+            tooltip-placement="bottom" tooltip="{{ timeline.highlightsOnly? 'Show all posts': 'Show highlighted post only' | translate }}">
+                <i class="fa fa-star fa-2"></i>  
+            </div>
             <button
                 ng-if="timeline.settings.canComment"
                 class="btn ng-cloak"
@@ -85,6 +89,9 @@
                         <a href="mailto:{{post.mainItem.original_creator.email}}"
                            ng-bind="post.mainItem.original_creator[timeline.settings.authorNameFormat]"></a>
                     </div>
+                </div>
+                <div class="lb-post-highlighted" ng-if="post.highlight">
+                    <i class="fa fa-star fa-2"></i>
                 </div>
                 <div class="lb-post-permalink">
                     <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
@@ -185,6 +192,9 @@
                         <a href="mailto:{{post.mainItem.original_creator.email}}"
                            ng-bind="post.mainItem.original_creator[timeline.settings.authorNameFormat]"></a>
                     </div>
+                </div>
+                <div class="lb-post-highlighted" ng-if="post.highlight">
+                    <i class="fa fa-star fa-2"></i>
                 </div>
                 <div class="lb-post-permalink">
                     <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">

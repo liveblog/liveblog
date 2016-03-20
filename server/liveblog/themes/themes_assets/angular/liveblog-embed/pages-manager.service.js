@@ -4,7 +4,7 @@
     PagesManagerFactory.$inject = ['posts', '$q', 'config'];
     function PagesManagerFactory(postsService, $q, config) {
 
-        function PagesManager (max_results, sort, sticky, highlight) {
+        function PagesManager (max_results, sort, sticky) {
             var SORTS = {
                 'editorial' : {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
                 'newest_first' : {published_date: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
@@ -30,10 +30,13 @@
              * @returns {promise}
              */
             function retrievePage(page, max_results) {
+                var query = self.highlight?
+                {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {term: {highlight: true}}, {not: {term: {deleted: true}}}]}}}:
+                {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {not: {term: {deleted: true}}}]}}}
                 // set request parameters
                 var posts_criteria = {
                     source: {
-                        query: {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {not: {term: {deleted: true}}}]}}},
+                        query: query,
                         sort: [SORTS[self.sort]]
                     },
                     page: page,
@@ -321,7 +324,6 @@
                  * Set the initial order (see self.SORTS)
                  */
                 sort: sort || config.settings.postOrder,
-                highlight: highlight,
                 /**
                  * Filter by post's highlight field
                  */
