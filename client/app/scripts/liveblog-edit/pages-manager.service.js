@@ -7,7 +7,7 @@
     PagesManagerFactory.$inject = ['postsService', '$q', 'lodash', 'moment'];
     function PagesManagerFactory(postsService, $q, _, moment) {
 
-        function PagesManager (blog_id, status, max_results, sort, sticky) {
+        function PagesManager (blog_id, status, max_results, sort, sticky, highlight) {
             var SORTS = {
                 'editorial': {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
                 'updated_first': {_updated: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
@@ -34,7 +34,7 @@
              * @returns {promise}
              */
             function retrievePage(page, max_results) {
-                var options = {status: self.status, authors: self.authors}
+                var options = {status: self.status, authors: self.authors, highlight: self.highlight}
                 //only care about the sticky status if post if open otherwise show them all together
                 //@TODO refactor when refactoring the page manager
                 if (self.status === 'open') {
@@ -47,7 +47,16 @@
                     return data;
                 });
             }
-
+            /**
+             * Filter the posts in timeline by their highlight attribute
+             * @param {boolean} highlight - The value of the field (true or false)
+             * @returns {promise}
+             */
+            function changeHighlight(highlight) {
+                self.highlight = highlight;
+                self.pages = [];
+                return fetchNewPage();
+            }
             /**
              * Change the order in the future posts request, remove exising post and load a new page
              * @param {string} sort_name - The name of the new order (see self.SORTS)
@@ -308,6 +317,12 @@
                 sort: sort || 'editorial',
                 blogId: blog_id,
                 status: status,
+                /**
+                 * Filter by post's highlight field
+                 */
+                highlight: highlight,
+                sticky: sticky,
+                changeHighlight: changeHighlight,
                 /**
                  * Change the order in the future posts request, remove exising post and load a new page
                  */

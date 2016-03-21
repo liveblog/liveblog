@@ -295,6 +295,9 @@ button.active {
     margin-bottom: 20px;
     position: relative;
 }
+.icon-star {
+    background-position: -120px 0;
+ }
 .lb-post {
     position: relative;
     border-bottom: 1px solid #CBCBCB;
@@ -492,7 +495,28 @@ article blockquote li:before {
     right: 10px;
     visibility: hidden;
 }
-
+.lb-post-highlighted {
+    position: absolute;
+    top: 10px;
+    right: 30px;
+    color: #f89406;
+}
+.toggleHighlights {
+    color: #f89406;
+    height: auto;
+    padding: 2px 8px 1px 8px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid rgba(215, 215, 215, 0.7);
+    border-radius: 2px;
+    box-sizing: border-box;
+    margin-right: 8px;
+    display: inline-block;
+    cursor: pointer;
+}
+.toggleHighlights.active {
+    background-color: rgba(0, 0, 0, 0.25);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.252);
+}
 .lb-post:hover .lb-post-permalink {
     visibility: visible;
 }

@@ -372,6 +372,7 @@ function TimelinePage(blog) {
     self.byRemove = by.css('[ng-click="askRemovePost(post)"]');
     self.waitForModal = waitForModal.bind(self);
     self.okModal = okModal.bind(self);
+    self.byHighlight = by.css('[ng-click="highlightPost(post)"]');
 
     self.get = function(index) {
         return self.column.element(self.byPosts.row(index));
@@ -399,6 +400,10 @@ function TimelinePage(blog) {
         return self;
     };
 
+    self.highlight = function(index) {
+        self.column.element(self.byPosts.row(index)).element(self.byHighlight).click();
+        return self;
+    };
     self.togglePin = function(index) {
         self.column.element(self.byPosts.row(index)).element(self.byTogglePin).click();
         return self;
@@ -407,7 +412,6 @@ function TimelinePage(blog) {
     self.isPinDrawerVisible = function() {
         return element(self.byPinnedDrawer).isDisplayed();
     };
-
     self.startMoving = function(index) {
         self.column.element(self.byPosts.row(index)).element(self.byStartMoving).click();
         return self;
