@@ -9,7 +9,7 @@
     transformBlog.$inject = ['fixProtocol']
     function transformBlog(fixProtocol) {
         return function(blog) {
-            if (blog.picture_url) {
+            if (blog.picture_url && blog.picture) {
                 var srcset = '';
                 angular.forEach(blog.picture.renditions, function(value) {
                     srcset += ', ' + fixProtocol(value.href) + ' ' + value.width + 'w';
