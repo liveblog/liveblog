@@ -38,8 +38,9 @@
             box-shadow: 0 2px 0 @orange;
         }
         .lb-post.pinned {
-            border: 1px solid @blue;
-            box-shadow: 0 2px 0 @blue;
+            border: 1px solid #a9cad7;
+            box-shadow: 0 1px 0 #a9cad7;
+            .border-radius(3px);
         }
     }
     .posts.flicker {
@@ -128,7 +129,14 @@
         }
     }
     .pin-drawer {
-        box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.25);
+        margin: 0px 20px 0px 20px;
+        border-bottom: 1px solid rgba(0, 0, 0, 0.12);
+        span {
+            font-size: 11px;
+            color: #999999;
+            padding: 5px 0;
+            display: inline-block;
+        }
     }
 }
 .opaque {
