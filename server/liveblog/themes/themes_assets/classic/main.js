@@ -40,6 +40,7 @@
             blog: transformBlog(config.blog),
             loading: true,
             finished: false,
+            highlightsOnly: false,
             settings: config.settings,
             newPosts: [],
             newStickyPosts: [],
@@ -76,6 +77,14 @@
                 vm.newPosts = [];
                 stickyPagesManager.applyUpdates(vm.newStickyPosts);
                 vm.newStickyPosts = [];
+            },
+            toggleHighlighsOnly: function() {
+                vm.highlightsOnly = !vm.highlightsOnly;
+                pagesManager.changeHighlight(vm.highlightsOnly);
+                stickyPagesManager.changeHighlight(vm.highlightsOnly);
+                if (vm.highlightsOnly) {
+                    stickyPagesManager.hideSticky = false;
+                }
             },
             pagesManager: pagesManager,
             permalink: permalink,

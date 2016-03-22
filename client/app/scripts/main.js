@@ -47,14 +47,16 @@ define('main', [
             }]);
         }])
         //show messages on websocket disconnect and connect
-        .run(['$rootScope', '$timeout', 'notify', 'gettext', function($rootScope, $timeout, notify, gettext) {
+        .run(['$rootScope', '$timeout', 'notify', 'gettext', 'session', function($rootScope, $timeout, notify, gettext, session) {
             var alertTimeout;
             $rootScope.$on('disconnected', function(event) {
                 $timeout.cancel(alertTimeout);
-                alertTimeout = $timeout(function() {
-                    notify.pop();
-                    notify.error(gettext('Disconnected from Notification Server, attempting to reconnect ...'), 20000);
-                }, 100);
+                if (session && session.sessionId) {
+                    alertTimeout = $timeout(function() {
+                        notify.pop();
+                        notify.error(gettext('Disconnected from Notification Server, attempting to reconnect ...'), 20000);
+                    }, 100);
+                }
             });
             $rootScope.$on('connected', function(event) {
                 //only show the 'connected' message if there was a disconnect event

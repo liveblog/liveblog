@@ -30,10 +30,13 @@
              * @returns {promise}
              */
             function retrievePage(page, max_results) {
+                var query = self.highlight?
+                {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {term: {highlight: true}}, {not: {term: {deleted: true}}}]}}}:
+                {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {not: {term: {deleted: true}}}]}}}
                 // set request parameters
                 var posts_criteria = {
                     source: {
-                        query: {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {not: {term: {deleted: true}}}]}}},
+                        query: query,
                         sort: [SORTS[self.sort]]
                     },
                     page: page,
@@ -44,6 +47,16 @@
                     self.meta = data._meta;
                     return data;
                 });
+            }
+            /**
+             * Filter the posts in embed by their highlight attribute
+             * @param {boolean} highlight - The value of the field (true or false)
+             * @returns {promise}
+             */
+            function changeHighlight(highlight) {
+                self.highlight = highlight;
+                self.pages = [];
+                return fetchNewPage();
             }
 
             /**
@@ -311,6 +324,10 @@
                  * Set the initial order (see self.SORTS)
                  */
                 sort: sort || config.settings.postOrder,
+                /**
+                 * Filter by post's highlight field
+                 */
+                changeHighlight: changeHighlight,
                 /**
                  * Change the order in the future posts request, remove exising post and load a new page
                  */
