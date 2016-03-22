@@ -24,7 +24,6 @@ import zipfile
 import os
 import magic
 from liveblog.blogs.blogs import publish_blog_embed_on_s3
-from eve.utils import ParsedRequest
 import superdesk
 import logging
 
@@ -236,15 +235,26 @@ class ThemesService(BaseService):
             return dict(status='created', theme=theme)
 
     def publish_related_blogs(self, theme):
-        terms = []
-        for t in self.get_children(theme['name']) + [theme['name']]:
-            terms.append({'term': {'blog_preferences.theme': t}})
-        query_filter = superdesk.json.dumps({'bool': {'should': terms}})
-        req = ParsedRequest()
-        req.args = {'filter': query_filter}
-        blogs = get_resource_service('blogs').get(req, None)
+        # FIXME: retrieve only the blogs who use a specified theme
+        # terms = []
+        # for t in self.get_children(theme['name']) + [theme['name']]:
+            # terms.append({'term': {'blog_preferences.theme': t}})
+        blogs = get_resource_service('blogs').get(req=None, lookup={})
+        # get all the children for the theme that we modify the settings for
+        theme_children = self.get_children(theme.get('name'))
         for blog in blogs:
-            publish_blog_embed_on_s3.delay(str(blog['_id']))
+            blog_pref = blog.get('blog_preferences')
+            if blog_pref['theme'] == theme['name']:
+                print('the parent', blog['title'])
+                publish_blog_embed_on_s3.delay(str(blog['_id']))
+            if theme_children:
+                # if a blog has associated the theme that is a  child of the one
+                # for which we modify the settings, we redeploy the blog on s3
+                for child in theme_children:
+                    if blog_pref['theme'] == child:
+                        print('just a child', blog['title'])
+                        publish_blog_embed_on_s3.delay(str(blog['_id']))
+                        break
         return blogs
 
     def on_updated(self, updates, original):
