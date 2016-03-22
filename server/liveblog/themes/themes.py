@@ -235,10 +235,10 @@ class ThemesService(BaseService):
             return dict(status='created', theme=theme)
 
     def publish_related_blogs(self, theme):
-        terms = []
-        for t in self.get_children(theme['name']) + [theme['name']]:
-            terms.append({'term': {'blog_preferences.theme': t}})
         # FIXME: retrieve only the blogs who use a specified theme
+        # terms = []
+        # for t in self.get_children(theme['name']) + [theme['name']]:
+            # terms.append({'term': {'blog_preferences.theme': t}})
         blogs = get_resource_service('blogs').get(req=None, lookup={})
         # get all the children for the theme that we modify the settings for
         theme_children = self.get_children(theme.get('name'))
@@ -250,6 +250,7 @@ class ThemesService(BaseService):
                 for child in theme_children:
                     if blog_pref['theme'] == child:
                         publish_blog_embed_on_s3.delay(str(blog['_id']))
+                        break
             if blog_pref['theme'] == theme['name']:
                 publish_blog_embed_on_s3.delay(str(blog['_id']))
         return blogs
