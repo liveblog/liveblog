@@ -86,7 +86,6 @@ define([
             actionDisabled: true,
             sticky: false,
             highlight: false,
-            showDraft:true,
             actionStatus: function() {
                 return $scope.actionDisabled || $scope.actionPending;
             },
@@ -99,11 +98,14 @@ define([
             toggleHighlight: function() {
                 $scope.highlight = !$scope.highlight;
             },
-            openPostInEditor: function (post) {
-                if (post.original_creator != session.identity._id){
-                    // console.log('here', showDraft)
-                    $scope.showDraft = !$scope.showDraft;
+            showSaveAsDraft: function() {
+                if (angular.isDefined($scope.currentPost)) {
+                    return $scope.currentPost.original_creator === session.identity._id;
+                } else {
+                    return true;
                 }
+            }, 
+            openPostInEditor: function (post) {
                 function fillEditor(post) {
                     cleanEditor(false);
                     $scope.currentPost = angular.copy(post);
