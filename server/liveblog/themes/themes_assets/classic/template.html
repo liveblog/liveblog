@@ -27,7 +27,7 @@
         </div>
         <div class="header-bar__actions">
             <div class="toggleHighlights" ng-class="{'active': timeline.highlightsOnly}" ng-click="timeline.toggleHighlighsOnly()"
-            tooltip-placement="bottom" tooltip="{{ timeline.highlightsOnly? 'Show all posts': 'Show highlighted post only' | translate }}">
+            title="{{ timeline.highlightsOnly? 'Show all posts': 'Show highlighted post only' | translate }}">
                 <i class="fa fa-star fa-2"></i>  
             </div>
             <button
@@ -173,9 +173,6 @@
                      ng-class="{'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
                                 'lb-post-permalink-selected': post._id === timeline.permalink._id}">        
                 <div class="lb-author" ng-if="timeline.settings.showAuthor">
-                    <a ng-click="highlightPost(post)" tooltip-placement="bottom" tooltip="{{ 'Highlight post' | translate }}">
-                    <i class="icon-star"></i>
-                </a>
                     <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar"
                          class="lb-author__avatar"
                          ng-class="{'lb-author__avatar': (post.mainItem.item_type !== 'comment'),
