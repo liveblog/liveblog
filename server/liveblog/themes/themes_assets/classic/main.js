@@ -47,8 +47,9 @@
             orderBy: function(order_by) {
                 vm.loading = true;
                 vm.finished = false;
-                vm.pagesManager.changeOrder(order_by).then(function() {
+                vm.pagesManager.changeOrder(order_by).then(function(data) {
                     vm.loading = false;
+                    vm.finished = data._meta.total <= data._meta.max_results;
                 });
             },
             fetchNewPage: function() {
