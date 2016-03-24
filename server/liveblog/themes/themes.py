@@ -245,14 +245,12 @@ class ThemesService(BaseService):
         for blog in blogs:
             blog_pref = blog.get('blog_preferences')
             if blog_pref['theme'] == theme['name']:
-                print('the parent', blog['title'])
                 publish_blog_embed_on_s3.delay(str(blog['_id']))
             if theme_children:
                 # if a blog has associated the theme that is a  child of the one
                 # for which we modify the settings, we redeploy the blog on s3
                 for child in theme_children:
                     if blog_pref['theme'] == child:
-                        print('just a child', blog['title'])
                         publish_blog_embed_on_s3.delay(str(blog['_id']))
                         break
         return blogs
