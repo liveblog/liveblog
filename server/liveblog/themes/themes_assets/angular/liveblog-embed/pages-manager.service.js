@@ -167,7 +167,7 @@
                             } else {
                                 // update
                                 self.pages[existing_post_indexes[0]].posts[existing_post_indexes[1]] = post;
-                                createPagesWithPosts();
+                                createPagesWithPosts(self.allPosts(), true);
                            }
                         }
                     } else {
@@ -203,9 +203,11 @@
              * Recreate the pages from the given posts
              * @param {array} [posts=self.allPosts()] - List of posts
              */
-            function createPagesWithPosts(posts) {
+            function createPagesWithPosts(posts, resetPages) {
                 posts = posts || self.allPosts();
-                self.pages = [];
+                if (resetPages) {
+                    self.pages = [];
+                }
                 // respect the order
                 var sort_by = Object.keys(SORTS[self.sort])[0];
                 var order_by = SORTS[self.sort][sort_by].order;
@@ -234,8 +236,8 @@
              */
             function reloadPagesFrom(page_index, to_page) {
                 to_page = to_page || self.pages.length;
-                return retrievePage(1, to_page * self.maxResults).then(function(posts) {
-                    createPagesWithPosts(posts._items);
+                return retrievePage(to_page).then(function(posts) {
+                    createPagesWithPosts(posts._items, false);
                     return posts;
 
                 });
@@ -274,7 +276,7 @@
                     }
                 });
                 // and recreate pages
-                createPagesWithPosts(all_posts);
+                createPagesWithPosts(all_posts, true);
                 // update date
                 updateLatestDates(all_posts);
             }
@@ -289,7 +291,7 @@
                     var page_index = indexes[0];
                     var post_index = indexes[1];
                     self.pages[page_index].posts.splice(post_index, 1);
-                    createPagesWithPosts(self.allPosts());
+                    createPagesWithPosts(self.allPosts(), true);
                 }
             }
 
