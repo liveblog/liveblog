@@ -95,7 +95,7 @@
                     });
                 }
                 return promise.then(function() {
-                    return reloadPagesFrom(0, self.pages.length + 1);
+                    return loadPage(self.pages.length + 1);
                 });
             }
 
@@ -229,14 +229,13 @@
             }
 
             /**
-             * Resynchronize the content of the given page and the following ones
-             * @param {interger} page_index - index of the first page
-             * @param {interger} [to_page=self.pages.length] - latest wanted page
+             * Load the content of the given page
+             * @param {interger} page - index of the desired page
              * @returns {promise}
              */
-            function reloadPagesFrom(page_index, to_page) {
-                to_page = to_page || self.pages.length;
-                return retrievePage(to_page).then(function(posts) {
+            function loadPage(page) {
+                page = page || self.pages.length;
+                return retrievePage(page).then(function(posts) {
                     createPagesWithPosts(posts._items, false);
                     return posts;
 
