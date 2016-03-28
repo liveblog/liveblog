@@ -20,7 +20,8 @@
         "vendors/ng-infinite-scroll.min.js",
         "vendors/angular-gettext.min.js",
         "translations.js",
-        "main.js"
+        "main.js",
+        "templates.js"
     ],
     "options": [
         {

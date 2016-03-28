@@ -23,3 +23,14 @@ gulp.task('translations', function () {
         .pipe($.rename('translations.js')) // rename to javascript
         .pipe(gulp.dest('.'));
 });
+
+gulp.task('templates', function () {
+  return gulp.src(['views/*.html'])
+    .pipe($.htmlmin({
+        collapseWhitespace: true,
+        removeComments: true,
+    })).pipe($.angularTemplatecache({
+        root:'/themes_assets/classic/views/',
+        module: 'theme'
+    })).pipe(gulp.dest('.'));
+});
