@@ -162,7 +162,7 @@
                             removePost(post);
                         } else {
                             // post updated
-                            if (post.post_status !== 'open' || post.sticky !== sticky) {
+                            if (post.post_status !== 'open' || post.sticky !== sticky  || (self.highlight && !post.highlight)) {
                                removePost(post);
                             } else {
                                 // update
