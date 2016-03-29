@@ -193,6 +193,7 @@
             /**
              * Recreate the pages from the given posts
              * @param {array} [posts=self.allPosts()] - List of posts
+             * @param {boolean} resetPages - Clear the array of pages or not
              */
             function createPagesWithPosts(posts, resetPages) {
                 posts = posts || self.allPosts();
