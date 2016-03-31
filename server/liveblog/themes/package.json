@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/superdesk/liveblog/tree/master/server/liveblog/themes"
+    "url": "https://github.com/liveblog/liveblog/tree/master/server/liveblog/themes"
   },
   "licenses": [
     {
