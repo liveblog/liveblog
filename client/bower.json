@@ -1,7 +1,7 @@
 {
-  "name": "liveblog-client",
-  "version": "3.0.0",
-  "homepage": "https://github.com/superdesk/liveblog-client",
+  "name": "liveblog",
+  "version": "3.0.6",
+  "homepage": "https://github.com/liveblog/liveblog/tree/master/client",
   "authors": [
     "Anca Farcas <mailto:anca.farcas@sourcefabric.org>",
     "Darko Tomic <mailto:darko.tomic@sourcefabric.org>",
