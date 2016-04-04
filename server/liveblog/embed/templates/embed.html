@@ -5,10 +5,15 @@
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-
-        {% for style in assets.styles %}
-            <link rel="stylesheet" href="{{ style }}">
-        {% endfor %}
+        {% if debug %}
+            {% for style in assets.devStyles %}
+                <link rel="stylesheet" href="{{ style }}">
+            {% endfor %}
+        {% else %}
+            {% for style in assets.styles %}
+                <link rel="stylesheet" href="{{ style }}">
+            {% endfor %}
+        {% endif %}
     </head>
 
     <body>
@@ -20,13 +25,19 @@
                 blog: {{ blog | tojson | safe }},
                 settings: {{ settings | tojson | safe }},
                 api_host: '{{ api_host }}',
+                debug: {{ debug | tojson | safe }}
                 assets_root: '{{ assets_root }}'
             };
         </script>
-
-        {% for script in assets.scripts %}
-            <script type="text/javascript" src="{{ script }}"></script>
-        {% endfor %}
+        {% if debug %}
+            {% for script in assets.devScripts %}
+                <script type="text/javascript" src="{{ script }}"></script>
+            {% endfor %}
+        {% else %}        
+            {% for script in assets.scripts %}
+                <script type="text/javascript" src="{{ script }}"></script>
+            {% endfor %}
+        {% endif %}
 
     </body>
 </html>
