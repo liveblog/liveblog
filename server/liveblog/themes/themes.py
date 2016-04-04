@@ -67,6 +67,18 @@ class ThemesResource(Resource):
         'license': {
             'type': 'string'
         },
+        'devStyles': {
+            'type': 'list',
+            'schema': {
+                'type': 'string'
+            }
+        },
+        'devScripts': {
+            'type': 'list',
+            'schema': {
+                'type': 'string'
+            }
+        },
         'styles': {
             'type': 'list',
             'schema': {

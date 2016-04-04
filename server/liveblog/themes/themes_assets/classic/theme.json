@@ -24,9 +24,7 @@
         "//code.angularjs.org/1.4.2/angular-animate.js",
         "vendors/ng-infinite-scroll.min.js",
         "vendors/angular-gettext.min.js",
-        "translations.js",
-        "main.js",
-        "templates.js"
+        "main.js"
     ],
     "scripts": [
         "//code.angularjs.org/1.4.2/angular-animate.js",

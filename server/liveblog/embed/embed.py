@@ -120,7 +120,7 @@ def embed(blog_id, api_host=None, theme=None, assets_prefix=None):
         'assets': assets,
         'api_host': api_host,
         'template': template_file,
-        'debug': app.config.get('LIVEBLOG_DEBUG', None),
+        'debug': app.config.get('LIVEBLOG_DEBUG'),
         'assets_root': assets_root
     }
     return render_template('embed.html', **scope)

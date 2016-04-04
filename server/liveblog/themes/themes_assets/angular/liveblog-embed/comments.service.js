@@ -54,6 +54,57 @@
         return CommentsManager;
     }
 
+    CommentsCtrl.$inject = ['$scope'];
+    function CommentsCtrl($scope) {
+        var vm = $scope;
+        angular.extend(vm, {
+            modal: true,
+            notify: false,
+            form: true,
+            reset: function() {
+                if (!vm.form) {
+                    vm.commenter = undefined;
+                    vm.content = undefined;
+                };
+            },
+            toggle: function(status) {
+                if(vm.notify) {
+                    vm.notify = false;
+                    vm.form = false;
+                    vm.modal = false;
+                    vm.reset();
+                } else {
+                    vm.modal = !vm.modal;
+                    vm.form = !vm.form;
+                    vm.reset();
+                }
+            },
+            send: function() {
+                if( 
+                    !vm.commenter || vm.commenter.length < 3 || vm.commenter.length > 30 ||
+                    !vm.content || vm.content.length <3 || vm.content.length > 300 ) {
+                        vm.commenter = (vm.commenter === undefined)? '' : vm.commenter;
+                        vm.content = (vm.content === undefined)? '' : vm.content;
+                        return false;
+                }
+                vm.notify = 'sended';
+                vm.form = false;
+                commentsManager.send({
+                    commenter: stripTags(vm.commenter),
+                    text: stripTags(vm.content)
+                }).then(function(){
+                    vm.reset();
+                    $timeout(function(){
+                        if(vm.notify) {
+                            vm.notify = false;
+                            vm.form = true;
+                            vm.comment = false;
+                        }
+                    }, 2500);
+                });
+            }
+        });
+    }
     angular.module('liveblog-embed')
         .factory('CommentsManager', CommentsManagerFactory)
         .directive('lbComments', ['CommentsManager', '$timeout', 'asset', function(CommentsManager, $timeout, asset) {
@@ -63,56 +114,7 @@
                     comment: '='
                 },
                 templateUrl: asset.templateUrl('views/comments.html'),
-                controller: function($scope) {
-                    var vm = $scope;
-                    angular.extend(vm, {
-                        modal: true,
-                        notify: false,
-                        form: true,
-                        reset: function() {
-                            if (!vm.form) {
-                                vm.commenter = undefined;
-                                vm.content = undefined;
-                            };
-                        },
-                        toggle: function(status) {
-                            if(vm.notify) {
-                                vm.notify = false;
-                                vm.form = false;
-                                vm.modal = false;
-                                vm.reset();
-                            } else {
-                                vm.modal = !vm.modal;
-                                vm.form = !vm.form;
-                                vm.reset();
-                            }
-                        },
-                        send: function() {
-                            if( 
-                                !vm.commenter || vm.commenter.length < 3 || vm.commenter.length > 30 ||
-                                !vm.content || vm.content.length <3 || vm.content.length > 300 ) {
-                                    vm.commenter = (vm.commenter === undefined)? '' : vm.commenter;
-                                    vm.content = (vm.content === undefined)? '' : vm.content;
-                                    return false;
-                            }
-                            vm.notify = 'sended';
-                            vm.form = false;
-                            commentsManager.send({
-                                commenter: stripTags(vm.commenter),
-                                text: stripTags(vm.content)
-                            }).then(function(){
-                                vm.reset();
-                                $timeout(function(){
-                                    if(vm.notify) {
-                                        vm.notify = false;
-                                        vm.form = true;
-                                        vm.comment = false;
-                                    }
-                                }, 2500);
-                            });
-                        }
-                    });
-                },
+                controller: CommentsCtrl,
                 link: function(scope, elem, attrs) {
                     scope.comment = false;
                     scope.$watch('comment', scope.toggle);
