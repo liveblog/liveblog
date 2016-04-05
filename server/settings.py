@@ -210,7 +210,7 @@ else:
 SUPERDESK_TESTING = (env('SUPERDESK_TESTING', 'true').lower() == 'true')
 
 # Debuging state, use SUPERDESK_TESTING testing if no LIVEBLOG_DEBUG is set.
-LIVEBLOG_DEBUG = env('LIVEBLOG_DEBUG', SUPERDESK_TESTING)
+LIVEBLOG_DEBUG = (env('LIVEBLOG_DEBUG', 'false').lower() == 'true')
 # The number of minutes since the last update of the Mongo auth object after which it will be deleted
 SESSION_EXPIRY_MINUTES = 240
 
