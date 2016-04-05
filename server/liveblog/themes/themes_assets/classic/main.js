@@ -80,8 +80,11 @@
             },
             toggleHighlighsOnly: function() {
                 vm.highlightsOnly = !vm.highlightsOnly;
+                vm.loading = true;
                 pagesManager.changeHighlight(vm.highlightsOnly);
-                stickyPagesManager.changeHighlight(vm.highlightsOnly);
+                stickyPagesManager.changeHighlight(vm.highlightsOnly).then(function() {
+                    vm.loading = false;
+                });
                 if (vm.highlightsOnly) {
                     stickyPagesManager.hideSticky = false;
                 }
