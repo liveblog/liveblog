@@ -1,11 +1,11 @@
 # Liveblog
-[Download](https://github.com/superdesk/liveblog/archive/master.zip) •
-[Fork](https://github.com/superdesk/liveblog) •
-[License](https://github.com/superdesk/liveblog/blob/master/LICENSE) •
+[Download](https://github.com/liveblog/liveblog/archive/master.zip) •
+[Fork](https://github.com/liveblog/liveblog) •
+[License](https://github.com/liveblog/liveblog/blob/master/LICENSE) •
 [Documentation](http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/) •
 *Version 3.0.6*
 
-[![Build Status](https://travis-ci.org/superdesk/liveblog.svg?branch=master)](https://travis-ci.org/superdesk/liveblog)
+[![Build Status](https://travis-ci.org/liveblog/liveblog.svg?branch=master)](https://travis-ci.org/liveblog/liveblog)
 
 ### Installation
 

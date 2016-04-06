@@ -45,9 +45,9 @@
     <div class="timeline-body">
         <div lb-comments data-comment="timeline.comment"></div>
         <div
-            class="lb-post emtpy-message ng-cloak"
+            class="lb-post emtpy-message" ng-cloak
             ng-show="timeline.pagesManager.allPosts().length + timeline.stickyPagesManager.allPosts().length< 1 && !timeline.loading">
-            <div>No posts for now.</div>
+            <div translate>No posts for now.</div>
         </div>
         <section
             ng-class="{'comment-active': timeline.comment}"
@@ -59,15 +59,14 @@
                  ng-click="timeline.applyUpdates()"
                  ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0"
                  translate translate-n="timeline.newPosts.length"
-                 translate-plural="See {{$count}} new updates">
+                 translate-plural="See {{$count}} new updates" ng-cloak>
                 See one new update
             </div>
-
             <lb-posts
                 ng-if='!timeline.stickyPagesManager.hideSticky'
                 timeline="timeline"
                 posts="timeline.stickyPagesManager.allPosts"
-                class="pin-posts"></lb-posts>
+                class="pin-posts" ng-cloak></lb-posts>
 
             <div ng-if="timeline.stickyPagesManager.allPosts().length && !timeline.loading"
                 class="pin-drawer">

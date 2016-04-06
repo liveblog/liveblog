@@ -49,15 +49,14 @@
                 vm.finished = false;
                 vm.pagesManager.changeOrder(order_by).then(function(data) {
                     vm.loading = false;
-                    vm.finished = data._meta.total <= data._meta.max_results;
+                    vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
                 });
             },
             fetchNewPage: function() {
                 vm.loading = true;
-                vm.stickyPagesManager.fetchNewPage();
                 return vm.pagesManager.fetchNewPage().then(function(data){
                     vm.loading = false;
-                    vm.finished = data._meta.total <= data._meta.max_results;
+                    vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
                     // TODO: notify updates
                 });
             },
@@ -81,8 +80,11 @@
             },
             toggleHighlighsOnly: function() {
                 vm.highlightsOnly = !vm.highlightsOnly;
+                vm.loading = true;
                 pagesManager.changeHighlight(vm.highlightsOnly);
-                stickyPagesManager.changeHighlight(vm.highlightsOnly);
+                stickyPagesManager.changeHighlight(vm.highlightsOnly).then(function() {
+                    vm.loading = false;
+                });
                 if (vm.highlightsOnly) {
                     stickyPagesManager.hideSticky = false;
                 }
@@ -92,7 +94,9 @@
             stickyPagesManager: stickyPagesManager,
             stickyPermalink: stickyPermalink
         });
-        // retrieve first page
+        //get the first sticky page only once
+        vm.stickyPagesManager.fetchNewPage();
+        // retrieve regular first page
         vm.fetchNewPage()
         // retrieve updates periodically
         .then(function() {
