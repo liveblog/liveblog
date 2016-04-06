@@ -14,6 +14,8 @@ h1 {
 img {
     max-width: 100%;
     max-height: 500px;
+    width: auto;
+    height: auto;
 }
 .content-item {
     margin: 15px 10px;
@@ -436,6 +438,10 @@ article blockquote li:before {
 }
 .item--embed__credit {
     text-align: right;
+}
+.item--embed__figure {
+    position: absolute;
+    width: 200px;
 }
 /* loading */
 .loading {
