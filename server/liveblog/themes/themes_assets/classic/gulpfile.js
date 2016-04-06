@@ -8,9 +8,13 @@ var gulp = require('gulp'),
         script: 'scripts.min.js',
         style: 'styles.min.css',
         translations: 'translations.js',
-        templates: 'templates.js',
+        templates: 'templates.js'
     };
- 
+
+config.get = function(key) {
+    return (config.dest !== '.' ? config.dest + '/' : '') + config[key];
+}
+
 gulp.task('pot', function () {
     return gulp.src(['*.html', '*.js', 'views/*.html'])
         .pipe($.angularGettext.extract('classic.pot', {}))
@@ -70,19 +74,18 @@ gulp.task('build', ['translations', 'templates'], function() {
             }
         });
 
-        if(!build.from.scripts.indexOf(config.translations) !== -1) {
-            build.from.scripts.push(config.translations);
+        if(build.from.scripts.indexOf(config.get('translations')) === -1) {
+            build.from.scripts.push(config.get('translations'));
         }
 
-        if(!build.from.scripts.indexOf(config.templates) !== -1) {
-            build.from.scripts.push(config.templates);
+        if(build.from.scripts.indexOf(config.get('templates')) === -1) {
+            build.from.scripts.push(config.get('templates'));
         }
-
         gulp.src(build.from.scripts)
             .pipe($.concat(config.script))
             .pipe($.uglify())
             .pipe(gulp.dest(config.dest));
-        build.to.scripts.push((config.dest !== '.' ? config.dest + '/' : '') + config.script);
+        build.to.scripts.push(config.get('script'));
         theme.scripts = build.to.scripts;
     }
     if(theme.devStyles) {
@@ -98,7 +101,7 @@ gulp.task('build', ['translations', 'templates'], function() {
             .pipe($.concat(config.style))
             .pipe($.cleanCss())
             .pipe(gulp.dest(config.dest));
-        build.to.styles.push((config.dest !== '.' ? config.dest + '/' : '') + config.style);
+        build.to.styles.push(config.get('style'));
         theme.styles = build.to.styles;
     }
     fs.writeFileSync('./theme.json', JSON.stringify(theme, null, 4));
