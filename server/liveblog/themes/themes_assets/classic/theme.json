@@ -21,13 +21,14 @@
         "dist/styles.min.css"
     ],
     "devScripts": [
-        "//code.angularjs.org/1.4.2/angular-animate.js",
-        "vendors/ng-infinite-scroll.min.js",
-        "vendors/angular-gettext.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.2/angular-animate.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.0/ng-infinite-scroll.min.js",
+        "vendors/angular-gettext.js",
         "main.js"
     ],
     "scripts": [
-        "//code.angularjs.org/1.4.2/angular-animate.js",
+        "//cdnjs.cloudflare.com/ajax/libs/angular.js/1.4.2/angular-animate.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.0/ng-infinite-scroll.min.js",
         "dist/scripts.min.js"
     ],
     "options": [
