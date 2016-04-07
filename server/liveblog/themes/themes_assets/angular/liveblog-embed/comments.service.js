@@ -54,9 +54,10 @@
         return CommentsManager;
     }
 
-    CommentsCtrl.$inject = ['$scope'];
-    function CommentsCtrl($scope) {
-        var vm = $scope;
+    CommentsCtrl.$inject = ['$scope', '$timeout', 'CommentsManager'];
+    function CommentsCtrl($scope, $timeout, CommentsManager) {
+        var vm = $scope,
+            commentsManager = new CommentsManager();        
         angular.extend(vm, {
             modal: true,
             notify: false,
@@ -107,8 +108,7 @@
     }
     angular.module('liveblog-embed')
         .factory('CommentsManager', CommentsManagerFactory)
-        .directive('lbComments', ['CommentsManager', '$timeout', 'asset', function(CommentsManager, $timeout, asset) {
-            var commentsManager = new CommentsManager();
+        .directive('lbComments', ['$timeout', 'asset', function($timeout, asset) {
             return {
                 scope: {
                     comment: '='
