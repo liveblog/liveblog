@@ -81,9 +81,11 @@
             toggleHighlighsOnly: function() {
                 vm.highlightsOnly = !vm.highlightsOnly;
                 vm.loading = true;
-                pagesManager.changeHighlight(vm.highlightsOnly);
-                stickyPagesManager.changeHighlight(vm.highlightsOnly).then(function() {
+                vm.finished = false;
+                stickyPagesManager.changeHighlight(vm.highlightsOnly);
+                pagesManager.changeHighlight(vm.highlightsOnly).then(function(data) {
                     vm.loading = false;
+                    vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
                 });
                 if (vm.highlightsOnly) {
                     stickyPagesManager.hideSticky = false;
