@@ -23,8 +23,7 @@ from superdesk.errors import SuperdeskError
 import zipfile
 import os
 import magic
-from liveblog.blogs.blogs import publish_blog_embed_on_s3
-import superdesk
+from server.liveblog.blogs.blogs import publish_blog_embed_on_s3
 import logging
 
 logger = logging.getLogger('superdesk')
