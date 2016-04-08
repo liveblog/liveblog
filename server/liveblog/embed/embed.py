@@ -66,8 +66,6 @@ def collect_theme_assets(theme, assets_prefix=None, assets=None, template=None):
 
 def publish_embed(blog_id, api_host=None, theme=None):
     html = embed(blog_id, api_host, theme, assets_prefix=app.config.get('S3_THEMES_PREFIX'))
-    if type(app.media).__name__ is not 'AmazonMediaStorage':
-        raise MediaStorageUnsupportedForBlogPublishing()
     file_path = 'blogs/%s/index.html' % (blog_id)
     # remove existing
     app.media.delete(file_path)
