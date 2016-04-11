@@ -121,7 +121,33 @@
         .run(['gettextCatalog', 'config', function (gettextCatalog, config) {
             gettextCatalog.setCurrentLanguage(config.settings.language);
         }])
-        .controller('TimelineCtrl', TimelineCtrl);
+        .controller('TimelineCtrl', TimelineCtrl)
+        .directive('lbItem', ['asset', function(asset) {
+            return {
+                restrict: 'A',
+                templateUrl: asset.templateUrl('views/item.html'),
+            }
+        }])
+        .directive('lbAuthor', ['asset', function(asset) {
+            return {
+                restrict: 'A',
+                scope: {
+                    item: '=',
+                    timeline: '='
+                },
+                templateUrl: asset.templateUrl('views/author.html'),
+            }
+        }])
+        .directive('lbPosts', ['asset', function(asset) {
+            return {
+                restrict: 'E',
+                scope: {
+                    posts: '=',
+                    timeline: '='
+                },
+                templateUrl: asset.templateUrl('views/posts.html'),
+            }
+        }]);
     angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 1000);
 
 })(angular);

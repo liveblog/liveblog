@@ -36,7 +36,7 @@ def is_relative_to_current_folder(url):
 
 
 def collect_theme_assets(theme, assets_prefix=None, assets=None, template=None):
-    assets = assets or {'scripts': [], 'styles': []}
+    assets = assets or {'scripts': [], 'styles': [], 'devScripts': [], 'devStyles': []}
     # load the template
     if not template:
         template_file_name = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme['name'], 'template.html')
@@ -53,7 +53,7 @@ def collect_theme_assets(theme, assets_prefix=None, assets=None, template=None):
             logger.info(error_message)
             raise UnknownTheme(error_message)
     # add assets from theme
-    for asset_type in ('scripts', 'styles'):
+    for asset_type in ('scripts', 'styles', 'devScripts', 'devStyles'):
         theme_folder = theme['name']
         for url in theme.get(asset_type, []):
             if is_relative_to_current_folder(url):
@@ -120,6 +120,7 @@ def embed(blog_id, api_host=None, theme=None, assets_prefix=None):
         'assets': assets,
         'api_host': api_host,
         'template': template_file,
+        'debug': app.config.get('LIVEBLOG_DEBUG'),
         'assets_root': assets_root
     }
     return render_template('embed.html', **scope)

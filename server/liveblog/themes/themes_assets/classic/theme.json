@@ -1,26 +1,35 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "2.3.7",
+    "version": "2.3.8",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
-        "type" : "git",
-        "url" : "git@github.com:liveblog/lb-theme-classic.git"
+        "type": "git",
+        "url": "git@github.com:liveblog/lb-theme-classic.git"
     },
     "license": "AGPL-3.0",
     "extends": "angular",
-    "styles": [
+    "devStyles": [
         "styles/reset.css",
         "styles/embed.css",
         "//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic",
         "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
     ],
-    "scripts": [
-        "//code.angularjs.org/1.4.2/angular-animate.js",
-        "vendors/ng-infinite-scroll.min.js",
-        "vendors/angular-gettext.min.js",
-        "translations.js",
+    "styles": [
+        "//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic",
+        "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css",
+        "dist/styles.min.css"
+    ],
+    "devScripts": [
+        "//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js",
+        "vendors/angular-gettext.js",
         "main.js"
+    ],
+    "scripts": [
+        "//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js",
+        "dist/scripts.min.js"
     ],
     "options": [
         {
@@ -28,9 +37,18 @@
             "label": "Theme language",
             "type": "select",
             "options": [
-                {"value": "en", "label": "English"},            
-                {"value": "ro", "label": "Română"},
-                {"value": "fr", "label": "Français"}
+                {
+                    "value": "en",
+                    "label": "English"
+                },
+                {
+                    "value": "ro",
+                    "label": "Română"
+                },
+                {
+                    "value": "fr",
+                    "label": "Français"
+                }
             ],
             "default": "en"
         },
@@ -46,9 +64,18 @@
             "label": "Default posts order of the timeline",
             "type": "select",
             "options": [
-                {"value": "editorial", "label": "Editorial"},
-                {"value": "newest_first", "label": "Newest first"},
-                {"value": "oldest_first", "label": "Oldest first"}
+                {
+                    "value": "editorial",
+                    "label": "Editorial"
+                },
+                {
+                    "value": "newest_first",
+                    "label": "Newest first"
+                },
+                {
+                    "value": "oldest_first",
+                    "label": "Oldest first"
+                }
             ],
             "default": "editorial"
         },
@@ -110,9 +137,18 @@
                 "showAuthor": true
             },
             "options": [
-                {"value": "display_name", "label": "Full name"},
-                {"value": "byline", "label": "Byline"},
-                {"value": "sign_off", "label": "Sign off"}
+                {
+                    "value": "display_name",
+                    "label": "Full name"
+                },
+                {
+                    "value": "byline",
+                    "label": "Byline"
+                },
+                {
+                    "value": "sign_off",
+                    "label": "Sign off"
+                }
             ],
             "help": "How to show the author name"
         },
@@ -131,8 +167,14 @@
             "label": "Permalink delimiter",
             "type": "select",
             "options": [
-                {"value": "?", "label": "Query delimiter (?)"},
-                {"value": "#", "label": " Fragment identifier delimiter (#)"}
+                {
+                    "value": "?",
+                    "label": "Query delimiter (?)"
+                },
+                {
+                    "value": "#",
+                    "label": " Fragment identifier delimiter (#)"
+                }
             ],
             "default": "?",
             "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."

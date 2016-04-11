@@ -212,7 +212,7 @@
                 // respect the order
                 var sort_by = Object.keys(SORTS[self.sort])[0];
                 var order_by = SORTS[self.sort][sort_by].order;
-                posts = _.sortByOrder(posts, sort_by, order_by);
+                posts = _.orderBy(posts, sort_by, order_by);
                 var page;
                 posts.forEach(function(post, index) {
                     if (index % self.maxResults === 0) {
