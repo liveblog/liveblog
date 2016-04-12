@@ -186,8 +186,10 @@
                 </div>
                 <div class="header--live">
                     <a href="{{ publicUrl }}" target="_blank" ng-disabled="!publicUrl" translate>Live</a>
-                    <button class="btn pull-right" ng-click="filterHighlight()" translate>All</button>
-                    <button class="btn pull-right" ng-click="filterHighlight(true)" translate>Highlights</button>
+                </div>
+                <div class="header--filters">                                        
+                    <button class="btn btn-xs active" ng-click="filterHighlight(); filter.isSelected ? (filter.isSelected = !filter.isSelected) : ''" ng-class="{true: 'active', false: ''}[!filter.isSelected]" tooltip-placement="bottom" tooltip="Show all" translate>All</button>
+                    <button class="btn btn-xs" ng-click="filterHighlight(true); !filter.isSelected ? (filter.isSelected = !filter.isSelected) : ''" ng-class="{false: 'active', true: ''}[!filter.isSelected]" tooltip-placement="bottom" tooltip="Show highlights" translate><i class="icon-star"></i></button>
                 </div>
             </header>
             <div class="content content--timeline" lr-infinite-scroll="fetchNewTimelinePage">
@@ -209,9 +211,7 @@
                     </div>
 
                     <div ng-if="!blogEdit.timelineStickyInstance.isPostsEmpty()"
-                        class="pin-drawer"
-                        style="margin: 0px 20px 0px 20px;
-                        border-bottom: 1px solid rgba(0, 0, 0, 0.25);"
+                        class="pin-drawer"                        
                         >
                         <div ng-if="blogEdit.timelineStickyInstance.hideSticky"
                         translate translate-n="blogEdit.timelineStickyInstance.numberOfPosts()" translate-plural="{{blogEdit.timelineStickyInstance.numberOfPosts()}} PINNED POSTS"
