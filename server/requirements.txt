@@ -4,4 +4,4 @@ Flask-Cors==2.1.0
 git+git://github.com/joehand/flask-s3@8fe9f27ebb5251b7cf53a6684595d41dc4af2fbf#egg=Flask-S3==0.1.7
 # Superdesk
 -e git+git://github.com/liveblog/superdesk-core@ff4666ae5de7474eb03a8c6606aed0917d8bdd0e#egg=Superdesk-Core==0.0.1-dev
--e git+git://github.com/liveblog/superdesk@33029d9fd55f7c7047a60abdac1f1911f044a27a#egg=Superdesk-Server
+-e git+git://github.com/liveblog/superdesk@0744f205ab79e77464a0503e60cab21f69f1c2a0#egg=Superdesk-Server
