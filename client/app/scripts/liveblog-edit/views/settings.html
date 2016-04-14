@@ -100,7 +100,7 @@
                                 <div class="form-input">
                                     <select
                                       ng-model="settings.selectedTheme"
-                                      ng-change="settings.blogPreferences.theme = settings.selectedTheme.name"
+                                      ng-change="settings.changeTheme()"
                                       ng-options="theme as theme.label for theme in settings.availableThemes track by theme.name"
                                       class="form-control">
                                     </select>
