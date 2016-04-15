@@ -170,6 +170,7 @@ define([
                 });
             },
             filterHighlight: function(highlight) {
+               vm.filter.isSelected ? (vm.filter.isSelected = !vm.filter.isSelected) : ''
                vm.timelineInstance.pagesManager.changeHighlight(highlight);
                vm.timelineStickyInstance.pagesManager.changeHighlight(highlight);
             },
