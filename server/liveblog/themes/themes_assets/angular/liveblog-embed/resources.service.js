@@ -71,7 +71,7 @@
                         // `fullDetails` is a business logic that can be compiled from other objects.
                         post.fullDetails = post.hasComments;
                         // special cases for comments.
-                        post.showUpdate = (post._updated !== post.published_date) && 
+                        post.showUpdate = (post.content_updated_date !== post.published_date) && 
                                            !post.hasComments && (post.mainItem.item_type !== 'comment');
 
                         // add all the items directly in a `items` property

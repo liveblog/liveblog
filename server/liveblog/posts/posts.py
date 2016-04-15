@@ -14,7 +14,6 @@ from superdesk.users.services import current_user_has_privilege
 from superdesk.errors import SuperdeskApiError
 from liveblog.common import check_comment_length
 
-
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
 
@@ -98,6 +97,9 @@ class PostsResource(ArchiveResource):
             'type': 'datetime'
         },
         'publisher': Resource.rel('users', True),
+        'content_updated_date': {
+            'type': 'datetime'
+        }
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
 
@@ -162,6 +164,7 @@ class PostsService(ArchiveService):
             # if you publish a post directly which is not a draft it will have a published_date assigned
             if doc['post_status'] == 'open':
                 doc['published_date'] = utcnow()
+                doc['content_updated_date'] = utcnow()
                 doc['publisher'] = getattr(flask.g, 'user', None)
         super().on_create(docs)
 
@@ -182,6 +185,20 @@ class PostsService(ArchiveService):
             updates['blog'] = original['groups'][1]['refs'][0]['item']['client_blog']
             # if the length of the comment is not between 1 and 300 then we get an error
             check_comment_length(original['groups'][1]['refs'][0]['item']['text'])
+        # check if updates `content` is diffrent then the original.
+        content_diff = False
+        if not updates.get('groups', False):
+            content_diff = False
+        elif len(original['groups'][1]['refs']) != len(updates['groups'][1]['refs']):
+            content_diff = True
+        else:
+            for index, val in enumerate(updates['groups'][1]['refs']):
+                item = get_resource_service('archive').find_one(req=None, _id=val['residRef'])
+                if item['text'] != original['groups'][1]['refs'][index]['item']['text']:
+                    content_diff = True
+                    break
+        if(content_diff):
+            updates['content_updated_date'] = utcnow()
         # check permission
         post = original.copy()
         post.update(updates)
