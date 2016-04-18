@@ -51,7 +51,8 @@ class ItemsResource(ArchiveResource):
             'type': 'string'
         },
         'meta': {
-            'type': 'dict'
+            'type': 'dict',
+            'allow_unknown': True
         },
         'deleted': {
             'type': 'string'
