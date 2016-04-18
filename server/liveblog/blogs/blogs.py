@@ -188,6 +188,9 @@ class BlogService(BaseService):
                 recipients.append(user)
         notify_members(blog, app.config['CLIENT_URL'], recipients)
 
+    def on_delete(self, doc):
+        liveblog.embed.delete_embed(doc.get('_id'))
+
     def on_deleted(self, doc):
         # invalidate cache for updated blog
         app.blog_cache.invalidate(doc.get('_id'))

@@ -64,11 +64,19 @@ def collect_theme_assets(theme, assets_prefix=None, assets=None, template=None):
     return assets, template
 
 
-def publish_embed(blog_id, api_host=None, theme=None):
-    html = embed(blog_id, api_host, theme, assets_prefix=app.config.get('S3_THEMES_PREFIX'))
+def get_file_path(blog_id):
+    return 'blogs/%s/index.html' % (blog_id)
+
+
+def check_media_storage():
     if type(app.media).__name__ is not 'AmazonMediaStorage':
         raise MediaStorageUnsupportedForBlogPublishing()
-    file_path = 'blogs/%s/index.html' % (blog_id)
+
+
+def publish_embed(blog_id, api_host=None, theme=None):
+    html = embed(blog_id, api_host, theme, assets_prefix=app.config.get('S3_THEMES_PREFIX'))
+    check_media_storage()
+    file_path = get_file_path(blog_id)
     # remove existing
     app.media.delete(file_path)
     # upload
@@ -76,6 +84,13 @@ def publish_embed(blog_id, api_host=None, theme=None):
                             filename=file_path,
                             content_type='text/html')
     return superdesk.upload.url_for_media(file_id)
+
+
+def delete_embed(blog_id):
+    check_media_storage()
+    file_path = get_file_path(blog_id)
+    # remove existing
+    app.media.delete(file_path)
 
 
 @bp.route('/embed/<blog_id>')
