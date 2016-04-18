@@ -124,6 +124,15 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
                 raise e
 
 
+@celery.task(soft_time_limit=1800)
+def delete_blog_embed_on_s3(blog_id, safe=True):
+        try:
+            liveblog.embed.delete_embed(blog_id)
+        except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
+            if not safe:
+                raise e
+
+
 class BlogService(BaseService):
     notification_key = 'blog'
 
@@ -189,7 +198,7 @@ class BlogService(BaseService):
         notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def on_delete(self, doc):
-        liveblog.embed.delete_embed(doc.get('_id'))
+        delete_blog_embed_on_s3.delay(doc.get('_id'))
 
     def on_deleted(self, doc):
         # invalidate cache for updated blog
