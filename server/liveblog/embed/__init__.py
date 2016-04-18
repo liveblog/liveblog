@@ -12,8 +12,9 @@
 
 from .embed import bp as embed_blueprint
 from .embed import publish_embed
+from .embed import delete_embed
 from .embed import MediaStorageUnsupportedForBlogPublishing
 
-__all__ = ['embed_blueprint', 'publish_embed', 'MediaStorageUnsupportedForBlogPublishing']
+__all__ = ['embed_blueprint', 'publish_embed', 'delete_embed', 'MediaStorageUnsupportedForBlogPublishing']
 
 # EOF
