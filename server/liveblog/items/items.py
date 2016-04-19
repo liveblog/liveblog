@@ -7,6 +7,7 @@ from superdesk.resource import Resource
 from liveblog.common import get_user, update_dates_for
 from apps.archive.archive import ArchiveResource, ArchiveService, ArchiveVersionsResource
 from superdesk.services import BaseService
+from superdesk.metadata.item import not_analyzed
 
 
 class ItemsVersionsResource(ArchiveVersionsResource):
@@ -51,7 +52,8 @@ class ItemsResource(ArchiveResource):
             'type': 'string'
         },
         'meta': {
-            'type': 'dict'
+            'type': 'dict',
+            'mapping': not_analyzed
         },
         'deleted': {
             'type': 'string'
