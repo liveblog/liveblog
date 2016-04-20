@@ -188,8 +188,8 @@
                     <a href="{{ publicUrl }}" target="_blank" ng-disabled="!publicUrl" translate>Live</a>
                 </div>
                 <div class="header--filters">                                        
-                    <button class="btn btn-xs active" ng-click="filterHighlight();" ng-class="{true: 'active', false: ''}[!filter.isSelected]" tooltip-placement="bottom" tooltip="Show all" translate>All</button>
-                    <button class="btn btn-xs" ng-click="filterHighlight(true); !filter.isSelected ? (filter.isSelected = !filter.isSelected) : ''" ng-class="{false: 'active', true: ''}[!filter.isSelected]" tooltip-placement="bottom" tooltip="Show highlights" translate><i class="icon-star"></i></button>
+                    <button class="btn btn-xs active" ng-click="filterHighlight(false);" ng-class="{'active': !filter.isHighlight}" tooltip-placement="bottom" tooltip="Show all" translate>All</button>
+                    <button class="btn btn-xs" ng-click="filterHighlight(true);" ng-class="{'active': filter.isHighlight}" tooltip-placement="bottom" tooltip="Show highlights" translate><i class="icon-star"></i></button>
                 </div>
             </header>
             <div class="content content--timeline" lr-infinite-scroll="fetchNewTimelinePage">
