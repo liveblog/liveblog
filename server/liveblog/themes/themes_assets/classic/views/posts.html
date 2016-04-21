@@ -3,7 +3,7 @@
          class="lb-post list-group-item ng-cloak"
          ng-class="{'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
                     'lb-post-permalink-selected': post._id === timeline.permalink._id}">
-    <div lb-author item="post.mainItem" timeline="timeline"></div>
+    <lb-author item="post.mainItem" timeline="timeline"></lb-author>
     <div class="lb-post-highlighted" ng-if="post.highlight">
         <i class="fa fa-star fa-2"></i>
     </div>
@@ -16,12 +16,12 @@
     <div ng-repeat="item in post.items track by item._id" class="lb-item">
         <div ng-if="post.fullDetails && !$first" class="list-group-item">
             <div class="lb-timeline__header">
-                <div lb-author item="item" timeline="timeline"></div>
-                <div lb-item item="item"></div>
+                <lb-author item="item" timeline="timeline"></lb-author>
+                <lb-item item="item"></lb-item>
             </div>
         </div>                
         <div ng-if="!post.fullDetails || $first">
-            <div lb-item item="item"></div>
+            <lb-item item="item"></lb-item>
         </div>
     </div>
     <div class="lb-updated-date ng-cloak" ng-show="post.showUpdate" translate>
