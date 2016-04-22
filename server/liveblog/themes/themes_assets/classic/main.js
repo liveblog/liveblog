@@ -124,13 +124,13 @@
         .controller('TimelineCtrl', TimelineCtrl)
         .directive('lbItem', ['asset', function(asset) {
             return {
-                restrict: 'A',
+                restrict: 'AE',
                 templateUrl: asset.templateUrl('views/item.html'),
             }
         }])
         .directive('lbAuthor', ['asset', function(asset) {
             return {
-                restrict: 'A',
+                restrict: 'AE',
                 scope: {
                     item: '=',
                     timeline: '='
