@@ -54,6 +54,8 @@
             }
         }
         .card-list {
+            display: flex;
+            flex-wrap: wrap;
             > li {
                 &:not(.can-access):hover {.box-shadow(none);}
                 &.can-access {
@@ -67,8 +69,8 @@
                 margin: 0 0 20px 20px;
                 padding: 10px;
                 width: 260px;
+                flex: 0 1 260px;
                 .border-box();
-                float: left;
                 cursor: pointer;
                 .close {
                     position: absolute;
@@ -88,11 +90,11 @@
                     }
                 }
                 .content {
-                    height: 70px;
+                    min-height: 60px;
                     .border-box();
                     padding: 0;
                     overflow: hidden;
-                    margin: 10px 0 0;
+                    margin: 10px 0;
                     .time {
                         font-size: 13px;
                         font-style: italic;
@@ -109,7 +111,7 @@
                           text-overflow: ellipsis;
                     }
                     .description {
-                        max-height: 30px;
+                        min-height: 30px;
                         font-size: 12px;
                         line-height: 15px;
                         color: @gray;
@@ -131,15 +133,19 @@
                             float: left;
                             color: #b4b4b4;
                             font-weight: 400;
-                            line-height: 16px;
+                            line-height: 12px;
                             min-width: 82px;
                             text-transform: uppercase;
+                            margin: 2px 0;
                         }
                         dd {
                             .text-light();
                             float: left;
+                            width: 145px;
                             font-weight: 400;
-                            line-height: 16px;
+                            line-height: 12px;
+                            word-wrap: break-word;
+                            margin: 2px 0 2px 9px;
                         }
                     }
                 }

@@ -81,9 +81,11 @@
             toggleHighlighsOnly: function() {
                 vm.highlightsOnly = !vm.highlightsOnly;
                 vm.loading = true;
-                pagesManager.changeHighlight(vm.highlightsOnly);
-                stickyPagesManager.changeHighlight(vm.highlightsOnly).then(function() {
+                vm.finished = false;
+                stickyPagesManager.changeHighlight(vm.highlightsOnly);
+                pagesManager.changeHighlight(vm.highlightsOnly).then(function(data) {
                     vm.loading = false;
+                    vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
                 });
                 if (vm.highlightsOnly) {
                     stickyPagesManager.hideSticky = false;
@@ -119,7 +121,33 @@
         .run(['gettextCatalog', 'config', function (gettextCatalog, config) {
             gettextCatalog.setCurrentLanguage(config.settings.language);
         }])
-        .controller('TimelineCtrl', TimelineCtrl);
+        .controller('TimelineCtrl', TimelineCtrl)
+        .directive('lbItem', ['asset', function(asset) {
+            return {
+                restrict: 'AE',
+                templateUrl: asset.templateUrl('views/item.html'),
+            }
+        }])
+        .directive('lbAuthor', ['asset', function(asset) {
+            return {
+                restrict: 'AE',
+                scope: {
+                    item: '=',
+                    timeline: '='
+                },
+                templateUrl: asset.templateUrl('views/author.html'),
+            }
+        }])
+        .directive('lbPosts', ['asset', function(asset) {
+            return {
+                restrict: 'E',
+                scope: {
+                    posts: '=',
+                    timeline: '='
+                },
+                templateUrl: asset.templateUrl('views/posts.html'),
+            }
+        }]);
     angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 1000);
 
 })(angular);

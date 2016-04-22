@@ -16,7 +16,7 @@ env/
 data/
 build/
 develop-eggs/
-dist/
+client/dist/
 downloads/
 eggs/
 lib/

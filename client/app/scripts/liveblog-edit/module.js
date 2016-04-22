@@ -86,6 +86,7 @@ define([
             actionDisabled: true,
             sticky: false,
             highlight: false,
+            filter: {isHighlight: false},
             actionStatus: function() {
                 return $scope.actionDisabled || $scope.actionPending;
             },
@@ -104,7 +105,7 @@ define([
                 } else {
                     return true;
                 }
-            }, 
+            },
             openPostInEditor: function (post) {
                 function fillEditor(post) {
                     cleanEditor(false);
@@ -170,8 +171,9 @@ define([
                 });
             },
             filterHighlight: function(highlight) {
-               vm.timelineInstance.pagesManager.changeHighlight(highlight);
-               vm.timelineStickyInstance.pagesManager.changeHighlight(highlight);
+                $scope.filter.isHighlight = highlight;
+                vm.timelineInstance.pagesManager.changeHighlight(highlight);
+                vm.timelineStickyInstance.pagesManager.changeHighlight(highlight);
             },
 
             // retrieve panel status from url

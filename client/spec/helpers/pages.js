@@ -151,7 +151,7 @@ function ThemesManagerPage() {
     self.fileThemeElement = element(by.css('#uploadAThemeFile'));
     self.byRemove = by.css('[ng-click="vm.removeTheme(theme)"]');
     self.bySettings = by.css('[ng-click="vm.openThemeSettings(theme)"]');
-    self.byPreview = by.css('[ng-click="vm.openThemePreview(theme)"]');
+    self.byPreview = by.css('[ng-click="theme.screenshot_url && vm.openThemePreview(theme)"]');
 
     self.openThemesManager = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();

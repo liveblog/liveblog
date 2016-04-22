@@ -122,7 +122,7 @@ define([
             // `fullDetails` is a business logic that can be compiled from other objects.
             post.fullDetails = post.hasComments;
             // special cases for comments.
-            post.showUpdate = (post._updated !== post.published_date) &&
+            post.showUpdate = (post.content_updated_date !== post.published_date) &&
                                (!post.hasComments) && (post.mainItem.item.item_type !== 'comment');
             angular.forEach(post.items, function(val) {
                 if (post.fullDetails) {

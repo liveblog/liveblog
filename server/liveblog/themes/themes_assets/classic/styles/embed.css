@@ -14,6 +14,8 @@ h1 {
 img {
     max-width: 100%;
     max-height: 500px;
+    width: auto;
+    height: auto;
 }
 .content-item {
     margin: 15px 10px;
@@ -343,7 +345,8 @@ button.active {
     position: absolute;
     border-radius: 0;
     overflow: hidden;
-    background: #FFFFFF url("../images/comment.svg") no-repeat scroll 0% 0% / 100% auto;
+    background: #FFFFFF url("../images/comment_64.png") no-repeat scroll 0% 0% / 100% auto;
+    color: #BBBBBB;
     width: 50px;
     height: 50px;
     left: -80px;
@@ -436,6 +439,10 @@ article blockquote li:before {
 .item--embed__credit {
     text-align: right;
 }
+.item--embed__figure {
+    position: absolute;
+    width: 200px;
+}
 /* loading */
 .loading {
     color: #5ea9c8;
@@ -521,6 +528,15 @@ article blockquote li:before {
     visibility: visible;
 }
 /* pinned posts */
+.pin-posts .lb-post{
+    background-color: rgba(94, 169, 200, 0.11);
+}
+.pin-drawer-info {
+    color: gray;
+    font-size: small;
+    margin-left: 4px;
+    text-transform: uppercase;
+}
 .pin-drawer-button {
     position: absolute;
     width: 23px;
@@ -539,12 +555,17 @@ article blockquote li:before {
     -o-transition: transform 0.5s;
     transition: transform 0.5s;
 }
+.fa-chevron-fix {
+    margin-bottom: 3px;
+    margin-left: 1px;
+}
 .chevron-active {
     -ms-transform: rotate(180deg); /* IE 9 */
     -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
     transform: rotate(180deg);
 }
 .pin-drawer {
+    background-color: rgba(94, 169, 200, 0.11);
     box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.25);
 }
 
@@ -585,3 +606,5 @@ article blockquote li:before {
 .fr .sorting-bar__orders {
     padding-left: 50px;
 }
+/* Remove this is angular-gettext is updated */
+[translate]{visibility:hidden !important;}
