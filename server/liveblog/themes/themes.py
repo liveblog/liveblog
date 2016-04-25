@@ -24,7 +24,6 @@ import zipfile
 import os
 import magic
 from liveblog.blogs.blogs import publish_blog_embed_on_s3
-import superdesk
 import logging
 
 logger = logging.getLogger('superdesk')
