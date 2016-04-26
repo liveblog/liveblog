@@ -1,10 +1,9 @@
 <div class="lb-author" ng-if="timeline.settings.showAuthor">
-    <div
-        ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar" 
-        ng-class="{'lb-author__avatar': (item.item_type !== 'comment'),
-                       'lb-author__comment': (item.item_type === 'comment')}">
-            <img class="lb-author__avatar" ng-src="{{ item.original_creator.picture_url }}" />
-    </div>
+    <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar"
+         class="lb-author__avatar"
+         ng-class="{'lb-author__avatar': (item.item_type !== 'comment'),
+                'lb-author__comment': (item.item_type === 'comment')}"
+         ng-src="{{ item.original_creator.picture_url }}" />
     <!-- special case, if the main item is a comment show the `_created` date insted of `published_date` one. !-->
     <div class="lb-author__date" ng-bind="item.displayDate | prettifyIsoDate"></div>
     <!-- author name, with or without mailto link  -->

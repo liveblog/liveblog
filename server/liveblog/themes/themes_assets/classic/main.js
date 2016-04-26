@@ -125,6 +125,10 @@
         .directive('lbItem', ['asset', function(asset) {
             return {
                 restrict: 'AE',
+                scope: {
+                    ident: '=',
+                    item: '='
+                },
                 templateUrl: asset.templateUrl('views/item.html'),
             }
         }])
