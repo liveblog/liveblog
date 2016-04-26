@@ -374,20 +374,8 @@ define([
                 });
             },
             changeTheme: function() {
-                var theme = vm.selectedTheme.name,
-                    blog_preferences = vm.blog.blog_preferences,
-                    themes = [];
+                var theme = vm.selectedTheme.name;
                 vm.blogPreferences.theme = theme;
-                if (!vm.blogPreferences['themes']) {
-                    vm.blogPreferences['themes'] = [];
-                }
-                if (_.indexOf(vm.blogPreferences['themes'], theme) === -1) {
-                    vm.blogPreferences['themes'].push(theme);
-                }
-                blogService.update(vm.blog, {blog_preferences: vm.blogPreferences}).then(function(blog) {
-                    vm.blog = blog;
-                    vm.blogPreferences = angular.copy(blog.blog_preferences);
-                });
             },
             saveAndClose: function() {
                 vm.save().then(function() {
