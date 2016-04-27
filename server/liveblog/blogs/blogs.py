@@ -62,11 +62,17 @@ blogs_schema = {
     'blog_preferences': {
         'type': 'dict'
     },
+    'themes_settings': {
+        'type': 'dict'
+    },
     'theme_settings': {
         'type': 'dict'
     },
     'public_url': {
         'type': 'string'
+    },
+    'public_urls': {
+        'type': 'dict'
     }
 }
 
@@ -113,9 +119,20 @@ def send_email_to_added_members(blog, recipients, origin):
 @celery.task(soft_time_limit=1800)
 def publish_blog_embed_on_s3(blog_id, safe=True):
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    if blog['blog_preferences'].get('themes', False):
+        try:
+            for theme in blog['blog_preferences'].get('themes'):
+                public_urls = blog.get('public_urls')
+                public_urls[theme] = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']), theme)
+                get_resource_service('blogs').system_update(blog['_id'], {'public_urls': public_urls}, blog)
+                push_notification('blog', published=1, blog_id=str(blog.get('_id')), public_urls=public_urls)
+        except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
+            if not safe:
+                raise e
     if blog['blog_preferences'].get('theme', False):
         try:
-            public_url = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
+            theme = blog['blog_preferences'].get('theme')
+            public_url = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']), theme)
             get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
             push_notification('blog', published=1, blog_id=str(blog.get('_id')), public_url=public_url)
             return public_url

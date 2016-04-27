@@ -64,8 +64,8 @@ def collect_theme_assets(theme, assets_prefix=None, assets=None, template=None):
     return assets, template
 
 
-def get_file_path(blog_id):
-    return 'blogs/%s/index.html' % (blog_id)
+def get_file_path(blog_id, theme):
+    return 'blogs/%s/%s/index.html' % (blog_id, theme)
 
 
 def check_media_storage():
@@ -76,7 +76,7 @@ def check_media_storage():
 def publish_embed(blog_id, api_host=None, theme=None):
     html = embed(blog_id, api_host, theme, assets_prefix=app.config.get('S3_THEMES_PREFIX'))
     check_media_storage()
-    file_path = get_file_path(blog_id)
+    file_path = get_file_path(blog_id, theme)
     # remove existing
     app.media.delete(file_path)
     # upload
@@ -93,8 +93,8 @@ def delete_embed(blog_id):
     app.media.delete(file_path)
 
 
-@bp.route('/embed/<blog_id>')
-def embed(blog_id, api_host=None, theme=None, assets_prefix=None):
+@bp.route('/embed/<blog_id>/<theme>')
+def embed(blog_id, theme, api_host=None, assets_prefix=None):
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if not blog:
