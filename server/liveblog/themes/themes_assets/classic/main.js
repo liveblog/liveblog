@@ -1,8 +1,8 @@
 (function(angular) {
     'use strict';
 
-    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink', 'transformBlog'];
-    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, transformBlog) {
+    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink', 'transformBlog', 'gettext'];
+    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, transformBlog, gettext) {
 
         var POSTS_PER_PAGE = config.settings.postsPerPage;
         var STICKY_POSTS_PER_PAGE = 100;
@@ -34,6 +34,7 @@
                 angular.extend(vm.blog, blog);
             });
         }
+
         // define view model
         angular.extend(vm, {
             templateDir: config.assets_root,
@@ -44,6 +45,16 @@
             settings: config.settings,
             newPosts: [],
             newStickyPosts: [],
+            sortOptions: [{
+                name: gettext('Editorial'),
+                order: 'editorial'
+            }, {
+                name: gettext('Newest first'),
+                order: 'newest_first'
+            }, {
+                name: gettext('Oldest first'),
+                order: 'oldest_first'
+            }],
             orderBy: function(order_by) {
                 vm.loading = true;
                 vm.finished = false;
@@ -120,6 +131,11 @@
     angular.module('theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll', 'gettext'])
         .run(['gettextCatalog', 'config', function (gettextCatalog, config) {
             gettextCatalog.setCurrentLanguage(config.settings.language);
+        }])
+        .run(['$rootScope', function($rootScope){
+            angular.element(document).on("click", function(e) {
+                $rootScope.$broadcast("documentClicked", angular.element(e.target));
+            });
         }])
         .controller('TimelineCtrl', TimelineCtrl)
         .directive('lbItem', ['asset', function(asset) {

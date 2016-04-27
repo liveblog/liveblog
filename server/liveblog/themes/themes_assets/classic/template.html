@@ -23,7 +23,10 @@
                     ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
                     ng-click="timeline.orderBy('oldest_first')" translate>Oldest first</div>
             </div>
-
+            <div class="sorting-bar__orders-mobile">
+                <lb-dropdown placeholder="{{ 'Sort by:' | translate }}" list="timeline.sortOptions"
+                selected="timeline.pagesManager.order()" order="timeline.orderBy(order)"></lb-dropdown>
+            </div>
         </div>
         <div class="header-bar__actions">
             <div class="toggleHighlights" ng-class="{'active': timeline.highlightsOnly}" ng-click="timeline.toggleHighlighsOnly()"
