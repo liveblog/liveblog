@@ -1,8 +1,8 @@
 (function(angular) {
     'use strict';
 
-    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink', 'transformBlog'];
-    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, transformBlog) {
+    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink', 'transformBlog', 'gettext'];
+    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, transformBlog, gettext) {
 
         var POSTS_PER_PAGE = config.settings.postsPerPage;
         var STICKY_POSTS_PER_PAGE = 100;
@@ -34,28 +34,40 @@
                 angular.extend(vm.blog, blog);
             });
         }
+
         // define view model
         angular.extend(vm, {
             templateDir: config.assets_root,
             blog: transformBlog(config.blog),
             loading: true,
             finished: false,
+            highlightsOnly: false,
             settings: config.settings,
             newPosts: [],
             newStickyPosts: [],
+            sortOptions: [{
+                name: gettext('Editorial'),
+                order: 'editorial'
+            }, {
+                name: gettext('Newest first'),
+                order: 'newest_first'
+            }, {
+                name: gettext('Oldest first'),
+                order: 'oldest_first'
+            }],
             orderBy: function(order_by) {
                 vm.loading = true;
                 vm.finished = false;
-                vm.pagesManager.changeOrder(order_by).then(function() {
+                vm.pagesManager.changeOrder(order_by).then(function(data) {
                     vm.loading = false;
+                    vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
                 });
             },
             fetchNewPage: function() {
                 vm.loading = true;
-                vm.stickyPagesManager.fetchNewPage();
                 return vm.pagesManager.fetchNewPage().then(function(data){
                     vm.loading = false;
-                    vm.finished = data._meta.total <= data._meta.max_results;
+                    vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
                     // TODO: notify updates
                 });
             },
@@ -77,12 +89,27 @@
                 stickyPagesManager.applyUpdates(vm.newStickyPosts);
                 vm.newStickyPosts = [];
             },
+            toggleHighlighsOnly: function() {
+                vm.highlightsOnly = !vm.highlightsOnly;
+                vm.loading = true;
+                vm.finished = false;
+                stickyPagesManager.changeHighlight(vm.highlightsOnly);
+                pagesManager.changeHighlight(vm.highlightsOnly).then(function(data) {
+                    vm.loading = false;
+                    vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
+                });
+                if (vm.highlightsOnly) {
+                    stickyPagesManager.hideSticky = false;
+                }
+            },
             pagesManager: pagesManager,
             permalink: permalink,
             stickyPagesManager: stickyPagesManager,
             stickyPermalink: stickyPermalink
         });
-        // retrieve first page
+        //get the first sticky page only once
+        vm.stickyPagesManager.fetchNewPage();
+        // retrieve regular first page
         vm.fetchNewPage()
         // retrieve updates periodically
         .then(function() {
@@ -105,7 +132,42 @@
         .run(['gettextCatalog', 'config', function (gettextCatalog, config) {
             gettextCatalog.setCurrentLanguage(config.settings.language);
         }])
-        .controller('TimelineCtrl', TimelineCtrl);
+        .run(['$rootScope', function($rootScope){
+            angular.element(document).on("click", function(e) {
+                $rootScope.$broadcast("documentClicked", angular.element(e.target));
+            });
+        }])
+        .controller('TimelineCtrl', TimelineCtrl)
+        .directive('lbItem', ['asset', function(asset) {
+            return {
+                restrict: 'AE',
+                scope: {
+                    ident: '=',
+                    item: '='
+                },
+                templateUrl: asset.templateUrl('views/item.html'),
+            }
+        }])
+        .directive('lbAuthor', ['asset', function(asset) {
+            return {
+                restrict: 'AE',
+                scope: {
+                    item: '=',
+                    timeline: '='
+                },
+                templateUrl: asset.templateUrl('views/author.html'),
+            }
+        }])
+        .directive('lbPosts', ['asset', function(asset) {
+            return {
+                restrict: 'E',
+                scope: {
+                    posts: '=',
+                    timeline: '='
+                },
+                templateUrl: asset.templateUrl('views/posts.html'),
+            }
+        }]);
     angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 1000);
 
 })(angular);

@@ -85,8 +85,17 @@ define([
                     }
                 });
             }
+            // filters.highlight
+            if (angular.isDefined(filters.highlight)) {
+                posts_criteria.source.query.filtered.filter.and.push({term: {highlight: filters.highlight}});
+            }
+            // filters.sticky
+            if (angular.isDefined(filters.sticky)) {
+                posts_criteria.source.query.filtered.filter.and.push({term: {sticky: filters.sticky}});
+            }
             return retrievePosts(blog_id, posts_criteria);
         }
+
         function _completeUser(obj) {
             if (obj.commenter) {
                 obj.user = {display_name: obj.commenter};
@@ -113,7 +122,7 @@ define([
             // `fullDetails` is a business logic that can be compiled from other objects.
             post.fullDetails = post.hasComments;
             // special cases for comments.
-            post.showUpdate = (post._updated !== post.published_date) &&
+            post.showUpdate = (post.content_updated_date !== post.published_date) &&
                                (!post.hasComments) && (post.mainItem.item.item_type !== 'comment');
             angular.forEach(post.items, function(val) {
                 if (post.fullDetails) {
@@ -235,11 +244,11 @@ define([
             getLatestUpdateDate: getLatestUpdateDate,
             retrievePost: retrievePost,
             savePost: savePost,
-            saveDraft: function(blog_id, post, items, sticky) {
-                return savePost(blog_id, post, items, {post_status: 'draft', 'sticky': sticky});
+            saveDraft: function(blog_id, post, items, sticky, highlight) {
+                return savePost(blog_id, post, items, {post_status: 'draft', 'sticky': sticky, 'highlight': highlight});
             },
-            saveContribution: function(blog_id, post, items, sticky) {
-                return savePost(blog_id, post, items, {post_status: 'submitted', 'sticky': sticky});
+            saveContribution: function(blog_id, post, items, sticky, highlight) {
+                return savePost(blog_id, post, items, {post_status: 'submitted', 'sticky': sticky, 'highlight': highlight});
             },
             remove: removePost
         };

@@ -18,11 +18,11 @@ define([
 ], function(angular, _) {
     'use strict';
     BlogEditController.$inject = [
-        'api', '$q', '$scope', 'blog', 'notify', 'gettext',
+        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'modal',
         'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService'
     ];
-    function BlogEditController(api, $q, $scope, blog, notify, gettext,
+    function BlogEditController(api, $q, $scope, blog, notify, gettext, session,
         upload, config, embedService, postsService, unreadPostsService, modal, blogService, $route, $routeParams, blogSecurityService, themesService) {
 
         var vm = this;
@@ -65,6 +65,7 @@ define([
             $scope.actionDisabled = actionDisabled;
             $scope.currentPost = undefined;
             $scope.sticky = false;
+            $scope.highlight = false;
         }
 
         // retieve the blog's public url
@@ -83,7 +84,9 @@ define([
             preview: false,
             actionPending: false,
             actionDisabled: true,
-            sticky: false, 
+            sticky: false,
+            highlight: false,
+            filter: {isHighlight: false},
             actionStatus: function() {
                 return $scope.actionDisabled || $scope.actionPending;
             },
@@ -92,12 +95,23 @@ define([
             },
             toggleSticky: function() {
                 $scope.sticky = !$scope.sticky;
-            }, 
+            },
+            toggleHighlight: function() {
+                $scope.highlight = !$scope.highlight;
+            },
+            showSaveAsDraft: function() {
+                if (angular.isDefined($scope.currentPost)) {
+                    return $scope.currentPost.original_creator === session.identity._id;
+                } else {
+                    return true;
+                }
+            },
             openPostInEditor: function (post) {
                 function fillEditor(post) {
                     cleanEditor(false);
                     $scope.currentPost = angular.copy(post);
                     $scope.sticky = $scope.currentPost.sticky;
+                    $scope.highlight = $scope.currentPost.highlight;
                     var items = post.groups[1].refs;
                     items.forEach(function(item) {
                         item = item.item;
@@ -113,7 +127,7 @@ define([
             saveAsContribution: function() {
                 $scope.actionPending = true;
                 notify.info(gettext('Submitting contribution'));
-                    postsService.saveContribution(blog._id, $scope.currentPost, getItemsFromEditor(),$scope.sticky).then(function(post) {
+                    postsService.saveContribution(blog._id, $scope.currentPost, getItemsFromEditor(), $scope.sticky, $scope.highlight).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Contribution submitted'));
                     cleanEditor();
@@ -127,7 +141,7 @@ define([
             saveAsDraft: function() {
                 $scope.actionPending = true;
                 notify.info(gettext('Saving draft'));
-                postsService.saveDraft(blog._id, $scope.currentPost, getItemsFromEditor(), $scope.sticky).then(function(post) {
+                postsService.saveDraft(blog._id, $scope.currentPost, getItemsFromEditor(), $scope.sticky, $scope.highlight).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Draft saved'));
                     cleanEditor();
@@ -144,7 +158,7 @@ define([
                 postsService.savePost(blog._id,
                     $scope.currentPost,
                     getItemsFromEditor(),
-                    {post_status: 'open', sticky: $scope.sticky}
+                    {post_status: 'open', sticky: $scope.sticky, highlight: $scope.highlight}
                 ).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
@@ -156,6 +170,12 @@ define([
                     $scope.actionPending = false;
                 });
             },
+            filterHighlight: function(highlight) {
+                $scope.filter.isHighlight = highlight;
+                vm.timelineInstance.pagesManager.changeHighlight(highlight);
+                vm.timelineStickyInstance.pagesManager.changeHighlight(highlight);
+            },
+
             // retrieve panel status from url
             panelState: undefined,
             openPanel: function(panel) {

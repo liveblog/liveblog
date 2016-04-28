@@ -51,6 +51,30 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Sort by:": "Trier par:",
   "Your comment was sent for approval.": "Votre commentaire a été envoyé et est en attente de validation."
 });
+  gettextCatalog.setStrings('nl', {
+  "Cancel": "Annuleren",
+  "Comment": "Reactie",
+  "Comment *": "Tekst *",
+  "Comment should be maximum 300 characters in length.": "Uw reactie van maximaal 300 tekens.",
+  "Editorial": "Redactioneel",
+  "Load more posts": "Meer",
+  "Loading": "Laden",
+  "Name *": "Naam *",
+  "Name should be maximum 30 characters in length.": "Uw naam kan maximaal 30 tekens lang zijn.",
+  "Newest first": "Toon nieuwste eerst",
+  "No post for now.": "Nog geen berichten beschikbaar.",
+  "Oldest first": "Toon oudste eerst",
+  "Please fill in your Comment.": "Uw reactie.",
+  "Please fill in your Name.": "Vul hier uw naam in.",
+  "Post a comment": "Schrijf een reactie",
+  "See one new post": [
+    "Bekijk nieuw bericht",
+    "Bekijk {{$count}} nieuwe berichten"
+  ],
+  "Send": "Verzenden",
+  "Sort by:": "Sorteer:",
+  "Your comment was sent for approval.": "Uw reactie is ontvangen ter beoordeling."
+});
   gettextCatalog.setStrings('ro', {
   "Cancel": "Anulează",
   "Comment": "Comentează",

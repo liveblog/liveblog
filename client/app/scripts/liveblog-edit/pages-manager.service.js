@@ -7,7 +7,7 @@
     PagesManagerFactory.$inject = ['postsService', '$q', 'lodash', 'moment'];
     function PagesManagerFactory(postsService, $q, _, moment) {
 
-        function PagesManager (blog_id, status, max_results, sort, sticky) {
+        function PagesManager (blog_id, status, max_results, sort, sticky, highlight) {
             var SORTS = {
                 'editorial': {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
                 'updated_first': {_updated: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
@@ -34,7 +34,7 @@
              * @returns {promise}
              */
             function retrievePage(page, max_results) {
-                var options = {status: self.status, authors: self.authors}
+                var options = {status: self.status, authors: self.authors, highlight: self.highlight}
                 //only care about the sticky status if post if open otherwise show them all together
                 //@TODO refactor when refactoring the page manager
                 if (self.status === 'open') {
@@ -47,7 +47,16 @@
                     return data;
                 });
             }
-
+            /**
+             * Filter the posts in timeline by their highlight attribute
+             * @param {boolean} highlight - The value of the field (true or false)
+             * @returns {promise}
+             */
+            function changeHighlight(highlight) {
+                self.highlight = highlight;
+                self.pages = [];
+                return fetchNewPage();
+            }
             /**
              * Change the order in the future posts request, remove exising post and load a new page
              * @param {string} sort_name - The name of the new order (see self.SORTS)
@@ -83,7 +92,7 @@
                     });
                 }
                 return promise.then(function() {
-                    return reloadPagesFrom(0, self.pages.length + 1);
+                    return loadPage(self.pages.length + 1);
                 });
             }
 
@@ -144,12 +153,12 @@
                             removePost(post);
                         } else {
                             // post updated
-                            if (post.post_status !== self.status || (self.status === 'open' && post.sticky !== sticky)) {
+                            if (post.post_status !== self.status || (self.status === 'open' && post.sticky !== sticky) || (self.highlight && !post.highlight)) {
                                removePost(post);
                             } else {
                                 // update
                                 self.pages[existing_post_indexes[0]].posts[existing_post_indexes[1]] = post;
-                                createPagesWithPosts();
+                                createPagesWithPosts(self.allPosts(), true);
                            }
                         }
                     } else {
@@ -184,10 +193,13 @@
             /**
              * Recreate the pages from the given posts
              * @param {array} [posts=self.allPosts()] - List of posts
+             * @param {boolean} resetPages - Clear the array of pages or not
              */
-            function createPagesWithPosts(posts) {
+            function createPagesWithPosts(posts, resetPages) {
                 posts = posts || self.allPosts();
-                self.pages = [];
+                if (resetPages) {
+                    self.pages = [];
+                }
                 // respect the order
                 var sort_by = Object.keys(SORTS[self.sort])[0];
                 var order_by = SORTS[self.sort][sort_by].order;
@@ -209,15 +221,14 @@
             }
 
             /**
-             * Resynchronize the content of the given page and the following ones
-             * @param {interger} page_index - index of the first page
-             * @param {interger} [to_page=self.pages.length] - latest wanted page
+             * Load the content of the given page
+             * @param {interger} page - index of the desired page
              * @returns {promise}
              */
-            function reloadPagesFrom(page_index, to_page) {
-                to_page = to_page || self.pages.length;
-                return retrievePage(1, to_page * self.maxResults).then(function(posts) {
-                    createPagesWithPosts(posts._items);
+            function loadPage(page) {
+                page = page || self.pages.length;
+                return retrievePage(page).then(function(posts) {
+                    createPagesWithPosts(posts._items, false);
                     return posts;
 
                 });
@@ -256,7 +267,7 @@
                     }
                 });
                 // and recreate pages
-                createPagesWithPosts(all_posts);
+                createPagesWithPosts(all_posts, true);
                 // update date
                 updateLatestDates(all_posts);
             }
@@ -271,7 +282,7 @@
                     var page_index = indexes[0];
                     var post_index = indexes[1];
                     self.pages[page_index].posts.splice(post_index, 1);
-                    createPagesWithPosts(self.allPosts());
+                    createPagesWithPosts(self.allPosts(), true);
                 }
             }
 
@@ -308,6 +319,12 @@
                 sort: sort || 'editorial',
                 blogId: blog_id,
                 status: status,
+                /**
+                 * Filter by post's highlight field
+                 */
+                highlight: highlight,
+                sticky: sticky,
+                changeHighlight: changeHighlight,
                 /**
                  * Change the order in the future posts request, remove exising post and load a new page
                  */

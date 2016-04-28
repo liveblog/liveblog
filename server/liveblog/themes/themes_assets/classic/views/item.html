@@ -1,0 +1,12 @@
+<div ng-switch="item.item_type" ng-class="{'lb-item': ident}">
+    <div ng-switch-when="embed">
+        <div ng-switch="item.meta.provider_name">
+            <div ng-switch-when="Twitter">
+                <lb-twitter-card lb-twitter-content="{{ item.meta.html }}"></lb-twitter-card>
+            </div>
+            <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
+        </div>
+    </div>
+    <div ng-switch-when="image" lb-bind-html html-content="{{ item.text | convertLinksWithRelativeProtocol }}"></div>
+    <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
+</div>

@@ -8,7 +8,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: template.html:28
+#: template.html:33
 msgid "Comment"
 msgstr ""
 
@@ -24,11 +24,11 @@ msgstr ""
 msgid "Editorial"
 msgstr ""
 
-#: template.html:142
+#: template.html:88
 msgid "Load more posts"
 msgstr ""
 
-#: template.html:145
+#: template.html:91
 msgid "Loading"
 msgstr ""
 
@@ -44,13 +44,15 @@ msgstr ""
 msgid "Newest first"
 msgstr ""
 
-#: template.html:45
-msgid "No post for now."
-msgstr ""
-
 #: template.html:21
 msgid "Oldest first"
 msgstr ""
+
+#: template.html:75
+msgid "One pinned post"
+msgid_plural "{{$count}} pined posts"
+msgstr[0] ""
+msgstr[1] ""
 
 #: comments.html:31
 msgid "Please fill in your Comment."
@@ -64,9 +66,9 @@ msgstr ""
 msgid "Post a comment"
 msgstr ""
 
-#: template.html:53
-msgid "See one new post"
-msgid_plural "See {{$count}} new posts"
+#: template.html:58
+msgid "See one new update"
+msgid_plural "See {{$count}} new updates"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -76,6 +78,10 @@ msgstr ""
 
 #: template.html:11
 msgid "Sort by:"
+msgstr ""
+
+#: posts.html:27
+msgid "Updated {{post._updated | prettifyIsoDate}}"
 msgstr ""
 
 #: comments.html:7
