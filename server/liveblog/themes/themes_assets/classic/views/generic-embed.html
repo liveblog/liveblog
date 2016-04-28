@@ -3,7 +3,7 @@
    <a  ng-href="{{ item.meta.url }}" 
         ng-if="!item.meta.html && item.meta.thumbnail_url"
         target="_blank"
-        class="item--embed__illustration">
+        ng-class="{ 'item--embed__illustration': item.meta.description, 'item--embed__only-illustration': !item.meta.description}">
             <img ng-src="{{ item.meta.thumbnail_url }}"/>
    </a>
     <div class="item--embed__title" ng-if="item.meta.title">

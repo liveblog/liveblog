@@ -420,14 +420,17 @@ article blockquote li:before {
     margin-left: -20px;
     padding-right: 5px;
 }
-.item--embed__illustration {
-    position: absolute;
-    width: 200px;
+.item--embed__figure, .item--embed__illustration {
+   width: 200px;
+   float: left;
+   margin-right: 20px;
 }
-/* if there is an image, leave space on the left */
-.item--embed__illustration ~ * {
-    margin-left: 220px;
+.item--embed__only-illustration {
+   width: 100%;
+   float: left;
+   margin-right: 20px;
 }
+
 .item--embed__description,
 .item--embed__credit {
     padding-top: 10px;
