@@ -130,12 +130,21 @@ def publish_blog_embed_on_s3(blog_id, theme=False, safe=True):
 
 
 @celery.task(soft_time_limit=1800)
-def delete_blog_embed_on_s3(blog_id, safe=True):
+def delete_blog_embed_on_s3(blog_id, theme=False, safe=True):
+    themes_service = get_resource_service('themes')
+    if theme:
         try:
-            liveblog.embed.delete_embed(blog_id)
+            liveblog.embed.delete_embed(blog_id, theme)
         except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:
                 raise e
+    else:
+        for theme in themes_service.get_concrete_themes():
+            try:
+                liveblog.embed.delete_embed(blog_id, theme.get('name'))
+            except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
+                if not safe:
+                    raise e
 
 
 class BlogService(BaseService):

@@ -23,7 +23,7 @@ from superdesk.errors import SuperdeskError
 import zipfile
 import os
 import magic
-from liveblog.blogs.blogs import publish_blog_embed_on_s3
+from liveblog.blogs.blogs import publish_blog_embed_on_s3, delete_blog_embed_on_s3
 from superdesk.celery_app import celery
 import superdesk
 import logging
@@ -181,12 +181,15 @@ class ThemesService(BaseService):
 
     def get_local_themes_packages(self):
         theme_folder = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR)
-        for file in glob.glob(theme_folder + '/**/theme.json'):
-            files = []
+        files = glob.glob(theme_folder + '/**/theme.json')
+        out = []
+        for file in files:
+            theme_files = []
             for root, dirnames, filenames in os.walk(os.path.dirname(file)):
                 for filename in filenames:
-                    files.append(os.path.join(root, filename))
-            yield json.loads(open(file).read()), files
+                    theme_files.append(os.path.join(root, filename))
+            out.append((json.loads(open(file).read()), theme_files))
+        return sorted(out, key=lambda item: 0 if item[0].get('abstract', False) else 1)
 
     def update_registered_theme_with_local_files(self, force=False):
         results = {'created': [], 'updated': [], 'unchanged': []}
@@ -304,20 +307,32 @@ class ThemesService(BaseService):
             self.publish_related_blogs(original)
 
     def on_delete(self, deleted_theme):
+        theme = deleted_theme['name']
         global_default_theme = get_resource_service('global_preferences').get_global_prefs()['theme']
         # raise an exception if the removed theme is the default one
-        if deleted_theme['name'] == global_default_theme:
+        if theme == global_default_theme:
             raise SuperdeskApiError.forbiddenError('This is a default theme and can not be deleted')
         # raise an exception if the removed theme has children
-        if self.get(req=None, lookup={'extends': deleted_theme['name']}).count() > 0:
+        if self.get(req=None, lookup={'extends': theme}).count() > 0:
             raise SuperdeskApiError.forbiddenError('This theme has children. It can\'t be removed')
         # update all the blogs using the removed theme and assign the default theme
         blogs_service = get_resource_service('blogs')
-        blogs = blogs_service.get(req=None, lookup={'blog_preferences.theme': deleted_theme['name']})
+        blogs = blogs_service.get(req=None, lookup={})
         for blog in blogs:
-            # will assign the default theme to this blog
-            blog['blog_preferences']['theme'] = global_default_theme
-            blogs_service.system_update(ObjectId(blog['_id']), {'blog_preferences': blog['blog_preferences']}, blog)
+            blog_prefences = blog['blog_preferences']
+            themes_settings = blog['themes_settings']
+            public_urls = blog['public_urls']
+            if blog_prefences['theme'] == theme:
+                # will assign the default theme to this blo
+                blog_prefences['theme'] = global_default_theme
+            delete_blog_embed_on_s3(blog['_id'], theme)
+            del themes_settings[theme]
+            del public_urls[theme]
+            blogs_service.system_update(ObjectId(blog['_id']), {
+                'blog_preferences': blog_prefences,
+                'themes_settings': themes_settings,
+                'public_urls': public_urls
+            }, blog)
 
     def get_dependencies(self, theme_name, deps=[]):
         ''' return a list of the dependencies names '''

@@ -86,9 +86,9 @@ def publish_embed(blog_id, api_host=None, theme=None):
     return superdesk.upload.url_for_media(file_id)
 
 
-def delete_embed(blog_id):
+def delete_embed(blog_id, theme):
     check_media_storage()
-    file_path = get_file_path(blog_id)
+    file_path = get_file_path(blog_id, theme)
     # remove existing
     app.media.delete(file_path)
 
