@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "2.3.11",
+    "version": "2.3.12",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -12,6 +12,7 @@
     "devStyles": [
         "styles/reset.css",
         "styles/embed.css",
+        "styles/dropdown.css",
         "//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic",
         "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
     ],
