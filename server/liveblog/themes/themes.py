@@ -320,15 +320,15 @@ class ThemesService(BaseService):
         blogs_service = get_resource_service('blogs')
         blogs = blogs_service.get(req=None, lookup={})
         for blog in blogs:
-            blog_prefences = blog['blog_preferences']
-            themes_settings = blog['themes_settings']
-            public_urls = blog['public_urls']
+            blog_prefences = blog.get('blog_preferences', {})
+            themes_settings = blog.get('themes_settings', {})
+            public_urls = blog.get('public_urls', {})
             if blog_prefences['theme'] == theme:
                 # will assign the default theme to this blo
                 blog_prefences['theme'] = global_default_theme
-            delete_blog_embed_on_s3.dealy(blog['_id'], theme)
-            del themes_settings[theme]
-            del public_urls[theme]
+            delete_blog_embed_on_s3.delay(blog['_id'], theme)
+            themes_settings.pop(theme, None)
+            public_urls.pop(theme, None)
             blogs_service.system_update(ObjectId(blog['_id']), {
                 'blog_preferences': blog_prefences,
                 'themes_settings': themes_settings,
