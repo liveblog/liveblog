@@ -1,6 +1,6 @@
 <div class="dropdown-container" ng-class="{ 'show': listVisible }">
 	<div class="dropdown-display" ng-click="show();" ng-class="{ 'clicked': listVisible }">
-		<span ng-if="!isPlaceholder">{{display}}</span>
+		<span ng-if="!isPlaceholder">{{display | translate}}</span>
 		<span class="placeholder" ng-if="isPlaceholder">{{placeholder}}</span>
 		<i class="fa fa-angle-down"></i>
 	</div>

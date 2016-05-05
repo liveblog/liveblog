@@ -1,7 +1,6 @@
 lb-dropdown {
   float: left;
   display: block;
-  width: 120px;
 }
 lb-dropdown > div {
   float: left;
@@ -117,3 +116,19 @@ lb-dropdown > div.show > div.dropdown-list {
     padding: 4px 0;
   }
 }
+/* Languages settings */
+.en lb-dropdown {
+    width: 120px;
+}
+.ro lb-dropdown {
+    width: 125px;
+}
+.de lb-dropdown {
+    width: 130px;
+}
+.nl lb-dropdown {
+    width: 155px;
+}
+.fr lb-dropdown {
+    width: 165px;
+} 
