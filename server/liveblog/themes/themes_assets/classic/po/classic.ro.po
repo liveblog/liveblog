@@ -17,7 +17,7 @@ msgstr ""
 msgid "Cancel"
 msgstr "Anulează"
 
-#: template.html:28
+#: template.html:36
 msgid "Comment"
 msgstr "Comentează"
 
@@ -29,15 +29,15 @@ msgstr "Comentariu *"
 msgid "Comment should be maximum 300 characters in length."
 msgstr "Comentariu nu poate fi mai lung de 300 de caractere."
 
-#: template.html:13
+#: main.js:49 template.html:13
 msgid "Editorial"
 msgstr "editorial"
 
-#: template.html:142
+#: template.html:90
 msgid "Load more posts"
 msgstr "Încarcă mai multe posturi"
 
-#: template.html:145
+#: template.html:93
 msgid "Loading"
 msgstr "Se încarcă"
 
@@ -49,17 +49,26 @@ msgstr "Numele *"
 msgid "Name should be maximum 30 characters in length."
 msgstr "Numele nu poate fi mai lung de 30 de caractere."
 
-#: template.html:17
+#: main.js:52 template.html:17
 msgid "Newest first"
 msgstr "Cele mai noi"
 
-#: template.html:45
-msgid "No post for now."
+#: template.html:53
+#, fuzzy
+msgid "No posts for now."
 msgstr "Deocamdata nu sunt articole."
 
-#: template.html:21
+#: main.js:55 template.html:21
 msgid "Oldest first"
 msgstr "Cele mai vechi"
+
+#: template.html:77
+#, fuzzy
+msgid "One pinned post"
+msgid_plural "{{$count}} pined posts"
+msgstr[0] "Vezi un articol nou"
+msgstr[1] "Vezi {{$count}} articole noi"
+msgstr[2] "Vezi {{$count}} de articole noi"
 
 #: comments.html:31
 msgid "Please fill in your Comment."
@@ -73,9 +82,10 @@ msgstr "Completează numele."
 msgid "Post a comment"
 msgstr "Scrie un comentariu"
 
-#: template.html:53
-msgid "See one new post"
-msgid_plural "See {{$count}} new posts"
+#: template.html:61
+#, fuzzy
+msgid "See one new update"
+msgid_plural "See {{$count}} new updates"
 msgstr[0] "Vezi un articol nou"
 msgstr[1] "Vezi {{$count}} articole noi"
 msgstr[2] "Vezi {{$count}} de articole noi"
@@ -84,9 +94,13 @@ msgstr[2] "Vezi {{$count}} de articole noi"
 msgid "Send"
 msgstr "Trimite"
 
-#: template.html:11
+#: template.html:11 template.html:27
 msgid "Sort by:"
 msgstr "Ordonează după:"
+
+#: posts.html:27
+msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
+msgstr ""
 
 #: comments.html:7
 msgid "Your comment was sent for approval."
