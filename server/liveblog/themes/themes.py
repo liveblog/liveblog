@@ -22,6 +22,7 @@ from flask import request, current_app as app
 from superdesk.errors import SuperdeskError
 import zipfile
 import os
+import liveblog.embed
 import magic
 from liveblog.blogs.blogs import publish_blog_embed_on_s3, delete_blog_embed_on_s3
 from superdesk.celery_app import celery
@@ -169,7 +170,7 @@ class ThemesService(BaseService):
         return options
 
     def get_concrete_themes(self):
-        return self.get(req=None, lookup={'abstract': { '$exists': False, '$nin': [True]}})
+        return self.get(req=None, lookup={'abstract': {'$exists': False, '$nin': [True]}})
 
     def get_default_settings(self, theme):
         settings = {}
@@ -241,7 +242,7 @@ class ThemesService(BaseService):
                 # initialize the new settings values for the blog based on the new settings
                 new_theme_settings = default_theme_settings.copy()
                 # loop over blog settings
-                themes_settings=blog.get('themes_settings', {})
+                themes_settings = blog.get('themes_settings', {})
                 for key, value in themes_settings.get(previous_theme['name'], {}).items():
                     # if the values of theme setting from blog level are the same as the settings
                     # from previous theme update the settings we keep them in a new variable
@@ -251,7 +252,7 @@ class ThemesService(BaseService):
                     else:
                         default_theme_settings[key] = value
                 new_theme_settings.update(default_theme_settings)
-                themes_settings[previous_theme['name']]=new_theme_settings
+                themes_settings[previous_theme['name']] = new_theme_settings
                 # save the blog with the new settings
                 blogs_service.system_update(ObjectId(blog['_id']),
                                             {'themes_settings': themes_settings}, blog)
@@ -274,7 +275,7 @@ class ThemesService(BaseService):
                 themes_settings[theme['name']] = default_theme_settings
                 # initialize the new settings values for the blog based on the new settings
                 blogs_service.system_update(ObjectId(blog['_id']),
-                                        {'themes_settings': themes_settings}, blog)
+                                            {'themes_settings': themes_settings}, blog)
             self.create([theme])
             if force_update:
                 blogs_updated = self.publish_related_blogs(theme)
@@ -291,7 +292,7 @@ class ThemesService(BaseService):
         # get all the children for the theme that we modify the settings for
         theme_children = self.get_children(theme.get('name'))
         for blog in blogs:
-            publish_blog_embed_on_s3(blog_id=str(blog['_id']), theme=theme)
+            publish_blog_embed_on_s3.delay(blog_id=str(blog['_id']), theme=theme)
             if theme_children:
                 # if a blog has associated the theme that is a  child of the one
                 # for which we modify the settings, we redeploy the blog on s3
@@ -325,7 +326,7 @@ class ThemesService(BaseService):
             if blog_prefences['theme'] == theme:
                 # will assign the default theme to this blo
                 blog_prefences['theme'] = global_default_theme
-            delete_blog_embed_on_s3(blog['_id'], theme)
+            delete_blog_embed_on_s3.dealy(blog['_id'], theme)
             del themes_settings[theme]
             del public_urls[theme]
             blogs_service.system_update(ObjectId(blog['_id']), {

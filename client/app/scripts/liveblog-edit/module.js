@@ -73,6 +73,11 @@ define([
             $scope.publicUrl = url;
         });
 
+        // retieve the blog's public urls
+        blogService.getPublicUrls(blog).then(function(urls) {
+            $scope.publicUrls = urls;
+        });
+
         // define the $scope
         angular.extend($scope, {
             blog: blog,
@@ -497,6 +502,12 @@ define([
         blogService.getPublicUrl(blog).then(function(url) {
             vm.publicUrl = url;
         });
+
+        // retieve the blog's public urls
+        blogService.getPublicUrls(blog).then(function(urls) {
+            vm.publicUrls = urls;
+        });
+
         // load available languages
         api('languages').query().then(function(data) {
             vm.availableLanguages = data._items;
