@@ -21,7 +21,7 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Sort by:": "Řazení:",
   "Your comment was sent for approval.": "Váš text byl úspěšně odeslán. Čeká na schválení."
 });
-  gettextCatalog.setStrings('German', {
+  gettextCatalog.setStrings('de', {
   "Cancel": "Abbrechen",
   "Comment": "Kommentar",
   "Comment *": "Kommentar",
