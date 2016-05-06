@@ -114,6 +114,7 @@ def embed(blog_id, theme, api_host=None, assets_prefix=None):
             message='You will be able to access the embed after you register the themes')
     # if a theme is provided, overwrite the default theme
     if theme_name:
+        print(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
         theme_package = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
         theme = json.loads(open(theme_package).read())
     try:
