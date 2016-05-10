@@ -625,5 +625,11 @@ article blockquote li:before {
 .fr .sorting-bar__orders {
     padding-left: 50px;
 }
+.de .sorting-bar__orders {
+    padding-left: 75px;
+}
+.nl .sorting-bar__orders {
+    padding-left: 50px;
+}
 /* Remove this is angular-gettext is updated */
 [translate]{visibility:hidden !important;}

@@ -13,19 +13,37 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Name *": "Jméno *",
   "Name should be maximum 30 characters in length.": "Maximální délka jména je 30 znaků.",
   "Newest first": "od nejnovějších",
-  "No post for now.": "Zatím zde nejsou žádné příspěvky.",
   "Oldest first": "od nejstarších",
   "Please fill in your Comment.": "Napište váš text.",
   "Please fill in your Name.": "Napište své jméno.",
   "Post a comment": "Otázka / komentář",
-  "See one new post": [
-    "Zobraz novou aktualizaci",
-    "Zobraz {{$count}} nové aktualizace",
-    "Zobraz {{$count}} nových aktualizací"
-  ],
   "Send": "Odeslat",
   "Sort by:": "Řazení:",
   "Your comment was sent for approval.": "Váš text byl úspěšně odeslán. Čeká na schválení."
+});
+  gettextCatalog.setStrings('de', {
+  "Cancel": "Abbrechen",
+  "Comment": "Kommentar",
+  "Comment *": "Kommentar",
+  "Comment should be maximum 300 characters in length.": "Kommentar darf maximal 300 Zeichen lang sein.",
+  "Editorial": "Redaktionell",
+  "Load more posts": "Mehr Einträge laden",
+  "Loading": "Lade",
+  "Name *": "Name",
+  "Name should be maximum 30 characters in length.": "Name darf maximal 30 Zeichen lang sein",
+  "Newest first": "Neueste zuerst",
+  "No posts for now.": "Kein Beitrag vorhanden",
+  "Oldest first": "Älteste zuerst",
+  "Please fill in your Comment.": "Bitte Kommentar hier eintragen",
+  "Please fill in your Name.": "Bitte Namen hier eintragen",
+  "Post a comment": "Kommentar posten",
+  "See one new update": [
+    "Neuen Beitrag anzeigen",
+    "Neue Beiträge anzeigen"
+  ],
+  "Send": "Abschicken",
+  "Sort by:": "Ordnen nach",
+  "Your comment was sent for approval.": "Ihr Kommentar wartet auf Freischaltung,"
 });
   gettextCatalog.setStrings('fr', {
   "Cancel": "Annuler",
@@ -62,15 +80,10 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Name *": "Naam *",
   "Name should be maximum 30 characters in length.": "Uw naam kan maximaal 30 tekens lang zijn.",
   "Newest first": "Toon nieuwste eerst",
-  "No post for now.": "Nog geen berichten beschikbaar.",
   "Oldest first": "Toon oudste eerst",
   "Please fill in your Comment.": "Uw reactie.",
   "Please fill in your Name.": "Vul hier uw naam in.",
   "Post a comment": "Schrijf een reactie",
-  "See one new post": [
-    "Bekijk nieuw bericht",
-    "Bekijk {{$count}} nieuwe berichten"
-  ],
   "Send": "Verzenden",
   "Sort by:": "Sorteer:",
   "Your comment was sent for approval.": "Uw reactie is ontvangen ter beoordeling."
@@ -86,16 +99,10 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Name *": "Numele *",
   "Name should be maximum 30 characters in length.": "Numele nu poate fi mai lung de 30 de caractere.",
   "Newest first": "Cele mai noi",
-  "No post for now.": "Deocamdata nu sunt articole.",
   "Oldest first": "Cele mai vechi",
   "Please fill in your Comment.": "Completează comentariu.",
   "Please fill in your Name.": "Completează numele.",
   "Post a comment": "Scrie un comentariu",
-  "See one new post": [
-    "Vezi un articol nou",
-    "Vezi {{$count}} articole noi",
-    "Vezi {{$count}} de articole noi"
-  ],
   "Send": "Trimite",
   "Sort by:": "Ordonează după:",
   "Your comment was sent for approval.": "Comentariul tău a fost trimis spre aprobare."
