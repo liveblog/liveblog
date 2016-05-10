@@ -32,7 +32,7 @@ angular.module('liveblog.security', [])
             return $rootScope.currentUser._id === archive.original_creator || canPublishAPost();
         }
         function canAccessSettings(archive) {
-            return canCreateABlog() && isUserOwnerOrAdmin(archive);
+            return canCreateABlog() && (isUserOwnerOrAdmin(archive) || isMemberOfBlog(archive));
         }
         function goToSettings() {
             var def = $q.defer();
