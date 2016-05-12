@@ -1,0 +1,17 @@
+{
+    "name": "actual-dog",
+    "label": "Actual Dog",
+    "version": "1.0",
+    "extends": "angular",
+    "styles": [
+        "styles/embed.css",
+        "//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css",
+        "//cdnjs.cloudflare.com/ajax/libs/animate.css/3.3.0/animate.min.css",
+        "//fonts.googleapis.com/css?family=Poppins:400,500"
+    ],
+    "scripts": [
+        "//code.angularjs.org/1.3.14/angular-sanitize.js",
+        "//code.angularjs.org/1.3.14/angular-animate.js",
+        "main.js"
+    ]
+}

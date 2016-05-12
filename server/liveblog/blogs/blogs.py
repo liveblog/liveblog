@@ -172,7 +172,7 @@ class BlogService(BaseService):
         for blog in docs:
             # Publish on s3 if possible and save the public_url in the blog
             print('publish it before')
-            publish_blog_embed_on_s3.delay(str(blog['_id']))
+            publish_blog_embed_on_s3(str(blog['_id']))
             # notify client with websocket
             push_notification(self.notification_key, created=1, blog_id=str(blog.get('_id')))
             # and members with emails
@@ -199,7 +199,7 @@ class BlogService(BaseService):
         updates['version_creator'] = str(get_user().get('_id'))
 
     def on_updated(self, updates, original):
-        publish_blog_embed_on_s3.delay(str(original['_id']))
+        publish_blog_embed_on_s3(str(original['_id']))
         # invalidate cache for updated blog
         app.blog_cache.invalidate(original.get('_id'))
         # send notifications
@@ -215,7 +215,7 @@ class BlogService(BaseService):
         notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def on_delete(self, doc):
-        delete_blog_embed_on_s3.delay(doc.get('_id'))
+        delete_blog_embed_on_s3(doc.get('_id'))
 
     def on_deleted(self, doc):
         # invalidate cache for updated blog
@@ -254,7 +254,7 @@ class PublishBlogsCommand(superdesk.Command):
         # republish on s3
         print('\n* Republishing blogs:\n')
         for blog in blogs:
-            url = publish_blog_embed_on_s3.delay(blog_id=str(blog['_id']), safe=False)
+            url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
             print('  - Blog "%s" republished: %s' % (blog['title'], url))
 
 superdesk.command('publish_blogs', PublishBlogsCommand())

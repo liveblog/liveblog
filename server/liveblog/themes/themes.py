@@ -292,13 +292,13 @@ class ThemesService(BaseService):
         # get all the children for the theme that we modify the settings for
         theme_children = self.get_children(theme.get('name'))
         for blog in blogs:
-            publish_blog_embed_on_s3.delay(blog_id=str(blog['_id']), theme=theme)
+            publish_blog_embed_on_s3(blog_id=str(blog['_id']), theme=theme)
             if theme_children:
                 # if a blog has associated the theme that is a  child of the one
                 # for which we modify the settings, we redeploy the blog on s3
                 for child in theme_children:
                     if theme.get('name') == child:
-                        publish_blog_embed_on_s3.delay(blog_id=str(blog['_id']), theme=theme)
+                        publish_blog_embed_on_s3(blog_id=str(blog['_id']), theme=theme)
                         break
         return blogs
 
@@ -326,7 +326,7 @@ class ThemesService(BaseService):
             if blog_prefences['theme'] == theme:
                 # will assign the default theme to this blo
                 blog_prefences['theme'] = global_default_theme
-            delete_blog_embed_on_s3.delay(blog['_id'], theme)
+            delete_blog_embed_on_s3(blog['_id'], theme)
             themes_settings.pop(theme, None)
             public_urls.pop(theme, None)
             blogs_service.system_update(ObjectId(blog['_id']), {

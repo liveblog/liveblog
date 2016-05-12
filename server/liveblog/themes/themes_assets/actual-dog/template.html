@@ -1,0 +1,27 @@
+<div  ng-app="chat" ng-controller="TimelineCtrl as timeline">
+            <h1>
+            {{ timeline.blog.title }}
+        </h1>
+        <div class="cover" ng-show="timeline.blog.picture_url" ng-style="{'background-image':'url({{timeline.blog.picture_url}})'}">
+        </div>
+    <div class="lb-timeline container">
+
+            <small>
+                {{ timeline.blog.description }}
+            </small>
+        <ul class="lb-posts list-group">
+            <li lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id" class="lb-post list-group-item">
+                <div>
+                    <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">
+                        <article lb-bind-html html-content="{{ item.text }}"></article>
+                    </div>
+                    <div class="lb-creator">
+                        <figure class="lb-avatar"><img ng-src="{{ post.original_creator.picture_url }}"/></figure>
+                        <div class="lb-user-info" ng-bind="post.original_creator.display_name"></div>
+                    </div>
+                </div>
+            </li>
+        </ul>
+    </div>
+    <div class="footer"></div>
+</div>
