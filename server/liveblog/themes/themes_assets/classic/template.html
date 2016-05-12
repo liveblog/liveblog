@@ -29,8 +29,12 @@
             </div>
         </div>
         <div class="header-bar__actions">
-            <div class="toggleHighlights" ng-class="{'active': timeline.highlightsOnly}" ng-click="timeline.toggleHighlighsOnly()"
-            title="{{ timeline.highlightsOnly? 'Show all posts': 'Show highlighted post only' | translate }}">
+            <div 
+                class="toggleHighlights"
+                ng-if="timeline.settings.hasHighlights"
+                ng-class="{'active': timeline.highlightsOnly}"
+                ng-click="timeline.toggleHighlighsOnly()"
+                title="{{ timeline.highlightsOnly? 'Show all posts': 'Show highlighted post only' | translate }}">
                 <i class="fa fa-star fa-2"></i>  
             </div>
             <button

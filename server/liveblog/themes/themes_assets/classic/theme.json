@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "2.3.14",
+    "version": "2.3.15",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -194,6 +194,13 @@
             "type": "checkbox",
             "default": false,
             "help": "If the users can comment from embed page"
+        },
+        {
+            "name": "hasHighlights",
+            "label": "Has highlights",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users see the highlight button in embed"
         }
     ]
 }
