@@ -88,7 +88,6 @@ button.active {
     background-color: #FAFAFA;
     border-top: 2px solid #CBCBCB;
     border-bottom: 1px solid #CBCBCB;
-    overflow: auto;
     padding: 10px 0 0 10px;
     margin: 10px 0 0 0;
     position: relative;
@@ -254,6 +253,9 @@ button.active {
 .comment-active {
     min-height: 250px;
 }
+.sorting-bar {
+    min-height: 28px;
+}
 .sorting-bar__title {
     float: left;
     text-transform: uppercase;
@@ -278,6 +280,9 @@ button.active {
     color: #333333;
     border-bottom: 2px solid #5ea9c8;
 }
+.sorting-bar__orders-mobile {
+    display: none;
+}
 .header-bar__logo {
     position: absolute;
     right: 10px;
@@ -297,9 +302,6 @@ button.active {
     margin-bottom: 20px;
     position: relative;
 }
-.icon-star {
-    background-position: -120px 0;
- }
 .lb-post {
     position: relative;
     border-bottom: 1px solid #CBCBCB;
@@ -418,14 +420,17 @@ article blockquote li:before {
     margin-left: -20px;
     padding-right: 5px;
 }
-.item--embed__illustration {
-    position: absolute;
-    width: 200px;
+.item--embed__figure, .item--embed__illustration {
+   width: 200px;
+   float: left;
+   margin-right: 20px;
 }
-/* if there is an image, leave space on the left */
-.item--embed__illustration ~ * {
-    margin-left: 220px;
+.item--embed__only-illustration {
+   width: 100%;
+   float: left;
+   margin-right: 20px;
 }
+
 .item--embed__description,
 .item--embed__credit {
     padding-top: 10px;
@@ -488,14 +493,28 @@ article blockquote li:before {
     .lb-author__date {
         float: none;
     }
+    .sorting-bar {
+        min-height: 38px;
+    }
     .sorting-bar__title {
         display: none;
     }
     .sorting-bar__orders {
         padding-left: 0 !important;
+        display: none;
+    }
+    .sorting-bar__orders-mobile {
+        display: block;
+    }
+    .header-bar {
+        padding: 0;
     }
 }
-
+@media (max-width: 320px) {
+    .btn {
+        padding: 8px;
+    }
+}
 .lb-post-permalink {
     position: absolute;
     top: 10px;
@@ -604,6 +623,12 @@ article blockquote li:before {
     padding-left: 70px;
 }
 .fr .sorting-bar__orders {
+    padding-left: 50px;
+}
+.de .sorting-bar__orders {
+    padding-left: 75px;
+}
+.nl .sorting-bar__orders {
     padding-left: 50px;
 }
 /* Remove this is angular-gettext is updated */

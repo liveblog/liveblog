@@ -2,8 +2,8 @@
     'use strict';
     var CACHE_OPTIONS = {
         deleteOnExpire: 'aggressive',
-        recycleFreq: 3600000, // 1h
-        storageMode: 'localStorage'
+        recycleFreq: 600000, // 10mins
+        storageMode: 'memory'
     };
 
     transformBlog.$inject = ['fixProtocol']

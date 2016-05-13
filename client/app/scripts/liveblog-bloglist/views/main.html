@@ -104,10 +104,11 @@
             <form ng-submit="createBlog()" name="createBlogForm">
                 <ul class="nav nav-tabs">
                     <li ng-class="{active: creationStep == 'Details'}">
-                        <button type="button" translate>Details</button>
+                        <button type="button" translate ng-click="switchTab('Details')">Details</button>
                     </li>
                     <li ng-class="{active: creationStep == 'Team'}">
-                        <button type="button" translate>Team</button>
+                        <button type="button" translate ng-disabled="!createBlogForm.$valid" ng-click="switchTab('Team')"
+                         ng-class="{'default-cursor': !createBlogForm.$valid}">Team</button>
                     </li>
                 </ul>
                 <div class="creation-steps">

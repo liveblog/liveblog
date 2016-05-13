@@ -1,4 +1,4 @@
-<div ng-switch="item.item_type">
+<div ng-switch="item.item_type" ng-class="{'lb-item': ident}">
     <div ng-switch-when="embed">
         <div ng-switch="item.meta.provider_name">
             <div ng-switch-when="Twitter">

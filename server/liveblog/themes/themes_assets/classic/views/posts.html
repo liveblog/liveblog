@@ -17,7 +17,7 @@
         <div ng-if="post.fullDetails && !$first" class="list-group-item">
             <div class="lb-timeline__header">
                 <lb-author item="item" timeline="timeline"></lb-author>
-                <lb-item item="item"></lb-item>
+                <lb-item item="item" ident="true"></lb-item>
             </div>
         </div>                
         <div ng-if="!post.fullDetails || $first">
