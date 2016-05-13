@@ -116,8 +116,9 @@ def publish_blog_embed_on_s3(blog_id, theme=False, safe=True):
     themes_service = get_resource_service('themes')
     public_urls = blog.get('public_urls', {})
     if theme:
-        public_urls[theme.get('name')] = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']),
-                                                                      theme.get('name'))
+        url = liveblog.embed.publish_embed(blog_id, api_host='//%s/' % (app.config['SERVER_NAME']),
+                                           theme=theme.get('name'))
+        public_urls[theme.get('name')] = url
     else:
         for theme in themes_service.get_concrete_themes():
             try:
@@ -171,7 +172,6 @@ class BlogService(BaseService):
     def on_created(self, docs):
         for blog in docs:
             # Publish on s3 if possible and save the public_url in the blog
-            print('publish it before')
             publish_blog_embed_on_s3(str(blog['_id']))
             # notify client with websocket
             push_notification(self.notification_key, created=1, blog_id=str(blog.get('_id')))
