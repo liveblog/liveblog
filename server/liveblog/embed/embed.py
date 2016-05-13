@@ -115,7 +115,10 @@ def embed(blog_id, theme, api_host=None, assets_prefix=None):
     # if a theme is provided, overwrite the default theme
     if theme_name:
         theme_package = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
-        theme = json.loads(open(theme_package).read())
+        if os.path.isfile(theme_package):
+            theme = json.loads(open(theme_package).read())
+        else:
+            return 'theme.json not found', 404
     try:
         assets, template_file = collect_theme_assets(theme, assets_prefix=assets_prefix)
     except UnknownTheme as e:
