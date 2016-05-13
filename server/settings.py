@@ -185,7 +185,8 @@ MAIL_USE_TLS = json.loads(env('MAIL_USE_TLS', 'False').lower())
 MAIL_USE_SSL = json.loads(env('MAIL_USE_SSL', 'False').lower())
 MAIL_USERNAME = env('MAIL_USERNAME', 'liveblogsf@gmail.com')
 MAIL_PASSWORD = env('MAIL_PASSWORD', 'fabric2010')
-ADMINS = [MAIL_USERNAME]
+MAIL_FROM = env('MAIL_FROM', 'liveblogsf@gmail.com')
+ADMINS = [MAIL_FROM]
 
 # LDAP settings
 LDAP_SERVER = env('LDAP_SERVER', '')  # Ex: ldap://sourcefabric.org
