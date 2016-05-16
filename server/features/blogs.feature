@@ -180,7 +180,7 @@ Feature: Blog operations
         Given empty "users"
         When we post to "users"
             """
-            {"username": "foo_user", "email": "foo@bar.com", "is_active": true, "sign_off": "abc"}
+            {"first_name": "foo", "username": "foo_user", "email": "foo@bar.com", "is_active": true, "sign_off": "abc"}
             """
         When we find for "users" the id as "user_foo" by "{"username": "foo_user"}"
         Given empty "blogs"
@@ -213,7 +213,7 @@ Feature: Blog operations
         Given empty "blogs"
         When we post to "users"
             """
-            {"username": "foo", "email": "foo@bar.com", "is_active": true, "sign_off": "abc"}
+            {"first_name": "foo", "username": "foo", "email": "foo@bar.com", "is_active": true, "sign_off": "abc"}
             """
         When we post to "/blogs"
             """
