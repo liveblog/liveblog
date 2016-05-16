@@ -116,13 +116,18 @@ def publish_blog_embed_on_s3(blog_id, theme=False, safe=True):
     themes_service = get_resource_service('themes')
     public_urls = blog.get('public_urls', {})
     if theme:
-        url = liveblog.embed.publish_embed(blog_id, api_host='//%s/' % (app.config['SERVER_NAME']),
-                                           theme=theme.get('name'))
-        public_urls[theme.get('name')] = url
+        try:
+            url = liveblog.embed.publish_embed(blog_id, api_host='//%s/' % (app.config['SERVER_NAME']),
+                                               theme=theme.get('name'))
+            public_urls[theme.get('name')] = url
+        except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
+            if not safe:
+                raise e
     else:
         for theme in themes_service.get_concrete_themes():
             try:
-                url = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']), theme.get('name'))
+                url = liveblog.embed.publish_embed(blog_id, api_host='//%s/' % (app.config['SERVER_NAME']),
+                                                   theme=theme.get('name'))
                 public_urls[theme.get('name')] = url
             except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
                 if not safe:
