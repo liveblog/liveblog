@@ -1,4 +1,4 @@
-Dear {{first_name}},
+Dear {{user.first_name}},
 
 Someone has created a {{app_name}} user account for you with username {{user.username}} and this email address.
 Please visit {{url}} to choose your password.
@@ -9,8 +9,6 @@ Next time you want to use {{app_name}}, please go to {{instance_url}} and log in
 See our User manual on http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/ to help you get started.
 
 Please ignore this email if you think your {{app_name}} account was created by mistake.
-aaaaaaaaaaaaaaaaaa
-*** {{user.first_name}}, {{first_name}}****
 
 Happy blogging,
 The {{app_name}} Team
