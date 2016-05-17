@@ -179,6 +179,9 @@ class PostsService(ArchiveService):
         push_notification('posts', created=True, post_status=doc['post_status'], post_ids=post_ids)
 
     def on_update(self, updates, original):
+        # check if the timeline is reordered
+        if updates.get('order'):
+            updates['order'] = self.get_next_order_sequence(original.get('blog'))
         # in the case we have a comment
         if original['post_status'] == 'comment':
             original['blog'] = original['groups'][1]['refs'][0]['item']['client_blog']
