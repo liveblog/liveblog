@@ -10,6 +10,8 @@ See our User manual on http://sourcefabric.booktype.pro/live-blog-30-for-journal
 
 Please ignore this email if you think your {{app_name}} account was created by mistake.
 
+*** {{user.first_name}}, {{first_name}}****
+
 Happy blogging,
 The {{app_name}} Team
 
