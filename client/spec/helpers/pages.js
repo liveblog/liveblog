@@ -156,9 +156,9 @@ function ThemesManagerPage() {
     self.openThemesManager = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
         browser.wait(function() {
-            return element(by.css('[href="#/themes/"]')).isDisplayed();
+            return element(by.css('[href="#/themes/"][title]')).isDisplayed();
         });
-        waitAndClick(by.css('[href="#/themes/"]'));
+        waitAndClick(by.css('[href="#/themes/"][title]'));
         return self;
     };
 
