@@ -582,7 +582,7 @@ define([
     ])
     .config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/liveblog/edit/:_id', {
-            label: gettext('Blog Edit'),
+            label: gettext('Blog Editor'),
             auth: true,
             controller: BlogEditController,
             controllerAs: 'blogEdit',
