@@ -34,6 +34,10 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Newest first": "Neueste zuerst",
   "No posts for now.": "Kein Beitrag vorhanden",
   "Oldest first": "Älteste zuerst",
+  "One pinned post": [
+    "Angehefteter Eintrag",
+    "$count Angeheftete Einträge"
+  ],
   "Please fill in your Comment.": "Bitte Kommentar hier eintragen",
   "Please fill in your Name.": "Bitte Namen hier eintragen",
   "Post a comment": "Kommentar posten",
@@ -43,6 +47,7 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   ],
   "Send": "Abschicken",
   "Sort by:": "Ordnen nach",
+  "Updated {{post.content_updated_date | prettifyIsoDate}}": "Aktualisiert am post.content_updated_date | prettifyIsoDate",
   "Your comment was sent for approval.": "Ihr Kommentar wartet auf Freischaltung,"
 });
   gettextCatalog.setStrings('fr', {
