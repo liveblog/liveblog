@@ -44,7 +44,8 @@ Feature: Post operations
                     "role": "grpRole:Main"
                 }
             ],
-            "guid": "tag:example.com,0000:newsml_BRE9A605"
+            "guid": "tag:example.com,0000:newsml_BRE9A605",
+            "blog": "#blogs._id#"
         }
         """
         And we get "/posts"
@@ -120,7 +121,8 @@ Feature: Post operations
                     "role": "grpRole:Main"
                 }
             ],
-            "guid": "tag:example.com,0000:newsml_BRE9A605"
+            "guid": "tag:example.com,0000:newsml_BRE9A605",
+            "blog": "#blogs._id#"
         }
         """
         Then we get response code 403
@@ -175,7 +177,8 @@ Feature: Post operations
                     "role": "grpRole:Main"
                 }
             ],
-            "guid": "tag:example.com,0000:newsml_BRE9A605"
+            "guid": "tag:example.com,0000:newsml_BRE9A605",
+            "blog": "#blogs._id#"
         }
         """
         And we get "/posts"
@@ -231,7 +234,8 @@ Feature: Post operations
                     "role": "grpRole:Main"
                 }
             ],
-            "guid": "tag:example.com,0000:newsml_BRE9A605"
+            "guid": "tag:example.com,0000:newsml_BRE9A605",
+            "blog": "#blogs._id#"
         }
         """
         And we get "/posts"
