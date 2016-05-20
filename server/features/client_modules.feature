@@ -44,9 +44,17 @@ Feature: Client modules operations
     #     Then we get list with 0 items
 
     Scenario: List posts without needing auth
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
+    	Given "blogs"
+        """
+        [{"title": "testBlog one", "blog_preferences": {"theme": "forest", "language": "fr"}}]
+        """
         Given "posts"
         """
-        [{"headline": "testPost one"}, {"headline": "testPost two"}]
+        [{"headline": "testPost one", "blog": "#blogs._id#"}, {"headline": "testPost two", "blog": "#blogs._id#"}]
         """
         When we get "/client_posts"
         Then we get list with 2 items
@@ -55,9 +63,17 @@ Feature: Client modules operations
         """
 
     Scenario: List a single client_post
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
+    	Given "blogs"
+        """
+        [{"title": "testBlog one", "blog_preferences": {"theme": "forest", "language": "fr"}}]
+        """
         Given "posts"
         """
-        [{"guid": "post-1", "headline": "test_post"}]
+        [{"guid": "post-1", "headline": "test_post", "blog": "#blogs._id#"}]
         """
         When we get "/client_posts/#posts._id#"
         Then we get existing resource
