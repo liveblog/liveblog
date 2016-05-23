@@ -35,7 +35,7 @@ def is_relative_to_current_folder(url):
     return not (url.startswith('/') or url.startswith('http://') or url.startswith('https://'))
 
 
-def collect_theme_assets(theme, assets_prefix=None, assets=None, template=None):
+def collect_theme_assets(theme, assets=None, template=None):
     assets = assets or {'scripts': [], 'styles': [], 'devScripts': [], 'devStyles': []}
     # load the template
     if not template:
@@ -46,7 +46,7 @@ def collect_theme_assets(theme, assets_prefix=None, assets=None, template=None):
     if theme.get('extends', None):
         parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
         if parent_theme:
-            assets, template = collect_theme_assets(parent_theme, assets_prefix, assets=assets, template=template)
+            assets, template = collect_theme_assets(parent_theme, assets=assets, template=template)
         else:
             error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
                 % (theme.get('name'), theme.get('extends'))
@@ -58,8 +58,9 @@ def collect_theme_assets(theme, assets_prefix=None, assets=None, template=None):
         for url in theme.get(asset_type, []):
             if is_relative_to_current_folder(url):
                 url = url_for('themes_assets.static', filename=os.path.join(theme_folder, url), _external=False)
-                if assets_prefix:
-                    url = '/%s%s' % (assets_prefix.strip('/'), url)
+                # @TODO: this should take the url theme from the `public_url` after the theme is published.
+                # fix theme location
+                url = '../..%s' % url
             assets[asset_type].append(url)
     return assets, template
 
@@ -74,7 +75,7 @@ def check_media_storage():
 
 
 def publish_embed(blog_id, api_host=None, theme=None):
-    html = embed(blog_id, api_host, theme, assets_prefix=app.config.get('S3_THEMES_PREFIX'))
+    html = embed(blog_id, api_host, theme)
     check_media_storage()
     file_path = get_file_path(blog_id)
     # remove existing
@@ -94,7 +95,7 @@ def delete_embed(blog_id):
 
 
 @bp.route('/embed/<blog_id>')
-def embed(blog_id, api_host=None, theme=None, assets_prefix=None):
+def embed(blog_id, api_host=None, theme=None):
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if not blog:
@@ -117,7 +118,7 @@ def embed(blog_id, api_host=None, theme=None, assets_prefix=None):
         theme_package = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
         theme = json.loads(open(theme_package).read())
     try:
-        assets, template_file = collect_theme_assets(theme, assets_prefix=assets_prefix)
+        assets, template_file = collect_theme_assets(theme)
     except UnknownTheme as e:
         return str(e), 500
     if not template_file:
@@ -126,9 +127,7 @@ def embed(blog_id, api_host=None, theme=None, assets_prefix=None):
     # compute the assets root
     assets_root = [THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme')]
     # prefix the assets root if needed (to isolate s3 bucket for instance)
-    if assets_prefix:
-        assets_root = [assets_prefix.strip('/')] + assets_root
-    assets_root = '/%s/' % ('/'.join(assets_root))
+    assets_root = '../../%s/' % ('/'.join(assets_root))
     scope = {
         'blog': blog,
         'settings': get_resource_service('themes').get_default_settings(theme),
