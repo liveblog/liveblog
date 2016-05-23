@@ -155,27 +155,31 @@ class PostsService(ArchiveService):
                     raise SuperdeskApiError.forbiddenError(
                         message='User does not have sufficient permissions.')
 
+    def get_order_list(self, doc):
+        mylist = []
+        if doc.get('blog'):
+            # get all the posts order until this point
+            all_orders = get_resource_service('posts').get(req=None, lookup=dict(blog=doc['blog']))
+            for a in all_orders:
+                mylist.append(a['order'])
+            return mylist
+
     def on_create(self, docs):
         for doc in docs:
             # check permission
             self.check_post_permission(doc)
             doc['type'] = 'composite'
-            mylist = []
-            # get all the posts order until this point
-            if doc.get('blog'):
-                all_orders = get_resource_service('posts').get(req=None, lookup=dict(blog=doc['blog']))
-                for a in all_orders:
-                    mylist.append(a['order'])
-            # takes the highest order in the posts and compute the newest post's order
-            if mylist:
-                max_ord = max(mylist)
-                current = self.get_next_order_sequence(doc.get('blog'))
-                if max_ord == current:
-                    doc['order'] = current + 1
-                else:
-                    doc['order'] = current + max_ord - current + 1
             # if you publish a post directly which is not a draft it will have a published_date assigned
             if doc['post_status'] == 'open':
+                mycreatelist = self.get_order_list(doc)
+                # takes the highest order in the posts and compute the newest post's order
+                if mycreatelist:
+                    max_ord = max(mycreatelist)
+                    current = self.get_next_order_sequence(doc.get('blog'))
+                    if max_ord == current:
+                        doc['order'] = current + 1
+                    else:
+                        doc['order'] = current + max_ord - current + 1
                 doc['published_date'] = utcnow()
                 doc['content_updated_date'] = utcnow()
                 doc['publisher'] = getattr(flask.g, 'user', None)
@@ -216,17 +220,11 @@ class PostsService(ArchiveService):
         post = original.copy()
         post.update(updates)
         self.check_post_permission(post)
-        # when publishing, put the published item from drafts and contributions at the top of the timeline
-        ####################
-        mylist = []
-        # get all the posts order until this point
-        if original.get('blog'):
-            all_orders = get_resource_service('posts').get(req=None, lookup=dict(blog=original['blog']))
-            for a in all_orders:
-                mylist.append(a['order'])
-        # takes the highest order in the posts and compute the newest post's order
-        if mylist:
-            max_ord = max(mylist)
+        # when publishing, put the published item from drafts and contributions at the top of the timeline and
+        # take into account the timeline ordering
+        myupdatelist = self.get_order_list(original)
+        if myupdatelist:
+            max_ord = max(myupdatelist)
             current = self.get_next_order_sequence(original.get('blog'))
             if (updates.get('post_status') == 'open' and
                     original.get('post_status') in ('draft', 'submitted', 'comment')):
@@ -234,12 +232,11 @@ class PostsService(ArchiveService):
                     updates['order'] = current + 1
                 else:
                     updates['order'] = current + max_ord - current + 1
-        #####################
-#         if updates.get('post_status') == 'open' and original.get('post_status') in ('draft', 'submitted', 'comment'):
-#             updates['order'] = self.get_next_order_sequence(original.get('blog'))
+        if updates.get('post_status') == 'open' and original.get('post_status') in ('draft', 'submitted', 'comment'):
+            updates['order'] = self.get_next_order_sequence(original.get('blog'))
             # if you publish a post it will save a published date and register who did it
-        updates['published_date'] = utcnow()
-        updates['publisher'] = getattr(flask.g, 'user', None)
+            updates['published_date'] = utcnow()
+            updates['publisher'] = getattr(flask.g, 'user', None)
         # when unpublishing
         if original.get('post_status') == 'open' and updates.get('post_status') != 'open':
             updates['unpublished_date'] = utcnow()
