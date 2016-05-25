@@ -50,39 +50,60 @@
                 }
             };
         }])
-        .directive('lbGenericEmbed', ['$timeout', '$window', function($timeout, $window) {
+        .directive('lbGenericEmbed', ['$timeout', '$window', 'asset', function($timeout, $window, asset) {
             return {
                 scope: {
                     item: '='
                 },
-                template: [
-                    '<div ng-if="isEmbedCode" class="item--embed" lb-bind-html html-content="{{item.meta.html}}"></div>',
-                    '<article class="item--embed">',
-                    '    <img ng-if="!isEmbedCode && item.meta.thumbnail_url" ng-src="{{ item.meta.thumbnail_url }}" class="item--embed__illustration"/>',
-                    '    <div class="item--embed__title" ng-if="item.meta.title">',
-                    '        <a ng-href="{{ item.meta.url }}" target="_blank" ng-bind="item.meta.title"></a>',
-                    '    </div>',
-                    '    <div class="item--embed__description" ng-if="item.meta.description" ng-bind="item.meta.description"></div>',
-                    '    <div class="item--embed__credit" ng-if="item.meta.credit" ng-bind="item.meta.credit"></div>',
-                    '</article>'
-                ].join(''),
-                link: function(scope, element) {
-                    var resize = function resize() {
-                        // update the min-height, depending of the image ratio
-                        $timeout(function() {
-                            var imageWidth = element.find('.item--embed__illustration').width();
-                            if (imageWidth) {
-                                var minHeight = (scope.item.meta.thumbnail_height / scope.item.meta.thumbnail_width) * imageWidth;
-                                element.find('.item--embed').css('min-height', minHeight);
-                            }
+                templateUrl: asset.templateUrl('views/generic-embed.html')
+            };
+        }])
+        .directive("lbDropdown", ['$rootScope', 'asset', function($rootScope, asset) {
+                return {
+                    restrict: "E",
+                    templateUrl: asset.templateUrl('views/dropdown.html'),
+                    scope: {
+                        placeholder: "@",
+                        list: "=",
+                        selected: "&",
+                        order: "&"
+                    },
+                    link: function(scope) {
+                        scope.listVisible = false;
+                        scope.isPlaceholder = true;
+
+                        scope.select = function(item) {
+                            scope.isPlaceholder = false;
+                            scope.order({order: item.order});
+                            scope.listVisible = false;
+                        };
+
+                        scope.isSelected = function(item) {
+                            return item.order === scope.selected();
+                        };
+                        
+                        scope.show = function() {
+                            scope.listVisible = true;
+                        };
+
+                        $rootScope.$on("documentClicked", function(inner, target) {
+                            if ($(target[0]).parents(".dropdown-display").length == 0 || $(target[0]).parents(".dropdown-display.clicked").length > 0) {
+                                scope.$apply(function() {
+                                    scope.listVisible = false;
+                                });
+                            } 
                         });
-                    };
-                    scope.isEmbedCode = angular.isDefined(scope.item.meta.html);
-                    if (!scope.isEmbedCode) {
-                        resize();
-                        angular.element($window).bind('resize', _.debounce(resize, 1000));
+
+                        scope.$watch("selected()", function(value) {
+                            _.each(scope.list, function(item) {
+                                if(item.order === scope.selected()) {
+                                    scope.display = item.name;
+                                    scope.isPlaceholder = false;
+                                }
+                            });
+                        });
                     }
                 }
-            };
-        }]);
+            }]);
+        ;
 })(angular);

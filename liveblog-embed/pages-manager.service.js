@@ -4,7 +4,7 @@
     PagesManagerFactory.$inject = ['posts', '$q', 'config'];
     function PagesManagerFactory(postsService, $q, config) {
 
-        function PagesManager (max_results, sort) {
+        function PagesManager (max_results, sort, sticky) {
             var SORTS = {
                 'editorial' : {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
                 'newest_first' : {published_date: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
@@ -30,10 +30,13 @@
              * @returns {promise}
              */
             function retrievePage(page, max_results) {
+                var query = self.highlight?
+                {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {term: {highlight: true}}, {not: {term: {deleted: true}}}]}}}:
+                {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {not: {term: {deleted: true}}}]}}}
                 // set request parameters
                 var posts_criteria = {
                     source: {
-                        query: {filtered: {filter: {and: [{term: {post_status: 'open'}}, {not: {term: {deleted: true}}}]}}},
+                        query: query,
                         sort: [SORTS[self.sort]]
                     },
                     page: page,
@@ -44,6 +47,16 @@
                     self.meta = data._meta;
                     return data;
                 });
+            }
+            /**
+             * Filter the posts in embed by their highlight attribute
+             * @param {boolean} highlight - The value of the field (true or false)
+             * @returns {promise}
+             */
+            function changeHighlight(highlight) {
+                self.highlight = highlight;
+                self.pages = [];
+                return fetchNewPage();
             }
 
             /**
@@ -82,7 +95,7 @@
                     });
                 }
                 return promise.then(function() {
-                    return reloadPagesFrom(0, self.pages.length + 1);
+                    return loadPage(self.pages.length + 1);
                 });
             }
 
@@ -149,17 +162,17 @@
                             removePost(post);
                         } else {
                             // post updated
-                            if (post.post_status !== 'open') {
+                            if (post.post_status !== 'open' || post.sticky !== sticky  || (self.highlight && !post.highlight)) {
                                removePost(post);
                             } else {
                                 // update
                                 self.pages[existing_post_indexes[0]].posts[existing_post_indexes[1]] = post;
-                                createPagesWithPosts();
+                                createPagesWithPosts(self.allPosts(), true);
                            }
                         }
                     } else {
                         // post doesn't exist in the list
-                        if (!post.deleted && post.post_status === 'open') {
+                        if (!post.deleted && post.post_status === 'open' && post.sticky === sticky) {
                             addPost(post);
                         }
                     }
@@ -189,14 +202,17 @@
             /**
              * Recreate the pages from the given posts
              * @param {array} [posts=self.allPosts()] - List of posts
+             * @param {boolean} resetPages - Clear the array of pages or not
              */
-            function createPagesWithPosts(posts) {
+            function createPagesWithPosts(posts, resetPages) {
                 posts = posts || self.allPosts();
-                self.pages = [];
+                if (resetPages) {
+                    self.pages = [];
+                }
                 // respect the order
                 var sort_by = Object.keys(SORTS[self.sort])[0];
                 var order_by = SORTS[self.sort][sort_by].order;
-                posts = _.sortByOrder(posts, sort_by, order_by);
+                posts = _.orderBy(posts, sort_by, order_by);
                 var page;
                 posts.forEach(function(post, index) {
                     if (index % self.maxResults === 0) {
@@ -214,15 +230,14 @@
             }
 
             /**
-             * Resynchronize the content of the given page and the following ones
-             * @param {interger} page_index - index of the first page
-             * @param {interger} [to_page=self.pages.length] - latest wanted page
+             * Load the content of the given page
+             * @param {interger} page - index of the desired page
              * @returns {promise}
              */
-            function reloadPagesFrom(page_index, to_page) {
-                to_page = to_page || self.pages.length;
-                return retrievePage(1, to_page * self.maxResults).then(function(posts) {
-                    createPagesWithPosts(posts._items);
+            function loadPage(page) {
+                page = page || self.pages.length;
+                return retrievePage(page).then(function(posts) {
+                    createPagesWithPosts(posts._items, false);
                     return posts;
 
                 });
@@ -261,7 +276,7 @@
                     }
                 });
                 // and recreate pages
-                createPagesWithPosts(all_posts);
+                createPagesWithPosts(all_posts, true);
                 // update date
                 updateLatestDates(all_posts);
             }
@@ -276,7 +291,7 @@
                     var page_index = indexes[0];
                     var post_index = indexes[1];
                     self.pages[page_index].posts.splice(post_index, 1);
-                    createPagesWithPosts(self.allPosts());
+                    createPagesWithPosts(self.allPosts(), true);
                 }
             }
 
@@ -311,6 +326,10 @@
                  * Set the initial order (see self.SORTS)
                  */
                 sort: sort || config.settings.postOrder,
+                /**
+                 * Filter by post's highlight field
+                 */
+                changeHighlight: changeHighlight,
                 /**
                  * Change the order in the future posts request, remove exising post and load a new page
                  */

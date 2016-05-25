@@ -2,25 +2,27 @@
     "label": "Angular Liveblog Toolkit",
     "name": "angular",
     "abstract": true,
-    "version": "1.4.0",
+    "version": "1.4.12",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
-        "type" : "git",
-        "url" : "git@github.com:liveblog/lb-theme-angular.git"
+        "type": "git",
+        "url": "git@github.com:liveblog/lb-theme-angular.git"
     },
     "license": "AGPL-3.0",
-    "scripts": [
-        "//code.jquery.com/jquery-1.11.3.min.js",
-        "//ajax.googleapis.com/ajax/libs/angularjs/1.4.2/angular.min.js",
-        "//code.angularjs.org/1.4.2/angular-resource.js",
-        "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js",
-        "vendors/lodash.min.js",
-        "vendors/angular-cache.min.js",
-        "vendors/iframeResizer.contentWindow.min.js",
+    "devScripts": [
+        "//ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js",
+        "//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/angular-resource/1.5.3/angular-resource.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/lodash.js/4.8.2/lodash.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/angular-cache/4.5.0/angular-cache.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js",
         "liveblog-embed/main.js",
         "liveblog-embed/resources.service.js",
+        "liveblog-embed/comments.service.js",
         "liveblog-embed/pages-manager.service.js",
         "liveblog-embed/permalink.service.js",
+        "liveblog-embed/services.js",
         "liveblog-embed/directives.js",
         "liveblog-embed/filters.js"
     ],
@@ -37,9 +39,18 @@
             "label": "Default posts order of the timeline",
             "type": "select",
             "options": [
-                {"value": "editorial", "label": "Editorial"},
-                {"value": "newest_first", "label": "Newest first"},
-                {"value": "oldest_first", "label": "Oldest first"}
+                {
+                    "value": "editorial",
+                    "label": "Editorial"
+                },
+                {
+                    "value": "newest_first",
+                    "label": "Newest first"
+                },
+                {
+                    "value": "oldest_first",
+                    "label": "Oldest first"
+                }
             ],
             "default": "editorial"
         },
@@ -48,11 +59,27 @@
             "label": "Permalink Delimiter",
             "type": "select",
             "options": [
-                {"value": "?", "label": "Query delimiter (?)"},
-                {"value": "#", "label": " Fragment identifier delimiter (#)"}
+                {
+                    "value": "?",
+                    "label": "Query delimiter (?)"
+                },
+                {
+                    "value": "#",
+                    "label": " Fragment identifier delimiter (#)"
+                }
             ],
             "default": "?",
             "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
         }
+    ],
+    "scripts": [
+        "//ajax.googleapis.com/ajax/libs/jquery/1.12.2/jquery.min.js",
+        "//ajax.googleapis.com/ajax/libs/angularjs/1.5.3/angular.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/angular-resource/1.5.3/angular-resource.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/moment.js/2.12.0/moment.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/lodash.js/4.8.2/lodash.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/angular-cache/4.5.0/angular-cache.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.3/iframeResizer.contentWindow.min.js",
+        "dist/scripts.min.js"
     ]
 }
