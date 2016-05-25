@@ -181,7 +181,9 @@ class PostsService(ArchiveService):
     def on_update(self, updates, original):
         # check if the timeline is reordered
         if updates.get('order'):
-            updates['order'] = self.get_next_order_sequence(original.get('blog'))
+            blog = get_resource_service('blogs').find_one(req=None, _id=original['blog'])
+            if blog['posts_order_sequence'] == updates['order']:
+                blog['posts_order_sequence'] = self.get_next_order_sequence(original.get('blog'))
         # in the case we have a comment
         if original['post_status'] == 'comment':
             original['blog'] = original['groups'][1]['refs'][0]['item']['client_blog']
