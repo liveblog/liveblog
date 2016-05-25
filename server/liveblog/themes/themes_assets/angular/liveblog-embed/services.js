@@ -18,7 +18,7 @@
                 if (!/^(https?:\/\/|\/\/)/.test(path)) {
                     ret = config.assets_root +'/' + ret;
                 }
-                ret = ret.replace(/[^\/]+\/+\.\.\//g, '')
+                ret = ret.replace(/[^\/]+\/+\.\.\//g, '/')
                          .replace(/\.\//g, '')
                          .replace(/(\w)\/\/(\w)/g, '$1/$2');
                 return ret;
