@@ -70,6 +70,10 @@
                         }, false);
                         // `fullDetails` is a business logic that can be compiled from other objects.
                         post.fullDetails = post.hasComments;
+                        // fallback for older posts.
+                        if(!post.content_updated_date) {
+                            post.content_updated_date = post._updated;
+                        }
                         // special cases for comments.
                         post.showUpdate = (post.content_updated_date !== post.published_date) && 
                                            !post.hasComments && (post.mainItem.item_type !== 'comment');
