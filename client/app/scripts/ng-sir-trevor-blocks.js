@@ -208,6 +208,9 @@ define([
                     // set the credit
                     if (_.has(data, 'provider_name')) {
                         var credit_text  = data.provider_name;
+                        if (_.has(data, 'credit')) {
+                            credit_text = data.credit;
+                        }
                         if (_.has(data, 'author_name')) {
                             credit_text += ' | by <a href="' + data.author_url + '" target="_blank">' + data.author_name + '</a>';
                         }
