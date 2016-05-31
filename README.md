@@ -13,9 +13,10 @@ what would normally be handled by Liveblog Server.
 Serve via `python -m SimpleHTTPServer` or equivalent
 
 # Build Notes
-None
+Zip this directory without the `node_modules` and `.git` folders before
+uploading to LiveBlog.
 
 # Synced with Sourcefabric
 incorporates all of  
 `github.com/liveblog/lb-theme-classic@2.3.9`  
-`github.com/liveblog/lb-theme-angular@1.4.7  
+`github.com/liveblog/lb-theme-angular@1.4.7`  
