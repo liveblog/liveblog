@@ -1,7 +1,7 @@
 # dpa Liveblog Theme
 Derived from Sourcefabric Angular Theme, merges all embed dependencies
 into one. This way we gain full control over the build process and
-establish the possibility to debug the theme in isolation without having
+allow debugging the theme in isolation without having
 to run a whole fleet of containers needed by the Liveblog Environment.
 Downside
 
@@ -16,6 +16,6 @@ Serve via python -m SimpleHTTPServer or equivalent
 None
 
 # Synced with Sourcefabric
-incorporates all of
-github.com/liveblog/lb-theme-classic@2.3.9
-github.com/liveblog/lb-theme-angular@1.4.7
+incorporates all of  
+`github.com/liveblog/lb-theme-classic@2.3.9`  
+`github.com/liveblog/lb-theme-angular@1.4.7`  

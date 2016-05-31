@@ -5,7 +5,7 @@
     "author": "Paul Solbach <psolbach@dpa-newslab.com>",
     "repository": {
         "type" : "git",
-        "url" : "git@github.com:"
+        "url" : "git@github.com:dpa-newslab/liveblog-theme-dpa"
     },
     "license": "UNLICENSED",
     "styles": ["css/dpa-liveblog.css"],
