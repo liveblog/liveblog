@@ -1,0 +1,117 @@
+{
+    "label": "dpa Liveblog Theme",
+    "name": "liveblog-theme-dpa",
+    "version": "0.2.0",
+    "author": "Paul Solbach <psolbach@dpa-newslab.com>",
+    "repository": {
+        "type" : "git",
+        "url" : "git@github.com:"
+    },
+    "license": "UNLICENSED",
+    "styles": ["css/dpa-liveblog.css"],
+    "scripts": ["dist/dpa-liveblog.js"],
+    "options": [
+        {
+            "name": "language",
+            "label": "Theme language",
+            "type": "select",
+            "options": [
+                {"value": "de", "label": "German"}
+            ],
+            "default": "de"
+        },
+        {
+            "name": "postsPerPage",
+            "label": "Number of posts per page",
+            "type": "number",
+            "default": 20,
+            "help": "Set the number of posts you want to see at the initialization"
+        },
+        {
+            "name": "postOrder",
+            "label": "Default posts order of the timeline",
+            "type": "select",
+            "options": [
+                {"value": "editorial", "label": "Topmeldungen"},
+                {"value": "newest_first", "label": "Neueste"},
+                {"value": "oldest_first", "label": "Älteste"}
+            ],
+            "default": "editorial"
+        },
+        {
+            "name": "loadNewPostsManually",
+            "label": "User needs to click a button to retrieve the new posts",
+            "type": "checkbox",
+            "default": true,
+            "help": "Otherwise they will be loaded periodically"
+        },
+        {
+            "name": "showImage",
+            "label": "Show the blog image",
+            "type": "checkbox",
+            "default": true
+        },
+        {
+            "name": "showTitle",
+            "label": "Show the blog title",
+            "type": "checkbox",
+            "default": true
+        },
+        {
+            "name": "showDescription",
+            "label": "Show the blog description",
+            "type": "checkbox",
+            "default": true
+        },
+        {
+            "name": "showAuthor",
+            "label": "Show author",
+            "type": "checkbox",
+            "default": true,
+            "help": "Show the author information on posts"
+        },
+        {
+            "name": "showAuthorAvatar",
+            "label": "Show author avatar",
+            "type": "checkbox",
+            "default": true,
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "help": "Show the author avatar on posts"
+        },
+        {
+            "name": "authorNameFormat",
+            "label": "Author name format",
+            "type": "select",
+            "default": "display_name",
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "options": [
+                {"value": "display_name", "label": "Full name"},
+                {"value": "byline", "label": "Byline"},
+                {"value": "sign_off", "label": "Sign off"}
+            ],
+            "help": "How to show the author name"
+        },
+        {
+            "name": "permalinkDelimiter",
+            "label": "Permalink delimiter",
+            "type": "select",
+            "options": [
+                {"value": "?", "label": "Query delimiter (?)"},
+                {"value": "#", "label": " Fragment identifier delimiter (#)"}
+            ],
+            "default": "?",
+            "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
+        },
+        {
+            "name": "hasHighlights",
+            "label": "Has highlights",
+            "type": "checkbox",
+            "default": true,
+            "help": "If the users see the highlight button in embed"
+        }        
+    ]
+}

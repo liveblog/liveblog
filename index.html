@@ -1,0 +1,353 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Was funktioniert, was fehlt!</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <link rel="stylesheet" href="css/dpa-liveblog.css">
+    </head>
+
+    <body>
+
+        <!-- inject:template -->
+        <div class="mod--hide lb-timeline {{timeline.settings.language}}" ng-app="theme" ng-controller="TimelineCtrl as timeline">
+
+    <div class="lb-timeline__header">
+        <h1 ng-if="timeline.settings.showTitle" ng-bind="timeline.blog.title"></h1>
+        <div class="illustration" ng-if="timeline.blog.picture_url && timeline.settings.showImage"></div>
+        <p class="description" ng-if="timeline.settings.showDescription" ng-bind="timeline.blog.description"></p>
+    </div>
+
+    <!-- Header -->
+    <div class="header-bar">
+        <div class="sorting-bar">
+            <div class="sorting-bar__orders">
+                <div class="sorting-bar__order"
+                    ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='editorial'}"
+                    ng-click="timeline.orderBy('editorial')">Editorial</div>
+                <div class="sorting-bar__order"
+                    ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='newest_first'}"
+                    ng-click="timeline.orderBy('newest_first')">Neueste</div>
+                <div class="sorting-bar__order"
+                    ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
+                    ng-click="timeline.orderBy('oldest_first')">&Auml;lteste</div>
+            </div>
+        </div>
+        <div class="header-bar__actions">
+            <div class="toggleHighlights"
+                ng-if="timeline.settings.hasHighlights"
+                ng-class="{'active': timeline.highlightsOnly}"
+                ng-click="timeline.toggleHighlighsOnly()"
+                tooltip-placement="bottom"
+                tooltip="{{ timeline.highlightsOnly? 'Show all posts': 'Show highlighted post only' }}">
+                    <i class="fa fa-star fa-2"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Header End -->
+    
+    <!-- Timeline -->
+    <div class="timeline-body" ng-class="{'timeline-body--loaded': !timeline.loading}">
+
+        <div class="lb-post emtpy-message ng-cloak"
+            ng-show="timeline.pagesManager.allPosts().length + timeline.stickyPagesManager.allPosts().length < 1 && !timeline.loading">
+            <div>Derzeit keine Eintr&auml;ge.</div>
+        </div>
+
+        <section class="lb-posts list-group"
+            infinite-scroll="timeline.fetchNewPage()"
+            infinite-scroll-disabled="!timeline.settings.infinitScroll || !timeline.isAllowedToLoadMore()"
+            infinite-scroll-immediate-check="false">
+
+            <ng-pluralize class="lb-post lb-button load-new-posts"
+                ng-click="timeline.applyUpdates()"
+                ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0"
+                when="{'one': 'Ein neuer Beitrag', 'other': '{} neue Beiträge'}"
+                count="timeline.newPosts.length">
+            </ng-pluralize>
+
+            <div ng-if="timeline.stickyPagesManager.allPosts().length && !timeline.loading" class="pin-drawer">
+                <ng-pluralize count="timeline.stickyPagesManager.allPosts().length" ng-if="timeline.stickyPagesManager.hideSticky"
+                    when="{'one': '1 PINNED POST', 'other': '{} PINNED POSTS'}">
+                </ng-pluralize>
+                <button class="pin-drawer-button" ng-class="{'chevron-active': timeline.stickyPagesManager.hideSticky}"
+                ng-click="timeline.stickyPagesManager.hideSticky = !timeline.stickyPagesManager.hideSticky">
+                    <i class="fa fa-chevron-up"></i>
+                </button>
+            </div>
+
+            <article lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id"
+                     class="lb-post list-group-item ng-cloak"
+                     ng-class="{'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
+                                'lb-post-permalink-selected': post._id === timeline.permalink._id}">        
+                
+                <div class="lb-type" ng-class="{
+                    'lb-type--text': !post.mainEmbed, 'lb-type--embed lb-type--twitter': post.mainEmbed == 'Twitter',
+                    'lb-type--embed lb-type--instagram': post.mainEmbed == 'Instagram', 'lb-type--embed lb-type--youtube': post.mainEmbed == 'Youtube'
+                    }">
+                </div>
+
+                <div class="lb-post-date" ng-bind="post.mainItem.displayDate | dateFromNowOrAbsolute"></div>
+
+                <div class="lb-post-highlighted" ng-if="post.highlight">
+                    <i class="fa fa-star fa-2"></i>
+                </div>
+
+                <div class="lb-post-permalink">
+                    <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
+                        <i class="fa fa-link fa-2"></i>
+                    </a>
+                </div>
+
+                <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">              
+                    <div ng-switch="item.item_type"> <!-- Item content type switch -->
+                        <div ng-switch-when="embed">
+                            <div ng-switch="item.meta.provider_name">
+                                <div ng-switch-default lb-generic-embed item="item"></div>
+                            </div>
+                        </div>
+                        <div ng-switch-when="image" lb-bind-html html-content="{{ item.text | convertLinksWithRelativeProtocol }}"></div>
+                        <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
+                    </div>
+                </div>
+
+                <!-- author plus avatar  -->
+                <div class="lb-author" ng-if="timeline.settings.showAuthor">
+                    <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar" class="lb-author__avatar" ng-src="{{ post.mainItem.original_creator.picture_url }}" />
+                    <div class="lb-author__name" ng-bind="post.mainItem.original_creator[timeline.settings.authorNameFormat]"></div>
+                </div>
+
+                <!-- <div class="lb-updated-date ng-cloak" ng-show="post.showUpdate">
+                    Updated <span ng-bind="post._updated | prettifyIsoDate"></span>
+                </div> -->
+            </article>
+
+        </section>
+
+        <button class="ng-cloak lb-button" ng-click="timeline.fetchNewPage()"
+            ng-if="!timeline.settings.infinitScroll && timeline.isAllowedToLoadMore()">Mehr laden</button>
+    </div>
+    <!-- Timeline End -->
+
+    <!-- Loading Overlay -->
+    <div class="loading" ng-show="timeline.loading">Laden</div>
+    <!-- Loading End -->
+
+    <!-- Templates -->
+    <script type="text/ng-template" id="template__generic-embed">
+        <div ng-if="isEmbedCode" class="item--embed" lb-bind-html html-content="{{item.meta.html}}" load-script></div>
+        <article class="item--embed">
+            <img ng-if="!isEmbedCode && item.meta.thumbnail_url" ng-src="{{ item.meta.thumbnail_url }}" class="item--embed__illustration"/>
+            <div class="item--embed__title" ng-if="item.meta.title">
+                <a ng-href="{{ item.meta.url }}" target="_blank" ng-bind="item.meta.title"></a>
+            </div>
+            <div class="item--embed__description" ng-if="item.meta.description" ng-bind="item.meta.description"></div>
+        </article>
+
+    </script>
+    <!-- Templates End -->
+
+</div>
+        <!-- endinject -->
+
+        <script type="text/javascript">
+            window.LB = {
+                "blog": {
+                    "_etag": "6c41f2ce4dac8ad0c0572c1b97b631c646d41ed7",
+                    "blog_status": "open",
+                    "posts_order_sequence": 41,
+                    "description": "Diese Stelle wollen wir dazu nutzen, um das Wichtigste eines Events fortlaufend darzustellen. \n\nProblem: Es gibt keine Aufz\u00e4hlungsfunktion - es ist ein fortlaufender Text. Auch wenn ich Bulletpoints setze, erscheint alles in hintereinander als Flie\u00dftext. Leider kann man hier nicht FETTEN!\n\n\u25aa\ufe0e Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.\n\n\u25aa\ufe0e  sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
+                    "version_creator": "56cad43adfc3f600800d2b97",
+                    "original_creator": "56c3530029ac1100191f8cd0",
+                    "_id": "56c5b34120dc360081f8e518",
+                    "_created": "2016-02-18T12:04:17+00:00",
+                    "versioncreated": "2016-03-29T13:49:11+00:00",
+                    "_updated": "2016-03-29T13:49:11+00:00",
+                    "title": "Was funktioniert, was fehlt!",
+                    "blog_preferences": { "theme": "classic", "language": "en" },
+                    "members": [
+                        { "user": "56c353bace78c00087488837" },
+                        { "user": "56c4451fce78c0008748883b" }
+                    ],
+                    "picture_url": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/edf8eb8de157e51fd3c5d5a2c3f865bcdce1b5e0d3033de1c4e2c23c4513477d",
+                    "public_url": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/blogs/56c5b34120dc360081f8e518/index.html",
+                    "picture": {
+                        "renditions": {
+                            "baseImage": {
+                                "height": 1080,
+                                "href": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/0f44c02fd533dc85ad5946b5439902b17feb844eda38646fa1e74546033e6b5b",
+                                "mimetype": "image/jpeg",
+                                "media": "0f44c02fd533dc85ad5946b5439902b17feb844eda38646fa1e74546033e6b5b",
+                                "width": 1080
+                            },
+                            "original": {
+                                "height": 319,
+                                "href": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/8bdfde82d3508011603713421826acd30bec51a477316cfa31fceb45ee1562e3",
+                                "mimetype": "image/jpeg",
+                                "media": "8bdfde82d3508011603713421826acd30bec51a477316cfa31fceb45ee1562e3",
+                                "width": 319
+                            },
+                            "viewImage": {
+                                "height": 720,
+                                "href": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/edf8eb8de157e51fd3c5d5a2c3f865bcdce1b5e0d3033de1c4e2c23c4513477d",
+                                "mimetype": "image/jpeg",
+                                "media": "edf8eb8de157e51fd3c5d5a2c3f865bcdce1b5e0d3033de1c4e2c23c4513477d",
+                                "width": 720
+                            },
+                            "thumbnail": {
+                                "height": 320,
+                                "href": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/578482f7455dbb997ea8270cbf25a7cf0699dbc87e167a4a4f73ba2ef5917512",
+                                "mimetype": "image/jpeg",
+                                "media": "578482f7455dbb997ea8270cbf25a7cf0699dbc87e167a4a4f73ba2ef5917512",
+                                "width": 320
+                            }
+                        },
+                        "mimetype": "image/jpeg",
+                        "type": "picture",
+                        "expiry": "2016-04-13T14:46:23+00:00",
+                        "original_creator": "56cad43adfc3f600800d2b97",
+                        "more_coming": false,
+                        "unique_id": 76,
+                        "pubstatus": "usable",
+                        "place": [],
+                        "filemeta": {
+                            "exifimagewidth": 319,
+                            "exifversion": "0221",
+                            "yresolution": [72, 1],
+                            "xresolution": [72, 1],
+                            "scenecapturetype": 0,
+                            "resolutionunit": 2,
+                            "exifoffset": 78,
+                            "exifimageheight": 319,
+                            "componentsconfiguration": "\u0001\u0002\u0003\u0000",
+                            "flashpixversion": "0100",
+                            "colorspace": 1,
+                            "length": 8284
+                        },
+                        "marked_for_not_publication": false,
+                        "media": "8bdfde82d3508011603713421826acd30bec51a477316cfa31fceb45ee1562e3",
+                        "family_id": "urn:newsml:localhost:2016-03-14T14:46:23.552204:c6a3fafe-ebef-4267-97a0-eac91cc95f69",
+                        "_etag": "f8904f98c823fecf6a65f8a01814dd77843da66c",
+                        "event_id": "tag:localhost:2016:a8741b0e-efd1-41a6-a589-d8293861d988",
+                        "firstcreated": "2016-03-14T14:46:23+00:00",
+                        "state": "draft",
+                        "operation": "create",
+                        "source": "Liveblog",
+                        "language": "en",
+                        "version_creator": "56cad43adfc3f600800d2b97",
+                        "priority": 3,
+                        "sticky": false,
+                        "sign_off": "art",
+                        "_id": "urn:newsml:localhost:2016-03-14T14:46:23.552204:c6a3fafe-ebef-4267-97a0-eac91cc95f69",
+                        "_created": "2016-03-14T14:46:23+00:00",
+                        "versioncreated": "2016-03-14T14:46:23+00:00",
+                        "_updated": "2016-03-14T14:46:23+00:00",
+                        "guid": "tag:localhost:2016:d1e6ea53-3d2c-4254-bf0a-94fd35d95e98",
+                        "dateline": { "source": "SF", "located": null, "text": null, "date": "2016-03-14T14:46:23+00:00" },
+                        "unique_name": "#76",
+                        "_current_version": 1,
+                        "urgency": 3
+                    }
+                },
+                "settings": {
+                    "showTitle": true,
+                    "authorNameLinksToEmail": false,
+                    "infinitScroll": true,
+                    "permalinkDelimiter": "?",
+                    "authorNameFormat": "display_name",
+                    "showAuthor": true,
+                    "postOrder": "editorial",
+                    "showAuthorAvatar": true,
+                    "postsPerPage": 20,
+                    "showImage": true,
+                    "showDescription": true,
+                    "loadNewPostsManually": true
+                },
+                "api_host": "//dpa-live-dev.dpa-newslab.com/",
+                "assets_root": "/themes_assets/classic/"
+            };
+
+            window.LB = {
+                "blog": {
+                    "blog_preferences": {
+                        "theme": "classic",
+                        "language": "en"
+                    },
+                    "_id": "56fceedda505e600f71959c8",
+                    "title": "Entwicklung",
+                    "description": "F\u00fcr den Developer.",
+                    "original_creator": "56c3530029ac1100191f8cd0",
+                    "_updated": "2016-04-27T14:23:05+00:00",
+
+                    "versioncreated": "2016-04-27T14:23:05+00:00",
+                    "posts_order_sequence": 95,
+                    "_etag": "a03d86c972a91c8759974f90332b5c0d3c080354",
+                    "version_creator": "56e979ab4f4cb600e39980b6",
+                    "members": [],
+                    "blog_status": "open",
+                    "_created": "2016-03-31T09:33:17+00:00"
+                },
+                "settings": {
+                    "postOrder": "editorial",
+                    "showTitle": true,
+                    "loadNewPostsManually": true,
+                    "language": "de",
+                    "permalinkDelimiter": "?",
+                    "showAuthorAvatar": true,
+                    "showImage": true,
+                    "authorNameFormat": "display_name",
+                    "postsPerPage": 20,
+                    "showAuthor": true,
+                    "hasHighlights": false,
+                    "showDescription": true
+                },
+                "api_host": "//dpa-live-dev.dpa-newslab.com/",
+                "assets_root": "/themes_assets/liveblog-theme-dpa/"
+            }
+
+            window.LB = {
+                blog: {
+                    "blog_preferences": {
+                        "theme": "liveblog-theme-dpa",
+                        "language": "en"
+                    },
+                    "_id": "5714cfcba505e600f26ac8e6",
+                    "title": "Die US-Wahlen 2016 im Liveblog",
+                    "description": "Hillary Clinton und Bernie Sanders haben die letzte Debatte der Vorwahlen hinter sich. Kurz gesagt, es geht noch immer Realismus gegen Revolution.\n\nIm Tourbus: Sanders traf im Vatikan auf Papst Franziskus, Clinton wird ihre Kampagne in Kalifornien fortsetzen. Alle republikanischen Kandidaten werden in New York erwartet.",
+                    "theme_settings": { "postOrder": "editorial", "showTitle": true, "loadNewPostsManually": true, "permalinkDelimiter": "?", "showAuthorAvatar": true, "showImage": true, "authorNameFormat": "display_name", "infinitScroll": true, "authorNameLinksToEmail": false, "postsPerPage": 20, "showAuthor": true, "showDescription": true },
+                    "original_creator": "56e979ab4f4cb600e39980b6",
+                    "_updated": "2016-04-28T15:25:24+00:00",
+                    "public_url": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/blogs/5714cfcba505e600f26ac8e6/index.html",
+                    "versioncreated": "2016-04-28T15:25:24+00:00",
+                    "posts_order_sequence": 3,
+                    "_etag": "3631c2ff6aea17524e9cc2d5551b3a0619e784aa",
+                    "version_creator": "56e979ab4f4cb600e39980b6",
+                    "members": [{ "user": "56e979ab4f4cb600e39980b6" }],
+                    "blog_status": "open",
+                    "_created": "2016-04-18T12:15:07+00:00"
+                },
+                settings: {
+                    "postOrder": "editorial",
+                    "showTitle": true,
+                    "loadNewPostsManually": true,
+                    "language": "de",
+                    "permalinkDelimiter": "?",
+                    "showAuthorAvatar": true,
+                    "showImage": true,
+                    "authorNameFormat": "display_name",
+                    "postsPerPage": 20,
+                    "showAuthor": true,
+                    "hasHighlights": false,
+                    "showDescription": true
+                },
+                api_host: '//dpa-live-dev.dpa-newslab.com/',
+                assets_root: '/themes_assets/liveblog-theme-dpa/'
+            };
+
+        </script>
+
+        <script type="text/javascript" src="dist/dpa-liveblog.js"></script>        
+
+    </body>
+</html>
