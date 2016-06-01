@@ -1,4 +1,4 @@
-# Known Issues on liveblog version 3.0.8
+# Known Issues on Live Blog version 3.0.8
 Live Blog uses third-party tools to embed content from social media.
 We make use of their APIs.
 From time to time these providers change their API data schema and we need to re-build the mapping for Elasticsearch and MongoDB to allow for backward compatibility with existing content.
