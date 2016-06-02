@@ -182,7 +182,7 @@
                 <div translate class="header--timeline">Timeline</div>
                 <div ng-if="isTimelineReordering()" class="cancel-reorder header--filters">
                     <i class="svg-icon-move fix-cancel-move-icon"></i>
-                    <button class="btn btn-xs fix-cancel-move-button" translate ng-click="clearTimelineReordering();">Cancel</button>
+                    <button class="btn btn-xs fix-cancel-move-button" translate ng-click="clearTimelineReordering();" tooltip-placement="bottom" tooltip="Cancel and exit reordering mode">Cancel</button>
                 </div>
                 <div class="header--live">
                     <a href="{{ publicUrl }}" target="_blank" ng-disabled="!publicUrl" translate>Live</a>
