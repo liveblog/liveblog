@@ -1,0 +1,9 @@
+<iframe src="//localhost:8000" onload="window.lb_iframe = this; postLoadMessage()" scrolling=no frameborder=0 width="100%" height="800" style="max-width: 100%; overflow: hidden; border:0"><p>Ihr Browser unterstützt keine iframes.</p></iframe>
+
+<script type="text/javascript">
+  var postLoadMessage = function() {
+    var iframe = lb_iframe.contentWindow;
+    iframe.postMessage('resize:' + lb_iframe.clientHeight,
+      window.lb_iframe.src);
+  }
+</script>
