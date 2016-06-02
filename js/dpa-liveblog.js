@@ -22,6 +22,17 @@ angular.module('liveblog-embed', [
     settings: window.LB.settings,
     api_host: window.LB.api_host,
     assets_root: window.LB.assets_root
+  })
+
+  .constant('embeds', {
+    allowed: [
+      "youtube.com",
+      "instagram.com",
+      "twitter.com"
+    ],
+    resize_sources: [
+      "youtube.com"
+    ]
   });
 
 // Main app module

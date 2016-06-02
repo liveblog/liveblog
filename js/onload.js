@@ -1,6 +1,6 @@
 'use strict';
 var angular = require("angular")
-  , registerParentHandler = require('./iframe')
+  , iframeParentResize = require('./iframe')
   , _ = require('./lodash-custom')
   , _log = require("./log");
 
@@ -11,7 +11,7 @@ module.exports = function($rootScope, $window, $timeout, resizeIframes, config) 
 
   $window.onload = function() {
     $rootScope._log.debug("ng-lb", "started");
-    registerParentHandler(); // Adjust body height to parent iframe
+    iframeParentResize(); // Adjust body height to parent iframe
     $timeout(resizeIframes, 1000); // Hacky, hacky
     angular.element($window).bind('resize', 
       _.debounce(resizeIframes, 1000));

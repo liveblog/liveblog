@@ -6,8 +6,6 @@
 */
 
 function receiveMessage(e) {
-  console.log("processing message.")
-
   var d = e.data; // height in px  
   var m = e.data.split(':'); // should be type:data
   var h = m[1]; // height 

@@ -79,12 +79,15 @@
 
             <article lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id"
                      class="lb-post list-group-item ng-cloak"
-                     ng-class="{'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
-                                'lb-post-permalink-selected': post._id === timeline.permalink._id}">        
+                     ng-class="{
+                        'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
+                        'lb-post-permalink-selected': post._id === timeline.permalink._id}">        
                 
                 <div class="lb-type" ng-class="{
-                    'lb-type--text': !post.mainEmbed, 'lb-type--embed lb-type--twitter': post.mainEmbed == 'Twitter',
-                    'lb-type--embed lb-type--instagram': post.mainEmbed == 'Instagram', 'lb-type--embed lb-type--youtube': post.mainEmbed == 'Youtube'
+                    'lb-type--text': !post.mainEmbed,
+                    'lb-type--embed lb-type--twitter': post.mainEmbed == 'Twitter',
+                    'lb-type--embed lb-type--instagram': post.mainEmbed == 'Instagram',
+                    'lb-type--embed lb-type--youtube': post.mainEmbed == 'Youtube'
                     }">
                 </div>
 
