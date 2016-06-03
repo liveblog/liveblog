@@ -1,0 +1,18 @@
+<ul>
+    <li ng-repeat="option in options">
+        <input type="radio"
+               class="form-control"
+               ng-model="$parent.radio"
+               value="{{ option }}" />
+        <label class="datetime__text">{{ option }}</label> 
+        <label class="datetime__example">{{ option | exampleDate }}</label> 
+    </li>
+    <li>
+        <input type="radio"
+               class="form-control"
+               ng-model="radio"
+               value="" />
+        <label class="datetime__text"><input ng-model="custom" placeholder="{{ 'Custom' || translate }}"/></label>
+        <label class="datetime__example datetime__last">{{ custom | exampleDate }}</label> 
+    </li>
+</ul>
