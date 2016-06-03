@@ -9,6 +9,7 @@
             modalOpened: angular.isDefined(vm.theme),
             settings: angular.copy(vm.theme.settings) || {},
             options: [],
+            datetimeFormats: ['MMMM Do, YYYY HH:mm', 'YYYY-MM-DD hh:mm a', 'DD/MM/YYYY hh:mm A', 'lll'],
             submitSettings: function(shouldClose) {
                 if (!angular.equals(vm.theme.settings, vm.settings)) {
                     api.themes.update(vm.theme, {settings: vm.settings}).then(function(data) {
@@ -99,6 +100,11 @@
     }
 
     angular.module('liveblog.themes')
+    .filter('exampleDate', [ 'moment', function(moment) {
+        return function(string) {
+            return moment().format(string);
+        };
+    }])
     .directive('themeSettingsModal', function() {
         return {
             templateUrl: 'scripts/liveblog-themes/views/theme-settings-modal.html',

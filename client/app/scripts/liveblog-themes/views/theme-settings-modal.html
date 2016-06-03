@@ -4,7 +4,7 @@
         <h3>{{ 'Theme Settings' | translate }} : {{ vm.theme.label }}</h3>
     </div>
     <div class="modal-body">
-        <div ng-if="vm.optionsAreloading" trans>Options are loading...</div>
+        <div ng-if="vm.optionsAreloading" translate>Options are loading...</div>
         <form ng-if="!vm.optionsAreloading" name="vm.themeSettingsForm">
             <div ng-repeat="option in vm.options" ng-if="vm.optionRequirementIsSatisfied(option)">
                 <div class="form-group">                    
@@ -22,12 +22,15 @@
                                     ng-model="vm.settings[option.name]"
                                     ng-options="option.value as option.label for option in option.options">
                             </select>
-                        </div>                        
+                        </div>
+                        <div ng-switch-when="datetimeformat" class="datetimeformat">
+                            <lb-date-format options="vm.datetimeFormats" ng-model="vm.settings[option.name]" />
+                        </div>
                     </div>
                     <div ng-messages="vm.themeSettingsForm[option.name].$error" style="color:maroon" role="alert">
                         <div ng-message="number" trans>You did not enter a number</div>
                     </div>
-                    <p class="help-block" ng-bind="option.help"></p>
+                    <p class="help-block">{{ option.help }}</p>
                 </div>
             </div>            
         </form>
