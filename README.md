@@ -13,8 +13,8 @@ what would normally be handled by Liveblog Server.
 Serve via `python -m SimpleHTTPServer` or equivalent
 
 # Build Notes
-Zip this directory without the `node_modules` and `.git` folders before
-uploading to LiveBlog.
+Use `make` or alternatively zip this directory without the `node_modules`
+and `.git` folders before uploading to LiveBlog.
 
 # Synced with Sourcefabric
 incorporates all of  

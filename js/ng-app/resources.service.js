@@ -107,8 +107,8 @@ function Posts($resource, config, users) {
     }
 
     return numEmbeds == 1
-    ? isMainEmbed // contains provider
-    : false // play doh
+      ? isMainEmbed // contains provider
+      : false // play doh
   }
 
   return $resource(config.api_host + 'api/client_blogs/:blogId/posts', {blogId: config.blog._id}, {
