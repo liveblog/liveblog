@@ -1,7 +1,8 @@
 THEME_ARCHIVE = "liveblog-theme-dpa.zip"
 
-make:	
-	gulp && rm $(THEME_ARCHIVE)
+make:
+	make clean
+	gulp
 	zip -r $(THEME_ARCHIVE) * \
 		-x ".git/*" \
 		-x "Makefile" \
@@ -11,3 +12,6 @@ make:
 		-x "index.html" \
 		-x "gulpfile.js" \
 		-x "embedcode.html"
+
+clean:
+	rm -f $(THEME_ARCHIVE)
