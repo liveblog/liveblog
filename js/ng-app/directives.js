@@ -59,20 +59,47 @@ angular.module('liveblog-embed')
   };
 }])
 
-.directive('loadScript', [function() {
-  // Reverse engineer that plaintext
+.directive('loadScript', ['$rootScope', function($rootScope) {
   return {
     restrict: 'A',
     link: function(scope, elem, attrs) {
       if (!scope.isEmbedCode) return;
 
+      var provider = scope.item.meta.provider_name.toLowerCase();
+      $rootScope._log.debug("ng-loadscript", provider);
+
+      /*
+        Return early if embed lib is already loaded
+        @param {DOM Element} elem - to avoid parsing the whole DOM tree,
+        some embed libs provide the option to specify elements
+      */
+
+      var embedLibMethods = {
+        instagram: function(elem) {
+          if (!window.instgrm) return false;
+          else instgrm.Embeds.process(elem);
+          return true;
+        },
+
+        twitter: function(elem) {
+          if (!window.twttr) return false
+          else window.setTimeout(twttr.widgets.load, 100);
+          return true;
+        }
+      }
+
+      if (embedLibMethods.hasOwnProperty(provider)) {
+        if (embedLibMethods[provider](elem[0]) === true) return; // Exits directive
+      }
+
+      // Reverse engineer plaintext
       var html = scope.item.meta.html
         , matchSource = /<script.*?src="(.*?)"/
         , matchContent = /<script(?:.*?)>(.*?)<\/script>/
         , content = html.match(matchContent)
         , src = html.match(matchSource);
 
-      if (src && src.length) {
+      if (src && src.length) { 
         var script = document.createElement('script'); script.src = src[1];
         elem[0].parentNode.insertBefore(script, elem[0]);
       }

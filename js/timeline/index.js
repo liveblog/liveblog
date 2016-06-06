@@ -59,6 +59,7 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
         newPosts: [],
         newStickyPosts: [],
         orderBy: function(order_by) {
+            console.log("ordering");
             vm.loading = true;
             vm.finished = false;
             vm.pagesManager.changeOrder(order_by).then(function() {

@@ -3,9 +3,9 @@ Derived from Sourcefabric Angular Theme, merges all embed dependencies
 into one. This way we gain full control over the build process and
 allow debugging the theme in isolation without having
 to run a whole fleet of containers needed by the Liveblog Environment.
-Downside
+Downside is we can't just merge upstream commits.
 
-# Install
+# Development
 Just issue a `npm i` followed by `gulp`.
 Assets are then bundled into single .js and .css files, an index.html is generated
 for debugging purposes by injecting hardcoded settings around `template.html` -- emulating

@@ -86,6 +86,7 @@ function PagesManagerFactory(postsService, $q, config) {
                 updateLatestDates(updates._items);
             });
         }
+
         return promise.then(function() {
             return reloadPagesFrom(0, self.pages.length + 1);
         });
