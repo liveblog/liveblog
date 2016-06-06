@@ -30,7 +30,7 @@
                     <div ng-messages="vm.themeSettingsForm[option.name].$error" style="color:maroon" role="alert">
                         <div ng-message="number" trans>You did not enter a number</div>
                     </div>
-                    <p class="help-block">{{ option.help }}</p>
+                    <p class="help-block" ng-bind-html="option.help | linkup"></p>
                 </div>
             </div>            
         </form>

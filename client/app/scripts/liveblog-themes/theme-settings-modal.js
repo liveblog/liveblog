@@ -9,7 +9,7 @@
             modalOpened: angular.isDefined(vm.theme),
             settings: angular.copy(vm.theme.settings) || {},
             options: [],
-            datetimeFormats: ['MMMM Do, YYYY HH:mm', 'YYYY-MM-DD hh:mm a', 'DD/MM/YYYY hh:mm A', 'lll'],
+            datetimeFormats: ['MMMM Do, YYYY HH:mm', 'YYYY-MM-DD hh:mm a', 'DD/MM/YYYY hh:mm A', 'HH:mm D.M.YYYY', 'lll'],
             submitSettings: function(shouldClose) {
                 if (!angular.equals(vm.theme.settings, vm.settings)) {
                     api.themes.update(vm.theme, {settings: vm.settings}).then(function(data) {
@@ -115,5 +115,15 @@
             bindToController: true,
             controller: ThemeSettingsModalController
         };
-    });
+    }).filter('linkup', ['$sce', function($sce) {
+        return function(value) {
+            if (!value) {
+                return value;
+            }
+            var removeRegx = /(<([^>]+)>)/ig,
+                linkupRegx = /((http(s)?:)?\/\/[^\s]*)/ig,
+                linkReplace = '<a href="$1" target="_blank">$1</a>';
+            return $sce.trustAsHtml(value.replace(removeRegx, '').replace(linkupRegx, linkReplace));
+        }
+    }]);
 })();
