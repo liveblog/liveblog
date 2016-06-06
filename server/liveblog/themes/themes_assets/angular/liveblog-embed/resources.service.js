@@ -5,16 +5,22 @@
         recycleFreq: 600000, // 10mins
         storageMode: 'memory'
     };
+    srcSet.$inject = ['fixProtocol'];
+    function srcSet(fixProtocol) {
+        return function(renditions) {
+            var srcset = '';
+            angular.forEach(renditions, function(value) {
+                srcset += ', ' + fixProtocol(value.href) + ' ' + value.width + 'w';
+            });
+            return srcset.substring(2);
+        }
+    }
 
-    transformBlog.$inject = ['fixProtocol']
+    transformBlog.$inject = ['fixProtocol', 'srcSet'];
     function transformBlog(fixProtocol) {
         return function(blog) {
             if (blog.picture_url && blog.picture) {
-                var srcset = '';
-                angular.forEach(blog.picture.renditions, function(value) {
-                    srcset += ', ' + fixProtocol(value.href) + ' ' + value.width + 'w';
-                });
-                blog.picture_srcset = srcset.substring(2); 
+                blog.picture_srcset = srcSet(blog.picture.renditions); 
                 blog.picture_url = fixProtocol(blog.picture_url);
             }
             return blog;
@@ -45,8 +51,8 @@
         });
     }
 
-    Posts.$inject = ['$resource', 'config', 'users'];
-    function Posts($resource, config, users) {
+    Posts.$inject = ['$resource', 'config', 'users', 'srcSet', 'fixProtocol'];
+    function Posts($resource, config, users, srcSet, fixProtocol) {
         function _completeUser(obj) {
             if (obj.commenter) {
                 obj.original_creator = {display_name: obj.commenter};
@@ -78,10 +84,16 @@
                         post.showUpdate = (post.content_updated_date !== post.published_date) && 
                                            !post.hasComments && (post.mainItem.item_type !== 'comment');
 
-                        // add all the items directly in a `items` property
+                        // add all the items directly in a `items` property.
                         if (angular.isDefined(post.groups[1])) {
                             post.items = post.groups[1].refs.map(function(value) {
                                 var item = value.item;
+                                // add `picture_url` and `picture_srcset` property on item.
+                                if( (item.item_type == 'image') && item.meta && item.meta.media) {
+                                    item.picture_url = fixProtocol(item.meta.media.renditions.thumbnail.href);
+                                    item.picture_srcset = srcSet(item.meta.media.renditions);
+                                }
+
                                 if(post.fullDetails) {
                                     _completeUser(item);
                                     item.displayDate = (item.meta && item.meta._created) || item._created;
@@ -116,6 +128,7 @@
         .service('blogs', Blogs)
         .service('comments', Comments)
         .service('items', Items)
-        .factory('transformBlog',transformBlog);
+        .factory('transformBlog',transformBlog)
+        .factory('srcSet', srcSet);
 
 })(angular);
