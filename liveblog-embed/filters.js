@@ -1,11 +1,11 @@
 (function(angular) {
     'use strict';
     angular.module('liveblog-embed')
-        .filter('prettifyIsoDate', function() {
+        .filter('prettifyIsoDate', [ 'config', function(config) {
             return function(input) {
-                return moment(input).format('DD/MM/YYYY  HH:mm');
+                return moment(input).format(config.settings.datetimeFormat);
             };
-        })
+        }])
         .filter('outboundAnchors', function() {
             return function(text) {
                 return text.replace(/<a([^>]*)>/g, function(match, attr){
