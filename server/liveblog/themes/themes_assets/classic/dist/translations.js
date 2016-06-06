@@ -48,7 +48,8 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Send": "Abschicken",
   "Sort by:": "Ordnen nach",
   "Updated {{post.content_updated_date | prettifyIsoDate}}": "Aktualisiert am post.content_updated_date | prettifyIsoDate",
-  "Your comment was sent for approval.": "Ihr Kommentar wartet auf Freischaltung,"
+  "Your comment was sent for approval.": "Ihr Kommentar wartet auf Freischaltung,",
+  "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} kredit: {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('fr', {
   "Cancel": "Annuler",
@@ -61,15 +62,10 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Name *": "Nom *",
   "Name should be maximum 30 characters in length.": "Le nom ne peut excéder 30 signes",
   "Newest first": "Le plus récent d'abord",
-  "No post for now.": "Aucun message pour le moment.",
   "Oldest first": "Plus ancien en premier",
   "Please fill in your Comment.": "Votre commentaire.",
   "Please fill in your Name.": "Votre nom.",
   "Post a comment": "Envoyer un commentaire",
-  "See one new post": [
-    "Voir le nouveau message",
-    "Voir {{$count}} nouveaux messages"
-  ],
   "Send": "Envoyer",
   "Sort by:": "Trier par:",
   "Your comment was sent for approval.": "Votre commentaire a été envoyé et est en attente de validation."

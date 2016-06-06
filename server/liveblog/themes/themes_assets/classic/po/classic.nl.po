@@ -16,7 +16,7 @@ msgstr ""
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: template.html:36
+#: template.html:40
 msgid "Comment"
 msgstr "Reactie"
 
@@ -32,11 +32,11 @@ msgstr "Uw reactie van maximaal 300 tekens."
 msgid "Editorial"
 msgstr "Redactioneel"
 
-#: template.html:90
+#: template.html:94
 msgid "Load more posts"
 msgstr "Meer"
 
-#: template.html:93
+#: template.html:97
 msgid "Loading"
 msgstr "Laden"
 
@@ -52,7 +52,7 @@ msgstr "Uw naam kan maximaal 30 tekens lang zijn."
 msgid "Newest first"
 msgstr "Toon nieuwste eerst"
 
-#: template.html:53
+#: template.html:57
 #, fuzzy
 msgid "No posts for now."
 msgstr "Nog geen berichten beschikbaar."
@@ -61,7 +61,7 @@ msgstr "Nog geen berichten beschikbaar."
 msgid "Oldest first"
 msgstr "Toon oudste eerst"
 
-#: template.html:77
+#: template.html:81
 #, fuzzy
 msgid "One pinned post"
 msgid_plural "{{$count}} pined posts"
@@ -80,7 +80,7 @@ msgstr "Vul hier uw naam in."
 msgid "Post a comment"
 msgstr "Schrijf een reactie"
 
-#: template.html:61
+#: template.html:65
 #, fuzzy
 msgid "See one new update"
 msgid_plural "See {{$count}} new updates"
@@ -102,3 +102,7 @@ msgstr ""
 #: comments.html:7
 msgid "Your comment was sent for approval."
 msgstr "Uw reactie is ontvangen ter beoordeling."
+
+#: item.html:14
+msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
+msgstr ""
