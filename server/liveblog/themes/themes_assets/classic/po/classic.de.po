@@ -16,7 +16,7 @@ msgstr ""
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: template.html:36
+#: template.html:40
 msgid "Comment"
 msgstr "Kommentar"
 
@@ -32,11 +32,11 @@ msgstr "Kommentar darf maximal 300 Zeichen lang sein."
 msgid "Editorial"
 msgstr "Redaktionell"
 
-#: template.html:90
+#: template.html:94
 msgid "Load more posts"
 msgstr "Mehr Einträge laden"
 
-#: template.html:93
+#: template.html:97
 msgid "Loading"
 msgstr "Lade"
 
@@ -52,7 +52,7 @@ msgstr "Name darf maximal 30 Zeichen lang sein"
 msgid "Newest first"
 msgstr "Neueste zuerst"
 
-#: template.html:53
+#: template.html:57
 msgid "No posts for now."
 msgstr "Kein Beitrag vorhanden"
 
@@ -60,7 +60,7 @@ msgstr "Kein Beitrag vorhanden"
 msgid "Oldest first"
 msgstr "Älteste zuerst"
 
-#: template.html:77
+#: template.html:81
 msgid "One pinned post"
 msgid_plural "{{$count}} pined posts"
 msgstr[0] "Angehefteter Eintrag"
@@ -78,7 +78,7 @@ msgstr "Bitte Namen hier eintragen"
 msgid "Post a comment"
 msgstr "Kommentar posten"
 
-#: template.html:61
+#: template.html:65
 msgid "See one new update"
 msgid_plural "See {{$count}} new updates"
 msgstr[0] "Neuen Beitrag anzeigen"
@@ -99,3 +99,7 @@ msgstr "Aktualisiert am post.content_updated_date | prettifyIsoDate"
 #: comments.html:7
 msgid "Your comment was sent for approval."
 msgstr "Ihr Kommentar wartet auf Freischaltung,"
+
+#: item.html:14
+msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
+msgstr "{{ item.meta.caption }} kredit: {{ item.meta.credit }}"

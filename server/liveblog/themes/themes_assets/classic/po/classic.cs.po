@@ -16,7 +16,7 @@ msgstr ""
 msgid "Cancel"
 msgstr "Zrušit"
 
-#: template.html:36
+#: template.html:40
 msgid "Comment"
 msgstr "Váš příspěvek"
 
@@ -32,11 +32,11 @@ msgstr "Maximální délka textu je 300 znaků."
 msgid "Editorial"
 msgstr "podle redakce"
 
-#: template.html:90
+#: template.html:94
 msgid "Load more posts"
 msgstr "Načíst další"
 
-#: template.html:93
+#: template.html:97
 msgid "Loading"
 msgstr "Načítám"
 
@@ -52,7 +52,7 @@ msgstr "Maximální délka jména je 30 znaků."
 msgid "Newest first"
 msgstr "od nejnovějších"
 
-#: template.html:53
+#: template.html:57
 #, fuzzy
 msgid "No posts for now."
 msgstr "Zatím zde nejsou žádné příspěvky."
@@ -61,7 +61,7 @@ msgstr "Zatím zde nejsou žádné příspěvky."
 msgid "Oldest first"
 msgstr "od nejstarších"
 
-#: template.html:77
+#: template.html:81
 #, fuzzy
 msgid "One pinned post"
 msgid_plural "{{$count}} pined posts"
@@ -81,7 +81,7 @@ msgstr "Napište své jméno."
 msgid "Post a comment"
 msgstr "Otázka / komentář"
 
-#: template.html:61
+#: template.html:65
 #, fuzzy
 msgid "See one new update"
 msgid_plural "See {{$count}} new updates"
@@ -104,3 +104,7 @@ msgstr ""
 #: comments.html:7
 msgid "Your comment was sent for approval."
 msgstr "Váš text byl úspěšně odeslán. Čeká na schválení."
+
+#: item.html:14
+msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
+msgstr ""
