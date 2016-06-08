@@ -97,7 +97,7 @@
         },
         {
             "name": "infinitScroll",
-            "label": "Use infinit scroll to load more pages",
+            "label": "Use infinite scroll to load more pages",
             "type": "checkbox",
             "default": true,
             "help": "if true, more pages are automatically loaded when the bottom of the page is reached. Otherwise a button is added at the bottom of the posts list"
