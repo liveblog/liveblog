@@ -457,10 +457,20 @@ article.lb-post:after {
 }
 
 .lb-post-highlighted {
+    background: url("../images/star_highlight.svg") center 6px;
+    background-size: 18px;
+    border-radius: 4px;
+    background-repeat: no-repeat;
+    padding: 5px;
+    background-clip: border-box;
     position: absolute;
-    top: 10px;
-    right: 30px;
+    margin-top: 52px;
+    left: -13px;
+    width: 20px;
+    height: 20px;
     color: #f89406;
+    background-color: #F05330;
+    opacity: .9;
 }
 
 
@@ -531,7 +541,7 @@ article.lb-post:after {
     }
 
     .lb-post-date {
-        margin-left: 25px;
+        margin-left: 30px;
         font-size: .8em;
     }
 
@@ -555,19 +565,40 @@ article.lb-post:after {
         height: 16px;
     }
 
+    .lb-type--embed {
+        width: 21px;
+        height: 21px;
+        margin-top: -10px;
+    }
+
     .lb-author__avatar, .lb-author__comment   {
         width: 30px;
         height: 30px;
         left: -50px;
     }
+    
     .lb-author__date {
         float: none;
     }
+    
     .sorting-bar__title {
         display: none;
     }
+
     .sorting-bar__orders {
         padding-left: 0 !important;
+    }
+
+    .lb-post-highlighted {
+        background-size: 12px;
+        padding: 5px;
+        float: left;
+        left: 20px;
+        display: inline-block;
+        position: relative;
+        width: 12px;
+        height: 12px;
+        margin: -11px 4px 0 10px;
     }
 }
 
@@ -584,9 +615,6 @@ article.lb-post:after {
     //     height: 12px;
     // }
 
-    .lb-post-date {
-        margin-left: 20px;
-    }
 }
 
 

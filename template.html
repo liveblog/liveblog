@@ -78,11 +78,10 @@
                     }">
                 </div>
 
+                <div class="lb-post-highlighted" ng-if="post.highlight"></div>
                 <div class="lb-post-date" ng-bind="post.mainItem.displayDate | dateFromNowOrAbsolute"></div>
 
-                <div class="lb-post-highlighted" ng-if="post.highlight">
-                    <i class="fa fa-star fa-2"></i>
-                </div>
+                
 
                 <div class="lb-post-permalink">
                     <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
