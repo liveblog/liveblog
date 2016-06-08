@@ -54,7 +54,7 @@
                 count="timeline.newPosts.length">
             </ng-pluralize>
 
-            <div ng-if="timeline.stickyPagesManager.allPosts().length && !timeline.loading" class="pin-drawer">
+            <!-- <div ng-if="timeline.stickyPagesManager.allPosts().length && !timeline.loading" class="pin-drawer">
                 <ng-pluralize count="timeline.stickyPagesManager.allPosts().length" ng-if="timeline.stickyPagesManager.hideSticky"
                     when="{'one': '1 PINNED POST', 'other': '{} PINNED POSTS'}">
                 </ng-pluralize>
@@ -62,9 +62,9 @@
                 ng-click="timeline.stickyPagesManager.hideSticky = !timeline.stickyPagesManager.hideSticky">
                     <i class="fa fa-chevron-up"></i>
                 </button>
-            </div>
+            </div> -->
 
-            <article lb-post ng-repeat="post in timeline.pagesManager.allPosts() track by post._id"
+            <article lb-post ng-repeat="post in timeline.getAllPosts() track by post._id"
                      class="lb-post list-group-item ng-cloak"
                      ng-class="{
                         'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
@@ -80,8 +80,6 @@
 
                 <div class="lb-post-highlighted" ng-if="post.highlight"></div>
                 <div class="lb-post-date" ng-bind="post.mainItem.displayDate | dateFromNowOrAbsolute"></div>
-
-                
 
                 <div class="lb-post-permalink">
                     <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">

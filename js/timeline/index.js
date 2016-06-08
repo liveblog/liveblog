@@ -47,6 +47,10 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
             angular.extend(vm.blog, blog);
         });
     }
+
+    function retrieveAllPosts() {
+
+    }
     
     // define view model
     angular.extend(vm, {
@@ -74,6 +78,17 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
                 vm.finished = data._meta.total <= data._meta.max_results;
                 // TODO: notify updates
             });
+        },
+        getAllPosts: function() {
+            /*
+            Consolidate posts and stickies
+            into one feed as to avoid redundant HTML and additional
+            requests from directive template requests
+            */
+            return [].concat.apply([], [
+                this.stickyPagesManager.allPosts(),
+                this.pagesManager.allPosts()
+                ]);
         },
         permalinkScroll: function() {
             vm.loading = true;
