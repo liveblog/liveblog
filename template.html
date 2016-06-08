@@ -22,13 +22,13 @@
             </div>
         </div>
         <div class="header-bar__actions">
-            <div class="toggleHighlights"
+            <div class="header-bar__highlights"
                 ng-if="timeline.settings.hasHighlights"
-                ng-class="{'active': timeline.highlightsOnly}"
+                ng-class="{'header-bar__highlights--active': timeline.highlightsOnly}"
                 ng-click="timeline.toggleHighlighsOnly()"
                 tooltip-placement="bottom"
                 tooltip="{{ timeline.highlightsOnly? 'Show all posts': 'Show highlighted post only' }}">
-                    <i class="fa fa-star fa-2"></i>
+                Nur Highlights
             </div>
         </div>
     </div>

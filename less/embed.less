@@ -48,9 +48,7 @@
 }
 
 .header-bar__actions {
-    position: absolute;
-    right: 100px;
-    top: 5px; 
+    display: inline-block;
 }
 
 .header-bar__logo {
@@ -119,7 +117,9 @@
 
 // Sorting Bar
 
-.sorting-bar {
+.sorting-bar,
+.header-bar {
+    display: inline-block;
     font-weight: 500;
 }
 
@@ -134,9 +134,9 @@
 
 .sorting-bar__orders {
     float: left;
-    margin-right: 90px;
 }
 
+.header-bar__highlights,
 .sorting-bar__order {
     float: left;
     margin: 0 10px;
@@ -146,10 +146,20 @@
     font-size: .8em;
 }
 
-.sorting-bar__order--active, .sorting-bar__order:hover {
+.sorting-bar__order--active,
+.sorting-bar__order:hover,
+.header-bar__highlights--active,
+.header-bar__highlights:hover {
     color: #333333;
+    margin-bottom: -4px;
     border-bottom: 4px solid @washedgreen;
 }
+
+.header-bar__highlights--active,
+.header-bar__highlights:hover {
+    border-bottom: 4px solid #E5D07F;
+}
+
 
 // Sorting Bar End
 
@@ -426,35 +436,21 @@ article.lb-post:after {
     opacity: 0;
 }
 
-
 .lb-post-permalink {
     position: absolute;
     top: 10px;
     right: 10px;
     visibility: hidden;
 }
+
 .lb-post-highlighted {
     position: absolute;
     top: 10px;
     right: 30px;
     color: #f89406;
 }
-.toggleHighlights {
-    color: #f89406;
-    height: auto;
-    padding: 2px 8px 1px 8px;
-    background: rgba(255, 255, 255, 0.5);
-    border: 1px solid rgba(215, 215, 215, 0.7);
-    border-radius: 2px;
-    box-sizing: border-box;
-    margin-right: 8px;
-    display: inline-block;
-    cursor: pointer;
-}
-.toggleHighlights.active {
-    background-color: rgba(0, 0, 0, 0.25);
-    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.252);
-}
+
+
 .lb-post:hover .lb-post-permalink {
     visibility: visible;
 }
@@ -567,13 +563,13 @@ article.lb-post:after {
         padding: 40px 15px 0px;
     }
 
-    .lb-type {
-        background-size: 10px;
-        margin-left: 0px;
-        margin-top: 5px;
-        width: 12px;
-        height: 12px;
-    }
+    // .lb-type {
+    //     background-size: 10px;
+    //     margin-left: 0px;
+    //     margin-top: 5px;
+    //     width: 12px;
+    //     height: 12px;
+    // }
 
     .lb-post-date {
         margin-left: 20px;
