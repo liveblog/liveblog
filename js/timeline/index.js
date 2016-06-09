@@ -47,10 +47,6 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
             angular.extend(vm.blog, blog);
         });
     }
-
-    function retrieveAllPosts() {
-
-    }
     
     // define view model
     angular.extend(vm, {
@@ -70,6 +66,7 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
                 vm.loading = false;
             });
         },
+
         fetchNewPage: function() {
             vm.loading = true;
             vm.stickyPagesManager.fetchNewPage();
@@ -79,12 +76,12 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
                 // TODO: notify updates
             });
         },
+
         getAllPosts: function() {
-            /*
-            Consolidate posts and stickies
+            /* Consolidate posts and stickies
             into one feed as to avoid redundant HTML and additional
-            requests from directive template requests
-            */
+            requests from directive template requests */
+
             return [].concat.apply([], [
                 this.stickyPagesManager.allPosts(),
                 this.pagesManager.allPosts()
@@ -99,15 +96,18 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
                 vm.loading = false;
             });
         },
+
         isAllowedToLoadMore: function() {
             return !vm.loading && !vm.finished;
         },
+
         applyUpdates: function() {
             pagesManager.applyUpdates(vm.newPosts);
             vm.newPosts = [];
             stickyPagesManager.applyUpdates(vm.newStickyPosts);
             vm.newStickyPosts = [];
         },
+
         toggleHighlighsOnly: function() {
             vm.highlightsOnly = !vm.highlightsOnly;
             pagesManager.changeHighlight(vm.highlightsOnly);
@@ -116,11 +116,13 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
                 stickyPagesManager.hideSticky = false;
             }
         },
+
         pagesManager: pagesManager,
         permalink: permalink,
         stickyPagesManager: stickyPagesManager,
         stickyPermalink: stickyPermalink
     });
+
     // retrieve first page
     vm.fetchNewPage()
     // retrieve updates periodically

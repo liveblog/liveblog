@@ -8,7 +8,7 @@
     background-color: white;
     max-width: 680px;
     margin: 0 auto;
-    margin-top: 50px;
+    margin-top: 30px;
     overflow-y: scroll;
     overflow-x: hidden;
     padding-bottom: 200px;
@@ -17,7 +17,7 @@
 
 .lb-timeline__header,
 .lb-post {
-    padding: 25px 10px 45px;
+    padding: 25px 10px 30px;
 }
 
 .timeline-body {
@@ -117,7 +117,10 @@
 
 // Sorting Bar
 
-.sorting-bar,
+.sorting-bar {
+    margin-right: 15px;
+}
+
 .header-bar {
     display: flex;
     align-items: center;
@@ -206,7 +209,7 @@
 
 .lb-post {
     position: relative;
-    padding: 45px 0px 100px;
+    padding: 45px 0px 90px;
     margin: 0px 30px;
 }
 
@@ -233,9 +236,34 @@ article.lb-post:after {
     }
 }
 
+.lb-post-date,
+.lb-post-date__fulldate {
+    font-weight: 600;
+    font-size: .85em;
+    color: #ACACAC;
+}
+
 .lb-post-date {
     float: left;
     padding-right: 20px;
+    margin: -10px 0 12px 60px;
+    font-size: .85em;
+    color: #ACACAC;
+}
+
+.lb-post-date__fulldate {
+    position: absolute;
+    font-weight: 600;
+    background-color: white;
+    margin: -62px 0px 0px -15px;
+    padding: 6px 0px;
+    width: 40px;
+    z-index: 3;
+}
+
+.lb-post:first-of-type 
+.lb-post-date__fulldate {
+    display: none;
 }
 
 .lb-post.ng-enter, .lb-post.ng-move {
@@ -252,17 +280,8 @@ article.lb-post:after {
 }
 
 .lb-item {
-    margin-left: 70px;
+    margin-left: 60px;
     clear: both;
-}
-
-.lb-post-date {
-    margin-left: 70px;
-    font-weight: 600;
-    margin-bottom: 12px;
-    margin-top: -10px;
-    font-size: .85em;
-    color: #ACACAC;
 }
 
 .lb-type {
@@ -339,7 +358,7 @@ article.lb-post:after {
 
 .lb-author {
     position: relative;
-    margin: 30px 0px 30px;
+    margin: 15px 0px 15px;
     max-width: 220px;
     float: right;
     display: flex;

@@ -79,6 +79,7 @@
                 </div>
 
                 <div class="lb-post-highlighted" ng-if="post.highlight"></div>
+                <div ng-if="post.mainItem.displayDate | isDateChange" class="lb-post-date__fulldate" ng-bind="post.mainItem.displayDate | simpleDate"></div>
                 <div class="lb-post-date" ng-bind="post.mainItem.displayDate | dateFromNowOrAbsolute"></div>
 
                 <div class="lb-post-permalink">
