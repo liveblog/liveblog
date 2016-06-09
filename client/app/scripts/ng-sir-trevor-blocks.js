@@ -358,9 +358,9 @@ define([
                     return [
                         '<blockquote><p>',
                         data.quote,
-                        '</p><ul><li>',
+                        '</p><h4><i>',
                         data.credit,
-                        '</li></ul></blockquote>'
+                        '</i></h4></blockquote>'
                     ].join('');
                 },
                 toMeta: function() {
