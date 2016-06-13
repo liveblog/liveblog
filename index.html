@@ -145,11 +145,21 @@
             </div>
             <div class="item--embed__description" ng-if="item.meta.description" ng-bind="item.meta.description"></div>
         </article>
-
     </script>
     <!-- Templates End -->
 
+    <!-- Pixel -->
+    <img name="pixelcounter" style="width: 1px; height: 1px; visibility:hidden;">
+    <script type="text/javascript">
+        var pixel = document.getElementsByName('pixelcounter')[0];
+        var pixel_src = "http://logging.mvtango.s3-website.eu-central-1.amazonaws.com/pixel.gif";
+        pixel.src = pixel_src + '?r='+ encodeURIComponent(document.referrer)
+            + '&l='+ encodeURIComponent(document.location);
+    </script>
+    <!-- Pixel End -->
+   
 </div>
+
         <!-- endinject -->
 
         <script type="text/javascript">
