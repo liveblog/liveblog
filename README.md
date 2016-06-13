@@ -18,5 +18,7 @@ and `.git` folders before uploading to LiveBlog.
 
 # Synced with Sourcefabric
 incorporates all of  
-`github.com/liveblog/lb-theme-classic@2.3.15`  
-`github.com/liveblog/lb-theme-angular@1.4.12`  
+```
+github.com/liveblog/lb-theme-classic@2.3.15
+github.com/liveblog/lb-theme-angular@1.4.12
+```
