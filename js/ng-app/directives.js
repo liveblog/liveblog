@@ -82,6 +82,7 @@ angular.module('liveblog-embed')
         },
 
         twitter: function(elem) {
+          console.log("loading", elem)
           if (!window.twttr) return false
           else window.setTimeout(function(){
             twttr.widgets.load(elem)
@@ -97,7 +98,7 @@ angular.module('liveblog-embed')
       // Reverse engineer plaintext
       var html = scope.item.meta.html
         , matchSource = /<script.*?src="(.*?)"/
-        , matchContent = /<script(?:.*?)>(.*?)<\/script>/
+        , matchContent = /<script(?:.*?)>([^]*?)<\/script>/
         , content = html.match(matchContent)
         , src = html.match(matchSource);
 
