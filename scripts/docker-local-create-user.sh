@@ -14,3 +14,5 @@ docker-compose -p lbdemo -f ./docker-compose-prebuilt.yml run superdesk ./script
   echo '+++ new user has been created' ;\
   python3 manage.py register_local_themes ;\
   echo '+++ liveblog: local themes were registered'"
+  python3 manage.py schema:migrate ;\
+  echo '+++ liveblog: elasticsearch schema is run if there are changes in the api'"
