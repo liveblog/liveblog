@@ -84,8 +84,10 @@ angular.module('liveblog-embed')
         twitter: function(elem) {
           console.log("loading", elem)
           if (!window.twttr) return false
-          else window.setTimeout(function(){
-            twttr.widgets.load(elem)
+          else window.setTimeout(function() {
+            if (twttr.hasOwnProperty("widgets")) {
+              twttr.widgets.load(elem)
+            }
           }, 100);
           return true;
         }
