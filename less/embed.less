@@ -15,7 +15,10 @@
     transition: opacity .2s ease-in-out;
 }
 
-.lb-timeline__header,
+.lb-timeline__header {
+    padding: 25px 10px 30px;
+}
+
 .lb-post {
     padding: 25px 10px 30px;
 }
@@ -196,6 +199,8 @@
     border-radius: 50%;
 }
 
+
+
 // Description End
 
 // Posts
@@ -348,7 +353,10 @@ article.lb-post:after {
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     border-radius: 4px;
     position: relative;
-    margin-top: -40px;
+    left: 50%;
+    margin-left: -55px;
+    width: 110px;
+    margin-top: 60px;
 }
 
 .lb-button:hover {
@@ -409,6 +417,7 @@ article.lb-post:after {
 
 
 .illustration {
+    display: none;
     margin: 20px 0;
     text-align: center;
 }
@@ -543,6 +552,10 @@ article.lb-post:after {
  * Remove the two cols layout
 */
 @media @medium {
+    .description:before {
+        display: none;
+    }
+
     .item--embed__illustration {
         position: relative;
         width: auto;
@@ -568,11 +581,11 @@ article.lb-post:after {
     }
 
     .lb-post-date {
-        margin-left: 30px;
+        margin-left: 25px;
         font-size: .8em;
     }
 
-    .lb-timeline__header, .lb-post {
+    .lb-post {
         padding: 40px 15px 70px;
     }
 
@@ -586,16 +599,16 @@ article.lb-post:after {
 
     .lb-type {
         background-size: 10px;
-        margin-left: 0px;
-        margin-top: -7px;
-        width: 16px;
-        height: 16px;
+        width: 12px;
+        height: 12px;
+        margin-top: -4px;
+        margin-left: 0;
     }
 
     .lb-type--embed {
-        width: 21px;
-        height: 21px;
-        margin-top: -10px;
+        width: 16px;
+        height: 16px;
+        margin-top: -7px;
     }
 
     .lb-author__avatar, .lb-author__comment   {
@@ -627,20 +640,18 @@ article.lb-post:after {
         height: 12px;
         margin: -11px 4px 0 10px;
     }
+
+    .lb-button {
+        margin-top: 110px;
+    }
 }
 
 @media @small {
-    .lb-timeline__header, .lb-post {
+    .lb-post {
         padding: 40px 15px 0px;
     }
 
-    // .lb-type {
-    //     background-size: 10px;
-    //     margin-left: 0px;
-    //     margin-top: 5px;
-    //     width: 12px;
-    //     height: 12px;
-    // }
+
 
 }
 

@@ -1,15 +1,15 @@
 {
     "label": "dpa Liveblog Theme",
     "name": "liveblog-theme-dpa",
-    "version": "0.4.0",
+    "version": "0.6.8",
     "author": "Paul Solbach <psolbach@dpa-newslab.com>",
     "repository": {
         "type" : "git",
         "url" : "git@github.com:dpa-newslab/liveblog-theme-dpa"
     },
     "license": "UNLICENSED",
-    "styles": ["css/dpa-liveblog.css"],
-    "scripts": ["dist/dpa-liveblog.js"],
+    "styles": ["dist/dpa-liveblog-b4a63aefa2.css"],
+    "scripts": ["dist/dpa-liveblog-74e01f6faf.js"],
     "options": [
         {
             "name": "language",
@@ -112,6 +112,6 @@
             "type": "checkbox",
             "default": true,
             "help": "If the users see the highlight button in embed"
-        }        
+        }
     ]
 }
