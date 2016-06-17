@@ -16,7 +16,7 @@ Serve via `python -m SimpleHTTPServer` or equivalent
 Use `make` or alternatively zip this directory without the `node_modules`
 and `.git` folders before uploading to LiveBlog.
 
-## Synced with Sourcefabric
+## Upstream Sync
 incorporates all of  
 ```
 github.com/liveblog/lb-theme-classic@2.3.15
