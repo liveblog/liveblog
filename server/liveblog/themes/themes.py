@@ -101,6 +101,9 @@ class ThemesResource(Resource):
         },
         'settings': {
             'type': 'dict'
+        },
+        'public_url': {
+            'type': 'string'
         }
     }
     datasource = {
@@ -182,6 +185,10 @@ class ThemesService(BaseService):
                     # save the screenshot url
                     if name.endswith('screenshot.png'):
                         theme['screenshot_url'] = superdesk.upload.url_for_media(file_id)
+                    # save the public_url
+                    if name.endswith('theme.json'):
+                        theme['public_url'] = superdesk.upload.url_for_media(file_id).replace('theme.json', '')
+
         previous_theme = self.find_one(req=None, name=theme.get('name'))
         if previous_theme:
             # retrieve the default settings of the current theme
@@ -236,8 +243,8 @@ class ThemesService(BaseService):
                 blogs_service.system_update(ObjectId(blog['_id']),
                                             {'theme_settings': new_theme_settings}, blog)
             if force_update:
-                blogs_updated = self.publish_related_blogs(theme)
                 self.replace(previous_theme['_id'], theme, previous_theme)
+                blogs_updated = self.publish_related_blogs(theme)
                 return dict(status='updated', theme=theme, blogs_updated=blogs_updated)
             else:
                 return dict(status='unchanged', theme=theme)
