@@ -125,9 +125,12 @@ def embed(blog_id, api_host=None, theme=None):
         logger.error('Template file not found for theme "%s". Theme: %s' % (theme.get('name'), theme))
         return 'Template file not found', 500
     # compute the assets root
-    assets_root = [THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme')]
+    if theme.get('public_url', False):
+        assets_root = theme.get('public_url')
+    else:
+        assets_root = [THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme')]
+        assets_root = '/%s/' % ('/'.join(assets_root))
 
-    assets_root = '/%s/' % ('/'.join(assets_root))
     scope = {
         'blog': blog,
         'settings': get_resource_service('themes').get_default_settings(theme),
