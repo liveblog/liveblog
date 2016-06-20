@@ -80,8 +80,8 @@ gulp.task('theme-replace', ['browserify', 'less'], function() {
   var manifest = require("./dist/rev-manifest.json");
   var base = './';
   gulp.src('theme.json', {base: base})
-    .pipe(plugins.replace(paths.cssfile, manifest[paths.cssfile]))
-    .pipe(plugins.replace(paths.jsfile, manifest[paths.jsfile]))
+    .pipe(plugins.replace(/dpa-liveblog-.*\.css/g, manifest[paths.cssfile]))
+    .pipe(plugins.replace(/dpa-liveblog-.*\.js/g, manifest[paths.jsfile]))
     .pipe(gulp.dest(base));
 });
 

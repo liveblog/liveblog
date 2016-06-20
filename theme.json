@@ -1,15 +1,15 @@
 {
     "label": "dpa Liveblog Theme",
     "name": "liveblog-theme-dpa",
-    "version": "0.6.8",
+    "version": "0.7.1",
     "author": "Paul Solbach <psolbach@dpa-newslab.com>",
     "repository": {
         "type" : "git",
         "url" : "git@github.com:dpa-newslab/liveblog-theme-dpa"
     },
     "license": "UNLICENSED",
-    "styles": ["dist/dpa-liveblog-b4a63aefa2.css"],
-    "scripts": ["dist/dpa-liveblog-74e01f6faf.js"],
+    "styles": ["dist/dpa-liveblog-d6f24177ba.css"],
+    "scripts": ["dist/dpa-liveblog-bc15d18386.js"],
     "options": [
         {
             "name": "language",
