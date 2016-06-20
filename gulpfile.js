@@ -19,23 +19,24 @@ var paths = {
   cssfile: 'dpa-liveblog.css'
 };
 
+
 gulp.task('inject-index', ['browserify', 'less'], function () {
-  var target = gulp.src('index.html');
+  var template = gulp.src(['template.html']);
   var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
     read: false // We're only after the file paths
   });
 
-  var template = gulp.src(['template.html'], {
+  var template_opts = {
       starttag: '<!-- inject:template -->',
       transform: function (filePath, file) {
         // return file contents as string
         return file.contents.toString('utf8')
       }
-    })
+    };
 
-  return target
+  return gulp.src('index.html')
     .pipe(plugins.inject(sources))
-    .pipe(plugins.inject(template))
+    .pipe(plugins.inject(template, template_opts))
     .pipe(gulp.dest('.'));
 });
 

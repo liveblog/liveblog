@@ -79,7 +79,7 @@
                 </button>
             </div> -->
 
-            <article lb-post ng-repeat="post in timeline.getAllPosts() track by post._id"
+            <article lb-post ng-repeat="post in timeline.getAllPosts() track by $index"
                      class="lb-post list-group-item ng-cloak"
                      ng-class="{
                         'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
@@ -370,7 +370,7 @@
 
         <!-- inject:js -->
         <script src="/dist/dpa-liveblog-8a2a169fa3.js"></script>
-        <!-- endinject -->
+        <!-- endinject -->     
         
     </body>
 </html>

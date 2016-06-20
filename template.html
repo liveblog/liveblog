@@ -64,7 +64,7 @@
                 </button>
             </div> -->
 
-            <article lb-post ng-repeat="post in timeline.getAllPosts() track by post._id"
+            <article lb-post ng-repeat="post in timeline.getAllPosts() track by $index"
                      class="lb-post list-group-item ng-cloak"
                      ng-class="{
                         'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
