@@ -12,7 +12,7 @@
     overflow-y: scroll;
     overflow-x: hidden;
     padding-bottom: 200px;
-    transition: opacity .2s ease-in-out;
+    transition: opacity .35s ease-in-out;
 }
 
 .lb-timeline__header {
@@ -25,7 +25,7 @@
 
 .timeline-body {
     position: relative;
-    opacity: 0;
+    // opacity: 0;
     background: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAQAAAABCAQAAABTNcdGAAAADUlEQVR42mN8/Z8BDAAOYwHsa419tgAAAABJRU5ErkJggg==') 30px repeat-y;
     -webkit-transition: opacity .25s;
     -o-transition: opacity .25s;
@@ -361,6 +361,7 @@ article.lb-post:after {
 }
 
 .load-more-posts {
+    position: absolute;
     left: 50%;
     margin-left: -55px;
     width: 110px;

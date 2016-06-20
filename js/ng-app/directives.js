@@ -38,24 +38,7 @@ angular.module('liveblog-embed')
   return {
     scope: {item: '='},
     templateUrl: "template__generic-embed",
-    link: function(scope, element) {
-      var resize = function resize() {
-        // update the min-height, depending of the image ratio
-        $timeout(function() {
-          var imageWidth = element.find('.item--embed__illustration').width();
-          if (imageWidth) {
-            var minHeight = (scope.item.meta.thumbnail_height / scope.item.meta.thumbnail_width) * imageWidth;
-            element.find('.item--embed').css('min-height', minHeight);
-          }
-        });
-      };
-
-      scope.isEmbedCode = angular.isDefined(scope.item.meta.html);
-      if (!scope.isEmbedCode) {
-        angular.element($window).bind('resize', _.debounce(resize, 1000));
-        resize();
-      }
-    }
+    link: function(scope, element) {}
   };
 }])
 
