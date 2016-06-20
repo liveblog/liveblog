@@ -59,7 +59,6 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
         newPosts: [],
         newStickyPosts: [],
         orderBy: function(order_by) {
-            console.log("ordering");
             vm.loading = true;
             vm.finished = false;
             vm.pagesManager.changeOrder(order_by).then(function() {
@@ -112,11 +111,14 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
 
         toggleHighlighsOnly: function() {
             vm.highlightsOnly = !vm.highlightsOnly;
+            vm.finished = false;
+
             pagesManager.changeHighlight(vm.highlightsOnly);
-            stickyPagesManager.changeHighlight(vm.highlightsOnly);
-            if (vm.highlightsOnly) {
-                stickyPagesManager.hideSticky = false;
-            }
+            stickyPagesManager.changeHighlight(vm.highlightsOnly).then(function(data) {
+                vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
+            });
+
+            if (vm.highlightsOnly) stickyPagesManager.hideSticky = false;
         },
 
         pagesManager: pagesManager,
@@ -142,4 +144,6 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
         }
         window.addEventListener('message', receiveMessage, false);
     });
+
+    window.timeline = this;
 }

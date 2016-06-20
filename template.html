@@ -35,16 +35,20 @@
     <!-- Header End -->
     
     <!-- Timeline -->
-    <div class="timeline-body" ng-class="{'timeline-body--loaded': !timeline.loading}">
+    <div class="timeline-body" ng-class="{
+        'timeline-body--loaded': !timeline.loading,
+        'mod--nobackground': timeline.getAllPosts().length < 1
+        }">
 
         <div class="lb-post emtpy-message ng-cloak"
-            ng-show="timeline.pagesManager.allPosts().length + timeline.stickyPagesManager.allPosts().length < 1 && !timeline.loading">
-            <div>Derzeit keine Eintr&auml;ge.</div>
+            ng-show="timeline.getAllPosts().length < 1 && !timeline.loading">
+            <div ng-if="!timeline.highlightsOnly">Derzeit keine Eintr&auml;ge.</div>
+            <div ng-if="timeline.highlightsOnly">Derzeit keine Highlights.</div>
         </div>
 
         <section class="lb-posts list-group"
             infinite-scroll="timeline.fetchNewPage()"
-            infinite-scroll-disabled="!timeline.settings.infinitScroll || !timeline.isAllowedToLoadMore()"
+            infinite-scroll-disabled="!timeline.settings.infiniteScroll || !timeline.isAllowedToLoadMore()"
             infinite-scroll-immediate-check="false">
 
             <ng-pluralize class="lb-post lb-button load-new-posts"
@@ -54,21 +58,11 @@
                 count="timeline.newPosts.length">
             </ng-pluralize>
 
-            <!-- <div ng-if="timeline.stickyPagesManager.allPosts().length && !timeline.loading" class="pin-drawer">
-                <ng-pluralize count="timeline.stickyPagesManager.allPosts().length" ng-if="timeline.stickyPagesManager.hideSticky"
-                    when="{'one': '1 PINNED POST', 'other': '{} PINNED POSTS'}">
-                </ng-pluralize>
-                <button class="pin-drawer-button" ng-class="{'chevron-active': timeline.stickyPagesManager.hideSticky}"
-                ng-click="timeline.stickyPagesManager.hideSticky = !timeline.stickyPagesManager.hideSticky">
-                    <i class="fa fa-chevron-up"></i>
-                </button>
-            </div> -->
-
             <article lb-post ng-repeat="post in timeline.getAllPosts() track by $index"
-                     class="lb-post list-group-item ng-cloak"
-                     ng-class="{
-                        'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
-                        'lb-post-permalink-selected': post._id === timeline.permalink._id}">        
+                class="lb-post list-group-item ng-cloak"
+                ng-class="{
+                    'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
+                    'lb-post-permalink-selected': post._id === timeline.permalink._id}">        
                 
                 <div class="lb-type" ng-class="{
                     'lb-type--text': !post.mainEmbed,
@@ -114,7 +108,7 @@
         </section>
 
         <button class="ng-cloak lb-button load-more-posts" ng-click="timeline.fetchNewPage()"
-            ng-if="!timeline.settings.infinitScroll && timeline.isAllowedToLoadMore()">Mehr laden</button>
+            ng-if="!timeline.settings.infiniteScroll && timeline.isAllowedToLoadMore()">Mehr laden</button>
     </div>
     <!-- Timeline End -->
 
