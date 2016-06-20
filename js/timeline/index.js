@@ -71,8 +71,9 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
             vm.loading = true;
             vm.stickyPagesManager.fetchNewPage();
             return vm.pagesManager.fetchNewPage().then(function(data){
+                var num_posts_loaded = data._meta.max_results * vm.pagesManager.pages.length;
+                vm.finished = data._meta.total <= num_posts_loaded;
                 vm.loading = false;
-                vm.finished = data._meta.total <= data._meta.max_results;
                 // TODO: notify updates
             });
         },
@@ -87,12 +88,13 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
                 this.pagesManager.allPosts()
                 ]);
         },
+
         permalinkScroll: function() {
             vm.loading = true;
             vm.permalink.loadPost().then(function(id){
                 $anchorScroll(id);
                 vm.loading = false;
-            }, function(){
+            }, function() {
                 vm.loading = false;
             });
         },

@@ -14,14 +14,14 @@ var DEBUG = false;
 var paths = {
   less: 'less/*.less',
   js : ['js/*.js', 'js/*/*.js'],
-  html : ['*.html'],
+  html : ['template.html'],
   jsfile: 'dpa-liveblog.js',
   cssfile: 'dpa-liveblog.css'
 };
 
 
 gulp.task('inject-index', ['browserify', 'less'], function () {
-  var template = gulp.src(['template.html']);
+  var template = gulp.src(paths.html);
   var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
     read: false // We're only after the file paths
   });
@@ -42,7 +42,7 @@ gulp.task('inject-index', ['browserify', 'less'], function () {
 
 
 // Browserify
-gulp.task('browserify', function() {
+gulp.task('browserify', ['clean-js'], function() {
   var b = browserify({
     entries: './js/dpa-liveblog.js',
     debug: DEBUG
@@ -62,7 +62,7 @@ gulp.task('browserify', function() {
 });
 
 // Compile LESS files
-gulp.task('less', function () {
+gulp.task('less', ['clean-css'], function () {
   return gulp.src('./less/dpa-liveblog.less')
     .pipe(plugins.less({
       paths: [path.join(__dirname, 'less', 'includes')]
@@ -88,8 +88,8 @@ gulp.task('theme-replace', ['browserify', 'less'], function() {
 // Watch
 gulp.task('watch', function() {
   DEBUG = true;
-  var jswatch = gulp.watch(paths.js, ['browserify']);
-  var lesswatch = gulp.watch(paths.less, ['less']);
+  var jswatch = gulp.watch(paths.js, ['browserify', 'inject-index']);
+  var lesswatch = gulp.watch(paths.less, ['less', 'inject-index']);
   var htmlwatch = gulp.watch(paths.html, ['inject-index']);
 
   [jswatch, lesswatch, htmlwatch].forEach(function(el, i) {
@@ -99,17 +99,25 @@ gulp.task('watch', function() {
   });
 });
 
-// Clean
-gulp.task('set-debug', function(cb) {
+// Set debug 
+gulp.task('set-debug', function() {
   DEBUG = true;
 });
 
-// Clean
-gulp.task('clean', function(cb) {
-  del(['css/*', 'dist/*'], cb)
+
+// Clean CSS
+gulp.task('clean-css', function() {
+  del(['dist/*.css'])
 });
 
+
+// Clean JS
+gulp.task('clean-js', function() {
+  del(['dist/*.js'])
+});
+
+
 // Default build for production
-gulp.task('default', ['clean', 'browserify', 'less', 'theme-replace']);
-gulp.task('debug', ['clean', 'set-debug', 'browserify', 'less', 'inject-index']);
+gulp.task('default', ['browserify', 'less', 'theme-replace']);
+gulp.task('debug', ['set-debug', 'browserify', 'less', 'inject-index']);
 

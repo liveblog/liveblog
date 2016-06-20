@@ -106,6 +106,7 @@ function PagesManagerFactory(postsService, $q, config) {
      */
     function fetchNewPage() {
         var promise = $q.when();
+
         // for the first time, retrieve the updates just to know the latest update date
         if (self.pages.length === 0) {
             promise = self.retrieveUpdate().then(function(updates) {
@@ -114,7 +115,7 @@ function PagesManagerFactory(postsService, $q, config) {
         }
 
         return promise.then(function() {
-            return loadPage(0, self.pages.length + 1);
+            return loadPage(self.pages.length + 1);
         });
     }
 
@@ -252,7 +253,7 @@ function PagesManagerFactory(postsService, $q, config) {
 
     /**
      * Load the content of the given page
-     * @param {interger} page - index of the desired page
+     * @param {integer} page - index of the desired page
      * @returns {promise}
      */
     function loadPage(page) {
@@ -387,6 +388,7 @@ function PagesManagerFactory(postsService, $q, config) {
                     return post;
                 });
             });
+
             // flatten array
             var merged = [];
             return merged.concat.apply(merged, posts);
