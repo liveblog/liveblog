@@ -39,9 +39,9 @@
                         <form class="form-horizontal" name="settings.forms.general">
                             <div class="form-group">
                                 <label for="inputTitle" class="control-label" translate>Blog Status</label>
-                                <div class="form-input">
+                                <div class="form-input relative">
                                     <span class="blog-status">{{ settings.blog_switch ? 'Active' : 'Archived' | translate }}</span>
-                                    <span tooltip="{{ settings.blog_switch ? 'Archive Blog' : 'Activate Blog' | translate }}" tooltip-placement="right">
+                                    <span style="display: block" tooltip="{{ settings.blog_switch ? 'Archive Blog' : 'Activate Blog' | translate }}" tooltip-placement="right">
                                         <span class="pull-left" sd-switch ng-model="settings.blog_switch" data-blog-status-switch></span>
                                     </span>
                                 </div>
