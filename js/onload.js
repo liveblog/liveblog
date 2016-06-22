@@ -9,7 +9,7 @@
 
 var angular = require("angular")
   , iframeParentResize = require('./iframe')
-  //, pageview = require('./pageview')
+  , pageview = require('./pageview')
   , _ = require('./lodash-custom')
   , _log = require("./log");
 
@@ -21,7 +21,7 @@ module.exports = function($rootScope, $window, $timeout, resizeIframes, config) 
   $window.onload = function() {
     $rootScope._log.debug("ng-lb", "started");
     
-    //pageview.init(); // Initialize 'analytics' trigger
+    pageview.init(); // Initialize 'analytics' trigger
     iframeParentResize(); // Adjust body height to parent iframe
     $timeout(resizeIframes, 1000); // Hacky, hacky, hacky ... hacky
 
