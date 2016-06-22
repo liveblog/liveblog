@@ -34,6 +34,8 @@
                 ng-if="timeline.settings.hasHighlights"
                 ng-class="{'active': timeline.highlightsOnly}"
                 ng-click="timeline.toggleHighlighsOnly()"
+                only-title="{{ 'Show highlighted post only' | translate }}"
+                all-title="{{ 'Show all posts'| translate }}"
                 title="{{ timeline.highlightsOnly? 'Show all posts': 'Show highlighted post only' | translate }}">
                 <i class="fa fa-star fa-2"></i>  
             </div>

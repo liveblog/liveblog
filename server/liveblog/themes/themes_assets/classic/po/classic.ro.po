@@ -17,7 +17,7 @@ msgstr ""
 msgid "Cancel"
 msgstr "Anulează"
 
-#: template.html:40
+#: template.html:42
 msgid "Comment"
 msgstr "Comentează"
 
@@ -33,11 +33,11 @@ msgstr "Comentariu nu poate fi mai lung de 300 de caractere."
 msgid "Editorial"
 msgstr "editorial"
 
-#: template.html:94
+#: template.html:96
 msgid "Load more posts"
 msgstr "Încarcă mai multe posturi"
 
-#: template.html:97
+#: template.html:99
 msgid "Loading"
 msgstr "Se încarcă"
 
@@ -53,7 +53,7 @@ msgstr "Numele nu poate fi mai lung de 30 de caractere."
 msgid "Newest first"
 msgstr "Cele mai noi"
 
-#: template.html:57
+#: template.html:59
 #, fuzzy
 msgid "No posts for now."
 msgstr "Deocamdata nu sunt articole."
@@ -62,7 +62,7 @@ msgstr "Deocamdata nu sunt articole."
 msgid "Oldest first"
 msgstr "Cele mai vechi"
 
-#: template.html:81
+#: template.html:83
 #, fuzzy
 msgid "One pinned post"
 msgid_plural "{{$count}} pined posts"
@@ -82,7 +82,7 @@ msgstr "Completează numele."
 msgid "Post a comment"
 msgstr "Scrie un comentariu"
 
-#: template.html:65
+#: template.html:67
 #, fuzzy
 msgid "See one new update"
 msgid_plural "See {{$count}} new updates"
@@ -93,6 +93,14 @@ msgstr[2] "Vezi {{$count}} de articole noi"
 #: comments.html:39
 msgid "Send"
 msgstr "Trimite"
+
+#: template.html:38
+msgid "Show all posts"
+msgstr ""
+
+#: template.html:37
+msgid "Show highlighted post only"
+msgstr ""
 
 #: template.html:11 template.html:27
 msgid "Sort by:"
@@ -106,6 +114,6 @@ msgstr ""
 msgid "Your comment was sent for approval."
 msgstr "Comentariul tău a fost trimis spre aprobare."
 
-#: item.html:14
+#: item.html:13
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr ""
