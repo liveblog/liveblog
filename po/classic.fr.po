@@ -16,7 +16,7 @@ msgstr ""
 msgid "Cancel"
 msgstr "Annuler"
 
-#: template.html:40
+#: template.html:42
 msgid "Comment"
 msgstr "Commentaire"
 
@@ -32,11 +32,11 @@ msgstr "Un commentaire ne peut excéder 300 signes"
 msgid "Editorial"
 msgstr "Éditorial"
 
-#: template.html:94
+#: template.html:96
 msgid "Load more posts"
 msgstr "Afficher plus de messages"
 
-#: template.html:97
+#: template.html:99
 msgid "Loading"
 msgstr "Chargement"
 
@@ -52,7 +52,7 @@ msgstr "Le nom ne peut excéder 30 signes"
 msgid "Newest first"
 msgstr "Le plus récent d'abord"
 
-#: template.html:57
+#: template.html:59
 #, fuzzy
 msgid "No posts for now."
 msgstr "Aucun message pour le moment."
@@ -61,7 +61,7 @@ msgstr "Aucun message pour le moment."
 msgid "Oldest first"
 msgstr "Plus ancien en premier"
 
-#: template.html:81
+#: template.html:83
 #, fuzzy
 msgid "One pinned post"
 msgid_plural "{{$count}} pined posts"
@@ -80,7 +80,7 @@ msgstr "Votre nom."
 msgid "Post a comment"
 msgstr "Envoyer un commentaire"
 
-#: template.html:65
+#: template.html:67
 #, fuzzy
 msgid "See one new update"
 msgid_plural "See {{$count}} new updates"
@@ -90,6 +90,14 @@ msgstr[1] "Voir {{$count}} nouveaux messages"
 #: comments.html:39
 msgid "Send"
 msgstr "Envoyer"
+
+#: template.html:38
+msgid "Show all posts"
+msgstr ""
+
+#: template.html:37
+msgid "Show highlighted post only"
+msgstr ""
 
 #: template.html:11 template.html:27
 msgid "Sort by:"
@@ -103,6 +111,6 @@ msgstr ""
 msgid "Your comment was sent for approval."
 msgstr "Votre commentaire a été envoyé et est en attente de validation."
 
-#: item.html:14
+#: item.html:13
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr ""
