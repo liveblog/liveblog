@@ -7,7 +7,6 @@
 
 var sendPageview = {
   _foundProviders: [], // Cache after first lookup
-  _parentURL: window.frameElement, // Embedding URL
 
   _sendIVW: function() {
     if (!window.iom) return;
@@ -20,7 +19,6 @@ var sendPageview = {
     }
 
     window.iom.c(iam_data, 1); // where's the .h? ahahaha
-    console.log("ivw pageview sent: ", iam_data);
   },
 
   _sendGA: function() {
@@ -28,8 +26,9 @@ var sendPageview = {
       window.ga('create', window._iframeDataset.gaProperty, 'auto');
     }
 
-    if (window.ga.loaded) ga('send', 'pageview'); // single view
-    console.log("ga pageview sent");
+    if (window.ga.loaded) ga('send', 'pageview', '/', {
+        location: window.document.referrer // set to parent url
+      }); 
   },
 
   _insertScript: function(src, cb) {
