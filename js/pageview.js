@@ -26,8 +26,9 @@ var sendPageview = {
       window.ga('create', window._iframeDataset.gaProperty, 'auto');
     }
 
-    if (window.ga.loaded) ga('send', 'pageview', '/', {
-        location: window.document.referrer // set to parent url
+    if (window.ga.loaded) ga('send', {
+        location: window.document.referrer, // set to parent url
+        hitType: 'pageview'
       }); 
   },
 
