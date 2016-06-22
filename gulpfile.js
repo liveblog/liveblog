@@ -50,7 +50,7 @@ gulp.task('browserify', ['clean-js'], function() {
 
   // Source-mapped
   return b
-    .bundle()
+    .bundle().on('error', plugins.util.log)
     .pipe(source(paths.jsfile))
     .pipe(buffer())
     .pipe(plugins.rev())

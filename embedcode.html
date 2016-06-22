@@ -1,9 +1,10 @@
-<iframe src="//localhost:8000" onload="window.lb_iframe = this; postLoadMessage()" scrolling=no frameborder=0 width="100%" height="800" style="max-width: 100%; overflow: hidden; border:0"><p>Ihr Browser unterstützt keine iframes.</p></iframe>
+<iframe src="//localhost:8000?foo=asd" data-szm-st="foo-szm-st" data-szm-cp="foo-szm-cp" data-szm-co="foo-szm-co" data-ga-property="UA-foo" onload="window.lb_iframe = this; postLoadMessage()" scrolling=no frameborder=0 width="320px" height="800" style="max-width: 320px; overflow: hidden; border:0"><p>Ihr Browser unterstützt keine iframes.</p></iframe>
 
 <script type="text/javascript">
   var postLoadMessage = function() {
     var iframe = lb_iframe.contentWindow;
-    iframe.postMessage('resize:' + lb_iframe.clientHeight,
-      window.lb_iframe.src);
+    var dataset = lb_iframe.dataset;
+    iframe.postMessage({type: 'resize', payload: lb_iframe.clientHeight}, window.lb_iframe.src);
+    iframe.postMessage({type: 'analytics', payload: JSON.stringify(dataset)}, window.lb_iframe.src);
   }
 </script>

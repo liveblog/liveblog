@@ -1,6 +1,8 @@
 'use strict';
 var angular = require('angular')
+  , pageview = require('../pageview')
   , _ = require('../lodash-custom')
+  ;
 
 angular.module('theme')
 .controller('TimelineCtrl', [
@@ -72,8 +74,8 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
             return vm.pagesManager.fetchNewPage().then(function(data){
                 var num_posts_loaded = data._meta.max_results * vm.pagesManager.pages.length;
                 vm.finished = data._meta.total <= num_posts_loaded;
-                vm.loading = false;
-                // TODO: notify updates
+                vm.loading = false; // fires css transitions
+                vm.triggerPageview(); // analytics
             });
         },
 
@@ -119,6 +121,11 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
             });
 
             if (vm.highlightsOnly) stickyPagesManager.hideSticky = false;
+        },
+
+        triggerPageview: function() {
+            var event = new Event("sendpageview");
+            window.dispatchEvent(event);
         },
 
         pagesManager: pagesManager,

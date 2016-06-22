@@ -38,7 +38,9 @@ angular.module('liveblog-embed')
   return {
     scope: {item: '='},
     templateUrl: "template__generic-embed",
-    link: function(scope, element) {}
+    link: function(scope, element) {
+      scope.isEmbedCode = angular.isDefined(scope.item.meta.html);
+    }
   };
 }])
 
