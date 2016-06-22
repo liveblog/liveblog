@@ -49,19 +49,19 @@
             "name": "showImage",
             "label": "Show the blog image",
             "type": "checkbox",
-            "default": true
+            "default": false
         },
         {
             "name": "showTitle",
             "label": "Show the blog title",
             "type": "checkbox",
-            "default": true
+            "default": false
         },
         {
             "name": "showDescription",
             "label": "Show the blog description",
             "type": "checkbox",
-            "default": true
+            "default": false
         },
         {
             "name": "showAuthor",
