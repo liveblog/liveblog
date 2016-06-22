@@ -27,8 +27,9 @@ var sendPageview = {
     }
 
     if (window.ga.loaded) ga('send', {
+        hitType: 'pageview',
         location: window.document.referrer, // set to parent url
-        hitType: 'pageview'
+        hitCallback: function() {}
       }); 
   },
 
