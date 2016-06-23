@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <!-- inject:css -->
-        <link rel="stylesheet" href="/dist/dpa-liveblog-961fa2fedd.css">
+        <link rel="stylesheet" href="/dist/dpa-liveblog-df37c0327a.css">
         <!-- endinject -->
     </head>
 
@@ -88,6 +88,7 @@
                 </div>
 
                 <div class="lb-post-highlighted" ng-if="post.highlight"></div>
+                <div class="lb-post-sticky" ng-if="post.sticky">sticky</div>
                 <div ng-if="post.mainItem.displayDate | isDateChange" class="lb-post-date__fulldate" ng-bind="post.mainItem.displayDate | simpleDate"></div>
                 <div class="lb-post-date" ng-bind="post.mainItem.displayDate | dateFromNowOrAbsolute"></div>
 
@@ -104,7 +105,12 @@
                                 <div ng-switch-default lb-generic-embed item="item"></div>
                             </div>
                         </div>
-                        <div ng-switch-when="image" lb-bind-html html-content="{{ item.text | convertLinksWithRelativeProtocol }}"></div>
+                        <div ng-switch-when="image" lb-bind-html">
+                            <figure>
+                                <img lb-create-sourceset>
+                                <figcaption>{{ item.meta.caption }} (<i>{{ item.meta.credit }}</i>)</figcaption>
+                            </figure>
+                        </div>
                         <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
                     </div>
                 </div>
@@ -159,211 +165,114 @@
         <!-- endinject -->
 
         <script type="text/javascript">
-            window.LB = {
-                "blog": {
-                    "_etag": "6c41f2ce4dac8ad0c0572c1b97b631c646d41ed7",
-                    "blog_status": "open",
-                    "posts_order_sequence": 41,
-                    "description": "Diese Stelle wollen wir dazu nutzen, um das Wichtigste eines Events fortlaufend darzustellen. \n\nProblem: Es gibt keine Aufz\u00e4hlungsfunktion - es ist ein fortlaufender Text. Auch wenn ich Bulletpoints setze, erscheint alles in hintereinander als Flie\u00dftext. Leider kann man hier nicht FETTEN!\n\n\u25aa\ufe0e Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat.\n\n\u25aa\ufe0e  sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.",
-                    "version_creator": "56cad43adfc3f600800d2b97",
-                    "original_creator": "56c3530029ac1100191f8cd0",
-                    "_id": "56c5b34120dc360081f8e518",
-                    "_created": "2016-02-18T12:04:17+00:00",
-                    "versioncreated": "2016-03-29T13:49:11+00:00",
-                    "_updated": "2016-03-29T13:49:11+00:00",
-                    "title": "Was funktioniert, was fehlt!",
-                    "blog_preferences": { "theme": "classic", "language": "en" },
-                    "members": [
-                        { "user": "56c353bace78c00087488837" },
-                        { "user": "56c4451fce78c0008748883b" }
-                    ],
-                    "picture_url": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/edf8eb8de157e51fd3c5d5a2c3f865bcdce1b5e0d3033de1c4e2c23c4513477d",
-                    "public_url": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/blogs/56c5b34120dc360081f8e518/index.html",
-                    "picture": {
-                        "renditions": {
-                            "baseImage": {
-                                "height": 1080,
-                                "href": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/0f44c02fd533dc85ad5946b5439902b17feb844eda38646fa1e74546033e6b5b",
-                                "mimetype": "image/jpeg",
-                                "media": "0f44c02fd533dc85ad5946b5439902b17feb844eda38646fa1e74546033e6b5b",
-                                "width": 1080
-                            },
-                            "original": {
-                                "height": 319,
-                                "href": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/8bdfde82d3508011603713421826acd30bec51a477316cfa31fceb45ee1562e3",
-                                "mimetype": "image/jpeg",
-                                "media": "8bdfde82d3508011603713421826acd30bec51a477316cfa31fceb45ee1562e3",
-                                "width": 319
-                            },
-                            "viewImage": {
-                                "height": 720,
-                                "href": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/edf8eb8de157e51fd3c5d5a2c3f865bcdce1b5e0d3033de1c4e2c23c4513477d",
-                                "mimetype": "image/jpeg",
-                                "media": "edf8eb8de157e51fd3c5d5a2c3f865bcdce1b5e0d3033de1c4e2c23c4513477d",
-                                "width": 720
-                            },
-                            "thumbnail": {
-                                "height": 320,
-                                "href": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/578482f7455dbb997ea8270cbf25a7cf0699dbc87e167a4a4f73ba2ef5917512",
-                                "mimetype": "image/jpeg",
-                                "media": "578482f7455dbb997ea8270cbf25a7cf0699dbc87e167a4a4f73ba2ef5917512",
-                                "width": 320
-                            }
-                        },
-                        "mimetype": "image/jpeg",
-                        "type": "picture",
-                        "expiry": "2016-04-13T14:46:23+00:00",
-                        "original_creator": "56cad43adfc3f600800d2b97",
-                        "more_coming": false,
-                        "unique_id": 76,
-                        "pubstatus": "usable",
-                        "place": [],
-                        "filemeta": {
-                            "exifimagewidth": 319,
-                            "exifversion": "0221",
-                            "yresolution": [72, 1],
-                            "xresolution": [72, 1],
-                            "scenecapturetype": 0,
-                            "resolutionunit": 2,
-                            "exifoffset": 78,
-                            "exifimageheight": 319,
-                            "componentsconfiguration": "\u0001\u0002\u0003\u0000",
-                            "flashpixversion": "0100",
-                            "colorspace": 1,
-                            "length": 8284
-                        },
-                        "marked_for_not_publication": false,
-                        "media": "8bdfde82d3508011603713421826acd30bec51a477316cfa31fceb45ee1562e3",
-                        "family_id": "urn:newsml:localhost:2016-03-14T14:46:23.552204:c6a3fafe-ebef-4267-97a0-eac91cc95f69",
-                        "_etag": "f8904f98c823fecf6a65f8a01814dd77843da66c",
-                        "event_id": "tag:localhost:2016:a8741b0e-efd1-41a6-a589-d8293861d988",
-                        "firstcreated": "2016-03-14T14:46:23+00:00",
-                        "state": "draft",
-                        "operation": "create",
-                        "source": "Liveblog",
-                        "language": "en",
-                        "version_creator": "56cad43adfc3f600800d2b97",
-                        "priority": 3,
-                        "sticky": false,
-                        "sign_off": "art",
-                        "_id": "urn:newsml:localhost:2016-03-14T14:46:23.552204:c6a3fafe-ebef-4267-97a0-eac91cc95f69",
-                        "_created": "2016-03-14T14:46:23+00:00",
-                        "versioncreated": "2016-03-14T14:46:23+00:00",
-                        "_updated": "2016-03-14T14:46:23+00:00",
-                        "guid": "tag:localhost:2016:d1e6ea53-3d2c-4254-bf0a-94fd35d95e98",
-                        "dateline": { "source": "SF", "located": null, "text": null, "date": "2016-03-14T14:46:23+00:00" },
-                        "unique_name": "#76",
-                        "_current_version": 1,
-                        "urgency": 3
-                    }
-                },
-                "settings": {
-                    "showTitle": true,
-                    "authorNameLinksToEmail": false,
-                    "infinitScroll": true,
-                    "permalinkDelimiter": "?",
-                    "authorNameFormat": "display_name",
-                    "showAuthor": true,
-                    "postOrder": "editorial",
-                    "showAuthorAvatar": true,
-                    "postsPerPage": 20,
-                    "showImage": true,
-                    "showDescription": true,
-                    "loadNewPostsManually": true
-                },
-                "api_host": "//dpa-live-dev.dpa-newslab.com/",
-                "assets_root": "/themes_assets/classic/"
-            };
-
-            window.LB = {
-                "blog": {
-                    "blog_preferences": {
-                        "theme": "classic",
-                        "language": "en"
-                    },
-                    "_id": "56fceedda505e600f71959c8",
-                    "title": "Entwicklung",
-                    "description": "F\u00fcr den Developer.",
-                    "original_creator": "56c3530029ac1100191f8cd0",
-                    "_updated": "2016-04-27T14:23:05+00:00",
-
-                    "versioncreated": "2016-04-27T14:23:05+00:00",
-                    "posts_order_sequence": 95,
-                    "_etag": "a03d86c972a91c8759974f90332b5c0d3c080354",
-                    "version_creator": "56e979ab4f4cb600e39980b6",
-                    "members": [],
-                    "blog_status": "open",
-                    "_created": "2016-03-31T09:33:17+00:00"
-                },
-                "settings": {
-                    "postOrder": "editorial",
-                    "showTitle": true,
-                    "loadNewPostsManually": true,
-                    "language": "de",
-                    "permalinkDelimiter": "?",
-                    "showAuthorAvatar": true,
-                    "showImage": true,
-                    "authorNameFormat": "display_name",
-                    "postsPerPage": 20,
-                    "showAuthor": true,
-                    "hasHighlights": false,
-                    "showDescription": true
-                },
-                "api_host": "//dpa-live-dev.dpa-newslab.com/",
-                "assets_root": "/themes_assets/liveblog-theme-dpa/"
-            }
-
-            window.LB = {
-                blog: {
-                    "blog_preferences": {
-                        "theme": "liveblog-theme-dpa",
-                        "language": "en"
-                    },
-                    "_id": "5714cfcba505e600f26ac8e6",
-                    "title": "Die US-Wahlen 2016 im Liveblog",
-                    "description": "Hillary Clinton und Bernie Sanders haben die letzte Debatte der Vorwahlen hinter sich. Kurz gesagt, es geht noch immer Realismus gegen Revolution.\n\nIm Tourbus: Sanders traf im Vatikan auf Papst Franziskus, Clinton wird ihre Kampagne in Kalifornien fortsetzen. Alle republikanischen Kandidaten werden in New York erwartet.",
-                    "theme_settings": { "postOrder": "editorial", "showTitle": true, "loadNewPostsManually": true, "permalinkDelimiter": "?", "showAuthorAvatar": true, "showImage": true, "authorNameFormat": "display_name", "infinitScroll": true, "authorNameLinksToEmail": false, "postsPerPage": 20, "showAuthor": true, "showDescription": true },
-                    "original_creator": "56e979ab4f4cb600e39980b6",
-                    "_updated": "2016-04-28T15:25:24+00:00",
-                    "public_url": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/blogs/5714cfcba505e600f26ac8e6/index.html",
-                    "versioncreated": "2016-04-28T15:25:24+00:00",
-                    "posts_order_sequence": 3,
-                    "_etag": "3631c2ff6aea17524e9cc2d5551b3a0619e784aa",
-                    "version_creator": "56e979ab4f4cb600e39980b6",
-                    "members": [{ "user": "56e979ab4f4cb600e39980b6" }],
-                    "blog_status": "open",
-                    "_created": "2016-04-18T12:15:07+00:00"
-                },
-                settings: {
-                    "postOrder": "editorial",
-                    "showTitle": true,
-                    "loadNewPostsManually": true,
-                    "language": "de",
-                    "permalinkDelimiter": "?",
-                    "showAuthorAvatar": true,
-                    "showImage": true,
-                    "authorNameFormat": "display_name",
-                    "postsPerPage": 20,
-                    "showAuthor": true,
-                    "hasHighlights": true,
-                    "showDescription": true
-                },
-                api_host: '//dpa-live-dev.dpa-newslab.com/',
-                assets_root: '/themes_assets/liveblog-theme-dpa/'
-            };
+            
 
             // window.LB = {
-            //     blog: {"title": "LIVEBRIDGE TEST - Apple WWDC 2016", "blog_status": "open", "_id": "575838e8c158bd068b69e832", "original_creator": "57568a93c158bd066f33a4d7", "theme_settings": {"authorNameLinksToEmail": false, "showDescription": true, "infinitScroll": true, "canComment": false, "postsPerPage": 20, "showAuthorAvatar": true, "loadNewPostsManually": true, "authorNameFormat": "display_name", "postOrder": "editorial", "showImage": true, "showTitle": true, "hasHighlights": false, "showAuthor": true, "language": "en", "permalinkDelimiter": "?"}, "picture": {"urgency": 3, "media": "3928c418d008ac89a4e73ea197fe7e934f6a1e216571631ab8c197fe6591df31", "firstcreated": "2016-06-10T15:33:29+00:00", "mimetype": "image/jpeg", "pubstatus": "usable", "guid": "tag:localhost:2016:403605a5-90d4-4866-9ac3-3b4bf67028b7", "expiry": "2016-07-10T15:33:30+00:00", "unique_name": "#9", "sign_off": "vir", "renditions": {"thumbnail": {"height": 320, "href": "https://dpa.liveblog.pro/395e4e4d47b718a470b13aa08d4dae5e46a6274f66b4442062de83e4b15532e8", "media": "395e4e4d47b718a470b13aa08d4dae5e46a6274f66b4442062de83e4b15532e8", "mimetype": "image/jpeg", "width": 426}, "viewImage": {"height": 720, "href": "https://dpa.liveblog.pro/e616e83d2c00a379710483520083c633172339ea22717f8e6eb8eb3da10acbba", "media": "e616e83d2c00a379710483520083c633172339ea22717f8e6eb8eb3da10acbba", "mimetype": "image/jpeg", "width": 960}, "original": {"height": 401, "href": "https://dpa.liveblog.pro/3928c418d008ac89a4e73ea197fe7e934f6a1e216571631ab8c197fe6591df31", "media": "3928c418d008ac89a4e73ea197fe7e934f6a1e216571631ab8c197fe6591df31", "mimetype": "image/jpeg", "width": 535}, "baseImage": {"height": 1080, "href": "https://dpa.liveblog.pro/0b7a28d16ea114d68bb81e902c3c1a59fa0cc293a6ec5397ab6fe5b955eea8e8", "media": "0b7a28d16ea114d68bb81e902c3c1a59fa0cc293a6ec5397ab6fe5b955eea8e8", "mimetype": "image/jpeg", "width": 1440}}, "filemeta": {"length": 25125}, "marked_for_not_publication": false, "priority": 3, "_id": "urn:newsml:localhost:2016-06-10T15:33:29.827426:3002c3f3-7714-43dd-bc15-18f6b7146f00", "unique_id": 9, "type": "picture", "dateline": {"text": null, "located": null, "date": "2016-06-10T15:33:29+00:00", "source": "SF"}, "_current_version": 1, "version_creator": "575ada57c158bd066b855f51", "original_creator": "575ada57c158bd066b855f51", "state": "draft", "byline": "Martin Virtel", "place": [], "_created": "2016-06-10T15:33:29+00:00", "versioncreated": "2016-06-10T15:33:29+00:00", "_etag": "a2479523c30aee0275bcd4424ab6c7f3242ef701", "event_id": "tag:localhost:2016:15ca5b5d-36c7-4ace-9f1d-a53b679a8ea1", "more_coming": false, "source": "Liveblog", "family_id": "urn:newsml:localhost:2016-06-10T15:33:29.827426:3002c3f3-7714-43dd-bc15-18f6b7146f00", "operation": "create", "language": "en", "_updated": "2016-06-10T15:33:29+00:00"}, "members": [], "_created": "2016-06-08T15:25:28+00:00", "versioncreated": "2016-06-10T15:42:19+00:00", "_etag": "a3a962fd8fca96f58196aa0efb708100b7e97e96", "_updated": "2016-06-10T15:42:19+00:00", "picture_url": "https://dpa.liveblog.pro/e616e83d2c00a379710483520083c633172339ea22717f8e6eb8eb3da10acbba", "description": "", "posts_order_sequence": 1, "version_creator": "575ada57c158bd066b855f51", "public_url": "https://dpa.liveblog.pro/blogs/575838e8c158bd068b69e832/index.html", "blog_preferences": {"theme": "liveblog-theme-dpa", "language": "en"}},
-            //     settings: {"showDescription": false, "showTitle": false, "postsPerPage": 20, "showAuthorAvatar": true, "loadNewPostsManually": true, "authorNameFormat": "display_name", "postOrder": "editorial", "showImage": true, "hasHighlights": true, "showAuthor": true, "language": "de", "permalinkDelimiter": "?"},
+            //     blog: {
+            //         "blog_preferences": {
+            //             "theme": "liveblog-theme-dpa",
+            //             "language": "en"
+            //         },
+            //         "_id": "5714cfcba505e600f26ac8e6",
+            //         "title": "Die US-Wahlen 2016 im Liveblog",
+            //         "description": "Hillary Clinton und Bernie Sanders haben die letzte Debatte der Vorwahlen hinter sich. Kurz gesagt, es geht noch immer Realismus gegen Revolution.\n\nIm Tourbus: Sanders traf im Vatikan auf Papst Franziskus, Clinton wird ihre Kampagne in Kalifornien fortsetzen. Alle republikanischen Kandidaten werden in New York erwartet.",
+            //         "theme_settings": { "postOrder": "editorial", "showTitle": true, "loadNewPostsManually": true, "permalinkDelimiter": "?", "showAuthorAvatar": true, "showImage": true, "authorNameFormat": "display_name", "infinitScroll": true, "authorNameLinksToEmail": false, "postsPerPage": 20, "showAuthor": true, "showDescription": true },
+            //         "original_creator": "56e979ab4f4cb600e39980b6",
+            //         "_updated": "2016-04-28T15:25:24+00:00",
+            //         "public_url": "http://newslab-liveblog-demo.s3-eu-central-1.amazonaws.com/blogs/5714cfcba505e600f26ac8e6/index.html",
+            //         "versioncreated": "2016-04-28T15:25:24+00:00",
+            //         "posts_order_sequence": 3,
+            //         "_etag": "3631c2ff6aea17524e9cc2d5551b3a0619e784aa",
+            //         "version_creator": "56e979ab4f4cb600e39980b6",
+            //         "members": [{ "user": "56e979ab4f4cb600e39980b6" }],
+            //         "blog_status": "open",
+            //         "_created": "2016-04-18T12:15:07+00:00"
+            //     },
+            //     settings: {
+            //         "postOrder": "editorial",
+            //         "showTitle": true,
+            //         "loadNewPostsManually": true,
+            //         "language": "de",
+            //         "permalinkDelimiter": "?",
+            //         "showAuthorAvatar": true,
+            //         "autoApplyEdits": true,
+            //         "showImage": false,
+            //         "authorNameFormat": "display_name",
+            //         "postsPerPage": 20,
+            //         "showAuthor": true,
+            //         "hasHighlights": true,
+            //         "showDescription": false,
+            //         "showTitle": false
+            //     },
+            //     api_host: '//dpa-live-dev.dpa-newslab.com/',
+            //     assets_root: '/themes_assets/liveblog-theme-dpa/'
+            // };
+
+            // window.LB = {
+            //     blog: {"title": "LIVEBRIDGE TEST - Apple WWDC 2016", "blog_status": "open", "_id": "575838e8c158bd068b69e832", "original_creator": "57568a93c158bd066f33a4d7", "theme_settings": {"authorNameLinksToEmail": false, "showDescription": true, "infinitScroll": true, "canComment": false, "postsPerPage": 20, "showAuthorAvatar": true, "loadNewPostsManually": true, "authorNameFormat": "display_name", "postOrder": "editorial", "showImage": true, "showTitle": true, "hasHighlights": false, "showAuthor": true, "language": "en", "permalinkDelimiter": "?"}, "picture": {"urgency": 3, "media": "3928c418d008ac89a4e73ea197fe7e934f6a1e216571631ab8c197fe6591df31", "firstcreated": "2016-06-10T15:33:29+00:00", "mimetype": "image/jpeg", "pubstatus": "usable", "guid": "tag:localhost:2016:403605a5-90d4-4866-9ac3-3b4bf67028b7", "expiry": "2016-07-10T15:33:30+00:00", "unique_name": "#9", "sign_off": "vir", "renditions": {"thumbnail": {"height": 320, "href": "https://dpa.liveblog.pro/395e4e4d47b718a470b13aa08d4dae5e46a6274f66b4442062de83e4b15532e8", "media": "395e4e4d47b718a470b13aa08d4dae5e46a6274f66b4442062de83e4b15532e8", "mimetype": "image/jpeg", "width": 426}, "viewImage": {"height": 720, "href": "https://dpa.liveblog.pro/e616e83d2c00a379710483520083c633172339ea22717f8e6eb8eb3da10acbba", "media": "e616e83d2c00a379710483520083c633172339ea22717f8e6eb8eb3da10acbba", "mimetype": "image/jpeg", "width": 960}, "original": {"height": 401, "href": "https://dpa.liveblog.pro/3928c418d008ac89a4e73ea197fe7e934f6a1e216571631ab8c197fe6591df31", "media": "3928c418d008ac89a4e73ea197fe7e934f6a1e216571631ab8c197fe6591df31", "mimetype": "image/jpeg", "width": 535}, "baseImage": {"height": 1080, "href": "https://dpa.liveblog.pro/0b7a28d16ea114d68bb81e902c3c1a59fa0cc293a6ec5397ab6fe5b955eea8e8", "media": "0b7a28d16ea114d68bb81e902c3c1a59fa0cc293a6ec5397ab6fe5b955eea8e8", "mimetype": "image/jpeg", "width": 1440}}, "filemeta": {"length": 25125}, "marked_for_not_publication": false, "priority": 3, "_id": "urn:newsml:localhost:2016-06-10T15:33:29.827426:3002c3f3-7714-43dd-bc15-18f6b7146f00", "unique_id": 9, "type": "picture", "dateline": {"text": null, "located": null, "date": "2016-06-10T15:33:29+00:00", "source": "SF"}, "_current_version": 1, "version_creator": "575ada57c158bd066b855f51", "original_creator": "575ada57c158bd066b855f51", "state": "draft", "byline": "Martin Virtel", "place": [], "_created": "2016-06-10T15:33:29+00:00", "versioncreated": "2016-06-10T15:33:29+00:00", "_etag": "a2479523c30aee0275bcd4424ab6c7f3242ef701", "event_id": "tag:localhost:2016:15ca5b5d-36c7-4ace-9f1d-a53b679a8ea1", "more_coming": false, "source": "Liveblog", "family_id": "urn:newsml:localhost:2016-06-10T15:33:29.827426:3002c3f3-7714-43dd-bc15-18f6b7146f00", "operation": "create", "language": "en", "_updated": "2016-06-10T15:33:29+00:00"}, "members": [], "_created": "2016-06-08T15:25:28+00:00", "versioncreated": "2016-06-22T08:54:04+00:00", "_etag": "d08ee77262baffcc199af7cf85a7a196c86a5788", "_updated": "2016-06-22T08:54:04+00:00", "picture_url": "https://dpa.liveblog.pro/e616e83d2c00a379710483520083c633172339ea22717f8e6eb8eb3da10acbba", "description": "", "posts_order_sequence": 173, "version_creator": "5759bdafc158bd067436267e", "public_url": "https://dpa.liveblog.pro/blogs/575838e8c158bd068b69e832/index.html", "blog_preferences": {"theme": "liveblog-theme-dpa", "language": "en"}},
+            //     settings: {"showDescription": false, "showTitle": false, "postsPerPage": 20, "showAuthorAvatar": true, "loadNewPostsManually": true, "autoApplyEdits": true, "authorNameFormat": "display_name", "postOrder": "editorial", "showImage": true, "hasHighlights": true, "showAuthor": true, "language": "de", "permalinkDelimiter": "?"},
             //     api_host: '//dpa-api.liveblog.pro/',
             //     assets_root: '/themes_assets/liveblog-theme-dpa/',
             //     debug: false
             // };
 
+            window.LB = {
+            blog: {
+                "title": "Paul's Testblog",
+                "blog_status": "open",
+                "_id": "576bdc46c158bd066b856006",
+                "original_creator": "5759bdafc158bd067436267e",
+                "members": [], "_created": "2016-06-23T12:55:34+00:00",
+                "versioncreated": "2016-06-23T12:55:34+00:00",
+                "_etag": "af9593580f9eee86dcd34ca75bca6c753d027ecf",
+                "_updated": "2016-06-23T12:55:34+00:00",
+                "description": "", "posts_order_sequence": 0,
+                "blog_preferences": {"theme": "liveblog-theme-dpa", "language": "en"}
+            },
+                "theme_settings": {
+                    "showDescription": false,
+                    "autoApplyEdits": false,
+                    "loadNewPostsManually": true,
+                    "showTitle": false,
+                    "showAuthorAvatar": true,
+                    "postsPerPage": 5,
+                    "authorNameFormat": "display_name",
+                    "postOrder": "editorial",
+                    "showImage": true,
+                    "hasHighlights": true,
+                    "showAuthor": true,
+                    "language": "de",
+                    "permalinkDelimiter": "?"
+                },
+            
+
+                "settings": {
+                    "showDescription": false,
+                    "autoApplyEdits": false,
+                    "loadNewPostsManually": true,
+                    "showTitle": false,
+                    "showAuthorAvatar": true,
+                    "postsPerPage": 5,
+                    "authorNameFormat": "display_name",
+                    "postOrder": "editorial",
+                    "showImage": true,
+                    "hasHighlights": true,
+                    "showAuthor": true,
+                    "language": "de",
+                    "permalinkDelimiter": "?"
+                },
+                
+                api_host: '//dpa-api.liveblog.pro/',
+                assets_root: '/themes_assets/liveblog-theme-dpa/',
+                debug: false
+            };
+
+            
+
         </script>
 
         <!-- inject:js -->
-        <script src="/dist/dpa-liveblog-ba014fe91e.js"></script>
+        <script src="/dist/dpa-liveblog-14979306d5.js"></script>
         <!-- endinject -->     
         
     </body>

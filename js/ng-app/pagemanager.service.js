@@ -2,6 +2,7 @@
 var angular = require("angular")
   , moment = require('moment')
   , _ = require('../lodash-custom')
+  , objhash = require('object-hash');
 
 angular.module('liveblog-embed')
 .factory('PagesManager', ['posts', '$q', 'config', PagesManagerFactory]);
@@ -124,8 +125,11 @@ function PagesManagerFactory(postsService, $q, config) {
      * @param {boolean} [should_apply_updates=false] - If true, will apply the updates into the posts list
      * @returns {promise}
      */
+
     function retrieveUpdate(should_apply_updates) {
         should_apply_updates = should_apply_updates === true;
+        // auto_apply_edits = auto_apply_edits === true;
+
         var date = self.latestUpdatedDate ? self.latestUpdatedDate.utc().format() : undefined;
         var posts_criteria = {
             page: 1,
@@ -136,6 +140,7 @@ function PagesManagerFactory(postsService, $q, config) {
                 ]}}}
             }
         };
+
         return postsService.get(posts_criteria).$promise.then(function(updates) {
             var meta = updates._meta;
             // if
@@ -152,18 +157,36 @@ function PagesManagerFactory(postsService, $q, config) {
                     promises.push(postsService.get(posts_criteria).$promise);
                 }
                 return $q.all(promises).then(function(updates_pages) {
-                    return angular.extend({} ,updates_pages[0], {
+                    return angular.extend({}, updates_pages[0], {
                         _items: [].concat.apply([], updates_pages.map(function(update) {return update._items;})),
                         _meta: angular.extend(meta, {max_results: meta.max_results * updates_pages.length})
                     });
                 });
             }
         })
+
         // Apply the update if needed
         .then(function(updates) {
+
+            // check for edited items (operation == update)
+            // var edited_items = updates._items.filter(function(item, i) {
+            //     return item.operation === 'update'
+            // })
+
+            // if (auto_apply_edits && edited_items.length) {
+            //     applyUpdates(edited_items); // always apply edits
+            // }
+
+            
+            // if (auto_apply_edits) {
+            //     applyUpdates(updates._items); // always apply edits
+            // }
+            
+
             if (should_apply_updates) {
                 applyUpdates(updates._items);
             }
+
             return updates;
         });
     }
@@ -175,6 +198,7 @@ function PagesManagerFactory(postsService, $q, config) {
     function applyUpdates(updates) {
         updates.forEach(function(post) {
             var existing_post_indexes = getPostPageIndexes(post);
+
             if (angular.isDefined(existing_post_indexes)) {
                 // post already in the list
                 if (post.deleted) {
@@ -193,6 +217,7 @@ function PagesManagerFactory(postsService, $q, config) {
             } else {
                 // post doesn't exist in the list
                 if (!post.deleted && post.post_status === 'open' && post.sticky === sticky) {
+                // if (!post.deleted && post.post_status === 'open') {
                     addPost(post);
                 }
             }

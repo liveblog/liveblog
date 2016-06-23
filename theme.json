@@ -46,6 +46,13 @@
             "help": "Otherwise they will be loaded periodically"
         },
         {
+            "name": "autoApplyEdits",
+            "label": "Updated/edited posts are applied without prompt",
+            "type": "checkbox",
+            "default": true,
+            "help": "Otherwise they will pop up as new posts"
+        },
+        {
             "name": "showImage",
             "label": "Show the blog image",
             "type": "checkbox",

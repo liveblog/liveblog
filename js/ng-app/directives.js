@@ -4,9 +4,6 @@ var angular = require("angular")
 
 angular.module('liveblog-embed')
 
-/*
-  Inject HTML
-*/
 
 .directive('lbBindHtml', [function() {
   return {
@@ -30,6 +27,31 @@ angular.module('liveblog-embed')
     restrict: 'E',
     link: function(scope, elem, attrs) {
       elem.html(attrs.lbTwitterContent);
+    }
+  };
+}])
+
+.directive('lbCreateSourceset', [function() {
+  // Recreate the .text <figure> but with custom photo credits
+  return {
+    restrict: 'A',
+    link: function(scope, elem, attrs) {
+      var meta = scope.item.meta
+        , srcset = 'bi 1620w, or 2048w, th 480w, vi 1080w'
+        , mapObj = {
+            bi: meta.media.renditions.baseImage.href,
+            or: meta.media.renditions.thumbnail.href,
+            th: meta.media.renditions.thumbnail.href,
+            vi: meta.media.renditions.viewImage.href
+          };
+
+      srcset = srcset.replace(/bi|or|th|vi/gi, function(matched) {
+        return mapObj[matched];
+      });
+
+      attrs.$set('src', '');
+      attrs.$set('srcset', srcset);
+      attrs.$set('alt', meta.caption);
     }
   };
 }])

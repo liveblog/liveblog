@@ -73,6 +73,7 @@
                 </div>
 
                 <div class="lb-post-highlighted" ng-if="post.highlight"></div>
+                <div class="lb-post-sticky" ng-if="post.sticky">sticky</div>
                 <div ng-if="post.mainItem.displayDate | isDateChange" class="lb-post-date__fulldate" ng-bind="post.mainItem.displayDate | simpleDate"></div>
                 <div class="lb-post-date" ng-bind="post.mainItem.displayDate | dateFromNowOrAbsolute"></div>
 
@@ -89,7 +90,12 @@
                                 <div ng-switch-default lb-generic-embed item="item"></div>
                             </div>
                         </div>
-                        <div ng-switch-when="image" lb-bind-html html-content="{{ item.text | convertLinksWithRelativeProtocol }}"></div>
+                        <div ng-switch-when="image" lb-bind-html">
+                            <figure>
+                                <img lb-create-sourceset>
+                                <figcaption>{{ item.meta.caption }} (<i>{{ item.meta.credit }}</i>)</figcaption>
+                            </figure>
+                        </div>
                         <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
                     </div>
                 </div>
