@@ -79,7 +79,7 @@ def publish_embed(blog_id, api_host=None, theme=None):
     check_media_storage()
     file_path = get_file_path(blog_id)
     # remove existing
-    app.media.delete(file_path)
+    app.media.delete(app.media.media_id(file_path))
     # upload
     file_id = app.media.put(io.BytesIO(bytes(html, 'utf-8')),
                             filename=file_path,
