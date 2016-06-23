@@ -46,6 +46,8 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
     "Neue Beiträge anzeigen"
   ],
   "Send": "Abschicken",
+  "Show all posts": "Alle Beiträge anzeigen",
+  "Show highlighted post only": "Anzeigen hervorgehoben Beitrag ist nur",
   "Sort by:": "Ordnen nach",
   "Updated {{post.content_updated_date | prettifyIsoDate}}": "Aktualisiert am post.content_updated_date | prettifyIsoDate",
   "Your comment was sent for approval.": "Ihr Kommentar wartet auf Freischaltung,",

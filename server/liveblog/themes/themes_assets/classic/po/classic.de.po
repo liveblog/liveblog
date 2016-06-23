@@ -16,7 +16,7 @@ msgstr ""
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: template.html:40
+#: template.html:42
 msgid "Comment"
 msgstr "Kommentar"
 
@@ -32,11 +32,11 @@ msgstr "Kommentar darf maximal 300 Zeichen lang sein."
 msgid "Editorial"
 msgstr "Redaktionell"
 
-#: template.html:94
+#: template.html:96
 msgid "Load more posts"
 msgstr "Mehr Einträge laden"
 
-#: template.html:97
+#: template.html:99
 msgid "Loading"
 msgstr "Lade"
 
@@ -52,7 +52,7 @@ msgstr "Name darf maximal 30 Zeichen lang sein"
 msgid "Newest first"
 msgstr "Neueste zuerst"
 
-#: template.html:57
+#: template.html:59
 msgid "No posts for now."
 msgstr "Kein Beitrag vorhanden"
 
@@ -60,7 +60,7 @@ msgstr "Kein Beitrag vorhanden"
 msgid "Oldest first"
 msgstr "Älteste zuerst"
 
-#: template.html:81
+#: template.html:83
 msgid "One pinned post"
 msgid_plural "{{$count}} pined posts"
 msgstr[0] "Angehefteter Eintrag"
@@ -78,7 +78,7 @@ msgstr "Bitte Namen hier eintragen"
 msgid "Post a comment"
 msgstr "Kommentar posten"
 
-#: template.html:65
+#: template.html:67
 msgid "See one new update"
 msgid_plural "See {{$count}} new updates"
 msgstr[0] "Neuen Beitrag anzeigen"
@@ -87,6 +87,14 @@ msgstr[1] "Neue Beiträge anzeigen"
 #: comments.html:39
 msgid "Send"
 msgstr "Abschicken"
+
+#: template.html:38
+msgid "Show all posts"
+msgstr "Alle Beiträge anzeigen"
+
+#: template.html:37
+msgid "Show highlighted post only"
+msgstr "Anzeigen hervorgehoben Beitrag ist nur"
 
 #: template.html:11 template.html:27
 msgid "Sort by:"
@@ -100,6 +108,6 @@ msgstr "Aktualisiert am post.content_updated_date | prettifyIsoDate"
 msgid "Your comment was sent for approval."
 msgstr "Ihr Kommentar wartet auf Freischaltung,"
 
-#: item.html:14
+#: item.html:13
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr "{{ item.meta.caption }} kredit: {{ item.meta.credit }}"
