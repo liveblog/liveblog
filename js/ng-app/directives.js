@@ -40,7 +40,7 @@ angular.module('liveblog-embed')
         , srcset = 'bi 1620w, or 2048w, th 480w, vi 1080w'
         , mapObj = {
             bi: meta.media.renditions.baseImage.href,
-            or: meta.media.renditions.thumbnail.href,
+            or: meta.media.renditions.original.href,
             th: meta.media.renditions.thumbnail.href,
             vi: meta.media.renditions.viewImage.href
           };
