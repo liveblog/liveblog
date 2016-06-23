@@ -66,7 +66,7 @@ angular.module('liveblog-embed')
   };
 }])
 
-.directive('loadScript', ['$rootScope', function($rootScope) {
+.directive('loadScript', ['$rootScope', '$timeout', function($rootScope, $timeout) {
   return {
     restrict: 'A',
     link: function(scope, elem, attrs) {
@@ -84,13 +84,16 @@ angular.module('liveblog-embed')
       var embedLibMethods = {
         instagram: function(elem) {
           if (!window.instgrm) return false;
-          else instgrm.Embeds.process(elem);
+          else $timeout(function() {
+            window.instgrm.Embeds.process(elem)
+          }, 100); // n-th instagrams need this
+          
           return true;
         },
 
         twitter: function(elem) {
           if (!window.twttr) return false
-          else window.setTimeout(function() {
+          else $timeout(function() {
             if (twttr.hasOwnProperty("widgets")) {
               twttr.widgets.load(elem)
             }
