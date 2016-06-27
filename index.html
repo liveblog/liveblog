@@ -12,7 +12,7 @@
 
     <body>
         <!-- inject:template -->
-        <script>window.FRAME_HEIGHT = window.innerHeight; /* iframe height */</script>
+        <script>if (window.self !== window.top) window.FRAME_HEIGHT = window.innerHeight; /* iframe height */</script>
 <div class="mod--hide lb-timeline {{timeline.settings.language}}" ng-app="theme" ng-controller="TimelineCtrl as timeline">
     <div class="lb-timeline__header" ng-if="timeline.settings.showDescription || timeline.settings.showTitle">
         <h1 ng-if="timeline.settings.showTitle" ng-bind="timeline.blog.title"></h1>
@@ -230,12 +230,8 @@
         </script>
 
         <!-- inject:js -->
-<<<<<<< HEAD
-        <script src="/dist/dpa-liveblog-eb18742785.js"></script>
-=======
-        <script src="/dist/dpa-liveblog-6b164768e3.js"></script>
->>>>>>> iframe_height
-        <!-- endinject -->     
+<script src="/dist/dpa-liveblog-b70f21d67f.js"></script>
+<!-- endinject -->     
         
     </body>
 </html>

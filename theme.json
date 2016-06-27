@@ -9,7 +9,7 @@
     },
     "license": "UNLICENSED",
     "styles": ["dist/dpa-liveblog-d2a02adc9c.css"],
-    "scripts": ["dist/dpa-liveblog-1f8986c2c1.js"],
+    "scripts": ["dist/dpa-liveblog-5b2c5ada5f.js"],
     "options": [
         {
             "name": "language",
