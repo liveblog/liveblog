@@ -17,5 +17,6 @@ function resizeIframeHeight(h) { // T
 
 module.exports = function() {
   window.addEventListener("message", receiveMessage, false);
+  if (!!window.FRAME_HEIGHT && parseInt(window.FRAME_HEIGHT)) resizeIframeHeight(window.FRAME_HEIGHT);
   //var parentHeight = parent.document.body.clientHeight
 }

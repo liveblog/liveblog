@@ -167,22 +167,6 @@ function PagesManagerFactory(postsService, $q, config) {
 
         // Apply the update if needed
         .then(function(updates) {
-
-            // check for edited items (operation == update)
-            // var edited_items = updates._items.filter(function(item, i) {
-            //     return item.operation === 'update'
-            // })
-
-            // if (auto_apply_edits && edited_items.length) {
-            //     applyUpdates(edited_items); // always apply edits
-            // }
-
-            
-            // if (auto_apply_edits) {
-            //     applyUpdates(updates._items); // always apply edits
-            // }
-            
-
             if (should_apply_updates) {
                 applyUpdates(updates._items);
             }
