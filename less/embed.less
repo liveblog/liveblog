@@ -121,7 +121,7 @@
 // Sorting Bar
 
 .sorting-bar {
-    margin-right: 4px;
+    margin-right: 20px;
 }
 
 .header-bar {
@@ -161,23 +161,34 @@
 .sorting-bar__order:hover {
     color: #333333;
     margin-bottom: -4px;
-    border-bottom: 4px solid @washedgreen;
+    border-bottom: 4px solid @dpagreen;
+}
+
+.header-bar__highlights {
+    position: relative;
+    border: 0px;
+    background-color: #EFEFEF;
+    color: #666;
+    border-radius: 5px;
+    padding: 2px 12px;
+    margin-bottom: 8px;
+    margin-left: 0px;
 }
 
 .header-bar__highlights:hover {
-    color: #666;
+    color: #333;
 }
 
 .header-bar__highlights--active {
     position: relative;
     border: 0px;
-    background-color: #EFEFEF;
-    box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.06);
-    color: #666;
-    border-radius: 5px;
-    padding: 2px 10px;
-    margin-bottom: 8px;
-    margin-left: 0px;
+    box-shadow: inset 1px 1px 4px rgba(0, 0, 0, 0.12);
+    background-color: #81D993;
+    color: #ffffff;
+}
+
+.header-bar__highlights--active:hover {
+    color: #ffffff;
 }
 
 
@@ -230,7 +241,7 @@ article.lb-post:after {
     background-color: #F1F1F1;
 }
 
-.lb-post:last-of-type:after {
+.lb-postlist > .lb-post:last-of-type:after {
     display: none;
 }
 
@@ -299,13 +310,13 @@ article.lb-post:after {
 
 .lb-type {
     position: absolute;
-    width: 20px;
-    height: 20px;
-    background-color: #81e496;
+    width: 16px;
+    height: 16px;
+    background-color: @dpagreen;
     background-position: center center;
     background-repeat: no-repeat;
     border-radius: 50%;
-    margin-left: -8px;
+    margin-left: -6px;
     margin-top: 12px;
 }
 
@@ -414,7 +425,7 @@ article.lb-post:after {
 }
 
 .lb-author__name {
-    color: #444444;
+    color: #878787;
 }
 
 .lb-author__date {
@@ -650,15 +661,16 @@ article.lb-post:after {
     }
 
     .lb-post-highlighted {
-        background-size: 12px;
-        padding: 5px;
+        background-size: 10px;
+        background-position-y: 4px;
+        padding: 4px;
         float: left;
-        left: 20px;
+        left: 16px;
         display: inline-block;
         position: relative;
-        width: 12px;
-        height: 12px;
-        margin: -11px 4px 0 10px;
+        width: 10px;
+        height: 10px;
+        margin: -7px 4px 0 6px;
     }
 
     .lb-button {

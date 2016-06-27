@@ -120,6 +120,9 @@ function Posts($resource, config, users) {
           post.mainItem = _completeUser(post.groups[1].refs[0].item); // Basically Refs 1?
           post.mainEmbed = _mainEmbed(post.groups[1].refs) // Heuristic for embed-centered item
           post.fullDetails = post.hasComments; // business logic compiled from other objects.
+
+          // fallback for older posts.
+          if(!post.content_updated_date) post.content_updated_date = post._updated;
           post.showUpdate = (post._updated !== post.published_date); // post is updated
 
           // add all the items directly in a `items` property

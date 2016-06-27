@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <!-- inject:css -->
-        <link rel="stylesheet" href="/dist/dpa-liveblog-df37c0327a.css">
+        <link rel="stylesheet" href="/dist/dpa-liveblog-e94d81828d.css">
         <!-- endinject -->
     </head>
 
@@ -43,7 +43,7 @@
                 ng-click="timeline.toggleHighlighsOnly()"
                 tooltip-placement="bottom"
                 tooltip="{{ timeline.highlightsOnly? 'Show all posts': 'Show highlighted post only' }}">
-                Highlights
+                Topmeldungen
             </div>
         </div>
     </div>
@@ -58,7 +58,7 @@
         <div class="lb-post emtpy-message ng-cloak"
             ng-show="timeline.getAllPosts().length < 1 && !timeline.loading">
             <div ng-if="!timeline.highlightsOnly">Derzeit keine Eintr&auml;ge.</div>
-            <div ng-if="timeline.highlightsOnly">Derzeit keine Highlights.</div>
+            <div ng-if="timeline.highlightsOnly">Derzeit keine Topmeldungen.</div>
         </div>
 
         <section class="lb-posts list-group"
@@ -74,61 +74,11 @@
             <div class="lb-button load-new-posts"
                 ng-click="timeline.applyUpdates()"
                 ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0">
-                Beiträge laden
+                Neue Beiträge
             </div>
 
-            <article lb-post ng-repeat="post in timeline.getAllPosts() track by $index"
-                class="lb-post list-group-item ng-cloak"
-                ng-class="{
-                    'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
-                    'lb-post-permalink-selected': post._id === timeline.permalink._id}">        
-                
-                <div class="lb-type" ng-class="{
-                    'lb-type--text': !post.mainEmbed,
-                    'lb-type--embed lb-type--twitter': post.mainEmbed == 'Twitter',
-                    'lb-type--embed lb-type--instagram': post.mainEmbed == 'Instagram',
-                    'lb-type--embed lb-type--youtube': post.mainEmbed == 'Youtube'
-                    }">
-                </div>
-
-                <div class="lb-post-highlighted" ng-if="post.highlight"></div>
-                <div class="lb-post-sticky" ng-if="post.sticky">sticky</div>
-                <div ng-if="post.mainItem.displayDate | isDateChange" class="lb-post-date__fulldate" ng-bind="post.mainItem.displayDate | simpleDate"></div>
-                <div class="lb-post-date" ng-bind="post.mainItem.displayDate | dateFromNowOrAbsolute"></div>
-
-                <div class="lb-post-permalink">
-                    <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
-                        <i class="fa fa-link fa-2"></i>
-                    </a>
-                </div>
-
-                <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">              
-                    <div ng-switch="item.item_type"> <!-- Item content type switch -->
-                        <div ng-switch-when="embed">
-                            <div ng-switch="item.meta.provider_name">
-                                <div ng-switch-default lb-generic-embed item="item"></div>
-                            </div>
-                        </div>
-                        <div ng-switch-when="image" lb-bind-html">
-                            <figure>
-                                <img lb-create-sourceset>
-                                <figcaption>{{ item.meta.caption }} <i ng-if="item.meta.credit">({{ item.meta.credit }})</i></figcaption>
-                            </figure>
-                        </div>
-                        <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
-                    </div>
-                </div>
-
-                <!-- author plus avatar  -->
-                <div class="lb-author" ng-if="timeline.settings.showAuthor">
-                    <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar" class="lb-author__avatar" ng-src="{{ post.mainItem.original_creator.picture_url }}" />
-                    <div class="lb-author__name" ng-bind="post.mainItem.original_creator[timeline.settings.authorNameFormat]"></div>
-                </div>
-
-                <div class="lb-updated-date ng-cloak" ng-show="post.showUpdate">
-                    Bearbeitet <!-- <span ng-bind="post._updated | prettifyIsoDate"> --></span>
-                </div>
-            </article>
+            <lb-postlist class="lb-postlist--stickyposts" timeline="timeline" posts="timeline.stickyPagesManager.allPosts"></lb-postlist>
+            <lb-postlist class="lb-postlist" timeline="timeline" posts="timeline.pagesManager.allPosts"></lb-postlist>
 
         </section>
 
@@ -150,6 +100,61 @@
                 <a ng-href="{{ item.meta.url }}" target="_blank" ng-bind="item.meta.title"></a>
             </div> -->
             <!-- <div class="item--embed__description" ng-if="item.meta.description" ng-bind="item.meta.description"></div> -->
+        </article>
+    </script>
+
+    <script type="text/ng-template" id="template__postlist">
+        <article lb-post ng-repeat="post in posts() track by post._id"
+            class="lb-post list-group-item ng-cloak"
+            ng-class="{
+                'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
+                'lb-post-permalink-selected': post._id === timeline.permalink._id}">
+            
+            <div class="lb-type" ng-class="{
+                'lb-type--text': !post.mainEmbed,
+                'lb-type--embed lb-type--twitter': post.mainEmbed == 'Twitter',
+                'lb-type--embed lb-type--instagram': post.mainEmbed == 'Instagram',
+                'lb-type--embed lb-type--youtube': post.mainEmbed == 'Youtube'
+                }">
+            </div>
+
+            <div class="lb-post-highlighted" ng-if="post.highlight"></div>
+            <div class="lb-post-sticky" ng-if="post.sticky">sticky</div>
+            <div ng-if="post.mainItem.displayDate | isDateChange" class="lb-post-date__fulldate" ng-bind="post.mainItem.displayDate | simpleDate"></div>
+            <div class="lb-post-date" ng-bind="post.mainItem.displayDate | dateFromNowOrAbsolute"></div>
+
+            <div class="lb-post-permalink">
+                <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
+                    <i class="fa fa-link fa-2"></i>
+                </a>
+            </div>
+
+            <div lb-item ng-repeat="item in post.items track by item._id" class="lb-item">              
+                <div ng-switch="item.item_type"> <!-- Item content type switch -->
+                    <div ng-switch-when="embed">
+                        <div ng-switch="item.meta.provider_name">
+                            <div ng-switch-default lb-generic-embed item="item"></div>
+                        </div>
+                    </div>
+                    <div ng-switch-when="image" lb-bind-html">
+                        <figure>
+                            <img lb-create-sourceset>
+                            <figcaption>{{ item.meta.caption }} <i ng-if="item.meta.credit">({{ item.meta.credit }})</i></figcaption>
+                        </figure>
+                    </div>
+                    <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
+                </div>
+            </div>
+
+            <!-- author plus avatar  -->
+            <div class="lb-author" ng-if="timeline.settings.showAuthor">
+                <img ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar" class="lb-author__avatar" ng-src="{{ post.mainItem.original_creator.picture_url }}" />
+                <div class="lb-author__name" ng-bind="post.mainItem.original_creator[timeline.settings.authorNameFormat]"></div>
+            </div>
+
+            <div class="lb-updated-date ng-cloak" ng-show="post.showUpdate">
+                Bearbeitet <!-- <span ng-bind="post._updated | prettifyIsoDate"> --></span>
+            </div>
         </article>
     </script>
     <!-- Templates End -->
@@ -276,7 +281,7 @@
         </script>
 
         <!-- inject:js -->
-        <script src="/dist/dpa-liveblog-9303aa1a92.js"></script>
+        <script src="/dist/dpa-liveblog-aa5a6008c1.js"></script>
         <!-- endinject -->     
         
     </body>

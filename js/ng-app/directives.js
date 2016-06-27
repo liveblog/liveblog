@@ -56,13 +56,24 @@ angular.module('liveblog-embed')
   };
 }])
 
-.directive('lbGenericEmbed', ['$timeout', '$window', function($timeout, $window) {
+.directive('lbGenericEmbed', [function() {
   return {
     scope: {item: '='},
     templateUrl: "template__generic-embed",
     link: function(scope, element) {
       scope.isEmbedCode = angular.isDefined(scope.item.meta.html);
     }
+  };
+}])
+
+.directive('lbPostlist', [function() {
+  return {
+    restrict: 'E',
+    scope: {
+      timeline: '=',
+      posts: '='
+    },
+    templateUrl: "template__postlist"
   };
 }])
 

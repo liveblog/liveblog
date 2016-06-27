@@ -211,7 +211,7 @@ function PagesManagerFactory(postsService, $q, config) {
                     } else {
                         // update
                         self.pages[existing_post_indexes[0]].posts[existing_post_indexes[1]] = post;
-                        createPagesWithPosts();
+                        createPagesWithPosts(self.allPosts(), true);
                    }
                 }
             } else {
@@ -249,15 +249,15 @@ function PagesManagerFactory(postsService, $q, config) {
      * @param {array} [posts=self.allPosts()] - List of posts
      */
     function createPagesWithPosts(posts, resetPages) {
-        var page;
         posts = posts || self.allPosts();
         if (resetPages) self.pages = [];
         
         // respect the order
         var sort_by = Object.keys(SORTS[self.sort])[0];
         var order_by = SORTS[self.sort][sort_by].order;
-
         posts = _.orderBy(posts, sort_by, order_by);
+
+        var page;
         
         posts.forEach(function(post, index) {
             if (index % self.maxResults === 0) {
