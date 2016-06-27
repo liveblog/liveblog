@@ -24,7 +24,7 @@ angular.module('liveblog-embed', [
     assets_root: window.LB.assets_root
   })
 
-  .constant('embeds', {
+  .constant('embed_flags', {
     allowed: [
       "youtube.com",
       "instagram.com",

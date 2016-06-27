@@ -16,14 +16,14 @@ angular.module('liveblog-embed')
     };
   }])
 
-  .factory('resizeIframes', ['embeds', function(embeds) {
+  .factory('resizeIframes', ['embed_flags', function(embed_flags) {
     return function resize() {
 
       /* for iframe providers that don't implement resize, we scale
       the initial proportions to timeline width */
 
       function shouldResize(iframe) {
-        var should = false, sources = embeds.resize_sources;
+        var should = false, sources = embed_flags.resize_sources;
         for (var i = sources.length - 1; i >= 0; i--) {
           should = iframe.src.indexOf(sources) > -1
         }
