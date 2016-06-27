@@ -66,12 +66,16 @@
             infinite-scroll-disabled="!timeline.settings.infiniteScroll || !timeline.isAllowedToLoadMore()"
             infinite-scroll-immediate-check="false">
 
-            <ng-pluralize class="lb-button load-new-posts"
+            <!-- <ng-pluralize class="lb-button load-new-posts"
                 ng-click="timeline.applyUpdates()"
                 ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0"
                 when="{'one': 'Ein neuer Beitrag', 'other': '{} neue Beiträge'}"
-                count="timeline.newPosts.length">
-            </ng-pluralize>
+                count="timeline.newPosts.length"> -->
+            <div class="lb-button load-new-posts"
+                ng-click="timeline.applyUpdates()"
+                ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0">
+                Beiträge laden
+            </div>
 
             <article lb-post ng-repeat="post in timeline.getAllPosts() track by $index"
                 class="lb-post list-group-item ng-cloak"
@@ -108,7 +112,7 @@
                         <div ng-switch-when="image" lb-bind-html">
                             <figure>
                                 <img lb-create-sourceset>
-                                <figcaption>{{ item.meta.caption }} (<i>{{ item.meta.credit }}</i>)</figcaption>
+                                <figcaption>{{ item.meta.caption }} <i ng-if="item.meta.credit">({{ item.meta.credit }})</i></figcaption>
                             </figure>
                         </div>
                         <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors }}"></article>
@@ -154,7 +158,7 @@
     <img name="pixelcounter" style="width: 1px; height: 1px; visibility:hidden;">
     <script type="text/javascript">
         var pixel = document.getElementsByName('pixelcounter')[0];
-        var pixel_src = "https://dq4xjmopyzaan.cloudfront.net/pixel.gi";
+        var pixel_src = "https://dq4xjmopyzaan.cloudfront.net/pixel.gif";
         pixel.src = pixel_src + '?r='+ encodeURIComponent(document.referrer)
             + '&l='+ encodeURIComponent(document.location);
     </script>
