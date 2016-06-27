@@ -1,10 +1,1 @@
-<iframe src="//localhost:8000" data-szm-st="foo-szm-st" data-szm-cp="foo-szm-cp" data-szm-co="foo-szm-co" data-ga-property="UA-foo" onload="window.lb_iframe = this; postLoadMessage()" scrolling=no frameborder=0 width="320px" height="800" style="max-width: 320px; overflow: hidden; border:0"><p>Ihr Browser unterstützt keine iframes.</p></iframe>
-
-<script type="text/javascript">
-  var postLoadMessage = function() {
-    var iframe = lb_iframe.contentWindow;
-    var dataset = lb_iframe.dataset;
-    iframe.postMessage({type: 'resize', payload: lb_iframe.clientHeight}, window.lb_iframe.src);
-    iframe.postMessage({type: 'analytics', payload: JSON.stringify(dataset)}, window.lb_iframe.src);
-  }
-</script>
+<iframe src="//localhost:8000" data-szm-st="foo-szm-st" data-szm-cp="foo-szm-cp" data-szm-co="foo-szm-co" data-ga-property="UA-foo" onload="var lb_frame = this; this.contentWindow.postMessage({type: 'analytics', payload: JSON.stringify(lb_frame.dataset)}, lb_frame.src);" scrolling=no frameborder=0 width="320px" height="800" style="max-width: 320px; overflow: hidden; border:0"><p>Ihr Browser unterstützt keine iframes.</p></iframe>

@@ -167,7 +167,6 @@ function PagesManagerFactory(postsService, $q, config) {
 
         // Apply the update if needed
         .then(function(updates) {
-
             if (should_apply_updates) {
                 applyUpdates(updates._items);
             }
