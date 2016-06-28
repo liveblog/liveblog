@@ -6,7 +6,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
         <!-- inject:css -->
-        <link rel="stylesheet" href="/dist/dpa-liveblog-6858fbf05a.css">
+        <link rel="stylesheet" href="/dist/dpa-liveblog-454fb38f03.css">
         <!-- endinject -->
     </head>
 
@@ -42,7 +42,7 @@
                 ng-click="timeline.toggleHighlighsOnly()"
                 tooltip-placement="bottom"
                 tooltip="{{ timeline.highlightsOnly? 'Show all posts': 'Show highlighted post only' }}">
-                Topmeldungen
+                Das Wichtigste
             </div>
         </div>
     </div>
@@ -65,16 +65,18 @@
             infinite-scroll-disabled="!timeline.settings.infiniteScroll || !timeline.isAllowedToLoadMore()"
             infinite-scroll-immediate-check="false">
 
-            <!-- <ng-pluralize class="lb-button load-new-posts"
+            <ng-pluralize class="lb-button load-new-posts"
                 ng-click="timeline.applyUpdates()"
                 ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0"
-                when="{'one': 'Ein neuer Beitrag', 'other': '{} neue Beiträge'}"
-                count="timeline.newPosts.length"> -->
-            <div class="lb-button load-new-posts"
+                when="{'one': 'Update laden', 'other': 'Updates laden'}"
+                count="timeline.newPosts.length"><!-- index via {} -->
+            </ng-pluralize>
+
+            <!-- <div class="lb-button load-new-posts"
                 ng-click="timeline.applyUpdates()"
                 ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0">
-                Neue Beiträge
-            </div>
+                Updates laden
+            </div> -->
 
             <lb-postlist class="lb-postlist--stickyposts" timeline="timeline" posts="timeline.stickyPagesManager.allPosts"></lb-postlist>
             <lb-postlist class="lb-postlist" timeline="timeline" posts="timeline.pagesManager.allPosts"></lb-postlist>
@@ -152,7 +154,7 @@
             </div>
 
             <div class="lb-updated-date ng-cloak" ng-show="post.showUpdate">
-                Bearbeitet <!-- <span ng-bind="post._updated | prettifyIsoDate"> --></span>
+                <!-- <span ng-bind="post._updated | prettifyIsoDate"> --></span>
             </div>
         </article>
     </script>
