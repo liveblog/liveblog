@@ -81,6 +81,14 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, $q, blogsService, conf
             });
         },
 
+        getAllPosts: function() {
+            /* templating helper */
+            return [].concat.apply([], [
+                this.stickyPagesManager.allPosts(),
+                this.pagesManager.allPosts()
+                ]);
+        },
+
         permalinkScroll: function() {
             vm.loading = true;
             vm.permalink.loadPost().then(function(id) {

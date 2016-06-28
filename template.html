@@ -42,8 +42,7 @@
 
         <div class="lb-post emtpy-message ng-cloak"
             ng-show="timeline.getAllPosts().length < 1 && !timeline.loading">
-            <div ng-if="!timeline.highlightsOnly">Derzeit keine Eintr&auml;ge.</div>
-            <div ng-if="timeline.highlightsOnly">Derzeit keine Topmeldungen.</div>
+            <div>Derzeit keine Eintr&auml;ge.</div>
         </div>
 
         <section class="lb-posts list-group"
@@ -83,10 +82,6 @@
         <div ng-if="isEmbedCode" class="item--embed" lb-bind-html html-content="{{item.meta.html}}" load-script></div>
         <article class="item--embed">
             <img ng-if="!isEmbedCode && item.meta.thumbnail_url" ng-src="{{ item.meta.thumbnail_url }}" class="item--embed__illustration"/>
-            <!-- <div class="item--embed__title" ng-if="item.meta.title">
-                <a ng-href="{{ item.meta.url }}" target="_blank" ng-bind="item.meta.title"></a>
-            </div> -->
-            <!-- <div class="item--embed__description" ng-if="item.meta.description" ng-bind="item.meta.description"></div> -->
         </article>
     </script>
 
