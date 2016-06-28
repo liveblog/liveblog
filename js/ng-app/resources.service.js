@@ -78,7 +78,7 @@ function Posts($resource, config, users) {
       ;
 
     switch (true) {
-      case yt.test(html): match = "Youtube"; break;
+      case yt.test(html): match = "YouTube"; break;
       case instagram.test(html): match = "Instagram"; break;
       case twitter.test(html): match = "Twitter"; break;
     }
