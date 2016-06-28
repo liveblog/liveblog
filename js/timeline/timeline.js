@@ -9,6 +9,7 @@ angular.module('theme')
     '$interval',
     '$anchorScroll',
     '$timeout',
+    '$q',
     'blogs',
     'config',
     'transformBlog',
@@ -17,7 +18,7 @@ angular.module('theme')
     TimelineCtrl]);
 
 
-function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, transformBlog, PagesManager, Permalink) {
+function TimelineCtrl($interval, $anchorScroll, $timeout, $q, blogsService, config, transformBlog, PagesManager, Permalink) {
     var POSTS_PER_PAGE = config.settings.postsPerPage;
     var STICKY_POSTS_PER_PAGE = 100;
     var PERMALINK_DELIMITER = config.settings.permalinkDelimiter || '?';
@@ -80,17 +81,6 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
             });
         },
 
-        getAllPosts: function() {
-            /* Consolidate posts and stickies
-            into one feed as to avoid redundant HTML and additional
-            requests from directive template requests */
-
-            return [].concat.apply([], [
-                this.stickyPagesManager.allPosts(),
-                this.pagesManager.allPosts()
-                ]);
-        },
-
         permalinkScroll: function() {
             vm.loading = true;
             vm.permalink.loadPost().then(function(id) {
@@ -113,17 +103,28 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
         },
 
         toggleHighlighsOnly: function() {
+            vm.loading = vm.finished = true
             vm.highlightsOnly = !vm.highlightsOnly;
-            vm.finished = false;
 
-            pagesManager.changeHighlight(vm.highlightsOnly).then(function(data) {
-                vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
-            });
-            stickyPagesManager.changeHighlight(vm.highlightsOnly).then(function(data) {
-                vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
+            var pageManagers = [pagesManager.changeHighlight(vm.highlightsOnly),
+                                stickyPagesManager.changeHighlight(vm.highlightsOnly)]
+
+            // stickies can in theory exceed posts per page!
+            $q.all(pageManagers).then(function(data) {
+                var has_finished = function(data) {
+                    return data._meta.total <= data._meta.max_results * data._meta.page
+                }
+
+                vm.finished = data.reduce(function(prev, curr) {
+                    return (has_finished(prev) + has_finished(curr)) == pageManagers.length
+                })
+
+                vm.loading = false;
             });
 
-            if (vm.highlightsOnly) stickyPagesManager.hideSticky = false;
+            if (vm.highlightsOnly) {
+                stickyPagesManager.hideSticky = false;
+            }
         },
 
         triggerPageview: function() {
@@ -137,23 +138,22 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, blogsService, config, 
         stickyPermalink: stickyPermalink
     });
 
-    // retrieve first page
-    vm.fetchNewPage()
-    // retrieve updates periodically
-    .then(function() {
-        vm.permalinkScroll();
-        $interval(retrieveUpdate, UPDATE_EVERY);
-        $interval(retrieveStickyUpdate, UPDATE_EVERY);
-        $interval(retrieveBlogSettings, 3 * UPDATE_EVERY);
-        // listen events from parent
-        var fetchNewPageDebounced = _.debounce(vm.fetchNewPage, 1000);
-        function receiveMessage(event) {
-            if (event.data === 'loadMore') {
-                fetchNewPageDebounced();
+    
+    vm.fetchNewPage() // retrieve first page
+        .then(function() { // retrieve updates periodically
+            vm.permalinkScroll();
+            $interval(retrieveUpdate, UPDATE_EVERY);
+            $interval(retrieveStickyUpdate, UPDATE_EVERY);
+            $interval(retrieveBlogSettings, 3 * UPDATE_EVERY);
+            // listen events from parent
+            var fetchNewPageDebounced = _.debounce(vm.fetchNewPage, 1000);
+            function receiveMessage(event) {
+                if (event.data === 'loadMore') {
+                    fetchNewPageDebounced();
+                }
             }
-        }
-        window.addEventListener('message', receiveMessage, false);
-    });
+            window.addEventListener('message', receiveMessage, false);
+        });
 
     window.timeline = this;
 }
