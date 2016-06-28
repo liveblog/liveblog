@@ -49,7 +49,7 @@ angular.module('liveblog-embed')
         return mapObj[matched];
       });
 
-      attrs.$set('src', '');
+      attrs.$set('src', mapObj.vi);
       attrs.$set('srcset', srcset);
       attrs.$set('alt', meta.caption);
     }
