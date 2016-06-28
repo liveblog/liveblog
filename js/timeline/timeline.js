@@ -103,7 +103,7 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, $q, blogsService, conf
         },
 
         toggleHighlighsOnly: function() {
-            vm.loading = vm.finished = true
+            vm.loading = vm.finished = true; // hide timeline
             vm.highlightsOnly = !vm.highlightsOnly;
 
             var pageManagers = [pagesManager.changeHighlight(vm.highlightsOnly),
