@@ -419,7 +419,7 @@ define([
                             class: 'alert alert-warning',
                             role: 'alert',
                         })
-                        .html(window.gettext('Image is bigger then ' + maxFileSize + 'MB, upload file size may be limited!')));
+                        .html(window.gettext('The image is being uploaded, please stand by. It may take a while as the file is bigger than ' + maxFileSize + 'MB.')));
                         var that = this;
                         window.setTimeout(function() {
                             that.$editor.find('[name="size-warning"]').css('display', 'none');
