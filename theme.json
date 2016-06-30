@@ -117,7 +117,7 @@
             "name": "hasHighlights",
             "label": "Has highlights",
             "type": "checkbox",
-            "default": true,
+            "default": false,
             "help": "If the users see the highlight button in embed"
         }
     ]

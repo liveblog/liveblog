@@ -60,6 +60,7 @@ function PagesManagerFactory(postsService, $q, config) {
             page: page,
             max_results: max_results || self.maxResults
         };
+        
         return postsService.get(posts_criteria).$promise.then(function(data) {
             // update posts meta data (used to know the total number of posts and pages)
             self.meta = data._meta;
