@@ -55,7 +55,7 @@ angular.module('liveblog-embed')
   return function(iso) {
     var d = new Date(iso);
     return [leftpad(d.getDate()),
-      leftpad(d.getMonth())].join(".")
+      leftpad(d.getMonth()+1)].join(".")
   };
 })
 
