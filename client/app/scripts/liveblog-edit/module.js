@@ -1,4 +1,4 @@
-f/**
+/**
  * This file is part of Superdesk.
  *
  * Copyright 2013, 2014 Sourcefabric z.u. and contributors.
@@ -302,6 +302,7 @@ define([
             preview: {},
             progress: {width: 0},
             tab: false,
+            // by default themes are not accepting embed multi height and code.
             embedMultiHight: false,
             userNotInMembers:function(user) {
                 for (var i = 0; i < vm.members.length; i ++) {
@@ -506,12 +507,16 @@ define([
                 return theme.name === vm.blogPreferences.theme;
             });
         });
+        // after publicUrl and theme is on `vm` object we can compute embeds code.
         $q.all([qPublicUrl, qTheme]).then(function() {
+            // if the theme doesn't have parent-iframe.js then it means it can't support resizeing.
             if (vm.selectedTheme.scripts.indexOf("parent-iframe.js") !== -1) {
                 vm.embedMultiHight = true;
             }
+            // devel link
             var parentIframe = 'http://localhost:5000/themes_assets/' + vm.blogPreferences.theme;
             if (vm.selectedTheme.public_url) {
+                // production link
                 parentIframe = vm.selectedTheme.public_url;
             }
             // loading mechanism, and load parent-iframe.js with callback.
