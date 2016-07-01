@@ -14,6 +14,28 @@ define([
     'ng-sir-trevor'
 ], function(angular, _) {
     'use strict';
+    function createCaretPlacer(atStart) {
+    return function(el) {
+        el.focus();
+        if (typeof window.getSelection != "undefined"
+                && typeof document.createRange != "undefined") {
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            range.collapse(atStart);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        } else if (typeof document.body.createTextRange != "undefined") {
+            var textRange = document.body.createTextRange();
+            textRange.moveToElementText(el);
+            textRange.collapse(atStart);
+            textRange.select();
+        }
+    };
+    }
+
+    var placeCaretAtStart = createCaretPlacer(true);
+    var placeCaretAtEnd = createCaretPlacer(false);
 
     function isURI(string) {
         var url_regex = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
@@ -551,6 +573,7 @@ define([
                     val = val.replace(/<(?!\s*\/?(br|p|b|i|strike|ul|ol|li|a)\b)[^>]+>/ig, '');
                 }
                 input.html(val);
+                placeCaretAtEnd(input.get(0));
             }, 0);
 
             SirTrevor.Blocks.Comment = SirTrevor.Block.extend({
