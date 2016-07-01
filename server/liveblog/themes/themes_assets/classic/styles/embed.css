@@ -463,67 +463,6 @@ article blockquote li:before {
 .loading.ng-hide {
     opacity: 0;
 }
-/* hide permalink on larger screens, show only on hover */
-@media (min-width: 1025px) {
-    .lb-post-permalink {
-        visibility: hidden;
-    }
-    .lb-post:hover .lb-post-permalink {
-        visibility: visible;
-    }
-}
-/* adapt embed card to small screens
- * Remove the two cols layout
-*/
-@media (max-width: 650px) {
-    .item--embed__illustration {
-        position: relative;
-        width: auto;
-    }
-    .item--embed__illustration ~ * {
-        margin-left: 0;
-    }
-}
-@media (max-width: 600px) {
-    .lb-timeline {
-        margin-top: 0;
-    }
-    .show-author-avatar .lb-author{
-        margin-left: 50px;
-    }
-    .show-author-avatar .lb-item {
-        margin-left: 0;
-    }
-    .lb-author__avatar, .lb-author__comment   {
-        width: 40px;
-        height: 40px;
-        left: -50px;
-    }
-    .lb-author__date {
-        float: none;
-    }
-    .sorting-bar {
-        min-height: 38px;
-    }
-    .sorting-bar__title {
-        display: none;
-    }
-    .sorting-bar__orders {
-        padding-left: 0 !important;
-        display: none;
-    }
-    .sorting-bar__orders-mobile {
-        display: block;
-    }
-    .header-bar {
-        padding: 0;
-    }
-}
-@media (max-width: 320px) {
-    .btn {
-        padding: 8px;
-    }
-}
 .lb-post-permalink {
     position: absolute;
     top: 10px;
@@ -639,3 +578,66 @@ article blockquote li:before {
 }
 /* Remove this is angular-gettext is updated */
 [translate]{visibility:hidden !important;}
+
+/* Media queries */ 
+/* hide permalink on larger screens, show only on hover */
+@media (min-width: 1025px) {
+    .lb-post-permalink {
+        visibility: hidden;
+    }
+    .lb-post:hover .lb-post-permalink {
+        visibility: visible;
+    }
+}
+/* adapt embed card to small screens
+ * Remove the two cols layout
+*/
+@media (max-width: 650px) {
+    .item--embed__illustration {
+        position: relative;
+        width: auto;
+    }
+    .item--embed__illustration ~ * {
+        margin-left: 0;
+    }
+}
+@media (max-width: 600px) {
+    .lb-timeline {
+        margin-top: 0;
+    }
+    .show-author-avatar .lb-author{
+        margin-left: 50px;
+    }
+    .show-author-avatar .lb-item {
+        margin-left: 0;
+    }
+    .lb-author__avatar, .lb-author__comment   {
+        width: 40px;
+        height: 40px;
+        left: -50px;
+    }
+    .lb-author__date {
+        float: none;
+    }
+    .sorting-bar {
+        min-height: 38px;
+    }
+    .sorting-bar__title {
+        display: none;
+    }
+    .sorting-bar__orders {
+        padding-left: 0 !important;
+        display: none;
+    }
+    .sorting-bar__orders-mobile {
+        display: block;
+    }
+    .header-bar {
+        padding: 0;
+    }
+}
+@media (max-width: 320px) {
+    .btn {
+        padding: 8px;
+    }
+}
