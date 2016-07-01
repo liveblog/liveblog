@@ -16,13 +16,6 @@ Serve via `python -m SimpleHTTPServer` or equivalent
 Use `make` or alternatively zip this directory without the `node_modules`
 and `.git` folders before uploading to LiveBlog.
 
-# Development Notes
-Debugging iframe PostMessage calls:
-'''
-document.getElementsByTagName("iframe")[0].contentWindow.postMessage(
-  'resize:400', document.getElementsByTagName("iframe")[0].src);
-'''
-
 ## Upstream Sync
 incorporates all of  
 ```
