@@ -13,23 +13,25 @@
         "styles/reset.css",
         "styles/embed.css",
         "styles/dropdown.css",
-        "//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic",
-        "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
+        "https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic",
+        "https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
     ],
     "styles": [
-        "//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic",
-        "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css",
+        "https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic",
+        "https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css",
         "dist/styles.min.css"
     ],
     "devScripts": [
-        "//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js",
-        "//cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js",
         "vendors/angular-gettext.js",
+        "parent-iframe.js",
         "main.js"
     ],
     "scripts": [
-        "//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js",
-        "//cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js",
+        "parent-iframe.js",
         "dist/scripts.min.js"
     ],
     "options": [

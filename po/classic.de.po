@@ -64,7 +64,7 @@ msgstr "Älteste zuerst"
 msgid "One pinned post"
 msgid_plural "{{$count}} pined posts"
 msgstr[0] "Angehefteter Eintrag"
-msgstr[1] "$count Angeheftete Einträge"
+msgstr[1] "{{$count}} Angeheftete Einträge"
 
 #: comments.html:31
 msgid "Please fill in your Comment."
@@ -102,7 +102,7 @@ msgstr "Ordnen nach"
 
 #: posts.html:27
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
-msgstr "Aktualisiert am post.content_updated_date | prettifyIsoDate"
+msgstr "Aktualisiert am {{post.content_updated_date | prettifyIsoDate}}"
 
 #: comments.html:7
 msgid "Your comment was sent for approval."
