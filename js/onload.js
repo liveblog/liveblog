@@ -10,17 +10,20 @@
 var angular = require("angular")
   , iframeParentResize = require('./iframe')
   , pageview = require('./pageview')
+  , polyfills = require("./polyfills")
   , _ = require('./lodash-custom')
   , _log = require("./log");
+
 
 module.exports = function($rootScope, $window, $timeout, resizeIframes, config) {
   var timeline = document.getElementsByClassName("lb-timeline")[0];
   timeline.classList.remove("mod--hide"); // Fade in timeline after all js has loaded
+  polyfills.events(); // IE10 compatible Event constructor
   $rootScope._log = _log(config); // Logging helper
 
   $window.onload = function() {
     $rootScope._log.debug("ng-lb", "started");
-    
+
     pageview.init(); // Initialize 'analytics' trigger
     iframeParentResize(); // Adjust body height to parent iframe
     $timeout(resizeIframes, 1000); // Hacky, hacky, hacky ... hacky

@@ -75,7 +75,6 @@ var sendPageview = {
 
   receiveMessage: function(e) {
     var parent = this;
-
     if (e.data.type === "analytics") {
       var payload = JSON.parse(e.data.payload);
       window._iframeDataset = payload // store dataset from parentNode 

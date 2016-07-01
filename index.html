@@ -12,7 +12,7 @@
 
     <body>
         <!-- inject:template -->
-        <script>if (window.self !== window.top) window.FRAME_HEIGHT = window.innerHeight; /* iframe height */</script>
+        <script>if (window.self !== window.top) {window.FRAME_HEIGHT = window.innerHeight;}/* iframe height */</script>
 <div class="mod--hide lb-timeline {{timeline.settings.language}}" ng-app="theme" ng-controller="TimelineCtrl as timeline">
     <div class="lb-timeline__header" ng-if="timeline.settings.showDescription || timeline.settings.showTitle">
         <h1 ng-if="timeline.settings.showTitle" ng-bind="timeline.blog.title"></h1>
@@ -27,9 +27,6 @@
                 <div class="sorting-bar__order"
                     ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='editorial'}"
                     ng-click="timeline.orderBy('editorial')">Neueste</div>
-                <!-- <div class="sorting-bar__order"
-                    ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='newest_first'}"
-                    ng-click="timeline.orderBy('newest_first')">Neueste</div> -->
                 <div class="sorting-bar__order"
                     ng-class="{'sorting-bar__order--active': timeline.pagesManager.order()=='oldest_first'}"
                     ng-click="timeline.orderBy('oldest_first')">&Auml;lteste</div>
@@ -70,12 +67,6 @@
                 when="{'one': 'Update laden', 'other': 'Updates laden'}"
                 count="timeline.newPosts.length"><!-- index via {} -->
             </ng-pluralize>
-
-            <!-- <div class="lb-button load-new-posts"
-                ng-click="timeline.applyUpdates()"
-                ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0">
-                Updates laden
-            </div> -->
 
             <lb-postlist class="lb-postlist--stickyposts" timeline="timeline" posts="timeline.stickyPagesManager.allPosts"></lb-postlist>
             <lb-postlist class="lb-postlist" timeline="timeline" posts="timeline.pagesManager.allPosts"></lb-postlist>
@@ -227,7 +218,7 @@
         </script>
 
         <!-- inject:js -->
-<script src="/dist/dpa-liveblog-4dc32eac55.js"></script>
+<script src="/dist/dpa-liveblog-e92a9e9535.js"></script>
 <!-- endinject -->     
         
     </body>

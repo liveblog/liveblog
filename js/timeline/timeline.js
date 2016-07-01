@@ -136,7 +136,7 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, $q, blogsService, conf
         },
 
         triggerPageview: function() {
-            var event = new Event("sendpageview");
+            var event = new CustomEvent("sendpageview");
             window.dispatchEvent(event);
         },
 
