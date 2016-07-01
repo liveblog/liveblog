@@ -62,7 +62,7 @@ define([
                     'data-icon-after': "ADD CONTENT HERE"
                 });
             }
-            // Add toMeta method to all blocks.
+            // Add toMeta method to all blocks. 
             SirTrevor.Block.prototype.toMeta = function() {return;};
             SirTrevor.Block.prototype.getOptions = function() {
                 return SirTrevor.$get().getInstance(this.instanceID).options;
@@ -403,12 +403,30 @@ define([
                         contenteditable: true,
                         placeholder: that.descriptionPlaceholder
                     }).html(data.caption));
+                    
                     this.$editor.append($('<div>', {
                         name: 'credit',
                         class: 'st-image-block',
                         contenteditable: true,
                         placeholder: that.authorPlaceholder
                     }).html(data.credit));
+
+                    //image size warning
+                    var maxFileSize = 2; //in MB
+                    if ((data.file.size / 1048576) > maxFileSize) {
+                        this.$editor.append($('<div>', {
+                            name: 'size-warning',
+                            class: 'alert alert-warning',
+                            role: 'alert',
+                        })
+                        .html(window.gettext('The image is being uploaded, please stand by. It may take a while as the file is bigger than ' + maxFileSize + 'MB.')));
+                        var that = this;
+                        window.setTimeout(function() {
+                            that.$editor.find('[name="size-warning"]').css('display', 'none');
+                        }, 10000);    
+                    }
+                    
+
                     //remove placeholders
                     handlePlaceholder(this.$('[name=caption]'), that.authorPlaceholder)
                     handlePlaceholder(this.$('[name=credit]'), that.descriptionPlaceholder, {tabbedOrder: true})
@@ -442,7 +460,8 @@ define([
                         this.$inputs.hide();
                         this.loadData({
                             file: {
-                                url: urlAPI.createObjectURL(file)
+                                url: urlAPI.createObjectURL(file),
+                                size: file.size
                             }
                         });
                         this.getOptions().uploader(
