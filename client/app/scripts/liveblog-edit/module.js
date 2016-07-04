@@ -514,13 +514,13 @@ define([
                 vm.embedMultiHight = true;
             }
             // devel link
-            var parentIframe = 'http://localhost:5000/themes_assets/' + vm.blogPreferences.theme;
+            var parentIframe = 'http://localhost:5000/themes_assets/' + vm.blogPreferences.theme + '/';
             if (vm.selectedTheme.public_url) {
                 // production link
                 parentIframe = vm.selectedTheme.public_url;
             }
             // loading mechanism, and load parent-iframe.js with callback.
-            var loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){var a=document,l=a.createElement("script"),o=a.getElementsByTagName("script")[0];return l.type="text/javascript",l.onload=t,l.async=!0,l.src=e,o.parentNode.insertBefore(l,o),l}};liveblog.load("' + parentIframe + '/parent-iframe.js",function(){"function"==typeof liveblog.loadCallback&&liveblog.loadCallback()});</script>';
+            var loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){var a=document,l=a.createElement("script"),o=a.getElementsByTagName("script")[0];return l.type="text/javascript",l.onload=t,l.async=!0,l.src=e,o.parentNode.insertBefore(l,o),l}};liveblog.load("' + parentIframe + 'parent-iframe.js",function(){"function"==typeof liveblog.loadCallback&&liveblog.loadCallback()});</script>';
             // compute embeds code with the injected publicUrl
             vm.embeds = {
                 normal: '<iframe width="100%" height="715" src="' + vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>',
