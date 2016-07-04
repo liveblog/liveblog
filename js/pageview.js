@@ -24,13 +24,16 @@ var sendPageview = {
   _sendGA: function() {
     if (window.ga.length > 0) {
       window.ga('create', window._iframeDataset.gaProperty, 'auto');
+      window.ga('set', 'anonymizeIp', true);
     }
 
-    if (window.ga.loaded) ga('send', {
+    if (window.ga.loaded) {
+      ga('send', {
         hitType: 'pageview',
         location: window.document.referrer, // set to parent url
         hitCallback: function() {}
       }); 
+    }
   },
 
   _insertScript: function(src, cb) {
