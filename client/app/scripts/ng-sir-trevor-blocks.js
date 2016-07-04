@@ -16,18 +16,13 @@ define([
     'use strict';
 
     function isURI(string) {
-        var url_regex = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
-        return (url_regex.test(string));
-    }
-    function embedFacebookToUrl(string) {
-        // regular expression to catch a facebook url in the embed code string.
-        // catch protocol even if relative, subdomain, facebook.com hardcoded and the path.
-        var facebook_regex = /(\b(?:([A-Za-z]+):)?\/\/([0-9.\-A-Za-z]+)facebook.com[-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[-A-Za-z0-9+&@#\/%=~_|])/,
-            matches = string.match(facebook_regex);
-        if (matches) {
-            return matches[0];
-        }
-        return string;
+        var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
+        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
+        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
+        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+        return pattern.test(string);
     }
     function handlePlaceholder(selector, placeHolderText, options) {
         var onEvents = 'click';
@@ -107,9 +102,6 @@ define([
                         that.resetMessages();
                         // start a loader over the block, it will be stopped in the loadData function
                         that.loading();
-                        // if facebook embed replace it with facebook url.
-                        // rendering facebook embed via url it doesn't cause issue LBSD-646.
-                        input = embedFacebookToUrl(input);
                         // if the input is an url, use embed services
                         if (isURI(input)) {
                             // request the embedService with the provided url
