@@ -14,7 +14,27 @@ from superdesk.resource import Resource
 class ClientUsersResource(UsersResource):
     datasource = {
         'source': 'users',
-        'default_sort': [('_created', -1)]
+        'projection': {
+            'avatar': 0,
+            'avatar_renditions': 0,
+            'renditions': 0,
+            'email': 0,
+            'role': 0,
+            'session_preferences': 0,
+            'user_preferences': 0,
+            'user_type': 0,
+            'is_active': 0,
+            'is_enabled': 0,
+            'last_name': 0,
+            'first_name': 0,
+            'sign_off': 0,
+            'needs_activation': 0,
+            '_created': 0,
+            '_updated': 0,
+            '_etag': 0,
+            '_id': 0,
+            'dateline_source': 0
+        }
     }
     public_methods = ['GET']
     public_item_methods = ['GET']
