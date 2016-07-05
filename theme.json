@@ -39,18 +39,18 @@
             "default": "editorial"
         },
         {
-            "name": "loadNewPostsManually",
-            "label": "User needs to click a button to retrieve the new posts",
+            "name": "autoApplyUpdates",
+            "label": "All updates including creates are auto-applied periodically.",
             "type": "checkbox",
-            "default": true,
-            "help": "Otherwise they will be loaded periodically"
+            "default": false,
+            "help": "Turn off to prompt user to load updates"
         },
         {
             "name": "autoApplyEdits",
-            "label": "Updated/edited posts are applied without prompt",
+            "label": "Edits, deletes are applied without prompt",
             "type": "checkbox",
             "default": true,
-            "help": "Otherwise they will pop up as new posts"
+            "help": "Otherwise they will pop up as new posts."
         },
         {
             "name": "showImage",

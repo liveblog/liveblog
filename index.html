@@ -63,7 +63,7 @@
 
             <ng-pluralize class="lb-button load-new-posts"
                 ng-click="timeline.applyUpdates()"
-                ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0"
+                ng-show="!timeline.settings.autoApplyUpdates && timeline.newPosts.length > 0"
                 when="{'one': 'Update laden', 'other': 'Updates laden'}"
                 count="timeline.newPosts.length"><!-- index via {} -->
             </ng-pluralize>
@@ -177,8 +177,8 @@
             },
                 "theme_settings": {
                     "showDescription": false,
-                    "autoApplyEdits": false,
-                    "loadNewPostsManually": true,
+                    "autoApplyUpdates": false,
+                    "autoApplyEdits": true,
                     "showTitle": false,
                     "showAuthorAvatar": true,
                     "postsPerPage": 5,
@@ -194,8 +194,8 @@
 
                 "settings": {
                     "showDescription": false,
-                    "autoApplyEdits": false,
-                    "loadNewPostsManually": true,
+                    "autoApplyUpdates": false,
+                    "autoApplyEdits": true,
                     "showTitle": false,
                     "showAuthorAvatar": true,
                     "postsPerPage": 5,
@@ -218,7 +218,7 @@
         </script>
 
         <!-- inject:js -->
-<script src="/dist/dpa-liveblog-a63f7345ad.js"></script>
+<script src="/dist/dpa-liveblog-4014becf96.js"></script>
 <!-- endinject -->     
         
     </body>

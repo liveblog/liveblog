@@ -122,24 +122,28 @@ function PagesManagerFactory(postsService, $q, config) {
 
     /**
      * Retrieve all the updates since the latest updated date
-     * @param {boolean} [should_apply_updates=false] - If true, will apply the updates into the posts list
+     * @param {boolean} [should_apply_updates=false] - By default, will auto-apply all updates to the posts list
+     * @param {boolean} [should_apply_edits=true] - By default, will auto-apply edits and deletes made to posts
      * @returns {promise}
      */
 
-    function retrieveUpdate(should_apply_updates) {
-        should_apply_updates = should_apply_updates === true;
-        // auto_apply_edits = auto_apply_edits === true;
+    function retrieveUpdate(auto_updates, auto_edits) {
+        var auto_apply_updates = auto_updates === true
+          , auto_apply_edits = auto_edits === true
+          
+          , date = self.latestUpdatedDate
+            ? self.latestUpdatedDate.utc().format()
+            : undefined
 
-        var date = self.latestUpdatedDate ? self.latestUpdatedDate.utc().format() : undefined;
-        var posts_criteria = {
-            page: 1,
-            source: {
-                sort: [{_updated: {order: 'desc'}}],
-                query: {filtered: {filter: {and: [
-                    {range: {_updated: {gt: date}}}
-                ]}}}
-            }
-        };
+          , posts_criteria = {
+                page: 1,
+                source: {
+                    sort: [{_updated: {order: 'desc'}}],
+                    query: {filtered: {filter: {and: [
+                        {range: {_updated: {gt: date}}}
+                    ]}}}
+                }
+            };
 
         return postsService.get(posts_criteria).$promise.then(function(updates) {
             var meta = updates._meta;
@@ -165,13 +169,22 @@ function PagesManagerFactory(postsService, $q, config) {
             }
         })
 
-        // Apply the update if needed
+        // Apply updates now?
         .then(function(updates) {
-            if (should_apply_updates) {
+            if (auto_apply_edits && !auto_apply_updates) {
+                var filtered_updates = applyUpdates(updates._items, {
+                    only_edits: true // We update edits, deletes
+                });
+
+                updates._items = filtered_updates ? filtered_updates : [];
+                return updates;
+            }
+
+            if (auto_apply_updates) {
                 applyUpdates(updates._items);
             }
 
-            return updates;
+            return updates; // untouched timestamps
         });
     }
 
@@ -179,35 +192,44 @@ function PagesManagerFactory(postsService, $q, config) {
      * Apply the given updates to the posts list
      * @param {array} updates - List of updated posts
      */
-    function applyUpdates(updates) {
-        updates.forEach(function(post) {
-            var existing_post_indexes = getPostPageIndexes(post);
+    function applyUpdates(updates, opts) {
+        var new_posts = []
+          , opts = angular.isDefined(opts) ? opts : {}
+          , only_edits = opts.hasOwnProperty("only_edits") && opts.only_edits === true;
 
-            if (angular.isDefined(existing_post_indexes)) {
-                // post already in the list
-                if (post.deleted) {
-                    // post deleted
+        updates.forEach(function(post) {
+            var existing_post_indexes = getPostPageIndexes(post)
+
+            if (angular.isDefined(existing_post_indexes)) { // post already in the list
+                if (post.deleted) { // post deleted
                     removePost(post);
-                } else {
-                    // post updated
+                }
+
+                else {
+                    // post either edited or not to be shown (but not deleted?)
                     if (post.post_status !== 'open' || post.sticky !== sticky || (self.highlight && !post.highlight)) {
-                       removePost(post);
-                    } else {
-                        // update
+                       removePost(post); // post was deleted
+                    }
+
+                    else {
+                        // post was edited
                         self.pages[existing_post_indexes[0]].posts[existing_post_indexes[1]] = post;
                         createPagesWithPosts(self.allPosts(), true);
                    }
                 }
-            } else {
-                // post doesn't exist in the list
+            }
+
+            else {
+                // post was just created
                 if (!post.deleted && post.post_status === 'open' && post.sticky === sticky) {
-                // if (!post.deleted && post.post_status === 'open') {
-                    addPost(post);
+                    if (only_edits) new_posts.push(post); // If we want to prompt the user for new posts                    
+                    else addPost(post); // auto-apply new post
                 }
             }
         });
-        // update date
-        updateLatestDates(updates);
+
+        if (new_posts.length) return new_posts; // returned to newPosts buffer in timeline
+        updateLatestDates(updates); // alternatively just update the viewmodel timestamps
     }
 
     /**
