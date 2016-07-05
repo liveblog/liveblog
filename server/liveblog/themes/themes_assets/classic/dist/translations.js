@@ -36,7 +36,7 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Oldest first": "Älteste zuerst",
   "One pinned post": [
     "Angehefteter Eintrag",
-    "$count Angeheftete Einträge"
+    "{{$count}} Angeheftete Einträge"
   ],
   "Please fill in your Comment.": "Bitte Kommentar hier eintragen",
   "Please fill in your Name.": "Bitte Namen hier eintragen",
@@ -49,7 +49,7 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Show all posts": "Alle Beiträge anzeigen",
   "Show highlighted post only": "Anzeigen hervorgehoben Beitrag ist nur",
   "Sort by:": "Ordnen nach",
-  "Updated {{post.content_updated_date | prettifyIsoDate}}": "Aktualisiert am post.content_updated_date | prettifyIsoDate",
+  "Updated {{post.content_updated_date | prettifyIsoDate}}": "Aktualisiert am {{post.content_updated_date | prettifyIsoDate}}",
   "Your comment was sent for approval.": "Ihr Kommentar wartet auf Freischaltung,",
   "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} kredit: {{ item.meta.credit }}"
 });
