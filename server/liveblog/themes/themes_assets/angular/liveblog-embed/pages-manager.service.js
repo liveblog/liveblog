@@ -12,6 +12,12 @@
             };
             var self = this;
 
+            //no of posts added with scheduled updates
+            self.newUpdatesApplied  = 0;
+            self.newUpdatesAvailable = 0;
+            //no of pages added by infinite scroll or "load more" button
+            self.pagesLoaded = 0;
+
             /**
              * Represent a page of posts
              * @param {array} [posts=[]] - a list of post to initialize the page
@@ -95,8 +101,27 @@
                     });
                 }
                 return promise.then(function() {
-                    return loadPage(self.pages.length + 1);
+                    var step = checkStep();
+                    //increase the number of pages loaded
+                    self.pagesLoaded = self.pagesLoaded + 1 + step;
+                    return loadPage(self.pagesLoaded);
                 });
+            }
+
+            /**
+             * Check to see if we need to require a higher page number
+             */
+            function checkStep() {
+                //if the number of new posts since the last pagination equals the items per page
+                var shift = self.newUpdatesApplied + self.newUpdatesAvailable;
+                // reset the counters as we need them fresh after a new page load
+                self.newUpdatesAvailable = 0; self.newUpdatesApplied = 0;
+                if (shift % self.maxResults === 0) {
+                    //increase page number
+                    return Math.floor(shift / self.maxResults);
+                } else {
+                    return 0;
+                }
             }
 
             /**
@@ -144,8 +169,29 @@
                     if (should_apply_updates) {
                         applyUpdates(updates._items);
                     }
+                    if (self.pages.length !== 0) {
+                        self.newUpdatesAvailable = newItemsNo(updates._items);
+                    }
                     return updates;
                 });
+            }
+
+            /**
+             * count the number of new items 
+             * to help the pagination process
+             */
+            function newItemsNo(updates) {
+                var available = 0;
+                updates.forEach(function(post) {
+                    var existing_post_indexes = getPostPageIndexes(post);
+                    if (!angular.isDefined(existing_post_indexes)) {
+                        // post doesn't exist in the list
+                        if (!post.deleted && post.post_status === 'open' && post.sticky === sticky) {
+                            available ++;
+                        }
+                    }
+                });
+                return available;
             }
 
             /**
@@ -174,9 +220,12 @@
                         // post doesn't exist in the list
                         if (!post.deleted && post.post_status === 'open' && post.sticky === sticky) {
                             addPost(post);
+                            self.newUpdatesApplied ++;
                         }
                     }
                 });
+                //reset the number of new posts available
+                self.newUpdatesAvailable = 0;
                 // update date
                 updateLatestDates(updates);
             }
@@ -236,10 +285,18 @@
              */
             function loadPage(page) {
                 page = page || self.pages.length;
+                var items = [];
                 return retrievePage(page).then(function(posts) {
-                    createPagesWithPosts(posts._items, false);
+                    //checking for dupes (until we make pagination with "startIndex")
+                    _.forEach(posts._items, function(post) {
+                        var postIndex = getPostPageIndexes(post);
+                        //console.log('postIndex ', postIndex);
+                        if (!angular.isDefined(postIndex)) {
+                            items.push(post);
+                        };
+                    });
+                    createPagesWithPosts(items, false);
                     return posts;
-
                 });
             }
 
