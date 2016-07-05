@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "del": "^2.2.0",
+    "graceful-fs": "^4.1.4",
     "gulp": "^3.9.1",
     "gulp-html-replace": "^1.5.5",
     "gulp-if": "^2.0.0",
