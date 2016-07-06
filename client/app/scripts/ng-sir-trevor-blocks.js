@@ -420,8 +420,8 @@ define([
                     
 
                     //remove placeholders
-                    handlePlaceholder(this.$('[name=caption]'), that.authorPlaceholder)
-                    handlePlaceholder(this.$('[name=credit]'), that.descriptionPlaceholder, {tabbedOrder: true})
+                    handlePlaceholder(this.$('[name=caption]'), that.descriptionPlaceholder)
+                    handlePlaceholder(this.$('[name=credit]'), that.authorPlaceholder, {tabbedOrder: true})
                 },
                 onBlockRender: function() {
                     var that = this;
