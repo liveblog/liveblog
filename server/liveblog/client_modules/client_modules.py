@@ -2,19 +2,20 @@ from liveblog.blogs.blogs import BlogsResource
 from superdesk.services import BaseService
 from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, BlogPostsResource
 from superdesk.users.users import UsersResource
-from superdesk.users.services import UsersService
 from superdesk.metadata.utils import item_url
 from flask import current_app as app
 from liveblog.items.items import ItemsResource, ItemsService
 from flask import request
 from liveblog.common import check_comment_length
 from superdesk.resource import Resource
+from eve.utils import config
 
 
-class ClientUsersResource(UsersResource):
+class ClientUsersResource(Resource):
     datasource = {
         'source': 'users',
         'projection': {
+            'password': 0,
             'avatar': 0,
             'avatar_renditions': 0,
             'renditions': 0,
@@ -33,9 +34,11 @@ class ClientUsersResource(UsersResource):
             '_updated': 0,
             '_etag': 0,
             '_id': 0,
-            'dateline_source': 0
+            'dateline_source': 0,
+            'username': 0
         }
     }
+
     public_methods = ['GET']
     public_item_methods = ['GET']
     item_methods = ['GET']
@@ -44,8 +47,10 @@ class ClientUsersResource(UsersResource):
     schema.update(UsersResource.schema)
 
 
-class ClientUsersService(UsersService):
-    pass
+class ClientUsersService(BaseService):
+    def get(self, req, lookup):
+        config.IF_MATCH = False
+        return super().get(req, lookup)
 
 
 class ClientBlogsResource(BlogsResource):
