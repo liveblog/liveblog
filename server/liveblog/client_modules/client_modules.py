@@ -17,7 +17,6 @@ class ClientUsersResource(Resource):
         'projection': {
             'password': 0,
             'avatar': 0,
-            'avatar_renditions': 0,
             'renditions': 0,
             'email': 0,
             'role': 0,
@@ -33,7 +32,6 @@ class ClientUsersResource(Resource):
             '_created': 0,
             '_updated': 0,
             '_etag': 0,
-            '_id': 0,
             'dateline_source': 0,
             'username': 0
         }
