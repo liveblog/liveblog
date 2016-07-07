@@ -599,6 +599,7 @@ define([
         'ngRoute',
         'superdesk.services.modal',
         'superdesk.upload',
+        'superdesk.editor',
         'liveblog.pages-manager',
         'lrInfiniteScroll',
         'liveblog.security'

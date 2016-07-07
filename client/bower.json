@@ -22,6 +22,7 @@
     "tests"
   ],
   "dependencies": {
+    "medium-editor": "^5.21.0",
     "superdesk": "https://github.com/liveblog/superdesk.git#0fb80412536dfc5bc28230d47b0073b9c56189e9",
     "Eventable": "https://github.com/nistormihai/eventable.git",
     "ng-sir-trevor": "~2.0.2",
@@ -36,6 +37,7 @@
   "resolutions": {
     "angular": "1.3.9",
     "jquery": "2.1.3",
-    "lodash": "~3.10.1"
+    "lodash": "~3.10.1",
+    "medium-editor": "^5.21.0"
   }
 }

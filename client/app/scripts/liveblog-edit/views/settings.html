@@ -77,12 +77,18 @@
                             <div class="form-group">
                                 <label for="inputDescription" class="control-label" translate>Blog Description</label>
                                 <div class="form-input">
-                                    <textarea
+                                    <div class="form-box"
+                                            sd-text-editor
+                                            data-config="{toolbar: {buttons: ['bold', 'italic', 'underline', 'strikethrough', 'orderedlist', 'unorderedlist'],sticky: false,static: true,align: 'left',updateOnEmptySelection: true}}"
+                                            data-language="en"
+                                            ng-model="settings.newBlog.description"
+                                    ></div>
+<!--                                     <textarea
                                         name="inputDescription"
                                         ng-model="settings.newBlog.description"
                                         class="form-control"
                                     ></textarea>
-                                </div>
+ -->                                </div>
                             </div>
 
                             <div class="form-group">
