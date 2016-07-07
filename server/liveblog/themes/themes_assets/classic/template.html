@@ -63,7 +63,7 @@
             class="lb-posts list-group"
             infinite-scroll="timeline.fetchNewPage()"
             infinite-scroll-disabled="!timeline.settings.infinitScroll || !timeline.isAllowedToLoadMore()"
-            infinite-scroll-immediate-check="false">
+            infinite-scroll-immediate-check="true">
             <div class="lb-post load-new-posts"
                  ng-click="timeline.applyUpdates()"
                  ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0"

@@ -67,7 +67,7 @@ gulp.task('build', ['translations', 'templates'], function() {
     if(theme.devScripts) {
         theme.devScripts.forEach(function(script) {
             // check if it is an external url, if so add it like that in final scripts.
-            if(externalUrlCheck.test(script)) {
+            if(externalUrlCheck.test(script) || (script === 'parent-iframe.js')) {
                 build.to.scripts.push(script);
             } else {
                 build.from.scripts.push(script);
