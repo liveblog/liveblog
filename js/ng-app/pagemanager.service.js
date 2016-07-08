@@ -15,6 +15,9 @@ function PagesManagerFactory(postsService, $q, config) {
     };
 
     var self = this;
+    self.newUpdatesApplied  = 0; // no of posts added with scheduled updates
+    self.newUpdatesAvailable = 0; // no of posts waiting to be pushed into view
+    self.pagesLoaded = 0; //no of pages added by infinite scroll or "load more" button
 
     /**
      * Represent a page of posts
@@ -116,7 +119,9 @@ function PagesManagerFactory(postsService, $q, config) {
         }
 
         return promise.then(function() {
-            return loadPage(self.pages.length + 1);
+            var page_boundaries = checkPageBoundary();
+            self.pagesLoaded += (1 + page_boundaries); // increase the number of pages loaded
+            return loadPage(self.pagesLoaded);
         });
     }
 
@@ -171,6 +176,10 @@ function PagesManagerFactory(postsService, $q, config) {
                 applyUpdates(updates._items);
             }
 
+            if (self.pages.length !== 0) {
+                self.newUpdatesAvailable = countNewPosts(updates._items);
+            }
+
             return updates;
         });
     }
@@ -182,7 +191,6 @@ function PagesManagerFactory(postsService, $q, config) {
     function applyUpdates(updates) {
         updates.forEach(function(post) {
             var existing_post_indexes = getPostPageIndexes(post);
-
             if (angular.isDefined(existing_post_indexes)) {
                 // post already in the list
                 if (post.deleted) {
@@ -203,11 +211,13 @@ function PagesManagerFactory(postsService, $q, config) {
                 if (!post.deleted && post.post_status === 'open' && post.sticky === sticky) {
                 // if (!post.deleted && post.post_status === 'open') {
                     addPost(post);
+                    self.newUpdatesApplied++;
                 }
             }
         });
-        // update date
-        updateLatestDates(updates);
+        
+        self.newUpdatesAvailable = 0; // reset the number of new posts available
+        updateLatestDates(updates); // update date
     }
 
     /**
@@ -232,6 +242,7 @@ function PagesManagerFactory(postsService, $q, config) {
      * Recreate the pages from the given posts
      * @param {array} [posts=self.allPosts()] - List of posts
      */
+
     function createPagesWithPosts(posts, resetPages) {
         posts = posts || self.allPosts();
         if (resetPages) self.pages = [];
@@ -265,12 +276,30 @@ function PagesManagerFactory(postsService, $q, config) {
      * @param {integer} page - index of the desired page
      * @returns {promise}
      */
+
     function loadPage(page) {
         page = page || self.pages.length;
+
         return retrievePage(page).then(function(posts) {
-            createPagesWithPosts(posts._items, false);
+            // check for dupes (until we make pagination with "startIndex")
+            var new_posts = posts._items.filter(function(post) {
+                return !postExists(post)
+            });
+
+            createPagesWithPosts(new_posts, false);
             return posts;
         });
+    }
+
+    /**
+     * Check if a post is already present in viewmodel
+     * @param {post} post - any given post
+     * @returns {bool}
+     */
+
+    function postExists(post) {
+        var postIndex = getPostPageIndexes(post);
+        return angular.isDefined(postIndex)
     }
 
     /**
@@ -278,6 +307,7 @@ function PagesManagerFactory(postsService, $q, config) {
      * @param {Post} post_to_find - post to find in the pages
      * @returns {array|undefined} - [page_index, post_index]
      */
+
     function getPostPageIndexes(post_to_find){
         var page;
         for (var page_index = 0; page_index < self.pages.length; page_index++) {
@@ -294,14 +324,16 @@ function PagesManagerFactory(postsService, $q, config) {
      * Add a post or a list of posts to the local pages
      * @param {Post|array<Post>} posts - posts to be added to the pages
      */
+
     function addPost(posts) {
         var all_posts = self.allPosts();
         if (!angular.isArray(posts)) {
             posts = [posts];
         }
+
         // for every post, check if exist before or add it
         posts.forEach(function(post) {
-            if (!angular.isDefined(getPostPageIndexes(post))) {
+            if (!postExists(post)) {
                 all_posts.push(post);
             }
         });
@@ -315,6 +347,7 @@ function PagesManagerFactory(postsService, $q, config) {
      * Remove a post in the local pages
      * @param {Post} post_to_remove - posts to be removed from the pages
      */
+
     function removePost(post_to_remove) {
         var indexes = getPostPageIndexes(post_to_remove);
         if (angular.isDefined(post_to_remove)) {
@@ -326,20 +359,58 @@ function PagesManagerFactory(postsService, $q, config) {
     }
 
     /**
+     * Check to see if we need to require a higher page number
+     * @returns {integer} of page boundaries crossed by the sum of posts
+     * loaded and available to be loaded after the initial render.
+     */
+     
+    function checkPageBoundary() {
+        var shift = self.newUpdatesApplied + self.newUpdatesAvailable; // if number of new posts since the last pagination equals the items per page
+        self.newUpdatesAvailable = self.newUpdatesApplied = 0; // reset the counters after new page load
+
+        return (shift % self.maxResults === 0)
+            ? Math.floor(shift / self.maxResults) : 0; // increase page number?
+    }
+
+    /**
      * Add the given page to the Page Manager
      * @param {Page} page - a page instance
      */
+
     function addPage(page) {
         self.pages.push(page);
+    }
+
+    /**
+     * Count the number of new posts 
+     * to help the pagination process
+     * @param {array} updates - a list of posts
+     * @returns {integer}
+     */
+
+    function countNewPosts(updates) {
+        function isNewPost(post) {
+            if (postExists(post)) return; // return early if post exists
+            if (!post.deleted && post.post_status === 'open' && post.sticky === sticky) {
+                return true
+            }
+        }
+        
+        var new_posts = updates.reduce(function(prev, curr) {
+            return prev + isNewPost(curr) 
+        }, false)
+
+        return new_posts;
     }
 
     /**
      * Returns the number of posts in the local pages
      * @returns {integer}
      */
-    function count() {
-        return self.pages.reduce(function(previous_value, current_value) {
-            return previous_value + current_value.posts.length;
+
+    function countTotalPosts() {
+        return self.pages.reduce(function(prev, curr) {
+            return prev + curr.posts.length;
         }, 0);
     }
 
