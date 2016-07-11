@@ -427,7 +427,7 @@ define([
 
                     //image size warning
                     var maxFileSize = 2; //in MB
-                    if ((data.file.size / 1048576) > maxFileSize) {
+                    if ( data.file && (data.file.size / 1048576) > maxFileSize) {
                         this.$editor.append($('<div>', {
                             name: 'size-warning',
                             class: 'alert alert-warning',
