@@ -23,7 +23,7 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, $q, blogsService, conf
     var STICKY_POSTS_PER_PAGE = 100;
     var PERMALINK_DELIMITER = config.settings.permalinkDelimiter || '?';
     var DEFAULT_ORDER = config.settings.postOrder; // newest_first, oldest_first or editorial
-    var UPDATE_MANUALLY = config.settings.loadNewPostsManually;
+    var AUTO_APPLY_UPDATES = config.settings.autoApplyUpdates;
     var AUTO_APPLY_EDITS = config.settings.autoApplyEdits;
     var UPDATE_EVERY = 10*1000; // retrieve update interval in millisecond
     
@@ -35,13 +35,13 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, $q, blogsService, conf
         stickyPermalink = new Permalink(stickyPagesManager, PERMALINK_DELIMITER);
 
     function retrieveUpdate() {
-        return vm.pagesManager.retrieveUpdate(!UPDATE_MANUALLY).then(function(data) {
+        return vm.pagesManager.retrieveUpdate(AUTO_APPLY_UPDATES, AUTO_APPLY_EDITS).then(function(data) {
             vm.newPosts = data._items;
         });
     }
 
     function retrieveStickyUpdate() {
-        return vm.stickyPagesManager.retrieveUpdate(!UPDATE_MANUALLY).then(function(data) {
+        return vm.stickyPagesManager.retrieveUpdate(AUTO_APPLY_UPDATES, AUTO_APPLY_EDITS).then(function(data) {
             vm.newStickyPosts = data._items;
         });
     }
