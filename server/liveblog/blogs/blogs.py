@@ -32,7 +32,7 @@ logger = logging.getLogger('superdesk')
 
 blogs_schema = {
     'title': metadata_schema['headline'],
-    'description': metadata_schema['description'],
+    'description': metadata_schema['description_text'],
     'picture_url': {
         'type': 'string',
         'nullable': True
