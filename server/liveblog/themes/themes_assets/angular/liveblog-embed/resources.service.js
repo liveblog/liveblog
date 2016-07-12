@@ -16,9 +16,10 @@
         }
     }
 
-    transformBlog.$inject = ['fixProtocol', 'srcSet'];
-    function transformBlog(fixProtocol) {
+    transformBlog.$inject = ['fixProtocol', 'srcSet', '$sce'];
+    function transformBlog(fixProtocol, srcSet, $sce) {
         return function(blog) {
+            blog.descriptionHtml = $sce.trustAsHtml(blog.description);
             if (blog.picture_url && blog.picture) {
                 blog.picture_srcset = srcSet(blog.picture.renditions); 
                 blog.picture_url = fixProtocol(blog.picture_url);
