@@ -1,4 +1,4 @@
-<div ng-if="item.meta.html" class="item--embed" lb-bind-html html-content="{{item.meta.html}}"></div>
+<div ng-if="item.meta.html" class="item--embed" lb-bind-html html-content="{{item.meta.html | fixEmbed}}"></div>
 <article class="item--embed">
    <a  ng-href="{{ item.meta.url }}" 
         ng-if="!item.meta.html && item.meta.thumbnail_url"
