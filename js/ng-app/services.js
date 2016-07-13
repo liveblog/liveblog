@@ -23,10 +23,11 @@ angular.module('liveblog-embed')
       the initial proportions to timeline width */
 
       function shouldResize(iframe) {
-        var should = false, sources = embed_flags.resize_sources;
-        for (var i = sources.length - 1; i >= 0; i--) {
-          should = iframe.src.indexOf(sources) > -1
-        }
+        var sources = embed_flags.resize_sources;
+        var should = sources.reduce(function(prev, curr) {
+            return prev + iframe.src.indexOf(curr) > -1
+        }, false)
+
         return should
       }
 

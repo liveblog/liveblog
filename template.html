@@ -49,7 +49,7 @@
 
             <ng-pluralize class="lb-button load-new-posts"
                 ng-click="timeline.applyUpdates()"
-                ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0"
+                ng-show="!timeline.settings.autoApplyUpdates && timeline.newPosts.length > 0"
                 when="{'one': 'Aktualisieren', 'other': 'Aktualisieren'}"
                 count="timeline.newPosts.length"><!-- index via {} -->
             </ng-pluralize>

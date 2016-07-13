@@ -17,7 +17,7 @@ angular.module('liveblog-embed', [
   ])
 
   .constant('config', {
-    debug: false,
+    debug: true,
     blog: window.LB.blog,
     settings: window.LB.settings,
     api_host: window.LB.api_host,
@@ -31,6 +31,7 @@ angular.module('liveblog-embed', [
       "twitter.com"
     ],
     resize_sources: [
+      "dpavideo.23video.com",
       "youtube.com"
     ]
   });
