@@ -202,7 +202,7 @@ define([
                         var cover_width = Math.min(this.getOptions().coverMaxWidth, data.thumbnail_width);
                         var cover_height = cover_width / ratio;
                         html.find('.cover-preview').css({
-                            'background-image': 'url(' + data.thumbnail_url + ')',
+                            'background-image': 'url("' + data.thumbnail_url + '")',
                             width: cover_width,
                             height: cover_height,
                             'background-size': 'cover'
