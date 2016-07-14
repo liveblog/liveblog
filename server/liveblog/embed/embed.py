@@ -79,11 +79,12 @@ def publish_embed(blog_id, api_host=None, theme=None):
     check_media_storage()
     file_path = get_file_path(blog_id)
     # remove existing
-    app.media.delete(app.media.media_id(file_path))
+    app.media.delete(app.media.media_id(file_path, version=False))
     # upload
     file_id = app.media.put(io.BytesIO(bytes(html, 'utf-8')),
                             filename=file_path,
-                            content_type='text/html')
+                            content_type='text/html',
+                            version=False)
     return superdesk.upload.url_for_media(file_id)
 
 
