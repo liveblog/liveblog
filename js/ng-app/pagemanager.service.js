@@ -15,7 +15,7 @@ function PagesManagerFactory(postsService, $q, config) {
     };
 
     var self = this;
-    self.newUpdatesApplied  = 0; // no of posts added with scheduled updates
+    self.newUpdatesApplied = 0; // no of posts added with scheduled updates
     self.newUpdatesAvailable = 0; // no of posts waiting to be pushed into view
     self.pagesLoaded = 0; //no of pages added by infinite scroll or "load more" button
 
@@ -89,11 +89,13 @@ function PagesManagerFactory(postsService, $q, config) {
     function changeOrder(sort_name) {
         self.sort = sort_name;
         self.pages = [];
+
+        resetPagination();
         return fetchNewPage();
     }
 
     /**
-     * Getter or Settre the order in the future posts request
+     * Getter or Setter the order in the future posts request
      * Gets the order current used.
      */
     function order(sort_name) {
@@ -325,6 +327,16 @@ function PagesManagerFactory(postsService, $q, config) {
     function postExists(post) {
         var postIndex = getPostPageIndexes(post);
         return angular.isDefined(postIndex)
+    }
+
+    /**
+     * Resets the helper vars keeping
+     * track of loaded posts and the like.
+     */
+
+    function resetPagination() {
+        self.newUpdatesApplied = self.newUpdatesAvailable = self.pagesLoaded = 0;
+        return true
     }
 
     /**

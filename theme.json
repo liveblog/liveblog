@@ -1,7 +1,7 @@
 {
     "label": "dpa Liveblog Theme",
     "name": "liveblog-theme-dpa",
-    "version": "0.9.8",
+    "version": "0.9.81",
     "author": "Paul Solbach <psolbach@dpa-newslab.com>",
     "repository": {
         "type" : "git",
@@ -9,7 +9,7 @@
     },
     "license": "UNLICENSED",
     "styles": ["dist/dpa-liveblog-4dd732662c.css"],
-    "scripts": ["dist/dpa-liveblog-adb70f6b89.js"],
+    "scripts": ["dist/dpa-liveblog-2bfb2fdce4.js"],
     "options": [
         {
             "name": "language",
@@ -42,14 +42,14 @@
             "name": "autoApplyUpdates",
             "label": "All updates including creates are auto-applied periodically.",
             "type": "checkbox",
-            "default": false,
+            "default": true,
             "help": "Turn off to prompt user to load updates"
         },
         {
             "name": "autoApplyEdits",
             "label": "Edits, deletes are applied without prompt",
             "type": "checkbox",
-            "default": true,
+            "default": false,
             "help": "Otherwise they will pop up as new posts."
         },
         {
