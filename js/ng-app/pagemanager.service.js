@@ -78,6 +78,8 @@ function PagesManagerFactory(postsService, $q, config) {
     function changeHighlight(highlight) {
         self.highlight = highlight;
         self.pages = [];
+
+        resetPagination();
         return fetchNewPage();
     }
 
