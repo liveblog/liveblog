@@ -420,7 +420,7 @@ article.lb-post:after {
 .lb-author__date {
     float: left;
     font-weight: 500;
-    font-size: 13px;
+    font-size: .8em;
     height: 24px;
 }
 
@@ -692,13 +692,37 @@ article.lb-post:after {
 }
 
 @media @small {
+    body {
+        font-size: 14px;
+    }
+
+    .header-bar {
+        margin: 10px 0 0 0px;
+    }
+
+    .header-bar__highlights,
+    .sorting-bar__order {
+        padding-bottom: 6px;
+    }
+
+    .lb-type {
+        margin-top: -7px;
+    }
+
     .lb-post {
         padding: 40px 15px 0px;
     }
 
+    .lb-post-date {
+        margin-left: 18px;
+        font-size: .8em;
+    }
+
     .lb-author__avatar {
-        width: 20px;
-        height: 20px;
+        width: 18px;
+        height: 18px;
+        margin-top: -3px;
+        margin-right: 6px;
     }
 
     .lb-updated-date {
