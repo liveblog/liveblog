@@ -109,8 +109,8 @@
                             <div class="form-group" ng-if="settings.embedMultiHight">
                                 <label for="inputTitle" class="control-label" translate>Embed height</label>
                                 <div class="form-input relative">
-                                    <span class="blog-status">{{ settings.blogPreferences.embed_switch ? 'Resizeing' : 'Normal' | translate }}</span>
-                                    <span style="display: block" tooltip="{{ settings.blogPreferences.embed_switch ? 'Resizeing automaticaly' : 'Normal, fixed height' | translate }}" tooltip-placement="right">
+                                    <span class="blog-status">{{ settings.blogPreferences.embed_switch ? 'Responsive' : 'Normal' | translate }}</span>
+                                    <span style="display: block" tooltip="{{ settings.blogPreferences.embed_switch ? 'Fluid height' : 'Normal, fixed height' | translate }}" tooltip-placement="right">
                                         <span class="pull-left" sd-switch ng-model="settings.blogPreferences.embed_switch" data-embed-status-switch></span>
                                     </span>
                                 </div>
