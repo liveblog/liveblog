@@ -64,8 +64,8 @@ function PagesManagerFactory(postsService, $q, config) {
         };
         
         return postsService.get(posts_criteria).$promise.then(function(data) {
-            // update posts meta data (used to know the total number of posts and pages)
-            self.meta = data._meta;
+            if (self.pages.length === 0) updateLatestDates(data._items); // init date cache on first load
+            self.meta = data._meta; // update posts meta data (used to know the total number of posts and pages)
             return data;
         });
     }
@@ -114,15 +114,6 @@ function PagesManagerFactory(postsService, $q, config) {
      */
     function fetchNewPage() {
         var promise = $q.when();
-
-        // for the first time, retrieve the updates just to know the latest update date
-        // Really? Let's doublecheck if this is necessary.
-        if (self.pages.length === 0) {
-            promise = self.retrieveUpdate().then(function(updates) {
-                updateLatestDates(updates._items);
-            });
-        }
-
         return promise.then(function() {
             var page_boundaries = checkPageBoundary();
             self.pagesLoaded += (1 + page_boundaries); // increase the number of pages loaded

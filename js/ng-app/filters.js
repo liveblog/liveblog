@@ -4,18 +4,18 @@ var angular = require("angular");
 angular.module('liveblog-embed')
 .filter('isDateChange', function() {
   return (function() { // use closure for comparator
-    var prev_isodatestring; // persists across calls
+    var date_array = []; // persists across calls
 
     function isoToDate(iso) {
       return new Date(iso).getDate()
     }
     
-    return function(new_isodatestring) {
-      var prev_date = isoToDate(prev_isodatestring)
-        , new_date = isoToDate(new_isodatestring);
+    return function(new_isodate) {
+      var prev_date = date_array[date_array.length-1]
+        , new_date = isoToDate(new_isodate);
 
-      prev_isodatestring = new_isodatestring; // save for next call
-      return (prev_date == new_date || !prev_isodatestring) // new date or first call?
+      date_array.push(new_date); // save for next call
+      return (prev_date == new_date || date_array.indexOf(new_date) == 0) // new date or update?
         ? false : true; 
     }
   })()
