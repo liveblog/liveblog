@@ -104,5 +104,13 @@ gulp.task('build', ['translations', 'templates'], function() {
         build.to.styles.push(config.get('style'));
         theme.styles = build.to.styles;
     }
+    // automatic `patch` increase in `version`.
+    if(theme.version) {
+        var version = theme.version.split('.');
+        if(version[2]) {
+            version[2] = parseInt(version[2], 10) + 1;
+        }
+        theme.version = version.join('.');
+    }
     fs.writeFileSync('./theme.json', JSON.stringify(theme, null, 4));
 });
