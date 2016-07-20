@@ -116,6 +116,7 @@ function PagesManagerFactory(postsService, $q, config) {
         var promise = $q.when();
 
         // for the first time, retrieve the updates just to know the latest update date
+        // Really? Let's doublecheck if this is necessary.
         if (self.pages.length === 0) {
             promise = self.retrieveUpdate().then(function(updates) {
                 updateLatestDates(updates._items);

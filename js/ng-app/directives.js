@@ -1,10 +1,12 @@
 'use strict';
 var angular = require("angular")
-  , _ = require('../lodash-custom');
+  , _ = require('../lodash-custom')
+  , moment = require('moment');
+
+require('moment/locale/de'); // Moment.js
+moment.locale("de"); // Set Moment.js to german
 
 angular.module('liveblog-embed')
-
-
 .directive('lbBindHtml', [function() {
   return {
     restrict: 'A',
@@ -18,6 +20,32 @@ angular.module('liveblog-embed')
           elem.html(attrs.htmlContent);
         }
       });
+    }
+  };
+}])
+
+.directive('dateFromNowOrAbsolute', ['$interval', function($interval) {
+  return {
+    restrict: 'A',
+    link: function(scope, elem, attrs) {
+      var d = new Date(); // Now
+      var date = scope.post.mainItem.displayDate
+      d.setDate(d.getDate()-1); // Minus 24h
+      var delta24h = moment(date).isBefore(d)
+
+      function updateMoment() {
+        elem.text(delta24h
+          ? moment(date).format('HH:mm')
+          : moment(date).fromNow());
+      }
+
+      var stopTime = $interval(updateMoment, 10*1000);
+
+      elem.on('$destroy', function() {
+        $interval.cancel(stopTime);
+      });
+
+      updateMoment();
     }
   };
 }])

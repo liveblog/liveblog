@@ -108,7 +108,7 @@
             <div class="lb-post-highlighted" ng-if="post.highlight"></div>
             <div class="lb-post-sticky" ng-if="post.sticky">sticky</div>
             <div ng-if="post.mainItem.displayDate | isDateChange" class="lb-post-date__fulldate" ng-bind="post.mainItem.displayDate | simpleDate"></div>
-            <div class="lb-post-date" ng-bind="post.mainItem.displayDate | dateFromNowOrAbsolute"></div>
+            <div date-from-now-or-absolute class="lb-post-date"></div>
 
             <div class="lb-post-permalink">
                 <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
@@ -166,8 +166,8 @@
             blog: {
                 "title": "Paul's Testblog",
                 "blog_status": "open",
-                // "_id": "576bdc46c158bd066b856006",
-                "_id": "578949e7c158bd0679132ddd",
+                "_id": "576bdc46c158bd066b856006",
+                // "_id": "578949e7c158bd0679132ddd",
                 // "_id": "576a8ac4c158bd066b856000",
                 "original_creator": "5759bdafc158bd067436267e",
                 "members": [], "_created": "2016-06-23T12:55:34+00:00",
@@ -217,7 +217,7 @@
         </script>
 
         <!-- inject:js -->
-<script src="/dist/dpa-liveblog-38f235bc58.js"></script>
+<script src="/dist/dpa-liveblog-992f1ae6ce.js"></script>
 <!-- endinject -->     
         
     </body>

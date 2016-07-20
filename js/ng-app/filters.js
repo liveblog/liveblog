@@ -1,29 +1,7 @@
 'use strict';
-var angular = require("angular")
-  , moment = require('moment');
-
-// Set Moment.js to german
-require('moment/locale/de');
-moment.locale("de");
+var angular = require("angular");
 
 angular.module('liveblog-embed')
-.filter('prettifyIsoDate', function() {
-  return function(input) {
-    return moment(input).format('DD/MM/YYYY  HH:mm');
-  };
-})
-
-.filter('dateFromNowOrAbsolute', function() {
-  return function(input) {
-    var d = new Date(); // Now
-    d.setDate(d.getDate()-1); // Minus 24h
-    var delta24h = moment(input).isBefore(d)
-    return delta24h
-      ? moment(input).format('HH:mm')
-      : moment(input).fromNow()
-  };
-})
-
 .filter('isDateChange', function() {
   return (function() { // use closure for comparator
     var prev_isodatestring; // persists across calls

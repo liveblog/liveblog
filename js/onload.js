@@ -15,7 +15,7 @@ var angular = require("angular")
   , _log = require("./log");
 
 
-module.exports = function($rootScope, $window, $timeout, resizeIframes, config) {
+module.exports = function($rootScope, $window, resizeIframe, config) {
   var timeline = document.getElementsByClassName("lb-timeline")[0];
   timeline.classList.remove("mod--hide"); // Fade in timeline after all js has loaded
   polyfills.events(); // IE10 compatible Event constructor
@@ -23,12 +23,10 @@ module.exports = function($rootScope, $window, $timeout, resizeIframes, config) 
 
   $window.onload = function() {
     $rootScope._log.debug("ng-lb", "started");
-
     pageview.init(); // Initialize 'analytics' trigger
     iframeParentResize(); // Adjust body height to parent iframe
-    $timeout(resizeIframes, 1000); // Hacky, hacky, hacky ... hacky
 
     angular.element($window).bind('resize', 
-      _.debounce(resizeIframes, 1000));
+      _.debounce(resizeIframe, 1000));
   };
 }

@@ -1,8 +1,7 @@
 'use strict';
 var angular = require('angular')
   , pageview = require('../pageview')
-  , _ = require('../lodash-custom')
-  ;
+  , _ = require('../lodash-custom');
 
 angular.module('theme')
 .controller('TimelineCtrl', [
@@ -13,12 +12,24 @@ angular.module('theme')
     'blogs',
     'config',
     'transformBlog',
+    'resizeIframes',
     'PagesManager',
     'Permalink',
     TimelineCtrl]);
 
 
-function TimelineCtrl($interval, $anchorScroll, $timeout, $q, blogsService, config, transformBlog, PagesManager, Permalink) {
+function TimelineCtrl(
+        $interval,
+        $anchorScroll,
+        $timeout,
+        $q,
+        blogsService,
+        config,
+        transformBlog,
+        resizeIframes,
+        PagesManager,
+        Permalink) {
+
     var POSTS_PER_PAGE = config.settings.postsPerPage;
     var STICKY_POSTS_PER_PAGE = 100;
     var PERMALINK_DELIMITER = config.settings.permalinkDelimiter || '?';
@@ -153,6 +164,8 @@ function TimelineCtrl($interval, $anchorScroll, $timeout, $q, blogsService, conf
             $interval(retrieveUpdate, UPDATE_EVERY);
             $interval(retrieveStickyUpdate, UPDATE_EVERY);
             $interval(retrieveBlogSettings, 3 * UPDATE_EVERY);
+            $interval(resizeIframes, 1000); // ... Hacky
+
             // listen events from parent
             var fetchNewPageDebounced = _.debounce(vm.fetchNewPage, 1000);
             function receiveMessage(event) {
