@@ -11,6 +11,7 @@ make:
 		-x "node_modules/*" \
 		-x "index.html" \
 		-x "gulpfile.js" \
+		-x "npm-shrinkwrap.json" \
 		-x "embedcode.html"
 
 clean:
