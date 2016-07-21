@@ -18,6 +18,15 @@
             //no of pages added by infinite scroll or "load more" button
             self.pagesLoaded = 0;
 
+             /**
+             * Reset to number of loaded pages
+             */
+            function resetPageCounter() {
+                self.pagesLoaded = 0;
+                self.newUpdatesApplied  = 0;
+                self.newUpdatesAvailable = 0;
+            }
+
             /**
              * Represent a page of posts
              * @param {array} [posts=[]] - a list of post to initialize the page
@@ -62,6 +71,7 @@
             function changeHighlight(highlight) {
                 self.highlight = highlight;
                 self.pages = [];
+                resetPageCounter();
                 return fetchNewPage();
             }
 
@@ -73,6 +83,7 @@
             function changeOrder(sort_name) {
                 self.sort = sort_name;
                 self.pages = [];
+                resetPageCounter();
                 return fetchNewPage();
             }
 
@@ -96,6 +107,7 @@
                 var promise = $q.when();
                 // for the first time, retrieve the updates just to know the latest update date
                 if (self.pages.length === 0) {
+                    resetPageCounter()
                     promise = self.retrieveUpdate().then(function(updates) {
                         updateLatestDates(updates._items);
                     });
@@ -257,6 +269,7 @@
                 posts = posts || self.allPosts();
                 if (resetPages) {
                     self.pages = [];
+                    resetPageCounter();
                 }
                 // respect the order
                 var sort_by = Object.keys(SORTS[self.sort])[0];
