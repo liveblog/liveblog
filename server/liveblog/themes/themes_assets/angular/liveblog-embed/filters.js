@@ -18,5 +18,13 @@
         })        
         .filter('convertLinksWithRelativeProtocol', ['fixProtocol', function (fixProtocol) {
             return fixProtocol;
-        }]);
+        }])
+        .filter('fixEmbed', function() {
+            return function(embed) {
+                // fix intragram height by removing max-height from blockquote
+                return embed.replace(/<blockquote class="instagram-media"[^>]*/g, function(tag) {
+                    return tag.replace(/ max-width:[^;]*;/, '').replace(/ width:[^;]*;/, ' width: 96%;');
+                });
+            }
+        });
 })(angular);

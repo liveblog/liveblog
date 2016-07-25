@@ -41,7 +41,7 @@ define([
         var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
         '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
         '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
+        '(\\:\\d+)?(\\/[-a-z\\d%_.~+,()]*)*'+ // port and path
         '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
         '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
         return pattern.test(string);
@@ -202,7 +202,7 @@ define([
                         var cover_width = Math.min(this.getOptions().coverMaxWidth, data.thumbnail_width);
                         var cover_height = cover_width / ratio;
                         html.find('.cover-preview').css({
-                            'background-image': 'url(' + data.thumbnail_url + ')',
+                            'background-image': 'url("' + data.thumbnail_url + '")',
                             width: cover_width,
                             height: cover_height,
                             'background-size': 'cover'
@@ -427,7 +427,7 @@ define([
 
                     //image size warning
                     var maxFileSize = 2; //in MB
-                    if ((data.file.size / 1048576) > maxFileSize) {
+                    if ( data.file && (data.file.size / 1048576) > maxFileSize) {
                         this.$editor.append($('<div>', {
                             name: 'size-warning',
                             class: 'alert alert-warning',
