@@ -172,7 +172,7 @@ class ThemesService(BaseService):
                 if name.endswith('screenshot.png') or type(app.media).__name__ is 'AmazonMediaStorage':
                     # set the content type
                     mime = magic.Magic(mime=True)
-                    content_type = mime.from_file(name).decode('utf8')
+                    content_type = mime.from_file(name)
                     if content_type == 'text/plain' and name.endswith(tuple(CONTENT_TYPES.keys())):
                         content_type = CONTENT_TYPES[os.path.splitext(name)[1]]
                     final_file_name = os.path.relpath(name, CURRENT_DIRECTORY)
@@ -369,6 +369,7 @@ class ThemesCommand(superdesk.Command):
         if updated:
             print('updated:')
             for theme in updated:
+                print('theme')
                 print('\t* %s %s (%s)' % (theme.get('label', theme['name']), theme['version'], theme['name']))
 
 

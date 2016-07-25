@@ -109,6 +109,10 @@ INSTALLED_APPS = [
     'superdesk.notification',
     'superdesk.activity',
     'superdesk.sequences',
+    'superdesk.vocabularies',
+    'superdesk.commands',
+    'superdesk.io',
+    'superdesk.publish',
 
     'apps.archive',
     'apps.desks',
@@ -116,6 +120,7 @@ INSTALLED_APPS = [
     'apps.groups',
     'apps.privilege',
     'apps.legal_archive',
+    'apps.archive_broadcast',
 
     'liveblog.prepopulate',
     'liveblog.blogs',

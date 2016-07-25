@@ -3,6 +3,7 @@ Flask-Cache==0.13.1
 Flask-Cors==2.1.0
 # Flask-S3 with support for python3
 git+git://github.com/joehand/flask-s3@8fe9f27ebb5251b7cf53a6684595d41dc4af2fbf#egg=Flask-S3==0.1.7
+behave
+wooper
 # Superdesk
--e git+git://github.com/liveblog/superdesk-core@72e3b886fa8cbe9485a3607c1696224c0e999090#egg=Superdesk-Core==1.05-test
--e git+git://github.com/superdesk/superdesk@6bac690a39c695228b37caf5a4ef968224d1cd3f#egg=Superdesk-Server
+-e git+git://github.com/ancafarcas/superdesk-core.git@61dae2de4504165d8c362000be070e4d43cdec2e#egg=Superdesk-Core==1.06-update-sd
