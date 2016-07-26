@@ -176,16 +176,18 @@ class ThemesService(BaseService):
                     if content_type == 'text/plain' and name.endswith(tuple(CONTENT_TYPES.keys())):
                         content_type = CONTENT_TYPES[os.path.splitext(name)[1]]
                     final_file_name = os.path.relpath(name, CURRENT_DIRECTORY)
-                    version = theme.get('version', True)
                     # remove existing first
+                    # TO DO: add version parameter to media_id() after merging related core-changes in
+                    # amazon_media_storage and desk_media storage
+                    # version = theme.get('version', True)
                     app.media.delete(app.media.media_id(final_file_name,
-                                                        content_type=content_type,
-                                                        version=version))
+                                                        content_type=content_type
+                                                        ))
                     # upload
                     file_id = app.media.put(file.read(),
                                             filename=final_file_name,
-                                            content_type=content_type,
-                                            version=version)
+                                            content_type=content_type
+                                            )
                     # save the screenshot url
                     if name.endswith('screenshot.png'):
                         theme['screenshot_url'] = superdesk.upload.url_for_media(file_id)
