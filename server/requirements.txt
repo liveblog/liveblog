@@ -6,5 +6,4 @@ git+git://github.com/joehand/flask-s3@8fe9f27ebb5251b7cf53a6684595d41dc4af2fbf#e
 behave
 wooper
 # Superdesk
--e git+git://github.com/ancafarcas/superdesk-core.git@61dae2de4504165d8c362000be070e4d43cdec2e#egg=Superdesk-Core==1.06-update-sd
-
+-e git+git://github.com/ancafarcas/superdesk-core.git@66de960faa16a1772c73741105c99b14256e80c0#egg=Superdesk-Core==1.06-update-sd
