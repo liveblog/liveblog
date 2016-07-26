@@ -54,7 +54,7 @@ function BlogsPage() {
     self.waitForModal = waitForModal.bind(self);
 
     self.title = element(by.model('newBlog.title'));
-    self.description = element(by.model('newBlog.description'));
+    self.description = element(by.css('[ng-model="newBlog.description"] [contenteditable="true"]'));
     self.file = element(by.css('input[type="file"]'));
 
     self.gridElement = element(by.css('.list-container table'));
@@ -562,7 +562,7 @@ function BlogSettingsPage(blog) {
     self.team = new TeamPage();
     self.blog = blog;
     self.title = element(by.model('settings.newBlog.title'));
-    self.description = element(by.model('settings.newBlog.description'));
+    self.description = element(by.css('[ng-model="settings.newBlog.description"] [contenteditable="true"]'));
     self.file = element(by.css('input[type="file"]'));
     self.saveAndClose = element(by.css('[ng-click="settings.saveAndClose()"]'));
 

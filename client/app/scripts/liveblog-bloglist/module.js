@@ -264,6 +264,12 @@
                 resolve: {isArchivedFilterSelected: function() {return true;}}
             });
     }]);
+    app.filter('htmlToPlaintext', function() {
+        return function(text) {
+          return text ? String(text).replace(/<[^>]+>/gm, '') : '';
+        };
+      }
+    );
     app.filter('username', ['session', function usernameFilter(session) {
         return function getUsername(user) {
             return user ? user.display_name || user.username : null;
