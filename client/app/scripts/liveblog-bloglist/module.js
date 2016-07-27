@@ -266,7 +266,9 @@
     }]);
     app.filter('htmlToPlaintext', function() {
         return function(text) {
-          return text ? String(text).replace(/<[^>]+>/gm, '') : '';
+            //replace paragraph and list item with an empty space
+            var retValue = text ? String(text).replace(/<(p|li)>/g, ' ') : '';
+            return retValue.replace(/<[^>]+>/gm, '');
         };
       }
     );
