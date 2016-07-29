@@ -20,8 +20,6 @@ lb-dropdown > div > div.dropdown-display {
 lb-dropdown > div > div.dropdown-display > * {
   float: left;
   height: 100%;
-  height: 38px;
-  line-height: 38px;
   display: inline-block;
   vertical-align: middle;
 }
@@ -32,6 +30,7 @@ lb-dropdown > div > div.dropdown-display > span {
   box-sizing: border-box;
   padding-right: 34px;
   padding-left: 10px;
+  line-height: 38px;
 }
 lb-dropdown > div > div.dropdown-display > span.placeholder {
   color: #aaaaaa;
@@ -45,6 +44,7 @@ lb-dropdown > div > div.dropdown-display > i {
   padding-right: 10px;
   text-align: right;
   margin-top: -2px;
+  line-height: 38px;
 }
 lb-dropdown > div > div.dropdown-list {
   float: left;
@@ -77,7 +77,6 @@ lb-dropdown > div > div.dropdown-list > div > div.selected {
   color: white;
 }
 lb-dropdown > div > div.dropdown-list > div > div > * {
-  height: 38px;
   line-height: 38px;
   display: inline-block;
   vertical-align: middle;
@@ -105,15 +104,20 @@ lb-dropdown > div.show > div.dropdown-list {
 }
 @media (max-width: 320px) {
   lb-dropdown {
-    width: 90px;
+    width: 90px !important;
   }
   lb-dropdown > div > div.dropdown-display span {
-    line-height: 13px;
-    padding-top: 8px;
+    padding-right: 14px;
+    padding-left: 2px;
+    text-align: center;
   }
   lb-dropdown > div .dropdown-list > div > div > * {
     line-height: 16px !important;
     padding: 4px 0;
+  }
+  lb-dropdown>div>div.dropdown-display>i {
+    margin-left: -18px;
+    padding-right: 0;
   }
 }
 /* Languages settings */
