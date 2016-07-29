@@ -61,6 +61,9 @@ button.active {
     border-color: #27496d;
     color: #27496d;
 }
+.border-bottom {
+    border-bottom: 1px solid #CBCBCB;
+}
 .lb-timeline {
     clear: both;
     background-color: white;
@@ -153,13 +156,6 @@ button.active {
     z-index: 2;    
 }
 .modal {
-    border: 1px solid #C8C8C8;
-    border-radius: 3px;
-    box-shadow: 0 0 25px 0 rgba(0, 0, 0, 0.3);
-    position: absolute;
-    top: 6px;
-    right: 65px;
-    left: 65px;
     z-index: 3;
 }
 .modal .content {
@@ -171,19 +167,20 @@ button.active {
     width: 100%;
     box-sizing: border-box;
 }
-.modal .modal-header,
-.modal .modal-footer {
-    padding: 25px;
+.modal .modal-header {
+    padding: 25px 15px 10px;
     box-sizing: border-box;
 }
 .modal .modal-footer {
+    padding: 15px 25px 25px;
+    box-sizing: border-box;
     text-align: right;
 }
 .modal .modal-footer .btn + .btn {
     margin-left: 5px;
 }
 .modal .modal-body {
-    padding: 0 25px;
+    padding: 0 15px;
     box-sizing: border-box;
 }
 .modal .content h2 {
@@ -192,10 +189,10 @@ button.active {
     margin-bottom: 10px;
 }
 .modal .content .field {
-    margin: 10px 0 30px 0;
+    margin: 4px 0 20px 0;
 }
 .modal .content label {
-    padding: 10px 0;
+    padding: 10px 0 0;
     width: 100%;
     display: block;
     box-sizing: border-box;
@@ -224,26 +221,6 @@ button.active {
     outline: none !important;
     box-shadow: 0 1px 0 0 #5ea9c8 !important;
     border-color: #5ea9c8 !important;
-}
-.modal .content::before {
-    content: ' ';
-    height: 0;
-    position: absolute;
-    width: 0;
-    border: 14px solid transparent;
-    border-bottom-color: #aaa;
-    top: -28px;
-    right: 66px;
-}
-.modal .content::after {
-    content: ' ';
-    height: 0;
-    position: absolute;
-    width: 0;
-    border: 13px solid transparent;
-    border-bottom-color: #FFF;
-    top: -26px;
-    right: 67px;
 }
 .modal .content .error {
     text-transform: uppercase;
@@ -304,7 +281,7 @@ button.active {
 }
 .lb-post {
     position: relative;
-    border-bottom: 1px solid #CBCBCB;
+    border-bottom: 1px solid #DDD;
 }
 .lb-post.ng-enter, .lb-post.ng-move {
   -webkit-transition:1s linear all;
@@ -331,9 +308,9 @@ button.active {
     position: absolute;
     border-radius: 50%;
     overflow: hidden;
-    background: #B9B9B9 url("../images/avatar_64.png") no-repeat scroll 0% 0% / 100% auto;
-    width: 50px;
-    height: 50px;
+    background: #CCCCCC url("../images/avatar_64.png") no-repeat scroll 0% 0% / 100% auto;
+    width: 42px;
+    height: 42px;
     left: -80px;
 }
 .lb-author__name, .lb-author__date {
@@ -347,11 +324,11 @@ button.active {
     position: absolute;
     border-radius: 0;
     overflow: hidden;
-    background: #FFFFFF url("../images/comment_64.png") no-repeat scroll 0% 0% / 100% auto;
+    background: #FFFFFF url("../images/comment_32.png") no-repeat scroll 0% 0% / 100% auto;
     color: #BBBBBB;
-    width: 50px;
-    height: 50px;
-    left: -80px;
+    width: 32px;
+    height: 32px;
+    left: -74px;
 }
 .lb-author__date {
     padding-right: 20px;
@@ -612,10 +589,11 @@ article blockquote li:before {
     .show-author-avatar .lb-item {
         margin-left: 0;
     }
-    .lb-author__avatar, .lb-author__comment   {
-        width: 40px;
-        height: 40px;
+    .lb-author__avatar  {
         left: -50px;
+    }
+    .lb-author__comment {
+        left: -46px;
     }
     .lb-author__date {
         float: none;
