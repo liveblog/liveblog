@@ -3,7 +3,7 @@
         ng-if="timeline.settings.showAuthor && timeline.settings.showAuthorAvatar" 
         ng-class="{'lb-author__avatar': (item.item_type !== 'comment'),
                        'lb-author__comment': (item.item_type === 'comment')}">
-            <img ng-src="{{ item.original_creator.picture_url }}" />
+            <img ng-src="{{ item.original_creator.picture_url }}" srcset="{{ item.original_creator.picture_srcset }}" />
     </div> 
     <div class="lb-author__date" ng-bind="item.displayDate | prettifyIsoDate"></div>
     <!-- author name, with or without mailto link  -->
