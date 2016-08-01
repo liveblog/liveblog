@@ -165,11 +165,10 @@ class BlogService(BaseService):
             members = blog.get('members', {})
             recipients = []
             for user in members:
-                if user not in blog.get('members', []):
-                    if isinstance(user, ObjectId):
-                        recipients.append(user)
-                    else:
-                        recipients.append(user['user'])
+                if isinstance(user, ObjectId):
+                    recipients.append(user)
+                else:
+                    recipients.append(user['user'])
             notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def find_one(self, req, **lookup):
