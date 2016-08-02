@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "2.3.19",
+    "version": "2.3.21",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -203,6 +203,13 @@
             "type": "checkbox",
             "default": false,
             "help": "If the users see the highlight button in embed"
+        },
+        {
+            "name": "blockSearchEngines",
+            "label": "Block search engines",
+            "type": "checkbox",
+            "default": false,
+            "help": "Block search engines from indexing my blogs"
         }
     ]
 }
