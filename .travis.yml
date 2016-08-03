@@ -1,7 +1,6 @@
 language: python
 
-python:
-    - "3.4"
+python: 3.4
 
 sudo: false
 
@@ -10,10 +9,8 @@ env:
         - secure: ajoP9pA/FYH+1sFwGKHlQ8PoGqRIjdmqEnwo44AA5j6c1NMsgiToA420lPm8Lp0cko5YK3ppBlGlvbRWu5JXVxl0vMtZTLf3FM2w99viddrRCkh4sMef2DzkXXYOW4Tnew/8pmaOtTn3UtNG/feJHkBzHLEDUuN0TA07Y6UaWHc=
     matrix:
         - TARGET=client
+        - TARGET=e2e_chrome
         - TARGET=server
-        - TARGET=e2e_first_chrome
-        - TARGET=e2e_second_chrome
-        - TARGET=e2e_third_chrome
 
 services:
     - mongodb
@@ -24,8 +21,10 @@ addons:
   apt:
     sources:
     - mongodb-3.0-precise
+    - elasticsearch-1.7
     packages:
     - mongodb-org-server
+    - elasticsearch
 
 cache:
   directories:
@@ -35,15 +34,13 @@ cache:
 
 before_install:
     - if [ "${TARGET}" = "client" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
+        npm config set loglevel warn ;
         npm install -g grunt-cli bower ;
       fi
     - if [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        pip install requests &&
-        export DISPLAY=:99.0 &&
-        /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1080x24 ;
-        ./scripts/get-chrome-url | wget -N --no-verbose -i - && unzip chrome-linux.zip &&
-        export CHROME_BIN=`pwd`/chrome-linux/chrome &&
-        $CHROME_BIN --version ;
+        export DISPLAY=:99.0 && /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1080x24 &&
+        wget -N --no-verbose 'https://storage.googleapis.com/chromium-browser-continuous/Linux_x64/353893/chrome-linux.zip' && unzip chrome-linux.zip &&
+        export CHROME_BIN=`pwd`/chrome-linux/chrome && $CHROME_BIN --version ;
       fi
 
 install:
@@ -53,16 +50,17 @@ install:
         cd .. ;
       fi
     - if [ "${TARGET}" = "client" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        cd client && npm install && bower install && cd .. ;
+        cd client && npm install --python=python2.7 && bower install &&
+        cd .. ;
       fi
 
 before_script:
     - if [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        cd server ;
-        (nohup env SUPERDESK_URL='http://127.0.0.1:5000/api' SUPERDESK_CLIENT_URL='http://127.0.0.1:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &) ;
-        cd ../client ;
-        grunt build --server='http://127.0.0.1:5000/api' --ws='ws://127.0.0.1:5100' ;
+        cd client ;
+        ./node_modules/.bin/webdriver-manager update &&
+        grunt build ;
         cd dist ;
+
         while [ ! -f index.html ]; do sleep .5; done ;
         (nohup python3 -m http.server 9000 &) ;
         cd ../.. ;
@@ -83,49 +81,16 @@ script:
     - if [ "${TARGET}" = "client" ]; then
         cd client && npm test && cd .. ;
       fi
-    - if [ "${TARGET}" != "${TARGET/e2e_first/}" ]; then
+    - if [ "${TARGET}" != "${TARGET/e2e/}" ]; then
         cd server &&
-        python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin 2>&1 ;
+        nohup python manage.py ;
+        (nohup honcho start & ) ;
         cd ../client &&
-        ./node_modules/.bin/webdriver-manager update &&
-        ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=5 -- protractor-conf.js --suite=a
-          --stackTrace --verbose
-          --baseUrl 'http://127.0.0.1:9000'
-          --params.baseBackendUrl 'http://127.0.0.1:5000/api'
-          --params.username 'admin'
-          --params.password 'admin'
-          --capabilities.browserName "${TARGET/e2e_first_/}"
-        ;
-      fi
-    - if [ "${TARGET}" != "${TARGET/e2e_second/}" ]; then
-        cd server &&
-        python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin 2>&1 ;
-        cd ../client &&
-        ./node_modules/.bin/webdriver-manager update &&
-        ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=5 -- protractor-conf.js --suite=b
-          --stackTrace --verbose
-          --baseUrl 'http://127.0.0.1:9000'
-          --params.baseBackendUrl 'http://127.0.0.1:5000/api'
-          --params.username 'admin'
-          --params.password 'admin'
-          --capabilities.browserName "${TARGET/e2e_second_/}"
-        ;
-      fi
-    - if [ "${TARGET}" != "${TARGET/e2e_third/}" ]; then
-        cd server &&
-        python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin 2>&1 ;
-        cd ../client &&
-        ./node_modules/.bin/webdriver-manager update &&
-        ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=5 -- protractor-conf.js --suite=c
-          --stackTrace --verbose
-          --baseUrl 'http://127.0.0.1:9000'
-          --params.baseBackendUrl 'http://127.0.0.1:5000/api'
-          --params.username 'admin'
-          --params.password 'admin'
-          --capabilities.browserName "${TARGET/e2e_third_/}"
-        ;
+        ./node_modules/protractor/bin/protractor protractor-conf.js --stackTrace --verbose ;
       fi
 
 after_script:
     - killall -9 python
+    - rm .npm/*.lock
+
 
