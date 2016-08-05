@@ -314,8 +314,9 @@ def upload_a_theme():
         # Determine if there is a root folder
         roots = set(file.split('/')[0] for file in files)
         root_folder = len(roots) == 1 and '%s/' % roots.pop() or ''
-        # Check if the package is correct
-        description_file = next((file for file in files if file.endswith('theme.json')), None)
+        # Check if it has a theme.json in the root folder.
+        description_file = next((
+            file for file in files if file.lower() == ('%stheme.json' % root_folder)), None)
         if description_file is None:
             return json.dumps(dict(error='A theme needs a theme.json file')), 400
         # decode and load as a json file
