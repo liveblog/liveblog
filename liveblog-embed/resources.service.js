@@ -20,7 +20,7 @@
     function thumbnailRendition(fixProtocol) {
         return function(renditions) {
             // if the renditions has thumbnail use that.
-            if( renditions.thumbnail ) {
+            if( renditions && renditions.thumbnail ) {
                 return fixProtocol(renditions.thumbnail.href);
             }
             // pick the smallest size image from renditions
