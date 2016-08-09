@@ -7,6 +7,7 @@ from superdesk.resource import Resource
 from liveblog.common import get_user, update_dates_for
 from apps.archive.archive import ArchiveResource, ArchiveService, ArchiveVersionsResource
 from superdesk.services import BaseService
+from superdesk.filemeta import set_filemeta, get_filemeta
 
 
 class ItemsVersionsResource(ArchiveVersionsResource):
@@ -77,6 +78,16 @@ class ItemsService(ArchiveService):
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
+            if doc.get('item_type'):
+                if doc['item_type'] == 'embed':
+                    metadata = doc['meta']
+                    set_filemeta(doc, metadata)
+                    if get_filemeta(doc, 'version'):
+                        metadata['version'] = str(metadata.get('version'))
+                    if get_filemeta(doc, 'width'):
+                        metadata['width'] = str(metadata.get('width'))
+                    if get_filemeta(doc, 'height'):
+                        metadata['height'] = str(metadata.get('height'))
 
     def on_created(self, docs):
         super().on_created(docs)
