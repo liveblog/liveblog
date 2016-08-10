@@ -203,6 +203,13 @@
             "type": "checkbox",
             "default": false,
             "help": "If the users see the highlight button in embed"
+        },
+        {
+            "name": "blockSearchEngines",
+            "label": "Block search engines",
+            "type": "checkbox",
+            "default": false,
+            "help": "Block search engines from indexing my blogs"
         }
     ]
 }
