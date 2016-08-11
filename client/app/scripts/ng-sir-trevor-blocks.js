@@ -456,7 +456,6 @@ define([
                         ev.preventDefault();
                     });
                     this.$inputs.find('input').on('change', _.bind(function(ev) {
-                        that.getOptions().disableSubmit(false);
                         this.onDrop(ev.currentTarget);
                     }, this));
                 },
@@ -481,6 +480,7 @@ define([
                         this.getOptions().uploader(
                             file,
                             function(data) {
+                                that.getOptions().disableSubmit(false);
                                 that.setData(data);
                                 that.ready();
                             },
