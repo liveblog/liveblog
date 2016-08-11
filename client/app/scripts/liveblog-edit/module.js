@@ -302,6 +302,8 @@ define([
             preview: {},
             progress: {width: 0},
             tab: false,
+            // by default themes are not accepting embed multi height and code.
+            embedMultiHight: false,
             userNotInMembers:function(user) {
                 for (var i = 0; i < vm.members.length; i ++) {
                     if (user._id === vm.members[i]._id) {
@@ -490,7 +492,7 @@ define([
 
         });
         // retieve the blog's public url
-        blogService.getPublicUrl(blog).then(function(url) {
+        var qPublicUrl = blogService.getPublicUrl(blog).then(function(url) {
             vm.publicUrl = url;
         });
         // load available languages
@@ -498,13 +500,34 @@ define([
             vm.availableLanguages = data._items;
         });
         // load available themes
-        api('themes').query().then(function(data) {
+        var qTheme = api('themes').query().then(function(data) {
             // filter theme with label (without label are `generic` from inheritance)
             vm.availableThemes = data._items.filter(function(theme) {return !theme['abstract'];});
             vm.selectedTheme = _.find(vm.availableThemes, function(theme) {
                 return theme.name === vm.blogPreferences.theme;
             });
         });
+        // after publicUrl and theme is on `vm` object we can compute embeds code.
+        $q.all([qPublicUrl, qTheme]).then(function() {
+            // if the theme doesn't have parent-iframe.js then it means it can't support resizeing.
+            if (vm.selectedTheme.scripts.indexOf("parent-iframe.js") !== -1) {
+                vm.embedMultiHight = true;
+            }
+            // devel link
+            var parentIframe = 'http://localhost:5000/themes_assets/' + vm.blogPreferences.theme + '/';
+            if (vm.selectedTheme.public_url) {
+                // production link
+                parentIframe = vm.selectedTheme.public_url;
+            }
+            // loading mechanism, and load parent-iframe.js with callback.
+            var loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){var a=document,l=a.createElement("script"),o=a.getElementsByTagName("script")[0];return l.type="text/javascript",l.onload=t,l.async=!0,l.src=e,o.parentNode.insertBefore(l,o),l}};liveblog.load("' + parentIframe + 'parent-iframe.js",function(){"function"==typeof liveblog.loadCallback&&liveblog.loadCallback()});</script>';
+            // compute embeds code with the injected publicUrl
+            vm.embeds = {
+                normal: '<iframe width="100%" height="715" src="' + vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>',
+                resizeing: loadingScript + '<iframe id="liveblog-iframe" width="100%" scrolling="no" src="' + vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>'
+            };
+        });
+
         api('users').getById(blog.original_creator).then(function(data) {
             vm.original_creator = data;
         });
@@ -576,6 +599,7 @@ define([
         'ngRoute',
         'superdesk.services.modal',
         'superdesk.upload',
+        'superdesk.editor',
         'liveblog.pages-manager',
         'lrInfiniteScroll',
         'liveblog.security'

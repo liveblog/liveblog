@@ -8,7 +8,7 @@ msgstr ""
 msgid "Cancel"
 msgstr ""
 
-#: template.html:36
+#: template.html:42
 msgid "Comment"
 msgstr ""
 
@@ -25,11 +25,11 @@ msgstr ""
 msgid "Editorial"
 msgstr ""
 
-#: template.html:90
+#: template.html:96
 msgid "Load more posts"
 msgstr ""
 
-#: template.html:93
+#: template.html:99
 msgid "Loading"
 msgstr ""
 
@@ -46,7 +46,7 @@ msgstr ""
 msgid "Newest first"
 msgstr ""
 
-#: template.html:53
+#: template.html:59
 msgid "No posts for now."
 msgstr ""
 
@@ -55,7 +55,7 @@ msgstr ""
 msgid "Oldest first"
 msgstr ""
 
-#: template.html:77
+#: template.html:83
 msgid "One pinned post"
 msgid_plural "{{$count}} pined posts"
 msgstr[0] ""
@@ -73,7 +73,7 @@ msgstr ""
 msgid "Post a comment"
 msgstr ""
 
-#: template.html:61
+#: template.html:67
 msgid "See one new update"
 msgid_plural "See {{$count}} new updates"
 msgstr[0] ""
@@ -81,6 +81,14 @@ msgstr[1] ""
 
 #: comments.html:39
 msgid "Send"
+msgstr ""
+
+#: template.html:38
+msgid "Show all posts"
+msgstr ""
+
+#: template.html:37
+msgid "Show highlighted post only"
 msgstr ""
 
 #: template.html:11
@@ -94,4 +102,8 @@ msgstr ""
 
 #: comments.html:7
 msgid "Your comment was sent for approval."
+msgstr ""
+
+#: item.html:13
+msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr ""

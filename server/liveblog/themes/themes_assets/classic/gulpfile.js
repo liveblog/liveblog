@@ -67,7 +67,7 @@ gulp.task('build', ['translations', 'templates'], function() {
     if(theme.devScripts) {
         theme.devScripts.forEach(function(script) {
             // check if it is an external url, if so add it like that in final scripts.
-            if(externalUrlCheck.test(script)) {
+            if(externalUrlCheck.test(script) || (script === 'parent-iframe.js')) {
                 build.to.scripts.push(script);
             } else {
                 build.from.scripts.push(script);
@@ -103,6 +103,14 @@ gulp.task('build', ['translations', 'templates'], function() {
             .pipe(gulp.dest(config.dest));
         build.to.styles.push(config.get('style'));
         theme.styles = build.to.styles;
+    }
+    // automatic `patch` increase in `version`.
+    if(theme.version) {
+        var version = theme.version.split('.');
+        if(version[2]) {
+            version[2] = parseInt(version[2], 10) + 1;
+        }
+        theme.version = version.join('.');
     }
     fs.writeFileSync('./theme.json', JSON.stringify(theme, null, 4));
 });

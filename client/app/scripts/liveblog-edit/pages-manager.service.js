@@ -34,11 +34,17 @@
              * @returns {promise}
              */
             function retrievePage(page, max_results) {
-                var options = {status: self.status, authors: self.authors, highlight: self.highlight}
+
+                var options = {status: self.status, authors: self.authors}
                 //only care about the sticky status if post if open otherwise show them all together
                 //@TODO refactor when refactoring the page manager
                 if (self.status === 'open') {
                     options.sticky = sticky
+                }
+
+                //only care about the highlight status if it is set to true
+                if (self.highlight) {
+                    options.highlight = self.highlight;
                 }
                 return postsService.getPosts(self.blogId, options ,max_results || self.maxResults, page)
                 .then(function(data) {

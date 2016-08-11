@@ -159,3 +159,36 @@
     cursor: default;
     pointer-events: none;
 }
+
+// style for medium editor element.
+.form-box {
+    width: 100%;
+    .box-sizing(border-box);
+    line-height:15px;
+    display:inline-block;
+    font-size:12px;
+    color:#000;
+    vertical-align:middle;
+    margin:0px;
+    .border-radius(2px) !important;
+    border: 1px solid  #d0d0d0 !important;
+    padding: 6px;
+    outline:none !important;
+    .box-shadow(inset 0 0 0 #000) !important;
+    .box-shadow(none) !important;
+    -moz-appearance: none !important;
+    background: #fff;
+    &:focus {
+        .box-shadow(0px 0px 5px 0px #d0d0d0) !important;
+        border-color: #b8b8b8 !important;
+        outline:none !important;
+    }
+    ul {
+        list-style-type: initial !important;
+        margin: 0px !important;
+        padding-left: 40px !important;
+    }
+    ol {
+        margin: 0px !important;
+    }
+}

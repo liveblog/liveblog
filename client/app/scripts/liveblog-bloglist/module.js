@@ -264,6 +264,14 @@
                 resolve: {isArchivedFilterSelected: function() {return true;}}
             });
     }]);
+    app.filter('htmlToPlaintext', function() {
+        return function(text) {
+            //replace paragraph and list item with an empty space
+            var retValue = text ? String(text).replace(/<(p|li)>/g, ' ') : '';
+            return retValue.replace(/<[^>]+>/gm, '');
+        };
+      }
+    );
     app.filter('username', ['session', function usernameFilter(session) {
         return function getUsername(user) {
             return user ? user.display_name || user.username : null;
