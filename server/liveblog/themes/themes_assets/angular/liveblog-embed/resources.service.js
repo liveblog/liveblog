@@ -10,8 +10,10 @@
         return function(renditions) {
             var srcset = '';
             // iterate and add the image with the width value to srcset
-            angular.forEach(renditions, function(value) {
-                srcset += ', ' + fixProtocol(value.href) + ' ' + value.width + 'w';
+            angular.forEach(renditions, function(value, key) {
+                if(key !== 'original') {
+                    srcset += ', ' + fixProtocol(value.href) + ' ' + value.width + 'w';
+                }
             });
             return srcset.substring(2);
         }
