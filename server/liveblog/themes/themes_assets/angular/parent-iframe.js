@@ -4,7 +4,8 @@ if(typeof liveblog !== 'undefined') {
             liveblog.load("https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.5/iframeResizer.min.js", function() {
                 var iframe = $('#liveblog-iframe');
                 iFrameResize({
-                    minHeight: 1000
+                    minHeight: 1000,
+                    heightCalculationMethod: 'lowestElement'
                 });
                 var reached = false;
                 var detectEndOfBlog = function() {
