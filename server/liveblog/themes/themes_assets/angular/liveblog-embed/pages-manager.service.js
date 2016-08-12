@@ -269,7 +269,6 @@
                 posts = posts || self.allPosts();
                 if (resetPages) {
                     self.pages = [];
-                    resetPageCounter();
                 }
                 // respect the order
                 var sort_by = Object.keys(SORTS[self.sort])[0];
