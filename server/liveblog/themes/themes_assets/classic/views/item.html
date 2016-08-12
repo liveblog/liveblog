@@ -9,7 +9,7 @@
     </div>
     <div ng-switch-when="image">
         <figure>
-            <img ng-src="{{ item.picture_url }}" ng-srcset="{{ item.picture_srcset }}" alt="{{ item.meta.caption }}" />
+            <img ng-src="{{ item.picture_url }}" ng-srcset="{{ item.picture_srcset }}" alt="{{ item.meta.caption }}" sizes="80vw"/>
             <figcaption translate>{{ item.meta.caption }} credit: {{ item.meta.credit }}
         </figure>
     </div>
