@@ -1,0 +1,30 @@
+<article
+         ng-repeat="post in posts() track by post._id"
+         class="lb-post list-group-item ng-cloak"
+         ng-class="{'show-author-avatar': timeline.settings.showAuthor && timeline.settings.showAuthorAvatar,
+                    'lb-post-permalink-selected': post._id === timeline.permalink._id}">
+    <lb-author item="post.mainItem" timeline="timeline"></lb-author>
+    <div class="lb-post-highlighted" ng-if="post.highlight">
+        <i class="fa fa-star fa-2"></i>
+    </div>
+    <div class="lb-post-permalink">
+        <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
+            <i class="fa fa-link fa-2"></i>
+        </a>
+    </div>
+
+    <div ng-repeat="item in post.items track by item._id" class="lb-item">
+        <div ng-if="post.fullDetails && !$first" class="list-group-item">
+            <div class="lb-timeline__header">
+                <lb-author item="item" timeline="timeline"></lb-author>
+                <lb-item item="item" ident="true"></lb-item>
+            </div>
+        </div>                
+        <div ng-if="!post.fullDetails || $first">
+            <lb-item item="item"></lb-item>
+        </div>
+    </div>
+    <div class="lb-updated-date ng-cloak" ng-show="post.showUpdate" translate>
+        Updated {{post.content_updated_date | prettifyIsoDate}}
+    </div>
+</article>
