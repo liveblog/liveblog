@@ -1,0 +1,113 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: de\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: comments.html:38
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: template.html:42
+msgid "Comment"
+msgstr "Kommentar"
+
+#: comments.html:28
+msgid "Comment *"
+msgstr "Kommentar"
+
+#: comments.html:32
+msgid "Comment should be maximum 300 characters in length."
+msgstr "Kommentar darf maximal 300 Zeichen lang sein."
+
+#: main.js:49 template.html:13
+msgid "Editorial"
+msgstr "Redaktionell"
+
+#: template.html:96
+msgid "Load more posts"
+msgstr "Mehr Einträge laden"
+
+#: template.html:99
+msgid "Loading"
+msgstr "Lade"
+
+#: comments.html:20
+msgid "Name *"
+msgstr "Name"
+
+#: comments.html:24
+msgid "Name should be maximum 30 characters in length."
+msgstr "Name darf maximal 30 Zeichen lang sein"
+
+#: main.js:52 template.html:17
+msgid "Newest first"
+msgstr "Neueste zuerst"
+
+#: template.html:59
+msgid "No posts for now."
+msgstr "Kein Beitrag vorhanden"
+
+#: main.js:55 template.html:21
+msgid "Oldest first"
+msgstr "Älteste zuerst"
+
+#: template.html:83
+msgid "One pinned post"
+msgid_plural "{{$count}} pined posts"
+msgstr[0] "Angehefteter Eintrag"
+msgstr[1] "$count Angeheftete Einträge"
+
+#: comments.html:31
+msgid "Please fill in your Comment."
+msgstr "Bitte Kommentar hier eintragen"
+
+#: comments.html:23
+msgid "Please fill in your Name."
+msgstr "Bitte Namen hier eintragen"
+
+#: comments.html:15
+msgid "Post a comment"
+msgstr "Kommentar posten"
+
+#: template.html:67
+msgid "See one new update"
+msgid_plural "See {{$count}} new updates"
+msgstr[0] "Neuen Beitrag anzeigen"
+msgstr[1] "Neue Beiträge anzeigen"
+
+#: comments.html:39
+msgid "Send"
+msgstr "Abschicken"
+
+#: template.html:38
+msgid "Show all posts"
+msgstr "Alle Beiträge anzeigen"
+
+#: template.html:37
+msgid "Show highlighted post only"
+msgstr "Anzeigen hervorgehoben Beitrag ist nur"
+
+#: template.html:11 template.html:27
+msgid "Sort by:"
+msgstr "Ordnen nach"
+
+#: posts.html:27
+msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
+msgstr "Aktualisiert am post.content_updated_date | prettifyIsoDate"
+
+#: comments.html:7
+msgid "Your comment was sent for approval."
+msgstr "Ihr Kommentar wartet auf Freischaltung,"
+
+#: item.html:13
+msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
+msgstr "{{ item.meta.caption }} kredit: {{ item.meta.credit }}"

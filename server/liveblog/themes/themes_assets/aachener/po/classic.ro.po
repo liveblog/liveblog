@@ -1,0 +1,119 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Classic Theme\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2);\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: comments.html:38
+msgid "Cancel"
+msgstr "Anulează"
+
+#: template.html:42
+msgid "Comment"
+msgstr "Comentează"
+
+#: comments.html:28
+msgid "Comment *"
+msgstr "Comentariu *"
+
+#: comments.html:32
+msgid "Comment should be maximum 300 characters in length."
+msgstr "Comentariu nu poate fi mai lung de 300 de caractere."
+
+#: main.js:49 template.html:13
+msgid "Editorial"
+msgstr "editorial"
+
+#: template.html:96
+msgid "Load more posts"
+msgstr "Încarcă mai multe posturi"
+
+#: template.html:99
+msgid "Loading"
+msgstr "Se încarcă"
+
+#: comments.html:20
+msgid "Name *"
+msgstr "Numele *"
+
+#: comments.html:24
+msgid "Name should be maximum 30 characters in length."
+msgstr "Numele nu poate fi mai lung de 30 de caractere."
+
+#: main.js:52 template.html:17
+msgid "Newest first"
+msgstr "Cele mai noi"
+
+#: template.html:59
+#, fuzzy
+msgid "No posts for now."
+msgstr "Deocamdata nu sunt articole."
+
+#: main.js:55 template.html:21
+msgid "Oldest first"
+msgstr "Cele mai vechi"
+
+#: template.html:83
+#, fuzzy
+msgid "One pinned post"
+msgid_plural "{{$count}} pined posts"
+msgstr[0] "Vezi un articol nou"
+msgstr[1] "Vezi {{$count}} articole noi"
+msgstr[2] "Vezi {{$count}} de articole noi"
+
+#: comments.html:31
+msgid "Please fill in your Comment."
+msgstr "Completează comentariu."
+
+#: comments.html:23
+msgid "Please fill in your Name."
+msgstr "Completează numele."
+
+#: comments.html:15
+msgid "Post a comment"
+msgstr "Scrie un comentariu"
+
+#: template.html:67
+#, fuzzy
+msgid "See one new update"
+msgid_plural "See {{$count}} new updates"
+msgstr[0] "Vezi un articol nou"
+msgstr[1] "Vezi {{$count}} articole noi"
+msgstr[2] "Vezi {{$count}} de articole noi"
+
+#: comments.html:39
+msgid "Send"
+msgstr "Trimite"
+
+#: template.html:38
+msgid "Show all posts"
+msgstr ""
+
+#: template.html:37
+msgid "Show highlighted post only"
+msgstr ""
+
+#: template.html:11 template.html:27
+msgid "Sort by:"
+msgstr "Ordonează după:"
+
+#: posts.html:27
+msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
+msgstr ""
+
+#: comments.html:7
+msgid "Your comment was sent for approval."
+msgstr "Comentariul tău a fost trimis spre aprobare."
+
+#: item.html:13
+msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
+msgstr ""

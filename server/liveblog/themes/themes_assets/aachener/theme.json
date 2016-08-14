@@ -1,0 +1,206 @@
+{
+    "label": "Aachener Theme",
+    "name": "aachener",
+    "version": "1.0.28",
+    "author": "Darko Tomic <darko.tomic@sourcefabric.org>",
+    "repository": {
+        "type": "git",
+        "url": "git@github.com:liveblog/lb-theme-aachener.git"
+    },
+    "license": "AGPL-3.0",
+    "extends": "angular",
+    "devStyles": [
+        "styles/reset.css",
+        "styles/embed.css",
+        "styles/dropdown.css",
+        "//fonts.googleapis.com/css?family=Crimson+Text:400,400i,600,600i,700,700i|Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i",
+        "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
+    ],
+    "styles": [
+        "//fonts.googleapis.com/css?family=Crimson+Text:400,400i,600,600i,700,700i|Roboto:100,100i,300,300i,400,400i,500,500i,700,700i,900,900i",
+        "//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css",
+        "dist/styles.min.css"
+    ],
+    "devScripts": [
+        "//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js",
+        "vendors/angular-gettext.js",
+        "main.js"
+    ],
+    "scripts": [
+        "//cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js",
+        "//cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js",
+        "dist/scripts.min.js"
+    ],
+    "options": [
+        {
+            "name": "language",
+            "label": "Theme language",
+            "type": "select",
+            "options": [
+                {
+                    "value": "en",
+                    "label": "English"
+                },
+                {
+                    "value": "nl",
+                    "label": "Dutch"
+                },
+                {
+                    "value": "de",
+                    "label": "German"
+                },
+                {
+                    "value": "fr",
+                    "label": "Français"
+                },
+                {
+                    "value": "ro",
+                    "label": "Română"
+                }
+            ],
+            "default": "en"
+        },
+        {
+            "name": "postsPerPage",
+            "label": "Number of posts per page",
+            "type": "number",
+            "default": 20,
+            "help": "Set the number of posts you want to see at the initialization"
+        },
+        {
+            "name": "postOrder",
+            "label": "Default posts order of the timeline",
+            "type": "select",
+            "options": [
+                {
+                    "value": "editorial",
+                    "label": "Editorial"
+                },
+                {
+                    "value": "newest_first",
+                    "label": "Newest first"
+                },
+                {
+                    "value": "oldest_first",
+                    "label": "Oldest first"
+                }
+            ],
+            "default": "editorial"
+        },
+        {
+            "name": "loadNewPostsManually",
+            "label": "User needs to click a button to retrieve the new posts",
+            "type": "checkbox",
+            "default": true,
+            "help": "Otherwise they will be loaded periodically"
+        },
+        {
+            "name": "infinitScroll",
+            "label": "Use infinite scroll to load more pages",
+            "type": "checkbox",
+            "default": true,
+            "help": "if true, more pages are automatically loaded when the bottom of the page is reached. Otherwise a button is added at the bottom of the posts list"
+        },
+        {
+            "name": "showImage",
+            "label": "Show the blog image",
+            "type": "checkbox",
+            "default": true
+        },
+        {
+            "name": "showTitle",
+            "label": "Show the blog title",
+            "type": "checkbox",
+            "default": true
+        },
+        {
+            "name": "showDescription",
+            "label": "Show the blog description",
+            "type": "checkbox",
+            "default": true
+        },
+        {
+            "name": "showAuthor",
+            "label": "Show author",
+            "type": "checkbox",
+            "default": true,
+            "help": "Show the author information on posts"
+        },
+        {
+            "name": "showAuthorAvatar",
+            "label": "Show author avatar",
+            "type": "checkbox",
+            "default": true,
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "help": "Show the author avatar on posts"
+        },
+        {
+            "name": "authorNameFormat",
+            "label": "Author name format",
+            "type": "select",
+            "default": "display_name",
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "options": [
+                {
+                    "value": "display_name",
+                    "label": "Full name"
+                },
+                {
+                    "value": "byline",
+                    "label": "Byline"
+                },
+                {
+                    "value": "sign_off",
+                    "label": "Sign off"
+                }
+            ],
+            "help": "How to show the author name"
+        },
+        {
+            "name": "authorNameLinksToEmail",
+            "label": "The author name links to email",
+            "type": "checkbox",
+            "default": false,
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "help": "A click to the author name will create a new mail to be sent to the author."
+        },
+        {
+            "name": "permalinkDelimiter",
+            "label": "Permalink delimiter",
+            "type": "select",
+            "options": [
+                {
+                    "value": "?",
+                    "label": "Query delimiter (?)"
+                },
+                {
+                    "value": "#",
+                    "label": " Fragment identifier delimiter (#)"
+                }
+            ],
+            "default": "?",
+            "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
+        },
+        {
+            "name": "canComment",
+            "label": "Users can comment",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users can comment from embed page"
+        },
+        {
+            "name": "hasHighlights",
+            "label": "Has highlights",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users see the highlight button in embed"
+        }
+    ]
+}
