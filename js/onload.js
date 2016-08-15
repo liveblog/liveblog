@@ -16,9 +16,11 @@ var angular = require("angular")
 
 
 module.exports = function($rootScope, $window, resizeIframe, config) {
+  polyfills.events(); // IE10 compatible Event constructor
+  polyfills.classList(); // IE9 classList polyfill/shim
+
   var timeline = document.getElementsByClassName("lb-timeline")[0];
   timeline.classList.remove("mod--hide"); // Fade in timeline after all js has loaded
-  polyfills.events(); // IE10 compatible Event constructor
   $rootScope._log = _log(config); // Logging helper
 
   $window.onload = function() {
