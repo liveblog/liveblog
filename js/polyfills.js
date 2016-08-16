@@ -2,7 +2,8 @@
 
 /*
   All polyfills go here
-  - IE10 compatible Events
+  - IE10 custom 'Events'
+  - IE9 elem.classList polyfill
 */
 
 function enableCustomEvent() {

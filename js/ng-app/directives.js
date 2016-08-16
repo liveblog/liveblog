@@ -35,7 +35,7 @@ angular.module('liveblog-embed')
 
       function updateMoment() {
         elem.text(delta24h
-          ? moment(date).format('HH:mm')
+          ? moment(date).format('DD.MM, HH:mm [Uhr]')
           : moment(date).fromNow());
       }
 
