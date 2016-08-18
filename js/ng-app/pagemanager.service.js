@@ -17,7 +17,7 @@ function PagesManagerFactory(postsService, $q, config) {
     var self = this;
     self.newUpdatesApplied = 0; // no of posts added with scheduled updates
     self.newUpdatesAvailable = 0; // no of posts waiting to be pushed into view
-    self.pagesLoaded = 0; //no of pages added by infinite scroll or "load more" button
+    self.pagesLoaded = 0; // no of pages added by infinite scroll or "load more" button
 
     /**
      * Represent a page of posts
