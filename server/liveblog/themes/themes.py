@@ -177,6 +177,10 @@ class ThemesService(BaseService):
                         content_type = CONTENT_TYPES[os.path.splitext(name)[1]]
                     final_file_name = os.path.relpath(name, CURRENT_DIRECTORY)
                     version = theme.get('version', True)
+                    # don't use version for the `parent-iframe.js` script
+                    # requering the version for this will be done from the client.
+                    if name.endswith('parent-iframe.js'):
+                        version = False
                     # remove existing first
                     app.media.delete(app.media.media_id(final_file_name,
                                                         content_type=content_type,
@@ -189,7 +193,8 @@ class ThemesService(BaseService):
                     # save the screenshot url
                     if name.endswith('screenshot.png'):
                         theme['screenshot_url'] = superdesk.upload.url_for_media(file_id)
-                    # save the public_url
+                    # theme is needed a theme.json in the root folder.
+                    # save the public_url for that theme
                     if name.endswith('theme.json'):
                         theme['public_url'] = superdesk.upload.url_for_media(file_id).replace('theme.json', '')
 
