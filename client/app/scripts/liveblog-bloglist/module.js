@@ -268,7 +268,8 @@
         return function(text) {
             //replace paragraph and list item with an empty space
             var retValue = text ? String(text).replace(/<(p|li)>/g, ' ') : '';
-            return retValue.replace(/<[^>]+>/gm, '');
+            retValue = retValue.replace(/<[^>]+>/gm, '');
+            return retValue.replace(/(&nbsp;)/gm, '');
         };
       }
     );
