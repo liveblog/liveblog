@@ -140,6 +140,10 @@ define([
                         // otherwise, use the input as the embed code
                         } else {
                             that.loadData({html: input});
+                            //if instagram process the embed code
+                            if (input.indexOf('platform.instagram.com') !== -1) {
+                                window.instgrm.Embeds.process();
+                            }
                         }
                     }, 200));
                 },
