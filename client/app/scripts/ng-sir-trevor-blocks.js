@@ -140,10 +140,6 @@ define([
                         // otherwise, use the input as the embed code
                         } else {
                             that.loadData({html: input});
-                            //if instagram process the embed code
-                            if (input.indexOf('platform.instagram.com') !== -1) {
-                                window.instgrm.Embeds.process();
-                            }
                         }
                     }, 200));
                 },
@@ -296,6 +292,12 @@ define([
                             e.preventDefault();
                         });
                         $cover_handler.append($remove_link, $show_link);
+                    }
+                    //if instagram process the embed code
+                    if (data.html.indexOf('platform.instagram.com') !== -1) {
+                        setTimeout(function() {
+                            window.instgrm.Embeds.process();
+                        }, 1000);
                     }
                 },
                 focus: function() {
