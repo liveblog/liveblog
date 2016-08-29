@@ -6,7 +6,7 @@ if(typeof liveblog !== 'undefined') {
                 iFrameResize({
                     minHeight: 1000,
                     heightCalculationMethod: 'lowestElement'
-                });
+                }, iframe[0]);
                 var reached = false;
                 var detectEndOfBlog = function() {
                     if ($(window).scrollTop() > iframe.height() + iframe.offset().top - 50 - $(window).height()) {
