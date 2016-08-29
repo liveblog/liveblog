@@ -7,7 +7,7 @@ describe('Blog settings', function() {
 
     beforeEach(function(done) {login('editor', 'editor').then(done);});
 
-    fit('should modify title and description for blog', function() {
+    it('should modify title and description for blog', function() {
         var blog = blogs.cloneBlog(0);
         blog.title = randomString();
         blog.description = randomString();
