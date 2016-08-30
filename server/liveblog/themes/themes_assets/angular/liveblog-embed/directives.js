@@ -27,16 +27,17 @@
                     var iframe;
                     $timeout(function() {
                         iframe = elem.find('iframe');
-                        iframe.data('aspectRatio', iframe.attr('height') / iframe.attr('width'))
-                        .removeAttr('height')
-                        .removeAttr('width');
+                        iframe.data('aspectRatio', iframe.attr('height') / iframe.attr('width'));
                         resize();
                     }, 1000);
                     function resize() {
                         var newWidth = elem.innerWidth();
-                        iframe
-                            .width(newWidth)
-                            .height(newWidth * iframe.data('aspectRatio'));
+                        if (newWidth < iframe.attr('width')) {
+                            iframe
+                                .width(newWidth)
+                                .height(newWidth * iframe.data('aspectRatio'));
+                        }
+                        
                     }
                     angular.element($window).bind('resize', _.debounce(resize, 1000));
                 }

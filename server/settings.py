@@ -144,7 +144,7 @@ AWS_SECRET_ACCESS_KEY = AMAZON_SECRET_ACCESS_KEY
 S3_BUCKET_NAME = AMAZON_CONTAINER_NAME
 S3_USE_HTTPS = False
 FLASK_ASSETS_USE_S3 = False
-S3_SUBFOLDER = env('S3_SUBFOLDER', None)
+AMAZON_S3_SUBFOLDER = env('AMAZON_S3_SUBFOLDER', None)
 USE_S3 = FLASK_ASSETS_USE_S3
 
 
@@ -167,7 +167,7 @@ RENDITIONS = {
     },
     'avatar': {
         'thumbnail': {'width': 60, 'height': 60},
-        'viewImage': {'width': 1024, 'height': 768},
+        'viewImage': {'width': 200, 'height': 200},
     }
 }
 
