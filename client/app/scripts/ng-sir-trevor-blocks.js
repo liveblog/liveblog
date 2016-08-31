@@ -294,7 +294,7 @@ define([
                         $cover_handler.append($remove_link, $show_link);
                     }
                     //if instagram process the embed code
-                    if (data.html.indexOf('platform.instagram.com') !== -1) {
+                    if (data.html && data.html.indexOf('platform.instagram.com') !== -1) {
                         setTimeout(function() {
                             window.instgrm.Embeds.process();
                         }, 1000);
