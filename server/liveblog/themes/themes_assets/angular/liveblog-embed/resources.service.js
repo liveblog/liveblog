@@ -9,10 +9,35 @@
     function srcSet(fixProtocol) {
         return function(renditions) {
             var srcset = '';
-            angular.forEach(renditions, function(value) {
-                srcset += ', ' + fixProtocol(value.href) + ' ' + value.width + 'w';
+            // iterate and add the image with the width value to srcset
+            angular.forEach(renditions, function(value, key) {
+                if(key !== 'original') {
+                    srcset += ', ' + fixProtocol(value.href) + ' ' + value.width + 'w';
+                }
             });
             return srcset.substring(2);
+        }
+    }
+    thumbnailRendition.$inject = ['fixProtocol'];
+    function thumbnailRendition(fixProtocol) {
+        return function(renditions) {
+            // if the renditions has thumbnail use that.
+            if( renditions && renditions.thumbnail ) {
+                return fixProtocol(renditions.thumbnail.href);
+            }
+            // pick the smallest size image from renditions
+            // the smallest one is the one with the minimum area.
+            var src = '', 
+                min = false,
+                area;
+            angular.forEach(renditions, function(rendition) {
+                area = parseInt(rendition.with,10) * parseInt(rendition.height,10);
+                if(  area < min || min === false ) {
+                    src = fixProtocol(rendition.href);
+                    min = area;
+                }
+            });
+            return src;
         }
     }
 
@@ -41,13 +66,22 @@
         });
     }
 
-    Users.$inject = ['$resource', 'config', 'CacheFactory'];
-    function Users($resource, config, CacheFactory) {
+    Users.$inject = ['$resource', 'config', 'CacheFactory', 'srcSet', 'thumbnailRendition'];
+    function Users($resource, config, CacheFactory, srcSet, thumbnailRendition) {
         if (!CacheFactory.get('usersCache')) {
             CacheFactory.createCache('usersCache', CACHE_OPTIONS);
         }
         return $resource(config.api_host + 'api/client_users/:userId', {'userId':'@id'}, {
-            'get': { method:'GET', cache: CacheFactory.get('usersCache')}
+            'get': { 
+                method:'GET',
+                transformResponse: function(user) {
+                    user = angular.fromJson(user);
+                    var thumbnail = thumbnailRendition(user.avatar_renditions);
+                    user.picture_url =thumbnail? thumbnail : user.picture_url;
+                    user.picture_srcset = srcSet(user.avatar_renditions);
+                    return user;
+                },
+                cache: CacheFactory.get('usersCache')}
 
         });
     }
@@ -130,6 +164,7 @@
         .service('comments', Comments)
         .service('items', Items)
         .factory('transformBlog',transformBlog)
-        .factory('srcSet', srcSet);
+        .factory('srcSet', srcSet)
+        .factory('thumbnailRendition', thumbnailRendition);
 
 })(angular);

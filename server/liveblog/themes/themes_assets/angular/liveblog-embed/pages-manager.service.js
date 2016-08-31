@@ -1,8 +1,8 @@
 (function(angular) {
     'use strict';
 
-    PagesManagerFactory.$inject = ['posts', '$q', 'config'];
-    function PagesManagerFactory(postsService, $q, config) {
+    PagesManagerFactory.$inject = ['posts', '$q', 'config', '$timeout'];
+    function PagesManagerFactory(postsService, $q, config, $timeout) {
 
         function PagesManager (max_results, sort, sticky) {
             var SORTS = {
@@ -269,13 +269,13 @@
                 posts = posts || self.allPosts();
                 if (resetPages) {
                     self.pages = [];
-                    resetPageCounter();
                 }
                 // respect the order
                 var sort_by = Object.keys(SORTS[self.sort])[0];
                 var order_by = SORTS[self.sort][sort_by].order;
                 posts = _.orderBy(posts, sort_by, order_by);
                 var page;
+                var processInstagram = false;
                 posts.forEach(function(post, index) {
                     if (index % self.maxResults === 0) {
                         page = new Page();
@@ -285,10 +285,22 @@
                         addPage(page);
                         page = undefined;
                     }
+                    angular.forEach(post.groups[1].refs, function(item) {
+                        if (item.item.item_type === 'embed') {
+                            if (item.item.text.indexOf('platform.instagram.com') !== -1) {
+                                processInstagram = true;
+                            }
+                        }
+                    });
                 });
                 if (angular.isDefined(page)) {
                     addPage(page);
                 }
+                if (processInstagram) {
+                    $timeout(function() {
+                        window.instgrm.Embeds.process();
+                    }, 1000);
+                };
             }
 
             /**

@@ -89,23 +89,23 @@ Feature: Client modules operations
     Scenario: List users without needing auth
         Given "users"
         """
-        [{"username": "test-user"}, {"username": "test-user 2"}]
+        [{"username": "test-user", "first_name": "Test", "last_name": "User1"}, {"username": "test-user 2", "first_name": "Test2", "last_name": "User2"}]
         """
         When we get "/client_users"
         Then we get list with 2 items
         """
-        {"_items": [{"username": "test-user"}, {"username": "test-user 2"}]}
+        {"_items": [{"display_name": "Test User1"}, {"display_name": "Test2 User2"}]}
         """
 
     Scenario: List a single client_user
         Given "users"
         """
-        [{"username": "foo"}]
+        [{"username": "foo", "first_name": "Foo", "last_name": "Bar"}]
         """
         When we get "/client_users/#users._id#"
         Then we get existing resource
         """
-        {"username": "foo"}
+        {"display_name": "Foo Bar"}
         """
 
     Scenario: Posting a comment

@@ -293,6 +293,12 @@ define([
                         });
                         $cover_handler.append($remove_link, $show_link);
                     }
+                    //if instagram process the embed code
+                    if (data.html.indexOf('platform.instagram.com') !== -1) {
+                        setTimeout(function() {
+                            window.instgrm.Embeds.process();
+                        }, 1000);
+                    }
                 },
                 focus: function() {
                     this.$('.embed-input').focus();
@@ -456,7 +462,6 @@ define([
                         ev.preventDefault();
                     });
                     this.$inputs.find('input').on('change', _.bind(function(ev) {
-                        that.getOptions().disableSubmit(false);
                         this.onDrop(ev.currentTarget);
                     }, this));
                 },
@@ -481,6 +486,7 @@ define([
                         this.getOptions().uploader(
                             file,
                             function(data) {
+                                that.getOptions().disableSubmit(false);
                                 that.setData(data);
                                 that.ready();
                             },

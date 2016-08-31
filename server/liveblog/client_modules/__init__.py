@@ -18,7 +18,7 @@ def init_app(app):
     ClientBlogPostsResource(endpoint_name, app=app, service=service)
 
     endpoint_name = 'client_users'
-    service = ClientUsersService('users', backend=superdesk.get_backend())
+    service = ClientUsersService(endpoint_name, backend=superdesk.get_backend())
     ClientUsersResource(endpoint_name, app=app, service=service)
 
     endpoint_name = 'client_comments'

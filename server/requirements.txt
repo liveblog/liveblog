@@ -13,3 +13,4 @@ httmock
 honcho
 # Superdesk
 -e git+git://github.com/ancafarcas/superdesk-core.git@66de960faa16a1772c73741105c99b14256e80c0#egg=Superdesk-Core==1.06-update-sd
+

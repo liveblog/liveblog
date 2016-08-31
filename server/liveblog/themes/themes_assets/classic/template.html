@@ -2,7 +2,7 @@
     <div class="lb-timeline__header">
         <h1 ng-if="timeline.settings.showTitle" ng-bind="timeline.blog.title"></h1>
         <div class="illustration" ng-if="timeline.blog.picture_url && timeline.settings.showImage" ng-cloak>
-            <img ng-src="{{ timeline.blog.picture_url }}" srcset="{{ timeline.blog.picture_srcset }}" sizes="100vw"/>
+            <img ng-src="{{ timeline.blog.picture_url }}" ng-srcset="{{ timeline.blog.picture_srcset }}" sizes="100vw"/>
         </div>
         <p class="description" ng-if="timeline.settings.showDescription" ng-bind-html="timeline.blog.descriptionHtml"></p>
     </div>
