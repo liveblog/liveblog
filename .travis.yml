@@ -131,6 +131,7 @@ script:
       fi
 
 after_script:
+    - pwd
     - cat server/nohup.out
     - killall -9 python
 
