@@ -20,11 +20,6 @@
         function retrieveUpdate() {
             return vm.pagesManager.retrieveUpdate(!UPDATE_MANUALLY).then(function(data) {
                 vm.newPosts = data._items;
-            });
-        }
-
-        function retrieveStickyUpdate() {
-            return vm.stickyPagesManager.retrieveUpdate(!UPDATE_MANUALLY).then(function(data) {
                 vm.newStickyPosts = data._items;
             });
         }
@@ -115,7 +110,6 @@
         .then(function() {
             vm.permalinkScroll();
             $interval(retrieveUpdate, UPDATE_EVERY);
-            $interval(retrieveStickyUpdate, UPDATE_EVERY);
             $interval(retrieveBlogSettings, 3 * UPDATE_EVERY);
             // listen events from parent
             var fetchNewPageDebounced = _.debounce(vm.fetchNewPage, 1000);
