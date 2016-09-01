@@ -94,6 +94,13 @@
             } else if(obj.original_creator !== "" && obj.original_creator !== 'None'){
                 users.get({userId: obj.original_creator}, function(user) {
                     obj.original_creator = user._items? user._items[0] : user;
+                    //at times we don't get the byline and sign_off fields from the user request
+                    if (!obj.original_creator.byline && obj.byline) {
+                        obj.original_creator.byline = obj.byline;
+                    }
+                    if (!obj.original_creator.sign_off && obj.sign_off) {
+                        obj.original_creator.sign_off = obj.sign_off;
+                    }
                 });
             }
             return obj;
