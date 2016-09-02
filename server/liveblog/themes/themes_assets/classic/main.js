@@ -26,6 +26,10 @@
 
         function retrieveBlogSettings() {
             blogsService.get({}, function(blog) {
+                if(blog.blog_status === 'closed') {
+                    $interval.cancel(vm.interval.posts);
+                    $interval.cancel(vm.interval.blog);
+                }
                 angular.extend(vm.blog, blog);
             });
         }
@@ -109,8 +113,12 @@
         // retrieve updates periodically
         .then(function() {
             vm.permalinkScroll();
-            $interval(retrieveUpdate, UPDATE_EVERY);
-            $interval(retrieveBlogSettings, 3 * UPDATE_EVERY);
+            if(vm.blog.blog_status !== 'closed') {
+                vm.interval = {
+                    posts: $interval(retrieveUpdate, UPDATE_EVERY),
+                    blog: $interval(retrieveBlogSettings, 3 * UPDATE_EVERY)
+                };
+            }
             // listen events from parent
             var fetchNewPageDebounced = _.debounce(vm.fetchNewPage, 1000);
             function receiveMessage(event) {
