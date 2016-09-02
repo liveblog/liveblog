@@ -122,6 +122,7 @@ INSTALLED_APPS = [
     'apps.privilege',
     'apps.legal_archive',
     'apps.archive_broadcast',
+    'apps.content_types',
 
     'liveblog.prepopulate',
     'liveblog.blogs',
