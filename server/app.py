@@ -13,12 +13,15 @@
 import jinja2
 from liveblog.embed import embed_blueprint
 from flask.ext.cache import Cache
-from liveblog.common import BlogCache
+from liveblog.common import LiveblogCache
 import flask_s3
 
 import os
 import settings
 from superdesk.factory import get_app as superdesk_app
+import logging
+
+logger = logging.getLogger('superdesk')
 
 
 def get_app(config=None):
@@ -51,9 +54,15 @@ def get_app(config=None):
     ])
     app.jinja_loader = custom_loader
 
-    # cache
-    app.cache = Cache(app, config={'CACHE_TYPE': 'simple'})
-    app.blog_cache = BlogCache(cache=app.cache)
+    # cache definition
+    # right now mostly used on client_modules
+    if config['CACHE_MEMCACHED_SERVERS']:
+        app.cache = Cache(app, config={'CACHE_TYPE': 'memcached',
+                                       'CACHE_MEMCACHED_SERVERS': config['CACHE_MEMCACHED_SERVERS']})
+    else:
+        app.cache = Cache(app, config={'CACHE_TYPE': 'simple'})
+
+    app.liveblog_cache = LiveblogCache(cache=app.cache)
     # s3
     s3 = flask_s3.FlaskS3()
     s3.init_app(app)

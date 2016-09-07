@@ -174,7 +174,7 @@ class PostsService(ArchiveService):
         post_ids = []
         for doc in docs:
             post_ids.append(doc.get('_id'))
-            app.blog_cache.invalidate(doc.get('blog'))
+            app.liveblog_cache.invalidate(doc.get('blog'))
         # send notifications
         push_notification('posts', created=True, post_status=doc['post_status'], post_ids=post_ids)
 
@@ -234,7 +234,7 @@ class PostsService(ArchiveService):
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
         # invalidate cache for updated blog
-        app.blog_cache.invalidate(original.get('blog'))
+        app.liveblog_cache.invalidate(original.get('blog'))
         # send notifications
         if updates.get('deleted', False):
             push_notification('posts', deleted=True, post_id=original.get('_id'))
@@ -256,7 +256,7 @@ class PostsService(ArchiveService):
     def on_deleted(self, doc):
         super().on_deleted(doc)
         # invalidate cache for updated blog
-        app.blog_cache.invalidate(doc.get('blog'))
+        app.liveblog_cache.invalidate(doc.get('blog'))
         # send notifications
         push_notification('posts', deleted=True)
 

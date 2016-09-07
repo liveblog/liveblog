@@ -201,7 +201,7 @@ class BlogService(BaseService):
     def on_updated(self, updates, original):
         publish_blog_embed_on_s3.delay(str(original['_id']))
         # invalidate cache for updated blog
-        app.blog_cache.invalidate(original.get('_id'))
+        app.liveblog_cache.invalidate(original.get('_id'))
         # send notifications
         push_notification('blogs', updated=1)
         # notify newly added members
@@ -222,7 +222,7 @@ class BlogService(BaseService):
 
     def on_deleted(self, doc):
         # invalidate cache for updated blog
-        app.blog_cache.invalidate(doc.get('_id'))
+        app.liveblog_cache.invalidate(doc.get('_id'))
         # send notifications
         push_notification('blogs', deleted=1)
 

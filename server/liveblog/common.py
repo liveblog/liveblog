@@ -1,9 +1,11 @@
 import flask
 import superdesk
 from superdesk.utc import utcnow
-from superdesk.celery_app import update_key
 import unittest
 from superdesk.errors import SuperdeskApiError
+import logging
+
+logger = logging.getLogger('superdesk')
 
 
 def get_user(required=False):
@@ -23,22 +25,51 @@ def check_comment_length(text):
         raise SuperdeskApiError(payload='Allowed length: between 1 and 300. You exceeded the allowed length')
 
 
-class BlogCache(object):
+class LiveblogCache(object):
     ''' Manage the cache for blogs '''
 
-    def __init__(self, cache):
+    def __init__(self, cache, key='lb'):
         self.cache = cache
+        self.main_key = key
 
     def __get_blog_version(self, blog, invalidate=False):
         '''
         Return the blog cache version.
         If invalidate is true, the version will be incremented
         '''
-        return update_key('%s__version' % (blog), flag=invalidate)
+        blog_cache_key = '{}__{}_version'.format(blog, self.main_key)
+        blog_version = self.cache.get(blog_cache_key)
+        if not blog_version:
+            blog_version = self.cache.set(blog_cache_key, '1')
+        if invalidate:
+            self.__remove_cache_keys(blog, blog_version=blog_version)
+            if not blog_version:
+                blog_version = '1'
+            blog_version = str(int(blog_version) + 1)
+            self.cache.set(blog_cache_key, blog_version)
+        return blog_version
 
     def __create_blog_cache_key(self, blog, key):
         ''' return a key name for the given blog and key '''
         return '%s__%s__%s' % (blog, self.__get_blog_version(blog), key)
+
+    def __remove_cache_keys(self, blog, blog_version):
+        ''' remove all the keys for the previous version '''
+        blog_cache_keys = '{}__{}__{}_cache_keys'.format(blog, blog_version, self.main_key)
+        keys = self.cache.get(blog_cache_keys)
+        if keys:
+            for key in keys:
+                self.cache.delete(key)
+
+    def __save_cache_keys(self, blog, key):
+        ''' keep the key so later we can remove it '''
+        blog_cache_keys = '{}__{}__{}_cache_keys'.format(blog, self.__get_blog_version(blog), self.main_key)
+        keys = self.cache.get(blog_cache_keys)
+        if not keys:
+            keys = []
+        keys.append(key)
+        self.cache.set(blog_cache_keys, keys)
+        return key
 
     def get(self, blog, key):
         ''' retrieve value from the cache '''
@@ -46,7 +77,8 @@ class BlogCache(object):
 
     def set(self, blog, key, value):
         ''' save value to the cache '''
-        return self.cache.set(self.__create_blog_cache_key(blog, key), value)
+        blog_cache_key = self.__save_cache_keys(blog, self.__create_blog_cache_key(blog, key))
+        return self.cache.set(blog_cache_key, value)
 
     def invalidate(self, blog):
         ''' invalidate the cache for the given blog '''
@@ -61,9 +93,9 @@ class BlogCacheTestCase(unittest.TestCase):
         with app_module.get_app().app_context():
             from flask import current_app as app
             cache = Cache(app, config={'CACHE_TYPE': 'simple'})
-            blog_cache = BlogCache(cache)
-            self.assertEqual(blog_cache.get('blog', 'key'), None)
-            blog_cache.set('blog', 'key', 'value')
-            self.assertEqual(blog_cache.get('blog', 'key'), 'value')
-            blog_cache.invalidate('blog')
-            self.assertEqual(blog_cache.get('blog', 'key'), None)
+            liveblog_cache = LiveblogCache(cache)
+            self.assertEqual(liveblog_cache.get('blog', 'key'), None)
+            liveblog_cache.set('blog', 'key', 'value')
+            self.assertEqual(liveblog_cache.get('blog', 'key'), 'value')
+            liveblog_cache.invalidate('blog')
+            self.assertEqual(liveblog_cache.get('blog', 'key'), None)
