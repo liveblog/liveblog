@@ -18,9 +18,9 @@
             stickyPermalink = new Permalink(stickyPagesManager, PERMALINK_DELIMITER);
 
         function retrieveUpdate() {
-            return vm.pagesManager.retrieveUpdate(!UPDATE_MANUALLY).then(function(data) {
-                vm.newPosts = data._items;
-                vm.newStickyPosts = data._items;
+            return vm.pagesManager.retrieveUpdate().then(function(data) {
+                vm.newPosts = vm.newPosts.concat(vm.pagesManager.processUpdates(data, !UPDATE_MANUALLY));
+                vm.newStickyPosts = vm.newStickyPosts.concat(vm.stickyPagesManager.processUpdates(data, !UPDATE_MANUALLY));
             });
         }
 
@@ -83,9 +83,9 @@
                 return !vm.loading && !vm.finished;
             },
             applyUpdates: function() {
-                pagesManager.applyUpdates(vm.newPosts);
+                pagesManager.applyUpdates(vm.newPosts, true);
                 vm.newPosts = [];
-                stickyPagesManager.applyUpdates(vm.newStickyPosts);
+                stickyPagesManager.applyUpdates(vm.newStickyPosts, true);
                 vm.newStickyPosts = [];
             },
             toggleHighlighsOnly: function() {

@@ -142,7 +142,6 @@
              * @returns {promise}
              */
             function retrieveUpdate(should_apply_updates) {
-                should_apply_updates = should_apply_updates === true;
                 var date = self.latestUpdatedDate ? self.latestUpdatedDate.utc().format() : undefined;
                 var posts_criteria = {
                     page: 1,
@@ -178,14 +177,24 @@
                 })
                 // Apply the update if needed
                 .then(function(updates) {
-                    if (should_apply_updates) {
-                        applyUpdates(updates._items);
-                    }
-                    if (self.pages.length !== 0) {
-                        self.newUpdatesAvailable = newItemsNo(updates._items);
-                    }
                     return updates;
                 });
+            }
+
+            /**
+             * Process the newly retrieved updates
+             * @param {array} updates - List of updated posts
+             * @param {boolean} [should_apply_updates=false] - If true, will apply the updates into the posts list
+             */
+            function processUpdates(updates, should_apply_all_updates) {
+                should_apply_all_updates = should_apply_all_updates === true;
+                
+                var newItems = applyUpdates(updates._items, should_apply_all_updates);
+                
+                if (self.pages.length !== 0) {
+                    self.newUpdatesAvailable = newItemsNo(updates._items);
+                }
+                return newItems;
             }
 
             /**
@@ -210,7 +219,8 @@
              * Apply the given updates to the posts list
              * @param {array} updates - List of updated posts
              */
-            function applyUpdates(updates) {
+            function applyUpdates(updates, should_apply_all_updates) {
+                var newItems = [];
                 updates.forEach(function(post) {
                     var existing_post_indexes = getPostPageIndexes(post);
                     if (angular.isDefined(existing_post_indexes)) {
@@ -229,17 +239,28 @@
                            }
                         }
                     } else {
+
                         // post doesn't exist in the list
                         if (!post.deleted && post.post_status === 'open' && post.sticky === sticky) {
-                            addPost(post);
-                            self.newUpdatesApplied ++;
+                            if (should_apply_all_updates) {
+                                addPost(post);
+                                self.newUpdatesApplied ++;
+                            } else {
+                                newItems.push(post);
+                            }               
                         }
                     }
                 });
-                //reset the number of new posts available
-                self.newUpdatesAvailable = 0;
+
+                if (should_apply_all_updates) {
+                    //reset the number of new posts available
+                    self.newUpdatesAvailable = 0;
+                } else {
+                    self.newUpdatesAvailable += newItems.length;
+                }
                 // update date
                 updateLatestDates(updates);
+                return newItems;
             }
 
             /**
@@ -436,6 +457,10 @@
                  * Return the latest available updates
                  */
                 retrieveUpdate: retrieveUpdate,
+                /**
+                 * Process the latest available updates
+                 */
+                processUpdates: processUpdates, 
                 /**
                  * Apply the given updates to the posts list
                  */
