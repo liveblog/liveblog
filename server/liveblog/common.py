@@ -4,6 +4,7 @@ from superdesk.utc import utcnow
 import unittest
 from superdesk.errors import SuperdeskApiError
 import logging
+from flask import current_app as app
 
 logger = logging.getLogger('superdesk')
 
@@ -37,7 +38,8 @@ class LiveblogCache(object):
         Return the blog cache version.
         If invalidate is true, the version will be incremented
         '''
-        blog_cache_key = '{}__{}_version'.format(blog, self.main_key)
+        blog_cache_key = '{}__{}__{}_version'.format(app.config['CACHE_MEMCACHED_PREFIX'],
+                                                     blog, self.main_key)
         blog_version = self.cache.get(blog_cache_key)
         if not blog_version:
             blog_version = self.cache.set(blog_cache_key, '1')
@@ -51,11 +53,13 @@ class LiveblogCache(object):
 
     def __create_blog_cache_key(self, blog, key):
         ''' return a key name for the given blog and key '''
-        return '%s__%s__%s' % (blog, self.__get_blog_version(blog), key)
+        return '{}__{}__{}__{}'.format(app.config['CACHE_MEMCACHED_PREFIX'],
+                                       blog, self.__get_blog_version(blog), key)
 
     def __remove_cache_keys(self, blog, blog_version):
         ''' remove all the keys for the previous version '''
-        blog_cache_keys = '{}__{}__{}_cache_keys'.format(blog, blog_version, self.main_key)
+        blog_cache_keys = '{}__{}__{}__{}_cache_keys'.format(app.config['CACHE_MEMCACHED_PREFIX'],
+                                                             blog, blog_version, self.main_key)
         keys = self.cache.get(blog_cache_keys)
         if keys:
             for key in keys:
@@ -63,7 +67,8 @@ class LiveblogCache(object):
 
     def __save_cache_keys(self, blog, key):
         ''' keep the key so later we can remove it '''
-        blog_cache_keys = '{}__{}__{}_cache_keys'.format(blog, self.__get_blog_version(blog), self.main_key)
+        blog_cache_keys = '{}__{}__{}__{}_cache_keys'.format(app.config['CACHE_MEMCACHED_PREFIX'],
+                                                             blog, self.__get_blog_version(blog), self.main_key)
         keys = self.cache.get(blog_cache_keys)
         if not keys:
             keys = []

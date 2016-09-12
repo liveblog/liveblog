@@ -216,10 +216,11 @@ LDAP_USER_FILTER = env('LDAP_USER_FILTER', "(&(objectCategory=user)(objectClass=
 LDAP_USER_ATTRIBUTES = {'givenName': 'first_name', 'sn': 'last_name', 'displayName': 'display_name',
                         'mail': 'email', 'ipPhone': 'phone'}
 
-# where are located memcached servers
+# memcached servers settings
 CACHE_MEMCACHED_SERVERS = env('CACHE_MEMCACHED_SERVERS', '')
 if CACHE_MEMCACHED_SERVERS:
     CACHE_MEMCACHED_SERVERS = tuple(CACHE_MEMCACHED_SERVERS.split(','))
+CACHE_MEMCACHED_PREFIX = env('CACHE_MEMCACHED_PREFIX', '')
 
 if LDAP_SERVER:
     INSTALLED_APPS.append('apps.auth.ldap')
