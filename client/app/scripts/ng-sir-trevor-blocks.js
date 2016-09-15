@@ -36,14 +36,23 @@ define([
 
     var placeCaretAtStart = createCaretPlacer(true);
     var placeCaretAtEnd = createCaretPlacer(false);
+    var uriRegx = '(https?:\\/\\/)?[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
+
+    function fixSecureEmbed(string) {
+        if (window.location.protocol === 'https:/') {
+            var pattern = new RegExp(uriRegx, 'i'),
+                matches = string.match(pattern);
+            if (matches.length) {
+                return matches[0];
+            }
+            return string;
+        } else {
+            return string;
+        }
+    }
 
     function isURI(string) {
-        var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
-        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+,()]*)*'+ // port and path
-        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+        var pattern = new RegExp('^' + uriRegx, 'i');
         return pattern.test(string);
     }
     function handlePlaceholder(selector, placeHolderText, options) {
@@ -124,6 +133,7 @@ define([
                         that.resetMessages();
                         // start a loader over the block, it will be stopped in the loadData function
                         that.loading();
+                        input = fixSecureEmbed(input);
                         // if the input is an url, use embed services
                         if (isURI(input)) {
                             // request the embedService with the provided url
