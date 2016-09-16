@@ -39,10 +39,13 @@ define([
     var uriRegx = '(https?:\\/\\/)?[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
 
     function fixSecureEmbed(string) {
-        if (window.location.protocol === 'https:/') {
+        console.log('protoco: ',window.location.protocol);
+        if (window.location.protocol === 'https:') {
+            console.log('is over https');
             var pattern = new RegExp(uriRegx, 'i'),
                 matches = string.match(pattern);
             if (matches.length) {
+                console.log('return: ',matches[0])
                 return matches[0];
             }
             return string;
