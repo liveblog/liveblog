@@ -39,19 +39,23 @@ define([
     var uriRegx = '(https?:\\/\\/)?[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
 
     function fixSecureEmbed(string) {
+        var ret;
         console.log('protoco: ',window.location.protocol);
         if (window.location.protocol === 'https:') {
             console.log('is over https');
             var pattern = new RegExp(uriRegx, 'i'),
                 matches = string.match(pattern);
             if (matches.length) {
-                console.log('return: ',matches[0])
-                return matches[0];
+                ret = matches[0];
             }
-            return string;
+            ret = string;
         } else {
-            return string;
+            ret = string;
         }
+        // particular case for cnn.
+        ret = ret.replace('cnn.com/video/api/embed.html#/video', 'cnn.com/videos');
+        console.log('ret: ', ret);
+        return ret;
     }
 
     function isURI(string) {
@@ -91,7 +95,7 @@ define([
                     'data-icon-after': "ADD CONTENT HERE"
                 });
             }
-            // Add toMeta method to all blocks. 
+            // Add toMeta method to all blocks.
             SirTrevor.Block.prototype.toMeta = function() {return;};
             SirTrevor.Block.prototype.getOptions = function() {
                 return SirTrevor.$get().getInstance(this.instanceID).options;
