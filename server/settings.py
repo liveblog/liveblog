@@ -31,7 +31,7 @@ def env(variable, fallback_value=None):
         else:
             return env_value
 
-
+INSTANCE_ID = env('INSTANCE_ID', 'liveblog')
 ABS_PATH = os.path.abspath(os.path.dirname(__file__))
 BEHAVE_TESTS_FIXTURES_PATH = os.path.join(ABS_PATH, 'features', 'steps', 'fixtures')
 XML = False
@@ -217,10 +217,10 @@ LDAP_USER_ATTRIBUTES = {'givenName': 'first_name', 'sn': 'last_name', 'displayNa
                         'mail': 'email', 'ipPhone': 'phone'}
 
 # memcached servers settings
-CACHE_MEMCACHED_SERVERS = env('CACHE_MEMCACHED_SERVERS', '')
-if CACHE_MEMCACHED_SERVERS:
-    CACHE_MEMCACHED_SERVERS = tuple(CACHE_MEMCACHED_SERVERS.split(','))
-CACHE_MEMCACHED_PREFIX = env('CACHE_MEMCACHED_PREFIX', '')
+MEMCACHE_URI = env('MEMCACHE_URI', '')
+if MEMCACHE_URI:
+    MEMCACHE_URI = tuple(MEMCACHE_URI.split(','))
+CACHE_TTL = env('CACHE_TTL', '0')
 
 if LDAP_SERVER:
     INSTALLED_APPS.append('apps.auth.ldap')

@@ -38,27 +38,29 @@ class LiveblogCache(object):
         Return the blog cache version.
         If invalidate is true, the version will be incremented
         '''
-        blog_cache_key = '{}__{}__{}_version'.format(app.config['CACHE_MEMCACHED_PREFIX'],
+        blog_cache_key = '{}__{}__{}_version'.format(app.config['INSTANCE_ID'],
                                                      blog, self.main_key)
         blog_version = self.cache.get(blog_cache_key)
         if not blog_version:
-            blog_version = self.cache.set(blog_cache_key, '1')
+            blog_version = 1
+            self.cache.set(blog_cache_key, blog_version)
         if invalidate:
-            self.__remove_cache_keys(blog, blog_version=blog_version)
+            # @TODO: check performance before uncoment
+            # self.__remove_cache_keys(blog, blog_version=blog_version)
             if not blog_version:
-                blog_version = '1'
-            blog_version = str(int(blog_version) + 1)
+                blog_version = 1
+            blog_version = (blog_version + 1) % 256
             self.cache.set(blog_cache_key, blog_version)
         return blog_version
 
     def __create_blog_cache_key(self, blog, key):
         ''' return a key name for the given blog and key '''
-        return '{}__{}__{}__{}'.format(app.config['CACHE_MEMCACHED_PREFIX'],
-                                       blog, self.__get_blog_version(blog), key)
+        key = '{}__{}__{}__{}'.format(app.config['INSTANCE_ID'], blog, self.__get_blog_version(blog), key)
+        return key
 
     def __remove_cache_keys(self, blog, blog_version):
         ''' remove all the keys for the previous version '''
-        blog_cache_keys = '{}__{}__{}__{}_cache_keys'.format(app.config['CACHE_MEMCACHED_PREFIX'],
+        blog_cache_keys = '{}__{}__{}__{}_cache_keys'.format(app.config['INSTANCE_ID'],
                                                              blog, blog_version, self.main_key)
         keys = self.cache.get(blog_cache_keys)
         if keys:
@@ -67,13 +69,13 @@ class LiveblogCache(object):
 
     def __save_cache_keys(self, blog, key):
         ''' keep the key so later we can remove it '''
-        blog_cache_keys = '{}__{}__{}__{}_cache_keys'.format(app.config['CACHE_MEMCACHED_PREFIX'],
+        blog_cache_keys = '{}__{}__{}__{}_cache_keys'.format(app.config['INSTANCE_ID'],
                                                              blog, self.__get_blog_version(blog), self.main_key)
         keys = self.cache.get(blog_cache_keys)
         if not keys:
             keys = []
         keys.append(key)
-        self.cache.set(blog_cache_keys, keys)
+        self.cache.set(blog_cache_keys, keys, time=int(app.config('CACHE_TTL')))
         return key
 
     def get(self, blog, key):
@@ -82,8 +84,9 @@ class LiveblogCache(object):
 
     def set(self, blog, key, value):
         ''' save value to the cache '''
-        blog_cache_key = self.__save_cache_keys(blog, self.__create_blog_cache_key(blog, key))
-        return self.cache.set(blog_cache_key, value)
+        # @TODO: check performance before uncoment
+        # blog_cache_key = self.__save_cache_keys(blog, self.__create_blog_cache_key(blog, key))
+        return self.cache.set(self.__create_blog_cache_key(blog, key), value)
 
     def invalidate(self, blog):
         ''' invalidate the cache for the given blog '''

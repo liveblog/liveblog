@@ -56,9 +56,10 @@ def get_app(config=None):
 
     # cache definition
     # right now mostly used on client_modules
-    if config['CACHE_MEMCACHED_SERVERS']:
+    if config['MEMCACHE_URI']:
+        logger.info('memcache server used: {}'.format(config['MEMCACHE_URI']))
         app.cache = Cache(app, config={'CACHE_TYPE': 'memcached',
-                                       'CACHE_MEMCACHED_SERVERS': config['CACHE_MEMCACHED_SERVERS']})
+                                       'CACHE_MEMCACHED_SERVERS': config['MEMCACHE_URI']})
     else:
         app.cache = Cache(app, config={'CACHE_TYPE': 'simple'})
 
