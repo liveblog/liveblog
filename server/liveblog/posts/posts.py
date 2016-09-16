@@ -170,7 +170,7 @@ class PostsService(ArchiveService):
             if doc['post_status'] == 'open':
                 doc['published_date'] = utcnow()
                 doc['content_updated_date'] = doc['published_date']
-                doc['publisher'] = {'_id': getattr(flask.g, 'user', None).get('_id')}
+                doc['publisher'] = {'_id': getattr(flask.g, 'user', {}).get('_id', None)}
         super().on_create(docs)
 
     def on_created(self, docs):
@@ -219,7 +219,7 @@ class PostsService(ArchiveService):
             updates['order'] = self.get_next_order_sequence(original.get('blog'))
             # if you publish a post it will save a published date and register who did it
             updates['published_date'] = utcnow()
-            updates['publisher'] = {'_id': getattr(flask.g, 'user', None).get('_id')}
+            updates['publisher'] = {'_id': getattr(flask.g, 'user', {}).get('_id', None)}
             # if you publish a post and hasn't `content_updated_date` add it.
             if not updates.get('content_updated_date', False):
                 updates['content_updated_date'] = updates['published_date']
