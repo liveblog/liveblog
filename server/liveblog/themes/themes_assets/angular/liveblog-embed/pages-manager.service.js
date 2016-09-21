@@ -14,9 +14,11 @@
 
             //no of posts added with scheduled updates
             self.newUpdatesApplied  = 0;
-            self.newUpdatesAvailable = 0;
             //no of pages added by infinite scroll or "load more" button
             self.pagesLoaded = 0;
+            //where we keep the available updates to make sure we don't count them twice
+            self.uncountedPosts = [];
+            self.countedPosts = [];
 
              /**
              * Reset to number of loaded pages
@@ -24,7 +26,8 @@
             function resetPageCounter() {
                 self.pagesLoaded = 0;
                 self.newUpdatesApplied  = 0;
-                self.newUpdatesAvailable = 0;
+                self.uncountedPosts = [];
+                self.countedPosts = [];
             }
 
             /**
@@ -124,16 +127,20 @@
              * Check to see if we need to require a higher page number
              */
             function checkStep() {
-                //if the number of new posts since the last pagination equals the items per page
-                var shift = self.newUpdatesApplied + self.newUpdatesAvailable;
-                // reset the counters as we need them fresh after a new page load
-                self.newUpdatesAvailable = 0; self.newUpdatesApplied = 0;
-                if (shift % self.maxResults === 0) {
-                    //increase page number
-                    return Math.floor(shift / self.maxResults);
+                
+                var shift, step;
+                //if order is 'oldest_first' we only need to care about the removed posts
+                if (self.sort === 'oldest_first') {
+                    shift = self.newUpdatesApplied;
                 } else {
-                    return 0;
+                    shift = self.newUpdatesApplied + self.uncountedPosts.length;
                 }
+                // reset the counters as we need them fresh after a new page load
+                self.countedPosts = self.countedPosts.concat(self.uncountedPosts);
+                self.uncountedPosts = []; self.newUpdatesApplied = 0;
+                //this works well with both negative and positive shift
+                step = Math.floor(shift / self.maxResults);
+                return step;
             }
 
             /**
@@ -192,27 +199,25 @@
                 var newItems = applyUpdates(updates._items, should_apply_all_updates);
                 
                 if (self.pages.length !== 0) {
-                    self.newUpdatesAvailable = newItemsNo(updates._items);
+                    processNewPosts(updates._items);
                 }
                 return newItems;
             }
 
             /**
-             * count the number of new items 
+             * process the new posts and keep the uncounted ones
              * to help the pagination process
              */
-            function newItemsNo(updates) {
-                var available = 0;
+            function processNewPosts(updates) {
                 updates.forEach(function(post) {
                     var existing_post_indexes = getPostPageIndexes(post);
                     if (!angular.isDefined(existing_post_indexes)) {
                         // post doesn't exist in the list
                         if (!post.deleted && post.post_status === 'open' && post.sticky === sticky) {
-                            available ++;
+                            self.uncountedPosts.push(post);
                         }
                     }
                 });
-                return available;
             }
 
             /**
@@ -228,10 +233,12 @@
                         if (post.deleted) {
                             // post deleted
                             removePost(post);
+                            self.newUpdatesApplied --;
                         } else {
                             // post updated
                             if (post.post_status !== 'open' || post.sticky !== sticky  || (self.highlight && !post.highlight)) {
                                removePost(post);
+                               self.newUpdatesApplied --;
                             } else {
                                 // update
                                 self.pages[existing_post_indexes[0]].posts[existing_post_indexes[1]] = post;
@@ -239,12 +246,17 @@
                            }
                         }
                     } else {
-
                         // post doesn't exist in the list
                         if (!post.deleted && post.post_status === 'open' && post.sticky === sticky) {
                             if (should_apply_all_updates) {
                                 addPost(post);
-                                self.newUpdatesApplied ++;
+                                if (self.countedPosts.indexOf(post) === -1) {
+                                    //we don't need to advance the pagination if we have reversed order
+                                    if (self.sort !== 'oldest_first') {
+                                        self.newUpdatesApplied ++;
+                                    }
+                                    
+                                }
                             } else {
                                 newItems.push(post);
                             }               
@@ -254,9 +266,7 @@
 
                 if (should_apply_all_updates) {
                     //reset the number of new posts available
-                    self.newUpdatesAvailable = 0;
-                } else {
-                    self.newUpdatesAvailable += newItems.length;
+                    self.countedPosts = [];
                 }
                 // update date
                 updateLatestDates(updates);
