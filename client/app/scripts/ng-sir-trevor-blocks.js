@@ -40,21 +40,19 @@ define([
 
     function fixSecureEmbed(string) {
         var ret;
-        console.log('protoco: ',window.location.protocol);
         if (window.location.protocol === 'https:') {
-            console.log('is over https');
             var pattern = new RegExp(uriRegx, 'i'),
                 matches = string.match(pattern);
             if (matches.length) {
                 ret = matches[0];
+            } else {
+                ret = string;
             }
-            ret = string;
         } else {
             ret = string;
         }
         // particular case for cnn.
         ret = ret.replace('cnn.com/video/api/embed.html#/video', 'cnn.com/videos');
-        console.log('ret: ', ret);
         return ret;
     }
 
