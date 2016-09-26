@@ -4,8 +4,8 @@
     // TODO: Factorize this file with
     // server/liveblog/embed/embed_assets/scripts/liveblog-embed/pages-manager.service.js
 
-    PagesManagerFactory.$inject = ['postsService', '$q', 'lodash', 'moment'];
-    function PagesManagerFactory(postsService, $q, _, moment) {
+    PagesManagerFactory.$inject = ['postsService', '$q', 'lodash', 'moment', '$timeout'];
+    function PagesManagerFactory(postsService, $q, _, moment, $timeout) {
 
         function PagesManager (blog_id, status, max_results, sort, sticky, highlight) {
             var SORTS = {
@@ -34,11 +34,17 @@
              * @returns {promise}
              */
             function retrievePage(page, max_results) {
-                var options = {status: self.status, authors: self.authors, highlight: self.highlight}
+
+                var options = {status: self.status, authors: self.authors}
                 //only care about the sticky status if post if open otherwise show them all together
                 //@TODO refactor when refactoring the page manager
                 if (self.status === 'open') {
                     options.sticky = sticky
+                }
+
+                //only care about the highlight status if it is set to true
+                if (self.highlight) {
+                    options.highlight = self.highlight;
                 }
                 return postsService.getPosts(self.blogId, options ,max_results || self.maxResults, page)
                 .then(function(data) {
@@ -205,6 +211,7 @@
                 var order_by = SORTS[self.sort][sort_by].order;
                 posts = _.sortByOrder(posts, sort_by, order_by);
                 var page;
+                var processInstagram = false;
                 posts.forEach(function(post, index) {
                     if (index % self.maxResults === 0) {
                         page = new Page();
@@ -214,10 +221,22 @@
                         addPage(page);
                         page = undefined;
                     }
+                    angular.forEach(post.items, function(item) {
+                        if (item.item.item_type === 'embed') {
+                            if (item.item.text.indexOf('platform.instagram.com') !== -1) {
+                                processInstagram = true;
+                            }
+                        }
+                    });
                 });
                 if (angular.isDefined(page)) {
                     addPage(page);
                 }
+                if (processInstagram) {
+                    $timeout(function() {
+                        window.instgrm.Embeds.process();
+                    }, 1000);
+                };
             }
 
             /**

@@ -1,4 +1,4 @@
-Dear {{first_name}},
+Dear {{user.first_name}},
 
 Someone has created a {{app_name}} user account for you with username {{user.username}} and this email address.
 Please visit {{url}} to choose your password.

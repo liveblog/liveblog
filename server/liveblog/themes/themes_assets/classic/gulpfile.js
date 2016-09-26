@@ -67,7 +67,7 @@ gulp.task('build', ['translations', 'templates'], function() {
     if(theme.devScripts) {
         theme.devScripts.forEach(function(script) {
             // check if it is an external url, if so add it like that in final scripts.
-            if(externalUrlCheck.test(script)) {
+            if(externalUrlCheck.test(script) || (script === 'parent-iframe.js')) {
                 build.to.scripts.push(script);
             } else {
                 build.from.scripts.push(script);
@@ -104,5 +104,40 @@ gulp.task('build', ['translations', 'templates'], function() {
         build.to.styles.push(config.get('style'));
         theme.styles = build.to.styles;
     }
+    // automatic `patch` increase in `version`.
+    if(theme.version) {
+        var version = theme.version.split('.');
+        if(version[2]) {
+            version[2] = parseInt(version[2], 10) + 1;
+        }
+        theme.version = version.join('.');
+    }
     fs.writeFileSync('./theme.json', JSON.stringify(theme, null, 4));
 });
+
+var zipTask = function(){
+    var theme = JSON.parse(fs.readFileSync('./theme.json')),
+        name = 'lb-theme';
+    if(theme.name) {
+        name = name + '-' + theme.name;
+    }
+    if(theme.version) {
+        name = name + '-' + theme.version;
+    }
+    var zipdest = '..', i = process.argv.indexOf("--zipdest");
+    if(i>-1) {
+        zipdest = process.argv[i+1];
+    }
+
+    return gulp.src(['./**','!./node_modules','!./node_modules/**', '!./.git/**', '!./__MACOSX', '!./__MACOSX/**', '!./.DS_Store'])
+    // in this way it goes from 7sec to 300ms zip time,
+    // but the folder structure isn't  keept.
+    // @TODO: check more.
+    // return gulp.src(['./dist/**','./images/**', './po/**','./styles/**','./vendors/**', './views/**', '*.*'])
+        .pipe($.zip(name + '.zip'))
+        .pipe(gulp.dest(zipdest));
+};
+
+gulp.task('zip', zipTask);
+
+gulp.task('make',['build'], zipTask);

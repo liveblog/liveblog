@@ -8,9 +8,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <link rel="icon" href="favicon.ico">
 
-    <!-- Superdesk styles -->
-    <link rel="stylesheet" href="styles/css/sd-app.css">
-
     <!-- Liveblog specific styles -->
     <link rel="stylesheet" href="styles/css/lb-bootstrap.css">
     <link rel="stylesheet" href="styles/css/liveblog.css">
@@ -55,10 +52,10 @@
             <div class="about-page-text">
                 <p>
                     <div style="font-weight: 700" translate>
-                        Live Blog 3.0.6
+                        Live Blog 3.0.9
                     </div>
                     <div translate>
-                        Released on 17/03/2016
+                        Released on 30/08/2016
                     </div>
                 </p>
                 <p translate>
@@ -97,12 +94,14 @@
     <script src="scripts/bower_components/rangy/rangy-core.js"></script>
     <script src="scripts/bower_components/rangy/rangy-selectionsaverestore.js"></script>
     <script src="scripts/bower_components/requirejs/require.js"></script>
+    <script src="scripts/bower_components/medium-editor/dist/medium-editor.min.js"></script>
     <!--  from liveblog -->
     <script src="scripts/bower_components/lrInfiniteScroll/lrInfiniteScroll.js"></script>
     <!-- endbuild -->
 
     <!-- build:js scripts/superdesk-core.js -->
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/editor/editor.js"></script>
+    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/editor/spellcheck/spellcheck.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/features/features.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/services/asset.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/services/image-factory.js"></script>
@@ -114,6 +113,7 @@
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/itemList/itemList.js"></script>
 
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/menu/menu.js"></script>
+    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/editor/editor.js"></script>
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/menu/notifications/notifications.js"></script>
 
     <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-workspace/content/content.js"></script>
@@ -168,6 +168,7 @@
     <script src="scripts/liveblog-themes/module.js"></script>
     <script src="scripts/liveblog-themes/theme-settings-modal.js"></script>
     <script src="scripts/liveblog-themes/themes.services.js"></script>    
+    <script src="scripts/liveblog-themes/directives.js"></script>
     <!-- endbuild -->
 
     <script src="scripts/lb-templates.js"></script>

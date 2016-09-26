@@ -9,14 +9,14 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.7\n"
+"X-Generator: Poedit 1.5.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: comments.html:38
 msgid "Cancel"
 msgstr "Annuleren"
 
-#: template.html:28
+#: template.html:42
 msgid "Comment"
 msgstr "Reactie"
 
@@ -28,15 +28,15 @@ msgstr "Tekst *"
 msgid "Comment should be maximum 300 characters in length."
 msgstr "Uw reactie van maximaal 300 tekens."
 
-#: template.html:13
+#: main.js:49 template.html:13
 msgid "Editorial"
 msgstr "Redactioneel"
 
-#: template.html:142
+#: template.html:96
 msgid "Load more posts"
 msgstr "Meer"
 
-#: template.html:145
+#: template.html:99
 msgid "Loading"
 msgstr "Laden"
 
@@ -48,17 +48,25 @@ msgstr "Naam *"
 msgid "Name should be maximum 30 characters in length."
 msgstr "Uw naam kan maximaal 30 tekens lang zijn."
 
-#: template.html:17
+#: main.js:52 template.html:17
 msgid "Newest first"
 msgstr "Toon nieuwste eerst"
 
-#: template.html:45
-msgid "No post for now."
+#: template.html:59
+#, fuzzy
+msgid "No posts for now."
 msgstr "Nog geen berichten beschikbaar."
 
-#: template.html:21
+#: main.js:55 template.html:21
 msgid "Oldest first"
 msgstr "Toon oudste eerst"
+
+#: template.html:83
+#, fuzzy
+msgid "One pinned post"
+msgid_plural "{{$count}} pined posts"
+msgstr[0] "Bekijk nieuw bericht"
+msgstr[1] "Bekijk {{$count}} nieuwe berichten"
 
 #: comments.html:31
 msgid "Please fill in your Comment."
@@ -72,9 +80,10 @@ msgstr "Vul hier uw naam in."
 msgid "Post a comment"
 msgstr "Schrijf een reactie"
 
-#: template.html:53
-msgid "See one new post"
-msgid_plural "See {{$count}} new posts"
+#: template.html:67
+#, fuzzy
+msgid "See one new update"
+msgid_plural "See {{$count}} new updates"
 msgstr[0] "Bekijk nieuw bericht"
 msgstr[1] "Bekijk {{$count}} nieuwe berichten"
 
@@ -82,10 +91,26 @@ msgstr[1] "Bekijk {{$count}} nieuwe berichten"
 msgid "Send"
 msgstr "Verzenden"
 
-#: template.html:11
+#: template.html:38
+msgid "Show all posts"
+msgstr ""
+
+#: template.html:37
+msgid "Show highlighted post only"
+msgstr ""
+
+#: template.html:11 template.html:27
 msgid "Sort by:"
 msgstr "Sorteer:"
+
+#: posts.html:27
+msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
+msgstr ""
 
 #: comments.html:7
 msgid "Your comment was sent for approval."
 msgstr "Uw reactie is ontvangen ter beoordeling."
+
+#: item.html:13
+msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
+msgstr ""

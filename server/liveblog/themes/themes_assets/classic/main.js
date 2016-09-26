@@ -1,8 +1,8 @@
 (function(angular) {
     'use strict';
 
-    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink', 'transformBlog'];
-    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, transformBlog) {
+    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink', 'transformBlog', 'gettext'];
+    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, transformBlog, gettext) {
 
         var POSTS_PER_PAGE = config.settings.postsPerPage;
         var STICKY_POSTS_PER_PAGE = 100;
@@ -18,22 +18,22 @@
             stickyPermalink = new Permalink(stickyPagesManager, PERMALINK_DELIMITER);
 
         function retrieveUpdate() {
-            return vm.pagesManager.retrieveUpdate(!UPDATE_MANUALLY).then(function(data) {
-                vm.newPosts = data._items;
-            });
-        }
-
-        function retrieveStickyUpdate() {
-            return vm.stickyPagesManager.retrieveUpdate(!UPDATE_MANUALLY).then(function(data) {
-                vm.newStickyPosts = data._items;
+            return vm.pagesManager.retrieveUpdate().then(function(data) {
+                vm.newPosts = vm.newPosts.concat(vm.pagesManager.processUpdates(data, !UPDATE_MANUALLY));
+                vm.newStickyPosts = vm.newStickyPosts.concat(vm.stickyPagesManager.processUpdates(data, !UPDATE_MANUALLY));
             });
         }
 
         function retrieveBlogSettings() {
             blogsService.get({}, function(blog) {
+                if(blog.blog_status === 'closed') {
+                    $interval.cancel(vm.interval.posts);
+                    $interval.cancel(vm.interval.blog);
+                }
                 angular.extend(vm.blog, blog);
             });
         }
+
         // define view model
         angular.extend(vm, {
             templateDir: config.assets_root,
@@ -44,6 +44,16 @@
             settings: config.settings,
             newPosts: [],
             newStickyPosts: [],
+            sortOptions: [{
+                name: gettext('Editorial'),
+                order: 'editorial'
+            }, {
+                name: gettext('Newest first'),
+                order: 'newest_first'
+            }, {
+                name: gettext('Oldest first'),
+                order: 'oldest_first'
+            }],
             orderBy: function(order_by) {
                 vm.loading = true;
                 vm.finished = false;
@@ -73,9 +83,9 @@
                 return !vm.loading && !vm.finished;
             },
             applyUpdates: function() {
-                pagesManager.applyUpdates(vm.newPosts);
+                pagesManager.applyUpdates(vm.newPosts, true);
                 vm.newPosts = [];
-                stickyPagesManager.applyUpdates(vm.newStickyPosts);
+                stickyPagesManager.applyUpdates(vm.newStickyPosts, true);
                 vm.newStickyPosts = [];
             },
             toggleHighlighsOnly: function() {
@@ -103,9 +113,12 @@
         // retrieve updates periodically
         .then(function() {
             vm.permalinkScroll();
-            $interval(retrieveUpdate, UPDATE_EVERY);
-            $interval(retrieveStickyUpdate, UPDATE_EVERY);
-            $interval(retrieveBlogSettings, 3 * UPDATE_EVERY);
+            if(vm.blog.blog_status !== 'closed') {
+                vm.interval = {
+                    posts: $interval(retrieveUpdate, UPDATE_EVERY),
+                    blog: $interval(retrieveBlogSettings, 3 * UPDATE_EVERY)
+                };
+            }
             // listen events from parent
             var fetchNewPageDebounced = _.debounce(vm.fetchNewPage, 1000);
             function receiveMessage(event) {
@@ -120,6 +133,11 @@
     angular.module('theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll', 'gettext'])
         .run(['gettextCatalog', 'config', function (gettextCatalog, config) {
             gettextCatalog.setCurrentLanguage(config.settings.language);
+        }])
+        .run(['$rootScope', function($rootScope){
+            angular.element(document).on("click", function(e) {
+                $rootScope.$broadcast("documentClicked", angular.element(e.target));
+            });
         }])
         .controller('TimelineCtrl', TimelineCtrl)
         .directive('lbItem', ['asset', function(asset) {

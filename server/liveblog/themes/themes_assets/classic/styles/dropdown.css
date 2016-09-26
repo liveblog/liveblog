@@ -1,0 +1,151 @@
+lb-dropdown {
+  float: left;
+  display: block;
+}
+lb-dropdown > div {
+  float: left;
+  width: 100%;
+}
+lb-dropdown > div > div.dropdown-display {
+  float: left;
+  width: 100%;
+  background: white;
+  height: 38px;
+  cursor: pointer;
+  border-style: solid;
+  border-color: #dddddd;
+  border-width: 0 1px 0 1px;
+  box-sizing: border-box;
+}
+lb-dropdown > div > div.dropdown-display > * {
+  float: left;
+  height: 100%;
+  display: inline-block;
+  vertical-align: middle;
+}
+lb-dropdown > div > div.dropdown-display > span {
+  font-size: 12px;
+  width: 100%;
+  position: relative;
+  box-sizing: border-box;
+  padding-right: 22px;
+  padding-left: 10px;
+  line-height: 38px;
+}
+lb-dropdown > div > div.dropdown-display > span.placeholder {
+  color: #aaaaaa;
+}
+lb-dropdown > div > div.dropdown-display > i {
+  position: relative;
+  width: 14px;
+  margin-left: -24px;
+  font-size: 1.125em;
+  font-weight: bold;
+  padding-right: 10px;
+  text-align: right;
+  margin-top: -2px;
+  line-height: 38px;
+}
+lb-dropdown > div > div.dropdown-list {
+  float: left;
+  position: relative;
+  width: 100%;
+  transform: scale(1, 0);
+  transition: transform ease 250ms;
+}
+lb-dropdown > div > div.dropdown-list > div {
+  position: absolute;
+  width: 100%;
+  z-index: 2;
+  cursor: pointer;
+  background: white;
+}
+lb-dropdown > div > div.dropdown-list > div > div {
+  float: left;
+  width: 100%;
+  padding: 4px 0px 4px 10px;
+  font-size: 12px;
+  box-sizing: border-box;
+  border: solid 1px #dddddd;
+  border-top: none;
+}
+lb-dropdown > div > div.dropdown-list > div > div:hover {
+  background: #F0F0F0;
+}
+lb-dropdown > div > div.dropdown-list > div > div.selected {
+  background: #5ea9c8;
+  color: white;
+}
+lb-dropdown > div > div.dropdown-list > div > div > * {
+  line-height: 38px;
+  display: inline-block;
+  vertical-align: middle;
+}
+lb-dropdown > div > div.dropdown-list > div > div > span {
+  float: left;
+  width: 100%;
+  position: relative;
+  padding-right: 26px;
+  box-sizing: border-box;
+  color: inherit;
+}
+lb-dropdown > div > div.dropdown-list > div > div > i {
+  float: left;
+  width: 20px;
+  margin-left: -20px;
+  display: none;
+}
+lb-dropdown > div > div.dropdown-list > div > div.selected > i {
+  display: inline-block;
+}
+lb-dropdown > div.show > div.dropdown-list {
+  transform: scale(1, 1);
+  z-index: 2;
+}
+/* Languages settings */
+.en lb-dropdown {
+    width: 120px;
+}
+.ro lb-dropdown {
+    width: 135px;
+}
+.de lb-dropdown {
+    width: 140px;
+}
+.nl lb-dropdown {
+    width: 150px;
+}
+.fr lb-dropdown {
+    width: 162px;
+} 
+.fr .toggleHighlights {
+  margin-right: 5px;
+}
+@media (max-width: 320px) {
+  lb-dropdown {
+    width: 120px;
+  }
+  lb-dropdown > div > div.dropdown-display span {
+    padding-right: 14px;
+  }
+  lb-dropdown > div .dropdown-list > div > div > * {
+    line-height: 16px !important;
+    padding: 4px 0;
+  }
+  lb-dropdown>div>div.dropdown-display>i {
+    margin-left: -22px;
+    padding-right: 0;
+  }
+  .nl lb-dropdown {
+    width: 140px;
+  }
+  .fr lb-dropdown {
+    width: 152px;
+  }
+  .fr .header-bar__actions {
+    right: 88px;
+  }
+  .de lb-dropdown {
+    width: 130px;
+  }
+}

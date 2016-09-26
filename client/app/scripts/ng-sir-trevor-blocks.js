@@ -14,20 +14,46 @@ define([
     'ng-sir-trevor'
 ], function(angular, _) {
     'use strict';
+    function createCaretPlacer(atStart) {
+    return function(el) {
+        el.focus();
+        if (typeof window.getSelection != "undefined"
+                && typeof document.createRange != "undefined") {
+            var range = document.createRange();
+            range.selectNodeContents(el);
+            range.collapse(atStart);
+            var sel = window.getSelection();
+            sel.removeAllRanges();
+            sel.addRange(range);
+        } else if (typeof document.body.createTextRange != "undefined") {
+            var textRange = document.body.createTextRange();
+            textRange.moveToElementText(el);
+            textRange.collapse(atStart);
+            textRange.select();
+        }
+    };
+    }
+
+    var placeCaretAtStart = createCaretPlacer(true);
+    var placeCaretAtEnd = createCaretPlacer(false);
+    var uriRegx = '(https?:\\/\\/)?[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
+
+    function fixSecureEmbed(string) {
+        if (window.location.protocol === 'https:/') {
+            var pattern = new RegExp(uriRegx, 'i'),
+                matches = string.match(pattern);
+            if (matches.length) {
+                return matches[0];
+            }
+            return string;
+        } else {
+            return string;
+        }
+    }
 
     function isURI(string) {
-        var url_regex = /^(?:([A-Za-z]+):)?(\/{0,3})([0-9.\-A-Za-z]+)(?::(\d+))?(?:\/([^?#]*))?(?:\?([^#]*))?(?:#(.*))?$/;
-        return (url_regex.test(string));
-    }
-    function embedFacebookToUrl(string) {
-        // regular expression to catch a facebook url in the embed code string.
-        // catch protocol even if relative, subdomain, facebook.com hardcoded and the path.
-        var facebook_regex = /(\b(?:([A-Za-z]+):)?\/\/([0-9.\-A-Za-z]+)facebook.com[-A-Za-z0-9+&@#\/%?=~_|!:,.;]*[-A-Za-z0-9+&@#\/%=~_|])/,
-            matches = string.match(facebook_regex);
-        if (matches) {
-            return matches[0];
-        }
-        return string;
+        var pattern = new RegExp('^' + uriRegx, 'i');
+        return pattern.test(string);
     }
     function handlePlaceholder(selector, placeHolderText, options) {
         var onEvents = 'click';
@@ -62,7 +88,7 @@ define([
                     'data-icon-after': "ADD CONTENT HERE"
                 });
             }
-            // Add toMeta method to all blocks.
+            // Add toMeta method to all blocks. 
             SirTrevor.Block.prototype.toMeta = function() {return;};
             SirTrevor.Block.prototype.getOptions = function() {
                 return SirTrevor.$get().getInstance(this.instanceID).options;
@@ -107,9 +133,7 @@ define([
                         that.resetMessages();
                         // start a loader over the block, it will be stopped in the loadData function
                         that.loading();
-                        // if facebook embed replace it with facebook url.
-                        // rendering facebook embed via url it doesn't cause issue LBSD-646.
-                        input = embedFacebookToUrl(input);
+                        input = fixSecureEmbed(input);
                         // if the input is an url, use embed services
                         if (isURI(input)) {
                             // request the embedService with the provided url
@@ -188,7 +212,7 @@ define([
                         var cover_width = Math.min(this.getOptions().coverMaxWidth, data.thumbnail_width);
                         var cover_height = cover_width / ratio;
                         html.find('.cover-preview').css({
-                            'background-image': 'url(' + data.thumbnail_url + ')',
+                            'background-image': 'url("' + data.thumbnail_url + '")',
                             width: cover_width,
                             height: cover_height,
                             'background-size': 'cover'
@@ -208,6 +232,9 @@ define([
                     // set the credit
                     if (_.has(data, 'provider_name')) {
                         var credit_text  = data.provider_name;
+                        if (_.has(data, 'credit')) {
+                            credit_text = data.credit;
+                        }
                         if (_.has(data, 'author_name')) {
                             credit_text += ' | by <a href="' + data.author_url + '" target="_blank">' + data.author_name + '</a>';
                         }
@@ -275,6 +302,12 @@ define([
                             e.preventDefault();
                         });
                         $cover_handler.append($remove_link, $show_link);
+                    }
+                    //if instagram process the embed code
+                    if (data.html && data.html.indexOf('platform.instagram.com') !== -1) {
+                        setTimeout(function() {
+                            window.instgrm.Embeds.process();
+                        }, 1000);
                     }
                 },
                 focus: function() {
@@ -355,9 +388,9 @@ define([
                     return [
                         '<blockquote><p>',
                         data.quote,
-                        '</p><ul><li>',
+                        '</p><h4><i>',
                         data.credit,
-                        '</li></ul></blockquote>'
+                        '</i></h4></blockquote>'
                     ].join('');
                 },
                 toMeta: function() {
@@ -400,15 +433,33 @@ define([
                         contenteditable: true,
                         placeholder: that.descriptionPlaceholder
                     }).html(data.caption));
+                    
                     this.$editor.append($('<div>', {
                         name: 'credit',
                         class: 'st-image-block',
                         contenteditable: true,
                         placeholder: that.authorPlaceholder
                     }).html(data.credit));
+
+                    //image size warning
+                    var maxFileSize = 2; //in MB
+                    if ( data.file && (data.file.size / 1048576) > maxFileSize) {
+                        this.$editor.append($('<div>', {
+                            name: 'size-warning',
+                            class: 'alert alert-warning',
+                            role: 'alert',
+                        })
+                        .html(window.gettext('The image is being uploaded, please stand by. It may take a while as the file is bigger than ' + maxFileSize + 'MB.')));
+                        var that = this;
+                        window.setTimeout(function() {
+                            that.$editor.find('[name="size-warning"]').css('display', 'none');
+                        }, 10000);    
+                    }
+                    
+
                     //remove placeholders
-                    handlePlaceholder(this.$('[name=caption]'), that.authorPlaceholder)
-                    handlePlaceholder(this.$('[name=credit]'), that.descriptionPlaceholder, {tabbedOrder: true})
+                    handlePlaceholder(this.$('[name=caption]'), that.descriptionPlaceholder)
+                    handlePlaceholder(this.$('[name=credit]'), that.authorPlaceholder, {tabbedOrder: true})
                 },
                 onBlockRender: function() {
                     var that = this;
@@ -421,7 +472,6 @@ define([
                         ev.preventDefault();
                     });
                     this.$inputs.find('input').on('change', _.bind(function(ev) {
-                        that.getOptions().disableSubmit(false);
                         this.onDrop(ev.currentTarget);
                     }, this));
                 },
@@ -439,12 +489,14 @@ define([
                         this.$inputs.hide();
                         this.loadData({
                             file: {
-                                url: urlAPI.createObjectURL(file)
+                                url: urlAPI.createObjectURL(file),
+                                size: file.size
                             }
                         });
                         this.getOptions().uploader(
                             file,
                             function(data) {
+                                that.getOptions().disableSubmit(false);
                                 that.setData(data);
                                 that.ready();
                             },
@@ -548,6 +600,7 @@ define([
                     val = val.replace(/<(?!\s*\/?(br|p|b|i|strike|ul|ol|li|a)\b)[^>]+>/ig, '');
                 }
                 input.html(val);
+                placeCaretAtEnd(input.get(0));
             }, 0);
 
             SirTrevor.Blocks.Comment = SirTrevor.Block.extend({

@@ -47,7 +47,7 @@
                     ng-class="{'can-access': isUserAllowedToOpenBlog(blog)}">
                     <td class="content">
                         <h3>{{ ::blog.title }} <small>by {{ ::blog.original_creator | username }}</small></h3>
-                        <div class="description">{{ ::blog.description }}</div>
+                        <div class="description">{{ ::blog.description | htmlToPlaintext }}</div>
                         <div class="time visible-phone">
                             {{ ::'Created' | translate}} {{ ::blog._created | reldate }},
                             {{ ::'updated' | translate }} {{ ::blog._updated | reldate }}.
@@ -67,7 +67,7 @@
                 </figure>
                 <div class="content">
                     <h3>{{ ::blog.title }}</h3>
-                    <div class="description">{{ ::blog.description }}</div>
+                    <div class="description">{{ ::blog.description | htmlToPlaintext }}</div>
                 </div>
                 <div class="footer">
                     <dl>
@@ -104,10 +104,11 @@
             <form ng-submit="createBlog()" name="createBlogForm">
                 <ul class="nav nav-tabs">
                     <li ng-class="{active: creationStep == 'Details'}">
-                        <button type="button" translate>Details</button>
+                        <button type="button" translate ng-click="switchTab('Details')">Details</button>
                     </li>
                     <li ng-class="{active: creationStep == 'Team'}">
-                        <button type="button" translate>Team</button>
+                        <button type="button" translate ng-disabled="!createBlogForm.$valid" ng-click="switchTab('Team')"
+                         ng-class="{'default-cursor': !createBlogForm.$valid}">Team</button>
                     </li>
                 </ul>
                 <div class="creation-steps">
@@ -119,7 +120,11 @@
                             </div>
                             <div class="field">
                                 <label translate>Blog description</label>
-                                <textarea ng-model="newBlog.description"></textarea>
+                                <div class="form-box"
+                                    sd-text-editor
+                                    data-config="{toolbar: {buttons: ['bold', 'italic', 'underline', 'strikethrough', 'orderedlist', 'unorderedlist'],sticky: false,static: true,align: 'left',updateOnEmptySelection: true}}"
+                                    ng-model="newBlog.description"
+                                ></div>
                             </div>
                             <div class="field ">
                                 <label translate>Blog image</label>

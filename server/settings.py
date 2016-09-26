@@ -144,7 +144,7 @@ AWS_SECRET_ACCESS_KEY = AMAZON_SECRET_ACCESS_KEY
 S3_BUCKET_NAME = AMAZON_CONTAINER_NAME
 S3_USE_HTTPS = False
 FLASK_ASSETS_USE_S3 = False
-S3_THEMES_PREFIX = env('S3_THEMES_PREFIX', None)
+AMAZON_S3_SUBFOLDER = env('AMAZON_S3_SUBFOLDER', None)
 USE_S3 = FLASK_ASSETS_USE_S3
 
 
@@ -167,7 +167,7 @@ RENDITIONS = {
     },
     'avatar': {
         'thumbnail': {'width': 60, 'height': 60},
-        'viewImage': {'width': 1024, 'height': 768},
+        'viewImage': {'width': 200, 'height': 200},
     }
 }
 
@@ -185,7 +185,8 @@ MAIL_USE_TLS = json.loads(env('MAIL_USE_TLS', 'False').lower())
 MAIL_USE_SSL = json.loads(env('MAIL_USE_SSL', 'False').lower())
 MAIL_USERNAME = env('MAIL_USERNAME', 'liveblogsf@gmail.com')
 MAIL_PASSWORD = env('MAIL_PASSWORD', 'fabric2010')
-ADMINS = [MAIL_USERNAME]
+MAIL_FROM = env('MAIL_FROM', 'liveblogsf@gmail.com')
+ADMINS = [MAIL_FROM]
 
 # LDAP settings
 LDAP_SERVER = env('LDAP_SERVER', '')  # Ex: ldap://sourcefabric.org

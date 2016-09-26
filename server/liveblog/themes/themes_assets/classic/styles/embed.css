@@ -61,6 +61,9 @@ button.active {
     border-color: #27496d;
     color: #27496d;
 }
+.border-bottom {
+    border-bottom: 1px solid #CBCBCB;
+}
 .lb-timeline {
     clear: both;
     background-color: white;
@@ -88,7 +91,6 @@ button.active {
     background-color: #FAFAFA;
     border-top: 2px solid #CBCBCB;
     border-bottom: 1px solid #CBCBCB;
-    overflow: auto;
     padding: 10px 0 0 10px;
     margin: 10px 0 0 0;
     position: relative;
@@ -111,7 +113,7 @@ button.active {
     line-height: 12px;
     margin-bottom: 0;
     outline: medium none !important;
-    padding: 8px 14px;
+    padding: 8px 11px;
     text-align: center;
     text-decoration: none;
     text-transform: uppercase;
@@ -144,6 +146,9 @@ button.active {
     background-color: #5ea9c8;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.252);
 }
+.btn.comment i {
+    display: none; 
+}
 .modal-backdrop {
     position: absolute;
     background: rgba(255, 255, 255, 0.8);
@@ -154,13 +159,6 @@ button.active {
     z-index: 2;    
 }
 .modal {
-    border: 1px solid #C8C8C8;
-    border-radius: 3px;
-    box-shadow: 0 0 25px 0 rgba(0, 0, 0, 0.3);
-    position: absolute;
-    top: 6px;
-    right: 65px;
-    left: 65px;
     z-index: 3;
 }
 .modal .content {
@@ -172,19 +170,20 @@ button.active {
     width: 100%;
     box-sizing: border-box;
 }
-.modal .modal-header,
-.modal .modal-footer {
-    padding: 25px;
+.modal .modal-header {
+    padding: 25px 15px 10px;
     box-sizing: border-box;
 }
 .modal .modal-footer {
+    padding: 15px 25px 25px;
+    box-sizing: border-box;
     text-align: right;
 }
 .modal .modal-footer .btn + .btn {
     margin-left: 5px;
 }
 .modal .modal-body {
-    padding: 0 25px;
+    padding: 0 15px;
     box-sizing: border-box;
 }
 .modal .content h2 {
@@ -193,10 +192,10 @@ button.active {
     margin-bottom: 10px;
 }
 .modal .content .field {
-    margin: 10px 0 30px 0;
+    margin: 4px 0 20px 0;
 }
 .modal .content label {
-    padding: 10px 0;
+    padding: 10px 0 0;
     width: 100%;
     display: block;
     box-sizing: border-box;
@@ -226,26 +225,6 @@ button.active {
     box-shadow: 0 1px 0 0 #5ea9c8 !important;
     border-color: #5ea9c8 !important;
 }
-.modal .content::before {
-    content: ' ';
-    height: 0;
-    position: absolute;
-    width: 0;
-    border: 14px solid transparent;
-    border-bottom-color: #aaa;
-    top: -28px;
-    right: 66px;
-}
-.modal .content::after {
-    content: ' ';
-    height: 0;
-    position: absolute;
-    width: 0;
-    border: 13px solid transparent;
-    border-bottom-color: #FFF;
-    top: -26px;
-    right: 67px;
-}
 .modal .content .error {
     text-transform: uppercase;
     color: #b82f00;
@@ -253,6 +232,9 @@ button.active {
 }
 .comment-active {
     min-height: 250px;
+}
+.sorting-bar {
+    min-height: 28px;
 }
 .sorting-bar__title {
     float: left;
@@ -278,6 +260,9 @@ button.active {
     color: #333333;
     border-bottom: 2px solid #5ea9c8;
 }
+.sorting-bar__orders-mobile {
+    display: none;
+}
 .header-bar__logo {
     position: absolute;
     right: 10px;
@@ -297,12 +282,9 @@ button.active {
     margin-bottom: 20px;
     position: relative;
 }
-.icon-star {
-    background-position: -120px 0;
- }
 .lb-post {
     position: relative;
-    border-bottom: 1px solid #CBCBCB;
+    border-bottom: 1px solid #DDD;
 }
 .lb-post.ng-enter, .lb-post.ng-move {
   -webkit-transition:1s linear all;
@@ -329,9 +311,9 @@ button.active {
     position: absolute;
     border-radius: 50%;
     overflow: hidden;
-    background: #B9B9B9 url("../images/avatar_64.png") no-repeat scroll 0% 0% / 100% auto;
-    width: 50px;
-    height: 50px;
+    background: #CCCCCC url("../images/avatar_64.png") no-repeat scroll 0% 0% / 100% auto;
+    width: 42px;
+    height: 42px;
     left: -80px;
 }
 .lb-author__name, .lb-author__date {
@@ -345,11 +327,11 @@ button.active {
     position: absolute;
     border-radius: 0;
     overflow: hidden;
-    background: #FFFFFF url("../images/comment_64.png") no-repeat scroll 0% 0% / 100% auto;
+    background: #FFFFFF url("../images/comment_32.png") no-repeat scroll 0% 0% / 100% auto;
     color: #BBBBBB;
-    width: 50px;
-    height: 50px;
-    left: -80px;
+    width: 32px;
+    height: 32px;
+    left: -74px;
 }
 .lb-author__date {
     padding-right: 20px;
@@ -380,6 +362,7 @@ button.active {
 /* text */
 article {
     font-size: 14px;
+    overflow: hidden;
 }
 article b {
     font-weight: bold;
@@ -418,14 +401,17 @@ article blockquote li:before {
     margin-left: -20px;
     padding-right: 5px;
 }
-.item--embed__illustration {
-    position: absolute;
-    width: 200px;
+.item--embed__figure, .item--embed__illustration {
+   width: 200px;
+   float: left;
+   margin-right: 20px;
 }
-/* if there is an image, leave space on the left */
-.item--embed__illustration ~ * {
-    margin-left: 220px;
+.item--embed__only-illustration {
+   width: 100%;
+   float: left;
+   margin-right: 20px;
 }
+
 .item--embed__description,
 .item--embed__credit {
     padding-top: 10px;
@@ -458,49 +444,11 @@ article blockquote li:before {
 .loading.ng-hide {
     opacity: 0;
 }
-/* adapt embed card to small screens
- * Remove the two cols layout
-*/
-@media (max-width: 650px) {
-    .item--embed__illustration {
-        position: relative;
-        width: auto;
-    }
-    .item--embed__illustration ~ * {
-        margin-left: 0;
-    }
-}
-@media (max-width: 600px) {
-    .lb-timeline {
-        margin-top: 0;
-    }
-    .show-author-avatar .lb-author{
-        margin-left: 50px;
-    }
-    .show-author-avatar .lb-item {
-        margin-left: 0;
-    }
-    .lb-author__avatar, .lb-author__comment   {
-        width: 40px;
-        height: 40px;
-        left: -50px;
-    }
-    .lb-author__date {
-        float: none;
-    }
-    .sorting-bar__title {
-        display: none;
-    }
-    .sorting-bar__orders {
-        padding-left: 0 !important;
-    }
-}
-
 .lb-post-permalink {
     position: absolute;
     top: 10px;
     right: 10px;
-    visibility: hidden;
+    visibility: visible;
 }
 .lb-post-highlighted {
     position: absolute;
@@ -511,7 +459,7 @@ article blockquote li:before {
 .toggleHighlights {
     color: #f89406;
     height: auto;
-    padding: 2px 8px 1px 8px;
+    padding: 4px 10px 4px 10px;
     background: rgba(255, 255, 255, 0.5);
     border: 1px solid rgba(215, 215, 215, 0.7);
     border-radius: 2px;
@@ -523,9 +471,6 @@ article blockquote li:before {
 .toggleHighlights.active {
     background-color: rgba(0, 0, 0, 0.25);
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.252);
-}
-.lb-post:hover .lb-post-permalink {
-    visibility: visible;
 }
 /* pinned posts */
 .pin-posts .lb-post{
@@ -606,5 +551,85 @@ article blockquote li:before {
 .fr .sorting-bar__orders {
     padding-left: 50px;
 }
+.de .sorting-bar__orders {
+    padding-left: 75px;
+}
+.nl .sorting-bar__orders {
+    padding-left: 50px;
+}
 /* Remove this is angular-gettext is updated */
 [translate]{visibility:hidden !important;}
+
+/* Media queries */ 
+/* hide permalink on larger screens, show only on hover */
+@media (min-width: 1025px) {
+    .lb-post-permalink {
+        visibility: hidden;
+    }
+    .lb-post:hover .lb-post-permalink {
+        visibility: visible;
+    }
+}
+/* adapt embed card to small screens
+ * Remove the two cols layout
+*/
+@media (max-width: 650px) {
+    .item--embed__illustration {
+        position: relative;
+        width: auto;
+    }
+    .item--embed__illustration ~ * {
+        margin-left: 0;
+    }
+}
+@media (max-width: 600px) {
+    .lb-timeline {
+        margin-top: 0;
+    }
+    .show-author-avatar .lb-author{
+        margin-left: 50px;
+    }
+    .show-author-avatar .lb-item {
+        margin-left: 0;
+    }
+    .lb-author__avatar  {
+        left: -50px;
+    }
+    .lb-author__comment {
+        left: -46px;
+    }
+    .lb-author__date {
+        float: none;
+    }
+    .sorting-bar {
+        min-height: 38px;
+    }
+    .sorting-bar__title {
+        display: none;
+    }
+    .sorting-bar__orders {
+        padding-left: 0 !important;
+        display: none;
+    }
+    .sorting-bar__orders-mobile {
+        display: block;
+    }
+    .header-bar {
+        padding: 0;
+    }
+    .btn.comment {
+        font-size: 0;
+        line-height: 0;
+        float: right;
+    }
+    .btn.comment i {
+        display: inline-block; 
+        font-size: 14px;
+        line-height: 0.5;
+    }
+}
+@media (max-width: 320px) {
+    .sorting-bar .btn {
+        padding: 10px;
+    }
+}

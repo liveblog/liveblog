@@ -104,6 +104,9 @@ class ThemesResource(Resource):
         },
         'settings': {
             'type': 'dict'
+        },
+        'public_url': {
+            'type': 'string'
         }
     }
     datasource = {
@@ -137,15 +140,27 @@ def publish_theme_on_s3(files, theme, safe=True):
                     if content_type == 'text/plain' and name.endswith(tuple(CONTENT_TYPES.keys())):
                         content_type = CONTENT_TYPES[os.path.splitext(name)[1]]
                     final_file_name = os.path.relpath(name, CURRENT_DIRECTORY)
-                    if app.config.get('S3_THEMES_PREFIX', None):
-                        final_file_name = '/'.join((app.config.get('S3_THEMES_PREFIX').strip('/'), final_file_name))
+                    version = theme.get('version', True)
+                    # don't use version for the `parent-iframe.js` script
+                    # requering the version for this will be done from the client.
+                    if name.endswith('parent-iframe.js'):
+                        version = False
                     # remove existing first
-                    app.media.delete(final_file_name)
+                    app.media.delete(app.media.media_id(final_file_name,
+                                                        content_type=content_type,
+                                                        version=version))
                     # upload
-                    file_id = app.media.put(file.read(), filename=final_file_name, content_type=content_type)
+                    file_id = app.media.put(file.read(),
+                                            filename=final_file_name,
+                                            content_type=content_type,
+                                            version=version)
                     # save the screenshot url
                     if name.endswith('screenshot.png'):
                         theme['screenshot_url'] = superdesk.upload.url_for_media(file_id)
+                    # theme is needed a theme.json in the root folder.
+                    # save the public_url for that theme
+                    if name.endswith('theme.json'):
+                        theme['public_url'] = superdesk.upload.url_for_media(file_id).replace('theme.json', '')
         except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:
                 raise e
@@ -257,8 +272,8 @@ class ThemesService(BaseService):
                 blogs_service.system_update(ObjectId(blog['_id']),
                                             {'themes_settings': themes_settings}, blog)
             if force_update:
-                blogs_updated = self.publish_related_blogs(theme)
                 self.replace(previous_theme['_id'], theme, previous_theme)
+                blogs_updated = self.publish_related_blogs(theme)
                 return dict(status='updated', theme=theme, blogs_updated=blogs_updated)
             else:
                 return dict(status='unchanged', theme=theme)
@@ -362,8 +377,9 @@ def upload_a_theme():
         # Determine if there is a root folder
         roots = set(file.split('/')[0] for file in files)
         root_folder = len(roots) == 1 and '%s/' % roots.pop() or ''
-        # Check if the package is correct
-        description_file = next((file for file in files if file.endswith('theme.json')), None)
+        # Check if it has a theme.json in the root folder.
+        description_file = next((
+            file for file in files if file.lower() == ('%stheme.json' % root_folder)), None)
         if description_file is None:
             return json.dumps(dict(error='A theme needs a theme.json file')), 400
         # decode and load as a json file

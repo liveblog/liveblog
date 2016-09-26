@@ -238,7 +238,7 @@ define([
             fetchNewDraftPage: function() {
                 vm.draftPostsInstance.fetchNewPage();
             },
-            fetchNewCommenttPage: function() {
+            fetchNewCommentsPage: function() {
                 vm.commentPostsInstance.fetchNewPage();
             },
             fetchNewTimelinePage: function() {
@@ -307,6 +307,8 @@ define([
             preview: {},
             progress: {width: 0},
             tab: false,
+            // by default themes are not accepting embed multi height and code.
+            embedMultiHight: false,
             userNotInMembers:function(user) {
                 for (var i = 0; i < vm.members.length; i ++) {
                     if (user._id === vm.members[i]._id) {
@@ -499,7 +501,7 @@ define([
 
         });
         // retieve the blog's public url
-        blogService.getPublicUrl(blog).then(function(url) {
+        var qPublicUrl = blogService.getPublicUrl(blog).then(function(url) {
             vm.publicUrl = url;
         });
 
@@ -513,13 +515,33 @@ define([
             vm.availableLanguages = data._items;
         });
         // load available themes
-        api('themes').query().then(function(data) {
+        var qTheme = api('themes').query().then(function(data) {
             // filter theme with label (without label are `generic` from inheritance)
+            vm.angularTheme = data._items.find(function(theme) {return theme.name == 'angular'});
             vm.availableThemes = data._items.filter(function(theme) {return !theme['abstract'];});
             vm.selectedTheme = _.find(vm.availableThemes, function(theme) {
                 return theme.name === vm.blogPreferences.theme;
             });
         });
+
+        // after publicUrl and theme is on `vm` object we can compute embeds code.
+        $q.all([qPublicUrl, qTheme]).then(function() {
+            vm.embedMultiHight = true;
+            // devel link
+            var parentIframe = 'http://localhost:5000/themes_assets/angular/';
+            if (vm.angularTheme.public_url) {
+                // production link
+                parentIframe = vm.angularTheme.public_url.replace(/\/[0-9\.]+\/themes_assets\//, '/themes_assets/');
+            }
+            // loading mechanism, and load parent-iframe.js with callback.
+            var loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){var a=document,l=a.createElement("script"),o=a.getElementsByTagName("script")[0];return l.type="text/javascript",l.onload=t,l.async=!0,l.src=e,o.parentNode.insertBefore(l,o),l}};liveblog.load("' + parentIframe + 'parent-iframe.js?"+parseInt(new Date().getTime()/900000,10),function(){"function"==typeof liveblog.loadCallback&&liveblog.loadCallback()});</script>';
+            // compute embeds code with the injected publicUrl
+            vm.embeds = {
+                normal: '<iframe width="100%" height="715" src="' + vm.publicUrls[vm.selectedTheme.name] + '" frameborder="0" allowfullscreen></iframe>',
+                resizeing: loadingScript + '<iframe id="liveblog-iframe" width="100%" scrolling="no" src="' + vm.publicUrls[vm.selectedTheme.name] + '" frameborder="0" allowfullscreen></iframe>'
+            };
+        });
+
         api('users').getById(blog.original_creator).then(function(data) {
             vm.original_creator = data;
         });
@@ -591,13 +613,14 @@ define([
         'ngRoute',
         'superdesk.services.modal',
         'superdesk.upload',
+        'superdesk.editor',
         'liveblog.pages-manager',
         'lrInfiniteScroll',
         'liveblog.security'
     ])
     .config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/liveblog/edit/:_id', {
-            label: gettext('Blog Edit'),
+            label: gettext('Blog Editor'),
             auth: true,
             controller: BlogEditController,
             controllerAs: 'blogEdit',

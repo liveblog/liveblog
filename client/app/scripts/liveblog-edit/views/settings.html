@@ -39,9 +39,9 @@
                         <form class="form-horizontal" name="settings.forms.general">
                             <div class="form-group">
                                 <label for="inputTitle" class="control-label" translate>Blog Status</label>
-                                <div class="form-input">
+                                <div class="form-input relative">
                                     <span class="blog-status">{{ settings.blog_switch ? 'Active' : 'Archived' | translate }}</span>
-                                    <span tooltip="{{ settings.blog_switch ? 'Archive Blog' : 'Activate Blog' | translate }}" tooltip-placement="right">
+                                    <span style="display: block" tooltip="{{ settings.blog_switch ? 'Archive Blog' : 'Activate Blog' | translate }}" tooltip-placement="right">
                                         <span class="pull-left" sd-switch ng-model="settings.blog_switch" data-blog-status-switch></span>
                                     </span>
                                 </div>
@@ -77,12 +77,18 @@
                             <div class="form-group">
                                 <label for="inputDescription" class="control-label" translate>Blog Description</label>
                                 <div class="form-input">
-                                    <textarea
+                                    <div class="form-box"
+                                            sd-text-editor
+                                            data-config="{toolbar: {buttons: ['bold', 'italic', 'underline', 'strikethrough', 'orderedlist', 'unorderedlist'],sticky: false,static: true,align: 'left',updateOnEmptySelection: true}}"
+                                            data-language="en"
+                                            ng-model="settings.newBlog.description"
+                                    ></div>
+<!--                                     <textarea
                                         name="inputDescription"
                                         ng-model="settings.newBlog.description"
                                         class="form-control"
                                     ></textarea>
-                                </div>
+ -->                                </div>
                             </div>
 
                             <div class="form-group">
@@ -106,10 +112,20 @@
                                     </select>
                                 </div>
                             </div>
+                            <div class="form-group" ng-if="settings.embedMultiHight">
+                                <label for="inputTitle" class="control-label" translate>Embed height</label>
+                                <div class="form-input relative">
+                                    <span class="blog-status">{{ settings.blogPreferences.embed_switch ? 'Responsive' : 'Normal' | translate }}</span>
+                                    <span style="display: block" tooltip="{{ settings.blogPreferences.embed_switch ? 'Fluid height' : 'Normal, fixed height' | translate }}" tooltip-placement="right">
+                                        <span class="pull-left" sd-switch ng-model="settings.blogPreferences.embed_switch" data-embed-status-switch></span>
+                                    </span>
+                                </div>
+                            </div>
+
                             <div class="form-group">
                                 <label for="inputEmbedCode" class="control-label" translate>Embed code</label>
                                 <div class="form-input">
-                                    <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click><iframe width="100%" height="715" src="{{ settings.publicUrls[settings.selectedTheme.name] }}" frameborder="0" allowfullscreen></iframe></textarea>
+                                    <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click>{{ settings.blogPreferences.embed_switch ? settings.embeds.resizeing : settings.embeds.normal }}</textarea>
                                     <a href="{{ settings.publicUrls[settings.selectedTheme.name] }}" target="_blank"><span ng-bind="settings.publicUrls[settings.selectedTheme.name]"></span> <i class="icon-external"></i></a>
                                 </div>
                             </div>
