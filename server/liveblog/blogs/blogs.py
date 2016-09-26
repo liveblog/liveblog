@@ -62,11 +62,11 @@ blogs_schema = {
     'blog_preferences': {
         'type': 'dict'
     },
-    'theme_settings': {
+    'themes_settings': {
         'type': 'dict'
     },
-    'public_url': {
-        'type': 'string'
+    'public_urls': {
+        'type': 'dict'
     }
 }
 
@@ -111,26 +111,47 @@ def send_email_to_added_members(blog, recipients, origin):
 
 
 @celery.task(soft_time_limit=1800)
-def publish_blog_embed_on_s3(blog_id, safe=True):
+def publish_blog_embed_on_s3(blog_id, theme=False, safe=True):
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
-    if blog['blog_preferences'].get('theme', False):
+    themes_service = get_resource_service('themes')
+    public_urls = blog.get('public_urls', {})
+    if theme:
         try:
-            public_url = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
-            get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
-            push_notification('blog', published=1, blog_id=str(blog.get('_id')), public_url=public_url)
-            return public_url
+            url = liveblog.embed.publish_embed(blog_id, api_host='//%s/' % (app.config['SERVER_NAME']),
+                                               theme=theme.get('name'))
+            public_urls[theme.get('name')] = url
         except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:
                 raise e
+    else:
+        for theme in themes_service.get_concrete_themes():
+            try:
+                url = liveblog.embed.publish_embed(blog_id, api_host='//%s/' % (app.config['SERVER_NAME']),
+                                                   theme=theme.get('name'))
+                public_urls[theme.get('name')] = url
+            except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
+                if not safe:
+                    raise e
+    get_resource_service('blogs').system_update(blog['_id'], {'public_urls': public_urls}, blog)
+    push_notification('blog', published=1, blog_id=str(blog.get('_id')), public_urls=public_urls)
 
 
 @celery.task(soft_time_limit=1800)
-def delete_blog_embed_on_s3(blog_id, safe=True):
+def delete_blog_embed_on_s3(blog_id, theme=False, safe=True):
+    themes_service = get_resource_service('themes')
+    if theme:
         try:
-            liveblog.embed.delete_embed(blog_id)
+            liveblog.embed.delete_embed(blog_id, theme)
         except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:
                 raise e
+    else:
+        for theme in themes_service.get_concrete_themes():
+            try:
+                liveblog.embed.delete_embed(blog_id, theme.get('name'))
+            except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
+                if not safe:
+                    raise e
 
 
 class BlogService(BaseService):
@@ -145,17 +166,18 @@ class BlogService(BaseService):
             prefs = global_prefs.copy()
             prefs.update(doc.get('blog_preferences', {}))
             doc['blog_preferences'] = prefs
-            # find the theme that is assigned to the blog
-            my_theme = get_resource_service('themes').find_one(req=None, name=doc['blog_preferences']['theme'])
-            # retrieve the default settings of the theme
-            default_theme_settings = get_resource_service('themes').get_default_settings(my_theme)
+            themes_service = get_resource_service('themes')
+            themes_settings = {}
+            # get all the themes and add theme default setting into themes_settings
+            for theme in themes_service.get_concrete_themes():
+                themes_settings[theme.get('name')] = themes_service.get_default_settings(theme)
             # save the theme settings on the blog level
-            doc['theme_settings'] = default_theme_settings
+            doc['themes_settings'] = themes_settings
 
     def on_created(self, docs):
         for blog in docs:
             # Publish on s3 if possible and save the public_url in the blog
-            publish_blog_embed_on_s3.delay(str(blog['_id']))
+            publish_blog_embed_on_s3(str(blog['_id']))
             # notify client with websocket
             push_notification(self.notification_key, created=1, blog_id=str(blog.get('_id')))
             # and members with emails
@@ -182,7 +204,7 @@ class BlogService(BaseService):
         updates['version_creator'] = str(get_user().get('_id'))
 
     def on_updated(self, updates, original):
-        publish_blog_embed_on_s3.delay(str(original['_id']))
+        publish_blog_embed_on_s3(str(original['_id']))
         # invalidate cache for updated blog
         app.blog_cache.invalidate(original.get('_id'))
         # send notifications
@@ -198,7 +220,7 @@ class BlogService(BaseService):
         notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def on_delete(self, doc):
-        delete_blog_embed_on_s3.delay(doc.get('_id'))
+        delete_blog_embed_on_s3(doc.get('_id'))
 
     def on_deleted(self, doc):
         # invalidate cache for updated blog

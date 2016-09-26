@@ -22,8 +22,11 @@ from flask import request, current_app as app
 from superdesk.errors import SuperdeskError
 import zipfile
 import os
+import liveblog.embed
 import magic
-from liveblog.blogs.blogs import publish_blog_embed_on_s3
+from liveblog.blogs.blogs import publish_blog_embed_on_s3, delete_blog_embed_on_s3
+from superdesk.celery_app import celery
+import superdesk
 import logging
 
 logger = logging.getLogger('superdesk')
@@ -124,50 +127,11 @@ class UnknownTheme(Exception):
     pass
 
 
-class ThemesService(BaseService):
-
-    def get_options(self, theme, options=None):
-        options = options or []
-        if theme.get('extends', False):
-            parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
-            if parent_theme:
-                options = self.get_options(parent_theme, options)
-            else:
-                error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
-                    % (theme.get('name'), theme.get('extends'))
-                logger.info(error_message)
-                raise UnknownTheme(error_message)
-        if theme.get('options', False):
-            options += theme.get('options')
-        return options
-
-    def get_default_settings(self, theme):
-        settings = {}
-        options = self.get_options(theme)
-        for option in options:
-            settings[option.get('name')] = option.get('default')
-        settings.update(theme.get('settings', {}))
-        return settings
-
-    def get_local_themes_packages(self):
-        theme_folder = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR)
-        for file in glob.glob(theme_folder + '/**/theme.json'):
-            files = []
-            for root, dirnames, filenames in os.walk(os.path.dirname(file)):
-                for filename in filenames:
-                    files.append(os.path.join(root, filename))
-            yield json.loads(open(file).read()), files
-
-    def update_registered_theme_with_local_files(self, force=False):
-        results = {'created': [], 'updated': [], 'unchanged': []}
-        for theme, files in self.get_local_themes_packages():
-            result = self.save_or_update_theme(theme, files, force_update=force)
-            results[result.get('status')].append(result.get('theme'))
-        return (results.get('created'), results.get('updated'))
-
-    def save_or_update_theme(self, theme, files=[], force_update=False):
-        # Save the file in the media storage if needed
-        for name in files:
+@celery.task(soft_time_limit=1800)
+def publish_theme_on_s3(files, theme, safe=True):
+    # Save the file in the media storage if needed
+    for name in files:
+        try:
             with open(name, 'rb') as file:
                 if name.endswith('screenshot.png') or type(app.media).__name__ is 'AmazonMediaStorage':
                     # set the content type
@@ -197,7 +161,61 @@ class ThemesService(BaseService):
                     # save the public_url for that theme
                     if name.endswith('theme.json'):
                         theme['public_url'] = superdesk.upload.url_for_media(file_id).replace('theme.json', '')
+        except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
+            if not safe:
+                raise e
+    return theme
 
+
+class ThemesService(BaseService):
+
+    def get_options(self, theme, options=None):
+        options = options or []
+        if theme.get('extends', False):
+            parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
+            if parent_theme:
+                options = self.get_options(parent_theme, options)
+            else:
+                error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
+                    % (theme.get('name'), theme.get('extends'))
+                logger.info(error_message)
+                raise UnknownTheme(error_message)
+        if theme.get('options', False):
+            options += theme.get('options')
+        return options
+
+    def get_concrete_themes(self):
+        return self.get(req=None, lookup={'abstract': {'$exists': False, '$nin': [True]}})
+
+    def get_default_settings(self, theme):
+        settings = {}
+        options = self.get_options(theme)
+        for option in options:
+            settings[option.get('name')] = option.get('default')
+        settings.update(theme.get('settings', {}))
+        return settings
+
+    def get_local_themes_packages(self):
+        theme_folder = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR)
+        files = glob.glob(theme_folder + '/**/theme.json')
+        out = []
+        for file in files:
+            theme_files = []
+            for root, dirnames, filenames in os.walk(os.path.dirname(file)):
+                for filename in filenames:
+                    theme_files.append(os.path.join(root, filename))
+            out.append((json.loads(open(file).read()), theme_files))
+        return sorted(out, key=lambda item: 0 if item[0].get('abstract', False) else 1)
+
+    def update_registered_theme_with_local_files(self, force=False):
+        results = {'created': [], 'updated': [], 'unchanged': []}
+        for theme, files in self.get_local_themes_packages():
+            result = self.save_or_update_theme(theme, files, force_update=force)
+            results[result.get('status')].append(result.get('theme'))
+        return (results.get('created'), results.get('updated'))
+
+    def save_or_update_theme(self, theme, files=[], force_update=False):
+        theme = publish_theme_on_s3(files=files, theme=theme)
         previous_theme = self.find_one(req=None, name=theme.get('name'))
         if previous_theme:
             # retrieve the default settings of the current theme
@@ -233,13 +251,14 @@ class ThemesService(BaseService):
             # theme settings at blog level
             blogs_service = get_resource_service('blogs')
             # retrieve the blog that use the previous theme
-            blogs = blogs_service.get(req=None, lookup={'blog_preferences.theme': previous_theme['name']})
+            blogs = blogs_service.get(req=None, lookup={})
             # loops over blogs to update settings and keep custom values
             for blog in blogs:
                 # initialize the new settings values for the blog based on the new settings
                 new_theme_settings = default_theme_settings.copy()
                 # loop over blog settings
-                for key, value in blog.get('theme_settings', {}).items():
+                themes_settings = blog.get('themes_settings', {})
+                for key, value in themes_settings.get(previous_theme['name'], {}).items():
                     # if the values of theme setting from blog level are the same as the settings
                     # from previous theme update the settings we keep them in a new variable
                     if value == default_prev_theme_settings.get(key, None):
@@ -248,9 +267,10 @@ class ThemesService(BaseService):
                     else:
                         default_theme_settings[key] = value
                 new_theme_settings.update(default_theme_settings)
+                themes_settings[previous_theme['name']] = new_theme_settings
                 # save the blog with the new settings
                 blogs_service.system_update(ObjectId(blog['_id']),
-                                            {'theme_settings': new_theme_settings}, blog)
+                                            {'themes_settings': themes_settings}, blog)
             if force_update:
                 self.replace(previous_theme['_id'], theme, previous_theme)
                 blogs_updated = self.publish_related_blogs(theme)
@@ -258,8 +278,25 @@ class ThemesService(BaseService):
             else:
                 return dict(status='unchanged', theme=theme)
         else:
+            # retrieve the default settings of the current theme
+            default_theme_settings = get_resource_service('themes').get_default_settings(theme)
+            # theme settings at blog level
+            blogs_service = get_resource_service('blogs')
+            # retrieve the blog that use the previous theme
+            blogs = blogs_service.get(req=None, lookup={})
+            # loops over blogs to update settings and keep custom values
+            for blog in blogs:
+                themes_settings = blog.get('themes_settings', {})
+                themes_settings[theme['name']] = default_theme_settings
+                # initialize the new settings values for the blog based on the new settings
+                blogs_service.system_update(ObjectId(blog['_id']),
+                                            {'themes_settings': themes_settings}, blog)
             self.create([theme])
-            return dict(status='created', theme=theme)
+            if force_update:
+                blogs_updated = self.publish_related_blogs(theme)
+                return dict(status='updated', theme=theme, blogs_updated=blogs_updated)
+            else:
+                return dict(status='created', theme=theme)
 
     def publish_related_blogs(self, theme):
         # FIXME: retrieve only the blogs who use a specified theme
@@ -270,15 +307,13 @@ class ThemesService(BaseService):
         # get all the children for the theme that we modify the settings for
         theme_children = self.get_children(theme.get('name'))
         for blog in blogs:
-            blog_pref = blog.get('blog_preferences')
-            if blog_pref['theme'] == theme['name']:
-                publish_blog_embed_on_s3.delay(str(blog['_id']))
+            publish_blog_embed_on_s3(blog_id=str(blog['_id']), theme=theme)
             if theme_children:
                 # if a blog has associated the theme that is a  child of the one
                 # for which we modify the settings, we redeploy the blog on s3
                 for child in theme_children:
-                    if blog_pref['theme'] == child:
-                        publish_blog_embed_on_s3.delay(str(blog['_id']))
+                    if theme.get('name') == child:
+                        publish_blog_embed_on_s3(blog_id=str(blog['_id']), theme=theme)
                         break
         return blogs
 
@@ -288,20 +323,32 @@ class ThemesService(BaseService):
             self.publish_related_blogs(original)
 
     def on_delete(self, deleted_theme):
+        theme = deleted_theme['name']
         global_default_theme = get_resource_service('global_preferences').get_global_prefs()['theme']
         # raise an exception if the removed theme is the default one
-        if deleted_theme['name'] == global_default_theme:
+        if theme == global_default_theme:
             raise SuperdeskApiError.forbiddenError('This is a default theme and can not be deleted')
         # raise an exception if the removed theme has children
-        if self.get(req=None, lookup={'extends': deleted_theme['name']}).count() > 0:
+        if self.get(req=None, lookup={'extends': theme}).count() > 0:
             raise SuperdeskApiError.forbiddenError('This theme has children. It can\'t be removed')
         # update all the blogs using the removed theme and assign the default theme
         blogs_service = get_resource_service('blogs')
-        blogs = blogs_service.get(req=None, lookup={'blog_preferences.theme': deleted_theme['name']})
+        blogs = blogs_service.get(req=None, lookup={})
         for blog in blogs:
-            # will assign the default theme to this blog
-            blog['blog_preferences']['theme'] = global_default_theme
-            blogs_service.system_update(ObjectId(blog['_id']), {'blog_preferences': blog['blog_preferences']}, blog)
+            blog_prefences = blog.get('blog_preferences', {})
+            themes_settings = blog.get('themes_settings', {})
+            public_urls = blog.get('public_urls', {})
+            if blog_prefences['theme'] == theme:
+                # will assign the default theme to this blo
+                blog_prefences['theme'] = global_default_theme
+            delete_blog_embed_on_s3(blog['_id'], theme)
+            themes_settings.pop(theme, None)
+            public_urls.pop(theme, None)
+            blogs_service.system_update(ObjectId(blog['_id']), {
+                'blog_preferences': blog_prefences,
+                'themes_settings': themes_settings,
+                'public_urls': public_urls
+            }, blog)
 
     def get_dependencies(self, theme_name, deps=[]):
         ''' return a list of the dependencies names '''

@@ -1,0 +1,102 @@
+@font-face {
+  font-family: 'Cabin';
+  font-style: normal;
+  font-weight: 400;
+  src: local('Cabin Regular'), local('Cabin-Regular'), url(http://themes.googleusercontent.com/static/fonts/cabin/v5/K6ngFdK5haaaRGBV8waDwA.ttf) format('truetype');
+}
+body, html {
+    background-color: #F6F6F6 !important;
+    height: 100%;
+}
+
+.lb-timeline {
+    font-family: 'Poppins', sans-serif;
+    height: 100%;
+}
+.cover {
+    height: 400px;
+    background-repeat: no-repeat;
+    background-size: cover;
+    padding-bottom: 20px;
+    -webkit-animation: slideInDown 1s;
+    animation: slideInDown 1s;    
+}
+ h1 {
+    text-transform: capitalize;
+    /*color: white;*/
+    padding-left:20px;
+    font-size: 4em;
+    position: relative;
+    /*text-shadow: 2px 2px 0px rgba(255, 255, 255, 0.7);*/
+    top:30%;
+}
+.lb-timeline h1 small{
+    display: block;
+    padding-top:20px;
+    max-width: 1000px;
+    margin: 0 auto;
+
+}
+.lb-timeline .lb-posts {
+    margin-top: 20px;
+}
+.lb-timeline .lb-post:first-child {
+    border-top: 0.0625rem solid red;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+
+}
+
+.lb-timeline .lb-post:nth-child(odd) {
+    float: left;
+}   
+.lb-timeline .lb-post {
+    clear: both;
+    margin:0 auto;
+    overflow: hidden;
+    width: 80%;
+    max-width: 500px;
+    margin-bottom: 12px;
+    border-top: 0.0625rem solid #BDBDBD;
+    float: right;
+    border-bottom: 0.0625rem solid #EAEAEA;
+}
+.lb-timeline .lb-post figure img {
+    width: 100%;
+}
+
+.lb-timeline .lb-avatar {
+    display: block;
+    width: 30px;
+    height: 30px;
+    overflow: hidden;
+    background: #B9B9B9 url("../images/avatar_64.png") no-repeat scroll 0% 0% / 100% auto;
+    float: left;
+    margin-top: 5px;
+}
+.lb-timeline .lb-avatar img {
+    height: auto;
+    display: block;
+    width: 100%;
+}
+.lb-timeline .lb-user-info {
+    text-transform: capitalize;
+    padding-top: 8px;
+    padding-left: 36px;
+    padding-right: 36px;
+    padding-bottom: 5px;
+    border-top: 1px solid #EAEAEA;
+}
+.lb-timeline .lb-item {
+    padding: 10px;
+    margin: 5px;
+}
+
+.lb-post:nth-child(odd).ng-enter {
+    -webkit-animation: fadeInLeft 1s;
+    animation: fadeInLeft 1s;
+}
+.lb-post:nth-child(even).ng-enter {
+    -webkit-animation: fadeInRight 1s;
+    animation: fadeInRight 1s;
+}

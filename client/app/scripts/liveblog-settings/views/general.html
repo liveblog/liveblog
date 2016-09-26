@@ -21,6 +21,7 @@
                     <div class="form-input">
                         <select ng-options="theme.name as theme.label for theme in themes"
                                 ng-model="liveblogSettings.theme.value"
+                                ng-change="addThemes(liveblogSettings.theme.value)"
                                 class="form-control"></select>
                     </div>
                 </div>

@@ -99,23 +99,23 @@ Feature: Themes operations
         And we get "/blogs"
         Then we get list with 1 items
         """
-        {"_items": [{"title": "foo blog", "theme_settings": {"postsPerPage": "22", "postOrder": "editorial"}, "blog_preferences": {"theme": "classic"}}]}
+        {"_items": [{"title": "foo blog", "themes_settings": {"classic": {"postsPerPage": "22", "postOrder": "editorial"}}, "blog_preferences": {"theme": "classic"}}]}
         """
         When we patch "/blogs/#blogs._id#"
         """
-        {"theme_settings": {"postsPerPage": "25"}}
+        {"themes_settings": {"classic": {"postsPerPage": "25"}}}
         """
         Then we get updated response
         When we get "/blogs"
         Then we get list with 1 items
         """
-        {"_items": [{"title": "foo blog", "theme_settings": {"postsPerPage": "25", "postOrder": "editorial"}}]}
+        {"_items": [{"title": "foo blog", "themes_settings": {"classic": {"postsPerPage": "25", "postOrder": "editorial"}}}]}
         """
         When we register "classic"
         When we get "/blogs"
         Then we get list with 1 items
         """
-        {"_items": [{"title": "foo blog", "theme_settings": {"postsPerPage": "25", "postOrder": "editorial"}}]}
+        {"_items": [{"title": "foo blog", "themes_settings": {"classic": {"postsPerPage": "25", "postOrder": "editorial"}}}]}
         """
         
         @auth

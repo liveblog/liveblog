@@ -65,8 +65,8 @@ def collect_theme_assets(theme, assets=None, template=None):
     return assets, template
 
 
-def get_file_path(blog_id):
-    return 'blogs/%s/index.html' % (blog_id)
+def get_file_path(blog_id, theme):
+    return 'blogs/%s/%s/index.html' % (blog_id, theme)
 
 
 def check_media_storage():
@@ -75,9 +75,9 @@ def check_media_storage():
 
 
 def publish_embed(blog_id, api_host=None, theme=None):
-    html = embed(blog_id, api_host, theme)
+    html = embed(blog_id, api_host=api_host, theme=theme)
     check_media_storage()
-    file_path = get_file_path(blog_id)
+    file_path = get_file_path(blog_id, theme)
     # remove existing
     app.media.delete(app.media.media_id(file_path, version=False))
     # upload
@@ -88,14 +88,14 @@ def publish_embed(blog_id, api_host=None, theme=None):
     return superdesk.upload.url_for_media(file_id)
 
 
-def delete_embed(blog_id):
+def delete_embed(blog_id, theme):
     check_media_storage()
-    file_path = get_file_path(blog_id)
+    file_path = get_file_path(blog_id, theme)
     # remove existing
     app.media.delete(file_path)
 
 
-@bp.route('/embed/<blog_id>')
+@bp.route('/embed/<blog_id>/<theme>')
 def embed(blog_id, api_host=None, theme=None):
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
@@ -117,7 +117,10 @@ def embed(blog_id, api_host=None, theme=None):
     # if a theme is provided, overwrite the default theme
     if theme_name:
         theme_package = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
-        theme = json.loads(open(theme_package).read())
+        if os.path.isfile(theme_package):
+            theme = json.loads(open(theme_package).read())
+        else:
+            return 'theme.json not found', 404
     try:
         assets, template_file = collect_theme_assets(theme)
     except UnknownTheme as e:

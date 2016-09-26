@@ -73,6 +73,11 @@ define([
             $scope.publicUrl = url;
         });
 
+        // retieve the blog's public urls
+        blogService.getPublicUrls(blog).then(function(urls) {
+            $scope.publicUrls = urls;
+        });
+
         // define the $scope
         angular.extend($scope, {
             blog: blog,
@@ -375,6 +380,10 @@ define([
                     });
                 });
             },
+            changeTheme: function() {
+                var theme = vm.selectedTheme.name;
+                vm.blogPreferences.theme = theme;
+            },
             saveAndClose: function() {
                 vm.save().then(function() {
                     vm.close();
@@ -495,6 +504,12 @@ define([
         var qPublicUrl = blogService.getPublicUrl(blog).then(function(url) {
             vm.publicUrl = url;
         });
+
+        // retieve the blog's public urls
+        blogService.getPublicUrls(blog).then(function(urls) {
+            vm.publicUrls = urls;
+        });
+
         // load available languages
         api('languages').query().then(function(data) {
             vm.availableLanguages = data._items;
@@ -522,8 +537,8 @@ define([
             var loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){var a=document,l=a.createElement("script"),o=a.getElementsByTagName("script")[0];return l.type="text/javascript",l.onload=t,l.async=!0,l.src=e,o.parentNode.insertBefore(l,o),l}};liveblog.load("' + parentIframe + 'parent-iframe.js?"+parseInt(new Date().getTime()/900000,10),function(){"function"==typeof liveblog.loadCallback&&liveblog.loadCallback()});</script>';
             // compute embeds code with the injected publicUrl
             vm.embeds = {
-                normal: '<iframe width="100%" height="715" src="' + vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>',
-                resizeing: loadingScript + '<iframe id="liveblog-iframe" width="100%" scrolling="no" src="' + vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>'
+                normal: '<iframe width="100%" height="715" src="' + vm.publicUrls[vm.selectedTheme.name] + '" frameborder="0" allowfullscreen></iframe>',
+                resizeing: loadingScript + '<iframe id="liveblog-iframe" width="100%" scrolling="no" src="' + vm.publicUrls[vm.selectedTheme.name] + '" frameborder="0" allowfullscreen></iframe>'
             };
         });
 
