@@ -60,3 +60,10 @@ docs/_build/
 target/
 celerybeatschedule.db
 dump.rdb
+
+# Vim stuff
+*.swo
+*.swp
+*.swn
+*.swm
+.vimrc
