@@ -183,8 +183,8 @@ define([
             }
         }])
         .directive('lbPost', [
-            'notify', 'gettext', 'asset', 'postsService', 'modal', 'blogSecurityService', '$document',
-            function(notify, gettext, asset, postsService, modal, blogSecurityService, $document) {
+            'notify', 'gettext', 'asset', 'postsService', 'modal', 'blogSecurityService', '$document', 'instagramService',
+            function(notify, gettext, asset, postsService, modal, blogSecurityService, $document, instagramService) {
                 return {
                     scope: {
                         post: '=',
@@ -236,6 +236,11 @@ define([
                             },
                             toggleMultipleItems: function() {
                                 scope.show_all = !scope.show_all;
+
+                                // check if the items toggled are instagram embeds
+                                if (instagramService.postHasEmbed(scope.post.groups[1].refs)) {
+                                    instagramService.processEmbeds();
+                                }
                             },
                             removePost: function(post) {
                                 postsService.remove(angular.copy(post)).then(function(message) {
