@@ -7,7 +7,7 @@
 
 module.exports = function(grunt) {
     return {
-        defaultRoute: '/workspace',
+        defaultRoute: '/liveblog',
         requiredMediaMetadata: ['headline', 'description_text', 'alt_text']
     };
 };

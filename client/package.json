@@ -61,15 +61,19 @@
   },
   "dependencies": {
     "angular": "^1.5.8",
-    "angular-embed": "2.1.1",
+    "angular-bootstrap-npm": "^0.14.3",
+    "angular-embed": "^2.1.1",
     "angular-gettext": "^2.3.8",
     "angular-messages": "^1.4.8",
+    "angular-resource": "^1.5.8",
+    "angular-route": "^1.5.8",
     "eventable": "0.0.0",
     "jquery": "^3.1.1",
     "lodash": "3.10.1",
     "lr-infinite-scroll": "^1.0.0",
     "medium-editor": "^5.21.0",
     "moment": "^2.15.1",
+    "ng-file-upload": "^12.2.11",
     "ng-sir-trevor": "git+https://github.com/superdesk/ng-sir-trevor",
     "superdesk-core": "git+https://github.com/superdesk/superdesk-client-core#superdesktop"
   }

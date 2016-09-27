@@ -18,7 +18,7 @@ module.exports = function makeConfig(grunt) {
     return {
         cache: true,
         entry: {
-            app: ['app/scripts/main.js']
+            app: ['app/scripts/index.js']
         },
         output: {
             path: path.join(process.cwd(), 'dist'),
@@ -44,8 +44,13 @@ module.exports = function makeConfig(grunt) {
             root: [
                 __dirname,
                 path.join(__dirname, '/scripts'),
+                path.join(__dirname, '/app/scripts'),
+                path.join(__dirname, '/node_modules/superdesk-core/scripts'),
+                path.join(__dirname, '/node_modules/superdesk-core/styles/less'),
+                path.join(__dirname, '/node_modules/superdesk-core'),
                 path.join(__dirname, '/styles/less')
             ],
+            modulesDirectories: [ 'node_modules' ],
             alias: {
                 'moment-timezone': 'moment-timezone/builds/moment-timezone-with-data-2010-2020',
                 'rangy-saverestore': 'rangy/lib/rangy-selectionsaverestore',
