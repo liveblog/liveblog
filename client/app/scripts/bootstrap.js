@@ -1,9 +1,14 @@
 import superdesk from 'superdesk-core/scripts/superdesk/superdesk';
 import _ from 'lodash';
 import moment from 'moment';
+import config from './../../config';
 //import gettext from 'angular-gettext';
 
-var config = {};
+//var config = {
+//    embedly: {
+//        key: '1163b640a11444e39ec77aa3735720e6'
+//    }
+//};
 
 //config.paths = {
 //    superdesk: 'scripts/bower_components/superdesk/client/app/'

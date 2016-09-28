@@ -67,3 +67,5 @@ dump.rdb
 *.swn
 *.swm
 .vimrc
+
+client/config.js
