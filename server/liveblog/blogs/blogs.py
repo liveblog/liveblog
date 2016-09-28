@@ -126,6 +126,12 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
             if not safe:
                 raise e
 
+            public_url = '{}://{}/embed/{}'.format(app.config['URL_PROTOCOL'], app.config['SERVER_NAME'],
+                                                   blog.get('_id'))
+            get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
+            push_notification('blog', published=1, blog_id=str(blog.get('_id')), public_url=public_url)
+            return public_url
+
 
 @celery.task(soft_time_limit=1800)
 def delete_blog_embed_on_s3(blog_id, safe=True):
