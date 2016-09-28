@@ -5,6 +5,7 @@ import 'angular-resource';
 import 'angular-route';
 import 'ng-file-upload';
 import 'angular-gettext';
+import 'angular-embed/dist/angular-embed';
 import 'lodash';
 
 // core
@@ -56,6 +57,10 @@ import 'superdesk-core/scripts/superdesk-search';
 
 import 'liveblog-bloglist/module';
 import 'liveblog-edit/module';
+import 'liveblog-edit/directives';
+import 'liveblog-edit/posts.service';
+import 'liveblog-edit/unread.posts.service';
 import 'liveblog-security.service';
 
+import './ng-sir-trevor';
 import './bootstrap';

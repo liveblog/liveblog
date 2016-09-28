@@ -7,16 +7,22 @@
  * AUTHORS and LICENSE files distributed with this source code, or
  * at https://www.sourcefabric.org/superdesk/license
  */
+import angular from 'angular';
+import _ from 'lodash';
+//import unreadPostsService from './unread.posts.service';
 
-define([
-    'angular',
-    'lodash',
-    './unread.posts.service',
-    'ng-sir-trevor',
-    'ng-sir-trevor-blocks',
-    'angular-embed'
-], function(angular, _) {
-    'use strict';
+import 'ngsirtrevor/dist/ng-sir-trevor';
+import '../ng-sir-trevor-blocks';
+
+//define([
+//    'angular',
+//    'lodash',
+//    './unread.posts.service',
+//    'ng-sir-trevor',
+//    'ng-sir-trevor-blocks',
+//    'angular-embed'
+//], function(angular, _) {
+    //'use strict';
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'modal',
@@ -720,5 +726,6 @@ define([
             embedService.registerHandler(ngEmbedPictureHandler); // use embed.ly, and provide a `thumbnail_url` field from the `url`
         }
     ]);
-    return app;
-});
+    //return app;
+export default app;
+//});
