@@ -164,7 +164,7 @@ class PostsService(ArchiveService):
             # if you publish a post directly which is not a draft it will have a published_date assigned
             if doc['post_status'] == 'open':
                 doc['published_date'] = utcnow()
-                doc['content_updated_date'] = utcnow()
+                doc['content_updated_date'] = doc['published_date']
                 doc['publisher'] = getattr(flask.g, 'user', None)
         super().on_create(docs)
 
@@ -218,6 +218,9 @@ class PostsService(ArchiveService):
             # if you publish a post it will save a published date and register who did it
             updates['published_date'] = utcnow()
             updates['publisher'] = getattr(flask.g, 'user', None)
+            # if you publish a post and hasn't `content_updated_date` add it.
+            if not updates.get('content_updated_date', False):
+                updates['content_updated_date'] = updates['published_date']
         # when unpublishing
         if original.get('post_status') == 'open' and updates.get('post_status') != 'open':
             updates['unpublished_date'] = utcnow()
