@@ -105,7 +105,7 @@ fi
 
 if [[ $RUN_E2E = 1 ]] ; then
 	# create admin user:
-	docker-compose run superdesk ./scripts/fig_wrapper.sh python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin=true &&
+	docker-compose run superdesk ./scripts/fig_wrapper.sh python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin &&
 	echo "+++ new user has been created" &&
 
 	# run e2e tests:

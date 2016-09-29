@@ -32,7 +32,7 @@ logger = logging.getLogger('superdesk')
 
 blogs_schema = {
     'title': metadata_schema['headline'],
-    'description': metadata_schema['description'],
+    'description': metadata_schema['description_text'],
     'picture_url': {
         'type': 'string',
         'nullable': True
@@ -94,8 +94,11 @@ def send_email_to_added_members(blog, recipients, origin):
     recipients_email = []
     for user in recipients:
         # if user want to receive email notification, we add him as recipient
-        if prefs_service.email_notification_is_enabled(user_id=user['user']):
-            user_doc = get_resource_service('users').find_one(req=None, _id=user['user'])
+        if prefs_service.email_notification_is_enabled(user_id=user):
+            if isinstance(user, ObjectId):
+                user_doc = get_resource_service('users').find_one(req=None, _id=ObjectId(user))
+            else:
+                user_doc = get_resource_service('users').find_one(req=None, _id=ObjectId(user['user']))
             recipients_email.append(user_doc['email'])
     if recipients_email:
         # send emails
@@ -159,7 +162,13 @@ class BlogService(BaseService):
             # notify client with websocket
             push_notification(self.notification_key, created=1, blog_id=str(blog.get('_id')))
             # and members with emails
-            recipients = blog.get('members', [])
+            members = blog.get('members', {})
+            recipients = []
+            for user in members:
+                if isinstance(user, ObjectId):
+                    recipients.append(user)
+                else:
+                    recipients.append(user['user'])
             notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def find_one(self, req, **lookup):
@@ -194,7 +203,10 @@ class BlogService(BaseService):
         recipients = []
         for user in members:
             if user not in original.get('members', []):
-                recipients.append(user)
+                if isinstance(user, ObjectId):
+                    recipients.append(user)
+                else:
+                    recipients.append(user['user'])
         notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def on_delete(self, doc):

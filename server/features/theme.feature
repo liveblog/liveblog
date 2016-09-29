@@ -48,9 +48,9 @@ Feature: Themes operations
         """
         [{"name": "forest-theme", "version": "1.0.1", "extends": "ocean-theme"}, {"name": "ocean-theme", "version": "2.0.1"}, {"name": "classic", "version": "1.0.1", "extends": "forest-theme"}]
         """
-        When we find for "themes" the id as "my-forest-theme" by "{"name": "forest-theme"}"
-        When we find for "themes" the id as "my-ocean-theme" by "{"name": "ocean-theme"}"
-        When we find for "themes" the id as "my-classic" by "{"name": "classic"}"
+        When we find for "themes" the id as "my-forest-theme" by "where={"name": "forest-theme"}"
+        When we find for "themes" the id as "my-ocean-theme" by "where={"name": "ocean-theme"}"
+        When we find for "themes" the id as "my-classic" by "where={"name": "classic"}"
         Given empty "blogs"
         When we post to "/blogs"
         """
@@ -86,7 +86,7 @@ Feature: Themes operations
         """
         [{"name": "angular", "version": "1.0.1"}, {"name": "classic", "extends": "angular", "options": [{"name": "postsPerPage", "default": "22"}, {"name": "postOrder", "default": "editorial"}]}]
         """
-        When we find for "themes" the id as "my-classic" by "{"name": "classic"}"
+        When we find for "themes" the id as "my-classic" by "where={"name": "classic"}"
         When we get "/themes"
         Then we get list with 2 items
         Given empty "blogs"
@@ -124,7 +124,7 @@ Feature: Themes operations
         """
         [{"name": "angular", "version": "1.0.1"}, {"name": "classic", "extends": "angular", "options": [{"name": "postsPerPage", "default": "22"}, {"name": "postOrder", "default": "editorial"}]}]
         """
-        When we find for "themes" the id as "my-classic" by "{"name": "classic"}"
+        When we find for "themes" the id as "my-classic" by "where={"name": "classic"}"
         When we patch "/themes/#my-classic#"
         """
         {"options": [{"name": "postsPerPage", "default": "30"}]}
