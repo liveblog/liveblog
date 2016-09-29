@@ -7,24 +7,26 @@ module.exports = function(grunt) {
     return {
         options: {
             webpack: webpackConfig,
-            publicPath: '/dist',
+            publicPath: './dist',
             port: 9000,
             host: '0.0.0.0',
+            contentBase: "./dist",
+            hot: true,
             headers: {
                 'Cache-Control': 'no-cache, private, no-store, must-revalidate, max-stale=0, post-check=0, pre-check=0'
             }
         },
         start: {
             keepAlive: true,
-            proxy: getProxy(),
+            //proxy: getProxy(),
             webpack: {
                 devtool: 'eval',
                 debug: true,
                 entry: {
-                    app: ['webpack-dev-server/client?http://localhost:9000/'].concat(webpackConfig.entry.app)
-                },
-                output: {
-                    publicPath: 'dist'
+                    app: ['webpack-dev-server/client?http://0.0.0.0:9000/'].concat(webpackConfig.entry.app)
+                //},
+                //output: {
+                //    publicPath: './dist'
                 }
             }
         },
@@ -34,7 +36,7 @@ module.exports = function(grunt) {
             port: 9100,
             webpack: {
                 entry: {
-                    docs: ['webpack-dev-server/client?http://localhost:9100/', 'docs/index']
+                    docs: ['webpack-dev-server/client?http://0.0.0.0:9100/', 'docs/index']
                 },
                 output: {
                     path: path.join(process.cwd(), 'docs/dist'),

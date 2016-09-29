@@ -23,6 +23,15 @@ module.exports = {
         
         }]
     },
+    index: {
+        files: [{
+            expand: true,
+            dot: true,
+            cwd: '<%= appDir %>',
+            dest: '<%= distDir %>',
+            src: [ 'index.html' ]
+        }]
+    },
     tmp: {
         files: [{
             expand: true,

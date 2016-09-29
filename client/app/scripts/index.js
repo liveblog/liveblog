@@ -1,5 +1,6 @@
+import 'bootstrap';
+
 import 'angular';
-//import 'angular-moment';
 import 'angular-bootstrap-npm';
 import 'angular-resource';
 import 'angular-route';
@@ -13,6 +14,9 @@ import 'angular-messages';
 import 'lodash';
 import 'lr-infinite-scroll';
 import 'ment.io';
+
+import 'superdesk-core/styles/less/variables.less';
+//import 'superdesk-core/styles/less/bootstrap.less';
 
 // core
 import 'superdesk-core/scripts/superdesk/gettext';
@@ -75,6 +79,12 @@ import 'liveblog-edit/unread.posts.service';
 import 'liveblog-security.service';
 import 'liveblog-themes/module'
 import 'liveblog-themes/themes.services'
+
+//import 'variables.less';
+//import 'mixins.less';
+//import 'lb-bootstrap.less';
+//import 'liveblog.less';
+//import 'sd-icon-font.less';
 
 import './ng-sir-trevor';
 import './lb-templates';

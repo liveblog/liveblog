@@ -45,10 +45,10 @@ module.exports = function makeConfig(grunt) {
                 __dirname,
                 path.join(__dirname, '/scripts'),
                 path.join(__dirname, '/app/scripts'),
+                path.join(__dirname, '/app/styles/less'),
                 path.join(__dirname, '/node_modules/superdesk-core/scripts'),
                 path.join(__dirname, '/node_modules/superdesk-core/styles/less'),
-                path.join(__dirname, '/node_modules/superdesk-core'),
-                path.join(__dirname, '/styles/less')
+                path.join(__dirname, '/node_modules/superdesk-core')
             ],
             modulesDirectories: [ 'node_modules' ],
             alias: {
@@ -162,7 +162,7 @@ function getDefaults(grunt) {
         environmentName: grunt.option('environmentName'),
 
         // route to be redirected to from '/'
-        defaultRoute: '/workspace',
+        defaultRoute: '/liveblog',
 
         // override language translations
         langOverride: {},
