@@ -42,8 +42,8 @@ blogs_schema = {
     'version_creator': metadata_schema['version_creator'],
     'versioncreated': metadata_schema['versioncreated'],
     'posts_order_sequence': {
-        'type': 'number',
-        'default': 0
+        'type': 'float',
+        'default': 0.00
     },
     'blog_status': {
         'type': 'string',
