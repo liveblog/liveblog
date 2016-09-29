@@ -12,6 +12,15 @@ module.exports = {
                 'scripts/**/*.{html,css,jpg,jpeg,png,gif,json}',
                 'scripts/bower_components/requirejs/require.js'
             ]
+        },{
+            expand: true,
+            dot: true,
+            cwd: 'node_modules/superdesk-core/',
+            dest: '<%= distDir %>',
+            src: [
+                'scripts/**/*.html',
+            ]
+        
         }]
     },
     tmp: {

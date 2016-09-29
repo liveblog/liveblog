@@ -42,27 +42,6 @@ import 'superdesk-core/scripts/superdesk/upload';
 import 'superdesk-core/scripts/superdesk/lang';
 import 'superdesk-core/scripts/superdesk/superdesk';
 
-//import 'superdesk-core/scripts/superdesk-settings';
-//import 'superdesk-core/scripts/superdesk-dashboard';
-//import 'superdesk-core/scripts/superdesk-users';
-//import 'superdesk-core/scripts/superdesk-archive';
-//import 'superdesk-core/scripts/superdesk-ingest';
-//import 'superdesk-core/scripts/superdesk-desks';
-//import 'superdesk-core/scripts/superdesk-groups';
-//import 'superdesk-core/scripts/superdesk-authoring';
-//import 'superdesk-core/scripts/superdesk-packaging';
-//import 'superdesk-core/scripts/superdesk-highlights';
-//import 'superdesk-core/scripts/superdesk-content-filters';
-//import 'superdesk-core/scripts/superdesk-dictionaries';
-//import 'superdesk-core/scripts/superdesk-vocabularies';
-//import 'superdesk-core/scripts/superdesk-users';
-//import 'superdesk-core/scripts/superdesk-stream';
-//import 'superdesk-core/scripts/superdesk-publish';
-//import 'superdesk-core/scripts/superdesk-templates';
-//import 'superdesk-core/scripts/superdesk-monitoring';
-//import 'superdesk-core/scripts/superdesk-search';
-//import 'superdesk-core/scripts/superdesk-workspace';
-
 import 'superdesk-core/scripts/superdesk-workspace';
 import 'superdesk-core/scripts/superdesk-dashboard';
 import 'superdesk-core/scripts/superdesk-users';
@@ -87,8 +66,6 @@ import 'superdesk-core/scripts/superdesk-monitoring';
 import 'superdesk-core/scripts/superdesk-settings';
 import 'superdesk-core/scripts/superdesk-ingest';
 import 'superdesk-core/scripts/superdesk-search-providers';
-
-
 
 import 'liveblog-bloglist/module';
 import 'liveblog-edit/module';
