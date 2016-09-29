@@ -202,8 +202,12 @@ class PostsService(ArchiveService):
                 if item['text'] != original['groups'][1]['refs'][index]['item']['text']:
                     content_diff = True
                     break
-        if(content_diff):
+        if content_diff:
             updates['content_updated_date'] = utcnow()
+
+        # assure that the item is keept if the content wasn't changed.
+        if not content_diff and updates.get('groups', False):
+            updates['groups'][1]['refs'] = original['groups'][1]['refs']
         # check permission
         post = original.copy()
         post.update(updates)
