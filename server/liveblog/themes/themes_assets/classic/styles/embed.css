@@ -113,7 +113,7 @@ button.active {
     line-height: 12px;
     margin-bottom: 0;
     outline: medium none !important;
-    padding: 8px 14px;
+    padding: 8px 11px;
     text-align: center;
     text-decoration: none;
     text-transform: uppercase;
@@ -145,6 +145,9 @@ button.active {
 .btn-primary:active {
     background-color: #5ea9c8;
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.252);
+}
+.btn.comment i {
+    display: none; 
 }
 .modal-backdrop {
     position: absolute;
@@ -456,7 +459,7 @@ article blockquote li:before {
 .toggleHighlights {
     color: #f89406;
     height: auto;
-    padding: 2px 8px 1px 8px;
+    padding: 4px 10px 4px 10px;
     background: rgba(255, 255, 255, 0.5);
     border: 1px solid rgba(215, 215, 215, 0.7);
     border-radius: 2px;
@@ -614,9 +617,19 @@ article blockquote li:before {
     .header-bar {
         padding: 0;
     }
+    .btn.comment {
+        font-size: 0;
+        line-height: 0;
+        float: right;
+    }
+    .btn.comment i {
+        display: inline-block; 
+        font-size: 14px;
+        line-height: 0.5;
+    }
 }
 @media (max-width: 320px) {
-    .btn {
-        padding: 8px;
+    .sorting-bar .btn {
+        padding: 10px;
     }
 }
