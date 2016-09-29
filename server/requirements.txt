@@ -13,5 +13,5 @@ pyflakes<=1.1
 httmock
 honcho
 # Superdesk
--e git+git://github.com/liveblog/superdesk-core.git@1148ce028e31bb1bcde9bd51df60e0c858646ffb#egg=Superdesk-Core==1.06-update-sd
+-e git+git://github.com/liveblog/superdesk-core.git@2d76fb0ffaaa6aac1835fe44486144282cd0c5ce#egg=Superdesk-Core==1.06-update-sd-core
 
