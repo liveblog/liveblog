@@ -1,5 +1,7 @@
 import 'lb-bootstrap.less';
 
+import 'jquery-ui/jquery-ui';
+import 'bootstrap';
 import 'angular';
 import 'angular-bootstrap-npm';
 import 'angular-resource';
