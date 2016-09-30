@@ -7,7 +7,7 @@ module.exports = function(grunt) {
     return {
         options: {
             webpack: webpackConfig,
-            publicPath: './dist',
+            //publicPath: './dist',
             port: 9000,
             host: '0.0.0.0',
             contentBase: "./dist",
@@ -24,9 +24,9 @@ module.exports = function(grunt) {
                 debug: true,
                 entry: {
                     app: ['webpack-dev-server/client?http://0.0.0.0:9000/'].concat(webpackConfig.entry.app)
-                //},
-                //output: {
-                //    publicPath: './dist'
+                },
+                output: {
+                    publicPath: ''
                 }
             }
         },

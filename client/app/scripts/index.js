@@ -1,4 +1,4 @@
-import 'bootstrap';
+import 'lb-bootstrap.less';
 
 import 'angular';
 import 'angular-bootstrap-npm';
@@ -15,7 +15,6 @@ import 'lodash';
 import 'lr-infinite-scroll';
 import 'ment.io';
 
-import 'superdesk-core/styles/less/variables.less';
 //import 'superdesk-core/styles/less/bootstrap.less';
 
 // core
@@ -71,21 +70,19 @@ import 'superdesk-core/scripts/superdesk-settings';
 import 'superdesk-core/scripts/superdesk-ingest';
 import 'superdesk-core/scripts/superdesk-search-providers';
 
-import 'liveblog-bloglist/module';
-import 'liveblog-edit/module';
-import 'liveblog-edit/directives';
-import 'liveblog-edit/posts.service';
-import 'liveblog-edit/unread.posts.service';
-import 'liveblog-security.service';
-import 'liveblog-themes/module'
-import 'liveblog-themes/themes.services'
+import 'liveblog-bloglist';
+import 'liveblog-edit';
+import 'liveblog-themes';
 
-//import 'variables.less';
-//import 'mixins.less';
-//import 'lb-bootstrap.less';
-//import 'liveblog.less';
-//import 'sd-icon-font.less';
+//import 'liveblog-bloglist/module';
+//import 'liveblog-edit/module';
+//import 'liveblog-edit/directives';
+//import 'liveblog-edit/posts.service';
+//import 'liveblog-edit/unread.posts.service';
+import 'liveblog-security.service';
+//import 'liveblog-themes/module'
+//import 'liveblog-themes/themes.services'
 
 import './ng-sir-trevor';
 import './lb-templates';
-import './bootstrap';
+import './lb-bootstrap';

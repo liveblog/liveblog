@@ -1,9 +1,9 @@
 // liveblog-edit.less
 // Styling for the liveblog edit page
 // ----------------------------------------------------------------------------------------
-@import 'mixins.less';
-@import (reference) 'bootstrap.less';
-@import 'variables.less';
+@import '~mixins.less';
+@import (reference) '~lb-bootstrap.less';
+@import '~variables.less';
 
 .blogedit {
     //left menu
@@ -162,7 +162,7 @@
                         position: absolute;
                         left: -15px;
                         top: 10px;
-                        background: url('../../images/dropdown-arrow-side.png') no-repeat;
+                        background: url('~images/dropdown-arrow-side.png') no-repeat;
                         content: " ";
                     }
                     .footer {
@@ -544,26 +544,26 @@
 
 // Icons LB custom
     .big-icon-contributions {
-        background-image: url('../../images/contributions.svg');
+        background-image: url('~images/contributions.svg');
     }
     .active .big-icon-contributions {
-        background-image: url('../../images/contributions_active.svg');
+        background-image: url('~images/contributions_active.svg');
     }
     .big-icon-editor {
-        background-image: url('../../images/editor.svg');
+        background-image: url('~images/editor.svg');
     }
     .active .big-icon-editor {
-        background-image: url('../../images/editor_active.svg');
+        background-image: url('~images/editor_active.svg');
     }
     .big-icon-archive {
         height: 28px;
         background-position: 0 0;
     }
     .big-icon-comments {
-        background-image: url('../../images/comments-sidetab.svg');
+        background-image: url('~images/comments-sidetab.svg');
     }
     .active .big-icon-comments {
-        background-image: url('../../images/comments-sidetab_active.svg');
+        background-image: url('~images/comments-sidetab_active.svg');
     }    
     .icon-archive {
         background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCIgdmlld0JveD0iMCAwIDE2IDE2IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxNiAxNiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPHBhdGggZD0iTTIgMXYxM2gydjFoM3YtMWgzdjFoM3YtMWgyVjFIMnogTTEzIDEySDRWM2g5VjEyeiIvPgoJPHBhdGggZD0iTTEyIDRINXYzaDdWNHogTTExIDZINlY1aDVWNnoiLz4KCTxwYXRoIGQ9Ik0xMiA4SDV2M2g3Vjh6IE0xMSAxMEg2VjloNVYxMHoiLz4KPC9nPgo8L3N2Zz4K);

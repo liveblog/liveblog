@@ -17,6 +17,7 @@ module.exports = function makeConfig(grunt) {
 
     return {
         cache: true,
+        debug: true,
         entry: {
             app: ['app/scripts/index.js']
         },
@@ -43,7 +44,8 @@ module.exports = function makeConfig(grunt) {
         resolve: {
             root: [
                 __dirname,
-                path.join(__dirname, '/scripts'),
+                //path.join(__dirname, '/scripts'),
+                path.join(__dirname, '/app'),
                 path.join(__dirname, '/app/scripts'),
                 path.join(__dirname, '/app/styles/less'),
                 path.join(__dirname, '/node_modules/superdesk-core/scripts'),
