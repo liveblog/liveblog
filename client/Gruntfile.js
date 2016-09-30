@@ -46,12 +46,11 @@ module.exports = function (grunt) {
 
     grunt.registerTask('server', [
         'clean',
-        'style',
-        'template:test',
-        'connect:test',
-        'open:test',
+        'copy:assets',
+        'copy:index',
+        'copy:sirTrevor',
         'ngtemplates',
-        'watch'
+        'webpack-dev-server:start'
     ]);
     grunt.registerTask('server:e2e', [
         'clean',

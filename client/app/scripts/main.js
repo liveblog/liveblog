@@ -8,28 +8,33 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 
+'use strict';
 // loaded already
-define('jquery', [], function() {
-    'use strict';
-    return window.jQuery;
-});
+//define('jquery', [], function() {
+//    'use strict';
+//    return window.jQuery;
+//});
 
-// loaded already
-define('angular', [], function() {
-    'use strict';
-    return window.angular;
-});
+//// loaded already
+//define('angular', [], function() {
+//    'use strict';
+//    return window.angular;
+//});
 
-define('main', [
-    'gettext',
-    'angular',
-    'superdesk/superdesk',
-    'lodash',
-    'moment'
-], function(gettext, angular, superdesk, _, moment) {
-    'use strict';
+import gettext from 'angular-gettext';
+import moment from 'moment';
+import angular from 'angular';
+import superdesk from 'superdesk-core';
 
-    return function bootstrap(config, apps) {
+//define('main', [
+//    'gettext',
+//    'angular',
+//    'superdesk/superdesk',
+//    'lodash',
+//    'moment'
+//], function(gettext, angular, superdesk, _, moment) {
+
+    export default function bootstrap(config, apps) {
 
         apps.unshift(superdesk.name);
         superdesk.constant('config', config);
@@ -76,4 +81,4 @@ define('main', [
             window.superdeskIsReady = true;
         });
     };
-});
+//});

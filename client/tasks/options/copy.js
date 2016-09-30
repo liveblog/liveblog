@@ -12,6 +12,32 @@ module.exports = {
                 'scripts/**/*.{html,css,jpg,jpeg,png,gif,json}',
                 'scripts/bower_components/requirejs/require.js'
             ]
+        },{
+            expand: true,
+            dot: true,
+            cwd: 'node_modules/superdesk-core/',
+            dest: '<%= distDir %>',
+            src: [
+                'scripts/**/*.html',
+            ]
+        }]
+    },
+    index: {
+        files: [{
+            expand: true,
+            dot: true,
+            cwd: '<%= appDir %>',
+            dest: '<%= distDir %>',
+            src: [ 'index.html' ]
+        }]
+    },
+    sirTrevor: {
+        files: [{
+            expand: true,
+            dot: true,
+            cwd: 'node_modules/sir-trevor/',
+            dest: '<%= distDir %>',
+            src: [ 'sir-trevor.js', 'sir-trevor.css' ]
         }]
     },
     tmp: {

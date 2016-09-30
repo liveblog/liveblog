@@ -1,8 +1,8 @@
 // planning.less
 // Styling for the superdesk content planing modules
 // ----------------------------------------------------------------------------------------
-@import 'mixins.less';
-@import 'variables.less';
+@import '~lb-mixins.less';
+@import '~lb-variables.less';
 
 .theme-settings-modal {
     form {padding: 10px 0;}
@@ -167,7 +167,7 @@
                     max-width: 400px;
                     height: 140px;
                     .border-box();
-                    background: #f8f8f8 url('../../images/blog-default-img.png') no-repeat center center;
+                    background: #f8f8f8 url('~images/blog-default-img.png') no-repeat center center;
                     float: left;
                     position: relative;
                     &:hover {
@@ -237,7 +237,7 @@
                     top: 0;
                     width: 90px;
                     height: 65px;
-                    background: url('../../images/default-icon.png') no-repeat left bottom;
+                    background: url('~images/default-icon.png') no-repeat left bottom;
                 }
                 &.default {
                     background-color: #eff7fa;
