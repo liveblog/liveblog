@@ -17,8 +17,6 @@ import 'lodash';
 import 'lr-infinite-scroll';
 import 'ment.io';
 
-//import 'superdesk-core/styles/less/bootstrap.less';
-
 // core
 import 'superdesk-core/scripts/superdesk/gettext';
 import 'superdesk-core/scripts/superdesk/activity';
@@ -76,7 +74,6 @@ import 'liveblog-bloglist';
 import 'liveblog-edit';
 import 'liveblog-themes';
 
-//import 'liveblog-bloglist/module';
 //import 'liveblog-edit/module';
 //import 'liveblog-edit/directives';
 //import 'liveblog-edit/posts.service';

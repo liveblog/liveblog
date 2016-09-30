@@ -1,16 +1,12 @@
 import angular from 'angular';
-import 'sir-trevor/sir-trevor';
 
 export default angular
 .module('SirTrevor', [])
     .provider('SirTrevor', function() {
         this.$get = function() {
             return window.SirTrevor;
-            //return SirTrevor;
         };
         angular.extend(this, window.SirTrevor);
-        console.log('window sir trevor', window.SirTrevor);
-        //angular.extend(this, SirTrevor);
     })
     .provider('SirTrevorOptions', function() {
         var options = {

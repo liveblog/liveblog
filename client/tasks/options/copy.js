@@ -20,7 +20,6 @@ module.exports = {
             src: [
                 'scripts/**/*.html',
             ]
-        
         }]
     },
     index: {
@@ -32,6 +31,16 @@ module.exports = {
             src: [ 'index.html' ]
         }]
     },
+    sirTrevor: {
+        files: [{
+            expand: true,
+            dot: true,
+            cwd: 'node_modules/sir-trevor/',
+            dest: '<%= distDir %>',
+            src: [ 'sir-trevor.js', 'sir-trevor.css' ]
+        }]
+    },
+ 
     tmp: {
         files: [{
             expand: true,

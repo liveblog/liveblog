@@ -48,8 +48,8 @@ module.exports = function (grunt) {
         'clean',
         'copy:assets',
         'copy:index',
+        'copy:sirTrevor',
         'ngtemplates',
-        //'webpack:build',
         'webpack-dev-server:start'
     ]);
     grunt.registerTask('server:e2e', [
