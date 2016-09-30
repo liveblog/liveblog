@@ -40,7 +40,6 @@ module.exports = {
             src: [ 'sir-trevor.js', 'sir-trevor.css' ]
         }]
     },
- 
     tmp: {
         files: [{
             expand: true,

@@ -73,14 +73,9 @@ import 'superdesk-core/scripts/superdesk-search-providers';
 import 'liveblog-bloglist';
 import 'liveblog-edit';
 import 'liveblog-themes';
+import 'liveblog-settings';
 
-//import 'liveblog-edit/module';
-//import 'liveblog-edit/directives';
-//import 'liveblog-edit/posts.service';
-//import 'liveblog-edit/unread.posts.service';
 import 'liveblog-security.service';
-//import 'liveblog-themes/module'
-//import 'liveblog-themes/themes.services'
 
 import './ng-sir-trevor';
 import './lb-templates';
