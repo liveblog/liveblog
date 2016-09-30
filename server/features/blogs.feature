@@ -57,7 +57,7 @@ Feature: Blog operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
@@ -161,7 +161,7 @@ Feature: Blog operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
@@ -182,7 +182,7 @@ Feature: Blog operations
             """
             {"first_name": "foo", "username": "foo_user", "email": "foo@bar.com", "is_active": true, "sign_off": "abc"}
             """
-        When we find for "users" the id as "user_foo" by "{"username": "foo_user"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo_user"}"
         Given empty "blogs"
         When we post to "/blogs"
         """

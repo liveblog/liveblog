@@ -39,6 +39,7 @@ BANDWIDTH_SAVER = False
 DATE_FORMAT = '%Y-%m-%dT%H:%M:%S+00:00'
 PAGINATION_LIMIT = 200
 
+LOG_CONFIG_FILE = env('LOG_CONFIG_FILE', 'logging_config.yml')
 LOG_SERVER_ADDRESS = env('LOG_SERVER_ADDRESS', 'localhost')
 LOG_SERVER_PORT = int(env('LOG_SERVER_PORT', 5555))
 
@@ -108,6 +109,11 @@ INSTALLED_APPS = [
     'superdesk.upload',
     'superdesk.notification',
     'superdesk.activity',
+    'superdesk.sequences',
+    'superdesk.vocabularies',
+    'superdesk.commands',
+    'superdesk.io',
+    'superdesk.publish',
 
     'apps.archive',
     'apps.desks',
@@ -115,6 +121,8 @@ INSTALLED_APPS = [
     'apps.groups',
     'apps.privilege',
     'apps.legal_archive',
+    'apps.archive_broadcast',
+    'apps.content_types',
 
     'liveblog.prepopulate',
     'liveblog.blogs',

@@ -23,7 +23,7 @@
   ],
   "dependencies": {
     "medium-editor": "^5.21.0",
-    "superdesk": "https://github.com/liveblog/superdesk.git#759a21b8c01f7f93e26c94daf4d89a2b61fd50c1",
+    "superdesk": "https://github.com/liveblog/superdesk.git#ee4d19a98f175d78471bc81e655f33927c4f8a7a",
     "Eventable": "https://github.com/nistormihai/eventable.git",
     "ng-sir-trevor": "~2.0.2",
     "angular-embed": "^2.0.2",

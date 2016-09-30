@@ -38,19 +38,24 @@ import _ from 'lodash';
 
     var placeCaretAtStart = createCaretPlacer(true);
     var placeCaretAtEnd = createCaretPlacer(false);
-    var uriRegx = '(https?:\\/\\/)?[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
+    var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
 
     function fixSecureEmbed(string) {
-        if (window.location.protocol === 'https:/') {
+        var ret;
+        if (window.location.protocol === 'https:') {
             var pattern = new RegExp(uriRegx, 'i'),
                 matches = string.match(pattern);
-            if (matches.length) {
-                return matches[0];
+            if (matches && matches.length && matches[1] === 'http:') {
+                ret = matches[0];
+            } else {
+                ret = string;
             }
-            return string;
         } else {
-            return string;
+            ret = string;
         }
+        // particular case for cnn.
+        ret = ret.replace('cnn.com/video/api/embed.html#/video', 'cnn.com/videos');
+        return ret;
     }
 
     function isURI(string) {
@@ -91,7 +96,7 @@ import _ from 'lodash';
                     'data-icon-after': "ADD CONTENT HERE"
                 });
             }
-            // Add toMeta method to all blocks. 
+            // Add toMeta method to all blocks.
             SirTrevor.Block.prototype.toMeta = function() {return;};
             SirTrevor.Block.prototype.getOptions = function() {
                 return SirTrevor.$get().getInstance(this.instanceID).options;
@@ -447,7 +452,7 @@ import _ from 'lodash';
                     //image size warning
                     var maxFileSize = 2; //in MB
                     if ( data.file && (data.file.size / 1048576) > maxFileSize) {
-                        this.$editor.append($('<div>', {
+                        this.$editor.prepend($('<div>', {
                             name: 'size-warning',
                             class: 'alert alert-warning',
                             role: 'alert',

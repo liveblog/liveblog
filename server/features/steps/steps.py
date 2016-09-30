@@ -15,7 +15,6 @@ from flask import json
 from superdesk.tests import set_placeholder
 from superdesk import get_resource_service
 
-
 external_url = 'http://thumbs.dreamstime.com/z/digital-nature-10485007.jpg'
 
 

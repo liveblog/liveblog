@@ -240,7 +240,7 @@ import '../ng-sir-trevor-blocks';
             fetchNewDraftPage: function() {
                 vm.draftPostsInstance.fetchNewPage();
             },
-            fetchNewCommenttPage: function() {
+            fetchNewCommentsPage: function() {
                 vm.commentPostsInstance.fetchNewPage();
             },
             fetchNewTimelinePage: function() {
@@ -712,6 +712,27 @@ import '../ng-sir-trevor-blocks';
                         });
         };
     })
+    .factory('instagramService', ['$timeout', function($timeout) {
+        var insta = {};
+        insta.postHasEmbed = function(post) {
+            var hasInstagram = false;
+            angular.forEach(post, function(item) {
+                if (item.item.item_type === 'embed') {
+                    if (item.item.text.indexOf('platform.instagram.com') !== -1) {
+                        hasInstagram = true;
+                    }
+                }
+            });
+            return hasInstagram;
+        }
+        insta.processEmbeds = function() {
+            // take in accound the animations
+            $timeout(function() {
+                window.instgrm.Embeds.process();
+            }, 1000);
+        }
+        return insta;
+    }])
     .config(['embedlyServiceProvider', 'embedServiceProvider', 'config', function(embedlyServiceProvider, embedServiceProvider, config) {
         embedlyServiceProvider.setKey(config.embedly.key);
         embedServiceProvider.setConfig('facebookAppId', config.facebookAppId);

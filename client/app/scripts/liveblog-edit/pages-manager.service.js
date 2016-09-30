@@ -4,8 +4,8 @@
     // TODO: Factorize this file with
     // server/liveblog/embed/embed_assets/scripts/liveblog-embed/pages-manager.service.js
 
-    PagesManagerFactory.$inject = ['postsService', '$q', 'lodash', 'moment', '$timeout'];
-    function PagesManagerFactory(postsService, $q, _, moment, $timeout) {
+    PagesManagerFactory.$inject = ['postsService', '$q', 'lodash', 'moment', 'instagramService'];
+    function PagesManagerFactory(postsService, $q, _, moment, instagramService) {
 
         function PagesManager (blog_id, status, max_results, sort, sticky, highlight) {
             var SORTS = {
@@ -221,21 +221,14 @@
                         addPage(page);
                         page = undefined;
                     }
-                    angular.forEach(post.items, function(item) {
-                        if (item.item.item_type === 'embed') {
-                            if (item.item.text.indexOf('platform.instagram.com') !== -1) {
-                                processInstagram = true;
-                            }
-                        }
-                    });
+
+                    processInstagram = instagramService.postHasEmbed(post.items);
                 });
                 if (angular.isDefined(page)) {
                     addPage(page);
                 }
                 if (processInstagram) {
-                    $timeout(function() {
-                        window.instgrm.Embeds.process();
-                    }, 1000);
+                    instagramService.processEmbeds();
                 };
             }
 
@@ -401,7 +394,7 @@
         return PagesManager;
     }
 
-    angular.module('liveblog.pages-manager', ['liveblog.posts'])
+    angular.module('liveblog.pages-manager', ['liveblog.posts', 'liveblog.edit'])
         .factory('PagesManager', PagesManagerFactory);
 
 })(angular);
