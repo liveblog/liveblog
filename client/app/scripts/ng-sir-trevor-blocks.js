@@ -36,14 +36,14 @@ define([
 
     var placeCaretAtStart = createCaretPlacer(true);
     var placeCaretAtEnd = createCaretPlacer(false);
-    var uriRegx = '(https?:\\/\\/)?[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
+    var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
 
     function fixSecureEmbed(string) {
         var ret;
         if (window.location.protocol === 'https:') {
             var pattern = new RegExp(uriRegx, 'i'),
                 matches = string.match(pattern);
-            if (matches.length) {
+            if (matches && matches.length && matches[1] === 'http:') {
                 ret = matches[0];
             } else {
                 ret = string;
