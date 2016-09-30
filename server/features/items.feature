@@ -21,7 +21,7 @@ Feature: Items operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
@@ -57,7 +57,7 @@ Feature: Items operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
@@ -92,7 +92,7 @@ Feature: Items operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """

@@ -9,8 +9,10 @@
 # at https://www.sourcefabric.org/superdesk/license
 
 import superdesk
-from apps.prepopulate import PrepopulateService, PrepopulateResource, AppScaffoldDataCommand
+from liveblog.prepopulate.app_prepopulate import PrepopulateService,\
+    PrepopulateResource
 from .app_initialize import AppInitializeWithDataCommand
+
 
 __all__ = ['PrepopulateService', 'PrepopulateResource', 'AppScaffoldDataCommand', 'AppInitializeWithDataCommand']
 

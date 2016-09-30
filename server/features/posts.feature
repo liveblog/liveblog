@@ -16,7 +16,7 @@ Feature: Post operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
@@ -89,7 +89,7 @@ Feature: Post operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
@@ -144,7 +144,7 @@ Feature: Post operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
@@ -201,7 +201,7 @@ Feature: Post operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
@@ -257,7 +257,7 @@ Feature: Post operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
@@ -335,7 +335,7 @@ Feature: Post operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
@@ -435,7 +435,7 @@ Feature: Post operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
@@ -519,7 +519,7 @@ Feature: Post operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
@@ -569,7 +569,7 @@ Feature: Post operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
@@ -656,7 +656,7 @@ Feature: Post operations
         {"_items": [{"username":"admin"},
               		    {"username": "test_user"}]}
         """
-        When we find for "users" the id as "user_admin" by "{"username": "admin"}"
+        When we find for "users" the id as "user_admin" by "where={"username": "admin"}"
 
         Given "posts"
         """
@@ -691,7 +691,7 @@ Feature: Post operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """
@@ -815,7 +815,7 @@ Feature: Post operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
-        When we find for "users" the id as "user_foo" by "{"username": "foo"}"
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         Given empty "blogs"
         When we post to "blogs"
         """

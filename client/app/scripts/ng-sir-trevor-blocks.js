@@ -36,14 +36,14 @@ define([
 
     var placeCaretAtStart = createCaretPlacer(true);
     var placeCaretAtEnd = createCaretPlacer(false);
-    var uriRegx = '(https?:\\/\\/)?[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
+    var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
 
     function fixSecureEmbed(string) {
         var ret;
         if (window.location.protocol === 'https:') {
             var pattern = new RegExp(uriRegx, 'i'),
                 matches = string.match(pattern);
-            if (matches.length) {
+            if (matches && matches.length && matches[1] === 'http:') {
                 ret = matches[0];
             } else {
                 ret = string;
@@ -449,7 +449,7 @@ define([
                     //image size warning
                     var maxFileSize = 2; //in MB
                     if ( data.file && (data.file.size / 1048576) > maxFileSize) {
-                        this.$editor.append($('<div>', {
+                        this.$editor.prepend($('<div>', {
                             name: 'size-warning',
                             class: 'alert alert-warning',
                             role: 'alert',
