@@ -61,28 +61,13 @@ module.exports = function (grunt) {
     ]);
     grunt.registerTask('server:travis', ['clean', 'style', 'template:travis', 'connect:travis']);
 
-    grunt.registerTask('bower', [
-        'build',
-        'copy:bower'
-    ]);
     grunt.registerTask('build', [
         'clean',
-        'less:dev',
-        'ngtemplates',
-        'useminPrepare',
-        'concat',
-        'requirejs', // must go after concat
-        'uglify',
-        'cssmin',
         'copy:assets',
-        'copy:tmp',
-        'copy:js',
-        'copy:fonts',
-        'copy:docs',
-        'template:test',
-        'nggettext_compile',
-        'filerev',
-        'usemin'
+        'copy:index',
+        'copy:sirTrevor',
+        'ngtemplates',
+        'webpack:build'
     ]);
 
     grunt.registerTask('package', ['ci', 'build']);
