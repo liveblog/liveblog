@@ -15,7 +15,7 @@
              */
             this.send = function(data) {
                 var deferred = $q.defer();
-                data.client_blog = config.blog._id;
+                data.blog = config.blog._id;
                 data.item_type = 'comment';
                 itemsService.save(data).$promise.then(function(dataItem) {
                     if (dataItem._status === 'ERR'){
@@ -24,7 +24,7 @@
                     }
                     var comment = {
                             "post_status": "comment",
-                            "client_blog": config.blog._id,
+                            "blog": config.blog._id,
                             "groups": [{
                                 "id": "root",
                                 "refs": [{"idRef":"main"}],

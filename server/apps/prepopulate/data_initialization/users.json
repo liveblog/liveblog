@@ -1,0 +1,15 @@
+[
+    {
+        "_id": "5788bc55ea8e157ca2ab7629",
+        "display_name": "admin admin",
+        "email": "admin+123@superdesk.org",
+        "first_name": "admin",
+        "is_active": true,
+        "last_name": "admin",
+        "needs_activation": false,
+        "password": "$2a$12$mJVAxOc/MgFla8RkxJ87RuxvcoXEjc75nngkS0GNb52SNKxRcGDTy",
+        "role": "54e650f31024542de2649bea",
+        "user_type": "administrator",
+        "username": "admin"
+     }
+]

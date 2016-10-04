@@ -46,7 +46,7 @@ $ fig up
 To create user you can run that command (it will start container instance for command execution and start depended service if needed):
 
 ```sh
-fig run api python3 manage.py users:create -u admin -p admin -e "admin@example.com" --admin=true
+fig run api python3 manage.py users:create -u admin -p admin -e "admin@example.com" --admin
 ```
 
 To rebuild container (ie in case of changes to environment or dependencies):

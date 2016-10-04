@@ -153,6 +153,21 @@
             $scope.creationStep = newTab;
         };
 
+        $scope.handleKeyDown = function(event, action) {
+            //prevent form submission and editor 'artifact'
+            if (event.keyCode === 13) {
+                event.preventDefault();
+                switch(action) {
+                    case 'goToTeamTab':
+                        //we need at least a valid title from the first tab
+                        if ($scope.newBlog.title) {
+                            $scope.switchTab('Team');
+                        }
+                        break;
+                }
+            }
+        };
+
         $scope.addMember = function(user) {
             $scope.blogMembers.push(user);
         };

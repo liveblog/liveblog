@@ -41,9 +41,9 @@
             </div>
             <button
                 ng-if="timeline.settings.canComment"
-                class="btn ng-cloak"
+                class="btn comment ng-cloak"
                 ng-class="{'active': timeline.comment}"
-                ng-click="timeline.comment = !timeline.comment" translate>Comment</button>
+                ng-click="timeline.comment = !timeline.comment"><i class="fa fa-comment"></i>{{ :: "Comment" | translate }}</button>
         </div>
         <div class="header-bar__logo">
             <a href="https://www.sourcefabric.org/liveblog/" target="_blank">
@@ -66,8 +66,8 @@
             infinite-scroll-immediate-check="true">
             <div class="lb-post load-new-posts"
                  ng-click="timeline.applyUpdates()"
-                 ng-show="timeline.settings.loadNewPostsManually && timeline.newPosts.length > 0"
-                 translate translate-n="timeline.newPosts.length"
+                 ng-show="timeline.settings.loadNewPostsManually && (timeline.newPosts.length > 0 || timeline.newStickyPosts.length > 0)"
+                 translate translate-n="timeline.newPosts.length + timeline.newStickyPosts.length"
                  translate-plural="See {{$count}} new updates" ng-cloak>
                 See one new update
             </div>

@@ -120,7 +120,10 @@ class ClientCommentsResource(PostsResource):
     item_methods = ['GET']
     resource_methods = ['GET', 'POST']
     schema = {
-        'client_blog': Resource.rel('client_blogs', True)
+        'client_blog': Resource.rel('client_blogs', True),
+        'blog': {
+            'type': 'string'
+        }
     }
     schema.update(PostsResource.schema)
 
@@ -130,6 +133,9 @@ class ClientCommentsService(PostsService):
         for doc in docs:
             if request.method == 'POST':
                 doc['post_status'] = 'comment'
+                # blog_id is kept also under the name blog as a string
+                # so that it can be further used to auto-refresh the back-office
+                doc['blog'] = str(doc['client_blog'])
         super().on_create(docs)
 
 

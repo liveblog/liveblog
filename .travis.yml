@@ -85,7 +85,7 @@ script:
       fi
     - if [ "${TARGET}" != "${TARGET/e2e_first/}" ]; then
         cd server &&
-        python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin=true 2>&1 ;
+        python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
         cd ../client &&
         ./node_modules/.bin/webdriver-manager update &&
         ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=5 -- protractor-conf.js --suite=a
@@ -99,7 +99,7 @@ script:
       fi
     - if [ "${TARGET}" != "${TARGET/e2e_second/}" ]; then
         cd server &&
-        python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin=true 2>&1 ;
+        python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
         cd ../client &&
         ./node_modules/.bin/webdriver-manager update &&
         ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=5 -- protractor-conf.js --suite=b
@@ -113,7 +113,7 @@ script:
       fi
     - if [ "${TARGET}" != "${TARGET/e2e_third/}" ]; then
         cd server &&
-        python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin=true 2>&1 ;
+        python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
         cd ../client &&
         ./node_modules/.bin/webdriver-manager update &&
         ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=5 -- protractor-conf.js --suite=c

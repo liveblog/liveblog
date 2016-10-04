@@ -87,8 +87,8 @@ class PostsResource(ArchiveResource):
             'default': False
         },
         'order': {
-            'type': 'number',
-            'default': 0
+            'type': 'float',
+            'default': 0.00
         },
         'published_date': {
             'type': 'datetime'
@@ -119,7 +119,7 @@ class PostsService(ArchiveService):
 
     def get_next_order_sequence(self, blog_id):
         if blog_id is None:
-            return 0
+            return 0.00
         # get next order sequence and increment it
         blog = get_resource_service('blogs').find_and_modify(
             query={'_id': blog_id},
@@ -139,10 +139,10 @@ class PostsService(ArchiveService):
                     # save the order into the blog
                     get_resource_service('blogs').update(blog_id, {'posts_order_sequence': order + 1}, blog)
                 else:
-                    order = 0
+                    order = 0.00
         else:
-            order = 0
-        return order
+            order = 0.00
+        return float(order)
 
     def check_post_permission(self, post):
         to_be_checked = (

@@ -36,14 +36,28 @@ define([
 
     var placeCaretAtStart = createCaretPlacer(true);
     var placeCaretAtEnd = createCaretPlacer(false);
+    var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
+
+    function fixSecureEmbed(string) {
+        var ret;
+        if (window.location.protocol === 'https:') {
+            var pattern = new RegExp(uriRegx, 'i'),
+                matches = string.match(pattern);
+            if (matches && matches.length && matches[1] === 'http:') {
+                ret = matches[0];
+            } else {
+                ret = string;
+            }
+        } else {
+            ret = string;
+        }
+        // particular case for cnn.
+        ret = ret.replace('cnn.com/video/api/embed.html#/video', 'cnn.com/videos');
+        return ret;
+    }
 
     function isURI(string) {
-        var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-        '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.?)+[a-z]{2,}|'+ // domain name
-        '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-        '(\\:\\d+)?(\\/[-a-z\\d%_.~+,()]*)*'+ // port and path
-        '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-        '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
+        var pattern = new RegExp('^' + uriRegx, 'i');
         return pattern.test(string);
     }
     function handlePlaceholder(selector, placeHolderText, options) {
@@ -79,7 +93,7 @@ define([
                     'data-icon-after': "ADD CONTENT HERE"
                 });
             }
-            // Add toMeta method to all blocks. 
+            // Add toMeta method to all blocks.
             SirTrevor.Block.prototype.toMeta = function() {return;};
             SirTrevor.Block.prototype.getOptions = function() {
                 return SirTrevor.$get().getInstance(this.instanceID).options;
@@ -124,6 +138,7 @@ define([
                         that.resetMessages();
                         // start a loader over the block, it will be stopped in the loadData function
                         that.loading();
+                        input = fixSecureEmbed(input);
                         // if the input is an url, use embed services
                         if (isURI(input)) {
                             // request the embedService with the provided url
@@ -434,7 +449,7 @@ define([
                     //image size warning
                     var maxFileSize = 2; //in MB
                     if ( data.file && (data.file.size / 1048576) > maxFileSize) {
-                        this.$editor.append($('<div>', {
+                        this.$editor.prepend($('<div>', {
                             name: 'size-warning',
                             class: 'alert alert-warning',
                             role: 'alert',
