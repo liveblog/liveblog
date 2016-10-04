@@ -89,6 +89,6 @@
     "ng-file-upload": "^12.2.11",
     "ng-sir-trevor": "git+https://github.com/superdesk/ng-sir-trevor",
     "sir-trevor": "git+https://github.com/m0g/sir-trevor-js#liveblog",
-    "superdesk-core": "git+https://github.com/superdesk/superdesk-client-core#npm-pkg"
+    "superdesk-core": "git+https://github.com/superdesk/superdesk-client-core#07ce3e4a5665f33785f7e857f4af845108d1a7ee"
   }
 }
