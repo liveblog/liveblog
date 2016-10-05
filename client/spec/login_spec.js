@@ -1,5 +1,5 @@
-var Login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/pages').login;
-var waitForSuperdesk = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').waitForSuperdesk;
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login;
+var waitForSuperdesk = require('./../node_modules/superdesk-core/spec/helpers/utils').waitForSuperdesk;
 
 describe('login', function() {
     'use strict';

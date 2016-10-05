@@ -1,4 +1,4 @@
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     logout = require('./helpers/utils').logout,
     waitAndClick = require('./helpers/utils').waitAndClick,
     blogs = require('./helpers/pages').blogs;

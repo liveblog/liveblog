@@ -46,7 +46,7 @@ exports.config = {
     onPrepare: function() {
         'use strict';
 
-        var setup = require('./app/scripts/bower_components/superdesk/client/spec/helpers/setup');
+        var setup = require('./node_modules/superdesk-core/spec/helpers/setup');
         setup({fixture_profile: 'test'});
 
         var reporters = require('jasmine-reporters');
