@@ -25,9 +25,9 @@ npm install -g grunt-cli
 
 # set locale
 locale-gen en_US.UTF-8
-export LANG en_US.UTF-8
-export LANGUAGE en_US:en
-export LC_ALL en_US.UTF-8
+export LANG="en_US.UTF-8"
+export LANGUAGE="en_US:en"
+export LC_ALL="en_US.UTF-8"
 
 # setup the environment
 cd /opt/liveblog
