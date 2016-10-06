@@ -1,6 +1,10 @@
 #!/bin/bash
 # IMPORTANT: Script only for Ubuntu Trusty
 # Setting up environment variables
+COLOR='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo -e "${COLOR}Setting environment variables${NC}"
 
 echo "SUPERDESK_RELOAD=True" | sudo tee --append /etc/environment
 echo "SUPERDESK_URL=http://localhost:5000/api" | sudo tee --append /etc/environment
@@ -34,6 +38,7 @@ echo "MONGO_URI=mongodb://localhost/liveblog" | sudo tee --append /etc/environme
 echo "PUBLICAPI_MONGO_URI=mongodb://localhost/liveblog" | sudo tee --append /etc/environment
 echo "LEGAL_ARCHIVE_URI=mongodb://localhost/liveblog" | sudo tee --append /etc/environment
 
+echo -e "${COLOR}Upgrading and installing packages${NC}"
 sudo apt-get update && apt-get dist-upgrade -y
 sudo apt-get install mongodb wget -y
 
@@ -41,6 +46,7 @@ sudo apt-get install mongodb wget -y
 sudo apt-get install redis-server -y
 
 # elastic search 1.5
+echo -e "${COLOR}Installing elasticsearch${NC}"
 sudo apt-get install openjdk-7-jre -y
 wget -c https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.5.0.deb
 sudo dpkg -i elasticsearch-1.5.0.deb
@@ -48,6 +54,7 @@ rm elasticsearch-1.5.0.deb
 echo "MAX_MAP_COUNT=" | sudo tee --append /etc/default/elasticsearch
 
 # NodeJS 4.X
+echo -e "${COLOR}Installing NodeJS${NC}"
 curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
 sudo apt-get install -y nodejs
 
@@ -83,13 +90,19 @@ export CELERYBEAT_SCHEDULE_FILENAME=/tmp/celerybeatschedule.db
 # Install server requirements
 cd /opt/liveblog/server
 sudo pip3 install -U -r requirements.txt
-python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
-python3 manage.py register_local_themes ;
-python3 manage.py schema:migrate ;
 
 #Install client requirements
 cd /opt/liveblog/client
 npm install
 
-# Run the app
-source /opt/liveblog/scripts/start-dev.sh
+# Migrate the data
+sudo service elasticsearch restart
+sudo service redis-server restart
+
+sleep 5
+
+python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
+python3 manage.py register_local_themes ;
+python3 manage.py schema:migrate ;
+
+echo -e "${COLOR}Provisioning done${NC}"
