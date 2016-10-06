@@ -7,7 +7,34 @@
 
 [![Build Status](https://travis-ci.org/liveblog/liveblog.svg?branch=master)](https://travis-ci.org/liveblog/liveblog)
 
-## Up to date installation
+## Vagrant LXC container
+
+This will only work on Linux
+
+```
+cd /tmp
+wget -c https://releases.hashicorp.com/vagrant/1.8.6/vagrant_1.8.6_x86_64.deb
+sudo dpkg -i vagrant_1.8.6_x86_64.deb
+rm vagrant_1.8.6_x86_64.deb
+vagrant plugin install vagrant-lxc
+```
+
+```
+cd ~/code/liveblog
+sudo rm -rf client/data client/dist/* client/.tmp server/src
+vagrant destroy
+vagrant up
+vagrant ssh
+```
+
+Once once in Vagrant
+
+```
+/opt/liveblog/scripts/provision.sh
+/opt/liveblog/scripts/start-dev.sh
+```
+
+## Run everything in Docker (Not recommended)
 
 How to run Liveblog in a full docker environment
 
