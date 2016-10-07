@@ -6,14 +6,30 @@ NC='\033[0m' # No Color
 
 echo -e "${COLOR}Setting environment variables${NC}"
 
+# Superdesk variables
 echo "SUPERDESK_RELOAD=True" | sudo tee --append /etc/environment
-echo "SUPERDESK_URL=http://localhost:5000/api" | sudo tee --append /etc/environment
-echo "SUPERDESK_WS_URL=ws://localhost:5050" | sudo tee --append /etc/environment
-echo "SUPERDESK_CLIENT_URL=http://localhost:9000" | sudo tee --append /etc/environment
+#echo "SUPERDESK_URL=http://localhost:5000/api" | sudo tee --append /etc/environment
+#echo "SUPERDESK_WS_URL=ws://localhost:5050" | sudo tee --append /etc/environment
+#echo "SUPERDESK_CLIENT_URL=http://localhost:9000" | sudo tee --append /etc/environment
+echo "SUPERDESK_URL=http://127.0.0.1/api" | sudo tee --append /etc/environment
+echo "SUPERDESK_WS_URL=ws://127.0.0.1/ws" | sudo tee --append /etc/environment
+echo "SUPERDESK_CLIENT_URL=http://127.0.0.1" | sudo tee --append /etc/environment
+echo "SUPERDESK_TESTING=True" | sudo tee --append /etc/environment
+
+# MongoDB
+echo "MONGO_URI=mongodb://localhost/liveblog" | sudo tee --append /etc/environment
+#echo "MONGO_DBNAME=liveblog" | sudo tee --append /etc/environment
+echo "PUBLICAPI_MONGO_URI=mongodb://localhost/liveblog" | sudo tee --append /etc/environment
+echo "LEGAL_ARCHIVE_URI=mongodb://localhost/liveblog" | sudo tee --append /etc/environment
+
+# Elasticsearch
 echo "ELASTICSEARCH_URL=http://localhost:9200" | sudo tee --append /etc/environment
 echo "ELASTICSEARCH_INDEX" | sudo tee --append /etc/environment
+
+# Redis
 echo "CELERY_BROKER_URL=redis://localhost:6379/1" | sudo tee --append /etc/environment
 echo "REDIS_URL=redis://localhost:6379/1" | sudo tee --append /etc/environment
+
 echo "LOG_SERVER_ADDRESS=logstash" | sudo tee --append /etc/environment
 echo "LOG_SERVER_PORT=5555" | sudo tee --append /etc/environment
 echo "AMAZON_ACCESS_KEY_ID" | sudo tee --append /etc/environment
@@ -30,14 +46,9 @@ echo "MAIL_USE_SSL=false" | sudo tee --append /etc/environment
 echo "MAIL_USERNAME=user" | sudo tee --append /etc/environment
 echo "MAIL_PASSWORD=pwd" | sudo tee --append /etc/environment
 echo "SENTRY_DSN" | sudo tee --append /etc/environment
-echo "SUPERDESK_URL=http://127.0.0.1/api" | sudo tee --append /etc/environment
-echo "SUPERDESK_WS_URL=ws://127.0.0.1/ws" | sudo tee --append /etc/environment
-echo "SUPERDESK_CLIENT_URL=http://127.0.0.1" | sudo tee --append /etc/environment
-echo "SUPERDESK_TESTING=True" | sudo tee --append /etc/environment
-echo "MONGO_URI=mongodb://localhost/liveblog" | sudo tee --append /etc/environment
-echo "MONGO_DBNAME=liveblog" | sudo tee --append /etc/environment
-echo "PUBLICAPI_MONGO_URI=mongodb://localhost/liveblog" | sudo tee --append /etc/environment
-echo "LEGAL_ARCHIVE_URI=mongodb://localhost/liveblog" | sudo tee --append /etc/environment
+
+echo "SERVER_NAME=None" | sudo tee --append /etc/environment
+echo "EMBEDLY_KEY=a7690e1033db42b59f4e9ad6d3b773b" | sudo tee --append /etc/environment
 
 echo -e "${COLOR}Upgrading and installing packages${NC}"
 sudo apt-get update && apt-get dist-upgrade -y
