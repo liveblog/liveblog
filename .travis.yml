@@ -7,6 +7,7 @@ sudo: false
 
 env:
     global:
+        - CXX=g++-4.8
         - secure: ajoP9pA/FYH+1sFwGKHlQ8PoGqRIjdmqEnwo44AA5j6c1NMsgiToA420lPm8Lp0cko5YK3ppBlGlvbRWu5JXVxl0vMtZTLf3FM2w99viddrRCkh4sMef2DzkXXYOW4Tnew/8pmaOtTn3UtNG/feJHkBzHLEDUuN0TA07Y6UaWHc=
     matrix:
         - TARGET=client
@@ -24,8 +25,17 @@ addons:
   apt:
     sources:
     - mongodb-3.0-precise
+    - ubuntu-toolchain-r-test
     packages:
     - mongodb-org-server
+    - xvfb
+    - build-essential
+    - libudev-dev
+    - clang-3.3
+    - fakeroot
+    - git
+    - libgnome-keyring-dev
+    - g++-4.8
 
 cache:
   directories:
