@@ -70,3 +70,4 @@ dump.rdb
 .vimrc
 
 client/config.js
+server/test-env.local
