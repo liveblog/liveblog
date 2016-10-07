@@ -19,19 +19,27 @@ rm vagrant_1.8.6_x86_64.deb
 vagrant plugin install vagrant-lxc
 ```
 
+We need to create the configuration file for the frontend:
+
+```
+cd ~/code/liveblog
+cp client/config.sample.js client/config.js
+```
+
+Start the virtual machine
+
 ```
 cd ~/code/liveblog
 sudo rm -rf client/data client/dist/* client/.tmp server/src
 vagrant destroy
 vagrant up
-vagrant ssh
+vagrant ssh -c /opt/liveblog/scripts/provision.sh
 ```
 
-Once once in Vagrant
+Once the provisioning is done:
 
 ```
-/opt/liveblog/scripts/provision.sh
-/opt/liveblog/scripts/start-dev.sh
+vagrant ssh -c /opt/liveblog/scripts/start-dev.sh
 ```
 
 ## Run everything in Docker (Not recommended)
