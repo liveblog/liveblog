@@ -2,6 +2,8 @@ language: python
 
 python:
     - "3.4"
+node_js:
+  - "4.6"
 
 sudo: false
 
