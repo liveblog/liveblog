@@ -1,5 +1,5 @@
 #!/bin/bash
-# IMPORTANT: Script only for Ubuntu Trusty
+# IMPORTANT: Script only for Ubuntu Trusty inside a virtual environment
 # Setting up environment variables
 COLOR='\033[0;34m'
 NC='\033[0m' # No Color
@@ -35,6 +35,7 @@ echo "SUPERDESK_WS_URL=ws://127.0.0.1/ws" | sudo tee --append /etc/environment
 echo "SUPERDESK_CLIENT_URL=http://127.0.0.1" | sudo tee --append /etc/environment
 echo "SUPERDESK_TESTING=True" | sudo tee --append /etc/environment
 echo "MONGO_URI=mongodb://localhost/liveblog" | sudo tee --append /etc/environment
+echo "MONGO_DBNAME=liveblog" | sudo tee --append /etc/environment
 echo "PUBLICAPI_MONGO_URI=mongodb://localhost/liveblog" | sudo tee --append /etc/environment
 echo "LEGAL_ARCHIVE_URI=mongodb://localhost/liveblog" | sudo tee --append /etc/environment
 
@@ -91,18 +92,11 @@ export CELERYBEAT_SCHEDULE_FILENAME=/tmp/celerybeatschedule.db
 cd /opt/liveblog/server
 sudo pip3 install -U -r requirements.txt
 
+source /opt/liveblog/scripts/create-local-user.sh
+
 #Install client requirements
 cd /opt/liveblog/client
 npm install
 
 # Migrate the data
-sudo service elasticsearch restart
-sudo service redis-server restart
-
-sleep 5
-
-python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
-python3 manage.py register_local_themes ;
-python3 manage.py schema:migrate ;
-
 echo -e "${COLOR}Provisioning done${NC}"
