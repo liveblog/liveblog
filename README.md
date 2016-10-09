@@ -33,7 +33,6 @@ cd ~/code/liveblog
 sudo rm -rf client/data client/dist/* client/.tmp server/src
 vagrant destroy
 vagrant up
-vagrant ssh -c /opt/liveblog/scripts/provision.sh
 ```
 
 Once the provisioning is done:
