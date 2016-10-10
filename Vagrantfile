@@ -15,5 +15,5 @@ Vagrant.configure(2) do |config|
     config.vm.synced_folder ".", "/opt/liveblog"
 
     config.vm.provider "lxc"
-    config.vm.provision "shell", path: "scripts/provision.sh", privileged: false
+    #config.vm.provision "shell", path: "scripts/provision.sh", privileged: false
 end

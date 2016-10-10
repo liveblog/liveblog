@@ -33,12 +33,19 @@ cd ~/code/liveblog
 sudo rm -rf client/data client/dist/* client/.tmp server/src
 vagrant destroy
 vagrant up
+vagrant ssh
 ```
 
-Once the provisioning is done:
+Once in the virtual machine:
 
 ```
-vagrant ssh -c /opt/liveblog/scripts/start-dev.sh
+/opt/liveblog/scripts/provision.sh
+```
+
+Once the provisioning done whil still in the virtual machine:
+
+```
+/opt/liveblog/scripts/start-dev.sh
 ```
 
 ## Run everything in Docker (Not recommended)

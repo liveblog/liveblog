@@ -1,3 +1,6 @@
+#!/bin/bash
+source ~/.bashrc
+
 sudo service elasticsearch restart
 sudo service redis-server restart
 
