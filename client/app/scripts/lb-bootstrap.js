@@ -36,7 +36,7 @@ var modules = [
     'superdesk.templates',
     'superdesk.monitoring',
     'superdesk.loading',
-    'lb.templates',
+    //'lb.templates',
     'ngMessages'
 ];
 

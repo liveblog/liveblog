@@ -40,7 +40,7 @@ module.exports = function (grunt) {
         'template:docs',
         'connect:test',
         'open:docs',
-        'ngtemplates',
+        'ngtemplates:docs',
         'watch'
     ]);
 
@@ -49,14 +49,14 @@ module.exports = function (grunt) {
         'copy:assets',
         'copy:index',
         'copy:sirTrevor',
-        'ngtemplates',
+        'ngtemplates:dev',
         'webpack-dev-server:start'
     ]);
     grunt.registerTask('server:e2e', [
         'clean',
         'style',
         'template:mock',
-        'ngtemplates',
+        'ngtemplates:core',
         'connect:mock' // nothing will be run after that
     ]);
     grunt.registerTask('server:travis', ['clean', 'style', 'template:travis', 'connect:travis']);
@@ -66,7 +66,7 @@ module.exports = function (grunt) {
         'copy:assets',
         'copy:index',
         'copy:sirTrevor',
-        'ngtemplates',
+        'ngtemplates:core',
         'webpack:build'
     ]);
 

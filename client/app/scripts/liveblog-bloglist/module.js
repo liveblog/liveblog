@@ -352,7 +352,7 @@
                     members: '=',
                     onchoose: '&'
                 },
-                templateUrl: 'scripts/bower_components/superdesk/client/app/scripts/superdesk-desks/views/user-select.html',
+                templateUrl: 'scripts/apps/desks/views/user-select.html',
                 link: function(scope, elem, attrs) {
 
                     var ARROW_UP = 38, ARROW_DOWN = 40, ENTER = 13;
