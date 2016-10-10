@@ -15,9 +15,9 @@ echo "export SUPERDESK_CLIENT_URL=http://localhost" | sudo tee --append ~/.bashr
 
 # MongoDB
 #echo "export MONGO_DBNAME=liveblog" | sudo tee --append ~/.bashrc
-echo "export MONGO_URI=mongodb://localhost/superdesk" | sudo tee --append ~/.bashrc
-echo "export PUBLICAPI_MONGO_URI=mongodb://localhost/superdesk" | sudo tee --append ~/.bashrc
-echo "export LEGAL_ARCHIVE_URI=mongodb://localhost/superdesk" | sudo tee --append ~/.bashrc
+#echo "export MONGO_URI=mongodb://localhost/superdesk" | sudo tee --append ~/.bashrc
+#echo "export PUBLICAPI_MONGO_URI=mongodb://localhost/superdesk" | sudo tee --append ~/.bashrc
+#echo "export LEGAL_ARCHIVE_URI=mongodb://localhost/superdesk" | sudo tee --append ~/.bashrc
 
 # Elasticsearch
 echo "export ELASTICSEARCH_URL=http://localhost:9200" | sudo tee --append ~/.bashrc
@@ -53,9 +53,9 @@ export SUPERDESK_TESTING=True
 export SUPERDESK_URL=http://localhost/api
 export SUPERDESK_WS_URL=ws://localhost/ws
 export SUPERDESK_CLIENT_URL=http://localhost
-export MONGO_URI=mongodb://localhost/superdesk
-export PUBLICAPI_MONGO_URI=mongodb://localhost/superdesk
-export LEGAL_ARCHIVE_URI=mongodb://localhost/superdesk
+#export MONGO_URI=mongodb://localhost/superdesk
+#export PUBLICAPI_MONGO_URI=mongodb://localhost/superdesk
+#export LEGAL_ARCHIVE_URI=mongodb://localhost/superdesk
 export ELASTICSEARCH_URL=http://localhost:9200
 export ELASTICSEARCH_INDEX
 export CELERY_BROKER_URL=redis://localhost:6379/1

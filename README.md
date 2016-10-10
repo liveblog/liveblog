@@ -9,6 +9,8 @@
 
 ## Vagrant LXC container
 
+### Setting things up
+
 This will only work on Linux
 
 ```
@@ -46,6 +48,16 @@ Once the provisioning done whil still in the virtual machine:
 
 ```
 /opt/liveblog/scripts/start-dev.sh
+```
+
+### Run the tests
+
+First you need run the startup scripts (`/opt/liveblog/scripts/start-dev.sh`) in your virtual machine. Once this is setted up, execute the following commands on your local machine:
+
+```
+cd ~/code/liveblog/client
+./node_modules/.bin/webdriver-manager update
+./node_modules/.bin/protractor protractor-conf.js
 ```
 
 ## Run everything in Docker (Not recommended)

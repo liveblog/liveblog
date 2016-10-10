@@ -3,6 +3,7 @@
 
 Vagrant.configure(2) do |config|
     config.vm.box = "fgrehm/trusty64-lxc"
+
     config.vm.box_check_update = false
 
     config.vm.network "forwarded_port", guest: 9000, host: 9000
@@ -15,5 +16,4 @@ Vagrant.configure(2) do |config|
     config.vm.synced_folder ".", "/opt/liveblog"
 
     config.vm.provider "lxc"
-    #config.vm.provision "shell", path: "scripts/provision.sh", privileged: false
 end
