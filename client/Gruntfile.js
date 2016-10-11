@@ -52,14 +52,7 @@ module.exports = function (grunt) {
         'webpack-dev-server:start'
     ]);
 
-    grunt.registerTask('ci:travis', [
-        'clean',
-        'copy:assets',
-        'copy:index',
-        'copy:sirTrevor',
-        'ngtemplates:dev',
-        'webpack:build'
-    ]);
+    grunt.registerTask('ci:travis', ['server']);
 
     grunt.registerTask('server:e2e', [
         'clean',
