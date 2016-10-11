@@ -23,7 +23,7 @@ consumers_schema = {
         'schema': {
             'type': 'dict',
             'schema': {
-                'consumer_contacts': Resource.rel('consumer_contacts', True)
+                'consumers_contacts': Resource.rel('consumers_contacts', True)
             }
         }
     },
