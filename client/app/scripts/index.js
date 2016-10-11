@@ -17,6 +17,10 @@ import 'lodash';
 import 'lr-infinite-scroll';
 import 'ment.io';
 
+// This is an ugly little hack required by the venerable superdesk.editor to work
+import MediumEditor from 'medium-editor';
+window.MediumEditor = MediumEditor;
+
 // core
 import 'superdesk-core/scripts/core/gettext';
 import 'superdesk-core/scripts/core/activity';
@@ -31,6 +35,7 @@ import 'superdesk-core/scripts/core/filters';
 import 'superdesk-core/scripts/core/services';
 import 'superdesk-core/scripts/core/directives';
 import 'superdesk-core/scripts/core/editor/editor';
+//import 'superdesk-core/scripts/core/editor2/editor';
 import 'superdesk-core/scripts/core/editor/spellcheck/spellcheck';
 import 'superdesk-core/scripts/core/features';
 import 'superdesk-core/scripts/core/list';
