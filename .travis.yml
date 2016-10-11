@@ -59,23 +59,23 @@ before_install:
 
 install:
     - if [ "${TARGET}" = "server" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        cd server &&
+        cd $TRAVIS_BUILD_DIR/server &&
         pip install -r requirements.txt &&
         cd .. ;
       fi
     - if [ "${TARGET}" = "client" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        cd client && npm install && cd .. ;
+        cd $TRAVIS_BUILD_DIR/client && npm install && cd .. ;
       fi
 
 before_script:
     - if [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        cd client ;
+        cd $TRAVIS_BUILD_DIR/client ;
         grunt build --server='http://127.0.0.1:5000/api' --ws='ws://127.0.0.1:5100' ;
-        cd dist ;
+        cd $TRAVIS_BUILD_DIR/client/dist ;
         while [ ! -f index.html ]; do sleep .5; done ;
         (nohup python3 -m http.server 9000 &) ;
-        cd ../.. ;
-        cd server ;
+        #cd ../.. ;
+        cd $TRAVIS_BUILD_DIR/server ;
         (nohup env SUPERDESK_URL='http://127.0.0.1:5000/api' SUPERDESK_CLIENT_URL='http://127.0.0.1:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &) ;
       fi
 
