@@ -1,4 +1,4 @@
-var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login;
+var Login = require('./../node_modules/superdesk-core/spec/helpers/pages').login;
 var waitForSuperdesk = require('./../node_modules/superdesk-core/spec/helpers/utils').waitForSuperdesk;
 
 describe('login', function() {
