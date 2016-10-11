@@ -69,7 +69,7 @@ install:
 
 before_script:
     - if [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        cd ../client ;
+        cd client ;
         grunt build --server='http://127.0.0.1:5000/api' --ws='ws://127.0.0.1:5100' ;
         cd dist ;
         while [ ! -f index.html ]; do sleep .5; done ;
