@@ -30,7 +30,6 @@ module.exports = function (grunt) {
     grunt.registerTask('hint', ['jshint', 'jscs']);
     grunt.registerTask('hint:docs', ['jshint:docs', 'jscs:docs']);
     grunt.registerTask('ci', ['hint']);
-    grunt.registerTask('ci:travis', ['build']);
     grunt.registerTask('bamboo', ['karma:bamboo']);
 
     grunt.registerTask('docs', [
@@ -52,6 +51,16 @@ module.exports = function (grunt) {
         'ngtemplates:dev',
         'webpack-dev-server:start'
     ]);
+
+    grunt.registerTask('ci:travis', [
+        'clean',
+        'copy:assets',
+        'copy:index',
+        'copy:sirTrevor',
+        'ngtemplates:dev',
+        'webpack:build'
+    ]);
+
     grunt.registerTask('server:e2e', [
         'clean',
         'style',
