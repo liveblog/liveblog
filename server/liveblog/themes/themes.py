@@ -25,6 +25,7 @@ import os
 import magic
 from liveblog.blogs.blogs import publish_blog_embed_on_s3
 import logging
+from flask import make_response, send_from_directory
 
 logger = logging.getLogger('superdesk')
 ASSETS_DIR = 'themes_assets'
@@ -35,6 +36,7 @@ CONTENT_TYPES = {
     '.json': 'application/json'
 }
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
+download_theme_blueprint = superdesk.Blueprint('download_theme', __name__)
 themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=ASSETS_DIR)
 
 
@@ -317,6 +319,17 @@ class ThemesService(BaseService):
             self.get_children(theme.get('name'))
         return list(set(response))
 
+@upload_theme_blueprint.route('/theme-download/', methods=['GET'])
+@cross_origin()
+def download_a_theme():
+    themes_service = get_resource_service('themes')
+    logger.info('here we go')
+    response = make_response()
+    response.headers['Cache-Control'] = 'no-cache'
+    response.headers['Content-Type'] = 'application/zip'
+    response.headers['X-Accel-Redirect'] = '/home/mihai/Downloads/lb-theme-classic-master.zip'
+    return send_from_directory('/home/mihai/Downloads/', 'lb-theme-classic-master.zip', as_attachment=True)
+    return response
 
 @upload_theme_blueprint.route('/theme-upload', methods=['POST'])
 @cross_origin()
