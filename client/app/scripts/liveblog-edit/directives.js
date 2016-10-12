@@ -8,14 +8,23 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 
-define([
-    'angular',
-    'lodash',
-    './module',
-    './posts.service',
-    './blog.service',
-    './pages-manager.service'
-], function(angular, _) {
+import angular from 'angular';
+import _ from 'lodash';
+
+//import './module';
+//import './posts.service';
+//import './blog.service';
+//import './pages-manager.service';
+
+
+//define([
+//    'angular',
+//    'lodash',
+//    './module',
+//    './posts.service',
+//    './blog.service',
+//    './pages-manager.service'
+//], function(angular, _) {
     'use strict';
 
     angular.module('liveblog.edit')
@@ -138,6 +147,7 @@ define([
                     // retrieve updates when event is recieved
                     .then(function() {
                         $scope.$on('posts', function(e, event_params) {
+                            console.log('post are being retrieved');
 
                             vm.isLoading = true;
                             vm.pagesManager.retrieveUpdate(true).then(function() {
@@ -466,6 +476,6 @@ define([
                 }
             };
         }]);
-});
+//});
 
 // EOF

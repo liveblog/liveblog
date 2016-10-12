@@ -4,7 +4,9 @@ import './styles/posts-in-panel.less';
 import './styles/settings.less';
 import './styles/timeline.less';
 
-import './module';
-import './directives';
 import './posts.service';
 import './unread.posts.service';
+import './blog.service';
+import './pages-manager.service';
+import './module';
+import './directives';
