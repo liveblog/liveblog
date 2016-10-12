@@ -37,6 +37,7 @@ CONTENT_TYPES = {
     '.json': 'application/json'
 }
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
+download_theme_blueprint = superdesk.Blueprint('download_theme', __name__)
 themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=ASSETS_DIR)
 
 
