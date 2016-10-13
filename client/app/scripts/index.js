@@ -81,6 +81,5 @@ import 'liveblog-settings';
 
 import 'liveblog-security.service';
 
-import './ng-sir-trevor';
 //import './lb-templates';
 import './lb-bootstrap';
