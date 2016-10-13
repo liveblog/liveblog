@@ -348,7 +348,7 @@ def download_a_theme(theme_name):
     response.headers['Cache-Control'] = 'no-cache'
     response.headers['Content-Type'] = 'application/zip'
     response.headers['Content-Disposition'] = 'attachment; filename={}.zip'.format(zip_folder)
-    response.headers['X-Accel-Redirect'] = '{}.zip'.format(zip_folder)
+    # response.headers['X-Accel-Redirect'] = '{}.zip'.format(zip_folder)
     return response
 
 @upload_theme_blueprint.route('/theme-upload', methods=['POST'])
