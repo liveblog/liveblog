@@ -33,3 +33,12 @@ $ . env/bin/activate
 $ pip install -r docker/requirements.txt
 $ ./scripts/docker-local-demo.sh
 ```
+
+### Testing
+
+How to run the behaviore tests for the syndication feature:
+
+```
+cd server
+behave --format progress2 --logging-level ERROR features/syndication.feature
+```
