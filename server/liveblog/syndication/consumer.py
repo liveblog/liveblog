@@ -1,7 +1,7 @@
 import logging
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-
+from .utils import generate_api_key
 
 logger = logging.getLogger('superdesk')
 
@@ -10,20 +10,25 @@ consumers_schema = {
     'name': {
         'type': 'string'
     },
-    'domain': {
-        'type': 'string',
-        'schema': {
-            'type': 'string',
-            'required': True,
-            'unique': True
-        }
-    },
     'contacts': {
         'type': 'list',
         'schema': {
             'type': 'dict',
             'schema': {
-                'consumers_contacts': Resource.rel('consumers_contacts', True)
+                'first_name': {
+                    'type': 'string',
+                },
+                'last_name': {
+                    'type': 'string',
+                },
+                'email': {
+                    'type': 'email',
+                    'required': True
+                },
+                'phone': {
+                    'type': 'string',
+                    'nullable': True
+                }
             }
         }
     },
@@ -31,14 +36,21 @@ consumers_schema = {
         'type': 'string',
         'schema': {
             'type': 'string',
-            'nullable': True
+            'nullable': True,
+            'unique': True,
         }
     }
 }
 
 
 class ConsumerService(BaseService):
-    notification_key = 'consumer'
+    notification_key = 'consumers'
+
+    def on_create(self, docs):
+        super().on_create(docs)
+        for doc in docs:
+            if not doc.get('api_key'):
+                doc['api_key'] = generate_api_key()
 
 
 class ConsumerResource(Resource):
@@ -51,45 +63,3 @@ class ConsumerResource(Resource):
     item_methods = ['GET', 'PATCH', 'PUT', 'DELETE']
     privileges = {'POST': 'consumers', 'PATCH': 'consumers', 'PUT': 'consumers', 'DELETE': 'consumers'}
     schema = consumers_schema
-
-
-consumers_contacts_schema = {
-    'first_name': {
-        'type': 'string',
-    },
-    'last_name': {
-        'type': 'string',
-    },
-    'display_name': {
-        'type': 'string'
-    },
-    'email': {
-        'unique': True,
-        'type': 'email',
-        'required': True
-    },
-    'phone': {
-        'type': 'string',
-        'nullable': True
-    },
-    'language': {
-        'type': 'string',
-        'nullable': True
-    }
-}
-
-
-class ConsumerContactService(BaseService):
-    notification_key = 'consumer_contact'
-
-
-class ConsumerContactResource(Resource):
-    datasource = {
-        'source': 'consumers_contacts',
-        'search_backend': 'elastic',
-        'default_sort': [('_updated', -1)]
-    }
-
-    item_methods = ['GET', 'PATCH', 'PUT', 'DELETE']
-    privileges = {'POST': 'consumers', 'PATCH': 'consumers', 'PUT': 'consumers', 'DELETE': 'consumers'}
-    schema = consumers_contacts_schema
