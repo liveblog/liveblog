@@ -42,3 +42,46 @@ How to run the behaviore tests for the syndication feature:
 cd server
 behave --format progress2 --logging-level ERROR features/syndication.feature
 ```
+
+### Vagrant LXC Installation
+
+#### Setting things up
+
+This will only work on Linux
+
+```
+cd /tmp
+wget -c https://releases.hashicorp.com/vagrant/1.8.6/vagrant_1.8.6_x86_64.deb
+sudo dpkg -i vagrant_1.8.6_x86_64.deb
+rm vagrant_1.8.6_x86_64.deb
+vagrant plugin install vagrant-lxc
+```
+
+We need to create the configuration file for the frontend:
+
+```
+cd ~/code/liveblog
+cp client/config.sample.js client/config.js
+```
+
+Start the virtual machine
+
+```
+cd ~/code/liveblog
+sudo rm -rf client/data client/dist/* client/.tmp server/src
+vagrant destroy
+vagrant up
+vagrant ssh
+```
+
+Once in the virtual machine:
+
+```
+/opt/liveblog/scripts/provision.sh
+```
+
+Once the provisioning done whil still in the virtual machine:
+
+```
+/opt/liveblog/scripts/start-dev.sh
+```
