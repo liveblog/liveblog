@@ -67,6 +67,10 @@ blogs_schema = {
     },
     'public_url': {
         'type': 'string'
+    },
+    'syndication_enabled': {
+        'type': 'boolean',
+        'default': False
     }
 }
 
