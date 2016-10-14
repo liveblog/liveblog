@@ -70,5 +70,3 @@ dump.rdb
 
 # Vagrant
 .vagrant
-Vagrantfile
-scripts/vagrant-*
