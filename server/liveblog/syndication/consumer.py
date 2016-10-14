@@ -34,11 +34,8 @@ consumers_schema = {
     },
     'api_key': {
         'type': 'string',
-        'schema': {
-            'type': 'string',
-            'nullable': True,
-            'unique': True,
-        }
+        'nullable': True,
+        'unique': True
     }
 }
 

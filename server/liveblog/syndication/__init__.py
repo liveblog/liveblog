@@ -1,11 +1,16 @@
 import superdesk
 from .consumer import ConsumerService, ConsumerResource
+from .producer import ProducerService, ProducerResource
 
 
 def init_app(app):
-    endpoint_name = 'consumers'
-    service = ConsumerService(endpoint_name, backend=superdesk.get_backend())
-    ConsumerResource(endpoint_name, app=app, service=service)
+    # Consumers
+    service = ConsumerService('consumers', backend=superdesk.get_backend())
+    ConsumerResource('consumers', app=app, service=service)
+    # Producers
+    service = ProducerService('producers', backend=superdesk.get_backend())
+    ProducerResource('producers', app=app, service=service)
 
 
 superdesk.privilege(name='consumers', label='Consumers Management', description='User can manage consumers')
+superdesk.privilege(name='producers', label='Producers Management', description='User can manage producers')
