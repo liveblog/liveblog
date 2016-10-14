@@ -67,3 +67,8 @@ dump.rdb
 *.swn
 *.swm
 .vimrc
+
+# Vagrant
+.vagrant
+Vagrantfile
+scripts/vagrant-*
