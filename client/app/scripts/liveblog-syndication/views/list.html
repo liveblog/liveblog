@@ -72,7 +72,7 @@
                 <button ng-click="selected.user = null" class="close-preview"><i class="icon-close-small"></i></button>
             </header>
             <div class="content" sd-user-details-pane ng-if="selected.consumer">
-                <div id="user-profile-edit" lb-consumer-edit data-user="selected.consumer" data-onsave="render(consumer)" data-oncancel="closePreview()"></div>
+                <div id="user-profile-edit" lb-consumer-edit data-consumer="selected.consumer" data-onsave="render(consumer)" data-oncancel="closePreview()"></div>
             </div>
         </div>
     </div>

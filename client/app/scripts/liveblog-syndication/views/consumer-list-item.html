@@ -9,23 +9,23 @@
     <i class="admin-label icon-settings" ng-if="consumer.consumer_type == 'administrator'" tooltip="{{ :: 'admin'|translate}}" tooltip-placement="top"></i>
 
     <div class="row-wrapper" sd-col-width>
-        <!--<div class="name">-->
-        <!--    {{ consumer.display_name }}-->
-        <!--    <span class="disabled-label" ng-if="!consumer.is_enabled" translate>disabled</span>-->
-        <!--    <span class="disabled-label" ng-if="consumer.is_enabled && !consumer.is_active" translate>inactive</span>-->
-        <!--    <span class="disabled-label" ng-if="consumer.is_enabled && consumer.is_active && consumer.needs_activation" translate>pending</span>-->
-        <!--</div>-->
         <div class="name">{{ consumer.name }}</div>
         <div class="api_key">{{ consumer.api_key }}</div>
     </div>
 
     <div class="action">
-        <ul class="item-functions"
-            sd-activity-list
-            data-item="consumer"
-            data-type="consumer"
-            data-action="edit"
-            data-done="done">
+        <ul class="item-functions">
+            <li class="item-field">
+                <a 
+                    title="Disable consumer" 
+                    ng-href="" 
+                    ng-click="disable($event, consumer)"
+                    ng-if=":: !activity.dropdown" 
+                    class="ng-scope">
+                    <i class="icon-trash true"></i>
+                    <span class="ng-binding">Disable consumer</span>
+                </a>
+            </li>
         </ul>
     </div>
 </li>

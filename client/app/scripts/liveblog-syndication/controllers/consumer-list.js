@@ -6,7 +6,7 @@ liveblogSyndication
 
         $scope.createConsumer = function() {
             console.log('create consumer');
-            $scope.selected = { consumer: true };
+            $scope.selected = { consumer: { name: ''}};
         };
 
         $scope.render = function(newConsumer) {
