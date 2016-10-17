@@ -1,7 +1,11 @@
 liveblogSyndication
     .controller('ConsumerController', ['$scope', 'api', function($scope, api) {
-        console.log('api', api.consumers);
         api.consumers.query().then(function(consumers) {
             console.log('consumers', consumers);
         });
+
+        $scope.createConsumer = function() {
+            console.log('create consumer');
+            $scope.selected = { consumer: true };
+        };
     }]);

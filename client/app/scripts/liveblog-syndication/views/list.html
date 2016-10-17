@@ -3,7 +3,7 @@
     <h3 class="page-nav-title" translate>Users</h3>
 
     <div class="button-stack right-stack">
-        <button class="navbtn sd-create-btn" ng-click="createUser()"></button>
+        <button class="navbtn sd-create-btn" ng-click="createConsumer()"></button>
     </div>
 </div>
 
@@ -60,13 +60,13 @@
             </div>
         </div>
 
-        <div class="preview-pane" ng-if="selected.user">
+        <div class="preview-pane" ng-if="selected.consumer">
             <header>
-                <a id="open-user-profile" href="" ng-click="intent('detail', 'user', selected.user)" ng-show="selected.user._id" class="btn btn-light pull-left" translate>View full profile</a>
+                <a id="open-user-profile" href="" ng-click="intent('detail', 'consumer', selected.consumer)" ng-show="selected.consumer._id" class="btn btn-light pull-left" translate>View full profile</a>
                 <button ng-click="selected.user = null" class="close-preview"><i class="icon-close-small"></i></button>
             </header>
-            <div class="content" sd-user-details-pane ng-if="selected.user">
-                <div id="user-profile-edit" sd-user-edit data-user="selected.user" data-onsave="render(user)" data-oncancel="closePreview()"></div>
+            <div class="content" sd-user-details-pane ng-if="selected.consumer">
+                <div id="user-profile-edit" lb-consumer-edit data-user="selected.consumer" data-onsave="render(user)" data-oncancel="closePreview()"></div>
             </div>
         </div>
     </div>
