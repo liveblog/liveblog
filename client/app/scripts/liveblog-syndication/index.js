@@ -1,12 +1,15 @@
-angular
-    .module('liveblog.consumers', ['liveblog.security'])
+var liveblogSyndication = angular
+    .module('liveblog.syndication', ['liveblog.security']);
+
+liveblogSyndication
     .config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/consumers', {
             label: gettext('Consumers Management'),
             controller: 'ConsumerController',
-            templateUrl: 'scripts/liveblog-syndication/list.html',
-            category: superdesk.MENU_SETTINGS,
-            adminTools: false,
+            templateUrl: 'scripts/liveblog-syndication/views/list.html',
+            category: superdesk.MENU_MAIN,
+            priority: 100,
+            adminTools: true,
             resolve: {isArchivedFilterSelected: function() {return false;}}
         });
     }])
@@ -14,11 +17,5 @@ angular
         apiProvider.api('consumers', {
             type: 'http',
             backend: {rel: 'consumers'}
-        });
-    }])
-    .controller('ConsumerController', ['$scope', 'api', function($scope, api) {
-        console.log('api', api.consumers);
-        api.consumers.query().then(function(consumers) {
-            console.log('consumers', consumers);
         });
     }]);
