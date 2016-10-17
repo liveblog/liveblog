@@ -1,0 +1,36 @@
+<li ng-repeat="consumer in consumers" ng-click="select(consumer)" ng-class="{selected: consumer === selected, 'inactive' : !consumer.is_enabled || !consumer.is_active}">
+    <figure class="avatar avatar-with-info" ng-class="{'consumer-logged': isLoggedIn(consumer)}">
+        <div class="logged-info"></div>
+        <div class="consumer-image">
+            <img sd-consumer-avatar data-consumer="consumer">
+        </div>
+    </figure>
+
+    <i class="admin-label icon-settings" ng-if="consumer.consumer_type == 'administrator'" tooltip="{{ :: 'admin'|translate}}" tooltip-placement="top"></i>
+
+    <div class="row-wrapper" sd-col-width>
+        <!--<div class="name">-->
+        <!--    {{ consumer.display_name }}-->
+        <!--    <span class="disabled-label" ng-if="!consumer.is_enabled" translate>disabled</span>-->
+        <!--    <span class="disabled-label" ng-if="consumer.is_enabled && !consumer.is_active" translate>inactive</span>-->
+        <!--    <span class="disabled-label" ng-if="consumer.is_enabled && consumer.is_active && consumer.needs_activation" translate>pending</span>-->
+        <!--</div>-->
+        <div class="name">{{ consumer.name }}</div>
+        <!--<div class="role">{{ roles[consumer.role].name }}</div>-->
+        <!--<div class="email">{{ consumer.email }}</div>-->
+        <!--<div class="created">{{ consumer._created | reldate}}</div>-->
+    </div>
+
+    <div class="action">
+        <ul class="item-functions"
+            sd-activity-list
+            data-item="consumer"
+            data-type="consumer"
+            data-action="edit"
+            data-done="done">
+        </ul>
+    </div>
+</li>
+
+<li class="alert alert-info" ng-show="consumers.length == null"><p translate>Loading...</p></li>
+<li class="alert alert-info" ng-show="consumers.length == 0"><p translate>Oops! There are no items.</p></li>
