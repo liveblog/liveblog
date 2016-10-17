@@ -1,5 +1,5 @@
 liveblogSyndication
-    .directive('lbConsumerEdit', ['api', function(api) {
+    .directive('lbConsumerEdit', ['api', 'notify', function(api, notify) {
         return {
             templateUrl: 'scripts/liveblog-syndication/views/edit-form.html',
             scope: {
@@ -10,8 +10,10 @@ liveblogSyndication
             link: function(scope, elem) {
                 scope.save = function() {
                     api.consumers.save(scope.consumer).then(function(result) {
-                        console.log('result', result);
-                        scope.onsave(result);
+                        notify.pop();
+                        notify.success(gettext('consumer saved.'));
+
+                        scope.onsave({ consumer: result });
                     });
                 };
             }

@@ -9,7 +9,8 @@ liveblogSyndication
             $scope.selected = { consumer: true };
         };
 
-        $scope.render = function(data) {
-            console.log('re-rendering stuff here', data);
+        $scope.render = function(newConsumer) {
+            $scope.consumers._items.unshift(newConsumer);
+            $scope.selected = { consumer: false };
         };
     }]);
