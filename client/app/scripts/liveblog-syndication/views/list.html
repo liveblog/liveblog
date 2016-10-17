@@ -27,11 +27,17 @@
                         <ul class="table-header">
                             <li>
                                 <div class="row-wrapper">
-                                    <div class="name" sd-sort data-label="{{ 'Full name' | translate }}" data-field="full_name"></div>
-                                    <div class="username" sd-sort data-label="{{ 'Username' | translate }}" data-field="username"></div>
-                                    <div class="role" translate>Role</div>
-                                    <div class="email" sd-sort data-label="{{ 'Email' | translate }}" data-field="email"></div>
-                                    <div class="created" sd-sort data-label="{{ 'Created' | translate }}" data-field="_created"></div>
+                                    <div 
+                                        class="name" 
+                                        sd-sort 
+                                        data-label="{{ 'Name' | translate }}" 
+                                        data-field="name"></div>
+
+                                    <div 
+                                        class="api_key" 
+                                        sd-sort 
+                                        data-label="{{ 'Api key' | translate }}" 
+                                        data-field="api_key"></div>
                                 </div>
                             </li>
                         </ul>
