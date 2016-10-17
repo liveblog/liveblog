@@ -1,3 +1,6 @@
+// dpa Liveblog Base Theme
+@import "dpa-globals.less";
+
 html {
     display: block;
 }
@@ -89,18 +92,35 @@ article .liveblog--card {
 }
 
 /* quote */
-article blockquote {
+blockquote {
     position: relative;
     margin: 30px 0 0 16px;
 }
 
-article blockquote p {
+blockquote p {
     font-family: "Georgia", "Times New Roman", serif;
     color: #444;
     font-size: 1.2em;
     margin-left: 1em;
     line-height: 1.4em;
-    font-style: italic;
+    // font-style: italic;
+}
+
+blockquote > h4 > i {
+    position: relative;
+    float: right;
+    top: -20px;
+}
+
+@media @small {
+    blockquote > h4 > i {
+        font-size: .8em;
+        top: -16px;
+    }
+}
+
+blockquote > h4 > i:before {
+    content: "\2014 "
 }
 
 @media (max-width: 600px) {
@@ -114,7 +134,7 @@ article blockquote p:before {
     font-family: "Georgia", serif;
     font-size: 4em;
     position: absolute;
-    margin-left: -0.46em;
+    margin-left: -0.5em;
     margin-top: -0.3em;
     color: #ccc;
 }
