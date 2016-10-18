@@ -5,12 +5,15 @@ liveblogSyndication
         });
 
         $scope.createConsumer = function() {
-            console.log('create consumer');
             $scope.selected = { consumer: { name: ''}};
         };
 
         $scope.render = function(newConsumer) {
             $scope.consumers._items.unshift(newConsumer);
-            $scope.selected = { consumer: false };
+            $scope.selected = {};
+        };
+
+        $scope.closePreview = function() {
+            $scope.selected = {};
         };
     }]);

@@ -1,5 +1,5 @@
 <form name="consumerForm" class="flat" ng-submit="consumerForm.$valid && save()">
-    <div class="action-bar clearfix show">
+    <div class="action-bar clearfix" ng-class="{show: !consumerForm.$pristine}">
         <button
             id="save-edit-btn" 
             type="submit" 

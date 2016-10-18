@@ -9,18 +9,14 @@ liveblogSyndication
                 onupdate: '&'
             },
             link: function(scope, elem) {
-                //var origConsumer = _.clone(scope.consumer);
-                var origConsumer;
-
-                console.log('form', scope.consumerForm);
-                angular.copy(scope.consumer, origConsumer);
+                scope.$watch('consumer', function(consumer) {
+                    scope.isEditing = consumer.hasOwnProperty('_id');
+                    scope.origConsumer = _.cloneDeep(consumer);
+                });
 
                 scope.save = function() {
-                    if (angular.equals(origConsumer, scope.consumer))
+                    if (angular.equals(scope.origConsumer, scope.consumer))
                         return;
-
-                    console.log('before save', origConsumer, scope.consumer, _.difference(origConsumer, scope.consumer));
-                    console.log('form', scope.consumerForm.$pristine);
 
                     var data = {};
                     var apiQuery;
@@ -28,20 +24,25 @@ liveblogSyndication
                     if (!scope.consumerForm.name.$pristine)
                         data.name = scope.consumer.name;
 
-                    if (origConsumer)
-                        apiQuery = api.save('consumers', origConsumer, data);
+                    if (scope.isEditing)
+                        apiQuery = api.save('consumers', scope.origConsumer, data);
                     else
                         apiQuery = api.consumers.save(data);
 
                     apiQuery.then(function(result) {
-                        console.log('result', result);
                         notify.pop();
                         notify.success(gettext('consumer saved.'));
 
-                        if (!origConsumer)
+                        if (!scope.isEditing)
                             scope.onsave({ consumer: result });
+                        else
+                            scope.oncancel();
                     });
                 };
+
+                scope.cancel = function() {
+                    scope.oncancel();
+                }
             }
         };
     }]);
