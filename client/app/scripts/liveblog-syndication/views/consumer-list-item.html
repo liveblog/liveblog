@@ -1,5 +1,9 @@
-<li ng-repeat="consumer in consumers" ng-click="select(consumer)" ng-class="{selected: consumer === selected}">
-    <figure class="avatar avatar-with-info" ng-class="{'consumer-logged': isLoggedIn(consumer)}">
+<li 
+    ng-repeat="consumer in consumers" 
+    ng-click="select(consumer)" 
+    ng-class="{selected: consumer === selected}">
+
+    <figure class="avatar avatar-with-info">
         <div class="logged-info"></div>
         <div class="consumer-image">
             <img sd-consumer-avatar data-consumer="consumer">
