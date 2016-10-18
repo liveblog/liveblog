@@ -1,12 +1,10 @@
-<li ng-repeat="consumer in consumers" ng-click="select(consumer)" ng-class="{selected: consumer === selected, 'inactive' : !consumer.is_enabled || !consumer.is_active}">
+<li ng-repeat="consumer in consumers" ng-click="select(consumer)" ng-class="{selected: consumer === selected}">
     <figure class="avatar avatar-with-info" ng-class="{'consumer-logged': isLoggedIn(consumer)}">
         <div class="logged-info"></div>
         <div class="consumer-image">
             <img sd-consumer-avatar data-consumer="consumer">
         </div>
     </figure>
-
-    <i class="admin-label icon-settings" ng-if="consumer.consumer_type == 'administrator'" tooltip="{{ :: 'admin'|translate}}" tooltip-placement="top"></i>
 
     <div class="row-wrapper" sd-col-width>
         <div class="name">{{ consumer.name }}</div>
