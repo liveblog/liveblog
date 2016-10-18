@@ -41,6 +41,10 @@ liveblogSyndication
                             scope.onsave({ consumer: result });
                         else
                             scope.oncancel();
+                    })
+                    .catch(function(err) {
+                        notify.pop();
+                        notify.error(gettext('Fatal error!'));
                     });
                 };
 

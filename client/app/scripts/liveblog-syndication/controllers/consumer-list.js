@@ -2,6 +2,10 @@ liveblogSyndication
     .controller('ConsumerController', ['$scope', 'api', function($scope, api) {
         api.consumers.query().then(function(consumers) {
             $scope.consumers = consumers;
+        })
+        .catch(function(err) {
+            notify.pop();
+            notify.error(gettext('Fatal error!'));
         });
 
         $scope.createConsumer = function() {
