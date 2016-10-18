@@ -1,6 +1,5 @@
 <div class="subnav">
-
-    <h3 class="page-nav-title" translate>Users</h3>
+    <h3 class="page-nav-title" translate>Consumers</h3>
 
     <div class="button-stack right-stack">
         <button class="navbtn sd-create-btn" ng-click="createConsumer()"></button>
@@ -14,15 +13,10 @@
             <header>
                 <div sd-searchbar></div>
                 <div class="separator-handler"></div>
-                <div class="online-users">
-                    <p><span sd-check ng-model="online_users" name="online_users" id="online_users"></span></p>
-                    <label translate>show only online users</label>
-                </div>
                 <div sd-pagination data-items="users"></div>
             </header>
             <div class="content">
                 <div sd-shadow>
-                    <div class="alert alert-error" ng-if="noRolesWarning" translate>No user roles defined!</div>
                     <div class="users-table">
                         <ul class="table-header">
                             <li>
@@ -42,37 +36,23 @@
                             </li>
                         </ul>
 
-                        <div class="table-title" ng-show="createdUsers.length" translate>Recently added</div>
-
-                        <ul class="table-newest"
-                            sd-user-list
-                            data-roles="roles"
-                            data-users="createdUsers"
-                            data-selected="selected.consumer"
-                            data-done="afterDelete"
-                            ng-if="createdUsers.length"
-                        ></ul>
-
                         <ul class="table-body"
                             lb-consumer-list
-                            data-roles="roles"
                             data-consumers="consumers._items"
-                            data-selected="selected.consumer"
-                            data-done="afterDelete"
-                        ></ul>
-
+                            data-selected="selected.consumer"></ul>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="preview-pane" ng-if="selected.consumer">
-            <header>
-                <a id="open-user-profile" href="" ng-click="intent('detail', 'consumer', selected.consumer)" ng-show="selected.consumer._id" class="btn btn-light pull-left" translate>View full profile</a>
-                <button ng-click="selected.user = null" class="close-preview"><i class="icon-close-small"></i></button>
-            </header>
             <div class="content" sd-user-details-pane ng-if="selected.consumer">
-                <div id="user-profile-edit" lb-consumer-edit data-consumer="selected.consumer" data-onsave="render(consumer)" data-oncancel="closePreview()"></div>
+                <div
+                    id="user-profile-edit" 
+                    lb-consumer-edit 
+                    data-consumer="selected.consumer" 
+                    data-onsave="render(consumer)" 
+                    data-oncancel="closePreview()"></div>
             </div>
         </div>
     </div>
