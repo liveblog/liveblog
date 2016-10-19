@@ -1,5 +1,5 @@
 liveblogSyndication
-    .controller('ProducerController', ['$scope', 'api', function($scope, api) {
+    .controller('ProducersController', ['$scope', 'api', function($scope, api) {
         api.producers.query().then(function(producers) {
             $scope.producers = producers;
         })

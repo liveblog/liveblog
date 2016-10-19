@@ -6,7 +6,7 @@ liveblogSyndication
         superdesk
             .activity('/consumers/', {
                 label: gettext('Consumers Management'),
-                controller: 'ConsumerController',
+                controller: 'ConsumersController',
                 templateUrl: 'scripts/liveblog-syndication/views/list.html',
                 category: superdesk.MENU_MAIN,
                 priority: 100,
@@ -15,7 +15,7 @@ liveblogSyndication
             })
             .activity('/producers/', {
                 label: gettext('Producers Management'),
-                controller: 'ProducerController',
+                controller: 'ProducersController',
                 templateUrl: 'scripts/liveblog-syndication/views/producer-list.html',
                 category: superdesk.MENU_MAIN,
                 priority: 100,

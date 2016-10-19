@@ -1,5 +1,5 @@
 liveblogSyndication
-    .controller('ConsumerController', ['$scope', 'api', function($scope, api) {
+    .controller('ConsumersController', ['$scope', 'api', function($scope, api) {
         api.consumers.query().then(function(consumers) {
             $scope.consumers = consumers;
         })
