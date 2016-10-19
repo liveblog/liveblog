@@ -7,7 +7,7 @@ liveblogSyndication
             .activity('/consumers/', {
                 label: gettext('Consumers Management'),
                 controller: 'ConsumersController',
-                templateUrl: 'scripts/liveblog-syndication/views/list.html',
+                templateUrl: 'scripts/liveblog-syndication/views/consumer-list.html',
                 category: superdesk.MENU_MAIN,
                 priority: 100,
                 adminTools: true,

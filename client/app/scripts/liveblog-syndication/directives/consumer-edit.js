@@ -1,7 +1,7 @@
 liveblogSyndication
     .directive('lbConsumerEdit', ['api', 'notify', 'lodash', function(api, notify, _) {
         return {
-            templateUrl: 'scripts/liveblog-syndication/views/edit-form.html',
+            templateUrl: 'scripts/liveblog-syndication/views/consumer-edit-form.html',
             scope: {
                 consumer: '=',
                 onsave: '&',
