@@ -728,7 +728,28 @@ function randomString(maxLen) {
     return text;
 }
 
+function ConsumersManagementPage() {
+    'use strict';
+    var self = this;
+    self.themes = element.all(by.css('.theme'));
+    self.blogsRows = element.all(by.repeater('blog in vm.selectedTheme.blogs'));
+    self.fileThemeElement = element(by.css('#uploadAThemeFile'));
+    self.byRemove = by.css('[ng-click="vm.removeTheme(theme)"]');
+    self.bySettings = by.css('[ng-click="vm.openThemeSettings(theme)"]');
+    self.byPreview = by.css('[ng-click="theme.screenshot_url && vm.openThemePreview(theme)"]');
+
+    self.openConsumersManagement = function() {
+        element(by.css('[ng-click="toggleMenu()"]')).click();
+        browser.wait(function() {
+            return element(by.css('[href="#/consumers/"][title]')).isDisplayed();
+        });
+        waitAndClick(by.css('[href="#/consumers/"][title]'));
+        return self;
+    };
+}
+
 exports.blogs = new BlogsPage();
 exports.generalSettings = new GeneralSettingsPage();
 exports.randomString = randomString;
 exports.themeManager = new ThemesManagerPage();
+exports.consumersManagement = new ConsumersManagementPage();

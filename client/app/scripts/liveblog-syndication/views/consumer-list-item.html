@@ -1,0 +1,36 @@
+<li 
+    ng-repeat="consumer in consumers" 
+    ng-click="select(consumer)" 
+    ng-class="{selected: consumer === selected}">
+
+    <figure class="avatar avatar-with-info">
+        <div class="logged-info"></div>
+        <div class="consumer-image">
+            <img sd-consumer-avatar data-consumer="consumer">
+        </div>
+    </figure>
+
+    <div class="row-wrapper" sd-col-width>
+        <div class="name">{{ consumer.name }}</div>
+        <div class="api_key">{{ consumer.api_key }}</div>
+    </div>
+
+    <div class="action">
+        <ul class="item-functions">
+            <li class="item-field">
+                <a 
+                    title="Disable consumer" 
+                    ng-href="" 
+                    ng-click="disable($event, consumer)"
+                    ng-if=":: !activity.dropdown" 
+                    class="ng-scope">
+                    <i class="icon-trash true"></i>
+                    <span class="ng-binding">Disable consumer</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</li>
+
+<li class="alert alert-info" ng-show="consumers.length == null"><p translate>Loading...</p></li>
+<li class="alert alert-info" ng-show="consumers.length == 0"><p translate>Oops! There are no items.</p></li>
