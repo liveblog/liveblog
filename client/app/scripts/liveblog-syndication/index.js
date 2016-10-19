@@ -3,7 +3,7 @@ var liveblogSyndication = angular
 
 liveblogSyndication
     .config(['superdeskProvider', function(superdesk) {
-        superdesk.activity('/consumers', {
+        superdesk.activity('/consumers/', {
             label: gettext('Consumers Management'),
             controller: 'ConsumerController',
             templateUrl: 'scripts/liveblog-syndication/views/list.html',
