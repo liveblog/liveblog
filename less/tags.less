@@ -106,16 +106,18 @@ blockquote p {
     // font-style: italic;
 }
 
-blockquote > h4 > i {
+blockquote > h4 {
+    display: inline-block;
     position: relative;
-    float: right;
-    top: -20px;
+    right: 0px;
+    width: 100%;
+    text-align: right;
 }
 
 @media @small {
-    blockquote > h4 > i {
+    blockquote > h4 {
         font-size: .8em;
-        top: -16px;
+        line-height: 1.2em;
     }
 }
 
