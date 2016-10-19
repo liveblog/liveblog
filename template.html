@@ -100,7 +100,7 @@ Bitte f&uuml;hren Sie ein <a href="http://browsehappy.com/">Upgrade</a> durch.</
             <div class="lb-post-highlighted" ng-if="post.highlight"></div>
             <div class="lb-post-sticky" ng-if="post.sticky">sticky</div>
             <div ng-if="post.mainItem.displayDate | isDateChange" class="lb-post-date__fulldate" ng-bind="post.mainItem.displayDate | simpleDate"></div>
-            <div date-from-now-or-absolute class="lb-post-date"></div>
+            <div ng-if="!post.sticky" date-from-now-or-absolute class="lb-post-date"></div>
 
             <div class="lb-post-permalink">
                 <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
