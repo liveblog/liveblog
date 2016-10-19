@@ -1,23 +1,7 @@
 liveblogSyndication
-    .controller('ProducersController', ['$scope', 'api', function($scope, api) {
-        api.producers.query().then(function(producers) {
-            $scope.producers = producers;
-        })
-        .catch(function(err) {
-            notify.pop();
-            notify.error(gettext('Fatal error!'));
-        });
+    .controller('ProducersController', ['$scope', '$controller', function($scope, $controller) {
+        $scope.endPoint = 'producers';
+        $scope.entryName = 'producer';
 
-        $scope.createProducer = function() {
-            $scope.selected = { producer: { name: ''}};
-        };
-
-        $scope.render = function(newProducer) {
-            $scope.producers._items.unshift(newProducer);
-            $scope.selected = {};
-        };
-
-        $scope.closePreview = function() {
-            $scope.selected = {};
-        };
+        angular.extend(this, $controller('BaseController', {$scope: $scope}));
     }]);
