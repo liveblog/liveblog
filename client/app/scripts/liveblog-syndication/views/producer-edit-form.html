@@ -1,0 +1,60 @@
+<form name="producerForm" class="flat" ng-submit="producerForm.$valid && save()">
+    <div class="action-bar clearfix" ng-class="{show: !producerForm.$pristine}">
+        <button
+            id="save-edit-btn" 
+            type="submit" 
+            class="btn btn-info pull-right" 
+            translate>Save</button>
+
+        <button 
+            id="cancel-edit-btn" 
+            type="button" 
+            class="btn pull-right" 
+            ng-click="cancel()" 
+            translate>Cancel</button>
+    </div>
+
+    <div class="profile-info editmode">
+        <div class="details-info form-flat" ng-class="{shifted : error}">
+            <div class="title">{{ 'General' | translate }} <span class="required-info" translate>* mandatory fields</span></div>
+            <fieldset class="label-light">
+                <div sd-info-item>
+                  <label for="name" translate>name</label>
+                  <input 
+                    type="text" 
+                    name="name" 
+                    id="name" 
+                    ng-model="producer.name" 
+                    required ng-readonly="producer._readonly && producer._readonly.name">
+                  <i ng-show="producerForm.name.$error.required" class="required-asteriks">*</i>
+                </div>
+
+                <div sd-info-item>
+                  <label for="api_url" translate>Api Url</label>
+                  <input 
+                    type="text" 
+                    name="api_url" 
+                    id="api-url" 
+                    ng-model="producer.api_url" 
+                    required ng-readonly="producer._readonly && producer._readonly.api_url">
+                  <i ng-show="producerForm.api_url.$error.required" class="required-asteriks">*</i>
+                </div>
+
+                <div sd-info-item>
+                  <label for="consumer_api_key" translate>Consumer Api Key</label>
+                  <input 
+                    type="text" 
+                    name="consumer_api_key" 
+                    id="consumer-api-key" 
+                    ng-model="producer.consumer_api_key" 
+                    required ng-readonly="producer._readonly && producer._readonly.consumer_api_key">
+                  <i 
+                      ng-show="producerForm.consumer_api_key.$error.required" 
+                      class="required-asteriks">*</i>
+                </div>
+
+            </fieldset>
+        </div>
+    </div>
+</form>
+
