@@ -53,8 +53,8 @@ class ConsumerService(BaseService):
 class ConsumerResource(Resource):
     datasource = {
         'source': 'consumers',
-        'search_backend': 'elastic',
-        'default_sort': [('_updated', -1)]
+        'search_backend': None,
+        'default_sort': [('_updated', -1)],
     }
 
     item_methods = ['GET', 'PATCH', 'PUT', 'DELETE']
