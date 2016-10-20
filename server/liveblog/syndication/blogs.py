@@ -17,7 +17,7 @@ class BlogResource(CustomAuthResource):
     url = 'syndication/blogs'
     authentication = ConsumerApiKeyAuth
     datasource = {
-        'source': 'blogs_2',
+        'source': 'blogs',
         'search_backend': None,
         'default_sort': [('_updated', -1)],
         'filter': {'syndication_enabled': True},
