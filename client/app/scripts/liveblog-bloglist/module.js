@@ -36,6 +36,14 @@
         $scope.isAdmin = blogSecurityService.isAdmin;
         $scope.isUserAllowedToCreateABlog = blogSecurityService.canCreateABlog;
         $scope.isUserAllowedToOpenBlog = blogSecurityService.canAccessBlog;
+        // blog list embed code.
+        $scope.cancelEmbed = function() {
+            $scope.embedModal = false;
+        };
+        $scope.openEmbed = function() {
+            $scope.embedModal = true;
+        };
+
         $scope.cancelCreate = function() {
             clearCreateBlogForm();
             $scope.newBlogModalActive = false;
