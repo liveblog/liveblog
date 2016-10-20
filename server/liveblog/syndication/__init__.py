@@ -1,6 +1,7 @@
 import superdesk
 from .consumer import ConsumerService, ConsumerResource
 from .producer import ProducerService, ProducerResource
+from .blogs import BlogService, BlogResource
 
 
 def init_app(app):
@@ -10,6 +11,9 @@ def init_app(app):
     # Producers
     service = ProducerService('producers', backend=superdesk.get_backend())
     ProducerResource('producers', app=app, service=service)
+    # Blogs and Posts
+    service = BlogService('syndication_blogs', backend=superdesk.get_backend())
+    BlogResource('syndication_blogs', app=app, service=service)
 
 
 superdesk.privilege(name='consumers', label='Consumers Management', description='User can manage consumers')

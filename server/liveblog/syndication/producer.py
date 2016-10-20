@@ -28,7 +28,7 @@ class ProducerService(BaseService):
 class ProducerResource(Resource):
     datasource = {
         'source': 'producers',
-        'search_backend': 'elastic',
+        'search_backend': None,
         'default_sort': [('_updated', -1)]
     }
 
