@@ -5,6 +5,7 @@ var angular = require('angular')
 
 angular.module('theme')
 .controller('TimelineCtrl', [
+    '$scope',
     '$interval',
     '$anchorScroll',
     '$timeout',
@@ -19,16 +20,17 @@ angular.module('theme')
 
 
 function TimelineCtrl(
-        $interval,
-        $anchorScroll,
-        $timeout,
-        $q,
-        blogsService,
-        config,
-        transformBlog,
-        resizeIframes,
-        PagesManager,
-        Permalink) {
+    $scope,
+    $interval,
+    $anchorScroll,
+    $timeout,
+    $q,
+    blogsService,
+    config,
+    transformBlog,
+    resizeIframes,
+    PagesManager,
+    Permalink) {
 
     var POSTS_PER_PAGE = config.settings.postsPerPage;
     var STICKY_POSTS_PER_PAGE = 100;
@@ -147,7 +149,8 @@ function TimelineCtrl(
         },
 
         triggerPageview: function() {
-            var event = new CustomEvent("sendpageview");
+            // vanilla events over angular events, so we can reuse pageview.js
+            var event = new CustomEvent("sendpageview"); 
             window.dispatchEvent(event);
         },
 
@@ -157,7 +160,7 @@ function TimelineCtrl(
         stickyPermalink: stickyPermalink
     });
 
-    
+
     vm.fetchNewPage() // retrieve first page
         .then(function() { // retrieve updates periodically
             vm.permalinkScroll();

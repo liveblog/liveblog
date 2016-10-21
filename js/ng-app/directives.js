@@ -135,7 +135,8 @@ angular.module('liveblog-embed')
           if (!window.twttr) return false
           else $timeout(function() {
             if (twttr.hasOwnProperty("widgets")) {
-              twttr.widgets.load(elem)
+              twttr.widgets.load(elem);
+              $rootScope.$emit('setParentFrameHeight'); // resize iframe
             }
           }, 100);
           return true;
@@ -143,7 +144,10 @@ angular.module('liveblog-embed')
       }
 
       if (embedLibMethods.hasOwnProperty(provider)) {
-        if (embedLibMethods[provider](elem[0]) === true) return; // Exits directive
+        if (embedLibMethods[provider](elem[0]) === true) {
+          $rootScope.$emit('setParentFrameHeight'); // resize iframe
+          return; // Exits directive
+        }
       }
 
       // Reverse engineer plaintext
@@ -154,7 +158,8 @@ angular.module('liveblog-embed')
         , src = html.match(matchSource);
 
       if (src && src.length) { 
-        var script = document.createElement('script'); script.src = src[1];
+        var script = document.createElement('script');
+        script.src = src[1]; script.onload = $rootScope.$emit('setParentFrameHeight'); // resize iframe
         elem[0].parentNode.insertBefore(script, elem[0]);
       }
 

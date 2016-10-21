@@ -18,6 +18,7 @@ angular.module('liveblog-embed', [
 
   .constant('config', {
     debug: false,
+    parent_resize: false,
     blog: window.LB.blog,
     settings: window.LB.settings,
     api_host: window.LB.api_host,
