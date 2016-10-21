@@ -31,7 +31,7 @@ angular.module('liveblog-embed')
       var d = new Date(); // Now
       var date = scope.post.mainItem.displayDate
 
-      d.setDate(d.getHours()-4); // Minus 24h
+      d.setHours(d.getHours()-12); // Minus 24h
       var delta24h = moment(date).isBefore(d)
 
       function updateMoment() {
