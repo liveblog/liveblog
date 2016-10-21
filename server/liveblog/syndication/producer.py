@@ -8,7 +8,7 @@ from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
 from flask import Blueprint, make_response
-from .auth import ConsumerApiKeyAuth
+from apps.auth import SuperdeskTokenAuth
 
 logger = logging.getLogger('superdesk')
 producers_blueprint = Blueprint('producers', __name__)
@@ -89,7 +89,7 @@ def producer_blogs(producer_id):
 
 
 def _producers_blueprint_auth():
-    auth = ConsumerApiKeyAuth()
+    auth = SuperdeskTokenAuth()
     authorized = auth.authorized(allowed_roles=[], resource='producers', method='GET')
     if not authorized:
         return abort(401, 'Authorization failed.')
