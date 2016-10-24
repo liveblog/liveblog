@@ -85,6 +85,20 @@ Still in the virtualenv, you can now start the server
 honcho -f ../docker/Procfile-dev start
 ```
 
+If you encounter any connection errors from elastic search:
+
+```bash
+elasticsearch.exceptions.ConnectionError: ConnectionError(<urllib3.connection.HTTPConnection object at 0x7f9434838358>: Failed to establish a new connection: [Errno 111] Connection refused) caused by: NewConnectionError(<urllib3.connection.HTTPConnection object at 0x7f9434838358>: Failed to establish a new connection: [Errno 111] Connection refused)
+```
+
+You will need to restart and elasticsearch and wait 10 seconds before starting honcho.
+
+```bash
+sudo service elasticsearch restart
+sleep 10
+honcho -f ../docker/Procfile-dev start
+```
+
 #### Configure the client
 
 Now we can install the dependencies for the client
