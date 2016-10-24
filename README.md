@@ -75,7 +75,7 @@ Add the default data:
 
 ```bash
 python3 manage.py app:initialize_data;
-python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
+python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin=1 ;
 python3 manage.py register_local_themes ;
 ```
 
