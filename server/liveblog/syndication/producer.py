@@ -79,7 +79,7 @@ def producer_blogs(producer_id):
             'Content-Type': 'application/json'
         })
     except ConnectionError:
-        return _make_json_response(_make_error('Unable to connect to producer.'))
+        return _make_json_response(_make_error('Unable to connect to producer: {}'.format(api_url)))
     else:
         status_code = response.status_code
         if status_code == 200:

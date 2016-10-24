@@ -51,3 +51,41 @@ Feature: Producer Resource
         When we find for "producers" the id as "producer_id" by "where={"name": "Producer 1"}"
         And we delete "/producers/#producer_id#"
         Then we get deleted response
+
+    @auth
+    Scenario: List producer blogs
+        Given "themes"
+        """
+        [{"name": "forest"}]
+        """
+        Given "blogs"
+        """
+        [
+            {
+                "title": "testBlog",
+                "blog_status": "open",
+                "syndication_enabled": true,
+                "blog_preferences": {"theme": "forest", "language": "fr"}
+            },
+            {
+                "title": "testBlog2",
+                "blog_status": "open",
+                "syndication_enabled": false,
+                "blog_preferences": {"theme": "forest", "language": "fr"}
+            }
+        ]
+        """
+        Given "consumers"
+        """
+        [
+            {"name": "Consumer", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}], "api_key": "__any_value__"}
+        ]
+        """
+        Given "producers"
+        """
+        [
+            {"name": "Producer", "api_url": "http://localhost:5000/api/", "consumer_api_key": "__any_value__"}
+        ]
+        """
+        When we get "/producers/#producers._id#/blogs"
+        Then we get list with 1 items
