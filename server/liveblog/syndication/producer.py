@@ -79,7 +79,7 @@ def producer_blogs(producer_id):
             'Authorization': producer['consumer_api_key'],
             'Origin': 'localhost',
             'Content-Type': 'application/json'
-        })
+        }, timeout=5)
     except ConnectionError:
         return _make_json_response(_make_error('Unable to connect to producer: {}'.format(api_url)))
     else:
