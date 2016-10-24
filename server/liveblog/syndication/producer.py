@@ -9,9 +9,11 @@ from superdesk.services import BaseService
 from superdesk import get_resource_service
 from flask import Blueprint, make_response
 from apps.auth import SuperdeskTokenAuth
+from flask_cors import CORS
 
 logger = logging.getLogger('superdesk')
 producers_blueprint = Blueprint('producers', __name__)
+CORS(producers_blueprint)
 
 
 producers_schema = {
