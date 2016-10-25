@@ -42,11 +42,15 @@
                 query: {filtered: {filter: {term: {key: 'blogslist'}}}}
             }};
             api.blogslist.query(criteria, false).then(function(embed) {
-                var url = 'http://localhost:5000/blogslist_embed';
+                var url;
                 if (embed._items.length) {
                     url = embed._items[0].value;
+                } else if (config.debug) {
+                    url = 'http://localhost:5000/blogslist_embed'
                 }
-                $scope.bloglistEmbed = '<iframe id="liveblog-bloglist" width="100%" scrolling="no" src="' + url + '"</iframe>';
+                if (url) {
+                    $scope.bloglistEmbed = '<iframe id="liveblog-bloglist" width="100%" scrolling="no" src="' + url + '"</iframe>';
+                }
             });
         }
         $scope.cancelEmbed = function() {
