@@ -17,7 +17,9 @@ import io
 import magic
 from superdesk.celery_app import celery
 from eve.io.mongo import MongoJSONEncoder
+import logging
 
+logger = logging.getLogger('superdesk')
 BLOGSLIST_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'blogslist'))
 BLOGSLIST_ASSETS_DIR = 'blogslist_assets'
 CONTENT_TYPES = {
@@ -114,11 +116,10 @@ def publish_bloglist_embed_on_s3():
         public_url = superdesk.upload.url_for_media(file_id)
         # retrieves all opened blogs
         blogslist_service = get_resource_service('blogslist')
-        blogslists = blogslist_service.get(req=None, lookup=dict(key='bloglist'))
-        if blogslists == None:
-            blogslist_service.create([{'key':'bloglist','value': public_url}])
+        for blogslist in blogslist_service.get(req=None, lookup=dict(key='bloglist')):
+            get_resource_service('blogslist').system_update(blogslist['_id'], {'value': public_url}, blogslist)
         else:
-            get_resource_service('blogslist').system_update(blogslists[0]['_id'], { 'value': public_url}, blogslists[0])
+            blogslist_service.create([{'key': 'bloglist', 'value': public_url}])
 
         # publish_assets('template')
         publish_assets('scripts')
@@ -163,8 +164,20 @@ class BlogsListResource(Resource):
 
 
 class BlogsListService(BaseService):
-    pass
+
+    def publish_bloglist_embed_on_s3(self):
+        publish_bloglist_embed_on_s3()
 
 @bp.app_template_filter('tojson')
 def tojson(obj):
     return json.dumps(obj, cls=MongoJSONEncoder)
+
+class BloglistCommand(superdesk.Command):
+
+    def run(self):
+        blogslist_service = get_resource_service('blogslist')
+        blogslist_service.publish_bloglist_embed_on_s3()
+
+
+superdesk.command('register_bloglist', BloglistCommand())
+

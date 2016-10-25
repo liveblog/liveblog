@@ -177,7 +177,7 @@ class BlogService(BaseService):
                     recipients.append(user['user'])
             notify_members(blog, app.config['CLIENT_URL'], recipients)
         # Publish bloglist aswell
-        publish_bloglist_embed_on_s3.delay()
+        publish_bloglist_embed_on_s3()
 
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
