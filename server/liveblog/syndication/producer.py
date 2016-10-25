@@ -7,7 +7,7 @@ from flask import abort
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
-from flask import Blueprint, make_response
+from flask import Blueprint, make_response, request
 from apps.auth import SuperdeskTokenAuth
 from flask_cors import CORS
 
@@ -75,12 +75,13 @@ def producer_blogs(producer_id):
         api_url = '{}/'.format(api_url)
 
     api_url = urljoin(api_url, 'syndication/blogs')
+
     try:
         response = requests.get(api_url, headers={
             'Authorization': producer['consumer_api_key'],
             'Origin': 'localhost',
             'Content-Type': 'application/json'
-        }, timeout=5)
+        }, params=request.args, timeout=5)
     except (ConnectionError, Timeout):
         return _make_json_response(_make_error('Unable to connect to producer: {}'.format(api_url)), 500)
     else:
