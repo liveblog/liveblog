@@ -37,10 +37,23 @@
         $scope.isUserAllowedToCreateABlog = blogSecurityService.canCreateABlog;
         $scope.isUserAllowedToOpenBlog = blogSecurityService.canAccessBlog;
         // blog list embed code.
+        function fetchBloglistEmbed() {
+            var criteria =  {source: {
+                query: {filtered: {filter: {term: {key: 'blogslist'}}}}
+            }};
+            api.blogslist.query(criteria, false).then(function(embed) {
+                var url = 'http://localhost:5000/blogslist_embed';
+                if (embed._items.length) {
+                    url = embed._items[0].value;
+                }
+                $scope.bloglistEmbed = '<iframe id="liveblog-bloglist" width="100%" scrolling="no" src="' + url + '"</iframe>';
+            });
+        }
         $scope.cancelEmbed = function() {
             $scope.embedModal = false;
         };
         $scope.openEmbed = function() {
+            fetchBloglistEmbed()
             $scope.embedModal = true;
         };
 
@@ -247,7 +260,8 @@
                 $scope.blogsLoading = false;
             });
         }
-
+        // initialize bloglist embed code.
+        fetchBloglistEmbed();
         // initialize blogs list
         fetchBlogs();
         // fetch when maxResults is updated from the searchbar-directive
@@ -258,6 +272,10 @@
 
     var app = angular.module('liveblog.bloglist', ['liveblog.security']);
     app.config(['apiProvider', function(apiProvider) {
+        apiProvider.api('blogslist', {
+            type: 'http',
+            backend: {rel: 'blogslist'}
+        });
         apiProvider.api('blogs', {
             type: 'http',
             backend: {rel: 'blogs'}
