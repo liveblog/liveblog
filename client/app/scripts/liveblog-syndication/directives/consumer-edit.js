@@ -21,6 +21,8 @@ liveblogSyndication
                     var data = {};
                     var apiQuery;
 
+                    data.contacts = scope.consumer.contacts;
+
                     if (!scope.consumerForm.name.$pristine)
                         data.name = scope.consumer.name;
 

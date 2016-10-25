@@ -7,9 +7,8 @@ liveblogSyndication
             },
             link: function(scope, elem, attrs) {
                 if (!scope.contacts) {
-                    scope.contacts = [{first_name: ''}];
+                    scope.contacts = [{}];
                 }
             }
         }
-
     });
