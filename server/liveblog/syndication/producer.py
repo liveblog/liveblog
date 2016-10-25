@@ -55,10 +55,11 @@ def _make_error(error_message):
     }
 
 
-def _make_json_response(data, dumps=True):
+def _make_json_response(data, status_code, dumps=True):
     if dumps:
         data = json.dumps(data)
     response = make_response(data)
+    response.status_code = status_code
     response.mimetype = 'application/json'
     return response
 
@@ -67,7 +68,7 @@ def _make_json_response(data, dumps=True):
 def producer_blogs(producer_id):
     producer = get_resource_service('producers').find_one(req=None, _id=producer_id)
     if not producer:
-        return _make_json_response(_make_error('Unable to get producer.'))
+        return _make_json_response(_make_error('Unable to get producer.'), 404)
 
     api_url = producer['api_url']
     if not api_url.endswith('/'):
@@ -81,13 +82,13 @@ def producer_blogs(producer_id):
             'Content-Type': 'application/json'
         }, timeout=5)
     except (ConnectionError, Timeout):
-        return _make_json_response(_make_error('Unable to connect to producer: {}'.format(api_url)))
+        return _make_json_response(_make_error('Unable to connect to producer: {}'.format(api_url)), 500)
     else:
         status_code = response.status_code
         if status_code == 200:
-            return _make_json_response(response.content, dumps=False)
+            return _make_json_response(response.content, status_code, dumps=False)
         else:
-            return _make_json_response(_make_error('Unable to get producer blogs ({})'.format(status_code)))
+            return _make_json_response(_make_error('Unable to get producer blogs'), status_code)
 
 
 def _producers_blueprint_auth():
