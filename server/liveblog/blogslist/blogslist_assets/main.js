@@ -57,12 +57,13 @@
             api_host:  window.LB.api_host,
             assets_root: window.LB.assets_root
         }).controller('BlogListCtrl',BlogListCtrl)
-        .config(['$routeProvider',
-              function($routeProvider) {
+        .config(['$routeProvider', 'config', '$sceDelegateProvider',
+              function($routeProvider, config, $sceDelegateProvider) {
+                    $sceDelegateProvider.resourceUrlWhitelist(['https://*.s3-eu-west-1.amazonaws.com/**'])
                     $routeProvider.
                       when('/', {
-                              templateUrl: '/blogslist_assets/template.html',
-                              controller: 'BlogListCtrl',
+                              'template': '<table class="row-list table table-striped"><tbody><tr ng-repeat="blog in bl.blogs._items track by blog._id" ng-click="bl.openBlog(blog)"><td class="content"><h3>{{ ::blog.title }} <small>by {{ ::blog.original_creator }}</small></h3><div class="description">{{ ::blog.description | htmlToPlaintext }}</div><div class="time visible-phone">{{ ::\'Created\' | translate}} {{ ::blog._created | reldate }}, {{ ::\'updated\' | translate }} {{ ::blog._updated | reldate }}.</div></td></tr></tbody></table>',
+                              'controller': 'BlogListCtrl',
                               'controllerAs': 'bl'
                       })
         }]).filter('htmlToPlaintext', function() {

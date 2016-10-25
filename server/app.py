@@ -19,6 +19,7 @@ import flask_s3
 import os
 import settings
 from superdesk.factory import get_app as superdesk_app
+from liveblog.blogslist.blogslist import publish_bloglist_embed_on_s3
 
 
 def get_app(config=None):
@@ -44,6 +45,9 @@ def get_app(config=None):
     config['DOMAIN'] = {}
 
     app = superdesk_app(config, media_storage)
+
+    # Publish bloglist aswell
+    publish_bloglist_embed_on_s3.delay()
 
     custom_loader = jinja2.ChoiceLoader([
         jinja2.FileSystemLoader('superdesk/templates'),
