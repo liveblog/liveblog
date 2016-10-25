@@ -104,7 +104,7 @@ def publish_bloglist_embed_on_s3():
 
         assets_public_url = superdesk.upload.url_for_media(file_id).replace(assets['version'], '').replace('http://', '//')
 
-        html = blogslist_embed(assets_root=assets_public_url)
+        html = render_bloglist_embed(assets_root=assets_public_url)
         file_path = get_file_path()
         # remove existing
         app.media.delete(app.media.media_id(file_path, version=False))
@@ -129,9 +129,7 @@ def check_media_storage():
     if type(app.media).__name__ is not 'AmazonMediaStorage':
         raise MediaStorageUnsupportedForBlogPublishing()
 
-@bp.route('/blogslist_embed')
-def blogslist_embed(api_host=None, assets_root=None):
-    api_host = api_host or request.url_root
+def render_bloglist_embed(api_host=None, assets_root=None):
     assets_root = assets_root or BLOGSLIST_ASSETS_DIR + '/'
     assets = bloglist_assets();
     # compute path relative to the assets_root for `styles` and `scripts`
@@ -147,6 +145,11 @@ def blogslist_embed(api_host=None, assets_root=None):
         'assets_root': assets_root
     }
     return render_template('blog-list-embed.html', **scope)
+
+@bp.route('/blogslist_embed')
+def blogslist_embed(api_host=None, assets_root=None):
+    api_host = api_host or request.url_root
+    return render_bloglist_embed(api_host=api_host, assets_root=assets_root)
 
 
 class BlogsListResource(Resource):

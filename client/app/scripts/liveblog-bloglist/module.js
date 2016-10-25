@@ -49,7 +49,7 @@
                     url = 'http://localhost:5000/blogslist_embed'
                 }
                 if (url) {
-                    $scope.bloglistEmbed = '<iframe id="liveblog-bloglist" width="100%" scrolling="no" src="' + url + '"</iframe>';
+                    $scope.bloglistEmbed = '<iframe id="liveblog-bloglist" width="100%" scrolling="no" src="' + url + '" frameborder="0" allowfullscreen></iframe>';
                 }
             });
         }
