@@ -130,6 +130,11 @@ def check_media_storage():
         raise MediaStorageUnsupportedForBlogPublishing()
 
 def render_bloglist_embed(api_host=None, assets_root=None):
+    compiled_api_host = "{}://{}{}".format(
+        app.config['URL_PROTOCOL'],
+        app.config['SERVER_NAME'],
+        '/' + app.config['URL_PREFIX']  if app.config['URL_PREFIX'] else '')
+    api_host = api_host or compiled_api_host
     assets_root = assets_root or BLOGSLIST_ASSETS_DIR + '/'
     assets = bloglist_assets();
     # compute path relative to the assets_root for `styles` and `scripts`
@@ -148,7 +153,6 @@ def render_bloglist_embed(api_host=None, assets_root=None):
 
 @bp.route('/blogslist_embed')
 def blogslist_embed(api_host=None, assets_root=None):
-    api_host = api_host or request.url_root
     return render_bloglist_embed(api_host=api_host, assets_root=assets_root)
 
 
