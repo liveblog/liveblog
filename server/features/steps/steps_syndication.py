@@ -5,6 +5,7 @@ from unittest.mock import patch
 from superdesk import get_resource_service
 from superdesk.tests.steps import json, apply_placeholders
 
+
 @given('config consumer api_key')
 def step_impl_given_config(context):
     tests.setup_auth_consumer(context, tests.test_consumer)
@@ -33,13 +34,18 @@ def then_we_get_consumers(context):
 def then_we_get_producer_blogs(context, producer_id):
     blog_service = get_resource_service('blogs')
     producer_service = get_resource_service('producers')
+
     with context.app.test_request_context(context.app.config['URL_PREFIX']):
         producer = producer_service.find_one(_id=producer_id, req=None)
         blogs = list(blog_service.find(where={'syndication_enabled': True}))
+
         with patch('liveblog.syndication.producer.ProducerService.get_blogs') as mock_get_blogs:
             mock_get_blogs.return_value = blogs
             producer_blogs = producer_service.get_blogs(producer)
-        _ids = lambda items: [i['_id'] for i in items]
+
+        def _ids(items):
+            return [i['_id'] for i in items]
+
         assert _ids(blogs) == _ids(producer_blogs)
 
 
