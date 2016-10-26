@@ -184,6 +184,7 @@ class BloglistCommand(superdesk.Command):
     def run(self):
         blogslist_service = get_resource_service('blogslist')
         blogslist_service.publish_bloglist_embed_on_s3()
+        print("Bloglist published to s3")
 
 
 superdesk.command('register_bloglist', BloglistCommand())
