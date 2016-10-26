@@ -27,6 +27,9 @@
         <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}">
             <i class="big-icon-archive" alt="draft posts"></i>
         </button>
+        <button class="navbtn" ng-click="openPanel('ingest')" ng-class="{'active': panelState === 'ingest'}">
+            <i class="big-icon-ingest" alt="ingest"></i>
+        </button>
         <button 
             ng-if="blog.blog_preferences.theme.settings.canComment"
             class="navbtn ng-cloak"
@@ -100,6 +103,8 @@
                         </lb-posts-list>
                     </div>
                 </div>
+                <!-- ingest -->
+                <div lb-ingest-panel ng-if="panelState === 'ingest'"></div>
                 <!-- comments -->
                 <div class="panel panel--comments" ng-if="panelState === 'comments'">
                     <header translate>Comments</header>
