@@ -87,5 +87,4 @@ Feature: Producer Resource
             {"name": "Producer", "api_url": "http://localhost:5000/api/", "consumer_api_key": "__any_value__"}
         ]
         """
-        When we get "/producers/#producers._id#/blogs"
-        Then we get list with 1 items
+        Then we get "#producers._id#" blogs from producer blogs endpoint

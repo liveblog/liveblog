@@ -1,9 +1,9 @@
 from behave import then, given
 from eve.methods.common import parse
 from liveblog import tests
+from unittest.mock import patch
 from superdesk import get_resource_service
 from superdesk.tests.steps import json, apply_placeholders
-
 
 @given('config consumer api_key')
 def step_impl_given_config(context):
@@ -27,6 +27,20 @@ def then_we_get_consumers(context):
 @then('we get producers')
 def then_we_get_consumers(context):
     return _test_list_response('producers', context)
+
+
+@then('we get "{producer_id}" blogs from producer blogs endpoint')
+def then_we_get_producer_blogs(context, producer_id):
+    blog_service = get_resource_service('blogs')
+    producer_service = get_resource_service('producers')
+    with context.app.test_request_context(context.app.config['URL_PREFIX']):
+        producer = producer_service.find_one(_id=producer_id, req=None)
+        blogs = list(blog_service.find(where={'syndication_enabled': True}))
+        with patch('liveblog.syndication.producer.ProducerService.get_blogs') as mock_get_blogs:
+            mock_get_blogs.return_value = blogs
+            producer_blogs = producer_service.get_blogs(producer)
+        _ids = lambda items: [i['_id'] for i in items]
+        assert _ids(blogs) == _ids(producer_blogs)
 
 
 @given('"{resource}" as consumer')
