@@ -1,7 +1,7 @@
 export default {
     server: {
         url: 'http://localhost:5000/api',
-        ws: 'http://localhost:5100'
+        ws: 'ws://localhost:5100'
     },
     editor: {
         disableEditorToolbar: false
