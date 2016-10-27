@@ -4,20 +4,14 @@ from .utils import generate_api_key
 
 
 syndication_out_schema = {
-    'blog_id': {
-        'type': 'objectid',
-        'required': True
-    },
-    'consumer_id': {
-        'type': 'objectid',
-        'required': True
-    },
+    'blog_id': Resource.rel('blogs', embeddable=True, required=True, type="string"),
+    'consumer_id': Resource.rel('consumers', embeddable=True, required=True, type="string"),
     'consumer_blog_id': {
-        'type': 'objectid',
+        'type': 'string',
         'required': True
     },
     'last_delivered_post_id': {
-        'type': 'objectid',
+        'type': 'string',
         'nullable': True
     },
     'token': {
@@ -51,21 +45,15 @@ class SyndicationOut(Resource):
 
 
 syndication_in_schema = {
-    'blog_id': {
-        'type': 'objectid',
-        'required': True
-    },
+    'blog_id': Resource.rel('blogs', embeddable=True, required=True, type="string"),
     'blog_token': {
         'type': 'string',
         'required': True,
         'unique': True
     },
-    'producer_id': {
-        'type': 'objectid',
-        'required': True
-    },
+    'producer_id': Resource.rel('producers', embeddable=True, required=True, type="string"),
     'producer_blog_id': {
-        'type': 'objectid',
+        'type': 'string',
         'required': True
     }
 }

@@ -1,9 +1,6 @@
-import logging
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from .utils import generate_api_key
-
-logger = logging.getLogger('superdesk')
 
 
 consumers_schema = {
@@ -36,6 +33,10 @@ consumers_schema = {
         'type': 'string',
         'nullable': True,
         'unique': True
+    },
+    'api_url': {
+        'type': 'string',
+        'required': True
     }
 }
 
