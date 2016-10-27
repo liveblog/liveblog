@@ -12,6 +12,10 @@ function assertToastMsg(type, msg) {
     browser.ignoreSynchronization = false;
 }
 
+//function hover(elem) {
+//    browser.actions().mouseMove(elem, {x: 3, y: 3}).perform();
+//}
+
 const consumer = {
     name: 'Massey Fergusson'
 };
@@ -80,6 +84,20 @@ describe('Consumers', function() {
                 });
         });
 
-        //it('can delete a consumer', function() {});
+        fit('can delete a consumer', function() {
+           consumersManagement.openConsumersManagement();
+            var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
+            expect(firstRowName.getText()).toEqual('John Deere');
+
+            var elemToHover = element(by.css('ul.table-body div.row-wrapper'));
+
+            browser.actions().mouseMove(elemToHover, {x: 3, y: 3}).perform()
+                .then(function() {
+                    return element(by.css('ul.table-body li a.delete-consumer'))
+                        .click();
+                })
+                .then(function() {
+                });
+        });
     });
 });
