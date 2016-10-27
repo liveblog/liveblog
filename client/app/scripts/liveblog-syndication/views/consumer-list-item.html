@@ -12,7 +12,16 @@
 
     <div class="row-wrapper" sd-col-width>
         <div class="name">{{ consumer.name }}</div>
-        <div class="api_key">{{ consumer.api_key }}</div>
+        <div class="api_key">
+            <span id="api-key">{{ consumer.api_key }}</span>
+            <a 
+                title="Copy to clipboard" 
+                ng-href="" 
+                ng-click="copyToClipboard('api-key')"
+                class="ng-scope">
+                <i class="icon-copy true"></i>
+            </a>
+        </div>
     </div>
 
     <div class="action">
