@@ -26,7 +26,7 @@ describe('Consumers', function() {
             consumersManagement.openConsumersManagement();
         });
 
-        fit('can create a new consumer', function() {
+        it('can create a new consumer', function() {
             consumersManagement.openConsumersManagement();
 
             element(by.css('button.navbtn.sd-create-btn'))
@@ -50,7 +50,35 @@ describe('Consumers', function() {
                 });
         });
 
-        //it('can update a consumer', function() {});
+        it('can update a consumer', function() {
+            consumersManagement.openConsumersManagement();
+
+            var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
+            expect(firstRowName.getText()).toEqual('John Deere');
+
+            firstRowName
+                .click()
+                .then(function() {
+                    return element(by.css('input#name')).isDisplayed();
+                })
+                .then(function() {
+                    return element(by.css('input#name')).clear();
+                })
+                .then(function() {
+                    return element(by.css('input#name')).sendKeys(consumer.name);
+                })
+                .then(function() {
+                    return element(by.css('#save-edit-btn')).click();
+                })
+                .then(function() {
+                    return assertToastMsg('success', 'consumer saved.');
+                })
+                .then(function() {
+                    var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
+                    expect(firstRowName.getText()).toEqual(consumer.name);
+                    return;
+                });
+        });
 
         //it('can delete a consumer', function() {});
     });
