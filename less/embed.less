@@ -317,40 +317,45 @@ article.lb-post:after {
 }
 
 .lb-type {
-    position: absolute;
-    width: 16px;
-    height: 16px;
-    background-color: @dpagreen;
-    background-position: center center;
-    background-repeat: no-repeat;
-    border-radius: 50%;
-    margin-left: -6px;
-    margin-top: -6px;
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background-color: @dpagreen;
+  background-position: center center;
+  background-repeat: no-repeat;
+  border-radius: 50%;
+  margin-left: -6px;
+  margin-top: -6px;
+}
+
+.lb-type--sticky {
+  background-color: #A0A0A0;
+  margin-top: 4px;
 }
 
 .lb-type--embed {
-    width: 40px;
-    height: 40px;
-    margin-left: -18px;
-    margin-top: -10px;
+  width: 40px;
+  height: 40px;
+  margin-left: -18px;
+  margin-top: -10px;
 }
 
 .lb-type--twitter {
-    background-color: #6bacdf;
-    background-image: url("../images/twitter_logo_white.png");
-    background-size: 20px;
+  background-color: #6bacdf;
+  background-image: url("../images/twitter_logo_white.png");
+  background-size: 20px;
 }
 
 .lb-type--youtube {
-    background-color: #e52d27;
-    background-image: url("../images/youtube_logo.png");
-    background-size: 20px;
+  background-color: #e52d27;
+  background-image: url("../images/youtube_logo.png");
+  background-size: 20px;
 }
 
 .lb-type--instagram {
-    background-color: #444;
-    background-image: url("../images/instagram_logo.png");
-    background-size: 20px;
+  background-color: #444;
+  background-image: url("../images/instagram_logo.png");
+  background-size: 20px;
 }
     
 
@@ -359,38 +364,38 @@ article.lb-post:after {
 // Load New Post
 
 .lb-button {
-    z-index: 1;
-    font-size: .85em;
-    font-weight: 600;
-    text-align: center;
-    color: #5ea9c8;
-    cursor: pointer;
-    padding: 4px 14px;
-    background-color: #81D993;
-    color: #fff;
-    border: 0;
-    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-    border-radius: 4px;
+  z-index: 1;
+  font-size: .85em;
+  font-weight: 600;
+  text-align: center;
+  color: #5ea9c8;
+  cursor: pointer;
+  padding: 4px 14px;
+  background-color: #81D993;
+  color: #fff;
+  border: 0;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  border-radius: 4px;
 }
 
 .lb-button:hover {
-    color: #fff;
-    background-color: @green;
+  color: #fff;
+  background-color: @green;
 }
 
 .load-more-posts {
-    position: absolute;
-    left: 50%;
-    margin-left: -55px;
-    padding: 6px 14px;
-    width: 120px;
-    margin-top: 60px;
+  position: absolute;
+  left: 50%;
+  margin-left: -55px;
+  padding: 6px 14px;
+  width: 120px;
+  margin-top: 60px;
 }
 
 .load-new-posts {
-    float: right;
-    position: absolute;
-    right: 0;
+  float: right;
+  position: absolute;
+  right: 0;
 }
 
 // Load New Post End
@@ -398,47 +403,47 @@ article.lb-post:after {
 // Author
 
 .lb-author {
-    position: relative;
-    margin: 15px 0px 15px;
-    max-width: 220px;
-    float: right;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  position: relative;
+  margin: 15px 0px 15px;
+  max-width: 220px;
+  float: right;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .lb-author:after {
-    content: '';
-    clear: both;
-    display: block;
+  content: '';
+  clear: both;
+  display: block;
 }
 
 .lb-author__avatar {
-    display: inline-block;
-    border-radius: 50%;
-    overflow: hidden;
-    background: #B9B9B9 url("../images/avatar_64.png") no-repeat;
-    border: 1px solid #f4f4f4;
-    float: left;
-    margin-right: 10px;
-    width: 20px;
-    height: 20px;
+  display: inline-block;
+  border-radius: 50%;
+  overflow: hidden;
+  background: #B9B9B9 url("../images/avatar_64.png") no-repeat;
+  border: 1px solid #f4f4f4;
+  float: left;
+  margin-right: 10px;
+  width: 20px;
+  height: 20px;
 }
 
 .lb-author__name,
 .lb-author__date {
-    float: left;
-    font-weight: 500;
-    font-size: .7em;
-    height: 22px;
+  float: left;
+  font-weight: 500;
+  font-size: .7em;
+  height: 22px;
 }
 
 .lb-author__name {
-    color: #878787;
+  color: #878787;
 }
 
 .lb-author__date {
-    padding-right: 20px;
+  padding-right: 20px;
 }
 
 // Author End
@@ -519,25 +524,32 @@ article.lb-post:after {
     visibility: hidden;
 }
 
+.lb-post-sticky,
 .lb-post-highlighted {
-    background: url("../images/star_highlight.svg") center 6px;
     background-size: 15px;
     border-radius: 4px;
     background-repeat: no-repeat;
-    padding: 5px;
+    background-position: center 6px;
     background-clip: border-box;
     position: absolute;
     margin-top: -12px;
+    padding: 5px;
     left: -11px;
     width: 16px;
     height: 16px;
     color: #f89406;
-    background-color: #F05330;
-    opacity: .9;
+    opacity: 1;
+}
+
+.lb-post-highlighted {
+  background-image: url("../images/star_highlight.svg");
+  background-color: #F05330;
 }
 
 .lb-post-sticky {
-    display: none;
+  // background-image: url("../images/exclamation_sticky.svg");
+  background-color: #C6C6C6;
+  margin-top: -2px;
 }
 
 .lb-post:hover .lb-post-permalink {
@@ -601,13 +613,14 @@ article.lb-post:after {
     .lb-timeline {
         margin-top: 0;
     }
-    .show-author-avatar .lb-author{
+    .show-author-avatar .lb-author {
         margin-left: 50px;
         margin-top: -15px;
         margin-top: 0px;
     }
     .show-author-avatar .lb-item {
         margin-left: 0;
+        margin-top: 18px;
     }
 
     .lb-post {
@@ -668,17 +681,18 @@ article.lb-post:after {
         padding-left: 0 !important;
     }
 
-    .lb-post-highlighted {
-        background-size: 10px;
-        background-position-y: 4px;
-        padding: 4px;
-        float: left;
-        left: 16px;
-        display: inline-block;
-        position: relative;
-        width: 10px;
-        height: 10px;
-        margin: -8px 4px 0 6px;
+    .lb-post-highlighted,
+    .lb-post-sticky {
+      background-size: 10px;
+      background-position-y: 4px;
+      padding: 4px;
+      float: left;
+      left: 16px;
+      display: inline-block;
+      position: relative;
+      width: 10px;
+      height: 10px;
+      margin: -8px 4px 0 6px;
     }
 
     article.lb-post:after {

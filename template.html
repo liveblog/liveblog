@@ -90,7 +90,8 @@ Bitte f&uuml;hren Sie ein <a href="http://browsehappy.com/">Upgrade</a> durch.</
                 'lb-post-permalink-selected': post._id === timeline.permalink._id}">
             
             <div class="lb-type" ng-class="{
-                'lb-type--text': !post.mainEmbed,
+                'lb-type--sticky': post.sticky,
+                'lb-type--text': !post.mainEmbed && !post.sticky,
                 'lb-type--embed lb-type--twitter': post.mainEmbed == 'Twitter',
                 'lb-type--embed lb-type--instagram': post.mainEmbed == 'Instagram',
                 'lb-type--embed lb-type--youtube': post.mainEmbed == 'YouTube'
@@ -98,7 +99,7 @@ Bitte f&uuml;hren Sie ein <a href="http://browsehappy.com/">Upgrade</a> durch.</
             </div>
 
             <div class="lb-post-highlighted" ng-if="post.highlight"></div>
-            <div class="lb-post-sticky" ng-if="post.sticky">sticky</div>
+            <!-- <div class="lb-post-sticky" ng-if="post.sticky"></div> -->
             <div ng-if="post.mainItem.displayDate | isDateChange" class="lb-post-date__fulldate" ng-bind="post.mainItem.displayDate | simpleDate"></div>
             <div ng-if="!post.sticky" date-from-now-or-absolute class="lb-post-date"></div>
 
