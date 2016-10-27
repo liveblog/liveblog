@@ -14,13 +14,7 @@
         <div class="name">{{ consumer.name }}</div>
         <div class="api_key">
             <span id="api-key">{{ consumer.api_key }}</span>
-            <a 
-                title="Copy to clipboard" 
-                ng-href="" 
-                ng-click="copyToClipboard('api-key')"
-                class="ng-scope">
-                <i class="icon-copy true"></i>
-            </a>
+            <span lb-copy-to-clipboard for="api-key"></span>
         </div>
     </div>
 

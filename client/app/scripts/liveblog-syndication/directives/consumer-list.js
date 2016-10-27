@@ -1,5 +1,5 @@
 liveblogSyndication
-    .directive('lbConsumerList', ['api', 'notify', function(api, notify) {
+    .directive('lbConsumerList', ['api', function(api) {
         return {
             templateUrl: 'scripts/liveblog-syndication/views/consumer-list-item.html',
             scope: {
@@ -22,27 +22,6 @@ liveblogSyndication
                                 scope.consumers.splice(i, 1);
                         });
                     });
-                }
-
-                scope.copyToClipboard = function(elementId) {
-                    var apiKey = document.getElementById(elementId),
-                        range = document.createRange(),
-                        selection = window.getSelection();
-
-                    if (apiKey) {
-                        range.selectNode(apiKey);
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                        document.execCommand('copy');
-
-                        if (selection.hasOwnProperty('removeRange'))
-                            selection.removeRange(range);
-                        else
-                            selection.removeAllRanges();
-
-                        notify.pop();
-                        notify.success('Selection successfully copied to clipboard');
-                    }
                 }
             }
         };
