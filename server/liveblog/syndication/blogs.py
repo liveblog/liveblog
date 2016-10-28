@@ -33,7 +33,7 @@ def blogs_syndicate(blog_id):
     consumer_api_key = request.headers['Authorization']
     consumer_blog_id = request.form.get('consumer_blog_id')
     if not consumer_blog_id:
-        return api_response(api_error('Missing "consumer_blog_id" in form data.'), 422)
+        return api_error('Missing "consumer_blog_id" in form data.', 422)
 
     consumer = get_resource_service('consumers').find_one(api_key=consumer_api_key, req=None)
 
@@ -41,7 +41,7 @@ def blogs_syndicate(blog_id):
     syndication = out_service.find_one(blog_id=blog_id, consumer_id=consumer._id,
                                        consumer_blog_id=consumer_blog_id, req=None)
     if syndication:
-        return api_response('Syndication already sent for blog "{}".'.format(blog_id), 409)
+        return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
 
     syndication_id = out_service.post([{
         'blog_id': blog_id,

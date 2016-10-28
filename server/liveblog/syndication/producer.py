@@ -53,11 +53,11 @@ class ProducerService(BaseService):
     def _send_api_request(self, producer_id, url_path, method='GET', data=None, json_loads=True, timeout=5):
         producer = self._get_producer(producer_id)
         if not producer:
-            raise ProducerAPIError('Unable to get producer {}'.format(producer_id))
+            raise ProducerAPIError('Unable to get producer "{}".'.format(producer_id))
 
         api_url = self._get_api_url(producer, url_path)
         if not api_url:
-            raise ProducerAPIError('Unable to get producer {} api url.'.format(producer_id))
+            raise ProducerAPIError('Unable to get producer "{}" api url.'.format(producer_id))
 
         data = data or {}
         try:
@@ -66,7 +66,7 @@ class ProducerService(BaseService):
                 'Content-Type': 'application/json'
             }, params=request.args, data=data, timeout=timeout)
         except (ConnectionError, Timeout):
-            raise ProducerAPIError('Unable to connect to producer: {}'.format(api_url))
+            raise ProducerAPIError('Unable to connect to producer: "{}".'.format(api_url))
 
         if not json_loads:
             return response
@@ -109,7 +109,7 @@ def producer_blogs(producer_id):
         if response.status_code == 200:
             return api_response(response.content, response.status_code, json_dumps=False)
         else:
-            return api_response(api_error('Unable to get producer blogs'), response.status_code)
+            return api_error('Unable to get producer blogs.', response.status_code)
 
 
 @producers_blueprint.route('/api/producers/<producer_id>/blogs/<blog_id>', methods=['GET'])
@@ -123,7 +123,7 @@ def producer_blog(producer_id, blog_id):
         if response.status_code == 200:
             return api_response(response.content, response.status_code, json_dumps=False)
         else:
-            return api_response(api_error('Unable to get producer blogs'), response.status_code)
+            return api_error('Unable to get producer blogs.', response.status_code)
 
 
 @producers_blueprint.route('/api/producers/<producer_id>/syndicate/<blog_id>', methods=['POST'])
@@ -131,7 +131,7 @@ def producer_blogs_syndicate(producer_id, blog_id):
     producers = get_resource_service('producers')
     consumer_blog_id = request.form.get('consumer_blog_id')
     if not consumer_blog_id:
-        return api_response(api_error('Missing "consumer_blog_id" in form data.'), 422)
+        return api_error('Missing "consumer_blog_id" in form data.', 422)
 
     try:
         response = producers.syndicate(producer_id, blog_id, consumer_blog_id, json_loads=False)
@@ -149,7 +149,7 @@ def producer_blogs_syndicate(producer_id, blog_id):
             }])
             return api_response(response.content, response.status_code, json_dumps=False)
         else:
-            return api_response(api_error('Unable to get producer blogs'), response.status_code)
+            return api_error('Unable to get producer blogs.', response.status_code)
 
 
 def _producers_blueprint_auth():

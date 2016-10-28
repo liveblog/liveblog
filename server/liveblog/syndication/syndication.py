@@ -59,6 +59,7 @@ syndication_in_schema = {
 }
 
 
+# TODO: on created, run celery task to fetch old blog posts.
 class SyndicationInService(BaseService):
     notification_key = 'syndication_in'
 

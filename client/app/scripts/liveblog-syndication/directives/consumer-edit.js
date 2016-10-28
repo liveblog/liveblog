@@ -24,6 +24,9 @@ liveblogSyndication
                     if (!scope.consumerForm.name.$pristine)
                         data.name = scope.consumer.name;
 
+                    if (!scope.consumerForm.api_url.$pristine)
+                        data.api_url = scope.consumer.api_url;
+
                     if (scope.isEditing)
                         apiQuery = api.save('consumers', scope.origConsumer, data);
                     else
