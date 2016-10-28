@@ -50,7 +50,10 @@ describe('Consumers', function() {
                 .then(function() {
                     var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
                     expect(firstRowName.getText()).toEqual(consumer.name);
-                    return;
+                    return element.all(by.repeater('consumer in consumers')).count();
+                })
+                .then(function(count) {
+                    expect(count).toEqual(2);
                 });
         });
 
@@ -80,7 +83,10 @@ describe('Consumers', function() {
                 .then(function() {
                     var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
                     expect(firstRowName.getText()).toEqual(consumer.name);
-                    return;
+                    return element.all(by.repeater('consumer in consumers')).count();
+                })
+                .then(function(count) {
+                    expect(count).toEqual(1);
                 });
         });
 
@@ -97,6 +103,10 @@ describe('Consumers', function() {
                         .click();
                 })
                 .then(function() {
+                    return element.all(by.repeater('consumer in consumers')).count();
+                })
+                .then(function(count) {
+                    expect(count).toEqual(0);
                 });
         });
     });
