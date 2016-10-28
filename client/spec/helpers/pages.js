@@ -748,8 +748,24 @@ function ConsumersManagementPage() {
     };
 }
 
+function ProducersManagementPage() {
+    'use strict';
+    var self = this;
+
+    self.openProducersManagement = function() {
+        element(by.css('[ng-click="toggleMenu()"]')).click();
+        browser.wait(function() {
+            return element(by.css('[href="#/producers/"][title]')).isDisplayed();
+        });
+        waitAndClick(by.css('[href="#/producers/"][title]'));
+        return self;
+    };
+}
+
+
 exports.blogs = new BlogsPage();
 exports.generalSettings = new GeneralSettingsPage();
 exports.randomString = randomString;
 exports.themeManager = new ThemesManagerPage();
 exports.consumersManagement = new ConsumersManagementPage();
+exports.producersManagement = new ProducersManagementPage();
