@@ -961,6 +961,13 @@
                 "role": "grpRole:Main"
             }]
     }
+},
+{
+    "resource": "consumers",
+    "data": {
+        "name": "John Deere",
+        "api_key": "123456789qwerty"
+    }
 }
 ]
 
