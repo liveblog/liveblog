@@ -961,6 +961,14 @@
                 "role": "grpRole:Main"
             }]
     }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "John Deere",
+        "api_url": "http://www.deere.com/api",
+        "consumer_api_key": "1234567890asdfgh"
+    }
 }
 ]
 
