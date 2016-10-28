@@ -78,7 +78,7 @@ Feature: Producer Resource
         Given "consumers"
         """
         [
-            {"name": "Consumer", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}], "api_key": "__any_value__"}
+            {"name": "Consumer", "api_url": "http://localhost:5000/api", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}], "api_key": "__any_value__"}
         ]
         """
         Given "producers"
