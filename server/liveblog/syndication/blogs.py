@@ -2,12 +2,15 @@ from flask import request, abort, Blueprint
 from superdesk.services import BaseService
 from superdesk import get_resource_service
 from liveblog.blogs.blogs import blogs_schema
+from flask_cors import CORS
+
 
 from .utils import api_error, api_response
 from .auth import CustomAuthResource, ConsumerApiKeyAuth
 
 
 blogs_blueprint = Blueprint('syndication_blogs', __name__)
+CORS(blogs_blueprint)
 
 
 class BlogService(BaseService):

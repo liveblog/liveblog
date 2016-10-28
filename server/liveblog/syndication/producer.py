@@ -40,8 +40,8 @@ class ProducerService(BaseService):
     notification_key = 'producers'
 
     def _get_producer(self, producer):
-        if isinstance(producer, int):
-            producer = self.find_one(req=None, _id=producer)
+        if isinstance(producer, str):
+            producer = self.find_one(_id=producer, req=None)
         return producer
 
     def _get_api_url(self, producer, url_path=None):
@@ -149,7 +149,7 @@ def producer_blogs_syndicate(producer_id, blog_id):
             }])
             return api_response(response.content, response.status_code, json_dumps=False)
         else:
-            return api_error('Unable to get producer blogs.', response.status_code)
+            return api_error('Unable to syndicate blog.', response.status_code)
 
 
 def _producers_blueprint_auth():
