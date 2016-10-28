@@ -19,7 +19,7 @@
             <div class="title">{{ 'General' | translate }} <span class="required-info" translate>* mandatory fields</span></div>
             <fieldset class="label-light">
                 <div sd-info-item>
-                  <label for="first-name" translate>name</label>
+                  <label for="name" translate>name</label>
                   <input 
                     type="text" 
                     name="name" 
@@ -28,7 +28,16 @@
                     required ng-readonly="consumer._readonly && consumer._readonly.name">
                   <i ng-show="consumerForm.name.$error.required" class="required-asteriks">*</i>
                 </div>
-
+                <div sd-info-item>
+                  <label for="api-url" translate>Api Url</label>
+                  <input
+                    type="text"
+                    name="api_url"
+                    id="api-url"
+                    ng-model="consumer.api_url"
+                    required ng-readonly="producer._readonly && producer._readonly.api_url">
+                  <i ng-show="consumerForm.api_url.$error.required" class="required-asteriks">*</i>
+                </div>
             </fieldset>
         </div>
     </div>
