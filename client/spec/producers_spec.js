@@ -14,8 +14,8 @@ function assertToastMsg(type, msg) {
 
 var producer = {
     name: 'Massey Fergusson',
-    api_url: 'http://www.masseyferguson.de/api',
-    consumer_api_key: '1234567890qwerty'
+    apiUrl: 'http://www.masseyferguson.de/api',
+    consumerApiKey: '1234567890qwerty'
 }
 
 fdescribe('Producers', function() {
@@ -33,5 +33,95 @@ fdescribe('Producers', function() {
                     expect(count).toEqual(1);
                 });
         });
+
+        it('can create a new producer', function() {
+            producersManagement.openProducersManagement();
+
+            element(by.css('button.navbtn.sd-create-btn'))
+                .click()
+                .then(function() {
+                    return element(by.css('input#name')).isDisplayed();
+                })
+                .then(function() {
+                    return element(by.css('input#name'))
+                        .sendKeys(producer.name);
+                })
+                .then(function() {
+                    return element(by.css('input#api-url'))
+                        .sendKeys(producer.apiUrl);
+                })
+                .then(function() {
+                    return element(by.css('input#consumer-api-key'))
+                        .sendKeys(producer.consumerApiKey);
+                })
+                .then(function() {
+                    return element(by.css('#save-edit-btn')).click();
+                })
+                .then(function() {
+                    return assertToastMsg('success', 'producer saved.');
+                })
+                .then(function() {
+                    var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
+                    expect(firstRowName.getText()).toEqual(producer.name);
+                    return element.all(by.repeater('producer in producers')).count();
+                })
+                .then(function(count) {
+                    expect(count).toEqual(2);
+                });
+        });
+
+        it('can update a producer', function() {
+            producersManagement.openProducersManagement();
+
+            var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
+            expect(firstRowName.getText()).toEqual('John Deere');
+
+            firstRowName
+                .click()
+                .then(function() {
+                    return element(by.css('input#name')).isDisplayed();
+                })
+                .then(function() {
+                    return element(by.css('input#name')).clear();
+                })
+                .then(function() {
+                    return element(by.css('input#name')).sendKeys(producer.name);
+                })
+                .then(function() {
+                    return element(by.css('#save-edit-btn')).click();
+                })
+                .then(function() {
+                    return assertToastMsg('success', 'producer saved.');
+                })
+                .then(function() {
+                    var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
+                    expect(firstRowName.getText()).toEqual(producer.name);
+                    return element.all(by.repeater('producer in producers')).count();
+                })
+                .then(function(count) {
+                    expect(count).toEqual(1);
+                });
+        });
+
+        it('can delete a producer', function() {
+            producersManagement.openProducersManagement();
+
+            var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
+            expect(firstRowName.getText()).toEqual('John Deere');
+
+            var elemToHover = element(by.css('ul.table-body div.row-wrapper'));
+
+            browser.actions().mouseMove(elemToHover, {x: 3, y: 3}).perform()
+                .then(function() {
+                    return element(by.css('ul.table-body li a.delete-producer'))
+                        .click();
+                })
+                .then(function() {
+                    return element.all(by.repeater('producer in producers')).count();
+                })
+                .then(function(count) {
+                    expect(count).toEqual(0);
+                });
+});
     });
 });
