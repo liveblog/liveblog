@@ -1,3 +1,5 @@
+'use strict';
+
 var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
     consumersManagement = require('./helpers/pages').consumersManagement;
 
@@ -12,12 +14,11 @@ function assertToastMsg(type, msg) {
     browser.ignoreSynchronization = false;
 }
 
-const consumer = {
+var consumer = {
     name: 'Massey Fergusson'
 };
 
 describe('Consumers', function() {
-    'use strict';
 
     beforeEach(function(done) {login().then(done);});
 
