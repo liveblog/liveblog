@@ -1,3 +1,5 @@
+'use strict';
+
 var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
     producersManagement = require('./helpers/pages').producersManagement;
 
@@ -16,11 +18,9 @@ var producer = {
     name: 'Massey Fergusson',
     apiUrl: 'http://www.masseyferguson.de/api',
     consumerApiKey: '1234567890qwerty'
-}
+};
 
-fdescribe('Producers', function() {
-    'use strict';
-
+describe('Producers', function() {
     beforeEach(function(done) {login().then(done);});
 
     describe('list', function() {
