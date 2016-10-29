@@ -14,47 +14,40 @@ liveblogSyndication
                     scope.origConsumer = _.cloneDeep(consumer);
                 });
 
-                scope.showValidation = false;
-
                 scope.save = function() {
                     if (angular.equals(scope.origConsumer, scope.consumer))
                         return;
 
-                    if (consumerForm.$valid)
-                    {
-                        var data = {};
-                        var apiQuery;
+                    var data = {};
+                    var apiQuery;
 
-                        data.contacts = scope.consumer.contacts;
+                    data.contacts = scope.consumer.contacts;
 
-                        if (!scope.consumerForm.name.$pristine)
-                            data.name = scope.consumer.name;
+                    if (!scope.consumerForm.name.$pristine)
+                        data.name = scope.consumer.name;
 
-                        if (scope.isEditing)
-                            apiQuery = api.save('consumers', scope.origConsumer, data);
+                    if (scope.isEditing)
+                        apiQuery = api.save('consumers', scope.origConsumer, data);
+                    else
+                        apiQuery = api.consumers.save(data);
+
+                    apiQuery.then(function(result) {
+                        notify.pop();
+                        notify.success(gettext('consumer saved.'));
+
+                        // If we are creating a new entry,
+                        // then we need to update the consumer list accordingly.
+                        // Otherwise we just broadcast a cancel event
+                        // to close the modal
+                        if (!scope.isEditing)
+                            scope.onsave({ consumer: result });
                         else
-                            apiQuery = api.consumers.save(data);
-
-                        apiQuery.then(function(result) {
-                            notify.pop();
-                            notify.success(gettext('consumer saved.'));
-
-                            // If we are creating a new entry,
-                            // then we need to update the consumer list accordingly.
-                            // Otherwise we just broadcast a cancel event
-                            // to close the modal
-                            if (!scope.isEditing)
-                                scope.onsave({ consumer: result });
-                            else
-                                scope.oncancel();
-                        })
-                        .catch(function(err) {
-                            notify.pop();
-                            notify.error(gettext('Fatal error!'));
-                        });
-                    } else {
-                        scope.showValidation = true;
-                    }
+                            scope.oncancel();
+                    })
+                    .catch(function(err) {
+                        notify.pop();
+                        notify.error(gettext('Fatal error!'));
+                    });
                 };
 
                 scope.cancel = function() {

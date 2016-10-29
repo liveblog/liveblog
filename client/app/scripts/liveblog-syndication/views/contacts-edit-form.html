@@ -17,7 +17,7 @@
                     id="first_name"
                     ng-model="contact.first_name"
                     required>
-            <div class="error" ng-show="showValidation && contactForm.first_name.$invalid" translate>Please enter a valid first name</div>
+            <div class="error" ng-show="contactForm.first_name.$invalid" translate>Please enter a valid first name</div>
         </div>
 
         <div sd-info-item>
@@ -28,7 +28,7 @@
                     id="last_name"
                     ng-model="contact.last_name"
                     required>
-            <div class="error" ng-show="showValidation && contactForm.last_name.$invalid" translate>Please enter a valid last name</div>
+            <div class="error" ng-show="contactForm.last_name.$invalid" translate>Please enter a valid last name</div>
         </div>
 
         <div sd-info-item>
@@ -48,7 +48,7 @@
                     id="email"
                     ng-model="contact.email"
                     required>
-            <div class="error" ng-show="showValidation && contactForm.email.$invalid" translate>Please enter a valid email</div>
+            <div class="error" ng-show="contactForm.email.$invalid" translate>Please enter a valid email</div>
         </div>
     </fieldset>
 </div>
