@@ -20,6 +20,8 @@ liveblogSyndication
 
                     var data = {}, apiQuery;
 
+                    data.contacts = scope.producer.contacts;
+
                     if (!scope.producerForm.name.$pristine)
                         data.name = scope.producer.name;
 

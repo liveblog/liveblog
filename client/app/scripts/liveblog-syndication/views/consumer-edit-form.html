@@ -1,4 +1,4 @@
-<form name="consumerForm" class="flat" ng-submit="consumerForm.$valid && save()">
+<form name="consumerForm" class="flat" novalidate ng-submit="save()">
     <div class="action-bar clearfix" ng-class="{show: !consumerForm.$pristine}">
         <button
             id="save-edit-btn" 
@@ -28,7 +28,6 @@
                     required ng-readonly="consumer._readonly && consumer._readonly.name">
                   <i ng-show="consumerForm.name.$error.required" class="required-asteriks">*</i>
                 </div>
-
             </fieldset>
 
             <div lb-contact-edit contacts="consumer.contacts"></div>
