@@ -62,7 +62,7 @@
                     $sceDelegateProvider.resourceUrlWhitelist(['https://*.s3-eu-west-1.amazonaws.com/**'])
                     $routeProvider.
                       when('/', {
-                              'template': '<table class="row-list table table-striped"><tbody><tr ng-repeat="blog in bl.blogs._items track by blog._id" ng-click="bl.openBlog(blog)"><td class="content"><h3>{{ ::blog.title }} <small>by {{ ::blog.original_creator }}</small></h3><div class="description">{{ ::blog.description | htmlToPlaintext }}</div><div class="time visible-phone">{{ ::\'Created\' | translate}} {{ ::blog._created | reldate }}, {{ ::\'updated\' | translate }} {{ ::blog._updated | reldate }}.</div></td></tr></tbody></table>',
+                              'template': "<div ng-repeat=\"blog in bl.blogs._items track by blog._id\" ng-click=\"bl.openBlog(blog)\" class=\"content-item\"><h3>{{ ::blog.title }}</h3><div class=\"list-item\"><div class=\"list-item__author\"><span>by</span> {{ ::blog.original_creator }}</div><div class=\"list-item__time\"><span>{{ ::\'Created\' | translate}}</span> {{ ::blog._created | reldate }} <span class=\"list-item--margin\">{{ ::\'updated\' | translate }}</span> {{ ::blog._updated | reldate }}.</div><div class=\"list-item__description\" ng-if=\"blog.description\">{{ ::blog.description | htmlToPlaintext }}</div></div></div>",
                               'controller': 'BlogListCtrl',
                               'controllerAs': 'bl'
                       })
