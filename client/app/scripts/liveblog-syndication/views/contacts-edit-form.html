@@ -28,7 +28,7 @@
                     id="last_name"
                     ng-model="contact.last_name"
                     required>
-            <div class="error" ng-show="contactForm.last_name.$invalid" translate>Please enter a valid last name</div>
+            <div class="error" ng-show="showValidation && contactForm.last_name.$invalid" translate>Please enter a valid last name</div>
         </div>
 
         <div sd-info-item>

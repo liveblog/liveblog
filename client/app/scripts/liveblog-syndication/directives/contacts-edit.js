@@ -5,7 +5,8 @@ liveblogSyndication
             scope: {
                 contacts: '='
             },
-            link: function(scope, elem, attrs) {
+            require:"^form",
+            link: function(scope, elem, attrs, form) {
                 if (!scope.contacts) {
                     scope.contacts = [{}];
                 }
@@ -16,6 +17,7 @@ liveblogSyndication
 
                 scope.removeContact = function(index) {
                     scope.contacts.splice(index, 1);
+                    scope.form.$setDirty();
                 };
             }
         }
