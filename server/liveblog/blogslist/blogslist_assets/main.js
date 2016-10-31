@@ -12,6 +12,7 @@
             fetchBlogs: function() {
                 var blogs_list_criteria = {
                     //sort: [("versioncreated", -1)],
+                    embedded: {'original_creator': 1},
                     source: {
                         query: {filtered: {filter: {term:
                             {"blog_status":"open"}
@@ -62,7 +63,7 @@
                     $sceDelegateProvider.resourceUrlWhitelist(['https://*.s3-eu-west-1.amazonaws.com/**'])
                     $routeProvider.
                       when('/', {
-                              'template': "<div ng-repeat=\"blog in bl.blogs._items track by blog._id\" ng-click=\"bl.openBlog(blog)\" class=\"content-item\"><h3>{{ ::blog.title }}</h3><div class=\"list-item\"><div class=\"list-item__author\"><span>by</span> {{ ::blog.original_creator }}</div><div class=\"list-item__time\"><span>{{ ::\'Created\' | translate}}</span> {{ ::blog._created | reldate }} <span class=\"list-item--margin\">{{ ::\'updated\' | translate }}</span> {{ ::blog._updated | reldate }}.</div><div class=\"list-item__description\" ng-if=\"blog.description\">{{ ::blog.description | htmlToPlaintext }}</div></div></div>",
+                              'template': "<div ng-repeat=\"blog in bl.blogs._items track by blog._id\" ng-click=\"bl.openBlog(blog)\" class=\"content-item\"><h3>{{ ::blog.title }}</h3><div class=\"list-item\"><div class=\"list-item__author\"><span>by</span> {{ ::blog.original_creator | username }}</div><div class=\"list-item__time\"><span>{{ ::\'Created\' | translate}}</span> {{ ::blog._created | reldate }} <span class=\"list-item--margin\">{{ ::\'updated\' | translate }}</span> {{ ::blog._updated | reldate }}.</div><div class=\"list-item__description\" ng-if=\"blog.description\">{{ ::blog.description | htmlToPlaintext }}</div></div></div>",
                               'controller': 'BlogListCtrl',
                               'controllerAs': 'bl'
                       })
