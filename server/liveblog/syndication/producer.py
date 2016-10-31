@@ -95,18 +95,6 @@ class ProducerService(BaseService):
         return self._send_api_request(producer_id, url_path, method='POST', data=data, json_loads=json_loads)
 
 
-    def is_syndicated(self, producer_id, blog_id, consumer_blog_id):
-        collection = self.find(where={'$and': {
-            'producer_id': {'$eq': producer_id},
-            'blog_id': {'$eq': blog_id},
-            'consumer_blog_id': {'$eq': consumer_blog_id},
-        }})
-        if collection.count():
-            return True
-        else:
-            return False
-
-
 class ProducerResource(Resource):
     datasource = {
         'source': 'producers',
@@ -156,7 +144,7 @@ def producer_blogs_syndicate(producer_id, blog_id):
     if not consumer_blog_id:
         return api_error('Missing "consumer_blog_id" in form data.', 422)
 
-    if producers.is_syndicated(producer_id, blog_id, consumer_blog_id):
+    if in_service.is_syndicated(producer_id, blog_id, consumer_blog_id):
         return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
 
     try:
