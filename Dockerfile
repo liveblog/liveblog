@@ -1,18 +1,22 @@
 # import base image
-FROM ubuntu:trusty
+FROM python:3.5
 
 # install system-wide dependencies,
 # python3 and the build-time dependencies for c modules
 RUN apt-get update && \
-DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-python3 python3-dev python3-pip python3-lxml \
-build-essential libffi-dev git \
-libtiff5-dev libjpeg8-dev zlib1g-dev \
+apt-get install -y --no-install-recommends \
+build-essential libffi-dev git locales \
+libtiff5-dev libjpeg62-turbo-dev zlib1g-dev \
 libfreetype6-dev liblcms2-dev libwebp-dev \
-curl libfontconfig nodejs npm nginx \
-&& echo "\ndaemon off;" >> /etc/nginx/nginx.conf \
-&& rm /etc/nginx/sites-enabled/default \
-&& ln --symbolic /usr/bin/nodejs /usr/bin/node
+curl libfontconfig nodejs npm nginx 
+
+ENV APP_HOME /opt/superdesk/
+RUN mkdir $APP_HOME
+WORKDIR $APP_HOME
+
+RUN echo "\ndaemon off;" >> /etc/nginx/nginx.conf 
+RUN rm /etc/nginx/sites-enabled/default 
+RUN ln --symbolic /usr/bin/nodejs /usr/bin/node
 
 RUN npm install -g npm
 RUN npm -g install grunt-cli bower
@@ -24,11 +28,13 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 # setup the environment
-WORKDIR /opt/superdesk/
 COPY ./docker/nginx.conf /etc/nginx/nginx.conf
 COPY ./docker/superdesk_vhost.conf /etc/nginx/sites-enabled/superdesk.conf
-COPY ./docker/start.sh /opt/superdesk/start.sh
-CMD /opt/superdesk/start.sh
+COPY ./docker/start.sh $APP_HOME/start.sh
+COPY ./docker/start-dev.sh $APP_HOME/start-dev.sh
+RUN chmod +x start.sh
+RUN chmod +x start-dev.sh
+CMD start.sh
 
 # client ports
 EXPOSE 9000
@@ -44,22 +50,27 @@ ENV CELERYBEAT_SCHEDULE_FILENAME /tmp/celerybeatschedule.db
 
 # install server dependencies
 COPY ./server/requirements.txt /tmp/requirements.txt
-RUN cd /tmp && pip3 install -U -r /tmp/requirements.txt
+RUN cd /tmp && pip install -U -r /tmp/requirements.txt
 
 # install client dependencies
-COPY ./client/package.json /opt/superdesk/client/
-RUN cd ./client && npm install
-COPY ./client/bower.json /opt/superdesk/client/
-COPY ./client/.bowerrc /opt/superdesk/client/
+COPY ./client/package.json $APP_HOME/client/
+RUN cd ./client && npm install --global npm-install-que
+RUN cd ./client && npm-install-que
+COPY ./client/bower.json $APP_HOME/client/
+COPY ./client/.bowerrc $APP_HOME/client/
 RUN cd ./client && bower --allow-root install
+#RUN cd ./client && npm install -d grunt
+#RUN cd ./client && npm install -d grunt-cli
+
+
 
 # copy server sources
-COPY ./server /opt/superdesk
+COPY ./server $APP_HOME/
 
 # copy client sources
-COPY ./client /opt/superdesk/client
+COPY ./client $APP_HOME/client
 
 # TODO: this is hack to update basic themes during bamboo deployment
-COPY ./server/liveblog/themes/themes_assets/ /opt/superdesk/themes_assets/
+COPY ./server/liveblog/themes/themes_assets/ $APP_HOME/themes_assets/
 
 RUN cd ./client && grunt build

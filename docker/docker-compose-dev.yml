@@ -3,7 +3,7 @@ logstash:
     file: common.yml
     service: logstash
   links:
-  - elastic
+    - elastic
 
 mongodb:
   extends:
@@ -20,9 +20,9 @@ kibana:
     file: common.yml
     service: kibana
   links:
-  - elastic
+    - elastic
   ports:
-  - "5601:5601"
+    - "5601:5601"
 
 elastic:
   extends:
@@ -39,23 +39,28 @@ superdesk:
     file: common.yml
     service: superdesk
   links:
-   - mongodb
-   - redis
-   - elastic
-   - logstash
-   - postfix
+    - mongodb
+    - redis
+    - elastic
+    - logstash
+    - postfix
   environment:
-   - SUPERDESK_RELOAD=True
-   - SUPERDESK_URL=http://localhost:5000/api
-   - SUPERDESK_WS_URL=ws://localhost:5050
-   - SUPERDESK_CLIENT_URL=http://localhost:9000
+    - SUPERDESK_RELOAD=True
+    - SUPERDESK_URL=http://127.0.0.1:5000/api
+    - SUPERDESK_WS_URL=ws://127.0.0.1:5050
+    - SUPERDESK_CLIENT_URL=http://127.0.0.1:9000
+    - ELASTICSEARCH_URL=http://elastic:9200
+    - ELASTICSEARCH_INDEX
   ports:
-   - "5000:5000"
-   - "5100:5100"
-   - "9000:9000"
-   - "35729:35729"
+    - "5000:5000"
+    - "5100:5100"
+    - "9000:9000"
+    - "35729:35729"
+    - "443:443"
+    - "80:80"
   volumes:
-   - ../server:/opt/superdesk/
-   - ../client:/opt/superdesk/client/
-   - ./Procfile-dev:/opt/superdesk/Procfile
-   - ./start-dev.sh:/opt/superdesk/start.sh
+    - ../server:/opt/superdesk/
+    - ../client:/opt/superdesk/client/
+    - ./Procfile-dev:/opt/superdesk/Procfile
+  command:
+    honcho start

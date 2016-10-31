@@ -9,6 +9,8 @@ mongodb:
   extends:
     file: ../docker/common.yml
     service: mongodb
+  volumes:
+   - ../data/mongodb:/data/db
 
 redis:
   extends:
