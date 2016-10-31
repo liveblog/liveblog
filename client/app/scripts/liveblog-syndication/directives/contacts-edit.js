@@ -3,7 +3,8 @@ liveblogSyndication
         return {
             templateUrl: 'scripts/liveblog-syndication/views/contacts-edit-form.html',
             scope: {
-                contacts: '='
+                contacts: '=',
+                attempted: '='
             },
             require:"^form",
             link: function(scope, elem, attrs, form) {

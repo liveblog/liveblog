@@ -1,4 +1,4 @@
-<form name="consumerForm" class="flat" novalidate ng-submit="consumerForm.$valid && save()">
+<form name="consumerForm" class="flat" novalidate ng-submit="save()">
     <div class="action-bar clearfix" ng-class="{show: !consumerForm.$pristine}">
         <button
             id="save-edit-btn" 
@@ -30,8 +30,10 @@
                 </div>
             </fieldset>
 
-            <div lb-contact-edit contacts="consumer.contacts"></div>
-
+            <div 
+                lb-contact-edit 
+                contacts="consumer.contacts" 
+                attempted="consumerForm.attempted"></div>
         </div>
     </div>
 </form>
