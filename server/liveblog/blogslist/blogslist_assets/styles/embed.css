@@ -1,24 +1,18 @@
+@import url(//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic&subset=latin,latin-ext);
+
 body {
-    background-color: #EAEAEA;
+    background-color: #FFF;
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
     color: #333333;
     line-height: 1.35em;
     font-size: 14px;
 }
-h1 {
-    font-weight: 400;
-    font-size: 24px;
-    line-height: 110%;
-}
 img {
     max-width: 100%;
     max-height: 500px;
     width: auto;
     height: auto;
-}
-.content-item {
-    margin: 15px 10px;
 }
 i {font-style: italic;}
 a {
@@ -167,17 +161,43 @@ tr {
 td, th {
     display: table-cell;
 }
-h3 {
-    line-height: 27px;
-    font-size: 18px;
-}
 h1, h2, h3, h4, h5, h6 {
-    margin: 0;
     font-family: inherit;
-    font-weight: 500;
-    color: inherit;
+    font-weight: 400;
     text-rendering: optimizelegibility;
+}
+h3 {
+    color: #5ea9c8;
+    line-height: 110%;
+    font-size: 18px;
+    margin-bottom: 8px;
 }
 h3 small {
     font-size: 14px;
+}
+.content-item {
+    padding: 10px 10px 14px;
+    border-bottom: 1px solid #eee;
+}
+.content-item:hover {
+    background-color: #f2f2f2;
+}
+.list-item {
+    font-size: 11px;
+    line-height: 120%;
+}
+.list-item span {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #999;
+    font-weight: 500;
+    margin-right: 2px;
+}
+.list-item__description {
+    font-size: 14px;
+    line-height: 130%;
+    margin-top: 6px;
+}
+.list-item--margin {
+    margin-left: 8px;
 }
