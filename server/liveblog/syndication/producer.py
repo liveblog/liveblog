@@ -1,4 +1,5 @@
 import json
+import logging
 from urllib.parse import urljoin
 import requests
 from requests.exceptions import ConnectionError, Timeout
@@ -12,6 +13,7 @@ from flask_cors import CORS
 from .utils import trailing_slash, api_response, api_error
 
 
+logger = logging.getLogger('superdesk')
 producers_blueprint = Blueprint('producers', __name__)
 CORS(producers_blueprint)
 
@@ -59,7 +61,10 @@ class ProducerService(BaseService):
         if not api_url:
             raise ProducerAPIError('Unable to get producer "{}" api url.'.format(producer_id))
 
-        data = data or {}
+        if data:
+            data = json.dumps(data)
+
+        logger.info('API {} request to {} with params={} and data={}'.format(method, api_url, request.args, data))
         try:
             response = requests.request(method, api_url, headers={
                 'Authorization': producer['consumer_api_key'],
@@ -67,6 +72,10 @@ class ProducerService(BaseService):
             }, params=request.args, data=data, timeout=timeout)
         except (ConnectionError, Timeout):
             raise ProducerAPIError('Unable to connect to producer: "{}".'.format(api_url))
+
+        logger.info('API {} request to {} - response: {} {}'.format(
+            method, api_url, response.status_code, response.content
+        ))
 
         if not json_loads:
             return response
@@ -129,27 +138,31 @@ def producer_blog(producer_id, blog_id):
 @producers_blueprint.route('/api/producers/<producer_id>/syndicate/<blog_id>', methods=['POST'])
 def producer_blogs_syndicate(producer_id, blog_id):
     producers = get_resource_service('producers')
-    consumer_blog_id = request.form.get('consumer_blog_id')
+    in_service = get_resource_service('syndication_in')
+
+    consumer_blog_id = request.get_json().get('consumer_blog_id')
     if not consumer_blog_id:
         return api_error('Missing "consumer_blog_id" in form data.', 422)
+
+    # TODO: check unique syndication request
+    # return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
 
     try:
         response = producers.syndicate(producer_id, blog_id, consumer_blog_id, json_loads=False)
     except ProducerAPIError as e:
         return api_response(str(e), 500)
     else:
-        if response.status_code == 200:
-            syndication = json.loads(response.content)
-            in_service = get_resource_service('in_syndication')
+        if response.status_code == 201:
+            syndication = response.json()
             in_service.post([{
                 'blog_id': syndication['consumer_blog_id'],
-                'blog_token': syndication['consumer_blog_id'],
+                'blog_token': syndication['token'],
                 'producer_id': producer_id,
                 'producer_blog_id': blog_id,
             }])
             return api_response(response.content, response.status_code, json_dumps=False)
         else:
-            return api_error('Unable to syndicate blog.', response.status_code)
+            return api_error('Unable to syndicate producer blog.', response.status_code)
 
 
 def _producers_blueprint_auth():
