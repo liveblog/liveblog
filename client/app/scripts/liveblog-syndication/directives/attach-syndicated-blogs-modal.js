@@ -6,6 +6,8 @@ liveblogSyndication
                 modalActive: '='
             },
             link: function(scope) {
+                scope.blogsToAttach = [];
+
                 scope.cancel = function() {
                     scope.syndBlogsListModalActive = false;
                 }
@@ -25,6 +27,15 @@ liveblogSyndication
                             console.log('blogs', blogs);
                             scope.blogs = blogs;
                         });
+                };
+
+                scope.check = function(blog) {
+                    blog.checked = (blog.hasOwnProperty('checked')) ? !blog.checked : true;
+
+                    if (blog.checked && scope.blogsToAttach.indexOf(blog._id) == -1)
+                        scope.blogsToAttach.push(blog._id);
+                    else if (!blog.checked && scope.blogsToAttach.indexOf(blog._id) != -1)
+                        scope.blogsToAttach.splice(scope.blogsToAttach.indexOf(blog._id), 1);
                 };
             }
         };
