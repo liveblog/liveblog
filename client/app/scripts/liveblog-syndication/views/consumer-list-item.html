@@ -12,7 +12,11 @@
 
     <div class="row-wrapper" sd-col-width>
         <div class="name">{{ consumer.name }}</div>
-        <div class="api_key">{{ consumer.api_key }}</div>
+        <div class="api_key">
+            <span id="api-key">{{ consumer.api_key }}</span>
+            <span lb-copy-to-clipboard for="api-key"></span>
+        </div>
+        <div class="api_url">{{ consumer.api_url }}</div>
     </div>
 
     <div class="action">
@@ -23,7 +27,7 @@
                     ng-href="" 
                     ng-click="disable($event, consumer)"
                     ng-if=":: !activity.dropdown" 
-                    class="ng-scope">
+                    class="ng-scope delete-consumer">
                     <i class="icon-trash true"></i>
                     <span class="ng-binding">Disable consumer</span>
                 </a>

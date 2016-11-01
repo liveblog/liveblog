@@ -15,6 +15,7 @@ from liveblog.embed import embed_blueprint
 from flask.ext.cache import Cache
 from liveblog.common import BlogCache
 import flask_s3
+from liveblog.syndication.producer import producers_blueprint
 
 import os
 import settings
@@ -59,6 +60,8 @@ def get_app(config=None):
     s3.init_app(app)
     # embed feature
     app.register_blueprint(embed_blueprint)
+    # Syndication features:
+    app.register_blueprint(producers_blueprint)
     return app
 
 if __name__ == '__main__':
