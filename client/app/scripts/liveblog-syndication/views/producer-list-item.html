@@ -12,8 +12,8 @@
 
     <div class="row-wrapper" sd-col-width>
         <div class="name">{{ producer.name }}</div>
-        <div class="api_url">{{ producer.api_url }}</div>
-        <div class="consumer_api_key">{{ producer.consumer_api_key }}</div>
+        <div class="email">{{ producer.api_url }}</div>
+        <div class="username">{{ producer.consumer_api_key }}</div>
     </div>
 
     <div class="action">
@@ -24,7 +24,7 @@
                     ng-href="" 
                     ng-click="disable($event, producer)"
                     ng-if=":: !activity.dropdown" 
-                    class="ng-scope">
+                    class="ng-scope delete-producer">
                     <i class="icon-trash true"></i>
                     <span class="ng-binding">Disable producer</span>
                 </a>

@@ -15,7 +15,6 @@ liveblogSyndication
 
                 scope.disable = function(e, consumerToRemove) {
                     e.stopPropagation();
-                    //console.log('disable', consumer);
 
                     api.consumers.remove(consumerToRemove).then(function(result) {
                         angular.forEach(scope.consumers, function(consumer, i) {

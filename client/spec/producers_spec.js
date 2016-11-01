@@ -1,7 +1,7 @@
 'use strict';
 
 var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
-    consumersManagement = require('./helpers/pages').consumersManagement;
+    producersManagement = require('./helpers/pages').producersManagement;
 
 function assertToastMsg(type, msg) {
     var cssSelector = '.notification-holder .alert-' + type,
@@ -14,22 +14,28 @@ function assertToastMsg(type, msg) {
     browser.ignoreSynchronization = false;
 }
 
-var consumer = {
+var producer = {
     name: 'Massey Fergusson',
-    apiUrl: 'http://www.masseyferguson.de/api'
+    apiUrl: 'http://www.masseyferguson.de/api',
+    consumerApiKey: '1234567890qwerty'
 };
 
-describe('Consumers', function() {
-
+describe('Producers', function() {
     beforeEach(function(done) {login().then(done);});
 
     describe('list', function() {
-        it('can open consumers managements and list the consumers', function() {
-            consumersManagement.openConsumersManagement();
+        it('can open producers managements and list the producers', function() {
+            producersManagement.openProducersManagement();
+
+            element.all(by.repeater('producer in producers'))
+                .count()
+                .then(function(count) {
+                    expect(count).toEqual(1);
+                });
         });
 
-        it('can create a new consumer', function() {
-            consumersManagement.openConsumersManagement();
+        it('can create a new producer', function() {
+            producersManagement.openProducersManagement();
 
             element(by.css('button.navbtn.sd-create-btn'))
                 .click()
@@ -37,29 +43,35 @@ describe('Consumers', function() {
                     return element(by.css('input#name')).isDisplayed();
                 })
                 .then(function() {
-                    return element(by.css('input#name')).sendKeys(consumer.name);
+                    return element(by.css('input#name'))
+                        .sendKeys(producer.name);
                 })
                 .then(function() {
-                    return element(by.css('input#api-url')).sendKeys(consumer.apiUrl);
+                    return element(by.css('input#api-url'))
+                        .sendKeys(producer.apiUrl);
+                })
+                .then(function() {
+                    return element(by.css('input#consumer-api-key'))
+                        .sendKeys(producer.consumerApiKey);
                 })
                 .then(function() {
                     return element(by.css('#save-edit-btn')).click();
                 })
                 .then(function() {
-                    return assertToastMsg('success', 'consumer saved.');
+                    return assertToastMsg('success', 'producer saved.');
                 })
                 .then(function() {
                     var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
-                    expect(firstRowName.getText()).toEqual(consumer.name);
-                    return element.all(by.repeater('consumer in consumers')).count();
+                    expect(firstRowName.getText()).toEqual(producer.name);
+                    return element.all(by.repeater('producer in producers')).count();
                 })
                 .then(function(count) {
                     expect(count).toEqual(2);
                 });
         });
 
-        it('can update a consumer', function() {
-            consumersManagement.openConsumersManagement();
+        it('can update a producer', function() {
+            producersManagement.openProducersManagement();
 
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
             expect(firstRowName.getText()).toEqual('John Deere');
@@ -73,26 +85,27 @@ describe('Consumers', function() {
                     return element(by.css('input#name')).clear();
                 })
                 .then(function() {
-                    return element(by.css('input#name')).sendKeys(consumer.name);
+                    return element(by.css('input#name')).sendKeys(producer.name);
                 })
                 .then(function() {
                     return element(by.css('#save-edit-btn')).click();
                 })
                 .then(function() {
-                    return assertToastMsg('success', 'consumer saved.');
+                    return assertToastMsg('success', 'producer saved.');
                 })
                 .then(function() {
                     var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
-                    expect(firstRowName.getText()).toEqual(consumer.name);
-                    return element.all(by.repeater('consumer in consumers')).count();
+                    expect(firstRowName.getText()).toEqual(producer.name);
+                    return element.all(by.repeater('producer in producers')).count();
                 })
                 .then(function(count) {
                     expect(count).toEqual(1);
                 });
         });
 
-        it('can delete a consumer', function() {
-           consumersManagement.openConsumersManagement();
+        it('can delete a producer', function() {
+            producersManagement.openProducersManagement();
+
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
             expect(firstRowName.getText()).toEqual('John Deere');
 
@@ -100,15 +113,15 @@ describe('Consumers', function() {
 
             browser.actions().mouseMove(elemToHover, {x: 3, y: 3}).perform()
                 .then(function() {
-                    return element(by.css('ul.table-body li a.delete-consumer'))
+                    return element(by.css('ul.table-body li a.delete-producer'))
                         .click();
                 })
                 .then(function() {
-                    return element.all(by.repeater('consumer in consumers')).count();
+                    return element.all(by.repeater('producer in producers')).count();
                 })
                 .then(function(count) {
                     expect(count).toEqual(0);
                 });
-        });
+});
     });
 });
