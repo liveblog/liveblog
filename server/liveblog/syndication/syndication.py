@@ -36,7 +36,7 @@ class SyndicationOutService(BaseService):
             {'blog_id': {'$eq': producer_blog_id}},
             {'consumer_blog_id': {'$eq': consumer_blog_id}}
         ]}
-        logger.info('SyndicationOut.is_syndicated lookup: {}'.format(lookup))
+        logger.debug('SyndicationOut.is_syndicated lookup: {}'.format(lookup))
         collection = cursor.find(lookup)
         if collection.count():
             return True
@@ -89,7 +89,7 @@ class SyndicationInService(BaseService):
             {'blog_id': {'$eq': consumer_blog_id}},
             {'producer_blog_id': {'$eq': producer_blog_id}}
         ]}
-        logger.info('SyndicationIn.is_syndicated lookup: {}'.format(lookup))
+        logger.debug('SyndicationIn.is_syndicated lookup: {}'.format(lookup))
         collection = cursor.find(lookup)
         if collection.count():
             return True

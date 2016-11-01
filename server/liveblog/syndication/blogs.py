@@ -55,7 +55,7 @@ def blogs_syndicate(blog_id):
         syndication = out_service.find_one(_id=syndication_id, req=None)
         return api_response({
             'token': syndication['token'],
-            'consumer_blog_id': consumer_blog_id # we return it anyway for consistency.
+            'consumer_blog_id': consumer_blog_id  # we return it anyway for consistency.
         }, 201)
 
 
