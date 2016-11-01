@@ -18,7 +18,7 @@ liveblogSyndication
 
                 scope.removeContact = function(index) {
                     scope.contacts.splice(index, 1);
-                    scope.form.$setDirty();
+                    form.$setDirty();
                 };
             }
         }
