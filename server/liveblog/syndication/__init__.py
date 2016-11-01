@@ -2,6 +2,7 @@ import superdesk
 from .consumer import ConsumerService, ConsumerResource
 from .producer import ProducerService, ProducerResource
 from .blogs import BlogService, BlogResource
+from .syndication import SyndicationOut, SyndicationOutService, SyndicationIn, SyndicationInService
 
 
 def init_app(app):
@@ -14,7 +15,16 @@ def init_app(app):
     # Blogs and Posts
     service = BlogService('syndication_blogs', backend=superdesk.get_backend())
     BlogResource('syndication_blogs', app=app, service=service)
+    # Syndication In/Out
+    service = SyndicationOutService('syndication_out', backend=superdesk.get_backend())
+    SyndicationOut('syndication_out', app=app, service=service)
+    service = SyndicationInService('syndication_in', backend=superdesk.get_backend())
+    SyndicationIn('syndication_in', app=app, service=service)
 
 
 superdesk.privilege(name='consumers', label='Consumers Management', description='User can manage consumers')
 superdesk.privilege(name='producers', label='Producers Management', description='User can manage producers')
+superdesk.privilege(name='syndication_out', label='Consumer Syndication Management',
+                    description='User can manage consumer syndication.')
+superdesk.privilege(name='syndication_in', label='Producer Syndication Management',
+                    description='User can manage producer syndication.')
