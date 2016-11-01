@@ -15,6 +15,11 @@ liveblogSyndication
                 });
 
                 scope.selectProducer = function(producerId) {
+                    scope.producers._items.forEach(function(producer) {
+                        if (producer._id == producerId)
+                            scope.currentProducer = producer;
+                    });
+
                     api.get('/producers/' + producerId + '/blogs')
                         .then(function(blogs) {
                             console.log('blogs', blogs);
