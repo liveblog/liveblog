@@ -29,6 +29,20 @@ syndication_out_schema = {
 class SyndicationOutService(BaseService):
     notification_key = 'syndication_out'
 
+    def is_syndicated(self, consumer_id, producer_blog_id, consumer_blog_id):
+        cursor = app.data.mongo.pymongo(resource=self.datasource).db[self.datasource]
+        lookup = {'$and': [
+            {'consumer_id': {'$eq': consumer_id}},
+            {'blog_id': {'$eq': producer_blog_id}},
+            {'consumer_blog_id': {'$eq': consumer_blog_id}}
+        ]}
+        logger.info('SyndicationOut.is_syndicated lookup: {}'.format(lookup))
+        collection = cursor.find(lookup)
+        if collection.count():
+            return True
+        else:
+            return False
+
     def on_create(self, docs):
         super().on_create(docs)
         for doc in docs:

@@ -43,19 +43,20 @@ def blogs_syndicate(blog_id):
     consumer_api_key = request.headers['Authorization']
     consumer = consumers.find_one(api_key=consumer_api_key, req=None)
     consumer_id = consumer['_id']
-    out_data = {
-        'blog_id': blog_id,
-        'consumer_id': consumer_id,
-        'consumer_blog_id': consumer_blog_id
-    }
-    # TODO: check unique syndication request
-    # return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
-    syndication_id = out_service.post([out_data])[0]
-    syndication = out_service.find_one(_id=syndication_id, req=None)
-    return api_response({
-        'token': syndication['token'],
-        'consumer_blog_id': consumer_blog_id
-    }, 201)
+
+    if out_service.is_syndicated(consumer_id, blog_id, consumer_blog_id):
+        return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
+    else:
+        syndication_id = out_service.post([{
+            'blog_id': blog_id,
+            'consumer_id': consumer_id,
+            'consumer_blog_id': consumer_blog_id
+        }])[0]
+        syndication = out_service.find_one(_id=syndication_id, req=None)
+        return api_response({
+            'token': syndication['token'],
+            'consumer_blog_id': consumer_blog_id # we return it anyway for consistency.
+        }, 201)
 
 
 def _blogs_blueprint_auth():
