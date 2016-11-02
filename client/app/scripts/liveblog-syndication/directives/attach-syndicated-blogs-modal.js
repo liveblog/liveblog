@@ -1,6 +1,7 @@
 liveblogSyndication
     .directive('lbAttachSyndicatedBlogsModal',
-        ['api', 'config', '$http', '$routeParams', function(api, config, $http, $routeParams) {
+        ['api', 'config', '$http', '$routeParams', 'lodash',
+        function(api, config, $http, $routeParams, _) {
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/attach-syndicated-blogs-modal.html',
                 scope: {
@@ -10,6 +11,13 @@ liveblogSyndication
                     scope.blogsToAttach = [];
 
                     var consumerBlogId = $routeParams._id;
+
+                    var compare = function() {
+                        scope.hasChanged = angular.equals(
+                            scope.localSyndication.sort(), 
+                            scope.blogsToAttach.sort()
+                        );
+                    };
 
                     api('syndication_in').query().then(function(syndicationIn) {
                         scope.syndicationIn = syndicationIn;
@@ -24,8 +32,6 @@ liveblogSyndication
                     }
 
                     var onProducerBlogs = function(blogs) {
-                        console.log('blogs', blogs);
-
                         scope.localSyndication = scope.syndicationIn._items
                             .filter(function(syndication) {
                                 return (syndication.blog_id == consumerBlogId);
@@ -34,14 +40,15 @@ liveblogSyndication
                                 return syndication.producer_blog_id;
                             });
 
-                        console.log('local synd', scope.localSyndication);
-
                         blogs._items = blogs._items.map(function(blog) {
                             blog.checked = (scope.localSyndication.indexOf(blog._id) != -1);
                             return blog;
                         });
 
+                        scope.blogsToAttach = angular.copy(scope.localSyndication);
                         scope.blogs = blogs;
+
+                        compare();
                     };
 
                     scope.selectProducer = function(producerId) {
@@ -61,6 +68,8 @@ liveblogSyndication
                             scope.blogsToAttach.push(blog._id);
                         else if (!blog.checked && scope.blogsToAttach.indexOf(blog._id) != -1)
                             scope.blogsToAttach.splice(scope.blogsToAttach.indexOf(blog._id), 1);
+
+                        compare();
                     };
 
                     var syndicate = function(blog) {
@@ -79,10 +88,19 @@ liveblogSyndication
                             });
                     };
 
+                    var unSyndicate = function(blog) {
+                        console.log('unsyndicate', blog);
+                    };
+
                     scope.attach = function() {
+                        var toSyndicate = _.difference(scope.blogsToAttach, scope.localSyndication);
+                        var toUnSyndicate = _.difference(scope.localSyndication, scope.blogsToAttach);
+
                         scope.blogs._items.forEach(function(blog) {
-                            if (scope.blogsToAttach.indexOf(blog._id) != -1)
+                            if (toSyndicate.indexOf(blog._id) != -1)
                                 syndicate(blog)
+                            else if (toUnSyndicate.indexOf(blog._id) != -1)
+                                unSyndicate(blog);
                         });
                     }
                 }
