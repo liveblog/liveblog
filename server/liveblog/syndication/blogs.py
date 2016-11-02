@@ -42,7 +42,7 @@ def _get_consumer_from_auth():
 def _create_blogs_syndicate(blog_id, consumer_blog_id):
     consumer = _get_consumer_from_auth()
     out_service = get_resource_service('syndication_out')
-    consumer_id = consumer['_id']
+    consumer_id = str(consumer['_id'])
     if out_service.is_syndicated(consumer_id, blog_id, consumer_blog_id):
         return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
     else:
@@ -61,7 +61,7 @@ def _create_blogs_syndicate(blog_id, consumer_blog_id):
 def _delete_blogs_syndicate(blog_id, consumer_blog_id):
     consumer = _get_consumer_from_auth()
     out_service = get_resource_service('syndication_out')
-    consumer_id = consumer['_id']
+    consumer_id = str(consumer['_id'])
     if not out_service.is_syndicated(consumer_id, blog_id, consumer_blog_id):
         return api_error('Syndication not sent for blog "{}".'.format(blog_id), 409)
     else:
