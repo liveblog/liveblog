@@ -26,13 +26,19 @@ liveblogSyndication
                     var onProducerBlogs = function(blogs) {
                         console.log('blogs', blogs);
 
-                        scope.syndicationIn._items.forEach(function(syndication) {
-                            if (syndication.blog_id == consumerBlogId)
-                                blogs._items = blogs._items.map(function(blog) {
-                                    if (syndication.producer_blog_id == blog._id)
-                                        blog.checked = true;
-                                    return blog;
-                                });
+                        scope.localSyndication = scope.syndicationIn._items
+                            .filter(function(syndication) {
+                                return (syndication.blog_id == consumerBlogId);
+                            })
+                            .map(function(syndication) {
+                                return syndication.producer_blog_id;
+                            });
+
+                        console.log('local synd', scope.localSyndication);
+
+                        blogs._items = blogs._items.map(function(blog) {
+                            blog.checked = (scope.localSyndication.indexOf(blog._id) != -1);
+                            return blog;
                         });
 
                         scope.blogs = blogs;
