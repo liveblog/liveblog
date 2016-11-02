@@ -32,18 +32,17 @@ class BlogResource(CustomAuthResource):
     item_methods = ['GET']
 
 
-@blogs_blueprint.route('/api/syndication/blogs/<string:blog_id>/syndicate', methods=['POST'])
-def blogs_syndicate(blog_id):
-    consumer_blog_id = request.get_json().get('consumer_blog_id')
-    if not consumer_blog_id:
-        return api_error('Missing "consumer_blog_id" in form data.', 422)
-
+def _get_consumer_from_auth():
     consumers = get_resource_service('consumers')
-    out_service = get_resource_service('syndication_out')
     consumer_api_key = request.headers['Authorization']
     consumer = consumers.find_one(api_key=consumer_api_key, req=None)
-    consumer_id = consumer['_id']
+    return consumer
 
+
+def _create_blogs_syndicate(blog_id, consumer_blog_id):
+    consumer = _get_consumer_from_auth()
+    out_service = get_resource_service('syndication_out')
+    consumer_id = consumer['_id']
     if out_service.is_syndicated(consumer_id, blog_id, consumer_blog_id):
         return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
     else:
@@ -57,6 +56,33 @@ def blogs_syndicate(blog_id):
             'token': syndication['token'],
             'consumer_blog_id': consumer_blog_id  # we return it anyway for consistency.
         }, 201)
+
+
+def _delete_blogs_syndicate(blog_id, consumer_blog_id):
+    consumer = _get_consumer_from_auth()
+    out_service = get_resource_service('syndication_out')
+    consumer_id = consumer['_id']
+    if not out_service.is_syndicated(consumer_id, blog_id, consumer_blog_id):
+        return api_error('Syndication not sent for blog "{}".'.format(blog_id), 409)
+    else:
+        out_service.delete({
+            'blog_id': blog_id,
+            'consumer_id': consumer_id,
+            'consumer_blog_id': consumer_blog_id
+        })
+        return api_response({}, 204)
+
+
+@blogs_blueprint.route('/api/syndication/blogs/<string:blog_id>/syndicate', methods=['POST', 'DELETE'])
+def blogs_syndicate(blog_id):
+    consumer_blog_id = request.get_json().get('consumer_blog_id')
+    if not consumer_blog_id:
+        return api_error('Missing "consumer_blog_id" in form data.', 422)
+
+    if request.method == 'DELETE':
+        return _delete_blogs_syndicate(blog_id, consumer_blog_id)
+    else:
+        return _create_blogs_syndicate(blog_id, consumer_blog_id)
 
 
 def _blogs_blueprint_auth():
