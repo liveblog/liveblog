@@ -1,3 +1,4 @@
+import logging
 from bson.objectid import ObjectId
 from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
@@ -12,8 +13,11 @@ import flask
 from superdesk.utc import utcnow
 from superdesk.users.services import current_user_has_privilege
 from superdesk.errors import SuperdeskApiError
+from superdesk import get_resource_service
 from liveblog.common import check_comment_length
 
+
+logger = logging.getLogger('superdesk')
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
 
@@ -155,6 +159,10 @@ class PostsService(ArchiveService):
                     raise SuperdeskApiError.forbiddenError(
                         message='User does not have sufficient permissions.')
 
+    def send_to_consumers(self, doc, action='created'):
+        out_service = get_resource_service('syndication_out')
+        out_service.send_syndication_post(doc, action)
+
     def on_create(self, docs):
         for doc in docs:
             # check permission
@@ -175,6 +183,11 @@ class PostsService(ArchiveService):
         for doc in docs:
             post_ids.append(doc.get('_id'))
             app.blog_cache.invalidate(doc.get('blog'))
+            # send post to consumer webhook
+            if doc['post_status'] == 'open':
+                logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
+                self.send_to_consumers(doc, action='created')
+
         # send notifications
         push_notification('posts', created=True, post_status=doc['post_status'], post_ids=post_ids)
 

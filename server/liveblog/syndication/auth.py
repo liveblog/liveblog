@@ -23,7 +23,7 @@ class SyndicationTokenAuth:
         abort(401, description='Please provide proper credentials')
 
     def check_auth(self, auth_token, allowed_roles, resource, method):
-        return get_resource_service(self.resource_name).find_one(req=None, **{self.token_field: self.resource_name})
+        return get_resource_service(self.resource_name).find_one(req=None, **{self.token_field: auth_token})
 
 
 class ConsumerApiKeyAuth(SyndicationTokenAuth):
