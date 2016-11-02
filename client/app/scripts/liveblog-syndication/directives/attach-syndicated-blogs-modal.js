@@ -11,13 +11,32 @@ liveblogSyndication
 
                     var consumerBlogId = $routeParams._id;
 
-                    api.producers.query().then((producers) => {
+                    api('syndication_in').query().then(function(syndicationIn) {
+                        scope.syndicationIn = syndicationIn;
+                    })
+
+                    api.producers.query().then(function(producers) {
                         scope.producers = producers;
                     });
 
                     scope.cancel = function() {
-                        scope.syndBlogsListModalActive = false;
+                        scope.modalActive = false;
                     }
+
+                    var onProducerBlogs = function(blogs) {
+                        console.log('blogs', blogs);
+
+                        scope.syndicationIn._items.forEach(function(syndication) {
+                            if (syndication.blog_id == consumerBlogId)
+                                blogs._items = blogs._items.map(function(blog) {
+                                    if (syndication.producer_blog_id == blog._id)
+                                        blog.checked = true;
+                                    return blog;
+                                });
+                        });
+
+                        scope.blogs = blogs;
+                    };
 
                     scope.selectProducer = function(producerId) {
                         scope.producers._items.forEach(function(producer) {
@@ -26,10 +45,7 @@ liveblogSyndication
                         });
 
                         api.get('/producers/' + producerId + '/blogs')
-                            .then(function(blogs) {
-                                console.log('blogs', blogs);
-                                scope.blogs = blogs;
-                            });
+                            .then(onProducerBlogs);
                     };
 
                     scope.check = function(blog) {
