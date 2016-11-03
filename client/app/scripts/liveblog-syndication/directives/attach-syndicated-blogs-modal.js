@@ -89,12 +89,31 @@ liveblogSyndication
                     };
 
                     var unSyndicate = function(blog) {
+                        var uri = config.server.url + 
+                            '/producers/' + scope.currentProducer._id + 
+                            '/syndicate/' + blog._id;
+
                         console.log('unsyndicate', blog);
+                        $http({
+                            url: uri,
+                            method: 'DELETE',
+                            data: { consumer_blog_id: consumerBlogId },
+                            headers: {
+                                "Content-Type": "application/json;charset=utf-8"
+                            }
+                        })
+                        //$http.delete(uri, { data: { consumer_blog_id: consumerBlogId }})
+                            .then(function(response) {
+                                console.log('response to delete', response);
+                            })
+                            .catch(function(err) {
+                                console.log('err', err);
+                            });
                     };
 
                     scope.attach = function() {
-                        var toSyndicate = _.difference(scope.blogsToAttach, scope.localSyndication);
-                        var toUnSyndicate = _.difference(scope.localSyndication, scope.blogsToAttach);
+                        var toSyndicate = _.difference(scope.blogsToAttach, scope.localSyndication),
+                            toUnSyndicate = _.difference(scope.localSyndication, scope.blogsToAttach);
 
                         scope.blogs._items.forEach(function(blog) {
                             if (toSyndicate.indexOf(blog._id) != -1)
