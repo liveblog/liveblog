@@ -1,7 +1,7 @@
 liveblogSyndication
     .directive('lbAttachSyndicatedBlogsModal',
-        ['api', 'config', '$http', '$routeParams', 'lodash',
-        function(api, config, $http, $routeParams, _) {
+        ['api', 'config', '$http', '$q', '$routeParams', 'lodash',
+        function(api, config, $http, $q, $routeParams, _) {
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/attach-syndicated-blogs-modal.html',
                 scope: {
@@ -72,55 +72,52 @@ liveblogSyndication
                         compare();
                     };
 
-                    var syndicate = function(blog) {
+                    var syndicate = function(blog, method) {
                         var uri = config.server.url + 
                             '/producers/' + scope.currentProducer._id + 
                             '/syndicate/' + blog._id;
 
-                        // I'm using angular default $http service because I couldn't manage
-                        // to have the superdesk api service to do what I want.
-                        $http.post(uri, { consumer_blog_id: consumerBlogId })
-                            .then(function(response) {
-                                console.log('response', response);
-                            })
-                            .catch(function(err) {
-                                console.log('err', err);
-                            });
-                    };
-
-                    var unSyndicate = function(blog) {
-                        var uri = config.server.url + 
-                            '/producers/' + scope.currentProducer._id + 
-                            '/syndicate/' + blog._id;
-
-                        console.log('unsyndicate', blog);
-                        $http({
+                        return $http({
                             url: uri,
-                            method: 'DELETE',
+                            method: (method == 'DELETE') ? 'DELETE' : 'POST',
                             data: { consumer_blog_id: consumerBlogId },
                             headers: {
                                 "Content-Type": "application/json;charset=utf-8"
                             }
                         })
-                        //$http.delete(uri, { data: { consumer_blog_id: consumerBlogId }})
-                            .then(function(response) {
-                                console.log('response to delete', response);
-                            })
-                            .catch(function(err) {
-                                console.log('err', err);
-                            });
+                        .then(function(response) {
+                            console.log('response to delete', response);
+                            return response;
+                        })
+                        .catch(function(err) {
+                            console.log('err', err);
+                            scope.modalActive = false;
+                        });
                     };
 
+
                     scope.attach = function() {
-                        var toSyndicate = _.difference(scope.blogsToAttach, scope.localSyndication),
+                        var chain = [],
+                            toSyndicate = _.difference(scope.blogsToAttach, scope.localSyndication),
                             toUnSyndicate = _.difference(scope.localSyndication, scope.blogsToAttach);
 
-                        scope.blogs._items.forEach(function(blog) {
+
+                        scope.blogs._items.forEach(function (blog) {
                             if (toSyndicate.indexOf(blog._id) != -1)
-                                syndicate(blog)
+                                chain.push(syndicate(blog, 'POST'));
                             else if (toUnSyndicate.indexOf(blog._id) != -1)
-                                unSyndicate(blog);
+                                chain.push(syndicate(blog, 'DELETE'));
                         });
+
+                        $q.all(chain)
+                            .then(function() {
+                                console.log('syndication complete');
+                                scope.modalActive = false;
+                            })
+                            .catch(function(err) {
+                                scope.modalActive = false;
+                                console.log('syndication failed');
+                            });
                     }
                 }
             };
