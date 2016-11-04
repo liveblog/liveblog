@@ -1,7 +1,7 @@
 liveblogSyndication
     .directive('lbAttachSyndicatedBlogsModal',
-        ['api', 'config', '$http', '$q', '$routeParams', 'lodash', 'IngestPanelActions',
-        function(api, config, $http, $q, $routeParams, _, IngestPanelActions) {
+        ['api', 'config', '$q', '$routeParams', 'lodash', 'IngestPanelActions',
+        function(api, config, $q, $routeParams, _, IngestPanelActions) {
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/attach-syndicated-blogs-modal.html',
                 scope: {
@@ -9,15 +9,33 @@ liveblogSyndication
                     store: '='
                 },
                 link: function(scope) {
+                    var consumerBlogId = $routeParams._id;
+
+                     var onProducerBlogs = function() {
+                        console.log('local syndication', scope.localSyndication);
+                        scope.producerBlogs._items = scope.producerBlogs._items.map(function(blog) {
+                            blog.checked = (scope.localSyndication.indexOf(blog._id) != -1);
+                            console.log('checked', blog.checked);
+                            return blog;
+                        });
+
+                        scope.blogsToAttach = angular.copy(scope.localSyndication);
+
+                        compare();
+                    };
+
                     scope.store.connect(function(state) {
                         scope.producers = state.producers;
                         scope.syndicationIn = state.syndicationIn;
+                        scope.producerBlogs = state.producerBlogs;
+                        scope.localSyndication = state.localSyndication;
+
+                        if (Object.keys(state.producerBlogs).length > 0)
+                            onProducerBlogs();
                     })
 
                     IngestPanelActions.getProducers();
                     scope.blogsToAttach = [];
-
-                    var consumerBlogId = $routeParams._id;
 
                     var compare = function() {
                         scope.hasChanged = angular.equals(
@@ -43,26 +61,6 @@ liveblogSyndication
                         scope.modalActive = false;
                     }
 
-                    var onProducerBlogs = function(blogs) {
-                        scope.localSyndication = scope.syndicationIn._items
-                            .filter(function(syndication) {
-                                return (syndication.blog_id == consumerBlogId);
-                            })
-                            .map(function(syndication) {
-                                return syndication.producer_blog_id;
-                            });
-
-                        blogs._items = blogs._items.map(function(blog) {
-                            blog.checked = (scope.localSyndication.indexOf(blog._id) != -1);
-                            return blog;
-                        });
-
-                        scope.blogsToAttach = angular.copy(scope.localSyndication);
-                        scope.blogs = blogs;
-
-                        compare();
-                    };
-
                     scope.selectProducer = function(producerId) {
                         console.log('syndication in', scope.syndicationIn);
                         scope.producers._items.forEach(function(producer) {
@@ -70,8 +68,9 @@ liveblogSyndication
                                 scope.currentProducer = producer;
                         });
 
-                        api.get('/producers/' + producerId + '/blogs')
-                            .then(onProducerBlogs);
+                        IngestPanelActions.getProducerBlogs(producerId);
+                        //api.get('/producers/' + producerId + '/blogs')
+                        //    .then(onProducerBlogs);
                     };
 
                     scope.check = function(blog) {
@@ -85,28 +84,28 @@ liveblogSyndication
                         compare();
                     };
 
-                    var syndicate = function(blog, method) {
-                        var uri = config.server.url + 
-                            '/producers/' + scope.currentProducer._id + 
-                            '/syndicate/' + blog._id;
+                    //var syndicate = function(blog, method) {
+                    //    var uri = config.server.url + 
+                    //        '/producers/' + scope.currentProducer._id + 
+                    //        '/syndicate/' + blog._id;
 
-                        return $http({
-                            url: uri,
-                            method: (method == 'DELETE') ? 'DELETE' : 'POST',
-                            data: { consumer_blog_id: consumerBlogId },
-                            headers: {
-                                "Content-Type": "application/json;charset=utf-8"
-                            }
-                        })
-                        .then(function(response) {
-                            console.log('response to delete', response);
-                            return response;
-                        })
-                        .catch(function(err) {
-                            console.log('err', err);
-                            scope.modalActive = false;
-                        });
-                    };
+                    //    return $http({
+                    //        url: uri,
+                    //        method: (method == 'DELETE') ? 'DELETE' : 'POST',
+                    //        data: { consumer_blog_id: consumerBlogId },
+                    //        headers: {
+                    //            "Content-Type": "application/json;charset=utf-8"
+                    //        }
+                    //    })
+                    //    .then(function(response) {
+                    //        console.log('response to delete', response);
+                    //        return response;
+                    //    })
+                    //    .catch(function(err) {
+                    //        console.log('err', err);
+                    //        scope.modalActive = false;
+                    //    });
+                    //};
 
 
                     scope.attach = function() {
@@ -115,17 +114,24 @@ liveblogSyndication
                             toUnSyndicate = _.difference(scope.localSyndication, scope.blogsToAttach);
 
 
-                        scope.blogs._items.forEach(function (blog) {
+                        scope.producerBlogs._items.forEach(function (blog) {
                             if (toSyndicate.indexOf(blog._id) != -1)
-                                Actions.syndicate(
+                                IngestPanelActions.syndicate(
                                     scope.currentProducer,
                                     consumerBlogId,
                                     blog, 
                                     'POST'
                                 );
-                            //else if (toUnSyndicate.indexOf(blog._id) != -1)
-                            //    chain.push(syndicate(blog, 'DELETE'));
+                            else if (toUnSyndicate.indexOf(blog._id) != -1)
+                                IngestPanelActions.syndicate(
+                                    scope.currentProducer,
+                                    consumerBlogId,
+                                    blog, 
+                                    'DELETE'
+                                );
                         });
+
+                        scope.modalActive = false;
 
                         //$q.all(chain)
                         //    .then(function() {

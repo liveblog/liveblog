@@ -32,7 +32,6 @@ liveblogSyndication
                         }
                     })
                     .then(function(response) {
-                        //return api.producers.query();
                         return api('syndication_in').query();
                     })
                     .then(function(syndicationIn) {
@@ -41,6 +40,15 @@ liveblogSyndication
                             syndicationIn: syndicationIn
                         });
                     });
+                },
+                getProducerBlogs: function(producerId) {
+                    api.get('/producers/' + producerId + '/blogs')
+                        .then(function(blogs) {
+                            Dispatcher.dispatch({
+                                type: 'ON_GET_PRODUCER_BLOGS',
+                                producerBlogs: blogs
+                            });
+                        });
                 }
             };
         }])
