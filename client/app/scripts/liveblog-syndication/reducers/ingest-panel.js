@@ -39,10 +39,6 @@ liveblogSyndication
                         producerBlogs: state.producerBlogs,
                         localSyndication: state.localSyndication,
                         locallySyndicatedItems: state.locallySyndicatedItems
-                        //locallySyndicatedItems: locallySyndicatedItems(
-                        //    state.syndicationIn, 
-                        //    state.localSyndication
-                        //)
                     }
 
                 case 'ON_GET_PRODUCER_BLOGS':
@@ -53,10 +49,6 @@ liveblogSyndication
                         producerBlogs: action.producerBlogs,
                         localSyndication: state.localSyndication,
                         locallySyndicatedItems: state.locallySyndicatedItems
-                        //locallySyndicatedItems: locallySyndicatedItems(
-                        //    state.syndicationIn, 
-                        //    state.localSyndication
-                        //)
                     }
             }
         }

@@ -17,8 +17,6 @@ liveblogSyndication
                         scope.syndicationIn = state.syndicationIn;
                         scope.localSyndication = state.localSyndication;
                         scope.locallySyndicatedItems = state.locallySyndicatedItems;
-
-                        console.log('state', state);
                     });
 
                     IngestPanelActions.getSyndication();
@@ -26,12 +24,6 @@ liveblogSyndication
                     scope.openSyndBlogsModal = function() {
                         scope.syndBlogsModalActive = true;
                     }
-
-                    //scope.locallySyndicatedItems = function() {
-                    //    return scope.syndicationIn._items.filter(function(item) {
-                    //        return (scope.localSyndication.indexOf(item.blog_id) != -1);
-                    //    });
-                    //};
                 }
             };
         }]);
