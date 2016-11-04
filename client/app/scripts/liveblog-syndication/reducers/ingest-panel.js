@@ -2,7 +2,8 @@ liveblogSyndication
     .factory('IngestPanelReducers', function() {
         var locallySyndicatedItems = function(syndicationIn, localSyndication) {
             return syndicationIn._items.filter(function(item) {
-                return (localSyndication.indexOf(item.producer_blog_id) != -1);
+                //return (localSyndication.indexOf(item.producer_blog_id) != -1);
+                return (localSyndication.indexOf(item.blog_token) != -1);
             });
         };
 
@@ -16,7 +17,7 @@ liveblogSyndication
                             return (syndication.blog_id == state.consumerBlogId);
                         })
                         .map(function(syndication) {
-                            return syndication.producer_blog_id;
+                            return syndication.blog_token;
                         });
 
                     return {
@@ -42,6 +43,17 @@ liveblogSyndication
                     }
 
                 case 'ON_GET_PRODUCER_BLOGS':
+                    action.producerBlogs._items = action.producerBlogs._items.map(function(blog) {
+                        blog.checked = false;
+
+                        state.locallySyndicatedItems.forEach(function(localBlog) {
+                            if (localBlog.producer_blog_id == blog._id)
+                                blog.checked = true;
+                        });
+
+                        return blog;
+                    });
+
                     return {
                         consumerBlogId: state.consumerBlogId,
                         syndicationIn: state.syndicationIn,

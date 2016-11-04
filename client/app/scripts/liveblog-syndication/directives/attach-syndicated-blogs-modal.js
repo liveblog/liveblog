@@ -1,7 +1,6 @@
 liveblogSyndication
     .directive('lbAttachSyndicatedBlogsModal',
-        ['$q', 'lodash', 'IngestPanelActions',
-        function($q, _, IngestPanelActions) {
+        ['$q', 'lodash', 'IngestPanelActions', function($q, _, IngestPanelActions) {
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/attach-syndicated-blogs-modal.html',
                 scope: {
@@ -9,19 +8,6 @@ liveblogSyndication
                     store: '='
                 },
                 link: function(scope) {
-                     var onProducerBlogs = function() {
-                        console.log('local syndication', scope.localSyndication);
-                        scope.producerBlogs._items = scope.producerBlogs._items.map(function(blog) {
-                            blog.checked = (scope.localSyndication.indexOf(blog._id) != -1);
-                            console.log('checked', blog.checked);
-                            return blog;
-                        });
-
-                        scope.blogsToAttach = angular.copy(scope.localSyndication);
-
-                        compare();
-                    };
-
                     scope.store.connect(function(state) {
                         scope.producers = state.producers;
                         scope.syndicationIn = state.syndicationIn;
@@ -29,8 +15,10 @@ liveblogSyndication
                         scope.localSyndication = state.localSyndication;
                         scope.consumerBlogId = state.consumerBlogId;
 
-                        if (Object.keys(state.producerBlogs).length > 0)
-                            onProducerBlogs();
+                        if (Object.keys(state.producerBlogs).length > 0) {
+                            scope.blogsToAttach = angular.copy(scope.localSyndication);
+                            compare();
+                        }
                     });
 
                     IngestPanelActions.getProducers();
