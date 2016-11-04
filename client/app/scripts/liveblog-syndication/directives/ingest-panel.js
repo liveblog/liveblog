@@ -1,18 +1,25 @@
 liveblogSyndication
-    .directive('lbIngestPanel', ['Actions', 'Store', function(Actions, Store) {
-        return {
-            templateUrl: 'scripts/liveblog-syndication/views/ingest-panel.html',
-            link: function(scope) {
-                new Store(function(data) {
-                    console.log('data syndication', data.syndicationIn);
-                    scope.syndicationIn = data.syndicationIn;
-                });
+    .directive('lbIngestPanel',
+        ['IngestPanelActions', 'Store', 'IngestPanelReducers', 
+        function(IngestPanelActions, Store, IngestPanelReducers) {
+            return {
+                templateUrl: 'scripts/liveblog-syndication/views/ingest-panel.html',
+                link: function(scope) {
+                    scope.store = new Store(IngestPanelReducers, {
+                        syndicationIn: {},
+                        producers: {}
+                    });
 
-                Actions.getSyndication();
+                    scope.store.connect(function(state) {
+                        console.log('state', state);
+                        scope.syndicationIn = state.syndicationIn;
+                    });
 
-                scope.openSyndBlogsModal = function() {
-                    scope.syndBlogsModalActive = true;
+                    IngestPanelActions.getSyndication();
+
+                    scope.openSyndBlogsModal = function() {
+                        scope.syndBlogsModalActive = true;
+                    }
                 }
-            }
-        };
-    }]);
+            };
+        }]);

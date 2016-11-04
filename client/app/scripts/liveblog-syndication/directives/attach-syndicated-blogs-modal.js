@@ -1,19 +1,20 @@
 liveblogSyndication
     .directive('lbAttachSyndicatedBlogsModal',
-        ['api', 'config', '$http', '$q', '$routeParams', 'lodash', 'Actions', 'Store',
-        function(api, config, $http, $q, $routeParams, _, Actions, Store) {
+        ['api', 'config', '$http', '$q', '$routeParams', 'lodash', 'IngestPanelActions',
+        function(api, config, $http, $q, $routeParams, _, IngestPanelActions) {
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/attach-syndicated-blogs-modal.html',
                 scope: {
                     modalActive: '=',
-                    syndicationIn: '='
+                    store: '='
                 },
                 link: function(scope) {
-                    new Store(function(data) {
-                        scope.producers = data.producers;
-                    });
+                    scope.store.connect(function(state) {
+                        scope.producers = state.producers;
+                        scope.syndicationIn = state.syndicationIn;
+                    })
 
-                    Actions.getProducers();
+                    IngestPanelActions.getProducers();
                     scope.blogsToAttach = [];
 
                     var consumerBlogId = $routeParams._id;
