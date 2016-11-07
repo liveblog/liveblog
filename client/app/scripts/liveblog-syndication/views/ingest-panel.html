@@ -1,0 +1,45 @@
+<div class="panel panel--contribution">
+    <header translate>
+        <span>Ingest</span>
+
+        <button class="btn btn-info pull-right" ng-click="openSyndBlogsModal()">
+            <i class="svg-icon-add inverse"></i>
+        </button>
+    </header>
+
+    <!--<div class="panel--contribution__filters">-->
+    <!--    <span class="panel--contribution__filters__title">Filter by user</span>-->
+    <!--    <lb-filter-by-member-->
+    <!--        on-filter-change="blogEdit.contributionsPostsInstance.setAuthorFilter"-->
+    <!--        blog-id="blog._id">-->
+    <!--    </lb-filter-by-member>-->
+    <!--</div>-->
+    <!--<div class="content" lr-infinite-scroll="fetchNewContributionPage" full-height>-->
+    <!--    <lb-posts-list-->
+    <!--      lb-posts-instance="blogEdit.contributionsPostsInstance"-->
+    <!--      lb-posts-blog-id="blog._id"-->
+    <!--      lb-posts-status="submitted"-->
+    <!--      lb-posts-order-by="updated_first"-->
+    <!--      lb-posts-allow-unpublishing="false"-->
+    <!--      lb-posts-allow-reordering="false"-->
+    <!--      lb-posts-is-unread-post="unreadPostsService.isContribution"-->
+    <!--      lb-posts-allow-editing="blogSecurityService.isUserOwnerOrCanPublishAPost"-->
+    <!--      lb-posts-allow-deleting="blogSecurityService.isUserOwnerOrCanPublishAPost"-->
+    <!--      lb-posts-allow-publishing="blogSecurityService.canPublishAPost"-->
+    <!--      lb-posts-on-post-selected="openPostInEditor"-->
+    <!--    >-->
+    <!--        <div ng-if="!blogEdit.contributionsPostsInstance.isFilterEnable()">-->
+    <!--            <p>There is no contribution yet.</p>-->
+    <!--            <p>-->
+    <!--                To create one, start to compose your post and click on the &#34;SUBMIT&#34; button.-->
+    <!--                You will be able to re-open it later in the editor.-->
+    <!--            </p>-->
+    <!--        </div>-->
+    <!--        <div ng-if="blogEdit.contributionsPostsInstance.isFilterEnable()">-->
+    <!--            <p>No contributions from the selected users</p>-->
+    <!--        </div>-->
+    <!--    </lb-posts-list>-->
+    <!--</div>-->
+</div>
+
+<div lb-attach-syndicated-blogs-modal modal-active="syndBlogsModalActive"></div>

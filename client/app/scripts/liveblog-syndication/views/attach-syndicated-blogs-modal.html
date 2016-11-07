@@ -1,0 +1,44 @@
+<div sd-modal="" data-model="modalActive">
+    <div class="modal-header">
+        <button class="close" ng-click="cancel()"><i class="icon-close-small"></i></button>
+        <h3 translate>Attach Syndicated blog</h3>
+    </div>
+    <div class="modal-body" style="min-height: 300px;">
+        <select ng-model="producerId" ng-change="selectProducer(producerId)">
+            <option 
+                ng-repeat="producer in producers._items" 
+                value="{{producer._id}}">
+                {{producer.name}}
+            </option>
+        </select>
+        <ul id="producers-list">
+            <li
+                ng-repeat="blog in blogs._items" 
+                ng-click="check(blog)" 
+                ng-class="{checked: blog.checked}">
+                <div class="block-left">
+                    <h4>{{blog.title}}</h4>
+                    <p><b>Producer:</b> {{currentProducer.name}}</p>
+                </div>
+                <dl>
+                    <dt>Autopublish</dt>
+                    <dd>
+                        <span
+                            sd-switch 
+                            ng-change="syndicate(blog)" 
+                            ng-model="blog.autopublish" 
+                            class="sms-switch"></span>
+                    </dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+    <div class="modal-footer">
+        <button
+            class="btn btn-primary btn-info" 
+            type="button"
+            ng-click="attach()"
+            ng-disabled="hasChanged"
+            translate>Attach</button>
+    </div>
+</div>
