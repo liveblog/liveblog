@@ -7,6 +7,8 @@ liveblogSyndication
                     store: '='
                 },
                 link: function(scope) {
+                    scope.actionName = 'Attach';
+
                     scope.store.connect(function(state) {
                         scope.producers = state.producers;
                         scope.syndicationIn = state.syndicationIn;
@@ -29,6 +31,24 @@ liveblogSyndication
                             scope.localProducerBlogIds.sort(), 
                             scope.blogsToAttach.sort()
                         );
+
+                        var toSyndicate = _.difference(
+                            scope.blogsToAttach, 
+                            scope.localProducerBlogIds
+                        ),
+                        toUnSyndicate = _.difference(
+                            scope.localProducerBlogIds, 
+                            scope.blogsToAttach
+                        );
+
+                        if (toSyndicate.length > 0 && toUnSyndicate.length == 0)
+                            scope.actionName = 'Attach';
+                        else if (toSyndicate.length == 0 && toUnSyndicate.length > 0)
+                            scope.actionName = 'Detach';
+                        else if (!scope.hasChanged)
+                            scope.actionName = 'Attach/Detach';
+                        else
+                            scope.actionName = 'Attach';
                     };
 
                     scope.cancel = function() {
