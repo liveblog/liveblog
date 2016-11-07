@@ -4,7 +4,7 @@ from superdesk import get_resource_service
 
 
 class ConsumerApiKeyAuth:
-    def authorized(self, allowed_roles, resource, method):
+    def authorized(self, allowed_roles, resource, method=None):
         auth_token = request.headers.get('Authorization')
         return auth_token and self.check_auth(auth_token, allowed_roles, resource, method)
 
