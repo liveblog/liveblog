@@ -86,7 +86,7 @@ liveblogSyndication
                             }
                         })
                         .then(function(response) {
-                            console.log('response to delete', response);
+                            console.log('response to create/delete', response);
                             return response;
                         })
                         .catch(function(err) {
