@@ -154,12 +154,14 @@ def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
         if response.status_code == 201:
             syndication = response.json()
             in_service.post([{
-                'blog_id': str(syndication['consumer_blog_id']),
+                'blog_id': syndication['consumer_blog_id'],
                 'blog_token': syndication['token'],
-                'producer_id': str(producer_id),
-                'producer_blog_id': str(blog_id)
+                'producer_id': producer_id,
+                'producer_blog_id': blog_id
             }])
             return api_response(response.content, response.status_code, json_dumps=False)
+        elif response.status_code == 409:
+            return api_error('Syndication already sent for blog "{}"'.format(blog_id), 409)
         else:
             return api_error('Unable to syndicate producer blog.', response.status_code)
 
@@ -178,9 +180,9 @@ def _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
         if response.status_code == 204:
             in_service.delete({
                 '$and': [
-                    {'blog_id': {'$eq': str(consumer_blog_id)}},
-                    {'producer_id': {'$eq': str(producer_id)}},
-                    {'producer_blog_id': {'$eq': str(blog_id)}}
+                    {'blog_id': {'$eq': consumer_blog_id}},
+                    {'producer_id': {'$eq': producer_id}},
+                    {'producer_blog_id': {'$eq': blog_id}}
                 ]
             })
             return api_response(response.content, response.status_code, json_dumps=False)
