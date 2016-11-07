@@ -1,18 +1,15 @@
 liveblogSyndication
     .factory('IngestPanelReducers', function() {
-        var locallySyndicatedItems = function(syndicationIn, localSyndication) {
+        var locallySyndicatedItems = function(syndicationIn, localSyndTokens) {
             return syndicationIn._items.filter(function(item) {
-                //return (localSyndication.indexOf(item.producer_blog_id) != -1);
-                return (localSyndication.indexOf(item.blog_token) != -1);
+                return (localSyndTokens.indexOf(item.blog_token) != -1);
             });
         };
 
         return function(state, action) {
-            console.log(action.type);
-
             switch (action.type) {
                 case 'ON_GET_SYND':
-                    var localSyndication = action.syndicationIn._items
+                    var localSyndTokens = action.syndicationIn._items
                         .filter(function(syndication) {
                             return (syndication.blog_id == state.consumerBlogId);
                         })
@@ -26,10 +23,11 @@ liveblogSyndication
                         syndicationIn: action.syndicationIn, //ACTION
                         producers: state.producers,
                         producerBlogs: state.producerBlogs,
-                        localSyndication: localSyndication,
+                        localProducerBlogIds: state.localProducerBlogsIds,
+                        localSyndTokens: localSyndTokens,
                         locallySyndicatedItems: locallySyndicatedItems(
                             action.syndicationIn, 
-                            localSyndication
+                            localSyndTokens
                         )
                     };
 
@@ -40,17 +38,22 @@ liveblogSyndication
                         syndicationIn: state.syndicationIn,
                         producers: action.producers, // ACTION
                         producerBlogs: state.producerBlogs,
-                        localSyndication: state.localSyndication,
+                        localProducerBlogIds: state.localProducerBlogsIds,
+                        localSyndTokens: state.localSyndTokens,
                         locallySyndicatedItems: state.locallySyndicatedItems
                     }
 
                 case 'ON_GET_PRODUCER_BLOGS':
+                    var localProducerBlogIds = [];
+
                     action.producerBlogs._items = action.producerBlogs._items.map(function(blog) {
                         blog.checked = false;
 
                         state.locallySyndicatedItems.forEach(function(localBlog) {
-                            if (localBlog.producer_blog_id == blog._id)
+                            if (localBlog.producer_blog_id == blog._id) {
+                                localProducerBlogIds.push(blog._id);
                                 blog.checked = true;
+                            }
                         });
 
                         return blog;
@@ -62,7 +65,8 @@ liveblogSyndication
                         syndicationIn: state.syndicationIn,
                         producers: state.producers,
                         producerBlogs: action.producerBlogs, // ACTION
-                        localSyndication: state.localSyndication,
+                        localProducerBlogIds: localProducerBlogIds,
+                        localSyndTokens: state.localSyndTokens,
                         locallySyndicatedItems: state.locallySyndicatedItems
                     }
 
@@ -73,7 +77,8 @@ liveblogSyndication
                         syndicationIn: state.syndicationIn,
                         producers: state.producers,
                         producerBlogs: state.producerBlogs,
-                        localSyndication: state.localSyndication,
+                        localProducerBlogIds: state.localProducerBlogsIds,
+                        localSyndTokens: state.localSyndTokens,
                         locallySyndicatedItems: state.locallySyndicatedItems
                     }
             }

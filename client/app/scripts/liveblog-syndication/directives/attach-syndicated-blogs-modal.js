@@ -11,12 +11,12 @@ liveblogSyndication
                         scope.producers = state.producers;
                         scope.syndicationIn = state.syndicationIn;
                         scope.producerBlogs = state.producerBlogs;
-                        scope.localSyndication = state.localSyndication;
                         scope.consumerBlogId = state.consumerBlogId;
+                        scope.localProducerBlogIds = state.localProducerBlogIds;
                         scope.modalActive = state.modalActive;
 
                         if (Object.keys(state.producerBlogs).length > 0) {
-                            scope.blogsToAttach = angular.copy(scope.localSyndication);
+                            scope.blogsToAttach = angular.copy(scope.localProducerBlogIds);
                             compare();
                         }
                     });
@@ -26,7 +26,7 @@ liveblogSyndication
 
                     var compare = function() {
                         scope.hasChanged = angular.equals(
-                            scope.localSyndication.sort(), 
+                            scope.localProducerBlogIds.sort(), 
                             scope.blogsToAttach.sort()
                         );
                     };
@@ -36,7 +36,6 @@ liveblogSyndication
                     };
 
                     scope.selectProducer = function(producerId) {
-                        console.log('syndication in', scope.syndicationIn);
                         scope.producers._items.forEach(function(producer) {
                             if (producer._id == producerId)
                                 scope.currentProducer = producer;
@@ -58,9 +57,14 @@ liveblogSyndication
 
                     scope.attach = function() {
                         var chain = [],
-                            toSyndicate = _.difference(scope.blogsToAttach, scope.localSyndication),
-                            toUnSyndicate = _.difference(scope.localSyndication, scope.blogsToAttach);
-
+                            toSyndicate = _.difference(
+                                scope.blogsToAttach, 
+                                scope.localProducerBlogIds
+                            ),
+                            toUnSyndicate = _.difference(
+                                scope.localProducerBlogIds, 
+                                scope.blogsToAttach
+                            );
 
                         scope.producerBlogs._items.forEach(function (blog) {
                             if (toSyndicate.indexOf(blog._id) != -1)

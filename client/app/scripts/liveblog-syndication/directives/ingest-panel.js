@@ -11,12 +11,12 @@ liveblogSyndication
                         producers: {},
                         producerBlogs: {},
                         modalActive: false,
+                        localProducerBlogIds: [],
                         locallySyndicatedItems: []
                     });
 
                     scope.store.connect(function(state) {
                         scope.syndicationIn = state.syndicationIn;
-                        scope.localSyndication = state.localSyndication;
                         scope.locallySyndicatedItems = state.locallySyndicatedItems;
                         scope.modalActive = state.modalActive;
                     });
