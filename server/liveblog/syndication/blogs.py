@@ -66,9 +66,11 @@ def _delete_blogs_syndicate(blog_id, consumer_blog_id):
         return api_error('Syndication not sent for blog "{}".'.format(blog_id), 409)
     else:
         out_service.delete({
-            'blog_id': blog_id,
-            'consumer_id': consumer_id,
-            'consumer_blog_id': consumer_blog_id
+            '$and': [
+                {'blog_id': {'$eq': blog_id}},
+                {'consumer_id': {'$eq': consumer_id}},
+                {'consumer_blog_id': {'$eq': consumer_blog_id}}
+            ]
         })
         return api_response({}, 204)
 
