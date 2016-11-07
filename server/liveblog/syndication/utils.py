@@ -1,8 +1,13 @@
 import json
 import uuid
 import hmac
+import logging
+from bson import ObjectId
 from hashlib import sha1
 from flask import make_response
+
+
+logger = logging.getLogger('superdesk')
 
 
 def generate_api_key():
@@ -34,3 +39,17 @@ def api_error(error_message, status_code):
         '_status': 'ERR',
         '_error': error_message
     }, status_code)
+
+
+def cast_to_object_id(doc, fields):
+    """Cast provided document fields to ObjectId."""
+    for field in fields:
+        value = doc.get(field)
+        if not value:
+            continue
+
+        if not ObjectId.is_valid(value):
+            logger.warning('Field "{}" value "{}" is not a valid ObjectId')
+            continue
+
+        doc[field] = ObjectId(value)
