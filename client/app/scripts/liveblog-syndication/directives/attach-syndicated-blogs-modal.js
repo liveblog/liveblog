@@ -55,6 +55,30 @@ liveblogSyndication
                         compare();
                     };
 
+                    var syndicate = function(blog, method) {
+                        var uri = config.server.url + 
+                            '/producers/' + scope.currentProducer._id + 
+                            '/syndicate/' + blog._id;
+
+                        return $http({
+                            url: uri,
+                            method: (method == 'DELETE') ? 'DELETE' : 'POST',
+                            data: { consumer_blog_id: consumerBlogId },
+                            headers: {
+                                "Content-Type": "application/json;charset=utf-8"
+                            }
+                        })
+                        .then(function(response) {
+                            console.log('response to create/delete', response);
+                            return response;
+                        })
+                        .catch(function(err) {
+                            console.log('err', err);
+                            scope.modalActive = false;
+                        });
+                    };
+
+
                     scope.attach = function() {
                         var chain = [],
                             toSyndicate = _.difference(
