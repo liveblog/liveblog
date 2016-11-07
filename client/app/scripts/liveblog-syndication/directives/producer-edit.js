@@ -9,12 +9,19 @@ liveblogSyndication
                 onupdate: '&'
             },
             link: function(scope, elem) {
+                scope.producerForm.attempted = false;
+
                 scope.$watch('producer', function(producer) {
                     scope.isEditing = producer.hasOwnProperty('_id');
                     scope.origProducer = _.cloneDeep(producer);
                 });
 
                 scope.save = function() {
+                    scope.producerForm.attempted = true;
+
+                    if (!scope.producerForm.$valid)
+                        return;
+
                     if (angular.equals(scope.origProducer, scope.producer))
                         return;
 
