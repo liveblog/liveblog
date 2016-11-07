@@ -15,7 +15,7 @@ var angular = require("angular")
   , _log = require("./log");
 
 
-module.exports = function($rootScope, $window, resizeIframe, config) {
+module.exports = function($rootScope, $window, $timeout, resizeIframe, config) {
   var timeline = document.getElementsByClassName("lb-timeline")[0]
     , timeline_body = document.getElementsByClassName("timeline-body")[0];
 
@@ -38,9 +38,14 @@ module.exports = function($rootScope, $window, resizeIframe, config) {
   $window.onload = function() {
     $rootScope._log.debug("ng-lb", "started");
     pageview.init(); // Initialize 'pageview/analytics'
-      angular.element($window).bind('resize', 
-        _.debounce(function() {
-          if (!config.parent_resize) iframeResize.adjustBody
-        }, 1000));
+    
+    $timeout(function() { // Initiate scrollable iframe
+      if (!config.parent_resize) iframeResize.adjustBody()
+    }, 1000); 
+
+    angular.element($window).bind('resize',  // scrollable iframe
+      _.debounce(function() {
+        if (!config.parent_resize) iframeResize.adjustBody
+      }, 1000));
   };
 }
