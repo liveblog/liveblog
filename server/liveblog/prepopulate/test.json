@@ -961,6 +961,22 @@
                 "role": "grpRole:Main"
             }]
     }
+},
+{
+    "resource": "consumers",
+    "data": {
+        "name": "John Deere",
+        "api_url": "http://www.deere.com/api",
+        "api_key": "123456789qwerty"
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "John Deere",
+        "api_url": "http://www.deere.com/api",
+        "consumer_api_key": "1234567890asdfgh"
+    }
 }
 ]
 
