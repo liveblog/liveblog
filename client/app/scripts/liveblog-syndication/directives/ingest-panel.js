@@ -10,6 +10,7 @@ liveblogSyndication
                         syndicationIn: {},
                         producers: {},
                         producerBlogs: {},
+                        modalActive: false,
                         locallySyndicatedItems: []
                     });
 
@@ -17,12 +18,13 @@ liveblogSyndication
                         scope.syndicationIn = state.syndicationIn;
                         scope.localSyndication = state.localSyndication;
                         scope.locallySyndicatedItems = state.locallySyndicatedItems;
+                        scope.modalActive = state.modalActive;
                     });
 
                     IngestPanelActions.getSyndication();
 
                     scope.openSyndBlogsModal = function() {
-                        scope.syndBlogsModalActive = true;
+                        IngestPanelActions.toggleModal(true);
                     }
                 }
             };

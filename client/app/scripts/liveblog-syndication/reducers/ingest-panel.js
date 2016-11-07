@@ -21,8 +21,9 @@ liveblogSyndication
                         });
 
                     return {
+                        modalActive: state.modalActive,
                         consumerBlogId: state.consumerBlogId,
-                        syndicationIn: action.syndicationIn,
+                        syndicationIn: action.syndicationIn, //ACTION
                         producers: state.producers,
                         producerBlogs: state.producerBlogs,
                         localSyndication: localSyndication,
@@ -34,9 +35,10 @@ liveblogSyndication
 
                 case 'ON_GET_PRODUCERS':
                     return {
+                        modalActive: state.modalActive,
                         consumerBlogId: state.consumerBlogId,
                         syndicationIn: state.syndicationIn,
-                        producers: action.producers,
+                        producers: action.producers, // ACTION
                         producerBlogs: state.producerBlogs,
                         localSyndication: state.localSyndication,
                         locallySyndicatedItems: state.locallySyndicatedItems
@@ -55,10 +57,22 @@ liveblogSyndication
                     });
 
                     return {
+                        modalActive: state.modalActive,
                         consumerBlogId: state.consumerBlogId,
                         syndicationIn: state.syndicationIn,
                         producers: state.producers,
-                        producerBlogs: action.producerBlogs,
+                        producerBlogs: action.producerBlogs, // ACTION
+                        localSyndication: state.localSyndication,
+                        locallySyndicatedItems: state.locallySyndicatedItems
+                    }
+
+                case 'ON_TOGGLE_MODAL':
+                    return {
+                        modalActive: action.modalActive, // ACTION
+                        consumerBlogId: state.consumerBlogId,
+                        syndicationIn: state.syndicationIn,
+                        producers: state.producers,
+                        producerBlogs: state.producerBlogs,
                         localSyndication: state.localSyndication,
                         locallySyndicatedItems: state.locallySyndicatedItems
                     }

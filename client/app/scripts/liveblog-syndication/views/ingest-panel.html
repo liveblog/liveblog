@@ -7,6 +7,7 @@
         </button>
     </header>
 
+    {{modalActive}}
     <div>
         <p ng-repeat="blog in locallySyndicatedItems">{{blog.blog_token}}</p>
     </div>
@@ -15,5 +16,4 @@
 <div 
     lb-attach-syndicated-blogs-modal 
     ng-if="store"
-    store="store"
-    modal-active="syndBlogsModalActive"></div>
+    store="store"></div>

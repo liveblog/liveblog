@@ -4,7 +4,6 @@ liveblogSyndication
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/attach-syndicated-blogs-modal.html',
                 scope: {
-                    modalActive: '=',
                     store: '='
                 },
                 link: function(scope) {
@@ -14,6 +13,7 @@ liveblogSyndication
                         scope.producerBlogs = state.producerBlogs;
                         scope.localSyndication = state.localSyndication;
                         scope.consumerBlogId = state.consumerBlogId;
+                        scope.modalActive = state.modalActive;
 
                         if (Object.keys(state.producerBlogs).length > 0) {
                             scope.blogsToAttach = angular.copy(scope.localSyndication);
@@ -32,7 +32,7 @@ liveblogSyndication
                     };
 
                     scope.cancel = function() {
-                        scope.modalActive = false;
+                        IngestPanelActions.toggleModal(false);
                     };
 
                     scope.selectProducer = function(producerId) {
@@ -79,7 +79,7 @@ liveblogSyndication
                                 );
                         });
 
-                        scope.modalActive = false;
+                        IngestPanelActions.toggleModal(false);
                     };
                 }
             };
