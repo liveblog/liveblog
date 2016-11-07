@@ -47,9 +47,9 @@ def _create_blogs_syndicate(blog_id, consumer_blog_id):
         return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
     else:
         syndication_id = out_service.post([{
-            'blog_id': blog_id,
-            'consumer_id': consumer_id,
-            'consumer_blog_id': consumer_blog_id
+            'blog_id': str(blog_id),
+            'consumer_id': str(consumer_id),
+            'consumer_blog_id': str(consumer_blog_id)
         }])[0]
         syndication = out_service.find_one(_id=syndication_id, req=None)
         return api_response({
@@ -66,9 +66,11 @@ def _delete_blogs_syndicate(blog_id, consumer_blog_id):
         return api_error('Syndication not sent for blog "{}".'.format(blog_id), 409)
     else:
         out_service.delete({
-            'blog_id': blog_id,
-            'consumer_id': consumer_id,
-            'consumer_blog_id': consumer_blog_id
+            '$and': [
+                {'blog_id': {'$eq': str(blog_id)}},
+                {'consumer_id': {'$eq': str(consumer_id)}},
+                {'consumer_blog_id': {'$eq': str(blog_id)}}
+            ]
         })
         return api_response({}, 204)
 
