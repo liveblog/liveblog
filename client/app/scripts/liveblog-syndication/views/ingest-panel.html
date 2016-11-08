@@ -8,8 +8,11 @@
     </header>
 
     {{modalActive}}
-    <div>
-        <p ng-repeat="blog in locallySyndicatedItems">{{blog.blog_token}}</p>
+
+    <ul id="syndicated-blogs-list">
+        <li ng-repeat="blog in locallySyndicatedItems" ng-click="select(blog)">
+            <h4>{{blog.blog_token}}</h4>
+        </li>
     </div>
 </div>
 

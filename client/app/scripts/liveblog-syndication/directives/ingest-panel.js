@@ -26,6 +26,12 @@ liveblogSyndication
                     scope.openSyndBlogsModal = function() {
                         IngestPanelActions.toggleModal(true);
                     }
+
+                    scope.select = function(synd) {
+                        // In case you're wondering, this method is calling
+                        // a parent scope function in liveblog-edit/module
+                        scope.openPanel('incoming-syndication', synd._id);
+                    }
                 }
             };
         }]);
