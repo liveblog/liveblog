@@ -23,6 +23,28 @@ producers_schema = {
         'type': 'string',
         'required': True
     },
+    'contacts': {
+        'type': 'list',
+        'schema': {
+            'type': 'dict',
+            'schema': {
+                'first_name': {
+                    'type': 'string',
+                },
+                'last_name': {
+                    'type': 'string',
+                },
+                'email': {
+                    'type': 'email',
+                    'required': True
+                },
+                'phone': {
+                    'type': 'string',
+                    'nullable': True
+                }
+            }
+        }
+    },
     'api_url': {
         'type': 'string',
         'required': True

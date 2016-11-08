@@ -1,4 +1,4 @@
-<form name="producerForm" class="flat" ng-submit="producerForm.$valid && save()">
+<form name="producerForm" class="flat" novalidate ng-submit="save()">
     <div class="action-bar clearfix" ng-class="{show: !producerForm.$pristine}">
         <button
             id="save-edit-btn" 
@@ -52,8 +52,11 @@
                       ng-show="producerForm.consumer_api_key.$error.required" 
                       class="required-asteriks">*</i>
                 </div>
-
             </fieldset>
+
+            <div lb-contact-edit
+                 contacts="producer.contacts"
+                 attempted="prducerForm.attempted"></div>
         </div>
     </div>
 </form>

@@ -13,7 +13,7 @@ liveblogSyndication
         $scope.createEntry = function() {
             if ($scope.entryName) {
                 $scope.selected = {};
-                $scope.selected[$scope.entryName] = {name: ''};
+                $scope.selected[$scope.entryName] = {name: '', contacts: [{}]};
             }
         };
 
