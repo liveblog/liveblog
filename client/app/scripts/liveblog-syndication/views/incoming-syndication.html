@@ -1,4 +1,4 @@
-<div class="panel panel--contribution">
+<div class="panel panel--incoming-syndication">
     <header translate>
         <span>Ingest</span>
 
@@ -6,6 +6,22 @@
         <!--    <i class="svg-icon-add inverse"></i>-->
         <!--</button>-->
     </header>
+
+    <div class="sub-header">
+        <a href="">
+            <i class="icon-close-small"></i>
+        </a>
+
+        <div class="block">
+            <h3>US Election Night Live Blog</h3>
+            <dl>
+                <dt>Producer:</dt>
+                <dd>DPA</dd>
+                <dt>Autopublish:</dt>
+                <dd>False</dd>
+            </dl>
+        </div>
+    </div>
 
     <ul id="syndicated-blogs-list">
         <li ng-repeat="blog in locallySyndicatedItems" ng-click="select(blog)">
