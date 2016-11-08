@@ -1,5 +1,5 @@
 liveblogSyndication
-    .directive('lbConsumerList', ['api', function(api) {
+    .directive('lbConsumerList', ['api', 'notify', function(api, notify) {
         return {
             templateUrl: 'scripts/liveblog-syndication/views/consumer-list-item.html',
             scope: {
@@ -21,6 +21,27 @@ liveblogSyndication
                             if (consumer._id == consumerToRemove._id)
                                 scope.consumers.splice(i, 1);
                         });
+                    });
+                }
+
+                scope.updateApiKey = function(e, consumer) {
+                    e.stopPropagation();
+
+                    if (!confirm('Are you sure you want to refresh the api key?')) {
+                        return;
+                    }
+
+                    var data = {};
+                    data.api_key = '';
+
+                    apiQuery = api.save('consumers', consumer, data);
+                    apiQuery.then(function(result) {
+                        notify.pop();
+                        notify.success(gettext('api key updated.'));
+                    })
+                    .catch(function(err) {
+                        notify.pop();
+                        notify.error(gettext('Fatal error!'));
                     });
                 }
             }

@@ -49,6 +49,10 @@ class ConsumerService(BaseService):
             if not doc.get('api_key'):
                 doc['api_key'] = generate_api_key()
 
+    def on_update(self, updates, original):
+        super().on_update(updates, original)
+        if 'api_key' in updates and updates['api_key'] != original['api_key']:
+            updates['api_key'] = generate_api_key()
 
 class ConsumerResource(Resource):
     datasource = {
