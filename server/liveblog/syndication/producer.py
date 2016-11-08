@@ -1,16 +1,13 @@
-import json
 import logging
 from urllib.parse import urljoin
-import requests
-from requests.exceptions import ConnectionError, Timeout
-from flask import abort
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
-from flask import Blueprint, request
+from flask import abort, Blueprint, request
 from apps.auth import SuperdeskTokenAuth
 from flask_cors import CORS
-from .utils import trailing_slash, api_response, api_error
+from .utils import trailing_slash, api_response, api_error, send_api_request
+from .exceptions import APIConnectionError, ProducerAPIError
 
 
 logger = logging.getLogger('superdesk')
@@ -32,10 +29,6 @@ producers_schema = {
         'required': True
     }
 }
-
-
-class ProducerAPIError(Exception):
-    pass
 
 
 class ProducerService(BaseService):
@@ -61,26 +54,13 @@ class ProducerService(BaseService):
         if not api_url:
             raise ProducerAPIError('Unable to get producer "{}" api url.'.format(producer_id))
 
-        if data:
-            data = json.dumps(data)
-
-        logger.info('API {} request to {} with params={} and data={}'.format(method, api_url, request.args, data))
         try:
-            response = requests.request(method, api_url, headers={
-                'Authorization': producer['consumer_api_key'],
-                'Content-Type': 'application/json'
-            }, params=request.args, data=data, timeout=timeout)
-        except (ConnectionError, Timeout):
-            raise ProducerAPIError('Unable to connect to producer: "{}".'.format(api_url))
-
-        logger.info('API {} request to {} - response: {} {}'.format(
-            method, api_url, response.status_code, response.content
-        ))
-
-        if not json_loads:
-            return response
+            response = send_api_request(api_url, producer['consumer_api_key'], method=method, args=request.args,
+                                        data=data, json_loads=json_loads, timeout=timeout)
+        except APIConnectionError as e:
+            raise ProducerAPIError(e)
         else:
-            return response.json()
+            return response
 
     def get_blogs(self, producer_id, json_loads=True):
         return self._send_api_request(producer_id, 'syndication/blogs', json_loads=json_loads)
