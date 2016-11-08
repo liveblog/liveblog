@@ -178,10 +178,14 @@ define([
 
             // retrieve panel status from url
             panelState: undefined,
-            openPanel: function(panel) {
+            openPanel: function(panel, id) {
                 $scope.panelState = panel;
                 // update url for deeplinking
-                $route.updateParams({panel: $scope.panelState});
+                var params = { panel: $scope.panelState, id: null };
+
+                if (id) params.id = id;
+
+                $route.updateParams(params);
                 unreadPostsService.reset(panel);
             },
             stParams: {
