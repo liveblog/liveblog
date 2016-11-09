@@ -2,9 +2,13 @@ import json
 import uuid
 import hmac
 import logging
+import requests
+from eve.io.mongo import MongoJSONEncoder
+from requests.exceptions import Timeout
 from bson import ObjectId
 from hashlib import sha1
 from flask import make_response
+from .exceptions import APIConnectionError
 
 
 logger = logging.getLogger('superdesk')
@@ -53,3 +57,27 @@ def cast_to_object_id(doc, fields):
             continue
 
         doc[field] = ObjectId(value)
+
+
+def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_loads=True, timeout=5):
+    """Utility function to send http requests for consumer/producer api endpoints."""
+    if data:
+        data = json.dumps(data, cls=MongoJSONEncoder)
+
+    logger.info('API {} request to {} with params={} and data={}'.format(method, api_url, args, data))
+    try:
+        response = requests.request(method, api_url, headers={
+            'Authorization': api_key,
+            'Content-Type': 'application/json'
+        }, params=args, data=data, timeout=timeout)
+    except (ConnectionError, Timeout):
+        raise APIConnectionError('Unable to connect to api_url "{}".'.format(api_url))
+
+    logger.info('API {} request to {} - response: {} {}'.format(
+        method, api_url, response.status_code, response.content
+    ))
+
+    if not json_loads:
+        return response
+    else:
+        return response.json()

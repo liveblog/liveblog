@@ -16,6 +16,7 @@ from flask.ext.cache import Cache
 from liveblog.common import BlogCache
 import flask_s3
 from liveblog.syndication.producer import producers_blueprint
+from liveblog.syndication.syndication import syndication_blueprint
 from liveblog.syndication.blogs import blogs_blueprint as syndication_blogs_blueprint
 
 import os
@@ -63,6 +64,7 @@ def get_app(config=None):
     app.register_blueprint(embed_blueprint)
     # Syndication features:
     app.register_blueprint(producers_blueprint)
+    app.register_blueprint(syndication_blueprint)
     app.register_blueprint(syndication_blogs_blueprint)
     return app
 
