@@ -3,7 +3,7 @@ liveblogSyndication
         function(Dispatcher, api, $http, config) {
             return {
                 getSyndication: function() {
-                    api('syndication_in').query().then(function(syndicationIn) {
+                    api.syndicationIn.query().then(function(syndicationIn) {
                         Dispatcher.dispatch({
                             type: 'ON_GET_SYND',
                             syndicationIn: syndicationIn

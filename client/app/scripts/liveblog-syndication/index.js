@@ -25,7 +25,11 @@ liveblogSyndication
     }])
     .config(['apiProvider', function(apiProvider) {
         apiProvider
-            .api('consumers', {
+            .api('syndicationIn', {
+                type: 'http',
+                backend: {rel: 'syndication_in'}
+            })
+             .api('consumers', {
                 type: 'http',
                 backend: {rel: 'consumers'}
             })
@@ -35,67 +39,3 @@ liveblogSyndication
             });
     }]);
 
-//liveblogSyndication
-//    .factory('Actions', ['Dispatcher', 'api', '$http', 'config', 
-//        function(Dispatcher, api, $http, config) {
-//            return {
-//                getSyndication: function() {
-//                    api('syndication_in').query().then(function(syndicationIn) {
-//                        Dispatcher.dispatch({
-//                            type: 'ON_GET_SYND',
-//                            syndicationIn: syndicationIn
-//                        });
-//                    });
-//                },
-//                getProducers: function() {
-//                    api.producers.query().then(function(producers) {
-//                        Dispatcher.dispatch({
-//                            type: 'ON_GET_PRODUCERS',
-//                            producers: producers
-//                        });
-//                    });
-//                },
-//                syndicate: function(currentProducer, consumerBlogId, blog, method) {
-//                    var uri = config.server.url + 
-//                        '/producers/' + currentProducer._id + 
-//                        '/syndicate/' + blog._id;
-
-//                    return $http({
-//                        url: uri,
-//                        method: (method == 'DELETE') ? 'DELETE' : 'POST',
-//                        data: { consumer_blog_id: consumerBlogId },
-//                        headers: {
-//                            "Content-Type": "application/json;charset=utf-8"
-//                        }
-//                    })
-//                    .then(function(response) {
-//                        //return api.producers.query();
-//                        return api('syndication_in').query();
-//                    })
-//                    .then(function(syndicationIn) {
-//                        Dispatcher.dispatch({
-//                            type: 'ON_GET_SYND',
-//                            syndicationIn: syndicationIn
-//                        });
-//                    });
-//                }
-//            };
-//        }])
-//    .factory('Reducers', function() {
-//        return function(state, action) {
-//            //console.log('inside reducers', state, action);
-//            switch (action.type) {
-//                case 'ON_GET_SYND':
-//                    return {
-//                        syndicationIn: action.syndicationIn,
-//                        producers: state.producers
-//                    };
-
-//                case 'ON_GET_PRODUCERS':
-//                    return {
-//                        syndicationIn: state.syndicationIn,
-//                        producers: action.producers
-//                    }
-//            }
-//        }
-//    });
