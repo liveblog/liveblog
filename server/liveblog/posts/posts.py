@@ -103,6 +103,11 @@ class PostsResource(ArchiveResource):
         'publisher': Resource.rel('users', True),
         'content_updated_date': {
             'type': 'datetime'
+        },
+        'syndication_in': Resource.rel('syndication_in', embeddable=True, required=False, nullable=True),
+        'producer_post_id': {
+            'type': 'string',
+            'nullable': True
         }
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
