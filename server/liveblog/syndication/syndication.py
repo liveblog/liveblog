@@ -176,14 +176,16 @@ def syndication_webhook():
 
     # Get post from request json, clean fields, add syndication_in reference and change blog id.
     post = request.get_json()
+    post_id = post['_id']
     _clean_post_fields(post)
     post['blog'] = in_syndication['blog_id']
-    # post['syndication_id'] = in_syndication['_id'] # TODO
+    post['syndication_in'] = in_syndication['_id']
+    post['producer_post_id'] = post_id
 
     # Create post content
     posts_service = get_resource_service('posts')
-    posts_service.create([post])
-    return api_response(post, 201)
+    post_id = posts_service.create([post])[0]
+    return api_response({'post_id': post_id}, 201)
 
 
 def _syndication_blueprint_auth():
