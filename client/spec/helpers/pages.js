@@ -762,7 +762,6 @@ function ProducersManagementPage() {
     };
 }
 
-
 exports.blogs = new BlogsPage();
 exports.generalSettings = new GeneralSettingsPage();
 exports.randomString = randomString;
