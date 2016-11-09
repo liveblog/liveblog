@@ -9,6 +9,9 @@ from .utils import generate_api_key, cast_to_object_id, api_response
 from .auth import ConsumerBlogTokenAuth
 from flask import Blueprint, request, abort
 from flask_cors import CORS
+from superdesk.metadata.item import GUID_NEWSML, GUID_FIELD
+from superdesk.metadata.item import ITEM_TYPE, ITEM_STATE, CONTENT_STATE, CONTENT_TYPE
+from apps.archive.common import (generate_guid, generate_unique_id_and_name)
 
 
 logger = logging.getLogger('superdesk')
@@ -162,10 +165,26 @@ class SyndicationIn(Resource):
     schema = syndication_in_schema
 
 
-def _clean_post_fields(post):
-    for field in post.copy():
-        if field.startswith('_'):
-            del post[field]
+def _duplicate_item(doc):
+    """Legacy code taken from superdesk apps.archive.archive.ArchiveService._duplicate_item """
+    posts_service = get_resource_service('blog_posts')
+    new_doc = doc.copy()
+    posts_service._remove_after_copy(new_doc)
+    new_doc[GUID_FIELD] = generate_guid(type=GUID_NEWSML)
+    generate_unique_id_and_name(new_doc)
+    new_doc.setdefault('_id', new_doc[GUID_FIELD])
+    new_doc['force_unlock'] = True
+    new_doc[ITEM_STATE] = CONTENT_STATE.PUBLISHED
+    return new_doc
+
+
+def _duplicate_content(self, original_doc):
+    """Legacy code taken from superdesk apps.archive.archive.ArchiveService._duplicate_content"""
+    posts_service = get_resource_service('blog_posts')
+    if original_doc.get(ITEM_TYPE, '') != CONTENT_TYPE.TEXT:
+        raise NotImplementedError('Post item_type not supported.')
+
+    return _duplicate_item(original_doc)
 
 
 @syndication_blueprint.route('/api/syndication/webhook', methods=['POST'])
@@ -173,19 +192,17 @@ def syndication_webhook():
     in_service = get_resource_service('syndication_in')
     blog_token = request.headers['Authorization']
     in_syndication = in_service.find_one(blog_token=blog_token, req=None)
-
     # Get post from request json, clean fields, add syndication_in reference and change blog id.
     post = request.get_json()
-    post_id = post['_id']
-    _clean_post_fields(post)
-    post['blog'] = in_syndication['blog_id']
-    post['syndication_in'] = in_syndication['_id']
-    post['producer_post_id'] = post_id
-
+    producer_post_id = post['_id']
+    new_post = _duplicate_item(post)
+    new_post['blog'] = in_syndication['blog_id']
+    new_post['syndication_in'] = in_syndication['_id']
+    new_post['producer_post_id'] = producer_post_id
     # Create post content
-    posts_service = get_resource_service('posts')
-    post_id = posts_service.create([post])[0]
-    return api_response({'post_id': post_id}, 201)
+    posts_service = get_resource_service('blog_posts')
+    new_post_id = posts_service.create([new_post])[0]
+    return api_response({'post_id': new_post_id}, 201)
 
 
 def _syndication_blueprint_auth():
