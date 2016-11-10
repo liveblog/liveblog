@@ -36,11 +36,12 @@ syndication_out_schema = {
 class SyndicationOutService(BaseService):
     notification_key = 'syndication_out'
 
-    def _cursor(self):
-        return app.data.mongo.pymongo(resource=self.datasource).db[self.datasource]
+    def _cursor(self, resource=None):
+        resource = resource or self.datasource
+        return app.data.mongo.pymongo(resource=resource).db[resource]
 
     def _get_blog(self, blog_id):
-        return get_resource_service('blogs').find_one(req=None, _id=blog_id)
+        return self._cursor('blogs').find_one({'_id': ObjectId(blog_id)})
 
     def is_syndicated(self, consumer_id, producer_blog_id, consumer_blog_id):
         lookup = {'$and': [
@@ -203,9 +204,7 @@ def syndication_webhook():
                 'id': 'root',
                 'role': 'grpRole:NEP',
                 'refs': [
-                    {
-                        'idRef': 'main'
-                    }
+                    {'idRef': 'main'}
                 ]
             },
             {
@@ -221,7 +220,6 @@ def syndication_webhook():
         'sticky': False,
         'syndication_in': in_syndication['_id']
     }
-    logger.info(new_post)
     # Create post content
     posts_service = get_resource_service('posts')
     new_post_id = posts_service.post([new_post])[0]
