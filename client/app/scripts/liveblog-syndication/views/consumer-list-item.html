@@ -12,11 +12,19 @@
 
     <div class="row-wrapper" sd-col-width>
         <div class="name">{{ consumer.name }}</div>
-        <div class="api_key">
+        <div class="email">
             <span id="api-key">{{ consumer.api_key }}</span>
+            <span>
+                <a title="Refresh api key"
+                   ng-href=""
+                   ng-click="updateApiKey($event, consumer)"
+                   class="ng-scope refresh-api-key">
+                    <i class="icon-refresh true"></i>
+                </a>
+            </span>
             <span lb-copy-to-clipboard for="api-key"></span>
         </div>
-        <div class="api_url">{{ consumer.api_url }}</div>
+        <div class="username">{{ consumer.api_url }}</div>
     </div>
 
     <div class="action">
@@ -24,7 +32,7 @@
             <li class="item-field">
                 <a 
                     title="Disable consumer" 
-                    ng-href="" 
+                    ng-href=""
                     ng-click="disable($event, consumer)"
                     ng-if=":: !activity.dropdown" 
                     class="ng-scope delete-consumer">
