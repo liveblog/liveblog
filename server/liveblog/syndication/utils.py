@@ -73,7 +73,7 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
     except (ConnectionError, Timeout):
         raise APIConnectionError('Unable to connect to api_url "{}".'.format(api_url))
 
-    logger.info('API {} request to {} - response: {} {}'.format(
+    logger.warning('API {} request to {} - response: {} {}'.format(
         method, api_url, response.status_code, response.content
     ))
 
