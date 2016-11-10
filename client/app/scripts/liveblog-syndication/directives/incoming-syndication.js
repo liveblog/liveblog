@@ -14,13 +14,13 @@ liveblogSyndication
                         scope.posts = state.posts;
                         scope.syndication = state.syndication;
                     });
-                    console.log('route', $routeParams.id);
+                    console.log('route', $routeParams.syndId);
 
                     //IncomingSyndicationActions
                     //    .getPosts($routeParams._id, 'draft');
 
                     IncomingSyndicationActions
-                        .getSyndication($routeParams.id);
+                        .getSyndication($routeParams.syndId);
                 }
             };
         }]);

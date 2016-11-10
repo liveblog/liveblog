@@ -178,12 +178,12 @@ define([
 
             // retrieve panel status from url
             panelState: undefined,
-            openPanel: function(panel, id) {
+            openPanel: function(panel, syndId) {
                 $scope.panelState = panel;
                 // update url for deeplinking
-                var params = { panel: $scope.panelState, id: null };
+                var params = { panel: $scope.panelState, syndId: null };
 
-                if (id) params.id = id;
+                if (syndId) params.syndId = syndId;
 
                 $route.updateParams(params);
                 unreadPostsService.reset(panel);
@@ -278,9 +278,9 @@ define([
 
         // initalize the view with the editor panel
         var panel = angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor',
-            id = angular.isDefined($routeParams.id) ? $routeParams.id : null;
+            syndId = angular.isDefined($routeParams.syndId) ? $routeParams.syndId : null;
 
-        $scope.openPanel(panel, id);
+        $scope.openPanel(panel, syndId);
     }
 
     BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
