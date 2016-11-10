@@ -198,9 +198,6 @@ def syndication_webhook():
     for item_id in item_ids:
         item_refs.append({'residRef': str(item_id)})
 
-    # for the published date
-    now = utcnow()
-
     new_post = {
         'blog': in_syndication['blog_id'],
         'groups': [
@@ -224,9 +221,7 @@ def syndication_webhook():
         'sticky': False,
         'syndication_in': in_syndication['_id'],
         # auto publish
-        'post_status': 'open',
-        'published_date': now,
-        'content_updated_date': now
+        'post_status': 'open'
     }
     # Create post content
     posts_service = get_resource_service('posts')
