@@ -56,21 +56,6 @@ liveblogSyndication
                         modalActive: value
                     });
                 }
-                //getSyndicatedBlogs: function() {
-                //    api('syndication_in').query()
-                //        .then(function(syndicationIn) {
-                //            return syndicationIn._items
-                //                .map(function(synd) {
-                //                    var uri = '/producers/' + synd.producer_id + 
-                //                        '/blogs/' + synd.producer_blog_id;
-
-                //                    api.get(uri).then(function(result) {
-                //                        console.log('syndicated blog', result);
-                //                    });
-                //                });
-                //        })
-                //},
- 
             };
         }])
 
