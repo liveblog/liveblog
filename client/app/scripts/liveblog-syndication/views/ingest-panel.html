@@ -9,7 +9,10 @@
 
     <ul id="syndicated-blogs-list">
         <li ng-repeat="blog in locallySyndicatedItems" ng-click="select(blog)">
-            <h4>{{blog.blog_token}}</h4>
+            <h4>
+                <span ng-if="!blog.producer_blog_title">{{blog.blog_token}}</span>
+                <span ng-if="blog.producer_blog_title">{{blog.producer_blog_title}}</span>
+            </h4>
         </li>
     </ul>
 </div>
