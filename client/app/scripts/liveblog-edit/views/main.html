@@ -27,7 +27,10 @@
         <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}">
             <i class="big-icon-archive" alt="draft posts"></i>
         </button>
-        <button class="navbtn" ng-click="openPanel('ingest')" ng-class="{'active': panelState === 'ingest'}">
+        <button 
+            class="navbtn" 
+            ng-click="openPanel('ingest')" 
+            ng-class="{'active': panelState === 'ingest' || panelState === 'incoming-syndication'}">
             <i class="big-icon-ingest" alt="ingest"></i>
         </button>
         <button 
@@ -105,6 +108,8 @@
                 </div>
                 <!-- ingest -->
                 <div lb-ingest-panel ng-if="panelState === 'ingest'"></div>
+                <!-- incoming syndication -->
+                <div lb-incoming-syndication ng-if="panelState === 'incoming-syndication'"></div>
                 <!-- comments -->
                 <div class="panel panel--comments" ng-if="panelState === 'comments'">
                     <header translate>Comments</header>

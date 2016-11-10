@@ -25,7 +25,11 @@ liveblogSyndication
     }])
     .config(['apiProvider', function(apiProvider) {
         apiProvider
-            .api('consumers', {
+            .api('syndicationIn', {
+                type: 'http',
+                backend: {rel: 'syndication_in'}
+            })
+             .api('consumers', {
                 type: 'http',
                 backend: {rel: 'consumers'}
             })
@@ -34,3 +38,4 @@ liveblogSyndication
                 backend: {rel: 'producers'}
             });
     }]);
+
