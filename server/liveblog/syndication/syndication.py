@@ -73,6 +73,10 @@ syndication_in_schema = {
     'producer_blog_id': {
         'type': 'objectid',
         'required': True
+    },
+    'producer_blog_title': {
+        'type': 'string',
+        'required': True
     }
 }
 

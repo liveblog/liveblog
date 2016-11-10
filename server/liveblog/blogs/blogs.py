@@ -181,10 +181,10 @@ class BlogService(BaseService):
                     recipients.append(user['user'])
             notify_members(blog, app.config['CLIENT_URL'], recipients)
 
-    def find_one(self, req, **lookup):
+    def find_one(self, req, checkUser=True, **lookup):
         doc = super().find_one(req, **lookup)
-        # check if the current user has permission to open a blog
-        if not is_admin(get_user()):
+        #check if the current user has permission to open a blog
+        if checkUser and not is_admin(get_user()):
             # get members ids
             members = [str(m['user']) for m in doc.get('members', [])]
             # add owner id to members

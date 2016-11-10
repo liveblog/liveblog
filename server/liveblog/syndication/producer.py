@@ -179,7 +179,8 @@ def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
                 'blog_id': syndication['consumer_blog_id'],
                 'blog_token': syndication['token'],
                 'producer_id': producer_id,
-                'producer_blog_id': blog_id
+                'producer_blog_id': blog_id,
+                'producer_blog_title': syndication['producer_blog_title']
             }])
             return api_response(response.content, response.status_code, json_dumps=False)
         elif response.status_code == 409:
