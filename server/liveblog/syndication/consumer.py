@@ -1,9 +1,13 @@
+import logging
 from bson import ObjectId
 from urllib.parse import urljoin
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from .utils import generate_api_key, trailing_slash, send_api_request
 from .exceptions import APIConnectionError, ConsumerAPIError
+
+
+logger = logging.getLogger('superdesk')
 
 
 consumers_schema = {
@@ -75,11 +79,14 @@ class ConsumerService(BaseService):
         else:
             return response
 
-    def send_syndication_post(self, syndication_out, post, action='created'):
+    def send_post(self, syndication_out, new_post, action='created'):
         blog_token = syndication_out['token']
         consumer_id = syndication_out['consumer_id']
         if action == 'created':
-            return self._send_api_request(consumer_id, blog_token, 'syndication/webhook', method='POST', data=post)
+            data = self._send_api_request(consumer_id, blog_token, 'syndication/webhook', method='POST',
+                                          data=new_post)
+            logger.warning('ConsumerService.send_post response data: {}'.format(data))
+            return data
         else:
             raise NotImplementedError('send_syndication_post "{}" not implemented yet.'.format(action))
 

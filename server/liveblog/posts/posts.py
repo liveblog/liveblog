@@ -164,10 +164,6 @@ class PostsService(ArchiveService):
                     raise SuperdeskApiError.forbiddenError(
                         message='User does not have sufficient permissions.')
 
-    def send_to_consumers(self, doc, action='created'):
-        out_service = get_resource_service('syndication_out')
-        out_service.send_syndication_post(doc, action)
-
     def on_create(self, docs):
         for doc in docs:
             # check permission
@@ -185,13 +181,14 @@ class PostsService(ArchiveService):
         super().on_created(docs)
         # invalidate cache for updated blog
         post_ids = []
+        out_service = get_resource_service('syndication_out')
         for doc in docs:
             post_ids.append(doc.get('_id'))
             app.blog_cache.invalidate(doc.get('blog'))
             # send post to consumer webhook
             if doc['post_status'] == 'open':
                 logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
-                self.send_to_consumers(doc, action='created')
+                out_service.send_syndication_post(doc, action='created')
 
         # send notifications
         push_notification('posts', created=True, post_status=doc['post_status'], post_ids=post_ids)
