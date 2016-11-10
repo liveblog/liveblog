@@ -66,10 +66,9 @@ angular.module('liveblog-embed')
     restrict: 'A',
     link: function(scope, elem, attrs) {
       var meta = scope.item.meta
-        , srcset = 'bi 1620w, or 2048w, th 480w, vi 1080w'
+        , srcset = 'bi 810w, th 240w, vi 540w'
         , mapObj = {
             bi: meta.media.renditions.baseImage.href,
-            or: meta.media.renditions.original.href,
             th: meta.media.renditions.thumbnail.href,
             vi: meta.media.renditions.viewImage.href
           };
