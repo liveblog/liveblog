@@ -47,6 +47,7 @@ angular.module('theme', [
 .run([
   '$rootScope',
   '$window',
+  '$timeout',
   'resizeIframes',
   'config',
   require('./onload')]);
