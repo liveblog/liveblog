@@ -21,6 +21,8 @@ liveblogSyndication
 
                     IncomingSyndicationActions
                         .getSyndication(scope.syndId);
+
+                    scope.$on('$destroy', scope.store.destroy);
                 }
             };
         }]);

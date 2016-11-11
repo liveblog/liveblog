@@ -34,6 +34,8 @@ liveblogSyndication
                         // a parent scope function in liveblog-edit/module
                         scope.openPanel('incoming-syndication', synd._id);
                     }
+
+                    scope.$on('$destroy', scope.store.destroy);
                 }
             };
         }]);
