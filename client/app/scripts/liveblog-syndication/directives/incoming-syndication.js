@@ -1,7 +1,7 @@
 liveblogSyndication
     .directive('lbIncomingSyndication',
-        ['$routeParams', 'IncomingSyndicationActions', 'IncomingSyndicationReducers', 'Store',
-        function($routeParams, IncomingSyndicationActions, IncomingSyndicationReducers, Store) {
+        ['$routeParams', 'IncomingSyndicationActions', 'IncomingSyndicationReducers', 'Store', '$route',
+        function($routeParams, IncomingSyndicationActions, IncomingSyndicationReducers, Store, $route) {
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/incoming-syndication.html',
                 link: function(scope) {
@@ -14,7 +14,7 @@ liveblogSyndication
                         scope.posts = state.posts;
                         scope.syndication = state.syndication;
                     });
-                    console.log('route', $routeParams.syndId);
+                    console.log('route', $route.current.params.syndId);
 
                     //IncomingSyndicationActions
                     //    .getPosts($routeParams._id, 'draft');
