@@ -18,9 +18,8 @@ liveblogSyndication
                     });
 
                     scope.goBack = function() {
-                        console.log('go back');
                         scope.openPanel('ingest', null);
-                    }
+                    };
 
                     IncomingSyndicationActions
                         .getPosts(scope.blogId, scope.syndId);
