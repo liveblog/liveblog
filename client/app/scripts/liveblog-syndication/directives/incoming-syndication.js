@@ -1,10 +1,12 @@
 liveblogSyndication
     .directive('lbIncomingSyndication',
-        ['$routeParams', 'IncomingSyndicationActions', 'IncomingSyndicationReducers', 'Store', '$route',
-        function($routeParams, IncomingSyndicationActions, IncomingSyndicationReducers, Store, $route) {
+        ['$routeParams', 'IncomingSyndicationActions', 'IncomingSyndicationReducers', 'Store',
+        function($routeParams, IncomingSyndicationActions, IncomingSyndicationReducers, Store) {
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/incoming-syndication.html',
                 link: function(scope) {
+                    scope.blogId = $routeParams._id;
+
                     scope.store = new Store(IncomingSyndicationReducers, {
                         posts: {},
                         syndication: {}
@@ -14,7 +16,11 @@ liveblogSyndication
                         scope.posts = state.posts;
                         scope.syndication = state.syndication;
                     });
-                    console.log('route', $route.current.params, scope.panelState, scope.syndId);
+
+                    scope.goBack = function() {
+                        console.log('go back');
+                        scope.openPanel('ingest', null);
+                    }
 
                     //IncomingSyndicationActions
                     //    .getPosts($routeParams._id, 'draft');

@@ -8,9 +8,9 @@
     </header>
 
     <div class="sub-header">
-        <a href="">
+        <button ng-click="goBack()">
             <i class="icon-close-small"></i>
-        </a>
+        </button>
 
         <div class="block">
             <h3>{{syndication.producer_blog_title}}</h3>
@@ -24,7 +24,7 @@
     </div>
 
     <ul id="syndicated-blogs-list" class="posts">
-        <li ng-repeat="post in posts._items" ng-click="select(blog)">
+        <li ng-repeat="post in posts._items">
             <p>{{post.mainItem.item.text}}</p>
         </li>
     </ul>
