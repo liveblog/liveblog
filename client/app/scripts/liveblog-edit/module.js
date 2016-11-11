@@ -180,6 +180,7 @@ define([
             panelState: undefined,
             openPanel: function(panel, syndId) {
                 $scope.panelState = panel;
+                $scope.syndId = syndId;
                 // update url for deeplinking
                 var params = { panel: $scope.panelState, syndId: null };
 
