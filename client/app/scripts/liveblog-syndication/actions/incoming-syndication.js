@@ -1,10 +1,10 @@
 liveblogSyndication
-    .factory('IncomingSyndicationActions', ['Dispatcher', 'PagesManager', 'api',
-        function(Dispatcher, PagesManager, api) {
+    .factory('IncomingSyndicationActions',
+        ['Dispatcher', 'api', 'postsService', '$rootScope',
+        function(Dispatcher, api, postsService, $rootScope) {
             return {
-                getPosts: function(blogId, status) {
-                    new PagesManager(blogId, status, 10, 'editorial')
-                        .fetchNewPage()
+                getPosts: function(blogId, syndicationId) {
+                    postsService.getPosts(blogId, { syndicationIn: syndicationId })
                         .then(function(posts) {
                             Dispatcher.dispatch({
                                 type: 'ON_GET_POSTS',

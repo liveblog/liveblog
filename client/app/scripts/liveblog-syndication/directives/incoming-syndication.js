@@ -22,11 +22,18 @@ liveblogSyndication
                         scope.openPanel('ingest', null);
                     }
 
-                    //IncomingSyndicationActions
-                    //    .getPosts($routeParams._id, 'draft');
+                    IncomingSyndicationActions
+                        .getPosts(scope.blogId, scope.syndId);
 
                     IncomingSyndicationActions
                         .getSyndication(scope.syndId);
+
+                    // On incoming post, we reload all the posts.
+                    // Not very fast, but easy to setup
+                    scope.$on('posts', function() {
+                        IncomingSyndicationActions
+                            .getPosts(scope.blogId, scope.syndId);
+                    });
 
                     scope.$on('$destroy', scope.store.destroy);
                 }
