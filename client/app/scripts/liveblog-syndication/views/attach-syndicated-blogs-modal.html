@@ -13,7 +13,7 @@
         </select>
         <ul id="producers-list">
             <li
-                ng-repeat="blog in blogs._items" 
+                ng-repeat="blog in producerBlogs._items" 
                 ng-click="check(blog)" 
                 ng-class="{checked: blog.checked}">
                 <div class="block-left">
@@ -39,6 +39,6 @@
             type="button"
             ng-click="attach()"
             ng-disabled="hasChanged"
-            translate>Attach</button>
+            translate>{{actionName}}</button>
     </div>
 </div>

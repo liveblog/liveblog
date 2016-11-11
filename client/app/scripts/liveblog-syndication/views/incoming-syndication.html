@@ -1,0 +1,33 @@
+<div class="panel panel--incoming-syndication">
+    <header translate>
+        <span>Ingest</span>
+
+        <!--<button class="btn btn-info pull-right" ng-click="openSyndBlogsModal()">-->
+        <!--    <i class="svg-icon-add inverse"></i>-->
+        <!--</button>-->
+    </header>
+
+    <div class="sub-header">
+        <a href="">
+            <i class="icon-close-small"></i>
+        </a>
+
+        <div class="block">
+            <h3>US Election Night Live Blog</h3>
+            <dl>
+                <dt>Producer:</dt>
+                <dd>DPA</dd>
+                <dt>Autopublish:</dt>
+                <dd>False</dd>
+            </dl>
+        </div>
+    </div>
+
+    <ul id="syndicated-blogs-list" class="posts">
+        <li ng-repeat="post in posts._items" ng-click="select(blog)">
+            <p>{{post.mainItem.item.text}}</p>
+        </li>
+    </ul>
+</div>
+
+
