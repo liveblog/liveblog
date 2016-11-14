@@ -1,7 +1,6 @@
 liveblogSyndication
-    .factory('IncomingSyndicationActions',
-        ['Dispatcher', 'api', 'postsService', '$rootScope',
-        function(Dispatcher, api, postsService, $rootScope) {
+    .factory('IncomingSyndicationActions', ['Dispatcher', 'api', 'postsService',
+        function(Dispatcher, api, postsService) {
             return {
                 getPosts: function(blogId, syndicationId) {
                     postsService.getPosts(blogId, { syndicationIn: syndicationId })
