@@ -54,6 +54,8 @@ liveblogSyndication
                                 localProducerBlogIds.push(blog._id);
                                 blog.checked = true;
                             }
+
+                            blog.autopublish = true; // Default autopublish as true
                         });
 
                         return blog;
