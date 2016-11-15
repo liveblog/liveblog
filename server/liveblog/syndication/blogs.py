@@ -1,8 +1,10 @@
 import logging
+from bson import ObjectId
 from flask import request, abort, Blueprint
 from superdesk.services import BaseService
 from superdesk import get_resource_service
 from liveblog.blogs.blogs import blogs_schema
+from liveblog.posts.posts import PostsResource
 from flask_cors import CORS
 
 from .utils import api_error, api_response
@@ -30,6 +32,25 @@ class BlogResource(CustomAuthResource):
     }
     schema = blogs_schema
     item_methods = ['GET']
+    resource_methods = ['GET']
+
+
+class BlogPostsService(BaseService):
+    notification_key = 'syndication_blog_posts'
+
+    def get(self, req, lookup):
+        if lookup.get('blog_id'):
+            lookup['blog'] = ObjectId(lookup['blog_id'])
+            del lookup['blog_id']
+        return super().get(req, lookup)
+
+
+class BlogPostsResource(CustomAuthResource):
+    url = 'syndication/blogs/<regex("[a-f0-9]{24}"):blog_id>/posts'
+    schema = PostsResource.schema
+    datasource = PostsResource.datasource
+    item_methods = ['GET']
+    resource_methods = ['GET']
 
 
 def _get_consumer_from_auth():
