@@ -93,6 +93,13 @@ define([
             if (angular.isDefined(filters.sticky)) {
                 posts_criteria.source.query.filtered.filter.and.push({term: {sticky: filters.sticky}});
             }
+
+            // filters.status
+            if (angular.isDefined(filters.syndicationIn)) {
+                posts_criteria.source.query.filtered.filter.and.push({
+                    term: {syndication_in: filters.syndicationIn}
+                });
+            }
             return retrievePosts(blog_id, posts_criteria);
         }
 
