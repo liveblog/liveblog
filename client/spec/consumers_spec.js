@@ -23,7 +23,7 @@ var contact = {
     firstName: 'Chuck',
     lastName: 'Norris',
     email: 'gmail@chucknorris.com'
-}
+};
 
 describe('Consumers', function() {
 

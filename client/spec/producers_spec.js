@@ -24,7 +24,7 @@ var contact = {
     firstName: 'Chuck',
     lastName: 'Norris',
     email: 'gmail@chucknorris.com'
-}
+};
 
 describe('Producers', function() {
     beforeEach(function(done) {login().then(done);});
