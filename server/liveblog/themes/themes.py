@@ -320,6 +320,7 @@ class ThemesService(BaseService):
             self.get_children(theme.get('name'))
         return list(set(response))
 
+
 @upload_theme_blueprint.route('/theme-download/<theme_name>', methods=['GET'])
 @cross_origin()
 def download_a_theme(theme_name):
@@ -350,6 +351,7 @@ def download_a_theme(theme_name):
     response.headers['Content-Disposition'] = 'attachment; filename={}.zip'.format(zip_folder)
     # response.headers['X-Accel-Redirect'] = '{}.zip'.format(zip_folder)
     return response
+
 
 @upload_theme_blueprint.route('/theme-upload', methods=['POST'])
 @cross_origin()

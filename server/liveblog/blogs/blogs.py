@@ -252,4 +252,5 @@ class PublishBlogsCommand(superdesk.Command):
             url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
             print('  - Blog "%s" republished: %s' % (blog['title'], url))
 
+
 superdesk.command('publish_blogs', PublishBlogsCommand())
