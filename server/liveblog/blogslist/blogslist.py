@@ -11,10 +11,11 @@ import superdesk
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
-from flask import render_template, json, request, current_app as app
+from flask import render_template, json, current_app as app
 import os
 import io
 import magic
+from liveblog.embed import MediaStorageUnsupportedForBlogPublishing
 from superdesk.celery_app import celery
 from eve.io.mongo import MongoJSONEncoder
 import logging
@@ -31,27 +32,28 @@ CONTENT_TYPES = {
 bp = superdesk.Blueprint('embed_blogslist', __name__, template_folder='templates')
 bloglist_assets_blueprint = superdesk.Blueprint('blogslist_assets', __name__, static_folder=BLOGSLIST_ASSETS_DIR)
 
+
 def bloglist_assets():
     return {
-            'scripts': [
-                'vendors/moment/min/moment-with-locales.min.js',
-                'vendors/angular/angular.min.js',
-                'vendors/angular-resource/angular-resource.min.js',
-                'vendors/angular-route/angular-route.min.js',
-                'vendors/angular-gettext/dist/angular-gettext.min.js',
-                # 'templates.js',
-                'main.js'
-            ],
-            'styles': [
-                'styles/embed.css',
-                'styles/reset.css'
-            ],
-            # 'template': ['template.html'],
-            'version': 'bower.json'
-        }
+        'scripts': [
+            'vendors/moment/min/moment-with-locales.min.js',
+            'vendors/angular/angular.min.js',
+            'vendors/angular-resource/angular-resource.min.js',
+            'vendors/angular-route/angular-route.min.js',
+            'vendors/angular-gettext/dist/angular-gettext.min.js',
+            'main.js'
+        ],
+        'styles': [
+            'styles/embed.css',
+            'styles/reset.css'
+        ],
+        'version': 'bower.json'
+    }
+
 
 def get_file_path():
     return os.path.join(BLOGSLIST_ASSETS_DIR, 'index.html')
+
 
 @celery.task(soft_time_limit=1800)
 def publish_assets(asset_type):
@@ -75,11 +77,11 @@ def publish_assets(asset_type):
                                                 # version=version
                                                 ))
             # upload
-            file_id = app.media.put(file.read(),
-                                    filename=final_file_name,
-                                    content_type=content_type,
-                                    # version = version
-                                    )
+            app.media.put(file.read(),
+                          filename=final_file_name,
+                          content_type=content_type,
+                          # version = version
+                          )
 
 
 @celery.task(soft_time_limit=1800)
@@ -102,7 +104,10 @@ def publish_bloglist_embed_on_s3():
                                 # version = version
                                 )
 
-        assets_public_url = superdesk.upload.url_for_media(file_id).replace(assets['version'], '').replace('http://', '//')
+        assets_public_url = superdesk.upload.url_for_media(file_id)
+        # correct the path
+        assets_public_url = assets_public_url.replace(assets['version'], '')
+        assets_public_url = assets_public_url.replace('http://', '//')
 
         html = render_bloglist_embed(assets_root=assets_public_url)
         file_path = get_file_path()
@@ -125,9 +130,11 @@ def publish_bloglist_embed_on_s3():
         publish_assets('scripts')
         publish_assets('styles')
 
+
 def check_media_storage():
     if type(app.media).__name__ is not 'AmazonMediaStorage':
         raise MediaStorageUnsupportedForBlogPublishing()
+
 
 def render_bloglist_embed(api_host=None, assets_root=None):
     compiled_api_host = "{}://{}/".format(
@@ -135,7 +142,7 @@ def render_bloglist_embed(api_host=None, assets_root=None):
         app.config['SERVER_NAME'])
     api_host = api_host or compiled_api_host
     assets_root = assets_root or BLOGSLIST_ASSETS_DIR + '/'
-    assets = bloglist_assets();
+    assets = bloglist_assets()
     # compute path relative to the assets_root for `styles` and `scripts`
     for index, script in enumerate(assets.get('scripts')):
         assets['scripts'][index] = os.path.join(assets_root, script)
@@ -149,6 +156,7 @@ def render_bloglist_embed(api_host=None, assets_root=None):
         'assets_root': assets_root
     }
     return render_template('blog-list-embed.html', **scope)
+
 
 @bp.route('/blogslist_embed')
 def blogslist_embed(api_host=None, assets_root=None):
@@ -174,9 +182,11 @@ class BlogsListService(BaseService):
     def publish_bloglist_embed_on_s3(self):
         publish_bloglist_embed_on_s3()
 
+
 @bp.app_template_filter('tojson')
 def tojson(obj):
     return json.dumps(obj, cls=MongoJSONEncoder)
+
 
 class BloglistCommand(superdesk.Command):
 
@@ -187,4 +197,3 @@ class BloglistCommand(superdesk.Command):
 
 
 superdesk.command('register_bloglist', BloglistCommand())
-
