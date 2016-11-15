@@ -22,6 +22,7 @@ def init_app(app):
     service = GlobalPreferencesService(endpoint_name, backend=get_backend())
     GlobalPreferencesResource(endpoint_name, app=app, service=service)
 
+
 superdesk.privilege(name='global_preferences', label='Global Settings Management',
                     description='User can blobal settings.')
 

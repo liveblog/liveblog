@@ -45,7 +45,6 @@ def get_app(config=None):
 
     app = superdesk_app(config, media_storage)
 
-
     custom_loader = jinja2.ChoiceLoader([
         jinja2.FileSystemLoader('superdesk/templates'),
         app.jinja_loader
@@ -61,6 +60,7 @@ def get_app(config=None):
     # embed feature
     app.register_blueprint(embed_blueprint)
     return app
+
 
 if __name__ == '__main__':
     debug = True
