@@ -19,6 +19,12 @@ var consumer = {
     apiUrl: 'http://www.masseyferguson.de/api'
 };
 
+var contact = {
+    firstName: 'Chuck',
+    lastName: 'Norris',
+    email: 'gmail@chucknorris.com'
+}
+
 describe('Consumers', function() {
 
     beforeEach(function(done) {login().then(done);});
@@ -41,6 +47,18 @@ describe('Consumers', function() {
                 })
                 .then(function() {
                     return element(by.css('input#api-url')).sendKeys(consumer.apiUrl);
+                })
+                .then(function() {
+                    return element(by.css('input[name="first_name"]'))
+                        .sendKeys(contact.firstName);
+                })
+                .then(function() {
+                    return element(by.css('input[name="last_name"]'))
+                        .sendKeys(contact.lastName);
+                })
+                .then(function() {
+                    return element(by.css('input[name="email"]'))
+                        .sendKeys(contact.email);
                 })
                 .then(function() {
                     return element(by.css('#save-edit-btn')).click();

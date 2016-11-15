@@ -20,6 +20,12 @@ var producer = {
     consumerApiKey: '1234567890qwerty'
 };
 
+var contact = {
+    firstName: 'Chuck',
+    lastName: 'Norris',
+    email: 'gmail@chucknorris.com'
+}
+
 describe('Producers', function() {
     beforeEach(function(done) {login().then(done);});
 
@@ -53,6 +59,18 @@ describe('Producers', function() {
                 .then(function() {
                     return element(by.css('input#consumer-api-key'))
                         .sendKeys(producer.consumerApiKey);
+                })
+                .then(function() {
+                    return element(by.css('input[name="first_name"]'))
+                        .sendKeys(contact.firstName);
+                })
+                .then(function() {
+                    return element(by.css('input[name="last_name"]'))
+                        .sendKeys(contact.lastName);
+                })
+                .then(function() {
+                    return element(by.css('input[name="email"]'))
+                        .sendKeys(contact.email);
                 })
                 .then(function() {
                     return element(by.css('#save-edit-btn')).click();
