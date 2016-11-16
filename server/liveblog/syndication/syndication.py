@@ -10,7 +10,6 @@ from .auth import ConsumerBlogTokenAuth
 from flask import Blueprint, request, abort
 from flask_cors import CORS
 from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
-from superdesk.utc import utcnow
 
 
 logger = logging.getLogger('superdesk')

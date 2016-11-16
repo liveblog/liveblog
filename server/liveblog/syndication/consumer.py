@@ -101,6 +101,7 @@ class ConsumerService(BaseService):
         if 'api_key' in updates and updates['api_key'] != original['api_key']:
             updates['api_key'] = generate_api_key()
 
+
 class ConsumerResource(Resource):
     datasource = {
         'source': 'consumers',

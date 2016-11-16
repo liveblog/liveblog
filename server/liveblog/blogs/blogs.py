@@ -183,7 +183,7 @@ class BlogService(BaseService):
 
     def find_one(self, req, checkUser=True, **lookup):
         doc = super().find_one(req, **lookup)
-        #check if the current user has permission to open a blog
+        # check if the current user has permission to open a blog
         if checkUser and not is_admin(get_user()):
             # get members ids
             members = [str(m['user']) for m in doc.get('members', [])]
@@ -261,5 +261,6 @@ class PublishBlogsCommand(superdesk.Command):
         for blog in blogs:
             url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
             print('  - Blog "%s" republished: %s' % (blog['title'], url))
+
 
 superdesk.command('publish_blogs', PublishBlogsCommand())

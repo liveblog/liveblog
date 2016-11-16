@@ -139,7 +139,7 @@ def producer_blog(producer_id, blog_id):
         if response.status_code == 200:
             return api_response(response.content, response.status_code, json_dumps=False)
         else:
-            return api_error('Unable to get producer blogs.', response.status_code)
+            return api_error('Unable to get producer blog "{}".'.format(blog_id), response.status_code)
 
 
 def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish):
