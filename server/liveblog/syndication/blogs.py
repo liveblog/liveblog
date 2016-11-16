@@ -49,8 +49,10 @@ class BlogPostsResource(CustomAuthResource):
     url = 'syndication/blogs/<regex("[a-f0-9]{24}"):blog_id>/posts'
     schema = PostsResource.schema
     datasource = PostsResource.datasource
+    authentication = ConsumerApiKeyAuth
     item_methods = ['GET']
     resource_methods = ['GET']
+    privileges = {'GET': 'posts'}
 
 
 def _get_consumer_from_auth():
