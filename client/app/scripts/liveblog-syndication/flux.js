@@ -11,6 +11,8 @@ liveblogSyndication
     .factory('Store', function() {
         var Store = function(reducers, initialState) {
             this.dispatch = this.dispatch.bind(this);
+            this.destroy = this.destroy.bind(this);
+
             this.reducers = reducers;
             this.listeners = [];
             this.state = initialState;
@@ -31,5 +33,9 @@ liveblogSyndication
             });
         };
 
+        Store.prototype.destroy = function() {
+            document.removeEventListener('dispatch', this.dispatch);
+        }
+
         return Store;
-    }); 
+    });
