@@ -183,7 +183,7 @@ class BlogService(BaseService):
 
     def find_one(self, req, checkUser=True, **lookup):
         doc = super().find_one(req, **lookup)
-        #check if the current user has permission to open a blog
+        # check if the current user has permission to open a blog
         if checkUser and not is_admin(get_user()):
             # get members ids
             members = [str(m['user']) for m in doc.get('members', [])]

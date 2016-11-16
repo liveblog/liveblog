@@ -1,5 +1,6 @@
 Feature: Syndication Blog Posts Resource
 
+    @auth
     Scenario: List blog posts
         Given "themes"
         """
@@ -12,15 +13,16 @@ Feature: Syndication Blog Posts Resource
                 "title": "testBlog",
                 "blog_status": "open",
                 "syndication_enabled": true,
-                "blog_preferences": {"theme": "forest", "language": "fr"}
+                "blog_preferences": {"theme": "forest", "language": "fr"},
+                "members": [{"user": "#CONTEXT_USER_ID#"}]
             }
         ]
         """
-        When we post to "items"
+        Given "items"
         """
         [{"text": "test", "blog": "#blogs._id#"}]
         """
-        And we post to "posts"
+        When we post to "posts" with success
         """
         [{
             "blog": "#blogs._id#",
