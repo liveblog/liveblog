@@ -26,7 +26,7 @@ liveblogSyndication
                     return $http({
                         url: uri,
                         method: (method == 'DELETE') ? 'DELETE' : 'POST',
-                        data: { consumer_blog_id: consumerBlogId, auto_publish: blog.autopublish },
+                        data: { consumer_blog_id: consumerBlogId, auto_publish: blog.auto_publish },
                         headers: {
                             "Content-Type": "application/json;charset=utf-8"
                         }
