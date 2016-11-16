@@ -115,6 +115,10 @@ syndication_in_schema = {
     'producer_blog_title': {
         'type': 'string',
         'required': True
+    },
+    'auto_publish': {
+        'type': 'boolean',
+        'default': False
     }
 }
 
@@ -201,6 +205,8 @@ def syndication_webhook():
     for item_id in item_ids:
         item_refs.append({'residRef': str(item_id)})
 
+    post_status = 'open' if in_syndication['auto_publish'] else 'submitted'
+
     new_post = {
         'blog': in_syndication['blog_id'],
         'groups': [
@@ -223,8 +229,7 @@ def syndication_webhook():
         'producer_post_id': old_post['_id'],
         'sticky': False,
         'syndication_in': in_syndication['_id'],
-        # auto publish
-        'post_status': 'open'
+        'post_status': post_status
     }
     # Create post content
     posts_service = get_resource_service('posts')

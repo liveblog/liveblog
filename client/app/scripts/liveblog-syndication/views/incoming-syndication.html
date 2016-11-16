@@ -8,15 +8,15 @@
     </header>
 
     <div class="sub-header">
-        <a href="">
+        <button ng-click="goBack()">
             <i class="icon-close-small"></i>
-        </a>
+        </button>
 
         <div class="block">
-            <h3>US Election Night Live Blog</h3>
+            <h3>{{syndication.producer_blog_title}}</h3>
             <dl>
                 <dt>Producer:</dt>
-                <dd>DPA</dd>
+                <dd>{{syndication.producer.name}}</dd>
                 <dt>Autopublish:</dt>
                 <dd>False</dd>
             </dl>
@@ -24,8 +24,11 @@
     </div>
 
     <ul id="syndicated-blogs-list" class="posts">
-        <li ng-repeat="post in posts._items" ng-click="select(blog)">
-            <p>{{post.mainItem.item.text}}</p>
+        <li ng-repeat="post in posts._items">
+            <div
+                class="lb-post__item"
+                lb-bind-html 
+                html-content="{{post.mainItem.item.text}}"></div>
         </li>
     </ul>
 </div>

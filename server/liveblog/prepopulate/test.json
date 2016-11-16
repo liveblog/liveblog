@@ -967,7 +967,12 @@
     "data": {
         "name": "John Deere",
         "api_url": "http://www.deere.com/api",
-        "api_key": "123456789qwerty"
+        "api_key": "123456789qwerty",
+        "contacts": [{
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "john.doe@gmail.com"
+        }]
     }
 },
 {
@@ -975,7 +980,12 @@
     "data": {
         "name": "John Deere",
         "api_url": "http://www.deere.com/api",
-        "consumer_api_key": "1234567890asdfgh"
+        "consumer_api_key": "1234567890asdfgh",
+        "contacts": [{
+            "first_name": "John",
+            "last_name": "Doe",
+            "email": "john.doe@gmail.com"
+        }]
     }
 }
 ]

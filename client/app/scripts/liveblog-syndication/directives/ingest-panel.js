@@ -19,6 +19,8 @@ liveblogSyndication
                         scope.syndicationIn = state.syndicationIn;
                         scope.locallySyndicatedItems = state.locallySyndicatedItems;
                         scope.modalActive = state.modalActive;
+
+                        console.log('locally synd items', state.locallySyndicatedItems);
                     });
 
                     IngestPanelActions.getSyndication();
@@ -32,6 +34,8 @@ liveblogSyndication
                         // a parent scope function in liveblog-edit/module
                         scope.openPanel('incoming-syndication', synd._id);
                     }
+
+                    scope.$on('$destroy', scope.store.destroy);
                 }
             };
         }]);
