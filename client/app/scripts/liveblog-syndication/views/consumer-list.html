@@ -53,6 +53,12 @@
         </div>
 
         <div class="preview-pane" ng-if="selected.consumer">
+            <header>
+                <button ng-click="selected.consumer = null" class="close-preview">
+                    <i class="icon-close-small"></i>
+                </button>
+            </header>
+
             <div class="content" sd-user-details-pane ng-if="selected.consumer">
                 <div
                     id="user-profile-edit" 
