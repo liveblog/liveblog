@@ -46,20 +46,25 @@ liveblogSyndication
                 case 'ON_GET_PRODUCER_BLOGS':
                     var localProducerBlogIds = [];
 
-                    action.producerBlogs._items = action.producerBlogs._items.map(function(blog) {
-                        blog.checked = false;
-                        blog.auto_publish = true; // Default autopublish as true
+                    action.producerBlogs._items = action.producerBlogs._items
+                        .filter(function(blog) {
+                            // Only display the producer's blogs with an enabled syndication
+                            return (blog.syndication_enabled);
+                        })
+                        .map(function(blog) {
+                            blog.checked = false;
+                            blog.auto_publish = true; // Default autopublish as true
 
-                        state.locallySyndicatedItems.forEach(function(localBlog) {
-                            if (localBlog.producer_blog_id == blog._id) {
-                                localProducerBlogIds.push(blog._id);
-                                blog.checked = true;
-                            }
+                            state.locallySyndicatedItems.forEach(function(localBlog) {
+                                if (localBlog.producer_blog_id == blog._id) {
+                                    localProducerBlogIds.push(blog._id);
+                                    blog.checked = true;
+                                }
 
+                            });
+
+                            return blog;
                         });
-
-                        return blog;
-                    });
 
                     return {
                         modalActive: state.modalActive,
