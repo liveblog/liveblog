@@ -21,5 +21,6 @@ def init_app(app):
     service = MemberListService(endpoint_name, backend=superdesk.get_backend())
     MemberListResource(endpoint_name, app=app, service=service)
 
+
 superdesk.privilege(name='blogs', label='Blog Management', description='User can manage blogs')
 superdesk.privilege(name='request_membership', label='Can create a request', description='User can create a request')
