@@ -48,6 +48,7 @@ liveblogSyndication
 
                     action.producerBlogs._items = action.producerBlogs._items.map(function(blog) {
                         blog.checked = false;
+                        blog.auto_publish = true; // Default autopublish as true
 
                         state.locallySyndicatedItems.forEach(function(localBlog) {
                             if (localBlog.producer_blog_id == blog._id) {
@@ -55,7 +56,6 @@ liveblogSyndication
                                 blog.checked = true;
                             }
 
-                            blog.autopublish = true; // Default autopublish as true
                         });
 
                         return blog;
