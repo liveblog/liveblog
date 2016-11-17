@@ -1,7 +1,7 @@
 import superdesk
 from .consumer import ConsumerService, ConsumerResource
 from .producer import ProducerService, ProducerResource
-from .blogs import BlogService, BlogResource
+from .blogs import BlogService, BlogResource, BlogPostsService, BlogPostsResource
 from .syndication import SyndicationOut, SyndicationOutService, SyndicationIn, SyndicationInService
 
 
@@ -12,9 +12,12 @@ def init_app(app):
     # Producers
     service = ProducerService('producers', backend=superdesk.get_backend())
     ProducerResource('producers', app=app, service=service)
-    # Blogs and Posts
+    # Blogs
     service = BlogService('syndication_blogs', backend=superdesk.get_backend())
     BlogResource('syndication_blogs', app=app, service=service)
+    # Blog Posts
+    service = BlogPostsService('syndication_blog_posts', backend=superdesk.get_backend())
+    BlogPostsResource('syndication_blog_posts', app=app, service=service)
     # Syndication In/Out
     service = SyndicationOutService('syndication_out', backend=superdesk.get_backend())
     SyndicationOut('syndication_out', app=app, service=service)

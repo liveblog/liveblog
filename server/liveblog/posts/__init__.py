@@ -17,6 +17,7 @@ def init_app(app):
     service = PostsVersionsService(endpoint_name, backend=get_backend())
     PostsVersionsResource(endpoint_name, app=app, service=service)
 
+
 superdesk.privilege(name='posts', label='Can create a post', description='User can create a post from items')
 superdesk.privilege(name='publish_post', label='Can publish a post',
                     description='User can publish a post to the timeline.')
