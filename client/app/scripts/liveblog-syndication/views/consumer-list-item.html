@@ -25,6 +25,8 @@
             <span lb-copy-to-clipboard for="api-key"></span>
         </div>
         <div class="username">{{ consumer.api_url }}</div>
+        <!--<div>{{getFirstContact(consumer)}}</div>-->
+        <div lb-first-contact prosumer="consumer"></div>
     </div>
 
     <div class="action">
