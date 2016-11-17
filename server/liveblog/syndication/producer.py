@@ -91,6 +91,10 @@ class ProducerService(BaseService):
         url_path = 'syndication/blogs/{}'.format(blog_id)
         return self._send_api_request(producer_id, url_path, json_loads=json_loads)
 
+    def get_blog_posts(self, producer_id, blog_id, json_loads=True):
+        url_path = 'syndication/blogs/{}/posts'.format(blog_id)
+        return self._send_api_request(producer_id, url_path, json_loads=json_loads)
+
     def syndicate(self, producer_id, blog_id, consumer_blog_id, json_loads=True):
         url_path = 'syndication/blogs/{}/syndicate'.format(blog_id)
         data = {'consumer_blog_id': consumer_blog_id}
@@ -142,7 +146,21 @@ def producer_blog(producer_id, blog_id):
             return api_error('Unable to get producer blog "{}".'.format(blog_id), response.status_code)
 
 
-def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
+@producers_blueprint.route('/api/producers/<producer_id>/blogs/<blog_id>/posts', methods=['GET'])
+def producer_blog_posts(producer_id, blog_id):
+    producers = get_resource_service('producers')
+    try:
+        response = producers.get_blog_posts(producer_id, blog_id, json_loads=False)
+    except ProducerAPIError as e:
+        return api_response(str(e), 500)
+    else:
+        if response.status_code == 200:
+            return api_response(response.content, response.status_code, json_dumps=False)
+        else:
+            return api_error('Unable to get producer blog posts.', response.status_code)
+
+
+def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish):
     producers = get_resource_service('producers')
     in_service = get_resource_service('syndication_in')
     if in_service.is_syndicated(producer_id, blog_id, consumer_blog_id):
@@ -160,7 +178,8 @@ def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
                 'blog_token': syndication['token'],
                 'producer_id': producer_id,
                 'producer_blog_id': blog_id,
-                'producer_blog_title': syndication['producer_blog_title']
+                'producer_blog_title': syndication['producer_blog_title'],
+                'auto_publish': auto_publish
             }])
             return api_response(response.content, response.status_code, json_dumps=False)
         elif response.status_code == 409:
@@ -196,13 +215,14 @@ def _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
 @producers_blueprint.route('/api/producers/<producer_id>/syndicate/<blog_id>', methods=['POST', 'DELETE'])
 def producer_blogs_syndicate(producer_id, blog_id):
     consumer_blog_id = request.get_json().get('consumer_blog_id')
+    auto_publish = request.get_json().get('auto_publish')
     if not consumer_blog_id:
         return api_error('Missing "consumer_blog_id" in form data.', 422)
 
     if request.method == 'DELETE':
         return _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id)
     else:
-        return _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id)
+        return _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish)
 
 
 def _producers_blueprint_auth():
