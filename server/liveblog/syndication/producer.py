@@ -91,6 +91,10 @@ class ProducerService(BaseService):
         url_path = 'syndication/blogs/{}'.format(blog_id)
         return self._send_api_request(producer_id, url_path, json_loads=json_loads)
 
+    def get_blog_posts(self, producer_id, blog_id, json_loads=True):
+        url_path = 'syndication/blogs/{}/posts'.format(blog_id)
+        return self._send_api_request(producer_id, url_path, json_loads=json_loads)
+
     def syndicate(self, producer_id, blog_id, consumer_blog_id, json_loads=True):
         url_path = 'syndication/blogs/{}/syndicate'.format(blog_id)
         data = {'consumer_blog_id': consumer_blog_id}
@@ -140,6 +144,20 @@ def producer_blog(producer_id, blog_id):
             return api_response(response.content, response.status_code, json_dumps=False)
         else:
             return api_error('Unable to get producer blog "{}".'.format(blog_id), response.status_code)
+
+
+@producers_blueprint.route('/api/producers/<producer_id>/blogs/<blog_id>/posts', methods=['GET'])
+def producer_blog_posts(producer_id, blog_id):
+    producers = get_resource_service('producers')
+    try:
+        response = producers.get_blog_posts(producer_id, blog_id, json_loads=False)
+    except ProducerAPIError as e:
+        return api_response(str(e), 500)
+    else:
+        if response.status_code == 200:
+            return api_response(response.content, response.status_code, json_dumps=False)
+        else:
+            return api_error('Unable to get producer blog posts.', response.status_code)
 
 
 def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish):
