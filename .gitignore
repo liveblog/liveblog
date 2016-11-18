@@ -59,6 +59,7 @@ docs/_build/
 # PyBuilder
 target/
 celerybeatschedule.db
+celerybeatschedule.db.*
 dump.rdb
 
 # Vim stuff
@@ -70,3 +71,11 @@ dump.rdb
 
 # Vagrant
 .vagrant
+
+# PyCharm idea folders
+.idea/
+
+# Themes folder
+server/liveblog/themes/themes_assets/*
+!server/liveblog/themes/themes_assets/angular
+!server/liveblog/themes/themes_assets/classic
