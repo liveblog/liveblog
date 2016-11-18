@@ -25,6 +25,12 @@ var contact = {
     email: 'gmail@chucknorris.com'
 };
 
+var contact2 = {
+    firstName: 'Steven',
+    lastName: 'Seagal',
+    email: 'steven.seagal@gmail.com'
+};
+
 describe('Consumers', function() {
 
     beforeEach(function(done) {login().then(done);});
@@ -128,5 +134,53 @@ describe('Consumers', function() {
                     expect(count).toEqual(0);
                 });
         });
+    });
+
+    describe('Contacts', function() {
+        it('can add a contact to an existing entry', function() {
+            consumersManagement.openConsumersManagement();
+
+            var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
+            expect(firstRowName.getText()).toEqual('John Deere');
+
+            firstRowName
+                .click()
+                .then(function() {
+                    return element(by.css('button[ng-click="addContact()"]')).isDisplayed();
+                })
+                .then(function() {
+                    return element(by.css('button[ng-click="addContact()"]')).click();
+                })
+                .then(function() {
+                    return element.all(by.repeater('contact in contacts')).get(1).isDisplayed();
+                })
+                .then(function() {
+                    return element
+                        .all(by.repeater('contact in contacts'))
+                        .get(1)
+                        .element(by.css('input[name="first_name"]'))
+                        .sendKeys(contact2.firstName);
+                })
+                .then(function() {
+                    return element
+                        .all(by.repeater('contact in contacts'))
+                        .get(1)
+                        .element(by.css('input[name="last_name"]'))
+                        .sendKeys(contact2.lastName);
+                })
+                .then(function() {
+                    return element
+                        .all(by.repeater('contact in contacts'))
+                        .get(1)
+                        .element(by.css('input[name="email"]'))
+                        .sendKeys(contact2.email);
+                })
+                .then(function() {
+                    return element(by.css('#save-edit-btn')).click();
+                })
+                .then(function() {
+                    return assertToastMsg('success', 'consumer saved.');
+                });
+         });
     });
 });
