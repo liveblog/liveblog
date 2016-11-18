@@ -10,6 +10,9 @@ from .auth import ConsumerBlogTokenAuth
 from flask import Blueprint, request, abort
 from flask_cors import CORS
 from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
+from .exceptions import DownloadError
+from .utils import fetch_url
+from werkzeug.datastructures import FileStorage
 
 
 logger = logging.getLogger('superdesk')
@@ -170,11 +173,13 @@ def _get_post_items(original_doc):
         if group['id'] == 'main':
             for ref in group['refs']:
                 item = items_service.find_one(req=None, guid=ref['guid'])
-                if ref['type'] == 'text':
-                    items.append({
-                        'text': item['text'],
-                        'item_type': 'text'
-                    })
+                item_type = item['item_type']
+                data = {
+                    'text': item['text'],
+                    'item_type': item_type,
+                    'meta': item.get('meta', {})
+                }
+                items.append(data)
     return items
 
 
@@ -187,6 +192,61 @@ def send_post_to_consumer(syndication_out, old_post, action='created'):
     consumers.send_post(syndication_out, {'items': items, 'producer_post': old_post}, action)
 
 
+@celery.task()
+def fetch_image(url, mimetype):
+    return FileStorage(stream=fetch_url(url), content_type=mimetype)
+
+
+def _get_image_text(data, meta):
+    srcset = []
+    for value in data['renditions'].values():
+        srcset.append('{} {}w'.format(value['href'], value['width']))
+
+    caption = meta['caption']
+    full_caption = caption
+    if meta['credit']:
+        full_caption = '{} Credit: {}'.format(caption, meta['credit'])
+
+    return ','.join([
+        '<figure>',
+        '   <img src="{}" alt="{}" srcset="{}" />'.format(
+            data['renditions']['viewImage']['href'],
+            meta['caption'],
+            ','.join(srcset)
+        ),
+        '   <figcaption>{}</figcaption>'.format(full_caption),
+        '</figure>'
+    ])
+
+
+def _webhook_fetch_item_image(meta):
+    try:
+        image_url = meta['media']['renditions']['original']['href']
+        mimetype = meta['media']['renditions']['original']['mimetype']
+    except KeyError:
+        raise DownloadError('Unable to get original image from metadata: {}'.format(meta))
+
+    item_data = {}
+    item_data['type'] = 'picture'
+    item_data['media'] = fetch_image(image_url, mimetype)
+    archive_service = get_resource_service('archive')
+    item_id = archive_service.post([item_data])[0]
+    logger.warning('Image posted as archive: "{}"'.format(item_id))
+    archive = archive_service.find_one(req=None, _id=item_id)
+    return {
+        'item_type': 'image',
+        'meta': {
+            'media': {
+                '_id': item_id,
+                'renditions': archive['renditions']
+            },
+            'caption': meta['caption'],
+            'credit': meta['credit']
+        },
+        'text': _get_image_text(archive, meta)
+    }
+
+
 @syndication_blueprint.route('/api/syndication/webhook', methods=['POST'])
 def syndication_webhook():
     in_service = get_resource_service('syndication_in')
@@ -197,15 +257,22 @@ def syndication_webhook():
     data = request.get_json()
     items, old_post = data['items'], data['producer_post']
 
+    post_items = []
     for item in items:
+        meta = item.pop('meta')
+        if item['item_type'] == 'image':
+            item = _webhook_fetch_item_image(meta)
         item['blog'] = in_syndication['blog_id']
+        post_items.append(item)
 
-    item_ids = items_service.post(items)
+    item_ids = items_service.post(post_items)
     item_refs = []
-    for item_id in item_ids:
-        item_refs.append({'residRef': str(item_id)})
+    for i, item_id in enumerate(item_ids):
+        item_refs.append({
+            'residRef': str(item_id)
+        })
 
-    post_status = 'open' if in_syndication['auto_publish'] else 'submitted'
+    post_status = 'open' if in_syndication.get('auto_publish', False) else 'submitted'
 
     new_post = {
         'blog': in_syndication['blog_id'],
