@@ -89,6 +89,11 @@ class SyndicationOutService(BaseService):
                 doc['token'] = generate_api_key()
             cast_to_object_id(doc, ['consumer_id', 'blog_id', 'consumer_blog_id'])
 
+    def on_created(self, docs):
+        super().on_created(docs)
+        for doc in docs:
+            send_old_posts_to_consumer.delay(doc)
+
 
 class SyndicationOut(Resource):
     datasource = {
@@ -126,7 +131,6 @@ syndication_in_schema = {
 }
 
 
-# TODO: on created, run celery task to fetch old blog posts.
 class SyndicationInService(BaseService):
     notification_key = 'syndication_in'
 
@@ -193,6 +197,21 @@ def send_post_to_consumer(syndication_out, old_post, action='created'):
 
 
 @celery.task()
+def send_old_posts_to_consumer(syndication_out, action='created', limit=25):
+    consumers = get_resource_service('consumers')
+    blog_id = syndication_out['blog_id']
+    posts_service = get_resource_service('posts')
+    posts = posts_service.find({'blog': blog_id}).limit(limit)
+    for old_post in posts:
+        items = _get_post_items(old_post)
+        consumers.send_post(syndication_out, {
+            'items': items,
+            'producer_post': old_post,
+            'post_status': 'submitted',
+        }, action)
+
+
+@celery.task()
 def fetch_image(url, mimetype):
     return FileStorage(stream=fetch_url(url), content_type=mimetype)
 
@@ -219,7 +238,7 @@ def _get_image_text(data, meta):
     ])
 
 
-def _webhook_fetch_item_image(meta):
+def _fetch_item_image(meta):
     try:
         image_url = meta['media']['renditions']['original']['href']
         mimetype = meta['media']['renditions']['original']['mimetype']
@@ -247,24 +266,16 @@ def _webhook_fetch_item_image(meta):
     }
 
 
-@syndication_blueprint.route('/api/syndication/webhook', methods=['POST'])
-def syndication_webhook():
-    in_service = get_resource_service('syndication_in')
-    items_service = get_resource_service('blog_items')
-    blog_token = request.headers['Authorization']
-    in_syndication = in_service.find_one(blog_token=blog_token, req=None)
-
-    data = request.get_json()
-    items, old_post = data['items'], data['producer_post']
-
+def _create_blog_post(old_post, items, in_syndication, post_status=None):
     post_items = []
     for item in items:
         meta = item.pop('meta')
         if item['item_type'] == 'image':
-            item = _webhook_fetch_item_image(meta)
+            item = _fetch_item_image(meta)
         item['blog'] = in_syndication['blog_id']
         post_items.append(item)
 
+    items_service = get_resource_service('blog_items')
     item_ids = items_service.post(post_items)
     item_refs = []
     for i, item_id in enumerate(item_ids):
@@ -272,7 +283,8 @@ def syndication_webhook():
             'residRef': str(item_id)
         })
 
-    post_status = 'open' if in_syndication.get('auto_publish', False) else 'submitted'
+    if not post_status:
+        post_status = 'open' if in_syndication.get('auto_publish', False) else 'submitted'
 
     new_post = {
         'blog': in_syndication['blog_id'],
@@ -292,13 +304,25 @@ def syndication_webhook():
         ],
         'highlight': False,
         'particular_type': 'post',
-        'post_status': 'open',
         'producer_post_id': old_post['_id'],
         'sticky': False,
         'syndication_in': in_syndication['_id'],
         'post_status': post_status
     }
-    # Create post content
+    return new_post
+
+
+@syndication_blueprint.route('/api/syndication/webhook', methods=['POST'])
+def syndication_webhook():
+    in_service = get_resource_service('syndication_in')
+    blog_token = request.headers['Authorization']
+    in_syndication = in_service.find_one(blog_token=blog_token, req=None)
+
+    data = request.get_json()
+    items, old_post = data['items'], data['producer_post']
+    post_status = data.get('post_status', 'open')
+    new_post = _create_blog_post(old_post, items, in_syndication, post_status=post_status)
+
     posts_service = get_resource_service('posts')
     new_post_id = posts_service.post([new_post])[0]
     return api_response({'post_id': str(new_post_id)}, 201)
