@@ -38,7 +38,6 @@ define([
                 source: {
                     query: {filtered: {filter: {
                         and: []
-                        //bool: { must_not: [] }
                     }}}
                 },
                 page: page,
