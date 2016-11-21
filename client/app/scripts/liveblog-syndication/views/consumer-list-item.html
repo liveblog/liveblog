@@ -12,7 +12,8 @@
 
     <div class="row-wrapper" sd-col-width>
         <div class="name">{{ consumer.name }}</div>
-        <div class="email">
+        <div class="email">{{ consumer.api_url }}</div>
+        <div class="username">
             <span id="api-key">{{ consumer.api_key }}</span>
             <span>
                 <a title="Refresh api key"
@@ -24,7 +25,6 @@
             </span>
             <span lb-copy-to-clipboard for="api-key"></span>
         </div>
-        <div class="username">{{ consumer.api_url }}</div>
     </div>
 
     <div class="action">
