@@ -13,6 +13,7 @@ from superdesk import get_resource_service
 import os
 import glob
 import json
+from io import BytesIO
 import superdesk
 from bson.objectid import ObjectId
 from superdesk.errors import SuperdeskApiError
@@ -25,6 +26,7 @@ import os
 import magic
 from liveblog.blogs.blogs import publish_blog_embed_on_s3
 import logging
+from flask import make_response
 
 logger = logging.getLogger('superdesk')
 ASSETS_DIR = 'themes_assets'
@@ -35,6 +37,7 @@ CONTENT_TYPES = {
     '.json': 'application/json'
 }
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
+download_theme_blueprint = superdesk.Blueprint('download_theme', __name__)
 themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=ASSETS_DIR)
 
 
@@ -316,6 +319,38 @@ class ThemesService(BaseService):
             response.append(theme.get('name'))
             self.get_children(theme.get('name'))
         return list(set(response))
+
+
+@upload_theme_blueprint.route('/theme-download/<theme_name>', methods=['GET'])
+@cross_origin()
+def download_a_theme(theme_name):
+    theme = get_resource_service('themes').find_one(req=None, name=theme_name)
+    if not theme:
+        error_message = 'Themes: "{}" this theme is not registered.'.format(theme_name)
+        logger.info(error_message)
+        raise UnknownTheme(error_message)
+    theme_filepath = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR, theme_name)
+    theme_zip = BytesIO()
+    themes_folder = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR)
+    # keep the same nameing convention as we have in github.
+    zip_folder = 'lb-theme-{}-{}'.format(theme_name, theme.get('version', 'master'))
+    with zipfile.ZipFile(theme_zip, 'w') as tz:
+        # add all the files from the theme folder
+        for root, dirs, files in os.walk(theme_filepath):
+            # compile the root for zip.
+            zip_root = root.replace(os.path.join(themes_folder, theme_name), zip_folder)
+            # add dir itself (needed for empty dirs)
+            tz.write(os.path.join(root, "."), os.path.join(zip_root, "."))
+            for file in files:
+                # compile the path in the zip for the file.
+                tz.write(os.path.join(root, file), os.path.join(zip_root, file))
+
+    response = make_response(theme_zip.getvalue(), 200)
+    response.headers['Cache-Control'] = 'no-cache'
+    response.headers['Content-Type'] = 'application/zip'
+    response.headers['Content-Disposition'] = 'attachment; filename={}.zip'.format(zip_folder)
+    # response.headers['X-Accel-Redirect'] = '{}.zip'.format(zip_folder)
+    return response
 
 
 @upload_theme_blueprint.route('/theme-upload', methods=['POST'])
