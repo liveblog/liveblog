@@ -36,7 +36,10 @@ define([
             filters.excludeDeleted = angular.isDefined(filters.excludeDeleted) ? filters.excludeDeleted : true;
             var posts_criteria = {
                 source: {
-                    query: {filtered: {filter: {and: []}}}
+                    query: {filtered: {filter: {
+                        and: []
+                        //bool: { must_not: [] }
+                    }}}
                 },
                 page: page,
                 max_results: max_results
@@ -100,6 +103,13 @@ define([
                     term: {syndication_in: filters.syndicationIn}
                 });
             }
+
+            if (angular.isDefined(filters.noSyndication)) {
+                posts_criteria.source.query.filtered.filter.and.push({
+                    missing: { field: 'syndication_in' }
+                });
+            }
+
             return retrievePosts(blog_id, posts_criteria);
         }
 
