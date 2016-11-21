@@ -64,6 +64,10 @@ liveblogSyndication
                         IngestPanelActions.getProducerBlogs(producerId);
                     };
 
+                    scope.isAlreadySyndicated = function(blog) {
+                        return scope.localProducerBlogIds.indexOf(blog._id) != -1;
+                    };
+
                     scope.check = function(blog) {
                         blog.checked = (blog.hasOwnProperty('checked')) ? !blog.checked : true;
 

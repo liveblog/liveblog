@@ -27,6 +27,7 @@
                             sd-switch 
                             ng-change="syndicate(blog)" 
                             ng-model="blog.auto_publish"
+                            ng-hide="isAlreadySyndicated(blog)"
                             class="sms-switch"></span>
                     </dd>
                 </dl>

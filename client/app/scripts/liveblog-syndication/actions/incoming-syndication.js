@@ -3,7 +3,12 @@ liveblogSyndication
         function(Dispatcher, api, postsService) {
             return {
                 getPosts: function(blogId, syndicationId) {
-                    postsService.getPosts(blogId, { syndicationIn: syndicationId })
+                    var filters = {
+                        status: 'submitted',
+                        syndicationIn: syndicationId
+                    };
+
+                    postsService.getPosts(blogId, filters)
                         .then(function(posts) {
                             Dispatcher.dispatch({
                                 type: 'ON_GET_POSTS',
