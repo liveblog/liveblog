@@ -203,12 +203,14 @@ def send_old_posts_to_consumer(syndication_out, action='created', limit=25):
     posts_service = get_resource_service('posts')
     posts = posts_service.find({'blog': blog_id}).limit(limit)
     for old_post in posts:
-        items = _get_post_items(old_post)
-        consumers.send_post(syndication_out, {
-            'items': items,
-            'producer_post': old_post,
-            'post_status': 'submitted',
-        }, action)
+        old_post_type = old_post.get(ITEM_TYPE, '')
+        if old_post_type == CONTENT_TYPE.COMPOSITE:
+            items = _get_post_items(old_post)
+            consumers.send_post(syndication_out, {
+                'items': items,
+                'producer_post': old_post,
+                'post_status': 'submitted',
+            }, action)
 
 
 @celery.task()
