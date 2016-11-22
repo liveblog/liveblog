@@ -17,7 +17,8 @@ liveblogSyndication
                         scope.localProducerBlogIds = state.localProducerBlogIds;
                         scope.modalActive = state.modalActive;
 
-                        if (Object.keys(state.producerBlogs).length > 0) {
+                        if (Object.keys(state.producerBlogs).length > 0 &&
+                            scope.localProducerBlogIds) {
                             scope.blogsToAttach = angular.copy(scope.localProducerBlogIds);
                             compare();
                         }

@@ -19,8 +19,6 @@ liveblogSyndication
                         scope.syndicationIn = state.syndicationIn;
                         scope.locallySyndicatedItems = state.locallySyndicatedItems;
                         scope.modalActive = state.modalActive;
-
-                        console.log('locally synd items', state.locallySyndicatedItems);
                     });
 
                     IngestPanelActions.getSyndication();
