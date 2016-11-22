@@ -43,12 +43,16 @@ define([
                         showReorder: false,
                         hideAllPosts: false,
                         originalOrder: 0,
-                        pagesManager: new PagesManager($scope.lbPostsBlogId,
-                                                       $scope.lbPostsStatus,
-                                                       //if the list is a list with sticky posts, show them all in the 1st pages
-                                                       $scope.lbSticky === true? 100: 10,
-                                                       $scope.lbPostsOrderBy || 'editorial',
-                                                       $scope.lbSticky),
+                        pagesManager: new PagesManager(
+                            $scope.lbPostsBlogId,
+                            $scope.lbPostsStatus,
+                            //if the list is a list with sticky posts, show them all in the 1st pages
+                            $scope.lbSticky === true? 100: 10,
+                            $scope.lbPostsOrderBy || 'editorial',
+                            $scope.lbSticky,
+                            null,
+                            $scope.lbPostsNoSyndication === true ? true : false
+                        ),
                         fetchNewPage: function() {
                             vm.isLoading = true;
                             return vm.pagesManager.fetchNewPage().then(function() {
@@ -156,6 +160,7 @@ define([
                         lbPostsStatus: '@',
                         lbSticky: '@',
                         lbStickyInstance: '=',
+                        lbPostsNoSyndication: '=',
                         lbPostsOrderBy: '@',
                         lbPostsAllowUnpublishing: '=',
                         lbPostsAllowReordering: '=',
