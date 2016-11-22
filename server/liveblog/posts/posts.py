@@ -225,11 +225,6 @@ class PostsService(ArchiveService):
                     item_id = container.get('residRef')
                     found = item_resource.find_one(req=None, _id=item_id)
                     item_resource.update(item_id, {'original_creator': original.get('original_creator')}, found)
-                    # it should work like this
-                    # items = item_resource.find_and_modify(
-                    #     query={'_id': item_id},
-                    #     update={'$set': {'original_creator': original.get('original_creator')}},
-                    #     upsert=False)
 
         # when unpublishing
         if original.get('post_status') == 'open' and updates.get('post_status') != 'open':
