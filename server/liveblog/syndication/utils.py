@@ -8,7 +8,8 @@ from requests.exceptions import Timeout
 from bson import ObjectId
 from hashlib import sha1
 from flask import make_response
-from .exceptions import APIConnectionError
+import tempfile
+from .exceptions import APIConnectionError, DownloadError
 
 
 logger = logging.getLogger('superdesk')
@@ -81,3 +82,16 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
         return response
     else:
         return response.json()
+
+
+def fetch_url(url, timeout=5):
+    try:
+        response = requests.get(url, timeout=timeout)
+    except (ConnectionError, TimeoutError):
+        raise DownloadError('Unable to download url: "{}"'.format(url))
+    fd = tempfile.NamedTemporaryFile()
+    for chunk in response.iter_content(chunk_size=1024):
+        if chunk:
+            fd.write(chunk)
+    fd.seek(0)
+    return fd

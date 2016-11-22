@@ -2,6 +2,10 @@ class APIConnectionError(Exception):
     pass
 
 
+class DownloadError(Exception):
+    pass
+
+
 class ProducerAPIError(APIConnectionError):
     pass
 
