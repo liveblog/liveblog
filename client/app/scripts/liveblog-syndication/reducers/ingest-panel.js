@@ -23,7 +23,9 @@ liveblogSyndication
                         locallySyndicatedItems: locallySyndicatedItems(
                             action.syndicationIn, 
                             localSyndTokens
-                        )
+                        ),
+                        localProducerBlogIds: [], // Reset list after syndication
+                        producerBlogs: [] // Same here
                     });
 
                 case 'ON_GET_PRODUCERS':
