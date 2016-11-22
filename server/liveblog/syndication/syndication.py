@@ -292,7 +292,6 @@ def _create_blog_post(old_post, items, in_syndication, post_status=None):
         else:
             post_status = 'submitted'
 
-
     new_post = {
         'blog': in_syndication['blog_id'],
         'groups': [
