@@ -286,7 +286,11 @@ def _create_blog_post(old_post, items, in_syndication, post_status=None):
         })
 
     if not post_status:
-        post_status = 'open' if in_syndication.get('auto_publish', False) else 'submitted'
+        auto_publish = in_syndication.get('auto_publish', False)
+        if auto_publish:
+            post_status = 'open'
+        else:
+            post_status = 'submitted'
 
     new_post = {
         'blog': in_syndication['blog_id'],
@@ -322,8 +326,7 @@ def syndication_webhook():
 
     data = request.get_json()
     items, old_post = data['items'], data['producer_post']
-    post_status = data.get('post_status', 'open')
-    new_post = _create_blog_post(old_post, items, in_syndication, post_status=post_status)
+    new_post = _create_blog_post(old_post, items, in_syndication)
 
     posts_service = get_resource_service('posts')
     new_post_id = posts_service.post([new_post])[0]
