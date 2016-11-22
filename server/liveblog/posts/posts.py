@@ -205,9 +205,6 @@ class PostsService(ArchiveService):
         if content_diff:
             updates['content_updated_date'] = utcnow()
 
-        # assure that the item is keept if the content wasn't changed.
-        if not content_diff and updates.get('groups', False):
-            updates['groups'][1]['refs'] = original['groups'][1]['refs']
         # check permission
         post = original.copy()
         post.update(updates)
@@ -221,6 +218,19 @@ class PostsService(ArchiveService):
             # if you publish a post and hasn't `content_updated_date` add it.
             if not updates.get('content_updated_date', False):
                 updates['content_updated_date'] = updates['published_date']
+            # assure that the item info is keept if is needed.
+            if original.get('post_status') == 'submitted' and updates.get('groups', False):
+                item_resource = get_resource_service('items')
+                for container in updates['groups'][1]['refs']:
+                    item_id = container.get('residRef')
+                    found = item_resource.find_one(req=None, _id=item_id)
+                    item_resource.update(item_id, {'original_creator': original.get('original_creator')}, found)
+                    # it should work like this
+                    # items = item_resource.find_and_modify(
+                    #     query={'_id': item_id},
+                    #     update={'$set': {'original_creator': original.get('original_creator')}},
+                    #     upsert=False)
+
         # when unpublishing
         if original.get('post_status') == 'open' and updates.get('post_status') != 'open':
             updates['unpublished_date'] = utcnow()
