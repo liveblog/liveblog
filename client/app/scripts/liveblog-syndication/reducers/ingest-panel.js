@@ -23,7 +23,7 @@ liveblogSyndication
                         syndicationIn: action.syndicationIn, //ACTION
                         producers: state.producers,
                         producerBlogs: state.producerBlogs,
-                        localProducerBlogIds: state.localProducerBlogsIds,
+                        localProducerBlogIds: state.localProducerBlogIds,
                         localSyndTokens: localSyndTokens,
                         locallySyndicatedItems: locallySyndicatedItems(
                             action.syndicationIn, 
@@ -38,7 +38,7 @@ liveblogSyndication
                         syndicationIn: state.syndicationIn,
                         producers: action.producers, // ACTION
                         producerBlogs: state.producerBlogs,
-                        localProducerBlogIds: state.localProducerBlogsIds,
+                        localProducerBlogIds: state.localProducerBlogIds,
                         localSyndTokens: state.localSyndTokens,
                         locallySyndicatedItems: state.locallySyndicatedItems
                     }
@@ -72,7 +72,7 @@ liveblogSyndication
                         syndicationIn: state.syndicationIn,
                         producers: state.producers,
                         producerBlogs: action.producerBlogs, // ACTION
-                        localProducerBlogIds: localProducerBlogIds,
+                        localProducerBlogIds: localProducerBlogIds, // ACTION
                         localSyndTokens: state.localSyndTokens,
                         locallySyndicatedItems: state.locallySyndicatedItems
                     }
@@ -84,7 +84,7 @@ liveblogSyndication
                         syndicationIn: state.syndicationIn,
                         producers: state.producers,
                         producerBlogs: state.producerBlogs,
-                        localProducerBlogIds: state.localProducerBlogsIds,
+                        localProducerBlogIds: state.localProducerBlogIds,
                         localSyndTokens: state.localSyndTokens,
                         locallySyndicatedItems: state.locallySyndicatedItems
                     }

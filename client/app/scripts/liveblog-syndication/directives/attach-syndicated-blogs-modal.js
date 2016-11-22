@@ -17,8 +17,7 @@ liveblogSyndication
                         scope.localProducerBlogIds = state.localProducerBlogIds;
                         scope.modalActive = state.modalActive;
 
-                        if (Object.keys(state.producerBlogs).length > 0 &&
-                            scope.localProducerBlogIds) {
+                        if (Object.keys(state.producerBlogs).length > 0) {
                             scope.blogsToAttach = angular.copy(scope.localProducerBlogIds);
                             compare();
                         }
@@ -66,7 +65,10 @@ liveblogSyndication
                     };
 
                     scope.isAlreadySyndicated = function(blog) {
-                        return scope.localProducerBlogIds.indexOf(blog._id) != -1;
+                        if (scope.localProducerBlogIds.length == 0)
+                            return false;
+                        else
+                            return scope.localProducerBlogIds.indexOf(blog._id) != -1;
                     };
 
                     scope.check = function(blog) {
