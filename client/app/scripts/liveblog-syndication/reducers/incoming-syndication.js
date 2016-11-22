@@ -3,16 +3,14 @@ liveblogSyndication
         return function(state, action) {
             switch (action.type) {
                 case 'ON_GET_POSTS':
-                    return {
+                    return angular.extend(state, {
                         posts: action.posts,
-                        syndication: state.syndication
-                    };
+                    });
 
                 case 'ON_GET_SYNDICATION':
-                    return {
-                        posts: state.posts,
+                    return angular.extend(state, {
                         syndication: action.syndication
-                    };
+                    });
             }
         };
     });

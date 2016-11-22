@@ -17,31 +17,19 @@ liveblogSyndication
                             return syndication.blog_token;
                         });
 
-                    return {
-                        modalActive: state.modalActive,
-                        consumerBlogId: state.consumerBlogId,
+                    return angular.extend(state, {
                         syndicationIn: action.syndicationIn, //ACTION
-                        producers: state.producers,
-                        producerBlogs: state.producerBlogs,
-                        localProducerBlogIds: state.localProducerBlogIds,
                         localSyndTokens: localSyndTokens,
                         locallySyndicatedItems: locallySyndicatedItems(
                             action.syndicationIn, 
                             localSyndTokens
                         )
-                    };
+                    });
 
                 case 'ON_GET_PRODUCERS':
-                    return {
-                        modalActive: state.modalActive,
-                        consumerBlogId: state.consumerBlogId,
-                        syndicationIn: state.syndicationIn,
-                        producers: action.producers, // ACTION
-                        producerBlogs: state.producerBlogs,
-                        localProducerBlogIds: state.localProducerBlogIds,
-                        localSyndTokens: state.localSyndTokens,
-                        locallySyndicatedItems: state.locallySyndicatedItems
-                    }
+                    return angular.extend(state, {
+                        producers: action.producers
+                    });
 
                 case 'ON_GET_PRODUCER_BLOGS':
                     var localProducerBlogIds = [];
@@ -66,28 +54,15 @@ liveblogSyndication
                             return blog;
                         });
 
-                    return {
-                        modalActive: state.modalActive,
-                        consumerBlogId: state.consumerBlogId,
-                        syndicationIn: state.syndicationIn,
-                        producers: state.producers,
+                    return angular.extend(state, {
                         producerBlogs: action.producerBlogs, // ACTION
-                        localProducerBlogIds: localProducerBlogIds, // ACTION
-                        localSyndTokens: state.localSyndTokens,
-                        locallySyndicatedItems: state.locallySyndicatedItems
-                    }
+                        localProducerBlogIds: localProducerBlogIds
+                    });
 
                 case 'ON_TOGGLE_MODAL':
-                    return {
-                        modalActive: action.modalActive, // ACTION
-                        consumerBlogId: state.consumerBlogId,
-                        syndicationIn: state.syndicationIn,
-                        producers: state.producers,
-                        producerBlogs: state.producerBlogs,
-                        localProducerBlogIds: state.localProducerBlogIds,
-                        localSyndTokens: state.localSyndTokens,
-                        locallySyndicatedItems: state.locallySyndicatedItems
-                    }
+                    return angular.extend(state, {
+                        modalActive: action.modalActive
+                    });
             }
         }
     });
