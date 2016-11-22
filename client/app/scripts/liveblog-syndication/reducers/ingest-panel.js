@@ -18,6 +18,7 @@ liveblogSyndication
                         });
 
                     return {
+                        error: state.error,
                         modalActive: state.modalActive,
                         consumerBlogId: state.consumerBlogId,
                         syndicationIn: action.syndicationIn, //ACTION
@@ -33,6 +34,7 @@ liveblogSyndication
 
                 case 'ON_GET_PRODUCERS':
                     return {
+                        error: state.error,
                         modalActive: state.modalActive,
                         consumerBlogId: state.consumerBlogId,
                         syndicationIn: state.syndicationIn,
@@ -67,6 +69,7 @@ liveblogSyndication
                         });
 
                     return {
+                        error: state.error,
                         modalActive: state.modalActive,
                         consumerBlogId: state.consumerBlogId,
                         syndicationIn: state.syndicationIn,
@@ -79,6 +82,7 @@ liveblogSyndication
 
                 case 'ON_TOGGLE_MODAL':
                     return {
+                        error: state.error,
                         modalActive: action.modalActive, // ACTION
                         consumerBlogId: state.consumerBlogId,
                         syndicationIn: state.syndicationIn,
@@ -88,6 +92,20 @@ liveblogSyndication
                         localSyndTokens: state.localSyndTokens,
                         locallySyndicatedItems: state.locallySyndicatedItems
                     }
+
+                case 'ON_ERROR':
+                    return {
+                        error: action.error, // ACTION
+                        modalActive: state.modalActive,
+                        consumerBlogId: state.consumerBlogId,
+                        syndicationIn: state.syndicationIn,
+                        producers: state.producers,
+                        producerBlogs: state.producerBlogs,
+                        localProducerBlogIds: state.localProducerBlogsIds,
+                        localSyndTokens: state.localSyndTokens,
+                        locallySyndicatedItems: state.locallySyndicatedItems
+                    }
+ 
             }
         }
     });

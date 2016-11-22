@@ -1,11 +1,12 @@
 liveblogSyndication
     .directive('lbIngestPanel',
-        ['IngestPanelActions', 'Store', 'IngestPanelReducers', '$routeParams',
-        function(IngestPanelActions, Store, IngestPanelReducers, $routeParams) {
+        ['IngestPanelActions', 'Store', 'IngestPanelReducers', '$routeParams', 'notify',
+        function(IngestPanelActions, Store, IngestPanelReducers, $routeParams, notify) {
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/ingest-panel.html',
                 link: function(scope) {
                     scope.store = new Store(IngestPanelReducers, {
+                        error: null,
                         consumerBlogId: $routeParams._id,
                         syndicationIn: {},
                         producers: {},
@@ -20,7 +21,10 @@ liveblogSyndication
                         scope.locallySyndicatedItems = state.locallySyndicatedItems;
                         scope.modalActive = state.modalActive;
 
-                        console.log('locally synd items', state.locallySyndicatedItems);
+                        if (state.error) {
+                            notify.pop();
+                            notify.error('Fatal Error!');
+                        }
                     });
 
                     IngestPanelActions.getSyndication();

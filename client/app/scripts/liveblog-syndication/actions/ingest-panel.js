@@ -39,6 +39,12 @@ liveblogSyndication
                             type: 'ON_GET_SYND',
                             syndicationIn: syndicationIn
                         });
+                    })
+                    .catch(function(error) {
+                        Dispatcher.dispatch({
+                            type: 'ON_ERROR',
+                            error: error
+                        });
                     });
                 },
                 getProducerBlogs: function(producerId) {
