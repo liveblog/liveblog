@@ -8,7 +8,14 @@ liveblogSyndication
                             type: 'ON_GET_SYND',
                             syndicationIn: syndicationIn
                         });
+                    })
+                    .catch(function(error) {
+                        Dispatcher.dispatch({
+                            type: 'ON_ERROR',
+                            error: error
+                        });
                     });
+
                 },
                 getProducers: function() {
                     api.producers.query().then(function(producers) {
@@ -16,7 +23,13 @@ liveblogSyndication
                             type: 'ON_GET_PRODUCERS',
                             producers: producers
                         });
-                    });
+                    })
+                    .catch(function(error) {
+                        Dispatcher.dispatch({
+                            type: 'ON_ERROR',
+                            error: error
+                        });
+                     });
                 },
                 syndicate: function(currentProducer, consumerBlogId, blog, method) {
                     var uri = config.server.url + 
@@ -54,12 +67,24 @@ liveblogSyndication
                                 type: 'ON_GET_PRODUCER_BLOGS',
                                 producerBlogs: blogs
                             });
+                        })
+                        .catch(function(error) {
+                            Dispatcher.dispatch({
+                                type: 'ON_ERROR',
+                                error: error
+                            });
                         });
                 },
                 toggleModal: function(value) {
                     Dispatcher.dispatch({
                         type: 'ON_TOGGLE_MODAL',
                         modalActive: value
+                    });
+                },
+                flushErrors: function() {
+                    Dispatcher.dispatch({
+                        type: 'ON_ERROR',
+                        error: null
                     });
                 }
             };
