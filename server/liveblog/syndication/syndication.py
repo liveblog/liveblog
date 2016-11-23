@@ -10,9 +10,10 @@ from .auth import ConsumerBlogTokenAuth
 from flask import Blueprint, request, abort
 from flask_cors import CORS
 from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
-from .exceptions import DownloadError
+from .exceptions import DownloadError, APIConnectionError
 from .utils import fetch_url
 from werkzeug.datastructures import FileStorage
+from settings import SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOWN
 
 
 logger = logging.getLogger('superdesk')
@@ -187,35 +188,44 @@ def _get_post_items(original_doc):
     return items
 
 
-@celery.task(soft_time_limit=1800)
-def send_post_to_consumer(syndication_out, old_post, action='created'):
+@celery.task(bind=True)
+def send_post_to_consumer(self, syndication_out, old_post, action='created'):
     """ Celery task to send blog post updates to consumers."""
     logger.warning('syndication_out:"{}" post:"{}" action:"{}"'.format(syndication_out['_id'], old_post['_id'], action))
     consumers = get_resource_service('consumers')
     items = _get_post_items(old_post)
-    consumers.send_post(syndication_out, {'items': items, 'producer_post': old_post}, action)
+    try:
+        consumers.send_post(syndication_out, {'items': items, 'producer_post': old_post}, action)
+    except APIConnectionError as e:
+        raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
 
 
-@celery.task()
-def send_old_posts_to_consumer(syndication_out, action='created', limit=25):
+@celery.task(bind=True)
+def send_old_posts_to_consumer(self, syndication_out, action='created', limit=25):
     consumers = get_resource_service('consumers')
     blog_id = syndication_out['blog_id']
     posts_service = get_resource_service('posts')
     posts = posts_service.find({'blog': blog_id}).limit(limit)
-    for old_post in posts:
-        old_post_type = old_post.get(ITEM_TYPE, '')
-        if old_post_type == CONTENT_TYPE.COMPOSITE:
-            items = _get_post_items(old_post)
-            consumers.send_post(syndication_out, {
-                'items': items,
-                'producer_post': old_post,
-                'post_status': 'submitted',
-            }, action)
+    try:
+        for old_post in posts:
+            old_post_type = old_post.get(ITEM_TYPE, '')
+            if old_post_type == CONTENT_TYPE.COMPOSITE:
+                items = _get_post_items(old_post)
+                consumers.send_post(syndication_out, {
+                    'items': items,
+                    'producer_post': old_post,
+                    'post_status': 'submitted',
+                }, action)
+    except APIConnectionError as e:
+        raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
 
 
-@celery.task()
-def fetch_image(url, mimetype):
-    return FileStorage(stream=fetch_url(url), content_type=mimetype)
+@celery.task(bind=True)
+def fetch_image(self, url, mimetype):
+    try:
+        return FileStorage(stream=fetch_url(url), content_type=mimetype)
+    except DownloadError as e:
+        raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
 
 
 def _get_image_text(data, meta):
