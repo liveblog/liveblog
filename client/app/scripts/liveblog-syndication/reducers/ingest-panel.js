@@ -28,6 +28,20 @@ liveblogSyndication
                         producerBlogs: [] // Same here
                     });
 
+                case 'ON_UPDATED_SYND':
+                    var syndicationIn = angular.copy(state.syndicationIn);
+
+                    syndicationIn._items = syndicationIn._items.map(function(item) {
+                        if (item._id == action.syndEntry._id)
+                            return action.syndEntry;
+                        else
+                            return item;
+                    });
+
+                    return angular.extend(state, {
+                        syndicationIn: syndicationIn,
+                    });
+
                 case 'ON_GET_PRODUCERS':
                     return angular.extend(state, {
                         producers: action.producers

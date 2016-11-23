@@ -55,6 +55,24 @@ liveblogSyndication
                         type: 'ON_TOGGLE_MODAL',
                         modalActive: value
                     });
+                },
+                updateSyndication: function(syndId, data, etag) {
+                    return $http({
+                        url: config.server.url + '/syndication_in/' + syndId,
+                        method: 'PATCH',
+                        data: data,
+                        headers: {
+                            "Content-Type": "application/json;charset=utf-8",
+                            "If-Match": etag
+                        }
+                    })
+                    .then(function(response) {
+                        console.log('patch res', response);
+                        Dispatcher.dispatch({
+                            type: 'ON_UPDATED_SYND',
+                            syndEntry: response.data
+                        });
+                    });
                 }
             };
         }])

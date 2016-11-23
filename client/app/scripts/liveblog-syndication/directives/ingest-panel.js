@@ -41,7 +41,15 @@ liveblogSyndication
                         $event.stopPropagation();
 
                         blog.isOpen = !blog.isOpen;
-                        //scope.status.isopen = !scope.status.isopen;
+                    };
+
+                    scope.updateSyndication = function(synd) {
+                        console.log('synd', synd);
+                        IngestPanelActions.updateSyndication(
+                            synd._id,
+                            { auto_publish: synd.auto_publish },
+                            synd._etag
+                        );
                     };
 
                     scope.open = false;
