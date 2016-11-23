@@ -15,6 +15,7 @@
             <li
                 ng-repeat="blog in producerBlogs._items" 
                 ng-click="check(blog)" 
+                class="blog-item"
                 ng-class="{checked: blog.checked}">
                 <div class="block-left">
                     <h4>{{blog.title}}</h4>

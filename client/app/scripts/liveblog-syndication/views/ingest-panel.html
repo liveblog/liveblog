@@ -9,10 +9,16 @@
 
     <ul id="syndicated-blogs-list">
         <li ng-repeat="blog in locallySyndicatedItems" ng-click="select(blog)" class="blog-item">
-            <h4>
-                <span ng-if="!blog.producer_blog_title">{{blog.blog_token}}</span>
-                <span ng-if="blog.producer_blog_title">{{blog.producer_blog_title}}</span>
-            </h4>
+            <div class="block-left">
+                <h4>
+                    <span ng-if="!blog.producer_blog_title">{{blog.blog_token}}</span>
+                    <span ng-if="blog.producer_blog_title">{{blog.producer_blog_title}}</span>
+                </h4>
+                <p>
+                    <b>Auto Publish:</b>
+                    <span>{{blog.auto_publish ? 'True' : 'False'}}</span>
+                </p>
+            </div>
             <div
                 class="dropdown dropdown--more-activity blog-actions-menu" 
                 dropdown 
