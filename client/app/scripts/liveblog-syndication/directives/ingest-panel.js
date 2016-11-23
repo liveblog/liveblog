@@ -19,6 +19,7 @@ liveblogSyndication
                         scope.syndicationIn = state.syndicationIn;
                         scope.locallySyndicatedItems = state.locallySyndicatedItems;
                         scope.modalActive = state.modalActive;
+                        scope.consumerBlogId = state.consumerBlogId;
                     });
 
                     IngestPanelActions.getSyndication();
@@ -44,12 +45,23 @@ liveblogSyndication
                     };
 
                     scope.updateSyndication = function(synd) {
-                        console.log('synd', synd);
                         IngestPanelActions.updateSyndication(
                             synd._id,
                             { auto_publish: synd.auto_publish },
                             synd._etag
                         );
+                    };
+
+                    scope.destroy = function($event, synd) {
+                        $event.preventDefault();
+                        $event.stopPropagation();
+
+                        IngestPanelActions.syndicate(
+                            { _id: synd.producer_id },
+                            scope.consumerBlogId,
+                            { _id: synd.producer_blog_id, auto_publish: synd.auto_publish },
+                            'DELETE'
+                        )
                     };
 
                     scope.open = false;
