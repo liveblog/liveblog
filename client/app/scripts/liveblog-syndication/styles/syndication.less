@@ -1,5 +1,5 @@
 #producers-list, #syndicated-blogs-list {
-    li {
+    li.blog-item {
         background: #fff;
         border-radius: 2px;
         border: 1px solid #d4d4d4;
@@ -28,17 +28,40 @@
         }
     }
 
-    li.checked {
+    li.blog-item.checked {
         background: #d2e5ed;
         border: 1px solid #d2e5ed;
         padding-top: 12px;
         box-shadow: inset 0 2px 1px rgba(0,0,0,.11)
     }
+
+    div.blog-actions-menu {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        button.btn-dots-vertical {
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            padding: 15px 10px;
+            color: #666;
+        }
+    }
+
+    h4 {
+        float: left;
+    }
+
+    h4, i {
+        color: #666;
+    }
 }
 
-#syndicated-blogs-list li {
+#syndicated-blogs-list li.blog-item {
     margin: 10px 15px;
     height: auto;
+    position: relative;
 }
 
 div.panel--incoming-syndication {

@@ -33,6 +33,18 @@ liveblogSyndication
                         scope.openPanel('incoming-syndication', synd._id);
                     }
 
+                    scope.toggleDropdown = function($event, blog) {
+                        if (!blog.hasOwnProperty('isOpen'))
+                            blog.isOpen = false;
+
+                        $event.preventDefault();
+                        $event.stopPropagation();
+
+                        blog.isOpen = !blog.isOpen;
+                        //scope.status.isopen = !scope.status.isopen;
+                    };
+
+                    scope.open = false;
                     scope.$on('$destroy', scope.store.destroy);
                 }
             };
