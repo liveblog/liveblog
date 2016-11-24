@@ -94,19 +94,19 @@ liveblogSyndication
                             );
 
                         scope.producerBlogs._items.forEach(function (blog) {
+                            var params = {
+                                producerId: scope.currentProducer._id,
+                                producerBlogId: blog._id,
+                                consumerBlogId: scope.consumerBlogId,
+                                autoPublish: blog.auto_publish,
+                                method: 'POST'
+                            };
+
                             if (toSyndicate.indexOf(blog._id) != -1)
-                                IngestPanelActions.syndicate(
-                                    scope.currentProducer,
-                                    scope.consumerBlogId,
-                                    blog, 
-                                    'POST'
-                                );
+                                IngestPanelActions.syndicate(params);
                             else if (toUnSyndicate.indexOf(blog._id) != -1)
                                 IngestPanelActions.syndicate(
-                                    scope.currentProducer,
-                                    scope.consumerBlogId,
-                                    blog, 
-                                    'DELETE'
+                                    angular.extend(params, { method: 'DELETE' })
                                 );
                         });
 

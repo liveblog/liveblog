@@ -8,11 +8,54 @@
     </header>
 
     <ul id="syndicated-blogs-list">
-        <li ng-repeat="blog in locallySyndicatedItems" ng-click="select(blog)">
-            <h4>
-                <span ng-if="!blog.producer_blog_title">{{blog.blog_token}}</span>
-                <span ng-if="blog.producer_blog_title">{{blog.producer_blog_title}}</span>
-            </h4>
+        <li ng-repeat="blog in locallySyndicatedItems" ng-click="select(blog)" class="blog-item">
+            <div class="block-left">
+                <h4>
+                    <span ng-if="!blog.producer_blog_title">{{blog.blog_token}}</span>
+                    <span ng-if="blog.producer_blog_title">{{blog.producer_blog_title}}</span>
+                </h4>
+                <p>
+                    <b>Auto Publish:</b>
+                    <span>{{blog.auto_publish ? 'True' : 'False'}}</span>
+                </p>
+            </div>
+            <div
+                class="dropdown dropdown--more-activity blog-actions-menu" 
+                dropdown 
+                dropdown-append-to-body 
+                is-open="blog.isOpen"> 
+                <button 
+                    id="btn-append-to-body" 
+                    type="button" 
+                    class="btn-dots-vertical condensed dropdown__toggle" 
+                    ng-click="toggleDropdown($event, blog)">
+                    <i class="icon-dots-vertical"></i>
+                </button>
+                <ul
+                    class="dropdown-menu dropdown__menu more-activity-menu" 
+                    role="menu" 
+                    aria-labelledby="btn-append-to-body">
+                    <li><div class="dropdown__menu-label" translate>Actions</div></li>
+                    <li class="divider"></li>
+                    <!--<li role="menuitem">-->
+                    <!--    <a href="#"><i class="icon-pencil"></i>Edit</a>-->
+                    <!--</li>-->
+                    <li role="menuitem">
+                        <button ng-click="destroy($event, blog)">
+                            <i class="icon-trash"></i> Remove
+                        </button>
+                    </li>
+                    <li class="divider"></li>
+                    <li role="menuitem">
+                        <span>Auto Publish</span>
+                        <span
+                            sd-switch 
+                            ng-change="updateSyndication(blog)"
+                            ng-model="blog.auto_publish"
+                            class="sms-switch"></span>
+                    </li>
+                </ul>
+            </div>
         </li>
     </ul>
 </div>

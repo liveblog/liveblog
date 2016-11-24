@@ -18,15 +18,19 @@ liveblogSyndication
                         });
                     });
                 },
-                syndicate: function(currentProducer, consumerBlogId, blog, method) {
+                //syndicate: function(currentProducer, consumerBlogId, blog, method) {
+                syndicate: function(params) {
                     var uri = config.server.url + 
-                        '/producers/' + currentProducer._id + 
-                        '/syndicate/' + blog._id;
+                        '/producers/' + params.producerId + 
+                        '/syndicate/' + params.producerBlogId;
 
                     return $http({
                         url: uri,
-                        method: (method == 'DELETE') ? 'DELETE' : 'POST',
-                        data: { consumer_blog_id: consumerBlogId, auto_publish: blog.auto_publish },
+                        method: (params.method == 'DELETE') ? 'DELETE' : 'POST',
+                        data: { 
+                            consumer_blog_id: params.consumerBlogId, 
+                            auto_publish: params.autoPublish
+                        },
                         headers: {
                             "Content-Type": "application/json;charset=utf-8"
                         }
@@ -54,6 +58,24 @@ liveblogSyndication
                     Dispatcher.dispatch({
                         type: 'ON_TOGGLE_MODAL',
                         modalActive: value
+                    });
+                },
+                updateSyndication: function(syndId, data, etag) {
+                    return $http({
+                        url: config.server.url + '/syndication_in/' + syndId,
+                        method: 'PATCH',
+                        data: data,
+                        headers: {
+                            "Content-Type": "application/json;charset=utf-8",
+                            "If-Match": etag
+                        }
+                    })
+                    .then(function(response) {
+                        console.log('patch res', response);
+                        Dispatcher.dispatch({
+                            type: 'ON_UPDATED_SYND',
+                            syndEntry: response.data
+                        });
                     });
                 }
             };
