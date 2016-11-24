@@ -986,6 +986,17 @@
             "last_name": "Doe",
             "email": "john.doe@gmail.com"
         }]
+    },
+    "id_name": "-producer one-"
+},
+{
+    "resource": "syndication_in",
+    "data": {
+        "producer_blog_title" : "This blog does not exist",
+        "blog_id" : "-id blog one-",
+        "blog_token" : "2ec28e31942faddece35aa10316cf878aaa36d90",
+        "producer_id" : "-producer one-",
+        "auto_publish" : false
     }
 }
 ]
