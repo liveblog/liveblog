@@ -18,15 +18,19 @@ liveblogSyndication
                         });
                     });
                 },
-                syndicate: function(currentProducer, consumerBlogId, blog, method) {
+                //syndicate: function(currentProducer, consumerBlogId, blog, method) {
+                syndicate: function(params) {
                     var uri = config.server.url + 
-                        '/producers/' + currentProducer._id + 
-                        '/syndicate/' + blog._id;
+                        '/producers/' + params.producerId + 
+                        '/syndicate/' + params.producerBlogId;
 
                     return $http({
                         url: uri,
-                        method: (method == 'DELETE') ? 'DELETE' : 'POST',
-                        data: { consumer_blog_id: consumerBlogId, auto_publish: blog.auto_publish },
+                        method: (params.method == 'DELETE') ? 'DELETE' : 'POST',
+                        data: { 
+                            consumer_blog_id: params.consumerBlogId, 
+                            auto_publish: params.autoPublish
+                        },
                         headers: {
                             "Content-Type": "application/json;charset=utf-8"
                         }

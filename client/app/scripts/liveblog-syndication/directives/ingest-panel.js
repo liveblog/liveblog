@@ -56,12 +56,13 @@ liveblogSyndication
                         $event.preventDefault();
                         $event.stopPropagation();
 
-                        IngestPanelActions.syndicate(
-                            { _id: synd.producer_id },
-                            scope.consumerBlogId,
-                            { _id: synd.producer_blog_id, auto_publish: synd.auto_publish },
-                            'DELETE'
-                        )
+                        IngestPanelActions.syndicate({
+                            producerId: synd.producer_id,
+                            producerBlogId: synd.producer_blog_id,
+                            consumerBlogId: scope.consumerBlogId,
+                            autoPublish: synd.auto_publish,
+                            method: 'DELETE'
+                        });
                     };
 
                     scope.open = false;
