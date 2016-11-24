@@ -238,7 +238,7 @@ def _get_image_text(data, meta):
     if meta['credit']:
         full_caption = '{} Credit: {}'.format(caption, meta['credit'])
 
-    return ','.join([
+    return ''.join([
         '<figure>',
         '   <img src="{}" alt="{}" srcset="{}" />'.format(
             data['renditions']['viewImage']['href'],
