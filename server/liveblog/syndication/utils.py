@@ -4,12 +4,13 @@ import hmac
 import logging
 import requests
 from eve.io.mongo import MongoJSONEncoder
-from requests.exceptions import Timeout
 from bson import ObjectId
 from hashlib import sha1
 from flask import make_response
 import tempfile
 from .exceptions import APIConnectionError, DownloadError
+from requests.exceptions import RequestException
+from requests.packages.urllib3.exceptions import MaxRetryError
 
 
 logger = logging.getLogger('superdesk')
@@ -71,7 +72,7 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
             'Authorization': api_key,
             'Content-Type': 'application/json'
         }, params=args, data=data, timeout=timeout)
-    except (ConnectionError, Timeout):
+    except (ConnectionError, RequestException, MaxRetryError):
         raise APIConnectionError('Unable to connect to api_url "{}".'.format(api_url))
 
     logger.warning('API {} request to {} - response: {} {}'.format(
@@ -87,7 +88,7 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
 def fetch_url(url, timeout=5):
     try:
         response = requests.get(url, timeout=timeout)
-    except (ConnectionError, TimeoutError):
+    except (ConnectionError, RequestException, MaxRetryError):
         raise DownloadError('Unable to download url: "{}"'.format(url))
     fd = tempfile.NamedTemporaryFile()
     for chunk in response.iter_content(chunk_size=1024):
