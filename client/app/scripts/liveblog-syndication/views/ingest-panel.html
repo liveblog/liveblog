@@ -1,24 +1,28 @@
 <div class="panel panel--contribution">
-    <header translate>
-        <span>Ingest</span>
-
-        <button class="btn btn-info pull-right" ng-click="openSyndBlogsModal()">
-            <i class="svg-icon-add inverse"></i>
-        </button>
+    <header>
+        <h4 translate>Ingest</h4>
+        <div class="button-stack right-stack">
+            <button class="navbtn sd-create-btn" ng-click="openSyndBlogsModal()">
+                <i class="svg-icon-plus"></i><span class="circle"></span>
+            </button>
+        </div>
     </header>
 
-    <ul id="syndicated-blogs-list">
+    <ul class="syndicated-blogs-list">
         <li ng-repeat="blog in locallySyndicatedItems" ng-click="select(blog)" class="blog-item">
-            <div class="block-left">
-                <h4>
-                    <span ng-if="!blog.producer_blog_title">{{blog.blog_token}}</span>
-                    <span ng-if="blog.producer_blog_title">{{blog.producer_blog_title}}</span>
-                </h4>
-                <p>
-                    <b>Auto Publish:</b>
-                    <span>{{blog.auto_publish ? 'True' : 'False'}}</span>
-                </p>
-            </div>
+            <h4>
+                <span ng-if="!blog.producer_blog_title">{{blog.blog_token}}</span>
+                <span ng-if="blog.producer_blog_title">{{blog.producer_blog_title}}</span>
+            </h4>
+            <dl class="panel-definition-list">
+                <dt class="panel-definition-list__term">Producer:</dt>
+                <dd class="panel-definition-list__definition">{{syndication.producer.name}}</dd>
+                <dt class="panel-definition-list__term">Autopublish:</dt>
+                <dd class="panel-definition-list__definition">
+                    <div ng-if="!blog.auto_publish" class="state-label state-draft state-label--no-float">OFF</div>
+                    <div ng-if="blog.auto_publish" class="state-label state-published state-label--no-float">ON</div>
+                </dd>
+            </dl>
             <div
                 class="dropdown dropdown--more-activity blog-actions-menu" 
                 dropdown 
@@ -48,11 +52,13 @@
                     <li class="divider"></li>
                     <li role="menuitem">
                         <span>Auto Publish</span>
-                        <span
+                        <div class="dropdown__sd-toggle">
+                            <span
                             sd-switch 
                             ng-change="updateSyndication(blog)"
                             ng-model="blog.auto_publish"
-                            class="sms-switch"></span>
+                            class="sd-toggle--vertical-middle"></span>
+                        </div>
                     </li>
                 </ul>
             </div>
