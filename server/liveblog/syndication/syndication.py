@@ -3,18 +3,13 @@ from bson import ObjectId
 from flask import current_app as app
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from superdesk.celery_app import celery
 from superdesk import get_resource_service
 from flask import Blueprint, request, abort
 from flask_cors import CORS
-from werkzeug.datastructures import FileStorage
-
-from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
-from settings import SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOWN
 
 from .auth import ConsumerBlogTokenAuth
-from .exceptions import DownloadError, APIConnectionError
-from .utils import generate_api_key, cast_to_object_id, api_response, api_error, fetch_url
+from .tasks import send_post_to_consumer, send_posts_to_consumer
+from .utils import generate_api_key, cast_to_object_id, api_response, api_error, create_syndicated_blog_post
 
 
 logger = logging.getLogger('superdesk')
@@ -94,7 +89,7 @@ class SyndicationOutService(BaseService):
     def on_created(self, docs):
         super().on_created(docs)
         for doc in docs:
-            send_old_posts_to_consumer.delay(doc)
+            send_posts_to_consumer.delay(doc)
 
 
 class SyndicationOut(Resource):
@@ -168,176 +163,6 @@ class SyndicationIn(Resource):
     schema = syndication_in_schema
 
 
-def _get_post_items(original_doc):
-    items_service = get_resource_service('items')
-    item_type = original_doc.get(ITEM_TYPE, '')
-    if item_type != CONTENT_TYPE.COMPOSITE:
-        raise NotImplementedError('Post item_type "{}" not supported.'.format(item_type))
-
-    items = []
-    for group in original_doc['groups']:
-        if group['id'] == 'main':
-            for ref in group['refs']:
-                item = items_service.find_one(req=None, guid=ref['guid'])
-                item_type = item['item_type']
-                data = {
-                    'text': item['text'],
-                    'item_type': item_type,
-                    'meta': item.get('meta', {})
-                }
-                items.append(data)
-    return items
-
-
-@celery.task(bind=True)
-def send_post_to_consumer(self, syndication_out, old_post, action='created'):
-    """ Celery task to send blog post updates to consumers."""
-    logger.warning('syndication_out:"{}" post:"{}" action:"{}"'.format(syndication_out['_id'], old_post['_id'], action))
-    consumers = get_resource_service('consumers')
-    items = _get_post_items(old_post)
-    try:
-        consumers.send_post(syndication_out, {'items': items, 'producer_post': old_post}, action)
-    except APIConnectionError as e:
-        raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
-
-
-@celery.task(bind=True)
-def send_old_posts_to_consumer(self, syndication_out, action='created', limit=25):
-    consumers = get_resource_service('consumers')
-    blog_id = syndication_out['blog_id']
-    posts_service = get_resource_service('posts')
-    posts = posts_service.find({'blog': blog_id}).limit(limit)
-    try:
-        for old_post in posts:
-            old_post_type = old_post.get(ITEM_TYPE, '')
-            if old_post_type == CONTENT_TYPE.COMPOSITE:
-                items = _get_post_items(old_post)
-                consumers.send_post(syndication_out, {
-                    'items': items,
-                    'producer_post': old_post,
-                    'post_status': 'submitted',
-                }, action)
-    except APIConnectionError as e:
-        raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
-
-
-@celery.task(bind=True)
-def fetch_image(self, url, mimetype):
-    try:
-        return FileStorage(stream=fetch_url(url), content_type=mimetype)
-    except DownloadError as e:
-        raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
-
-
-def _get_image_text(data, meta):
-    srcset = []
-    for value in data['renditions'].values():
-        srcset.append('{} {}w'.format(value['href'], value['width']))
-
-    caption = meta['caption']
-    full_caption = caption
-    if meta['credit']:
-        full_caption = '{} Credit: {}'.format(caption, meta['credit'])
-
-    return ''.join([
-        '<figure>',
-        '   <img src="{}" alt="{}" srcset="{}" />'.format(
-            data['renditions']['viewImage']['href'],
-            meta['caption'],
-            ','.join(srcset)
-        ),
-        '   <figcaption>{}</figcaption>'.format(full_caption),
-        '</figure>'
-    ])
-
-
-def _fetch_item_image(meta):
-    try:
-        image_url = meta['media']['renditions']['original']['href']
-        mimetype = meta['media']['renditions']['original']['mimetype']
-    except KeyError:
-        raise DownloadError('Unable to get original image from metadata: {}'.format(meta))
-
-    item_data = {}
-    item_data['type'] = 'picture'
-    item_data['media'] = fetch_image(image_url, mimetype)
-    archive_service = get_resource_service('archive')
-    item_id = archive_service.post([item_data])[0]
-    logger.warning('Image posted as archive: "{}"'.format(item_id))
-    archive = archive_service.find_one(req=None, _id=item_id)
-    return {
-        'item_type': 'image',
-        'meta': {
-            'media': {
-                '_id': item_id,
-                'renditions': archive['renditions']
-            },
-            'caption': meta['caption'],
-            'credit': meta['credit']
-        },
-        'text': _get_image_text(archive, meta)
-    }
-
-
-def _create_producer_post_id(in_syndication, post_id):
-    """Helps to denormalize syndication producer blog post data and provide unique value for producer_post_id field."""
-    return '{}:{}:{}'.format(
-        in_syndication['producer_id'],
-        in_syndication['producer_blog_id'],
-        post_id
-    )
-
-
-def _create_blog_post(old_post, items, in_syndication, post_status=None):
-    post_items = []
-    for item in items:
-        meta = item.pop('meta')
-        if item['item_type'] == 'image':
-            item = _fetch_item_image(meta)
-        item['blog'] = in_syndication['blog_id']
-        post_items.append(item)
-
-    items_service = get_resource_service('blog_items')
-    item_ids = items_service.post(post_items)
-    item_refs = []
-    for i, item_id in enumerate(item_ids):
-        item_refs.append({
-            'residRef': str(item_id)
-        })
-
-    if not post_status:
-        auto_publish = in_syndication.get('auto_publish', False)
-        if auto_publish:
-            post_status = 'open'
-        else:
-            post_status = 'submitted'
-
-    new_post = {
-        'blog': in_syndication['blog_id'],
-        'groups': [
-            {
-                'id': 'root',
-                'role': 'grpRole:NEP',
-                'refs': [
-                    {'idRef': 'main'}
-                ]
-            },
-            {
-                'id': 'main',
-                'role': 'grpRole:Main',
-                'refs': item_refs
-            }
-        ],
-        'highlight': False,
-        'particular_type': 'post',
-        'producer_post_id': _create_producer_post_id(in_syndication, old_post['_id']),
-        'sticky': False,
-        'syndication_in': in_syndication['_id'],
-        'post_status': post_status
-    }
-    return new_post
-
-
 @syndication_blueprint.route('/api/syndication/webhook', methods=['POST'])
 def syndication_webhook():
     in_service = get_resource_service('syndication_in')
@@ -345,8 +170,8 @@ def syndication_webhook():
     in_syndication = in_service.find_one(blog_token=blog_token, req=None)
 
     data = request.get_json()
-    items, old_post = data['items'], data['producer_post']
-    new_post = _create_blog_post(old_post, items, in_syndication)
+    items, producer_post = data['items'], data['producer_post']
+    new_post = create_syndicated_blog_post(producer_post, items, in_syndication)
     posts_service = get_resource_service('posts')
     producer_post_id = new_post['producer_post_id']
     post = posts_service.find_one(req=None, producer_post_id=producer_post_id)
