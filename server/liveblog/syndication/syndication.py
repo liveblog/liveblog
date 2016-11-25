@@ -5,15 +5,16 @@ from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk.celery_app import celery
 from superdesk import get_resource_service
-from .utils import generate_api_key, cast_to_object_id, api_response
-from .auth import ConsumerBlogTokenAuth
 from flask import Blueprint, request, abort
 from flask_cors import CORS
-from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
-from .exceptions import DownloadError, APIConnectionError
-from .utils import fetch_url
 from werkzeug.datastructures import FileStorage
+
+from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
 from settings import SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOWN
+
+from .auth import ConsumerBlogTokenAuth
+from .exceptions import DownloadError, APIConnectionError
+from .utils import generate_api_key, cast_to_object_id, api_response, api_error, fetch_url
 
 
 logger = logging.getLogger('superdesk')
@@ -278,6 +279,15 @@ def _fetch_item_image(meta):
     }
 
 
+def _create_producer_post_id(in_syndication, post_id):
+    """Helps to denormalize syndication producer blog post data and provide unique value for producer_post_id field."""
+    return '{}:{}:{}'.format(
+        in_syndication['producer_id'],
+        in_syndication['producer_blog_id'],
+        post_id
+    )
+
+
 def _create_blog_post(old_post, items, in_syndication, post_status=None):
     post_items = []
     for item in items:
@@ -320,7 +330,7 @@ def _create_blog_post(old_post, items, in_syndication, post_status=None):
         ],
         'highlight': False,
         'particular_type': 'post',
-        'producer_post_id': old_post['_id'],
+        'producer_post_id': _create_producer_post_id(in_syndication, old_post['_id']),
         'sticky': False,
         'syndication_in': in_syndication['_id'],
         'post_status': post_status
@@ -337,10 +347,16 @@ def syndication_webhook():
     data = request.get_json()
     items, old_post = data['items'], data['producer_post']
     new_post = _create_blog_post(old_post, items, in_syndication)
-
     posts_service = get_resource_service('posts')
-    new_post_id = posts_service.post([new_post])[0]
-    return api_response({'post_id': str(new_post_id)}, 201)
+    producer_post_id = new_post['producer_post_id']
+    post = posts_service.find_one(req=None, producer_post_id=producer_post_id)
+    # TODO: update post
+    if not post:
+        new_post_id = posts_service.post([new_post])[0]
+        return api_response({'post_id': str(new_post_id)}, 201)
+    else:
+        logger.warning('Producer post "{}" already exists'.format(producer_post_id))
+        return api_error('Producer post already exists!', 409)
 
 
 def _syndication_blueprint_auth():
