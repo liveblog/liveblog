@@ -13,11 +13,14 @@ logger = logging.getLogger('superdesk')
 @celery.task(bind=True)
 def send_post_to_consumer(self, syndication_out, producer_post, action='created'):
     """Send blog post updates to consumers webhook."""
-    from .utils import extract_post_items
+    from .utils import extract_post_items, extract_producer_post_data
     consumers = get_resource_service('consumers')
     items = extract_post_items(producer_post)
     try:
-        consumers.send_post(syndication_out, {'items': items, 'producer_post': producer_post}, action)
+        consumers.send_post(syndication_out, {
+            'items': items,
+            'producer_post': extract_producer_post_data(producer_post)
+        }, action)
     except APIConnectionError as e:
         raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
 
@@ -25,7 +28,7 @@ def send_post_to_consumer(self, syndication_out, producer_post, action='created'
 @celery.task(bind=True)
 def send_posts_to_consumer(self, syndication_out, action='created', limit=25):
     """Send latest blog post updates to consumers webhook."""
-    from .utils import extract_post_items
+    from .utils import extract_post_items, extract_producer_post_data
     consumers = get_resource_service('consumers')
     blog_id = syndication_out['blog_id']
     posts_service = get_resource_service('posts')
@@ -37,7 +40,7 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=25):
                 items = extract_post_items(producer_post)
                 consumers.send_post(syndication_out, {
                     'items': items,
-                    'producer_post': producer_post,
+                    'producer_post': extract_producer_post_data(producer_post),
                     'post_status': 'submitted',
                 }, action)
     except APIConnectionError as e:

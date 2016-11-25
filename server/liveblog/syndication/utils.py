@@ -89,6 +89,7 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
 
 
 def fetch_url(url, timeout=5):
+    """Fetch url using python-requests and save data to temporary file."""
     try:
         response = requests.get(url, timeout=timeout)
     except (ConnectionError, RequestException, MaxRetryError):
@@ -102,6 +103,7 @@ def fetch_url(url, timeout=5):
 
 
 def extract_post_items(original_doc):
+    """Extract blog post items."""
     items_service = get_resource_service('items')
     item_type = original_doc.get(ITEM_TYPE, '')
     if item_type != CONTENT_TYPE.COMPOSITE:
@@ -122,21 +124,24 @@ def extract_post_items(original_doc):
     return items
 
 
-def get_html_from_image_data(data, meta):
+def get_html_from_image_data(renditions, **meta):
+    """Generate html code for new blog post image items."""
     srcset = []
-    for value in data['renditions'].values():
+    for value in renditions.values():
         srcset.append('{} {}w'.format(value['href'], value['width']))
 
-    caption = meta['caption']
-    full_caption = caption
-    if meta['credit']:
-        full_caption = '{} Credit: {}'.format(caption, meta['credit'])
+    credit = meta.get('credit', '')
+    caption = meta.get('caption', '')
+    if credit:
+        full_caption = '{} Credit: {}'.format(caption, credit)
+    else:
+        full_caption = caption
 
     return ''.join([
         '<figure>',
         '   <img src="{}" alt="{}" srcset="{}" />'.format(
-            data['renditions']['viewImage']['href'],
-            meta['caption'],
+            renditions['viewImage']['href'],
+            full_caption,
             ','.join(srcset)
         ),
         '   <figcaption>{}</figcaption>'.format(full_caption),
@@ -145,6 +150,7 @@ def get_html_from_image_data(data, meta):
 
 
 def fetch_and_create_image_item(renditions, **meta):
+    """Download and create image item from producer blog post renditions"""
     try:
         image_url = renditions['original']['href']
         mimetype = renditions['original']['mimetype']
@@ -168,7 +174,7 @@ def fetch_and_create_image_item(renditions, **meta):
             'caption': meta.get('caption', ''),
             'credit': meta.get('credit', '')
         },
-        'text': get_html_from_image_data(archive, meta)
+        'text': get_html_from_image_data(archive['renditions'], **meta)
     }
 
 
@@ -181,7 +187,13 @@ def _create_producer_post_id(in_syndication, post_id):
     )
 
 
+def extract_producer_post_data(post, fields=('_id', '_updated', 'highlight', 'sticky', 'post_status')):
+    """Extract only useful data from original producer blog post."""
+    return {key: post[key] for key in fields}
+
+
 def create_syndicated_blog_post(producer_post, items, in_syndication, post_status=None):
+    """Create syndicted blog post data using producer post, fetched items and incoming syndication."""
     post_items = []
     for item in items:
         meta = item.pop('meta')
