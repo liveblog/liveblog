@@ -1,6 +1,31 @@
 (function() {
     'use strict';
 
+    LiveblogItemsController.$inject = ['api', '$location', 'notify', 'gettext',
+    '$q', '$sce', 'config', 'lodash', 'upload', 'blogService'];
+    function LiveblogItemsController(api, $location, notify, gettext,
+    $q, $sce, config, _, upload, blogService) {
+        var vm = this;
+        angular.extend(vm, {
+            //new item type modal is closed by default§
+            newItemModalActive: false,
+            //open dialog for adding editing an item type
+            openNewItem: function(itemTypeId) {
+                var itemTypeId = itemTypeId || false;
+
+                console.log('opening the dialog ', itemTypeId);
+                vm.newItemModalActive = true;
+            },
+            createItem: function() {
+                vm.newItemModalActive = false;
+            },
+            cancelCreate: function() {
+                vm.newItemModalActive = false;
+            }
+        });
+    }
+
+
     LiveblogThemesController.$inject = ['api', '$location', 'notify', 'gettext',
     '$q', '$sce', 'config', 'lodash', 'upload', 'blogService'];
     function LiveblogThemesController(api, $location, notify, gettext,
@@ -242,6 +267,15 @@
                 adminTools: true,
                 privileges: {'global_preferences': 1},
                 templateUrl: 'scripts/liveblog-themes/views/list.html'
+            })
+            .activity('/items/', {
+                label: gettext('Post Items'),
+                controller: LiveblogItemsController,
+                controllerAs: 'vm',
+                category: superdesk.MENU_MAIN,
+                adminTools: true,
+                privileges: {'global_preferences': 1},
+                templateUrl: 'scripts/liveblog-themes/views/items.html'
             });
     }])
     .filter('githubUrlFromGit', function() {
