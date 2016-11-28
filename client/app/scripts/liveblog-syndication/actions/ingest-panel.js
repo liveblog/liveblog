@@ -8,7 +8,14 @@ liveblogSyndication
                             type: 'ON_GET_SYND',
                             syndicationIn: syndicationIn
                         });
+                    })
+                    .catch(function(error) {
+                        Dispatcher.dispatch({
+                            type: 'ON_ERROR',
+                            error: error
+                        });
                     });
+
                 },
                 getProducers: function() {
                     api.producers.query().then(function(producers) {
@@ -16,9 +23,14 @@ liveblogSyndication
                             type: 'ON_GET_PRODUCERS',
                             producers: producers
                         });
-                    });
+                    })
+                    .catch(function(error) {
+                        Dispatcher.dispatch({
+                            type: 'ON_ERROR',
+                            error: error
+                        });
+                     });
                 },
-                //syndicate: function(currentProducer, consumerBlogId, blog, method) {
                 syndicate: function(params) {
                     var uri = config.server.url + 
                         '/producers/' + params.producerId + 
@@ -43,6 +55,12 @@ liveblogSyndication
                             type: 'ON_GET_SYND',
                             syndicationIn: syndicationIn
                         });
+                    })
+                    .catch(function(error) {
+                        Dispatcher.dispatch({
+                            type: 'ON_ERROR',
+                            error: error
+                        });
                     });
                 },
                 getProducerBlogs: function(producerId) {
@@ -51,6 +69,12 @@ liveblogSyndication
                             Dispatcher.dispatch({
                                 type: 'ON_GET_PRODUCER_BLOGS',
                                 producerBlogs: blogs
+                            });
+                        })
+                        .catch(function(error) {
+                            Dispatcher.dispatch({
+                                type: 'ON_ERROR',
+                                error: error
                             });
                         });
                 },
@@ -76,6 +100,12 @@ liveblogSyndication
                             type: 'ON_UPDATED_SYND',
                             syndEntry: response.data
                         });
+                    });
+                },
+                flushErrors: function() {
+                    Dispatcher.dispatch({
+                        type: 'ON_ERROR',
+                        error: null
                     });
                 }
             };
