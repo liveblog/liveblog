@@ -15,7 +15,7 @@ from flask import render_template, json, current_app as app
 import os
 import io
 import magic
-from liveblog.embed import MediaStorageUnsupportedForBlogPublishing
+import liveblog.embed
 from superdesk.celery_app import celery
 from eve.io.mongo import MongoJSONEncoder
 import logging
@@ -133,7 +133,7 @@ def publish_bloglist_embed_on_s3():
 
 def check_media_storage():
     if type(app.media).__name__ is not 'AmazonMediaStorage':
-        raise MediaStorageUnsupportedForBlogPublishing()
+        raise liveblog.embed.MediaStorageUnsupportedForBlogPublishing()
 
 
 def render_bloglist_embed(api_host=None, assets_root=None):
