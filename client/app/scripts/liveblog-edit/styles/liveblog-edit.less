@@ -17,6 +17,7 @@
             border:0;
             border-bottom:1px solid @grayLight;
             padding: 0;
+            line-height: 0;
             &.active,
             &:hover {
                 background: #b8b8b8;
@@ -41,13 +42,17 @@
         .border-box();
         header {
             height: @nav-height;
-            .border-box();
-            border-bottom: 1px solid #e0e0e0;
+            .border-box();           
+            box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
             padding: 10px 20px;
-            background-color: white;
-            color: @gray;
-            font-size: 1.4em;
-            line-height: 1.6em;
+            background-color: white;            
+            h4 {
+                color: @gray;
+                font-size: 1.4em;
+                line-height: 1.6em;
+                font-weight: 400;
+                display: inline-block;
+            }
         }
         .content {
             position: absolute;
@@ -80,7 +85,11 @@
             }
             background: #f0f0f0;
             header {
-                background: #fff;
+                background: #fff;                
+                color: @gray;
+                font-size: 1.4em;
+                line-height: 1.6em;
+                font-weight: 400;
             }
         }
     }
@@ -94,7 +103,7 @@
             }
             &__filters {
                 .border-box();
-                background-color: @sd-background;
+                //background-color: @sd-background;
                 border-bottom: 1px solid #e0e0e0;
                 padding: 10px 20px;
                 position: relative;

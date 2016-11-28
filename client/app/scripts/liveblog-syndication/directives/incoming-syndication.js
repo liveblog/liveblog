@@ -5,7 +5,8 @@ liveblogSyndication
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/incoming-syndication.html',
                 scope: {
-                    lbPostsOnPostSelected: '='
+                    lbPostsOnPostSelected: '=',
+                    openPanel: '='
                 },
                 link: function(scope) {
                     scope.blogId = $routeParams._id;
