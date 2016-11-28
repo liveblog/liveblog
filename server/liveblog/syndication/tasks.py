@@ -13,9 +13,9 @@ logger = logging.getLogger('superdesk')
 @celery.task(bind=True)
 def send_post_to_consumer(self, syndication_out, producer_post, action='created'):
     """Send blog post updates to consumers webhook."""
-    from .utils import extract_post_items, extract_producer_post_data
+    from .utils import extract_post_items_data, extract_producer_post_data
     consumers = get_resource_service('consumers')
-    items = extract_post_items(producer_post)
+    items = extract_post_items_data(producer_post)
     post = extract_producer_post_data(producer_post)
     try:
         consumers.send_post(syndication_out, {
@@ -29,14 +29,14 @@ def send_post_to_consumer(self, syndication_out, producer_post, action='created'
 @celery.task(bind=True)
 def send_posts_to_consumer(self, syndication_out, action='created', limit=25):
     """Send latest blog post updates to consumers webhook."""
-    from .utils import extract_post_items, extract_producer_post_data
+    from .utils import extract_post_items_data, extract_producer_post_data
     consumers = get_resource_service('consumers')
     blog_id = syndication_out['blog_id']
     posts_service = get_resource_service('posts')
     posts = posts_service.find({'blog': blog_id, ITEM_TYPE: CONTENT_TYPE.COMPOSITE}).limit(limit)
     try:
         for producer_post in posts:
-            items = extract_post_items(producer_post)
+            items = extract_post_items_data(producer_post)
             consumers.send_post(syndication_out, {
                 'items': items,
                 'producer_post': extract_producer_post_data(producer_post),

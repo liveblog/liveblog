@@ -102,7 +102,7 @@ def fetch_url(url, timeout=5):
     return fd
 
 
-def extract_post_items(original_doc):
+def extract_post_items_data(original_doc):
     """Extract blog post items."""
     items_service = get_resource_service('items')
     item_type = original_doc.get(ITEM_TYPE, '')
