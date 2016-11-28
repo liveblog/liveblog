@@ -25,10 +25,6 @@ liveblogSyndication
                         scope.openPanel('ingest', null);
                     };
 
-                    //scope.onEdit = function(post) {
-                    //    console.log('on edit', scope.onPostSelected, scope.lbPostsOnPostSelected);
-                    //};
-
                     IncomingSyndicationActions
                         .getPosts(scope.blogId, scope.syndId);
 
