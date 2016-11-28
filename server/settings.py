@@ -134,6 +134,7 @@ INSTALLED_APPS = [
     'liveblog.themes',
     'liveblog.global_preferences',
     'liveblog.client_modules',
+    'liveblog.freetypes',
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
