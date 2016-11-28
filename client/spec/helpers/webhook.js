@@ -1,8 +1,8 @@
 'use strict';
 
-var querystring = require('querystring');
+//var querystring = require('querystring');
 var http = require('http');
-var webhookJson = require('./webhook.json');
+//var webhookJson = require('./webhook.json');
 
 var Webhook = function(params) {
     this.serverUrl = params.baseBackendUrl;
@@ -21,7 +21,10 @@ Webhook.prototype.login = function() {
     return this.request({ 
         path: '/api/auth', 
         method: 'POST',
-        data: { username: this.username, password: this.password }
+        data: {
+            username: this.username,
+            password: this.password
+        }
     });
 };
 
@@ -35,30 +38,30 @@ Webhook.prototype.request = function(params) {
         method: (params.hasOwnProperty('method')) ? params.method : 'GET',
         headers: {
             'Content-Type': 'application/json;charset=UTF-8',
-            'Accept': 'application/json, text/plain, */*',
-            'Accept-Encoding': 'gzip, deflate',
-            'Accept-Language': 'en-US,en;q=0.8',
-            'Host': 'undefined.local:5000',
-            'Origin': 'http://localhost:9000',
-            'Referer': 'http://localhost:9000/'
+            'Accept': 'application/json, text/plain, */*'
+            //'Accept-Encoding': 'gzip, deflate',
+            //'Accept-Language': 'en-US,en;q=0.8',
+            //'Host': 'undefined.local:5000',
+            //'Origin': 'http://localhost:9000',
+            //'Referer': 'http://localhost:9000/'
         }
     };
 
     if (options.method === 'POST') {
-        postData = querystring.stringify(params.data);
+        postData = JSON.stringify(params.data);
         options.headers['Content-Length'] = Buffer.byteLength(postData);
-        console.log('post', postData);
+        //console.log('post', postData);
     }
 
     console.log('options', options);
 
     return new Promise(function(resolve, reject) {
         var req = http.request(options, function(response) {
-            console.log('perform query');
+            console.log('perform query', response);
             var bodyString = '';
             response.setEncoding('utf8');
 
-            response.on("data", function(chunk) {
+            response.on('data', function(chunk) {
                 console.log('receiving data...');
                 bodyString += chunk;
             });
@@ -67,25 +70,34 @@ Webhook.prototype.request = function(params) {
                 console.log('end', bodyString);
                 resolve(bodyString);
             });
+        });
 
-        }).on('error', function(err) {
+        console.log('promise');
+
+        req.on('error', function(err) {
             console.log('ERR', err);
             reject(err);
         });
 
-        if (options.method === 'POST') {
-            req.write(postData);
-        }
+        req.on('timeout', function() {
+            console.log('timeout');
+        });
 
-        req.end();
+        if (options.method === 'POST') {
+            //req.write(postData);
+            console.log('post', postData);
+            req.end(postData);
+        } else {
+            req.end();
+        }
     });
 };
 
 Webhook.prototype.fire = function(currentUrl) {
-    var syndId = currentUrl.match(/syndId=([a-z0-9]{24})/i)[1],
-        syndicationUrl = this.serverUrl + 'syndication_in/' + syndId;
+    //var syndId = currentUrl.match(/syndId=([a-z0-9]{24})/i)[1],
+    //    syndicationUrl = this.serverUrl + 'syndication_in/' + syndId;
 
-    console.log(syndicationUrl);
+    //console.log(syndicationUrl);
 
     return this.login()
         .catch(function(err) {
