@@ -11,7 +11,6 @@
             blogs: [],
             fetchBlogs: function() {
                 var blogs_list_criteria = {
-                    //sort: [("versioncreated", -1)],
                     embedded: {'original_creator': 1},
                     source: {
                         query: {filtered: {filter: {term:
@@ -42,10 +41,6 @@
                 method:'GET',
                 transformResponse: function(blogs) {
                     blogs = angular.fromJson(blogs);
-                    // Transformation for blog image renditions.
-                    // angular.forEach(function(blog) {
-                    //     blog = transformBlog(blog);
-                    // })
                     return blogs;
                 }
             }
