@@ -16,10 +16,11 @@ def send_post_to_consumer(self, syndication_out, producer_post, action='created'
     from .utils import extract_post_items, extract_producer_post_data
     consumers = get_resource_service('consumers')
     items = extract_post_items(producer_post)
+    post = extract_producer_post_data(producer_post)
     try:
         consumers.send_post(syndication_out, {
             'items': items,
-            'producer_post': extract_producer_post_data(producer_post)
+            'producer_post': post
         }, action)
     except APIConnectionError as e:
         raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
@@ -32,17 +33,15 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=25):
     consumers = get_resource_service('consumers')
     blog_id = syndication_out['blog_id']
     posts_service = get_resource_service('posts')
-    posts = posts_service.find({'blog': blog_id}).limit(limit)
+    posts = posts_service.find({'blog': blog_id, ITEM_TYPE: CONTENT_TYPE.COMPOSITE}).limit(limit)
     try:
         for producer_post in posts:
-            producer_post_type = producer_post.get(ITEM_TYPE, '')
-            if producer_post_type == CONTENT_TYPE.COMPOSITE:
-                items = extract_post_items(producer_post)
-                consumers.send_post(syndication_out, {
-                    'items': items,
-                    'producer_post': extract_producer_post_data(producer_post),
-                    'post_status': 'submitted',
-                }, action)
+            items = extract_post_items(producer_post)
+            consumers.send_post(syndication_out, {
+                'items': items,
+                'producer_post': extract_producer_post_data(producer_post),
+                'post_status': 'submitted',
+            }, action)
     except APIConnectionError as e:
         raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
 
