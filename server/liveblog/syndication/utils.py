@@ -124,7 +124,7 @@ def extract_post_items_data(original_doc):
     return items
 
 
-def get_html_from_image_data(renditions, **meta):
+def _get_html_from_image_data(renditions, **meta):
     """Generate html code for new blog post image items."""
     srcset = []
     for value in renditions.values():
@@ -149,7 +149,7 @@ def get_html_from_image_data(renditions, **meta):
     ])
 
 
-def fetch_and_create_image_item(renditions, **meta):
+def _fetch_and_create_image_item(renditions, **meta):
     """Download and create image item from producer blog post renditions"""
     try:
         image_url = renditions['original']['href']
@@ -163,7 +163,7 @@ def fetch_and_create_image_item(renditions, **meta):
     archive_service = get_resource_service('archive')
     item_id = archive_service.post([item_data])[0]
     archive = archive_service.find_one(req=None, _id=item_id)
-    text = get_html_from_image_data(archive['renditions'], **meta)
+    text = _get_html_from_image_data(archive['renditions'], **meta)
     return {
         'item_type': 'image',
         'meta': {
@@ -178,7 +178,7 @@ def fetch_and_create_image_item(renditions, **meta):
     }
 
 
-def create_producer_post_id(in_syndication, post_id):
+def _create_producer_post_id(in_syndication, post_id):
     """Helps to denormalize syndication producer blog post data and provide unique value for producer_post_id field."""
     return '{}:{}:{}'.format(
         in_syndication['producer_id'],
@@ -198,7 +198,7 @@ def create_syndicated_blog_post(producer_post, items, in_syndication, post_statu
     for item in items:
         meta = item.pop('meta')
         if item['item_type'] == 'image':
-            item = fetch_and_create_image_item(
+            item = _fetch_and_create_image_item(
                 renditions=meta['media']['renditions'],
                 caption=meta['caption'],
                 credit=meta['credit']
@@ -221,7 +221,7 @@ def create_syndicated_blog_post(producer_post, items, in_syndication, post_statu
         else:
             post_status = 'submitted'
 
-    producer_post_id = create_producer_post_id(in_syndication, producer_post['_id'])
+    producer_post_id = _create_producer_post_id(in_syndication, producer_post['_id'])
     new_post = {
         'blog': in_syndication['blog_id'],
         'groups': [
