@@ -48,7 +48,7 @@
             <span ng-if="isBlogOpened()">
                 <!-- drafts -->
                 <div class="panel panel--draft" ng-if="panelState === 'drafts'">
-                    <header translate>Drafts</header>
+                    <header><h4 translate>Drafts</h4></header>
                     <div class="content" lr-infinite-scroll="fetchNewDraftPage">
                         <lb-posts-list
                           lb-posts-instance="blogEdit.draftPostsInstance"
@@ -71,7 +71,7 @@
                 </div>
                 <!-- contributions -->
                 <div class="panel panel--contribution" ng-if="panelState === 'contributions'">
-                    <header translate>Contributions</header>
+                    <header><h4 translate>Contributions</h4></header>
                     <div class="panel--contribution__filters">
                         <span class="panel--contribution__filters__title">Filter by user</span>
                         <lb-filter-by-member
@@ -136,7 +136,8 @@
                     <div class="panel--editor" ng-show="panelState === 'editor'">
                         <div ng-if="!preview">
                         <header>
-                            Editor<button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate>Preview
+                            <h4 translate>Editor</h4>
+                            <button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate>Preview
                                 </button>
                                 <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
                         </header>
