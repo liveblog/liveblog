@@ -2,27 +2,78 @@
     'use strict';
 
     LiveblogItemsController.$inject = ['api', '$location', 'notify', 'gettext',
-    '$q', '$sce', 'config', 'lodash', 'upload', 'blogService'];
+    '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', 'modal'];
     function LiveblogItemsController(api, $location, notify, gettext,
-    $q, $sce, config, _, upload, blogService) {
+    $q, $sce, config, _, upload, blogService, modal) {
         var vm = this;
+
+        function getFreetypes() {
+            api.freetypes.query().then(function(data) {
+                vm.freeposts = data._items;
+                notify.info('Free types loaded');
+            }, function(data) {
+                notify.error(gettext('There was an error getting the free type'));
+            })
+        };
+
         angular.extend(vm, {
             //new item type modal is closed by default§
-            newItemModalActive: false,
-            //open dialog for adding editing an item type
-            openNewItem: function(itemTypeId) {
-                var itemTypeId = itemTypeId || false;
-
-                console.log('opening the dialog ', itemTypeId);
-                vm.newItemModalActive = true;
+            freetypeModalActive: false,
+            editFreetype: false,
+            dialogFreetype: {
+                loading: false,
+                name: '',
+                template: ''
             },
-            createItem: function() {
-                vm.newItemModalActive = false;
+            //open dialog for adding editing an item type
+            openFreepostDialog: function(freetype) {
+
+                vm.editFreetype = freetype || false;
+
+                if (vm.editFreetype) {
+                    vm.dialogFreetype.name = vm.editFreetype.name;
+                    vm.dialogFreetype.template = vm.editFreetype.template;
+                } else {
+                    vm.dialogFreetype.name = '';
+                    vm.dialogFreetype.template = '';
+                }
+                vm.freetypeModalActive = true;
+            },
+            saveFreepost: function() {
+                vm.freetypeModalActive = false;
+                vm.dialogFreetype.loading = true;
+                if (vm.editFreetype) {
+                    api.freetypes.save(vm.editFreetype, {name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
+                        vm.dialogFreetype.loading = false;
+                        getFreetypes();
+                        vm.editFreetype = false;
+                    }, function(data) {
+                        notify.error(gettext('Saving dit not work, please try again later!'));
+                    });
+                } else {
+                    api.freetypes.save({name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
+                        vm.dialogFreetype.loading = false;
+                        getFreetypes();
+                    }, function(data) {
+                        notify.error(gettext('Saving dit not work, please try again later!'));
+                    });
+                }
+            },
+            removeFreepost: function(freetype, $index) {
+                modal.confirm(gettext('Are you sure you want to remove this free type?')).then(function() {
+                    api.freetypes.remove(freetype).then(function(data) {
+                        vm.freeposts.splice($index, 1);
+                    }, function(data) {
+                        notify.errorp(gettext('Can\'t remove free type'));
+                    });
+                });
             },
             cancelCreate: function() {
-                vm.newItemModalActive = false;
+                vm.freetypeModalActive = false;
             }
         });
+
+        getFreetypes();
     }
 
 
@@ -325,6 +376,10 @@
         apiProvider.api('blogs', {
             type: 'http',
             backend: {rel: 'blogs'}
+        });
+        apiProvider.api('freetypes', {
+            type: 'http',
+            backend: {rel: 'freetypes'}
         });
     }]);
     return liveblogThemeModule;
