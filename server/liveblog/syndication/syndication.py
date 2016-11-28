@@ -10,6 +10,10 @@ from .auth import ConsumerBlogTokenAuth
 from flask import Blueprint, request, abort
 from flask_cors import CORS
 from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
+from .exceptions import DownloadError, APIConnectionError
+from .utils import fetch_url
+from werkzeug.datastructures import FileStorage
+from settings import SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOWN
 
 
 logger = logging.getLogger('superdesk')
@@ -86,6 +90,11 @@ class SyndicationOutService(BaseService):
                 doc['token'] = generate_api_key()
             cast_to_object_id(doc, ['consumer_id', 'blog_id', 'consumer_blog_id'])
 
+    def on_created(self, docs):
+        super().on_created(docs)
+        for doc in docs:
+            send_old_posts_to_consumer.delay(doc)
+
 
 class SyndicationOut(Resource):
     datasource = {
@@ -123,7 +132,6 @@ syndication_in_schema = {
 }
 
 
-# TODO: on created, run celery task to fetch old blog posts.
 class SyndicationInService(BaseService):
     notification_key = 'syndication_in'
 
@@ -170,42 +178,129 @@ def _get_post_items(original_doc):
         if group['id'] == 'main':
             for ref in group['refs']:
                 item = items_service.find_one(req=None, guid=ref['guid'])
-                if ref['type'] == 'text':
-                    items.append({
-                        'text': item['text'],
-                        'item_type': 'text'
-                    })
+                item_type = item['item_type']
+                data = {
+                    'text': item['text'],
+                    'item_type': item_type,
+                    'meta': item.get('meta', {})
+                }
+                items.append(data)
     return items
 
 
-@celery.task(soft_time_limit=1800)
-def send_post_to_consumer(syndication_out, old_post, action='created'):
+@celery.task(bind=True)
+def send_post_to_consumer(self, syndication_out, old_post, action='created'):
     """ Celery task to send blog post updates to consumers."""
     logger.warning('syndication_out:"{}" post:"{}" action:"{}"'.format(syndication_out['_id'], old_post['_id'], action))
     consumers = get_resource_service('consumers')
     items = _get_post_items(old_post)
-    consumers.send_post(syndication_out, {'items': items, 'producer_post': old_post}, action)
+    try:
+        consumers.send_post(syndication_out, {'items': items, 'producer_post': old_post}, action)
+    except APIConnectionError as e:
+        raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
 
 
-@syndication_blueprint.route('/api/syndication/webhook', methods=['POST'])
-def syndication_webhook():
-    in_service = get_resource_service('syndication_in')
-    items_service = get_resource_service('blog_items')
-    blog_token = request.headers['Authorization']
-    in_syndication = in_service.find_one(blog_token=blog_token, req=None)
+@celery.task(bind=True)
+def send_old_posts_to_consumer(self, syndication_out, action='created', limit=25):
+    consumers = get_resource_service('consumers')
+    blog_id = syndication_out['blog_id']
+    posts_service = get_resource_service('posts')
+    posts = posts_service.find({'blog': blog_id}).limit(limit)
+    try:
+        for old_post in posts:
+            old_post_type = old_post.get(ITEM_TYPE, '')
+            if old_post_type == CONTENT_TYPE.COMPOSITE:
+                items = _get_post_items(old_post)
+                consumers.send_post(syndication_out, {
+                    'items': items,
+                    'producer_post': old_post,
+                    'post_status': 'submitted',
+                }, action)
+    except APIConnectionError as e:
+        raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
 
-    data = request.get_json()
-    items, old_post = data['items'], data['producer_post']
 
+@celery.task(bind=True)
+def fetch_image(self, url, mimetype):
+    try:
+        return FileStorage(stream=fetch_url(url), content_type=mimetype)
+    except DownloadError as e:
+        raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
+
+
+def _get_image_text(data, meta):
+    srcset = []
+    for value in data['renditions'].values():
+        srcset.append('{} {}w'.format(value['href'], value['width']))
+
+    caption = meta['caption']
+    full_caption = caption
+    if meta['credit']:
+        full_caption = '{} Credit: {}'.format(caption, meta['credit'])
+
+    return ''.join([
+        '<figure>',
+        '   <img src="{}" alt="{}" srcset="{}" />'.format(
+            data['renditions']['viewImage']['href'],
+            meta['caption'],
+            ','.join(srcset)
+        ),
+        '   <figcaption>{}</figcaption>'.format(full_caption),
+        '</figure>'
+    ])
+
+
+def _fetch_item_image(meta):
+    try:
+        image_url = meta['media']['renditions']['original']['href']
+        mimetype = meta['media']['renditions']['original']['mimetype']
+    except KeyError:
+        raise DownloadError('Unable to get original image from metadata: {}'.format(meta))
+
+    item_data = {}
+    item_data['type'] = 'picture'
+    item_data['media'] = fetch_image(image_url, mimetype)
+    archive_service = get_resource_service('archive')
+    item_id = archive_service.post([item_data])[0]
+    logger.warning('Image posted as archive: "{}"'.format(item_id))
+    archive = archive_service.find_one(req=None, _id=item_id)
+    return {
+        'item_type': 'image',
+        'meta': {
+            'media': {
+                '_id': item_id,
+                'renditions': archive['renditions']
+            },
+            'caption': meta['caption'],
+            'credit': meta['credit']
+        },
+        'text': _get_image_text(archive, meta)
+    }
+
+
+def _create_blog_post(old_post, items, in_syndication, post_status=None):
+    post_items = []
     for item in items:
+        meta = item.pop('meta')
+        if item['item_type'] == 'image':
+            item = _fetch_item_image(meta)
         item['blog'] = in_syndication['blog_id']
+        post_items.append(item)
 
-    item_ids = items_service.post(items)
+    items_service = get_resource_service('blog_items')
+    item_ids = items_service.post(post_items)
     item_refs = []
-    for item_id in item_ids:
-        item_refs.append({'residRef': str(item_id)})
+    for i, item_id in enumerate(item_ids):
+        item_refs.append({
+            'residRef': str(item_id)
+        })
 
-    post_status = 'open' if in_syndication['auto_publish'] else 'submitted'
+    if not post_status:
+        auto_publish = in_syndication.get('auto_publish', False)
+        if auto_publish:
+            post_status = 'open'
+        else:
+            post_status = 'submitted'
 
     new_post = {
         'blog': in_syndication['blog_id'],
@@ -225,13 +320,24 @@ def syndication_webhook():
         ],
         'highlight': False,
         'particular_type': 'post',
-        'post_status': 'open',
         'producer_post_id': old_post['_id'],
         'sticky': False,
         'syndication_in': in_syndication['_id'],
         'post_status': post_status
     }
-    # Create post content
+    return new_post
+
+
+@syndication_blueprint.route('/api/syndication/webhook', methods=['POST'])
+def syndication_webhook():
+    in_service = get_resource_service('syndication_in')
+    blog_token = request.headers['Authorization']
+    in_syndication = in_service.find_one(blog_token=blog_token, req=None)
+
+    data = request.get_json()
+    items, old_post = data['items'], data['producer_post']
+    new_post = _create_blog_post(old_post, items, in_syndication)
+
     posts_service = get_resource_service('posts')
     new_post_id = posts_service.post([new_post])[0]
     return api_response({'post_id': str(new_post_id)}, 201)

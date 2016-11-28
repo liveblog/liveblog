@@ -75,7 +75,7 @@ class ConsumerService(BaseService):
             response = send_api_request(api_url, consumer_blog_token, method=method, data=data, json_loads=json_loads,
                                         timeout=timeout)
         except APIConnectionError as e:
-            raise ConsumerAPIError(e)
+            raise ConsumerAPIError(str(e))
         else:
             return response
 
