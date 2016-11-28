@@ -31,6 +31,13 @@
                 class="lb-post__item"
                 lb-bind-html 
                 html-content="{{post.mainItem.item.text}}"></div>
+
+            <a
+                ng-click="lbPostsOnPostSelected(post)" 
+                tooltip-placement="bottom" 
+                tooltip="Edit">
+                <i class="icon-pencil"></i>
+            </a>
         </li>
     </ul>
 </div>

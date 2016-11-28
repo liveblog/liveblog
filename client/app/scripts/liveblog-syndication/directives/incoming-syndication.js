@@ -4,6 +4,9 @@ liveblogSyndication
         function($routeParams, IncomingSyndicationActions, IncomingSyndicationReducers, Store) {
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/incoming-syndication.html',
+                scope: {
+                    lbPostsOnPostSelected: '='
+                },
                 link: function(scope) {
                     scope.blogId = $routeParams._id;
 
@@ -20,6 +23,10 @@ liveblogSyndication
                     scope.goBack = function() {
                         scope.openPanel('ingest', null);
                     };
+
+                    //scope.onEdit = function(post) {
+                    //    console.log('on edit', scope.onPostSelected, scope.lbPostsOnPostSelected);
+                    //};
 
                     IncomingSyndicationActions
                         .getPosts(scope.blogId, scope.syndId);

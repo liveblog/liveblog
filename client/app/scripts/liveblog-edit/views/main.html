@@ -110,7 +110,10 @@
                 <!-- ingest -->
                 <div lb-ingest-panel ng-if="panelState === 'ingest'"></div>
                 <!-- incoming syndication -->
-                <div lb-incoming-syndication ng-if="panelState === 'incoming-syndication'"></div>
+                <div
+                    lb-incoming-syndication 
+                    lb-posts-on-post-selected="openPostInEditor"
+                    ng-if="panelState === 'incoming-syndication'"></div>
                 <!-- comments -->
                 <div class="panel panel--comments" ng-if="panelState === 'comments'">
                     <header translate>Comments</header>
