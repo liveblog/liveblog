@@ -37,8 +37,8 @@ Webhook.prototype.request = function(params) {
         path: params.path,
         method: (params.hasOwnProperty('method')) ? params.method : 'GET',
         headers: {
-            'Content-Type': 'application/json;charset=UTF-8',
-            'Accept': 'application/json, text/plain, */*'
+            'Content-Type': 'application/json;charset=UTF-8'
+            //'Accept': 'application/json, text/plain, */*'
             //'Accept-Encoding': 'gzip, deflate',
             //'Accept-Language': 'en-US,en;q=0.8',
             //'Host': 'undefined.local:5000',
@@ -49,7 +49,7 @@ Webhook.prototype.request = function(params) {
 
     if (options.method === 'POST') {
         postData = JSON.stringify(params.data);
-        options.headers['Content-Length'] = Buffer.byteLength(postData);
+        //options.headers['Content-Length'] = Buffer.byteLength(postData);
         //console.log('post', postData);
     }
 
@@ -57,7 +57,7 @@ Webhook.prototype.request = function(params) {
 
     return new Promise(function(resolve, reject) {
         var req = http.request(options, function(response) {
-            console.log('perform query', response);
+            //console.log('perform query', response);
             var bodyString = '';
             response.setEncoding('utf8');
 
@@ -86,10 +86,10 @@ Webhook.prototype.request = function(params) {
         if (options.method === 'POST') {
             //req.write(postData);
             console.log('post', postData);
-            req.end(postData);
-        } else {
-            req.end();
+            req.write(postData);
         }
+
+        req.end();
     });
 };
 

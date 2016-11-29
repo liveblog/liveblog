@@ -16,8 +16,8 @@ var navigateToIngestPanel = function() {
         .then(function() {
             return element(by.css('button[ng-click="openPanel(\'ingest\')"]')).click();
         })
-        .then(function() {
-            return element(by.css('#syndicated-blogs-list')).isDisplayed();
+            .then(function() {
+                return element(by.css('.syndicated-blogs-list')).isDisplayed();
         });
 };
 
@@ -52,7 +52,7 @@ describe('Syndication', function() {
                         .click();
                 })
                 .then(function() {
-                    return element(by.css('div.panel--incoming-syndication'))
+                    return element(by.css('div.panel__incoming-syndication'))
                         .isDisplayed();
                 })
                 .then(function() {
