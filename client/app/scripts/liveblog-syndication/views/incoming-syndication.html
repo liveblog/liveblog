@@ -13,8 +13,12 @@
                 <dd class="panel-definition-list__definition">{{syndication.producer.name}}</dd>
                 <dt class="panel-definition-list__term">Autopublish:</dt>
                 <dd class="panel-definition-list__definition">
-                    <div ng-if="!blog.auto_publish" class="state-label state-draft state-label--no-float">OFF</div>
-                    <div ng-if="blog.auto_publish" class="state-label state-published state-label--no-float">ON</div>
+                    <div
+                        ng-if="!syndication.auto_publish"
+                        class="state-label state-draft state-label--no-float">OFF</div>
+                    <div
+                        ng-if="syndication.auto_publish"
+                        class="state-label state-published state-label--no-float">ON</div>
                 </dd>
             </dl>
         </div>
