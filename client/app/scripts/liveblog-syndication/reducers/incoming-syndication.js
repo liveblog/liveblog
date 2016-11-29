@@ -12,7 +12,7 @@ liveblogSyndication
                         syndication: action.syndication
                     });
 
-                case 'ON_PUBLISH_POST':
+                case 'ON_YANKED_POST':
                     return angular.extend(state, {
                         posts: angular.extend(state.posts, {
                             _items: state.posts._items.filter(function(item) {
