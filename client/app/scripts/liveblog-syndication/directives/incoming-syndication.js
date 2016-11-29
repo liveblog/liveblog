@@ -26,6 +26,11 @@ liveblogSyndication
                         scope.openPanel('ingest', null);
                     };
 
+                    scope.publish = function(post) {
+                        IncomingSyndicationActions
+                            .publish(post);
+                    };
+
                     IncomingSyndicationActions
                         .getPosts(scope.blogId, scope.syndId);
 
