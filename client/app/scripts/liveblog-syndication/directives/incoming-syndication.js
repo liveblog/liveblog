@@ -4,6 +4,11 @@ liveblogSyndication
         function($routeParams, IncomingSyndicationActions, IncomingSyndicationReducers, Store) {
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/incoming-syndication.html',
+                scope: {
+                    lbPostsOnPostSelected: '=',
+                    openPanel: '=',
+                    syndId: '='
+                },
                 link: function(scope) {
                     scope.blogId = $routeParams._id;
 

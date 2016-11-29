@@ -79,6 +79,11 @@ liveblogSyndication
                     return angular.extend(state, {
                         modalActive: action.modalActive
                     });
+
+                case 'ON_ERROR':
+                    return angular.extend(state, {
+                        error: action.error
+                    });
             }
         }
     });
