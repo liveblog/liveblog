@@ -180,10 +180,14 @@ class PostsService(ArchiveService):
     def on_created(self, docs):
         super().on_created(docs)
         # invalidate cache for updated blog
-        post_ids = []
+        posts = []
         out_service = get_resource_service('syndication_out')
         for doc in docs:
-            post_ids.append(doc.get('_id'))
+            post = {}
+            post['id'] = doc.get('_id')
+            post['syndication_in'] = doc.get('syndication_in')
+            posts.append(post)
+            # post_ids.append({ id: doc.get('_id'), str('syndication_in'): doc.get('syndication_in')})
             app.blog_cache.invalidate(doc.get('blog'))
             # send post to consumer webhook
             if doc['post_status'] == 'open':
@@ -191,7 +195,7 @@ class PostsService(ArchiveService):
                 out_service.send_syndication_post(doc, action='created')
 
         # send notifications
-        push_notification('posts', created=True, post_status=doc['post_status'], post_ids=post_ids)
+        push_notification('posts', created=True, post_status=doc['post_status'], posts=posts)
 
     def on_update(self, updates, original):
         # check if the timeline is reordered
