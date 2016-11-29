@@ -56,12 +56,16 @@ define([
 
         // add the post in the contributions vector.
         function onPostReceive(e, event_params) {
+            if (event_params.posts[0].syndication_in) {
+                return;
+            }
+
             if (event_params.post_status === 'comment') {
-                comments = comments.concat(event_params.post_ids);
+                comments = comments.concat(event_params.posts);
             }
 
             if (event_params.post_status === 'submitted') {
-                contributions = contributions.concat(event_params.post_ids);
+                contributions = contributions.concat(event_params.posts);
             }
         }
         return {
