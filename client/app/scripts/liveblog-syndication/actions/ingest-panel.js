@@ -95,7 +95,6 @@ liveblogSyndication
                         }
                     })
                     .then(function(response) {
-                        console.log('patch res', response);
                         Dispatcher.dispatch({
                             type: 'ON_UPDATED_SYND',
                             syndEntry: response.data
