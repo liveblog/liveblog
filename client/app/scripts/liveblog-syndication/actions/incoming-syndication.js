@@ -27,6 +27,15 @@ liveblogSyndication
                             });
                         });
                     });
+                },
+                publish: function(post) {
+                    postsService.savePost(post.blog, post, undefined, {post_status: 'open'})
+                        .then(function(post) {
+                            Dispatcher.dispatch({
+                                type: 'ON_PUBLISH_POST',
+                                post: post
+                            });
+                        });
                 }
             }
         }]);
