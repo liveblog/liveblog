@@ -32,10 +32,18 @@ liveblogSyndication
                     postsService.savePost(post.blog, post, undefined, {post_status: 'open'})
                         .then(function(post) {
                             Dispatcher.dispatch({
-                                type: 'ON_PUBLISH_POST',
+                                type: 'ON_YANKED_POST',
                                 post: post
                             });
                         });
+                },
+                destroy: function(post) {
+                    postsService.remove(post).then(function(post) {
+                        Dispatcher.dispatch({
+                            type: 'ON_YANKED_POST',
+                            post: post
+                        });
+                    });
                 }
             }
         }]);
