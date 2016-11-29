@@ -9,9 +9,11 @@ var Webhook = function(params) {
     this.port = params.baseBackendUrl.match(/:(\d{4})/i)[1];
     this.username = params.username;
     this.password = params.password;
+    this.token = '';
 
     this.request = this.request.bind(this);
     this.login = this.login.bind(this);
+    this.getSyndication = this.getSyndication.bind(this);
     this.fire = this.fire.bind(this);
 };
 
@@ -26,6 +28,13 @@ Webhook.prototype.login = function() {
     });
 };
 
+Webhook.prototype.getSyndication = function() {
+    return this.request({
+        path: 'syndication_in',
+        method: 'GET'
+    })
+}
+
 Webhook.prototype.request = function(params) {
     var options = {
         url: this.serverUrl + params.path,
@@ -36,93 +45,34 @@ Webhook.prototype.request = function(params) {
         }
     };
 
-    //console.log('OPTIONS', options);
+    if (this.token)
+        options.headers['Authentication'] = 'Basic ' + this.token;
+
     return new Promise(function(resolve, reject) {
         request(options, function(err, response, body) {
-            console.log(err, body);
+            console.log(response);
+            //console.log(err, body);
             if (err)
                 reject(err);
             else
                 resolve(body);
         });
     });
-    //var postData;
-
-    //var options = {
-    //    host: this.host,
-    //    port: this.port,
-    //    path: params.path,
-    //    method: (params.hasOwnProperty('method')) ? params.method : 'GET',
-    //    headers: {
-    //        'Content-Type': 'application/json;charset=UTF-8'
-    //        //'Accept': 'application/json, text/plain, */*'
-    //        //'Accept-Encoding': 'gzip, deflate',
-    //        //'Accept-Language': 'en-US,en;q=0.8',
-    //        //'Host': 'undefined.local:5000',
-    //        //'Origin': 'http://localhost:9000',
-    //        //'Referer': 'http://localhost:9000/'
-    //    }
-    //};
-
-    //if (options.method === 'POST') {
-    //    postData = JSON.stringify(params.data);
-    //    //options.headers['Content-Length'] = Buffer.byteLength(postData);
-    //    //console.log('post', postData);
-    //}
-
-    //console.log('options', options);
-
-    //return new Promise(function(resolve, reject) {
-    //    var req = http.request(options, function(response) {
-    //        //console.log('perform query', response);
-    //        var bodyString = '';
-    //        response.setEncoding('utf8');
-
-    //        response.on('data', function(chunk) {
-    //            console.log('receiving data...');
-    //            bodyString += chunk;
-    //        });
-
-    //        response.on('end', function() {
-    //            console.log('end', bodyString);
-    //            resolve(bodyString);
-    //        });
-    //    });
-
-    //    console.log('promise');
-
-    //    req.on('error', function(err) {
-    //        console.log('ERR', err);
-    //        reject(err);
-    //    });
-
-    //    req.on('timeout', function() {
-    //        console.log('timeout');
-    //    });
-
-    //    if (options.method === 'POST') {
-    //        //req.write(postData);
-    //        console.log('post', postData);
-    //        req.write(postData);
-    //    }
-
-    //    req.end();
-    //});
 };
 
 Webhook.prototype.fire = function(currentUrl) {
-    //var syndId = currentUrl.match(/syndId=([a-z0-9]{24})/i)[1],
-    //    syndicationUrl = this.serverUrl + 'syndication_in/' + syndId;
-
-    //console.log(syndicationUrl);
-
     return this.login()
+        .then((body) => {
+            console.log('token', body.token);
+            this.token = body.token;
+            return this.getSyndication();
+        })
+        .then((body) => {
+            console.log('body get synd', body);
+        })
         .catch(function(err) {
             console.log('err', err);
         });
-
-    //return this.request(syndicationUrl);
-    //return this.request(this.webhookUrl);
 };
 
 module.exports = Webhook;
