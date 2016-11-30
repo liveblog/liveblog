@@ -34,7 +34,6 @@ liveblogSyndication
                     scope.askRemove = function(post) {
                         modal.confirm(gettext('Are you sure you want to delete the post?'))
                             .then(function() {
-                                console.log('remove it yo!');
                                 IncomingSyndicationActions
                                     .destroy(post);
                             });
