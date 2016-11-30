@@ -10,7 +10,7 @@
         </div>
     </figure>
 
-    <div class="row-wrapper" sd-col-width>
+    <div class="row-wrapper four-col">
         <div class="name">{{ consumer.name }}</div>
         <div class="email">{{ consumer.api_url }}</div>
         <div class="name">
@@ -25,7 +25,7 @@
             </span>
             <span lb-copy-to-clipboard for="api-key"></span>
         </div>
-        <div lb-first-contact prosumer="consumer"></div>
+        <div lb-first-contact prosumer="consumer" class="name"></div>
     </div>
 
     <div class="action">
