@@ -1,10 +1,8 @@
 liveblogSyndication
     .directive('lbFirstContact', function() {
         return {
-            template: '<div>' +
-                    '<span>{{contact.first_name}} {{contact.last_name}}</span>&nbsp;' +
-                    '<a href="mailto:{{contact.email}}">{{contact.email}}</a>' +
-                '</div>',
+            template: '<span>{{contact.first_name}} {{contact.last_name}}&nbsp;</span>' +
+                '<a href="mailto:{{contact.email}}">{{contact.email}}</a>',
             scope: {
                 prosumer: '=',
             },

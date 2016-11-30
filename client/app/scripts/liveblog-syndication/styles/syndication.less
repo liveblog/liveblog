@@ -1,6 +1,16 @@
 @import 'mixins.less';
 @import 'variables.less';
 
+/*Force 4 columns layout in consumers view*/
+.users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div,
+.users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div.email,
+.users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div.name,
+.users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div,
+.users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.email,
+.users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.name {
+    width: 25%;
+}
+
 .producers-list, .syndicated-blogs-list {
    > li.post-item, > li.blog-item {
         background: #fff;
@@ -11,7 +21,7 @@
         clear: both;
         min-height: 31px;
         box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 0px 1px rgba(0, 0, 0, 0.08);
-        
+
         h4 {
             font-weight: 400;
         }
