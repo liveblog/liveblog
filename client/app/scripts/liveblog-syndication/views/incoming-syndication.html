@@ -40,6 +40,22 @@
                                     <i class="icon-pencil"></i>
                                 </a>
                             </li>
+                            <li>
+                                <a
+                                    ng-click="askRemove(post)" 
+                                    tooltip-placement="bottom" 
+                                    tooltip="{{ 'Remove' | translate }}">
+                                    <i class="icon-close-thick"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    ng-click="publish(post)"
+                                    tooltip-placement="bottom"
+                                    tooltip="{{ 'Publish' | translate }}">
+                                    <i class="icon-publish"></i>
+                                </a>
+                            </li>
                         </ul>
                     </div>
                 </div>

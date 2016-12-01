@@ -1,7 +1,7 @@
 liveblogSyndication
     .directive('lbIncomingSyndication',
-        ['$routeParams', 'IncomingSyndicationActions', 'IncomingSyndicationReducers', 'Store',
-        function($routeParams, IncomingSyndicationActions, IncomingSyndicationReducers, Store) {
+        ['$routeParams', 'IncomingSyndicationActions', 'IncomingSyndicationReducers', 'Store', 'modal',
+        function($routeParams, IncomingSyndicationActions, IncomingSyndicationReducers, Store, modal) {
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/incoming-syndication.html',
                 scope: {
@@ -24,6 +24,19 @@ liveblogSyndication
 
                     scope.goBack = function() {
                         scope.openPanel('ingest', null);
+                    };
+
+                    scope.publish = function(post) {
+                        IncomingSyndicationActions
+                            .publish(post);
+                    };
+
+                    scope.askRemove = function(post) {
+                        modal.confirm(gettext('Are you sure you want to delete the post?'))
+                            .then(function() {
+                                IncomingSyndicationActions
+                                    .destroy(post);
+                            });
                     };
 
                     IncomingSyndicationActions
