@@ -9,7 +9,7 @@ var Webhook = function(params) {
     this.port = params.baseBackendUrl.match(/:(\d{4})/i)[1];
     this.username = params.username;
     this.password = params.password;
-    this.token = '';
+    this.auth = '';
 
     this.request = this.request.bind(this);
     this.login = this.login.bind(this);
@@ -45,13 +45,11 @@ Webhook.prototype.request = function(params) {
         }
     };
 
-    if (this.token)
-        options.headers['Authentication'] = 'Basic ' + this.token;
+    if (this.auth)
+        options.headers['Authorization'] = this.auth;
 
     return new Promise(function(resolve, reject) {
         request(options, function(err, response, body) {
-            console.log(response);
-            //console.log(err, body);
             if (err)
                 reject(err);
             else
@@ -63,8 +61,7 @@ Webhook.prototype.request = function(params) {
 Webhook.prototype.fire = function(currentUrl) {
     return this.login()
         .then((body) => {
-            console.log('token', body.token);
-            this.token = body.token;
+            this.auth = 'Basic ' + new Buffer(body.token + ':').toString('base64');
             return this.getSyndication();
         })
         .then((body) => {
