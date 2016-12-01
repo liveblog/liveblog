@@ -169,7 +169,7 @@ class SyndicationIn(Resource):
     schema = syndication_in_schema
 
 
-@syndication_blueprint.route('/api/syndication/webhook', methods=['POST', 'PUT', 'DELETE'])
+@syndication_blueprint.route('/api/syndication/webhook', methods=['POST', 'PUT'])
 def syndication_webhook():
     in_service = get_resource_service('syndication_in')
     blog_token = request.headers['Authorization']
@@ -195,7 +195,7 @@ def syndication_webhook():
         publisher = post.get('publisher')
         if not publisher and method == 'PUT':
             # Update only posts with publisher set to None
-            posts_service.put(post['_id'], new_post)
+            posts_service.update(post_id, new_post, post)
             return api_response({'post_id': post_id}, 200)
         else:
             return api_error('Post "{}" cannot be updated: publisher already exists.'.format(post_id), 409)

@@ -17,8 +17,6 @@ def send_post_to_consumer(self, syndication_out, producer_post, action='created'
     consumers = get_resource_service('consumers')
     items = extract_post_items_data(producer_post)
     post = extract_producer_post_data(producer_post)
-    if 'action' in ('updated', 'deleted'):
-        del post['post_status']
     try:
         consumers.send_post(syndication_out, {
             'items': items,
