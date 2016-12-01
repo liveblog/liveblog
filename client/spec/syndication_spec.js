@@ -16,8 +16,8 @@ var navigateToIngestPanel = function() {
         .then(function() {
             return element(by.css('button[ng-click="openPanel(\'ingest\')"]')).click();
         })
-            .then(function() {
-                return element(by.css('.syndicated-blogs-list')).isDisplayed();
+        .then(function() {
+            return element(by.css('.syndicated-blogs-list')).isDisplayed();
         });
 };
 
@@ -59,14 +59,12 @@ describe('Syndication', function() {
                     return browser.getCurrentUrl();
                 })
                 .then(function(currentUrl) {
+                    console.log('current url');
                     return webhook.fire(currentUrl);
                 })
-                .then(function(data) {
-                    console.log('data', data);
-                    //browser.manage().then(function(cookie) {
-                    //    console.log('cookie', cookie);
-                    //});
-                });
+                .then(function(err, data) {
+                    console.log('data', err, data);
+                })
         });
 
         //it('should delete a syndication', function() {

@@ -1,6 +1,7 @@
 'use strict';
 
-const request = require('request');
+//var Promise = require('bluebird');
+var request = require('request');
 
 var Webhook = function(params) {
     this.serverUrl = params.baseBackendUrl;
@@ -39,7 +40,7 @@ Webhook.prototype.request = function(params) {
     var options = {
         url: this.serverUrl + params.path,
         method: (params.hasOwnProperty('method')) ? params.method : 'GET',
-        json: params.data,
+        data: params.data,
         headers: {
             "Content-Type": "application/json;charset=UTF-8"
         }
@@ -48,27 +49,38 @@ Webhook.prototype.request = function(params) {
     if (this.auth)
         options.headers['Authorization'] = this.auth;
 
-    return new Promise(function(resolve, reject) {
-        request(options, function(err, response, body) {
-            if (err)
-                reject(err);
-            else
-                resolve(body);
-        });
-    });
+    return browser.executeAsyncScript(function(options, cb) {
+        $http = angular.injector(["ng"]).get("$http")
+        $http(options)
+            .then(function(data) {
+                cb({ err: false, data: JSON.stringify(data) });
+            })
+            .catch(function(err) {
+                cb({ err: err, data: null });
+            })
+
+    }, options)
+    .then(function(res) {
+        // Funky promises that don't catch statements
+        // I'd say why not
+        if (res.err)
+            throw(res.err);
+        else
+            return JSON.parse(res.data);
+    })
 };
 
 Webhook.prototype.fire = function(currentUrl) {
+    console.log('fire!');
     return this.login()
         .then((body) => {
-            this.auth = 'Basic ' + new Buffer(body.token + ':').toString('base64');
+            console.log('login', body);
+            this.auth = 'Basic ' + new Buffer(body.data.token + ':').toString('base64');
             return this.getSyndication();
         })
         .then((body) => {
             console.log('body get synd', body);
-        })
-        .catch(function(err) {
-            console.log('err', err);
+            return body;
         });
 };
 
