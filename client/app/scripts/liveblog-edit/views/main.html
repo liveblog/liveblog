@@ -29,9 +29,9 @@
         </button>
         <button 
             class="navbtn" 
+            lb-notifications-count
             ng-click="openPanel('ingest')" 
             ng-class="{'active': panelState === 'ingest' || panelState === 'incoming-syndication'}">
-            <i class="big-icon-ingest" alt="ingest"></i>
         </button>
         <button 
             ng-if="blog.blog_preferences.theme.settings.canComment"
