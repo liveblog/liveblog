@@ -32,7 +32,7 @@ liveblogSyndication
                     postsService.savePost(post.blog, post, undefined, {post_status: 'open'})
                         .then(function(post) {
                             Dispatcher.dispatch({
-                                type: 'ON_YANKED_POST',
+                                type: 'ON_SAVED_POST',
                                 post: post
                             });
                         });
@@ -40,7 +40,7 @@ liveblogSyndication
                 destroy: function(post) {
                     postsService.remove(post).then(function(post) {
                         Dispatcher.dispatch({
-                            type: 'ON_YANKED_POST',
+                            type: 'ON_REMOVED_POST',
                             post: post
                         });
                     });

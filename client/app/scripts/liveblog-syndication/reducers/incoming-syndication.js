@@ -12,7 +12,8 @@ liveblogSyndication
                         syndication: action.syndication
                     });
 
-                case 'ON_YANKED_POST':
+                case 'ON_SAVED_POST':
+                case 'ON_REMOVED_POST':
                     return angular.extend(state, {
                         posts: angular.extend(state.posts, {
                             _items: state.posts._items.filter(function(item) {
