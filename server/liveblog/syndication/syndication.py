@@ -17,6 +17,12 @@ syndication_blueprint = Blueprint('syndication', __name__)
 CORS(syndication_blueprint)
 
 
+WEBHOOK_METHODS = {
+    'created': 'POST',
+    'updated': 'PUT'
+}
+
+
 syndication_out_schema = {
     'blog_id': Resource.rel('blogs', embeddable=True, required=True, type="objectid"),
     'consumer_id': Resource.rel('consumers', embeddable=True, required=True, type="objectid"),
@@ -163,7 +169,7 @@ class SyndicationIn(Resource):
     schema = syndication_in_schema
 
 
-@syndication_blueprint.route('/api/syndication/webhook', methods=['POST'])
+@syndication_blueprint.route('/api/syndication/webhook', methods=['POST', 'PUT', 'DELETE'])
 def syndication_webhook():
     in_service = get_resource_service('syndication_in')
     blog_token = request.headers['Authorization']
@@ -174,14 +180,25 @@ def syndication_webhook():
     new_post = create_syndicated_blog_post(producer_post, items, in_syndication)
     posts_service = get_resource_service('posts')
     producer_post_id = new_post['producer_post_id']
-    post = posts_service.find_one(req=None, producer_post_id=producer_post_id)
-    # TODO: update post
-    if not post:
+
+    method = request.method
+
+    if method == 'POST':
         new_post_id = posts_service.post([new_post])[0]
         return api_response({'post_id': str(new_post_id)}, 201)
     else:
-        logger.warning('Producer post "{}" already exists'.format(producer_post_id))
-        return api_error('Producer post already exists!', 409)
+        post = posts_service.find_one(req=None, producer_post_id=producer_post_id)
+        if not post:
+            return api_error('Post cannot be updated: syndicated post does not exist.', 404)
+
+        post_id = str(post['_id'])
+        publisher = post.get('publisher')
+        if not publisher and method == 'PUT':
+            # Update only posts with publisher set to None
+            posts_service.put(post['_id'], new_post)
+            return api_response({'post_id': post_id}, 200)
+        else:
+            return api_error('Post "{}" cannot be updated: publisher already exists.'.format(post_id), 409)
 
 
 def _syndication_blueprint_auth():
