@@ -29,7 +29,14 @@ define([
 
         // check if the post is an unread contribution.
         function isContribution(post) {
-            return _.indexOf(prevContributions, post._id) !== -1;
+            var isContrib = false;
+
+            prevContributions.forEach(function(contrib) {
+                if (contrib.id == post._id)
+                    isContrib = true;
+            });
+
+            return isContrib;
         }
 
         // get the count of current contribution.
