@@ -47,9 +47,10 @@ liveblogSyndication
 
                     // On incoming post, we reload all the posts.
                     // Not very fast, but easy to setup
-                    scope.$on('posts', function() {
-                        IncomingSyndicationActions
-                            .getPosts(scope.blogId, scope.syndId);
+                    scope.$on('posts', function(e, data) {
+                        if (data.posts[0].syndication_in)
+                            IncomingSyndicationActions
+                                .getPosts(scope.blogId, scope.syndId);
                     });
 
                     scope.$on('$destroy', scope.store.destroy);
