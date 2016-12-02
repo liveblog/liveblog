@@ -12,6 +12,7 @@
     }
   ],
   "devDependencies": {
+    "bluebird": "^3.4.6",
     "btoa": "^1.1.2",
     "grunt": "^0.4.2",
     "grunt-angular-gettext": "2.1.3",

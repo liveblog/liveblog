@@ -1,3 +1,5 @@
+'use strict';
+
 module.exports = function(type, msg) {
     var cssSelector = '.notification-holder .alert-' + type,
         toast = $(cssSelector);

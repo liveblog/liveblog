@@ -1,6 +1,6 @@
 'use strict';
 
-const Webhook = require('./helpers/webhook');
+var Webhook = require('./helpers/webhook');
 var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login;
     //assertToastMsg = require('./helpers/assert-toast-msg');
 
@@ -40,7 +40,7 @@ describe('Syndication', function() {
                 });
         });
 
-        it('should display an incoming syndication and delete it', function() {
+        fit('should display an incoming syndication and delete it', function() {
             navigateToIngestPanel()
                 .then(function() {
                     return element.all(by.repeater('blog in locallySyndicatedItems'))
