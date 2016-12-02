@@ -1,0 +1,458 @@
+{
+    "items": [
+        {
+            "item_type": "text",
+            "meta": {},
+            "text": "test"
+        }
+    ],
+    "producer_post": {
+        "_created": "2016-11-24T17:02:30+00:00",
+        "_current_version": 1,
+        "_etag": "a70315dac7218a61d094417f1a294e9d160287aa",
+        "_id": "urn:newsml:localhost:2016-11-24T18:02:30.141667:7897266f-316d-463c-a3af-f1a9c489a6af",
+        "_latest_version": 1,
+        "_links": {
+            "self": {
+                "href": "posts/urn:newsml:localhost:2016-11-24T18:02:30.141667:7897266f-316d-463c-a3af-f1a9c489a6af",
+                "title": "Post"
+            }
+        },
+        "_status": "OK",
+        "_updated": "2016-11-24T17:02:30+00:00",
+        "blog": "583449a79b4f571fdd2146e6",
+        "content_updated_date": "2016-11-24T17:02:30+00:00",
+        "dateline": {
+            "date": "2016-11-24T17:02:30+00:00",
+            "located": "2016-11-24T17:02:30+00:00",
+            "source": "Liveblog",
+            "text": "2016-11-24T17:02:30+00:00"
+        },
+        "deleted": false,
+        "event_id": "tag:localhost:2016:0df0605d-746c-4ac8-8be3-df837e5570bf",
+        "family_id": "urn:newsml:localhost:2016-11-24T18:02:30.141667:7897266f-316d-463c-a3af-f1a9c489a6af",
+        "firstcreated": "2016-11-24T17:02:30+00:00",
+        "flags": {
+            "marked_archived_only": false,
+            "marked_for_legal": false,
+            "marked_for_not_publication": false,
+            "marked_for_sms": false
+        },
+        "format": "HTML",
+        "genre": [
+            {
+                "name": "Article (news)",
+                "qcode": "Article"
+            }
+        ],
+        "groups": [
+            {
+                "id": "root",
+                "refs": [
+                    {
+                        "idRef": "main"
+                    }
+                ],
+                "role": "grpRole:NEP"
+            },
+            {
+                "id": "main",
+                "refs": [
+                    {
+                        "guid": "urn:newsml:localhost:2016-11-24T18:02:30.089452:2fb5644a-dbc2-4269-b4c9-19c052bb7b50",
+                        "residRef": "urn:newsml:localhost:2016-11-24T18:02:30.089452:2fb5644a-dbc2-4269-b4c9-19c052bb7b50",
+                        "type": "text"
+                    }
+                ],
+                "role": "grpRole:Main"
+            }
+        ],
+        "guid": "urn:newsml:localhost:2016-11-24T18:02:30.141667:7897266f-316d-463c-a3af-f1a9c489a6af",
+        "highlight": false,
+        "language": "en",
+        "operation": "create",
+        "order": 57.0,
+        "original_creator": "581292979b4f572a73d3f307",
+        "particular_type": "post",
+        "place": [],
+        "post_status": "open",
+        "priority": 3,
+        "published_date": "2016-11-24T17:02:30+00:00",
+        "publisher": {
+            "_created": "2016-10-27T23:49:43+00:00",
+            "_etag": "0da6c9fe7edc62a2abe7b013cf303cae536a9abd",
+            "_id": "581292979b4f572a73d3f307",
+            "_updated": "2016-11-24T17:01:23+00:00",
+            "active_privileges": {
+                "archive": 1,
+                "archive_broadcast": 1,
+                "blogs": 1,
+                "consumers": 1,
+                "content_type": 1,
+                "desks": 1,
+                "global_preferences": 1,
+                "groups": 1,
+                "hold": 1,
+                "ingest": 1,
+                "ingest_providers": 1,
+                "legal_archive": 1,
+                "metadata_uniquename": 1,
+                "posts": 1,
+                "producers": 1,
+                "publish_post": 1,
+                "request_membership": 1,
+                "restore": 1,
+                "rewrite": 1,
+                "roles": 1,
+                "spike": 1,
+                "submit_post": 1,
+                "syndication_in": 1,
+                "syndication_out": 1,
+                "tasks": 1,
+                "unlock": 1,
+                "unspike": 1,
+                "users": 1,
+                "vocabularies": 1
+            },
+            "display_name": "admin",
+            "email": "admin@example.com",
+            "invisible_stages": [],
+            "is_active": true,
+            "is_enabled": true,
+            "needs_activation": false,
+            "role": "2016-11-24T17:02:30+00:00",
+            "session_preferences": {
+                "5812929e9b4f572a17d27b8f": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "581355409b4f5730013fa54c": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "58144e359b4f5720c581ba30": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "581477c79b4f572c15c23918": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "5814793f9b4f572e79c419d3": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "581479ac9b4f572e873b2939": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "5815294c9b4f5717a6e9916f": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "58152a2b9b4f5717a1904d43": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "581679999b4f570e59574593": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "58174b3b9b4f5710b923903a": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "581858ae9b4f57137ef0ab0c": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "5818cea79b4f573fdd28967c": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "5819a4d19b4f570c273fc7fa": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "5819ef979b4f572c58a37a89": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "582055869b4f571387afb2e9": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "58209f9b9b4f57340a4b235d": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "58219a579b4f570ec4b4aeee": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "5821e71c9b4f572b4882a53d": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "582301f29b4f571446d4b672": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "582344629b4f572e19d3e8cb": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "5823447d9b4f572e1c3b7835": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "582385059b4f57151497e453": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "5823ccb99b4f5733b09aab10": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "5824304d9b4f570ddc337182": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "582c2cea9b4f5711aa76f1d7": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "582d84809b4f571134ae9b15": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "582dcc0e9b4f571688e13eba": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "582e10f59b4f573c96407bd3": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "582e57a99b4f574d2090a237": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "582e57b29b4f574d229d50bf": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "582f3aef9b4f57785c606e7a": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "5834498c9b4f571fdd2146e5": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "58359e6b9b4f572143f500be": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "5836d00d9b4f5719b7eac461": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                },
+                "58371ce39b4f57283a39efc7": {
+                    "desk:items": [],
+                    "desk:last_worked": "",
+                    "pinned:items": [],
+                    "scratchpad:items": [],
+                    "stage:items": []
+                }
+            },
+            "sign_off": "ADM",
+            "user_preferences": {
+                "agg:view": {
+                    "active": {}
+                },
+                "archive:view": {
+                    "allowed": [
+                        "mgrid",
+                        "compact"
+                    ],
+                    "category": "archive",
+                    "default": "mgrid",
+                    "label": "Users archive view format",
+                    "type": "string",
+                    "view": "mgrid"
+                },
+                "article:default:place": {
+                    "category": "article_defaults",
+                    "label": "Place",
+                    "place": [],
+                    "type": "list"
+                },
+                "categories:preferred": {
+                    "category": "categories",
+                    "label": "Preferred Categories",
+                    "selected": {},
+                    "type": "dict"
+                },
+                "dashboard:ingest": {
+                    "providers": []
+                },
+                "dateline:located": {
+                    "category": "article_defaults",
+                    "label": "Located",
+                    "type": "dict"
+                },
+                "destination:active": {},
+                "editor:theme": {
+                    "theme": "",
+                    "type": "string"
+                },
+                "email:notification": {
+                    "category": "notifications",
+                    "default": true,
+                    "enabled": true,
+                    "label": "Send notifications via email",
+                    "type": "bool"
+                },
+                "feature:preview": {
+                    "category": "feature",
+                    "default": false,
+                    "enabled": false,
+                    "label": "Enable Feature Preview",
+                    "privileges": [
+                        "feature_preview"
+                    ],
+                    "type": "bool"
+                },
+                "spellchecker:status": {
+                    "default": true,
+                    "enabled": true,
+                    "type": "bool"
+                },
+                "templates:recent": {},
+                "workqueue:items": {
+                    "items": []
+                }
+            },
+            "user_type": "administrator",
+            "username": "admin"
+        },
+        "pubstatus": "usable",
+        "schedule_settings": {
+            "time_zone": "2016-11-24T17:02:30+00:00",
+            "utc_embargo": "2016-11-24T17:02:30+00:00"
+        },
+        "sign_off": "ADM",
+        "source": "Liveblog",
+        "state": "draft",
+        "sticky": false,
+        "type": "composite",
+        "unique_id": 1653,
+        "unique_name": "#1653",
+        "urgency": 3,
+        "version_creator": "581292979b4f572a73d3f307",
+        "versioncreated": "2016-11-24T17:02:30+00:00"
+    }
+}
