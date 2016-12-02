@@ -1,7 +1,7 @@
 liveblogSyndication
     .directive('lbIncomingSyndication',
-        ['$routeParams', 'IncomingSyndicationActions', 'IncomingSyndicationReducers', 'Store',
-        function($routeParams, IncomingSyndicationActions, IncomingSyndicationReducers, Store) {
+        ['$routeParams', 'IncomingSyndicationActions', 'IncomingSyndicationReducers', 'Store', 'modal',
+        function($routeParams, IncomingSyndicationActions, IncomingSyndicationReducers, Store, modal) {
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/incoming-syndication.html',
                 scope: {
@@ -26,6 +26,19 @@ liveblogSyndication
                         scope.openPanel('ingest', null);
                     };
 
+                    scope.publish = function(post) {
+                        IncomingSyndicationActions
+                            .publish(post);
+                    };
+
+                    scope.askRemove = function(post) {
+                        modal.confirm(gettext('Are you sure you want to delete the post?'))
+                            .then(function() {
+                                IncomingSyndicationActions
+                                    .destroy(post);
+                            });
+                    };
+
                     IncomingSyndicationActions
                         .getPosts(scope.blogId, scope.syndId);
 
@@ -34,9 +47,10 @@ liveblogSyndication
 
                     // On incoming post, we reload all the posts.
                     // Not very fast, but easy to setup
-                    scope.$on('posts', function() {
-                        IncomingSyndicationActions
-                            .getPosts(scope.blogId, scope.syndId);
+                    scope.$on('posts', function(e, data) {
+                        if (data.posts[0].syndication_in)
+                            IncomingSyndicationActions
+                                .getPosts(scope.blogId, scope.syndId);
                     });
 
                     scope.$on('$destroy', scope.store.destroy);
