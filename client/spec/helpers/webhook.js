@@ -2,9 +2,9 @@
 
 var Webhook = function(params) {
     this.serverUrl = params.baseBackendUrl;
-    this.webhookUrl = this.serverUrl + 'syndication/webhook';
-    this.host = params.baseBackendUrl.match(/^http:\/\/([^/:]+)/i)[1];
-    this.port = params.baseBackendUrl.match(/:(\d{4})/i)[1];
+    //this.webhookUrl = this.serverUrl + 'syndication/webhook';
+    //this.host = params.baseBackendUrl.match(/^http:\/\/([^/:]+)/i)[1];
+    //this.port = params.baseBackendUrl.match(/:(\d{4})/i)[1];
     this.username = params.username;
     this.password = params.password;
     this.auth = '';
@@ -85,7 +85,7 @@ Webhook.prototype.request = function(params) {
     })
 };
 
-Webhook.prototype.fire = function(currentUrl) {
+Webhook.prototype.fire = function() {
     return this.login()
         .then((body) => {
             this.auth = 'Basic ' + new Buffer(body.data.token + ':').toString('base64');

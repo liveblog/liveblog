@@ -56,11 +56,7 @@ describe('Syndication', function() {
                         .isDisplayed();
                 })
                 .then(function() {
-                    return browser.getCurrentUrl();
-                })
-                .then(function(currentUrl) {
-                    console.log('current url');
-                    return webhook.fire(currentUrl);
+                    return webhook.fire();
                 })
                 .then(function() {
                     return element.all(by.repeater('post in posts._items'))
