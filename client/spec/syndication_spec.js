@@ -40,7 +40,7 @@ describe('Syndication', function() {
                 });
         });
 
-        fit('should display an incoming syndication', function() {
+        fit('should display an incoming syndication and delete it', function() {
             navigateToIngestPanel()
                 .then(function() {
                     return element.all(by.repeater('blog in locallySyndicatedItems'))
@@ -62,46 +62,32 @@ describe('Syndication', function() {
                     console.log('current url');
                     return webhook.fire(currentUrl);
                 })
-                .then(function(err, data) {
-                    console.log('data', err, data);
+                .then(function() {
+                    return element.all(by.repeater('post in posts._items'))
+                        .get(0)
+                        .isDisplayed();
                 })
+                .then(function() {
+                    return element.all(by.repeater('post in posts._items'))
+                        .get(0)
+                        .element(by.css('a[ng-click="askRemove(post)"]'))
+                        .click();
+                })
+                .then(function() {
+                    return element(by.css('div.modal-footer button[ng-click="ok()"]'))
+                        .isDisplayed();
+                })
+                .then(function() {
+                    return element(by.css('div.modal-footer button[ng-click="ok()"]'))
+                        .click();
+                })
+                .then(function() {
+                    return element.all(by.repeater('post in posts._items'))
+                        .count();
+                })
+                .then(function(count) {
+                    expect(count).toEqual(0);
+                });
         });
-
-        //it('should delete a syndication', function() {
-        //    navigateToIngestPanel()
-        //        .then(function() {
-        //            return element.all(by.repeater('blog in locallySyndicatedItems'))
-        //                .isDisplayed();
-        //        })
-        //        .then(function() {
-        //            return element.all(by.repeater('blog in locallySyndicatedItems'))
-        //                .get(0)
-        //                .element(by.css('button[ng-click="toggleDropdown($event, blog)"]'))
-        //                .click();
-        //        })
-        //        .then(function() {
-        //            return element.all(by.repeater('blog in locallySyndicatedItems'))
-        //                .get(0)
-        //                .element(by.css('button[ng-click="destroy($event, blog)"]'))
-        //                .isDisplayed();
-        //        })
-        //        .then(function() {
-        //            return element.all(by.repeater('blog in locallySyndicatedItems'))
-        //                .get(0)
-        //                .element(by.css('button[ng-click="destroy($event, blog)"]'))
-        //                .click();
-        //        })
-        //        //.then(function() {
-        //        //    return browser.sleep(500);
-        //        //})
-        //        .then(function() {
-        //            browser.sleep(500);
-        //            return element.all(by.repeater('blog in locallySyndicatedItems'))
-        //                .count();
-        //        })
-        //        .then(function(count) {
-        //            expect(count).toEqual(0);
-        //        });
-        //});
     });
 });

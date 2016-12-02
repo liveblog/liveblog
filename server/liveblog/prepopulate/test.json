@@ -993,6 +993,7 @@
     "resource": "syndication_in",
     "data": {
         "producer_blog_title" : "This blog does not exist",
+        "producer_blog_id" : "583430a2de3e2a0e690994ad",
         "blog_id" : "-id blog one-",
         "blog_token" : "2ec28e31942faddece35aa10316cf878aaa36d90",
         "producer_id" : "-producer one-",

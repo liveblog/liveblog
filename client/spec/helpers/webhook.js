@@ -1,8 +1,5 @@
 'use strict';
 
-//var Promise = require('bluebird');
-var request = require('request');
-
 var Webhook = function(params) {
     this.serverUrl = params.baseBackendUrl;
     this.webhookUrl = this.serverUrl + 'syndication/webhook';
@@ -15,6 +12,7 @@ var Webhook = function(params) {
     this.request = this.request.bind(this);
     this.login = this.login.bind(this);
     this.getSyndication = this.getSyndication.bind(this);
+    this.incomingPost = this.incomingPost.bind(this);
     this.fire = this.fire.bind(this);
 };
 
@@ -35,6 +33,25 @@ Webhook.prototype.getSyndication = function() {
         method: 'GET'
     })
 }
+
+Webhook.prototype.incomingPost = function(body) {
+    var incomingPost = require('./webhook.json');
+    var prodBlogId = body.data._items[0].blog_id;
+
+    this.auth = body.data._items[0].blog_token;
+    //var prodId = body.data._items[0].producer_id;
+
+    incomingPost.producer_post.blog = prodBlogId;
+
+    //console.log('synd', body.data._items);
+
+    console.log('auth', this.auth);
+    return this.request({ 
+        path: 'syndication/webhook', 
+        method: 'POST',
+        data: incomingPost
+    });
+};
 
 Webhook.prototype.request = function(params) {
     var options = {
@@ -63,8 +80,10 @@ Webhook.prototype.request = function(params) {
     .then(function(res) {
         // Funky promises that don't catch statements
         // I'd say why not
-        if (res.err)
+        if (res.err) {
+            console.log('ERR', res);
             throw(res.err);
+        }
         else
             return JSON.parse(res.data);
     })
@@ -74,14 +93,24 @@ Webhook.prototype.fire = function(currentUrl) {
     console.log('fire!');
     return this.login()
         .then((body) => {
-            console.log('login', body);
             this.auth = 'Basic ' + new Buffer(body.data.token + ':').toString('base64');
             return this.getSyndication();
         })
-        .then((body) => {
-            console.log('body get synd', body);
-            return body;
+        .then(this.incomingPost)
+        .then(function(body) {
+            console.log('after webhook', body);
         });
+        //.then((body) => {
+        //    var incomingPost = require('./webhook.json');
+        //    var prodBlogId = body.data._items[0].blog_id;
+        //    //var prodBlogToken = body.data._items[0].blog_token;
+        //    //var prodId = body.data._items[0].producer_id;
+
+        //    incomingPost.producer_post.blog = prodBlogId;
+
+        //    console.log('synd', body.data._items);
+        //    return body;
+        //});
 };
 
 module.exports = Webhook;
