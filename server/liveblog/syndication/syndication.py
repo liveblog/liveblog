@@ -193,7 +193,7 @@ def syndication_webhook():
 
         post_id = str(post['_id'])
         publisher = post.get('publisher')
-        if not publisher and method == 'PUT':
+        if not publisher:
             # Update only posts with publisher set to None
             posts_service.update(post_id, new_post, post)
             return api_response({'post_id': post_id}, 200)
