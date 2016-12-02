@@ -15,8 +15,8 @@ var Webhook = function(params) {
 };
 
 Webhook.prototype.login = function() {
-    return this.request({ 
-        path: 'auth', 
+    return this.request({
+        path: 'auth',
         method: 'POST',
         data: {
             username: this.username,
@@ -42,11 +42,10 @@ Webhook.prototype.incomingPost = function(body) {
     var prodBlogId = body.data._items[0].blog_id;
 
     this.auth = body.data._items[0].blog_token;
-
     incomingPost.producer_post.blog = prodBlogId;
 
-    return this.request({ 
-        path: 'syndication/webhook', 
+    return this.request({
+        path: 'syndication/webhook',
         method: 'POST',
         data: incomingPost
     });
@@ -70,10 +69,10 @@ Webhook.prototype.request = function(params) {
         var $http = angular.injector(['ng']).get('$http');
         $http(options)
             .then(function(data) {
-                cb({ err: false, data: JSON.stringify(data) });
+                cb({err: false, data: JSON.stringify(data)});
             })
             .catch(function(err) {
-                cb({ err: err, data: null });
+                cb({err: err, data: null});
             });
 
     }, options)
@@ -82,8 +81,7 @@ Webhook.prototype.request = function(params) {
         // I'd say why not
         if (res.err) {
             throw(res.err);
-        }
-        else {
+        } else {
             return JSON.parse(res.data);
         }
     });
@@ -92,10 +90,6 @@ Webhook.prototype.request = function(params) {
 Webhook.prototype.fire = function() {
     return this.login()
         .then(this.setAuth)
-        //.then((body) => {
-        //    this.auth = 'Basic ' + new Buffer(body.data.token + ':').toString('base64');
-        //    return this.getSyndication();
-        //})
         .then(this.incomingPost);
 };
 
