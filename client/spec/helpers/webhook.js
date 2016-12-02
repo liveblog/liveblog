@@ -90,27 +90,12 @@ Webhook.prototype.request = function(params) {
 };
 
 Webhook.prototype.fire = function(currentUrl) {
-    console.log('fire!');
     return this.login()
         .then((body) => {
             this.auth = 'Basic ' + new Buffer(body.data.token + ':').toString('base64');
             return this.getSyndication();
         })
-        .then(this.incomingPost)
-        .then(function(body) {
-            console.log('after webhook', body);
-        });
-        //.then((body) => {
-        //    var incomingPost = require('./webhook.json');
-        //    var prodBlogId = body.data._items[0].blog_id;
-        //    //var prodBlogToken = body.data._items[0].blog_token;
-        //    //var prodId = body.data._items[0].producer_id;
-
-        //    incomingPost.producer_post.blog = prodBlogId;
-
-        //    console.log('synd', body.data._items);
-        //    return body;
-        //});
+        .then(this.incomingPost);
 };
 
 module.exports = Webhook;

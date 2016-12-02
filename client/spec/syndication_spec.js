@@ -2,7 +2,7 @@
 
 const Webhook = require('./helpers/webhook');
 var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login;
-    //ingestPanel = require('./helpers/pages').EditPostPage;
+    //assertToastMsg = require('./helpers/assert-toast-msg');
 
 var webhook = new Webhook(browser.params);
 
@@ -40,7 +40,7 @@ describe('Syndication', function() {
                 });
         });
 
-        fit('should display an incoming syndication and delete it', function() {
+        it('should display an incoming syndication and delete it', function() {
             navigateToIngestPanel()
                 .then(function() {
                     return element.all(by.repeater('blog in locallySyndicatedItems'))
@@ -81,6 +81,9 @@ describe('Syndication', function() {
                     return element(by.css('div.modal-footer button[ng-click="ok()"]'))
                         .click();
                 })
+                //.then(function() {
+                //    return assertToastMsg('success', 'Post removed');
+                //})
                 .then(function() {
                     return element.all(by.repeater('post in posts._items'))
                         .count();
