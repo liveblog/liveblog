@@ -40,7 +40,7 @@ describe('Syndication', function() {
                 });
         });
 
-        fit('should display an incoming syndication and delete it', function() {
+        it('should display an incoming syndication and delete it', function() {
             navigateToIngestPanel()
                 .then(function() {
                     return element.all(by.repeater('blog in locallySyndicatedItems'))
