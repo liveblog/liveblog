@@ -4,17 +4,6 @@ var login = require('../app/scripts/bower_components/superdesk/client/spec/helpe
     producersManagement = require('./helpers/pages').producersManagement,
     assertToastMsg = require('./helpers/assert-toast-msg');
 
-//function assertToastMsg(type, msg) {
-//    var cssSelector = '.notification-holder .alert-' + type,
-//        toast = $(cssSelector);
-
-//    browser.sleep(500);
-//    browser.ignoreSynchronization = true;
-//    expect(toast.getText()).toContain(msg);
-//    browser.sleep(500);
-//    browser.ignoreSynchronization = false;
-//}
-
 var producer = {
     name: 'Massey Fergusson',
     apiUrl: 'http://www.masseyferguson.de/api',

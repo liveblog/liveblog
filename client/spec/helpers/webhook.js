@@ -39,13 +39,9 @@ Webhook.prototype.incomingPost = function(body) {
     var prodBlogId = body.data._items[0].blog_id;
 
     this.auth = body.data._items[0].blog_token;
-    //var prodId = body.data._items[0].producer_id;
 
     incomingPost.producer_post.blog = prodBlogId;
 
-    //console.log('synd', body.data._items);
-
-    console.log('auth', this.auth);
     return this.request({ 
         path: 'syndication/webhook', 
         method: 'POST',
