@@ -123,47 +123,71 @@ define([
             return obj;
         }
         function _completePost(post) {
-            angular.extend(post, {
-                // add a `multiple_items` field. Can be false or a positive integer.
-                // FIXME: left like that to support other feature, but this need to be in camelcase
-                multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
-                // add a `mainItem` field containing the first item
-                mainItem: post.groups[1].refs[0],
-                items: post.groups[1].refs
-            });
-            // if an item has a commenter then that post hasComments.
-            post.hasComments = _.reduce(post.groups[1].refs, function(is, val) {
-                return is || !_.isUndefined(val.item.commenter);
-            }, false);
-            // `fullDetails` is a business logic that can be compiled from other objects.
-            post.fullDetails = post.hasComments;
-            // special cases for comments.
-            post.showUpdate = (post.content_updated_date !== post.published_date) &&
-                               (!post.hasComments) && (post.mainItem.item.item_type !== 'comment');
-            angular.forEach(post.items, function(val) {
-                if (post.fullDetails) {
-                    _completeUser(val.item);
+            return $q(function(resolve, reject) {
+                angular.extend(post, {
+                    // add a `multiple_items` field. Can be false or a positive integer.
+                    // FIXME: left like that to support other feature, but this need to be in camelcase
+                    multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
+                    // add a `mainItem` field containing the first item
+                    mainItem: post.groups[1].refs[0],
+                    items: post.groups[1].refs
+                });
+
+                //console.log('complete post', pos.particular_type);
+
+                // if an item has a commenter then that post hasComments.
+                post.hasComments = _.reduce(post.groups[1].refs, function(is, val) {
+                    return is || !_.isUndefined(val.item.commenter);
+                }, false);
+                // `fullDetails` is a business logic that can be compiled from other objects.
+                post.fullDetails = post.hasComments;
+                // special cases for comments.
+                post.showUpdate = (post.content_updated_date !== post.published_date) &&
+                                   (!post.hasComments) && (post.mainItem.item.item_type !== 'comment');
+                angular.forEach(post.items, function(val) {
+                    if (post.fullDetails) {
+                        _completeUser(val.item);
+                    }
+                });
+                _completeUser(post.mainItem.item);
+
+                if (post.syndication_in) {
+                    api.syndicationIn.getById(post.syndication_in).then(function(synd) {
+                        //console.log('complete user', synd.producer_blog_title);
+                        post.producer_blog_title = synd.producer_blog_title;
+                        resolve(post);
+                    });
+                } else {
+                    resolve(post)
                 }
             });
-            _completeUser(post.mainItem.item);
-            return post;
         }
 
         function retrievePost(post_id) {
-            return api.posts.getById(post_id).then(function(post) {
-                _completePost(post);
-                return post;
-            });
+            console.log('retrieve post');
+            return api.posts.getById(post_id)
+                .then(_completePost)
+                .then(function(post) {
+                    return post;
+                });
         }
 
         function retrievePosts(blog_id, posts_criteria) {
+            console.log('retrieve posts');
             return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
                 .query(posts_criteria)
                 .then(function(data) {
-                    data._items.forEach(function(post) {
-                        _completePost(post);
+                    //var promises = [];
+
+                    //data._items.forEach(function(post) {
+                    //    promises.push(_completePost(post));
+                    //});
+
+                    return $q.all(data._items.map(_completePost)).then(function(result) {
+                    //return $q.all(promises).then(function(result) {
+                        return angular.extend(data, { _items: result });
+                        //return data;
                     });
-                    return data;
                 });
         }
 
