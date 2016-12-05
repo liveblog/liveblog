@@ -1,0 +1,58 @@
+.freetypeslist {
+    .list-container {
+        position: absolute;
+        top: 0px;
+        left: 0; right: 0; bottom: 0;
+        padding: 30px 30px 30px 0;
+        overflow-y: auto;
+        ul {
+            li {
+                margin-left: 40px;
+            }
+        }
+    }
+    .pills-list {
+        max-width: 650px;
+        margin-top: 2px;
+        >li {
+            background: #fff;
+            margin-bottom: 6px;
+            margin-right: 2px;
+            border-radius: 2px;
+            padding: 10px 16px;
+            min-height: 18px;
+            color: #444;
+            position: relative;
+            box-shadow: 0 1px 3px rgba(0,0,0,.1), 0 0 1px rgba(0,0,0,.08);
+            line-height: 18px;
+            text-rendering: optimizelegibility;
+            h6 {
+
+                font-size: 14px;
+                font-weight: 300;
+                color: #333;
+                text-transform: none;
+            };
+            .actions button {
+                border: 0;
+                height: 30px;
+                width: 30px;
+                margin: 3px;
+                background: none;
+                text-align: center;
+                display: block;
+                float: left;
+                line-height: 0;
+                opacity: .4;
+            };
+            .actions button:hover {
+                cursor: pointer;
+                opacity: 1;
+            };
+        }
+        >li:hover {
+            box-shadow: 0 0 3px rgba(0,0,0,.3), 0 0 1px rgba(0,0,0,.2);
+        }
+    }
+        
+}
