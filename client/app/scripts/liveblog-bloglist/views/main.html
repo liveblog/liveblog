@@ -26,6 +26,9 @@
             <button title="{{ 'switch to list view' | translate}}" ng-show="blogsView === 'grid'" ng-click="setBlogsView('list');">
                 <i class="icon-th-list"></i>
             </button>
+            <button title="{{ 'blog list embed' | translate}}" ng-click="openEmbed()">
+                <i class="icon-link"></i>
+            </button>
         </div>
         <div sd-pagination data-items="blogs" data-limit="25"></div>
     </header>
@@ -90,6 +93,16 @@
                 </div>
             </li>
         </ul>
+    </div>
+
+    <div sd-modal="" data-model="embedModal">
+            <div class="modal-header">
+                <button class="close" ng-click="cancelEmbed()"><i class="icon-close-small"></i></button>
+                <h3 translate>Get blog list embed</h3>
+            </div>
+            <div class="modal-body" style="min-height: 300px;">
+                <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click>{{ bloglistEmbed }}</textarea>
+            </div>
     </div>
 
     <div sd-modal="" data-model="newBlogModalActive">
