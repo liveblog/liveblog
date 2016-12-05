@@ -177,17 +177,10 @@ define([
             return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
                 .query(posts_criteria)
                 .then(function(data) {
-                    //var promises = [];
-
-                    //data._items.forEach(function(post) {
-                    //    promises.push(_completePost(post));
-                    //});
-
-                    return $q.all(data._items.map(_completePost)).then(function(result) {
-                    //return $q.all(promises).then(function(result) {
-                        return angular.extend(data, { _items: result });
-                        //return data;
-                    });
+                    return $q.all(data._items.map(_completePost))
+                        .then(function(result) {
+                            return angular.extend(data, { _items: result });
+                        });
                 });
         }
 
