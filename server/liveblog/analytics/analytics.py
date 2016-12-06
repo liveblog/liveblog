@@ -53,7 +53,7 @@ class BlogAnalyticsService(BaseService):
     notification_key = 'blog_analytics'
 
 
-@analytics_blueprint.route('/api/analytics/hit', methods=['POST', 'GET'])
+@analytics_blueprint.route('/api/analytics/hit', methods=['POST'])
 def analytics_hit():
     data = request.get_json()
     context_url = data['context_url']
