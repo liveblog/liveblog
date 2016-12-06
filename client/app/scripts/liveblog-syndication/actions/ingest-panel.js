@@ -3,7 +3,7 @@ liveblogSyndication
         function(Dispatcher, api, $http, config) {
             return {
                 getSyndication: function(consumerBlogId) {
-                    let params = {
+                    var params = {
                         where: {
                             blog_id: consumerBlogId
                         }
