@@ -24,6 +24,7 @@ analytics_schema = {
     }
 }
 
+
 class AnalyticsResource(Resource):
     datasource = {
         'source': 'analytics',
@@ -80,16 +81,15 @@ def analytics_hit():
     blog = blogs_service.find_one(req=None, checkUser=False, _id=blog_id)
     if blog is None:
         data = json.dumps({
-                '_status': 'ERR',
-                '_error': 'No blog available for syndication with given id "{}".'.format(blog_id)
-            })
+            '_status': 'ERR',
+            '_error': 'No blog available for syndication with given id "{}".'.format(blog_id)
+        })
         response = make_response(data, 409)
         return response
 
     # if ip is new and blog exists, add a record of a hit in db
     client = app.data.mongo.pymongo('analytics').db['analytics']
     # use upsert to be thread safe (upsert updates the record if it exists, or else creates it)
-    client.update({'blog_id': ObjectId(blog_id), 'context_url': context_url}, {"$inc": {"hits": 1} }, True)
+    client.update({'blog_id': ObjectId(blog_id), 'context_url': context_url}, {"$inc": {"hits": 1}}, True)
 
     return make_response('success', 200)
-

@@ -1,6 +1,7 @@
 import superdesk
 from .analytics import AnalyticsResource, AnalyticsService
 
+
 def init_app(app):
     # Analytics
     endpoint_name = 'analytics'
