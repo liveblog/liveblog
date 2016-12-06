@@ -16,6 +16,8 @@ from flask.ext.cache import Cache
 from liveblog.common import BlogCache
 import flask_s3
 
+from liveblog.analytics.analytics import analytics_blueprint
+
 import os
 import settings
 from superdesk.factory import get_app as superdesk_app
@@ -59,6 +61,8 @@ def get_app(config=None):
     s3.init_app(app)
     # embed feature
     app.register_blueprint(embed_blueprint)
+    app.register_blueprint(analytics_blueprint)
+
     return app
 
 
