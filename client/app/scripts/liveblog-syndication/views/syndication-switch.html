@@ -12,6 +12,7 @@
                 class="pull-left"
                 sd-switch
                 ng-model="settings.syndication_enabled"
+                ng-if="enableSyndSwitch || !settings.syndication_enabled"
                 data-syndication-status-switch></span>
         </span>
     </div>
