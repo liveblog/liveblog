@@ -676,3 +676,34 @@
         font-size:13px!important;
     }
 }
+
+.freetype-selector {
+    background-color: #fff;
+    border: 1px solid #c6c6c6;
+    border-radius: 3px;
+    box-shadow: 0 3px 5px rgba(0,0,0,.2);
+    padding: 10px 10px 5px 10px;
+    min-width: 100px;
+    width: auto;
+    z-index: 2;
+    position: absolute;
+    right: 70px;
+    top: 2px;
+    li {
+        padding: 0px 5px;
+        border-radius: 2px;
+        margin-right: 0px;
+        margin-bottom: 1px;
+    }
+}
+.freetype-selector::before {
+    width: 15px;
+    height: 22px;
+    display: block;
+    z-index: 100;
+    position: absolute;
+    left: -15px;
+    top: 10px;
+    background: url(../../images/dropdown-arrow-side.png) no-repeat;
+    content: " ";
+}
