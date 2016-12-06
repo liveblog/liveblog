@@ -179,10 +179,10 @@ class BlogService(BaseService):
         # Publish bloglist aswell
         publish_bloglist_embed_on_s3()
 
-    def find_one(self, req, **lookup):
+    def find_one(self, req, checkUser=True, **lookup):
         doc = super().find_one(req, **lookup)
         # check if the current user has permission to open a blog
-        if not is_admin(get_user()):
+        if checkUser and not is_admin(get_user()):
             # get members ids
             members = [str(m['user']) for m in doc.get('members', [])]
             # add owner id to members
