@@ -4,29 +4,37 @@
     <fieldset class="label-light">
         <div class="sub-title">
             <span translate>Contact {{$index + 1}}</span>
-            <button ng-if="$index" type="button" class="btn btn-info pull-right" ng-click="removeContact($index)">
-                Remove
-            </button>
+            <button 
+                ng-if="$index" 
+                type="button" 
+                class="btn btn-info pull-right" 
+                ng-click="removeContact($index)">Remove</button>
         </div>
 
         <div sd-info-item>
             <label for="first-name" translate>first name</label>
             <input
-                    type="text"
-                    name="first_name"
-                    ng-model="contact.first_name"
-                    required>
+                type="text"
+                name="first_name"
+                ng-model="contact.first_name"
+                required>
             <i ng-show="contactForm.first_name.$error.required" class="required-asteriks">*</i>
+            <div
+                ng-show="attempted && contactForm.first_name.$error.required" 
+                class="error">This field is required</div>
         </div>
 
         <div sd-info-item>
             <label for="last-name" translate>last name</label>
             <input
-                    type="text"
-                    name="last_name"
-                    ng-model="contact.last_name"
-                    required>
+                type="text"
+                name="last_name"
+                ng-model="contact.last_name"
+                required>
             <i ng-show="contactForm.last_name.$error.required" class="required-asteriks">*</i>
+            <div
+                ng-show="attempted && contactForm.last_name.$error.required" 
+                class="error">This field is required</div>
         </div>
 
         <div sd-info-item>
@@ -47,7 +55,13 @@
                     ng-model="contact.email"
                     required>
             <i ng-show="contactForm.email.$error.required" class="required-asteriks">*</i>
-            <div class="error" ng-show="attempted && contactForm.email.$error.email" translate>Please enter a valid email</div>
+            <div 
+                class="error" 
+                ng-show="attempted && contactForm.email.$error.email" 
+                translate>Please enter a valid email</div>
+            <div
+                ng-show="attempted && contactForm.email.$error.required" 
+                class="error">This field is required</div>
         </div>
     </fieldset>
 </div>
