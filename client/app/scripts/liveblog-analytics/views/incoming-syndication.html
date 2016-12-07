@@ -1,0 +1,72 @@
+<div class="panel panel__incoming-syndication">
+    <header>
+        <h4 translate>Ingest</h4>
+    </header>
+
+    <div class="sub-header">
+        <button ng-click="goBack()"></button>
+
+        <div class="block">
+            <h3>{{syndication.producer_blog_title}}</h3>
+            <dl class="panel-definition-list">
+                <dt class="panel-definition-list__term">Producer:</dt>
+                <dd class="panel-definition-list__definition">{{syndication.producer.name}}</dd>
+                <dt class="panel-definition-list__term">Autopublish:</dt>
+                <dd class="panel-definition-list__definition">
+                    <div
+                        ng-if="!syndication.auto_publish"
+                        class="state-label state-draft state-label--no-float">OFF</div>
+                    <div
+                        ng-if="syndication.auto_publish"
+                        class="state-label state-published state-label--no-float">ON</div>
+                </dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="content content--syndication">
+        <ul class="posts">
+            <li
+                ng-repeat="post in posts._items" 
+                class="lb-post__holder">
+                <div class="lb-post__header">
+                    <div class="lb-post__actions">
+                        <ul>
+                            <li>
+                                <a
+                                    ng-click="lbPostsOnPostSelected(post)" 
+                                    tooltip-placement="bottom" 
+                                    tooltip="Edit">
+                                    <i class="icon-pencil"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    ng-click="askRemove(post)" 
+                                    tooltip-placement="bottom" 
+                                    tooltip="{{ 'Remove' | translate }}">
+                                    <i class="icon-close-thick"></i>
+                                </a>
+                            </li>
+                            <li>
+                                <a
+                                    ng-click="publish(post)"
+                                    tooltip-placement="bottom"
+                                    tooltip="{{ 'Publish' | translate }}">
+                                    <i class="icon-publish"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div
+                    class="lb-post__item"
+                    lb-bind-html 
+                    html-content="{{post.mainItem.item.text}}"></div>
+            </li>
+        </ul>
+    </div>
+</div>
+
+

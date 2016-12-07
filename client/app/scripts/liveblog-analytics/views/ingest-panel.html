@@ -1,0 +1,73 @@
+<div class="panel panel--contribution">
+    <header>
+        <h4 translate>Ingest</h4>
+        <div class="button-stack right-stack">
+            <button class="navbtn sd-create-btn" ng-click="openSyndBlogsModal()">
+                <i class="svg-icon-plus"></i><span class="circle"></span>
+            </button>
+        </div>
+    </header>
+
+    <ul class="syndicated-blogs-list">
+        <li ng-repeat="blog in locallySyndicatedItems" ng-click="select(blog)" class="blog-item">
+            <h4>
+                <span ng-if="!blog.producer_blog_title">{{blog.blog_token}}</span>
+                <span ng-if="blog.producer_blog_title">{{blog.producer_blog_title}}</span>
+            </h4>
+            <dl class="panel-definition-list">
+                <dt class="panel-definition-list__term">Producer:</dt>
+                <dd class="panel-definition-list__definition">{{syndication.producer.name}}</dd>
+                <dt class="panel-definition-list__term">Autopublish:</dt>
+                <dd class="panel-definition-list__definition">
+                    <div ng-if="!blog.auto_publish" class="state-label state-draft state-label--no-float">OFF</div>
+                    <div ng-if="blog.auto_publish" class="state-label state-published state-label--no-float">ON</div>
+                </dd>
+            </dl>
+            <div
+                class="dropdown dropdown--more-activity blog-actions-menu" 
+                ng-click="$event.stopPropagation()"
+                dropdown 
+                dropdown-append-to-body 
+                is-open="blog.isOpen"> 
+                <button 
+                    id="btn-append-to-body" 
+                    type="button" 
+                    class="btn-dots-vertical condensed dropdown__toggle" 
+                    ng-click="toggleDropdown($event, blog)">
+                    <i class="icon-dots-vertical"></i>
+                </button>
+                <ul
+                    class="dropdown-menu dropdown__menu more-activity-menu" 
+                    role="menu" 
+                    aria-labelledby="btn-append-to-body">
+                    <li><div class="dropdown__menu-label" translate>Actions</div></li>
+                    <li class="divider"></li>
+                    <!--<li role="menuitem">-->
+                    <!--    <a href="#"><i class="icon-pencil"></i>Edit</a>-->
+                    <!--</li>-->
+                    <li role="menuitem">
+                        <button ng-click="destroy($event, blog)">
+                            <i class="icon-trash"></i> Remove
+                        </button>
+                    </li>
+                    <li class="divider"></li>
+                    <li role="menuitem">
+                        <span>Auto Publish</span>
+                        <div class="dropdown__sd-toggle">
+                            <span
+                            sd-switch 
+                            ng-change="updateSyndication(blog)"
+                            ng-model="blog.auto_publish"
+                            class="sd-toggle--vertical-middle"></span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </li>
+    </ul>
+</div>
+
+<div 
+    lb-attach-syndicated-blogs-modal 
+    ng-if="store"
+    store="store"></div>

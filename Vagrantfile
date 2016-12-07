@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-    config.vm.box = "trusty64"
+    config.vm.box = "ubuntu/trusty64"
     host = RbConfig::CONFIG['host_os']
 
     config.vm.provider :virtualbox do |virtualbox| # Default
