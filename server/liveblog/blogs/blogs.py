@@ -26,7 +26,7 @@ import superdesk
 from superdesk.users.services import is_admin
 from superdesk.errors import SuperdeskApiError
 import logging
-
+from liveblog.blogslist.blogslist import publish_bloglist_embed_on_s3
 
 logger = logging.getLogger('superdesk')
 
@@ -180,6 +180,8 @@ class BlogService(BaseService):
                 else:
                     recipients.append(user['user'])
             notify_members(blog, app.config['CLIENT_URL'], recipients)
+        # Publish bloglist aswell
+        publish_bloglist_embed_on_s3()
 
     def find_one(self, req, checkUser=True, **lookup):
         doc = super().find_one(req, **lookup)

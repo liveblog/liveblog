@@ -1,18 +1,8 @@
 'use strict';
 
 var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
-    producersManagement = require('./helpers/pages').producersManagement;
-
-function assertToastMsg(type, msg) {
-    var cssSelector = '.notification-holder .alert-' + type,
-        toast = $(cssSelector);
-
-    browser.sleep(500);
-    browser.ignoreSynchronization = true;
-    expect(toast.getText()).toContain(msg);
-    browser.sleep(500);
-    browser.ignoreSynchronization = false;
-}
+    producersManagement = require('./helpers/pages').producersManagement,
+    assertToastMsg = require('./helpers/assert-toast-msg');
 
 var producer = {
     name: 'Massey Fergusson',
