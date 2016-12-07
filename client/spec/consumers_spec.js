@@ -72,7 +72,7 @@ describe('Consumers', function() {
                 });
         });
 
-        fit('can update a consumer, multiple time', function() {
+        it('can update a consumer, multiple time', function() {
             consumersManagement.openConsumersManagement();
 
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
@@ -99,7 +99,7 @@ describe('Consumers', function() {
                     })
                     .then(function() {
                         var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
-                        expect(firstRowName.getText()).toEqual(consumer.name);
+                        expect(firstRowName.getText()).toEqual(consumerName);
                         return element.all(by.repeater('consumer in consumers')).count();
                     })
                     .then(function(count) {

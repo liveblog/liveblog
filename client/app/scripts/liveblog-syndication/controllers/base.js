@@ -18,7 +18,23 @@ liveblogSyndication
         };
 
         $scope.render = function(newEntry) {
-            $scope[$scope.endPoint]._items.unshift(newEntry);
+            var isEditing = false;
+
+            $scope[$scope.endPoint]._items = $scope[$scope.endPoint]._items
+                .map(function(item) {
+                    console.log('map', item._id, newEntry._id);
+                    if (item._id == newEntry._id) {
+                        isEditing = true;
+                        return newEntry;
+                    } else {
+                        return item;
+                    }
+                });
+
+            if (!isEditing) {
+                $scope[$scope.endPoint]._items.unshift(newEntry);
+            }
+
             $scope.selected = {};
         };
 
