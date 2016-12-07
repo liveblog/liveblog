@@ -88,7 +88,6 @@ describe('Consumers', function() {
                         return element(by.css('input#name')).clear();
                     })
                     .then(function() {
-                        //return element(by.css('input#name')).sendKeys(consumer.name);
                         return element(by.css('input#name')).sendKeys(consumerName);
                     })
                     .then(function() {
@@ -105,11 +104,11 @@ describe('Consumers', function() {
                     .then(function(count) {
                         return expect(count).toEqual(1);
                     });
-            }
+            };
 
-            updateConsumer(consumer.name).then(() => {
+            updateConsumer(consumer.name).then(function() {
                 return updateConsumer(consumer.name + '1');
-            })
+            });
         });
 
         it('can delete a consumer', function() {
