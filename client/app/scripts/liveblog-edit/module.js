@@ -73,6 +73,16 @@ define([
             $scope.publicUrl = url;
         });
 
+        $scope.freetypes = [];
+        $scope.selectedFreetype = undefined;
+        // retrieve the freetypes
+        function getFreetypes() {
+            api.freetypes.query().then(function(data) {
+                $scope.freetypes = data._items;
+            });
+        };
+        getFreetypes();
+
         // define the $scope
         angular.extend($scope, {
             blog: blog,
@@ -88,6 +98,15 @@ define([
             sticky: false,
             highlight: false,
             filter: {isHighlight: false},
+            selectPostTypeDialog: false,
+            selectedPostType: 'Default',
+            toggleTypePostDialog: function() {
+                $scope.selectPostTypeDialog = !$scope.selectPostTypeDialog;
+            },
+            selectPostType: function(postType) {
+                $scope.selectedPostType = postType;
+                $scope.toggleTypePostDialog();
+            },
             actionStatus: function() {
                 return $scope.actionDisabled || $scope.actionPending;
             },
@@ -613,7 +632,8 @@ define([
         'superdesk.editor',
         'liveblog.pages-manager',
         'lrInfiniteScroll',
-        'liveblog.security'
+        'liveblog.security',
+        'liveblog.freetypes'
     ])
     .config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/liveblog/edit/:_id', {
