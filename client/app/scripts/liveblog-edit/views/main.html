@@ -125,9 +125,11 @@
                     <div class="panel--editor" ng-show="panelState === 'editor'">
                         <div ng-if="!preview">
                         <header>
-                            Editor<button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate>Preview
-                                </button>
-                                <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
+                            Editor
+                            <button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate>Preview
+                            </button>
+                            <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
+                            <button class="btn pull-right" ng-click="toggleTypePostDialog()" translate>Chose post type</button>
                         </header>
                         </div>
                         <div ng-if="preview">
@@ -167,6 +169,18 @@
                             </div>
                         </div>
                     </div>
+                    <div class="freetype-selector" ng-click="$event.stopPropagation();" ng-if="selectPostTypeDialog">
+                        <ul class="users-list-embed">
+                            <li translate ng-click="selectPostType('Default')"
+                            ng-class="{'active': selectedPostType === 'Default'}">Default</li>
+                            <li ng-repeat="freetype in freetypes" ng-click="selectPostType(freetype)"
+                            ng-class="{'active': freetype == selectedPostType}"
+                            >
+                                {{ freetype.name }}
+                            </li>
+                        </ul>
+                    </div>
+
                 </div>
             </span>
             <span ng-if="!isBlogOpened()">
