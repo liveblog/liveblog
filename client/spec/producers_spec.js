@@ -79,7 +79,7 @@ describe('Producers', function() {
                             .isDisplayed()
                     ).toBeTruthy();
                 })
-         });
+        });
 
         it('can create a new producer', function() {
             producersManagement.openProducersManagement();

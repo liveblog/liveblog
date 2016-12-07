@@ -30,6 +30,58 @@ describe('Consumers', function() {
             consumersManagement.openConsumersManagement();
         });
 
+        it('can show an error when some required field are empty', function() {
+            consumersManagement.openConsumersManagement();
+
+            element(by.css('button.navbtn.sd-create-btn'))
+                .click()
+                .then(function() {
+                    return element(by.css('input#name')).isDisplayed();
+                })
+                .then(function() {
+                    return element(by.css('input[name="first_name"]'))
+                        .sendKeys(contact.firstName);
+                })
+                .then(function() {
+                    return element(by.css('#save-edit-btn')).click();
+                })
+                .then(function() {
+                    var fieldName = 'div[ng-show="consumerForm.attempted &&' +
+                        ' consumerForm.name.$error.required"]';
+
+                    return expect(
+                        $(fieldName).isDisplayed()
+                    ).toBeTruthy();
+                })
+                .then(function() {
+                    var fieldName = 'div[ng-show="consumerForm.attempted &&' +
+                        ' consumerForm.api_url.$error.required"]';
+
+                    return expect(
+                        $(fieldName).isDisplayed()
+                    ).toBeTruthy();
+                })
+                .then(function() {
+                    return expect(
+                        $('div[ng-show="attempted && contactForm.first_name.$error.required"]')
+                            .isDisplayed()
+                    ).toBeFalsy();
+                })
+                .then(function() {
+                    return expect(
+                        $('div[ng-show="attempted && contactForm.last_name.$error.required"]')
+                            .isDisplayed()
+                    ).toBeTruthy();
+                })
+                .then(function() {
+                    return expect(
+                        $('div[ng-show="attempted && contactForm.email.$error.required"]')
+                            .isDisplayed()
+                    ).toBeTruthy();
+                })
+        });
+
+
         it('can create a new consumer', function() {
             consumersManagement.openConsumersManagement();
 
