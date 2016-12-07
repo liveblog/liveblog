@@ -78,9 +78,8 @@ describe('Consumers', function() {
                         $('div[ng-show="attempted && contactForm.email.$error.required"]')
                             .isDisplayed()
                     ).toBeTruthy();
-                })
+                });
         });
-
 
         it('can create a new consumer', function() {
             consumersManagement.openConsumersManagement();
