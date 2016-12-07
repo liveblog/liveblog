@@ -1,0 +1,55 @@
+<div class="title"><span translate>Contacts</span></div>
+
+<div ng-repeat="contact in contacts" ng-form="contactForm" novalidate>
+    <fieldset class="label-light">
+        <div class="sub-title">
+            <span translate>Contact {{$index + 1}}</span>
+            <button ng-if="$index" type="button" class="btn btn-info pull-right" ng-click="removeContact($index)">
+                Remove
+            </button>
+        </div>
+
+        <div sd-info-item>
+            <label for="first-name" translate>first name</label>
+            <input
+                    type="text"
+                    name="first_name"
+                    ng-model="contact.first_name"
+                    required>
+            <i ng-show="contactForm.first_name.$error.required" class="required-asteriks">*</i>
+        </div>
+
+        <div sd-info-item>
+            <label for="last-name" translate>last name</label>
+            <input
+                    type="text"
+                    name="last_name"
+                    ng-model="contact.last_name"
+                    required>
+            <i ng-show="contactForm.last_name.$error.required" class="required-asteriks">*</i>
+        </div>
+
+        <div sd-info-item>
+            <label for="phone" translate>phone</label>
+            <input
+                    type="text"
+                    name="phone"
+                    id="phone"
+                    ng-model="contact.phone">
+        </div>
+
+        <div sd-info-item>
+            <label for="email" translate>email</label>
+            <input
+                    type="email"
+                    name="email"
+                    id="email"
+                    ng-model="contact.email"
+                    required>
+            <i ng-show="contactForm.email.$error.required" class="required-asteriks">*</i>
+            <div class="error" ng-show="attempted && contactForm.email.$error.email" translate>Please enter a valid email</div>
+        </div>
+    </fieldset>
+</div>
+
+<div><button type="btn" class="btn btn-info" ng-click="addContact()">Add</button></div>
