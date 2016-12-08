@@ -16,9 +16,9 @@ function getChromeOptions() {
 
 exports.config = {
     allScriptsTimeout: 34000,
-    baseUrl: 'http://localhost:9090',
+    baseUrl: 'http://127.0.0.1:9000',
     params: {
-        baseBackendUrl: 'http://localhost:5000/api/',
+        baseBackendUrl: 'http://127.0.0.1:5000/api/',
         username: 'admin',
         password: 'admin'
     },
@@ -37,6 +37,7 @@ exports.config = {
     },
 
     capabilities: {
+        //browserName: 'firefox',
         browserName: 'chrome',
         chromeOptions: getChromeOptions()
     },
