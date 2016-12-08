@@ -262,6 +262,12 @@ class PostsService(ArchiveService):
         #     push_notification('posts', drafted=True, post_id=original.get('_id'),
         #                       author_id=original.get('original_creator'))
         else:
+            # Syndication
+            out_service = get_resource_service('syndication_out')
+            doc = original.copy()
+            doc.update(updates)
+            logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
+            out_service.send_syndication_post(doc, action='updated')
             push_notification('posts', updated=True)
 
     def get_item_update_data(self, item, links, delete=True):
@@ -276,6 +282,9 @@ class PostsService(ArchiveService):
         super().on_deleted(doc)
         # invalidate cache for updated blog
         app.blog_cache.invalidate(doc.get('blog'))
+        # Syndication
+        out_service = get_resource_service('syndication_out')
+        out_service.send_syndication_post(doc, action='deleted')
         # send notifications
         push_notification('posts', deleted=True)
 
