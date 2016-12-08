@@ -57,7 +57,7 @@ liveblogSyndication
                                 })
                                 .map(function(blog) {
                                     blog.checked = false;
-                                    blog.auto_publish = true; // Default autopublish as true
+                                    blog.auto_publish = false; // Default autopublish as false
 
                                     state.locallySyndicatedItems.forEach(function(localBlog) {
                                         if (localBlog.producer_blog_id == blog._id) {
