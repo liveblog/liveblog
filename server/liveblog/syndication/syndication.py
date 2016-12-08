@@ -10,7 +10,7 @@ from flask_cors import CORS
 from .auth import ConsumerBlogTokenAuth
 from .tasks import send_post_to_consumer, send_posts_to_consumer
 from .utils import (generate_api_key, cast_to_object_id, api_response, api_error, create_syndicated_blog_post,
-                    get_producer_post_id)
+                    get_producer_post_id, get_post_creator)
 
 
 logger = logging.getLogger('superdesk')
@@ -192,10 +192,11 @@ def syndication_webhook():
     publisher = None
     if post:
         post_id = str(post['_id'])
-        publisher = post.get('publisher')
+        publisher = get_post_creator(post)
 
     if publisher:
-        return api_error('Post cannot be updated: already edited on consumer.', 409)
+        return api_error('Post "{}" cannot be updated: already updated by "{}"'.format(
+                         post_id, publisher), 409)
 
     if request.method in ('POST', 'PUT'):
         new_post = create_syndicated_blog_post(producer_post, items, in_syndication)
@@ -215,7 +216,6 @@ def syndication_webhook():
             return api_response({'post_id': post_id}, 200)
     else:
         # Delete post
-        # posts_service.delete_action(lookup={'_id': post_id})
         posts_service.update(post_id, {'deleted': True}, post)
         return api_response({'post_id': post_id}, 200)
 

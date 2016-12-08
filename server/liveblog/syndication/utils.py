@@ -192,6 +192,20 @@ def extract_producer_post_data(post, fields=('_id', '_updated', 'highlight', 'st
     return {key: post[key] for key in fields}
 
 
+def get_post_creator(post):
+    """Get publisher/author from consumer post."""
+    try:
+        ref = post['groups'][1]['refs'][0]
+    except (KeyError, IndexError):
+        return
+
+    items_service = get_resource_service('blog_items')
+    item = items_service.find_one(req=None, guid=ref['guid'])
+
+    if item:
+        return item.get('original_creator')
+
+
 def create_syndicated_blog_post(producer_post, items, in_syndication):
     """Create syndicted blog post data using producer post, fetched items and incoming syndication."""
     post_items = []
