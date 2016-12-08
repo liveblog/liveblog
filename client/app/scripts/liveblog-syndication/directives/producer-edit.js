@@ -47,14 +47,7 @@ liveblogSyndication
                         notify.pop();
                         notify.success(gettext('producer saved.'));
 
-                        // If we are creating a new entry,
-                        // then we need to update the producer list accordingly.
-                        // Otherwise we just broadcast a cancel event
-                        // to close the modal
-                        if (!scope.isEditing)
-                            scope.onsave({ producer: result });
-                        else
-                            scope.oncancel();
+                        scope.onsave({ producer: result });
                     })
                     .catch(function(err) {
                         notify.pop();
