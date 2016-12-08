@@ -130,15 +130,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group">
-                                <label for="inputTitle" class="control-label" translate>Syndication</label>
-                                <div class="form-input relative">
-                                    <span class="blog-status">{{ settings.syndication_enabled ? 'Enabled' : 'Disabled' | translate }}</span>
-                                    <span style="display: block" tooltip="{{ settings.syndication_enabled ? 'Disable Syndication' : 'Enable Syndication' | translate }}" tooltip-placement="right">
-                                        <span class="pull-left" sd-switch ng-model="settings.syndication_enabled" data-syndication-status-switch></span>
-                                    </span>
-                                </div>
-                            </div>
+                            <div lb-syndication-switch></div>
 
                             <div class="form-group">
                                 <label for="removeBlog" class="control-label" translate>Blog removal</label>

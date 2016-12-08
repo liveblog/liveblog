@@ -72,37 +72,43 @@ describe('Consumers', function() {
                 });
         });
 
-        it('can update a consumer', function() {
+        it('can update a consumer manyfold', function() {
             consumersManagement.openConsumersManagement();
 
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
             expect(firstRowName.getText()).toEqual('John Deere');
 
-            firstRowName
-                .click()
-                .then(function() {
-                    return element(by.css('input#name')).isDisplayed();
-                })
-                .then(function() {
-                    return element(by.css('input#name')).clear();
-                })
-                .then(function() {
-                    return element(by.css('input#name')).sendKeys(consumer.name);
-                })
-                .then(function() {
-                    return element(by.css('#save-edit-btn')).click();
-                })
-                .then(function() {
-                    return assertToastMsg('success', 'consumer saved.');
-                })
-                .then(function() {
-                    var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
-                    expect(firstRowName.getText()).toEqual(consumer.name);
-                    return element.all(by.repeater('consumer in consumers')).count();
-                })
-                .then(function(count) {
-                    expect(count).toEqual(1);
-                });
+            var updateConsumer = function(consumerName) {
+                return firstRowName
+                    .click()
+                    .then(function() {
+                        return element(by.css('input#name')).isDisplayed();
+                    })
+                    .then(function() {
+                        return element(by.css('input#name')).clear();
+                    })
+                    .then(function() {
+                        return element(by.css('input#name')).sendKeys(consumerName);
+                    })
+                    .then(function() {
+                        return element(by.css('#save-edit-btn')).click();
+                    })
+                    .then(function() {
+                        return assertToastMsg('success', 'consumer saved.');
+                    })
+                    .then(function() {
+                        var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
+                        expect(firstRowName.getText()).toEqual(consumerName);
+                        return element.all(by.repeater('consumer in consumers')).count();
+                    })
+                    .then(function(count) {
+                        return expect(count).toEqual(1);
+                    });
+            };
+
+            updateConsumer(consumer.name).then(function() {
+                return updateConsumer(consumer.name + '1');
+            });
         });
 
         it('can delete a consumer', function() {
