@@ -45,14 +45,7 @@ liveblogSyndication
                         notify.pop();
                         notify.success(gettext('consumer saved.'));
 
-                        // If we are creating a new entry,
-                        // then we need to update the consumer list accordingly.
-                        // Otherwise we just broadcast a cancel event
-                        // to close the modal
-                        if (!scope.isEditing)
-                            scope.onsave({ consumer: result });
-                        else
-                            scope.oncancel();
+                        scope.onsave({ consumer: result });
                     })
                     .catch(function(err) {
                         notify.pop();

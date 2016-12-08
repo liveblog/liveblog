@@ -78,37 +78,43 @@ describe('Producers', function() {
                 });
         });
 
-        it('can update a producer', function() {
+        it('can update a producer manyfold', function() {
             producersManagement.openProducersManagement();
 
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
             expect(firstRowName.getText()).toEqual('John Deere');
 
-            firstRowName
-                .click()
-                .then(function() {
-                    return element(by.css('input#name')).isDisplayed();
-                })
-                .then(function() {
-                    return element(by.css('input#name')).clear();
-                })
-                .then(function() {
-                    return element(by.css('input#name')).sendKeys(producer.name);
-                })
-                .then(function() {
-                    return element(by.css('#save-edit-btn')).click();
-                })
-                .then(function() {
-                    return assertToastMsg('success', 'producer saved.');
-                })
-                .then(function() {
-                    var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
-                    expect(firstRowName.getText()).toEqual(producer.name);
-                    return element.all(by.repeater('producer in producers')).count();
-                })
-                .then(function(count) {
-                    expect(count).toEqual(1);
-                });
+            var updateProducer = function(producerName) {
+                return firstRowName
+                    .click()
+                    .then(function() {
+                        return element(by.css('input#name')).isDisplayed();
+                    })
+                    .then(function() {
+                        return element(by.css('input#name')).clear();
+                    })
+                    .then(function() {
+                        return element(by.css('input#name')).sendKeys(producerName);
+                    })
+                    .then(function() {
+                        return element(by.css('#save-edit-btn')).click();
+                    })
+                    .then(function() {
+                        return assertToastMsg('success', 'producer saved.');
+                    })
+                    .then(function() {
+                        var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
+                        expect(firstRowName.getText()).toEqual(producerName);
+                        return element.all(by.repeater('producer in producers')).count();
+                    })
+                    .then(function(count) {
+                        return expect(count).toEqual(1);
+                    });
+            };
+
+            updateProducer(producer.name).then(function() {
+                return updateProducer(producer.name + '1');
+            });
         });
 
         it('can delete a producer', function() {
