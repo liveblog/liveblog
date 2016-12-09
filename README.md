@@ -178,12 +178,12 @@ vagrant ssh
 Once in the virtual machine:
 
 ```
-/opt/liveblog/scripts/provision.sh
+/opt/liveblog/scripts/vagrant-provision.sh
 ```
 
 Once the provisioning done whil still in the virtual machine:
 
 ```
-/opt/liveblog/scripts/start-dev.sh
+/opt/liveblog/scripts/vagrant-start-dev.sh
 ```
 
