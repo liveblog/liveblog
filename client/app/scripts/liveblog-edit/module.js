@@ -78,7 +78,11 @@ define([
         // retrieve the freetypes
         function getFreetypes() {
             api.freetypes.query().then(function(data) {
-                $scope.freetypes = data._items;
+                var freetypes = [{
+                    name: 'scorecard',
+                    template: '<fieldset> <legend translate>Away Team:</legend> <div> <label for="away.name" translate>Name</label> <input id="away.name" name="$away.name"/> </div><div> <label for="away.score" translate>Score</label> <input id="away.score" name="$away.score"/> </div></fieldset><fieldset> <legend translate>Home Team:</legend> <div> <label for="home.name" translate>Home</label> <input id="home.name" name="$home.name"/> </div><div> <label for="home.score" translate>Score</label> <input id="home.score" name="$home.score"/> </div></fieldset><fieldset> <legend translate>Minutes played:</legend> <div> <input id="time" name="$time"/> </div></fieldset><fieldset> <legend translate translate-n="home.scorers.length" translate-plural="Home scorers">Home scorer:</legend> <ul> <li> <div> <label translate>Name</label> <input name="$home.scorers[0].name"/> </div><div> <label translate>Minute</label> <input name="$home.scorers[0].time"/> </div></li></ul></fieldset>'
+                }];
+                $scope.freetypes = freetypes.concat(data._items);
             });
         };
         getFreetypes();
