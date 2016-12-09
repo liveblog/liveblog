@@ -72,3 +72,10 @@ server/liveblog/themes/themes_assets/*
 
 # Vagrant
 .vagrant
+
+# Vim stuff
+*.swo
+*.swp
+*.swn
+*.swm
+.vimrc
