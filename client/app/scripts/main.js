@@ -47,7 +47,7 @@ define('main', [
             }]);
         }])
         //show messages on websocket disconnect and connect
-        .run(['$rootScope', '$timeout', 'notify', 'gettext', 'session', function($rootScope, $timeout, notify, gettext, session) {
+        .run(['$rootScope', '$timeout', '$window', 'notify', 'gettext', 'session', function($rootScope, $timeout, $window, notify, gettext, session) {
             var alertTimeout;
             $rootScope.$on('disconnected', function(event) {
                 $timeout.cancel(alertTimeout);
@@ -68,6 +68,10 @@ define('main', [
                     }, 100);
                 }
             });
+            $window.addEventListener('keyup', globalKeyHandler, false);
+            function globalKeyHandler(e) { // global hotkey navigation
+                if ((e.keyCode || e.which) == 27) $window.history.back(); // close on ESC
+              }
         }]);
         // load apps & bootstrap
         var body = angular.element('body');
