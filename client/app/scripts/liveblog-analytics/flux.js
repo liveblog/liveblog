@@ -1,4 +1,4 @@
-liveblogSyndication
+liveblogAnalytics
   .factory('Dispatcher', function() {
     return {
       dispatch: function(action) {
