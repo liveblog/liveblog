@@ -1,5 +1,6 @@
 @import 'mixins.less';
 @import 'variables.less';
+@import 'superdesk-overrides.less';
 
 .main-section {
 	z-index: auto;
@@ -9,28 +10,69 @@
 	background: #e0e0e0;
 }
 
-.button-stack {
-    &.right-stack {
-        .navbtn {
-            line-height: 46px;
-        }
-    }
-    &.active {
-        background-color: #eaeaea;
-        &.right-stack {
-            border-left: 1px solid #d1d1d1 !important;
-            height: 49px !important;
-            .navbtn {
-                border-left: none !important;
-                &:hover {
-                    background-color: transparent;
-                }
-            }
-        }
-    }
-    .nav-tabs {
-        margin-left: 20px;
-    }
+.button-stack > .btn {
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+.button-stack.right-stack {
+  float: right;
+  margin: -10px -20px 0 5px;
+}
+
+.button-stack.right-stack .navbtn {
+  border-left: 1px solid rgba(0, 0, 0, 0.1) !important;
+  //border-right: 0 !important;
+  line-height: 46px;
+}
+
+.button-stack.right-stack .navbtn .dropdown-toggle {
+  width: 100%;
+}
+
+.button-stack.right-stack > .btn {
+  margin-right: 12px;
+  margin-left: 0;
+}
+
+.button-stack.active {
+    //background-color: #eaeaea;
+}
+
+.button-stack.active .navbtn {
+    opacity: .4;
+}
+
+.button-stack.active .navbtn:hover{
+    background: transparent;
+}
+
+.button-stack .navbtn.navbtn-active {
+    opacity: 1;
+    height: 48px;
+    border-right: 1px solid rgb(216, 216, 216) !important;
+    margin-right: -1px;
+}
+
+.button-stack .navbtn.navbtn-active,
+.button-stack .navbtn.navbtn-active:hover {
+    background-color: #eaeaea;
+}
+
+.button-stack.active.right-stack {
+    height: 49px !important;
+}
+
+.button-stack.active.right-stack.navbtn {
+    border-left: none !important;
+}
+
+.button-stack.active.right-stack.navbtn:hover {
+    background-color: transparent;
+}
+
+.button-stack .nav-tabs {
+    margin-left: 20px;
 }
 
 .homebtn {
