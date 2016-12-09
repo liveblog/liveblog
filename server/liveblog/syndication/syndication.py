@@ -81,6 +81,11 @@ class SyndicationOutService(BaseService):
             return bool(out_syndication.count())
 
     def send_syndication_post(self, post, action='created'):
+        # Prevent "loops" by sending only posts without syndication_in set.
+        if post.get('syndication_in'):
+            logger.warning('Not sending post "{}": syndicated content.'.format(post['_id']))
+            return
+
         blog_id = ObjectId(post['blog'])
         out_syndication = self.get_blog_syndication(blog_id)
         for out in out_syndication:
