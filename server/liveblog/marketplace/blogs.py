@@ -15,9 +15,9 @@ class BlogResource(Resource):
         'projection': {
             'title': 1,
             'description': 1,
-            'picture': 1,
+            'picture_url': 1,
             'public_url': 1
         }
     }
     schema = blogs_schema
-    resource_methods = ['GET']
+    public_methods = ['GET']
