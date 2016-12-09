@@ -3,10 +3,9 @@ from urllib.parse import urljoin
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
-from flask import abort, Blueprint, request
-from apps.auth import SuperdeskTokenAuth
+from flask import Blueprint, request
 from flask_cors import CORS
-from .utils import trailing_slash, api_response, api_error, send_api_request
+from .utils import trailing_slash, api_response, api_error, send_api_request, blueprint_superdesk_token_auth
 from .exceptions import APIConnectionError, ProducerAPIError
 
 
@@ -225,11 +224,4 @@ def producer_blogs_syndicate(producer_id, blog_id):
         return _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish)
 
 
-def _producers_blueprint_auth():
-    auth = SuperdeskTokenAuth()
-    authorized = auth.authorized(allowed_roles=[], resource='producers', method='GET')
-    if not authorized:
-        return abort(401, 'Authorization failed.')
-
-
-producers_blueprint.before_request(_producers_blueprint_auth)
+producers_blueprint.before_request(blueprint_superdesk_token_auth)

@@ -1,10 +1,9 @@
 import logging
 import requests
-from flask import abort, Blueprint, request
+from flask import Blueprint, request
 from flask_cors import CORS
-from liveblog.syndication.utils import api_response, api_error
+from liveblog.syndication.utils import api_response, api_error, blueprint_superdesk_token_auth
 from liveblog.syndication.exceptions import APIConnectionError
-from apps.auth import SuperdeskTokenAuth
 from settings import MARKETPLACE_APP_URL
 from requests.exceptions import RequestException
 from requests.packages.urllib3.exceptions import MaxRetryError
@@ -79,11 +78,4 @@ def _send_marketplace_api_request(url, uri, timeout=5):
     return response.json()
 
 
-def _producers_blueprint_auth():
-    auth = SuperdeskTokenAuth()
-    authorized = auth.authorized(allowed_roles=[], resource='marketers', method='GET')
-    if not authorized:
-        return abort(401, 'Authorization failed.')
-
-
-marketers_blueprint.before_request(_producers_blueprint_auth)
+marketers_blueprint.before_request(blueprint_superdesk_token_auth)
