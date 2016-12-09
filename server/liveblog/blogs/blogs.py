@@ -226,7 +226,17 @@ class BlogService(BaseService):
 
     def on_deleted(self, doc):
         # invalidate cache for updated blog
-        app.blog_cache.invalidate(doc.get('_id'))
+        blog_id = doc.get('_id')
+        app.blog_cache.invalidate(blog_id)
+        delete_blog_embed_on_s3.delay(blog_id)
+
+        # Remove syndication on blog post delete.
+        syndication_in = get_resource_service('syndication_in')
+        syndication_out = get_resource_service('syndication_out')
+        lookup = {'blog_id': blog_id}
+        syndication_in.delete_action(lookup)
+        syndication_out.delete_action(lookup)
+
         # send notifications
         push_notification('blogs', deleted=1)
 
