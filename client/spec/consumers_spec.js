@@ -72,7 +72,7 @@ describe('Consumers', function() {
                 });
         });
 
-        fit('can update a consumer manyfold', function() {
+        it('can update a consumer manyfold', function() {
             consumersManagement.openConsumersManagement();
 
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
