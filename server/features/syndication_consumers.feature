@@ -14,6 +14,20 @@ Feature: Consumer Resource
         """
 
     @auth
+    Scenario: Check if api_url is unique
+        Given empty "consumers"
+        When we post to "consumers"
+        """
+        [{"name": "Consumer 1", "api_url": "http://localhost:5000/api", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}]}]
+        """
+        Then we get OK response
+        When we post to "consumers"
+        """
+        [{"name": "Consumer 2", "api_url": "http://localhost:5000/api", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}]}]
+        """
+        Then we get response code 400
+
+    @auth
     Scenario: List consumers
         Given "consumers"
         """
