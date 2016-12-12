@@ -10,18 +10,26 @@
 
 (function(angular) {
     'use strict';
+    /**
+    * Function to create object properties on a variable
+    * Also it creates an array on the variable if the value contains `[]`
+    */
     function objCreate(variable, value) {
         var part;
-        if(angular.isString(value)) {
-            if(angular.isArray(variable)) {
+        if (angular.isString(value)) {
+            // is variable is an array transform it in a collection.
+            // by adding an empty object with that `value` property.
+            if (angular.isArray(variable)) {
                 part = {};
                 part[value] = null;
                 variable[0] = part;
                 return variable[0];
-            } else if(value.indexOf('[]') !== -1 || value.indexOf('[0]') !== -1) {
-                part = value.replace('[]','').replace('[0]','');
-                variable[part] = []; 
+            // if the value contains `[]` or `[0]` create an vector on variable.
+            } else if (value.indexOf('[]') !== -1 || value.indexOf('[0]') !== -1) {
+                part = value.replace('[]', '').replace('[0]', '');
+                variable[part] = [];
                 return variable[part];
+            // by default add object on variable property.
             } else {
                 variable[value] = {};
                 return variable[value];
@@ -31,16 +39,21 @@
 
     angular.module('liveblog.freetype', ['liveblog.edit'])
     .factory('FreetypeService', ['$q', function ($q) {
-
         return {
+            /**
+            * transformation method from dorla sign template to angular template
+            * also requires `scope` object so that the proper object with the data is set.
+            *     this is special case for vector array.
+            */
             transform: function(template, scope) {
                 if (!angular.isObject(scope.freetypeData)) {
                     scope.freetypeData = {};
                 }
+                // transform dolar variables in the attributes.
                 template = template.replace(/[A-Za-z0-9_\.]+=("|')?\$([A-Za-z0-9_.\[\]]+)("|')/gi, function(all, limit, name) {
                     var prefix = 'ng-model="freetypeData.', parts, vector;
                     if (name.indexOf('[]') !== -1 || name.indexOf('[0]') !== -1) {
-                        // create vector array on scope, so the representation is an vector.
+                        // create properties on scope
                         vector = name.split('.');
                         for (var i = 0, neededObj = scope.freetypeData; i < vector.length; i++) {
                             neededObj = objCreate(neededObj, vector[i]);
@@ -49,6 +62,7 @@
                     }
                     return prefix + name + '"';
                 });
+                // transform collection mechaism for `scorers` or for dinamical lists.
                 template = template.replace(/\<li[^>]*\>(.*?)\<\/li\>/g, function(all) {
                     return all + '<li><freetype-collection/></li>';
                 })
@@ -57,6 +71,9 @@
             }
         };
     }])
+    /**
+    * Main directive to render the freetype editor.
+    */
     .directive('freetypeRender', ['$compile', 'FreetypeService', function ($compile, FreetypeService) {
 
         return {
@@ -80,11 +97,8 @@
             template: '<button ng-click="add()">+</button>',
             controller: function() {
                 this.add = function() {
-                    console.log('add');
+                    /* @TODO add here the mechanism for add more scorers or items */
                 }
-            },
-            link: function (scope, element, attrs) {
-
             },
             scope: {
                 tmpl: '='
