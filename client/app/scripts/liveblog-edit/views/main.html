@@ -159,8 +159,17 @@
                     <div class="content">
                         <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">
-                                <div class="editor" ng-sir-trevor st-model="blogEdit.editor" st-params="stParams"></div>
+                                <div 
+                                    class="editor"
+                                    ng-sir-trevor
+                                    st-model="blogEdit.editor"
+                                    st-params="stParams"
+                                    ng-if="selectedPostType=='Default'"></div>
                             </div>
+                            <freetype-render
+                                    ng-if="selectedPostType!='Default'" 
+                                    freetype="selectedPostType"
+                                    freetype-data="freetypes"></freetype-render>
                         </div>
                         <div class="actions">
                             <div style="display:table-row">
