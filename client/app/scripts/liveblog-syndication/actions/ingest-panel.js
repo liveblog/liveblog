@@ -2,8 +2,14 @@ liveblogSyndication
     .factory('IngestPanelActions', ['Dispatcher', 'api', '$http', 'config', 
         function(Dispatcher, api, $http, config) {
             return {
-                getSyndication: function() {
-                    api.syndicationIn.query().then(function(syndicationIn) {
+                getSyndication: function(consumerBlogId) {
+                    var params = {
+                        where: {
+                            blog_id: consumerBlogId
+                        }
+                    };
+
+                    api.syndicationIn.query(params).then(function(syndicationIn) {
                         Dispatcher.dispatch({
                             type: 'ON_GET_SYND',
                             syndicationIn: syndicationIn
