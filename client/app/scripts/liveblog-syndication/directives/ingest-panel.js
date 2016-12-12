@@ -32,7 +32,11 @@ liveblogSyndication
                         if (state.error) handleError();
                     });
 
-                    IngestPanelActions.getSyndication();
+                    // Small inconsistency in the code. This function takes
+                    // the consumer blog id as a parameter.
+                    // Whereas IncomingSyndication.getSyndiction takes the
+                    // actual syndication id as a parameter.
+                    IngestPanelActions.getSyndication($routeParams._id);
 
                     scope.openSyndBlogsModal = function() {
                         IngestPanelActions.toggleModal(true);
