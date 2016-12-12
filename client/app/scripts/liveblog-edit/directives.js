@@ -14,7 +14,8 @@ define([
     './module',
     './posts.service',
     './blog.service',
-    './pages-manager.service'
+    './pages-manager.service',
+    './freetype.service'
 ], function(angular, _) {
     'use strict';
 
