@@ -22,7 +22,10 @@
     </header>
     <div class="list-container">
         <ul class="card-list">
-            <li ng-repeat="producer in producers._items track by producer._id" class="can-access">
+            <li
+                ng-repeat="producer in producers._items track by producer._id" 
+                ng-click="open(producer)"
+                class="can-access">
                 <figure class="media">
                     <div
                         ng-if="producer.picture_url" 

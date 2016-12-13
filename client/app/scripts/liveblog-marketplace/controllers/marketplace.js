@@ -1,5 +1,5 @@
 liveblogMarketplace
-    .controller('MarketplaceController', ['$scope', function($scope) {
+    .controller('MarketplaceController', ['$scope', '$location', function($scope, $location) {
         $scope.states = [
             { text: 'Available Producers' },
             { text: 'Registered Producers' }
@@ -15,4 +15,8 @@ liveblogMarketplace
             title: 'Sourcefabric',
             description: 'Lorem ipsum dolor sit amet'
         }]};
+
+        $scope.open = function(producer) {
+            $location.path('/marketplace/' + producer._id);
+        };
     }]);
