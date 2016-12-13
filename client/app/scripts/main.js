@@ -68,12 +68,12 @@ define('main', [
                     }, 100);
                 }
             });
+
             window.addEventListener('keyup', globalKeyHandler, false);
             function globalKeyHandler(e) { // global hotkey navigation
                 if ((e.keyCode || e.which) === 27) {
                     $window.history.back(); // close on ESC
                 }
-              }
         }]);
         // load apps & bootstrap
         var body = angular.element('body');
