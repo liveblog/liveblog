@@ -89,8 +89,7 @@ define([
         getFreetypes();
 
         // init with empty vector
-        $scope.freetypesData = [];
-
+        $scope.freetypesData = {};
 
         // define the $scope
         angular.extend($scope, {
@@ -202,7 +201,7 @@ define([
                 } else {
                     var newPost = [
                         {
-                            item_type: 'scorecard',
+                            item_type: $scope.selectedPostType.name,
                             text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
                             meta: {data: $scope.freetypesData}
                         }
