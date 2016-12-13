@@ -29,6 +29,10 @@ liveblogSyndication
                 type: 'http',
                 backend: {rel: 'syndication_in'}
             })
+            .api('syndicationOut', {
+                type: 'http',
+                backend: {rel: 'syndication_out'}
+            })
              .api('consumers', {
                 type: 'http',
                 backend: {rel: 'consumers'}

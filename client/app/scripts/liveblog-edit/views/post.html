@@ -23,7 +23,11 @@
                         <span class="name">{{ ::post.mainItem.item.user.display_name }}</span> | <time>{{ post._created | reldate }}</time>
                     </div>
                     <div class="inline" ng-if="post.post_status == 'open'">
-                        <span class="name">{{ ::post.mainItem.item.user.display_name }}</span> | <time>{{ post.published_date | reldate }}</time>
+                        <span class="name">
+                            {{ ::post.mainItem.item.user.display_name || post.producer_blog_title }}
+                        </span>
+                        &nbsp;|&nbsp;
+                        <time>{{ post.published_date | reldate }}</time>
                     </div>
                     <div class="inline" ng-if="post.showUpdate">
                         <span class="updated-label" translate>&nbsp;Updated</span> <time class="updated-time">{{ post.content_updated_date | reldate }}</time>

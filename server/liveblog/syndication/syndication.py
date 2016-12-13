@@ -9,7 +9,8 @@ from flask_cors import CORS
 
 from .auth import ConsumerBlogTokenAuth
 from .tasks import send_post_to_consumer, send_posts_to_consumer
-from .utils import generate_api_key, cast_to_object_id, api_response, api_error, create_syndicated_blog_post
+from .utils import (generate_api_key, cast_to_object_id, api_response, api_error, create_syndicated_blog_post,
+                    get_producer_post_id, get_post_creator)
 
 
 logger = logging.getLogger('superdesk')
@@ -19,7 +20,8 @@ CORS(syndication_blueprint)
 
 WEBHOOK_METHODS = {
     'created': 'POST',
-    'updated': 'PUT'
+    'updated': 'PUT',
+    'deleted': 'DELETE'
 }
 
 
@@ -169,36 +171,53 @@ class SyndicationIn(Resource):
     schema = syndication_in_schema
 
 
-@syndication_blueprint.route('/api/syndication/webhook', methods=['POST', 'PUT'])
+@syndication_blueprint.route('/api/syndication/webhook', methods=['POST', 'PUT', 'DELETE'])
 def syndication_webhook():
     in_service = get_resource_service('syndication_in')
     blog_token = request.headers['Authorization']
     in_syndication = in_service.find_one(blog_token=blog_token, req=None)
 
     data = request.get_json()
-    items, producer_post = data['items'], data['producer_post']
-    new_post = create_syndicated_blog_post(producer_post, items, in_syndication)
+    try:
+        items, producer_post = data['items'], data['post']
+    except KeyError:
+        return api_error('Bad Request', 400)
+
+    logger.info('Webhook Request - method: {} items: {} post: {}'.format(request.method, items, producer_post))
     posts_service = get_resource_service('posts')
-    producer_post_id = new_post['producer_post_id']
+    producer_post_id = get_producer_post_id(in_syndication, producer_post['_id'])
+    post = posts_service.find_one(req=None, producer_post_id=producer_post_id)
 
-    method = request.method
-
-    if method == 'POST':
-        new_post_id = posts_service.post([new_post])[0]
-        return api_response({'post_id': str(new_post_id)}, 201)
-    else:
-        post = posts_service.find_one(req=None, producer_post_id=producer_post_id)
-        if not post:
-            return api_error('Post cannot be updated: syndicated post does not exist.', 404)
-
+    post_id = None
+    publisher = None
+    if post:
         post_id = str(post['_id'])
-        publisher = post.get('publisher')
-        if not publisher:
-            # Update only posts with publisher set to None
+        publisher = get_post_creator(post)
+
+    if publisher:
+        return api_error('Post "{}" cannot be updated: already updated by "{}"'.format(
+                         post_id, publisher), 409)
+
+    if request.method in ('POST', 'PUT'):
+        new_post = create_syndicated_blog_post(producer_post, items, in_syndication)
+        if request.method == 'POST':
+            # Create post
+            if post:
+                return api_error('Post already exist', 409)
+
+            new_post_id = posts_service.post([new_post])[0]
+            return api_response({'post_id': str(new_post_id)}, 201)
+        else:
+            # Update post
+            if not post:
+                return api_error('Post does not exist', 404)
+
             posts_service.update(post_id, new_post, post)
             return api_response({'post_id': post_id}, 200)
-        else:
-            return api_error('Post "{}" cannot be updated: publisher already exists.'.format(post_id), 409)
+    else:
+        # Delete post
+        posts_service.update(post_id, {'deleted': True}, post)
+        return api_response({'post_id': post_id}, 200)
 
 
 def _syndication_blueprint_auth():
