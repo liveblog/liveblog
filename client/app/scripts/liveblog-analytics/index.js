@@ -19,7 +19,7 @@ var liveblogAnalytics = angular
       category: superdesk.MENU_MAIN,
       priority: 100,
       adminTools: true,
-      resolve: {isArchivedFilterSelected: function() {return false;}}
+      resolve: {}
     })
   }])
 
@@ -29,9 +29,9 @@ var liveblogAnalytics = angular
       /*
       * 'analytics' being one of the resources that we discovered
       * earlier by requesting http://localhost:5000/api -- endpoints are described with href, title pairs.
-      * The apiProvider service then wraps around $http/$resource and inserts a blog_id via
+      * The apiProvider service then wraps around $http and inserts a blog_id via
       * .getById(<id>) into href before calling the endpoint. Heads up: apiProvider.query() does
-      * not function like 
+      * not function like $resource.
       */
 
       .api('analytics', { 

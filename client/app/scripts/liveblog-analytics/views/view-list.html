@@ -1,0 +1,22 @@
+<input ng-model="analyticsSearch.context_url" placeholder="Filter referrers">
+
+<div class="orderby">sort by &nbsp;
+  <span class="orderby__button" ng-class="{
+    'orderby__button--reverse': isReversePredicate('context_url'),
+    'orderby__button--active' : predicate == 'context_url'
+  }" ng-click="order('context_url')">referrer</span>
+  <span class="orderby__button" ng-class="{
+    'orderby__button--reverse': isReversePredicate('hits'),
+    'orderby__button--active' : predicate == 'hits'
+  }" ng-click="order('hits')">amount</span>
+</div>
+
+<!--  |  -->
+<div ng-repeat="item in analytics._items | orderBy:predicate:reverse | filter:analyticsSearch track by item._id" class="analytics-list">
+  <div class="analytics-list-table">
+    <div class="analytics-list-row">
+      <div class="analytics-list-row-item" lb-filter-domain>{{item.context_url}}</div>
+      <div class="analytics-list-row-item">{{item.hits}}</div>
+    </div>
+  </div>
+</div>

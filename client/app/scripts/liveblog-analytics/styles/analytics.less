@@ -20,3 +20,56 @@
 //     </g>
 //   </g>
 // </svg>
+
+.analytics-list-table {
+  display: table;
+  width: 100%;
+}
+
+.analytics-list-row-item {
+  display: table-cell;
+  padding-right: 10px;
+  box-sizing: border-box;
+  min-width: 200px;
+}
+
+.analytics-list-row-item:nth-of-type(2) {
+  text-align: right;
+  font-weight: 600;
+} 
+
+.analytics-list-row {
+  display: table-row;
+}
+
+.content--analytics .subsettings-header,
+.content--analytics .orderby,
+.content--analytics input {
+  margin-bottom: 20px;
+}
+
+.orderby__button {
+  opacity: .5;
+}
+
+.orderby__button:after {
+  content: "\25B2";
+  font-size: .6em;
+  position: relative;
+  top: -1px;
+  padding: 0px 6px 0px 2px;
+}
+
+.orderby__button--reverse:after {
+  content: "\25BC";
+}
+
+.orderby__button--active {
+  opacity: 1;
+}
+
+.mod--absoluteright {
+  position: absolute;
+  right: 20px;
+  top: 20px;
+}
