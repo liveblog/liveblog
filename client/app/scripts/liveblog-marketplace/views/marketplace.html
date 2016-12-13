@@ -1,6 +1,6 @@
 <div class="subnav">
     <div class="button-stack left-stack" >
-        <button class="navbtn hover" href="/#/liveproducer">
+        <button class="navbtn hover" href="/#/livemarketer">
             <i class="icon-th-large"></i>
         </button>
         <ul class="nav nav-tabs pull-left" >
@@ -18,22 +18,23 @@
 <section class="main-section bloglist">
     <header>
         <div sd-searchbar></div>
-        <div sd-pagination data-items="producers" data-limit="25"></div>
+        <div sd-pagination data-items="marketers" data-limit="25"></div>
     </header>
     <div class="list-container">
         <ul class="card-list">
             <li
-                ng-repeat="producer in producers._items track by producer._id" 
-                ng-click="open(producer)"
+                ng-repeat="marketer in marketers._items track by marketer._id" 
+                ng-click="open(marketer)"
                 class="can-access">
                 <figure class="media">
                     <div
-                        ng-if="producer.picture_url" 
-                        if-background-image="{{producer.picture_url}}"></div>
+                        ng-if="marketer.picture_url" 
+                        if-background-image="{{marketer.picture_url}}"></div>
                 </figure>
                 <div class="content">
-                    <h3>{{ ::producer.title }}</h3>
-                    <div class="description">{{ ::producer.description | htmlToPlaintext }}</div>
+                    <h3>{{ ::marketer.name }}</h3>
+                    <div class="description">{{marketer.email}}</div>
+                    <div class="description">{{marketer.phone}}</div>
                 </div>
                 <div class="footer">
                     <dl>

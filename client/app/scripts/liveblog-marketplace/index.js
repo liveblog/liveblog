@@ -12,10 +12,10 @@ liveblogMarketplace
                 adminTools: true,
                 resolve: {isArchivedFilterSelected: function() {return false;}}
             })
-            .activity('/marketplace/:producerId', {
+            .activity('/marketplace/:marketerId', {
                 label: gettext('Marketplace'),
-                controller: 'MPProducerController',
-                templateUrl: 'scripts/liveblog-marketplace/views/mp-producer.html',
+                controller: 'MarketerController',
+                templateUrl: 'scripts/liveblog-marketplace/views/marketer.html',
                 category: superdesk.MENU_MAIN,
                 priority: 100,
                 //adminTools: true,

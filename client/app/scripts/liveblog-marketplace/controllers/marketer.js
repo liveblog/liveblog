@@ -1,5 +1,5 @@
 liveblogMarketplace
-    .controller('MPProducerController', ['$scope', '$sce', function($scope, $sce) {
+    .controller('MarketerController', ['$scope', '$sce', function($scope, $sce) {
         $scope.states = [
             { text: 'Active Blogs' },
             { text: 'Archived Blogs' }
