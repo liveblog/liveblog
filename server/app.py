@@ -68,7 +68,7 @@ def get_app(config=None):
     app.register_blueprint(syndication_blueprint)
     app.register_blueprint(syndication_blogs_blueprint)
     # Market place
-    #app.register_blueprint(marketers_blueprint)
+    app.register_blueprint(marketers_blueprint)
     return app
 
 
