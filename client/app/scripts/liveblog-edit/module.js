@@ -183,7 +183,6 @@ define([
                 });
             },
             publish: function() {
-                console.log(getItemsFromEditor());
                 $scope.actionPending = true;
                 notify.info(gettext('Saving post'));
                 if ($scope.selectedPostType === 'Default'){
