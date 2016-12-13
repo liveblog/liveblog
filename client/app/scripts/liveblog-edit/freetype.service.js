@@ -43,7 +43,7 @@
             // by adding an empty object with that `value` property.
             if (angular.isArray(variable)) {
                 part = {};
-                part[value] = null;
+                part[value] = '';
                 variable[0] = part;
                 return variable[0];
             // if the value contains `[]` or `[0]` create an vector on variable.
