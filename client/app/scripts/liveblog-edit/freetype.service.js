@@ -84,6 +84,7 @@
                     }
                     return prefix + name + '"';
                 });
+                // @TODO: remove when freetype-collection mechanism is full implemented.
                 // transform collection mechaism for `scorers` or for dinamical lists.
                 // template = template.replace(/\<li[^>]*\>(.*?)\<\/li\>/g, function(all) {
                 //     return all + '<li><freetype-collection/></li>';
@@ -94,7 +95,6 @@
             htmlContent: function(template, data) {
                 var paths = {}, path;
                 obj2path(paths, data);
-                console.log(paths);
                 template = template.replace(/\<input[^>]*\>/g, function(all) {
                     for (path in paths) {
                         if (all.indexOf('$' + path) > -1) {
@@ -116,21 +116,10 @@
             restrict: 'E',
             link: function (scope, element, attrs) {
                 scope.$watch('freetype', function(freetype) {
-                    var ngTemplate = freetypeService.transform(freetype.template, scope);
-                    // ngTemplate += '<button ng-click="ft.save()">Save</button><br><div ng-bind-html="myHTML"></div>'
-                    element.html(ngTemplate);
+                    element.html(freetypeService.transform(freetype.template, scope));
                     $compile(element.contents())(scope);
                 });
             },
-            // controller: ['$scope', function(scope) {
-            //     this.save = function() {
-            //         console.log(scope.freetype.template);
-            //         console.log(scope.freetypeData);
-            //         var html = freetypeService.htmlContent(scope.freetype.template, scope.freetypeData);
-            //         console.log(html)
-            //     }
-            // }],
-            // controllerAs: 'ft',
             scope: {
                 freetype: '=',
                 freetypeData: '='
