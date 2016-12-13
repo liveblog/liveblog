@@ -11,5 +11,14 @@ liveblogMarketplace
                 priority: 100,
                 adminTools: true,
                 resolve: {isArchivedFilterSelected: function() {return false;}}
+            })
+            .activity('/marketplace/:producerId', {
+                label: gettext('Marketplace'),
+                controller: 'MPProducerController',
+                templateUrl: 'scripts/liveblog-marketplace/views/mp-producer.html',
+                category: superdesk.MENU_MAIN,
+                priority: 100,
+                //adminTools: true,
+                resolve: {isArchivedFilterSelected: function() {return false;}}
             });
     }]);
