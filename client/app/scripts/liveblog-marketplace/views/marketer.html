@@ -86,16 +86,12 @@
             <div
                 class="settings" 
                 ng-if="active == 'settings'">
-                <dl>
-                    <dt>{{ ::'Embed code' | translate }}:</dt>
-                    <dd>
-                        <textarea 
-                            class="form-control" 
-                            rows="6" 
-                            readonly="readonly" 
-                            select-text-on-click>{{ currentBlog.embed }}</textarea>
-                    </dd>
-                </dl>
+                <p><b>{{ ::'Embed code' | translate }}:</b></p>
+                <textarea
+                    class="form-control"
+                    rows="6"
+                    readonly="readonly"
+                    select-text-on-click>{{ currentBlog.embed }}</textarea>
             </div>
         </div>
     </div>
