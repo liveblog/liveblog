@@ -11,7 +11,7 @@
     </div>
 </div>
 
-<section class="main-section bloglist">
+<section class="main-section bloglist marketer">
     <header>
         <div sd-searchbar></div>
         <div sd-pagination data-items="marketer.blogs" data-limit="25"></div>
@@ -53,7 +53,7 @@
         </ul>
     </div>
 
-    <div sd-modal="" data-model="embedModal">
+    <div sd-modal="" data-model="embedModal" class="mp-embed-modal">
         <div class="modal-header">
             <button class="close" ng-click="cancelEmbed()">
                 <i class="icon-close-small"></i>
@@ -61,13 +61,42 @@
             <h3><span>Producer Blog:</span> {{currentBlog.title}}</h3>
         </div>
         <div class="modal-body" style="min-height: 300px;">
+            <ul class="nav nav-tabs">
+                <li ng-class="{active: active == 'preview'}">
+                    <button
+                        type="button" 
+                        translate 
+                        ng-click="active = 'preview'">Preview</button>
+                </li>
+                <li ng-class="{active: active == 'settings'}">
+                    <button
+                        type="button"
+                        translate
+                        ng-click="active = 'settings'">Settings</button>
+                </li>
+            </ul>
             <iframe
                 class="modal-body"
+                ng-if="active == 'preview'"
                 width="100%"
                 height="715"
                 ng-src="{{currentBlog.public_url}}"
                 frameborder="0"
                 allowfullscreen></iframe>
+            <div
+                class="settings" 
+                ng-if="active == 'settings'">
+                <dl>
+                    <dt>{{ ::'Embed code' | translate }}:</dt>
+                    <dd>
+                        <textarea 
+                            class="form-control" 
+                            rows="6" 
+                            readonly="readonly" 
+                            select-text-on-click>{{ currentBlog.embed }}</textarea>
+                    </dd>
+                </dl>
+            </div>
         </div>
     </div>
 </section>
