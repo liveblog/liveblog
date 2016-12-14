@@ -11,6 +11,28 @@
 (function(angular) {
     'use strict';
     /**
+    * Create a list of paths from `obj` parameter and return it in the
+    * `ret` parameter
+    */
+    function obj2path(ret, obj, path) {
+        ret = ret || {};
+        var gotopath, path;
+        angular.forEach(obj, function(value, key) {
+            if (angular.isArray(value)) {
+                for (var i = 0; i< value.length; i++) {
+                    gotopath = path? path + '.' + key + '[' + i + ']' : key + '[' + i + ']';
+                    obj2path(ret, value[i], gotopath);
+                }
+            } else if (angular.isObject(value)) {
+                gotopath = path? path + '.' + key : key;
+                obj2path(ret, value, gotopath);
+            } else {
+                gotopath = path? path + '.' + key : key;
+                ret[gotopath] = value;
+            }
+        });
+    }
+    /**
     * Function to create object properties on a variable
     * Also it creates an array on the variable if the value contains `[]`
     */
@@ -21,7 +43,7 @@
             // by adding an empty object with that `value` property.
             if (angular.isArray(variable)) {
                 part = {};
-                part[value] = null;
+                part[value] = '';
                 variable[0] = part;
                 return variable[0];
             // if the value contains `[]` or `[0]` create an vector on variable.
@@ -38,7 +60,7 @@
     }
 
     angular.module('liveblog.freetype', ['liveblog.edit'])
-    .factory('FreetypeService', ['$q', function ($q) {
+    .factory('freetypeService', ['$q', function ($q) {
         return {
             /**
             * transformation method from dorla sign template to angular template
@@ -62,26 +84,39 @@
                     }
                     return prefix + name + '"';
                 });
+                // @TODO: remove when freetype-collection mechanism is full implemented.
                 // transform collection mechaism for `scorers` or for dinamical lists.
-                template = template.replace(/\<li[^>]*\>(.*?)\<\/li\>/g, function(all) {
-                    return all + '<li><freetype-collection/></li>';
-                })
+                // template = template.replace(/\<li[^>]*\>(.*?)\<\/li\>/g, function(all) {
+                //     return all + '<li><freetype-collection/></li>';
+                // })
                 return template;
 
+            },
+            htmlContent: function(template, data) {
+                var paths = {}, path;
+                obj2path(paths, data);
+                template = template.replace(/\<input[^>]*\>/g, function(all) {
+                    for (path in paths) {
+                        if (all.indexOf('$' + path) > -1) {
+                            return '<span class="freetype--element">' + paths[path] + '</span>'
+                        }
+                    }
+                    return '<span class="freetype--empty"></span>';
+                });
+                return template;
             }
         };
     }])
     /**
     * Main directive to render the freetype editor.
     */
-    .directive('freetypeRender', ['$compile', 'FreetypeService', function ($compile, FreetypeService) {
+    .directive('freetypeRender', ['$compile', 'freetypeService', function ($compile, freetypeService) {
 
         return {
             restrict: 'E',
             link: function (scope, element, attrs) {
                 scope.$watch('freetype', function(freetype) {
-                    var ngTemplate = FreetypeService.transform(freetype.template, scope);
-                    element.html(ngTemplate);
+                    element.html(freetypeService.transform(freetype.template, scope));
                     $compile(element.contents())(scope);
                 });
             },

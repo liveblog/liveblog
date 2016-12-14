@@ -19,11 +19,12 @@ define([
     'use strict';
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session',
-        'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'modal',
+        'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'freetypeService', 'modal',
         'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext, session,
-        upload, config, embedService, postsService, unreadPostsService, modal, blogService, $route, $routeParams, blogSecurityService, themesService) {
+        upload, config, embedService, postsService, unreadPostsService, freetypeService, modal,
+        blogService, $route, $routeParams, blogSecurityService, themesService) {
 
         var vm = this;
         // @TODO: remove this when theme at blog level.
@@ -87,6 +88,9 @@ define([
         };
         getFreetypes();
 
+        // init with empty vector
+        $scope.freetypesData = {};
+
         // define the $scope
         angular.extend($scope, {
             blog: blog,
@@ -111,6 +115,7 @@ define([
                 $scope.toggleTypePostDialog();
             },
             actionStatus: function() {
+                return false;
                 return $scope.actionDisabled || $scope.actionPending;
             },
             askAndResetEditor: function() {
@@ -178,20 +183,45 @@ define([
             publish: function() {
                 $scope.actionPending = true;
                 notify.info(gettext('Saving post'));
-                postsService.savePost(blog._id,
-                    $scope.currentPost,
-                    getItemsFromEditor(),
-                    {post_status: 'open', sticky: $scope.sticky, highlight: $scope.highlight}
-                ).then(function(post) {
-                    notify.pop();
-                    notify.info(gettext('Post saved'));
-                    cleanEditor();
-                    $scope.actionPending = false;
-                }, function() {
-                    notify.pop();
-                    notify.error(gettext('Something went wrong. Please try again later'));
-                    $scope.actionPending = false;
-                });
+                if ($scope.selectedPostType === 'Default'){
+                    postsService.savePost(blog._id,
+                        $scope.currentPost,
+                        getItemsFromEditor(),
+                        {post_status: 'open', sticky: $scope.sticky, highlight: $scope.highlight}
+                    ).then(function(post) {
+                        notify.pop();
+                        notify.info(gettext('Post saved'));
+                        cleanEditor();
+                        $scope.actionPending = false;
+                    }, function() {
+                        notify.pop();
+                        notify.error(gettext('Something went wrong. Please try again later'));
+                        $scope.actionPending = false;
+                    });
+                } else {
+                    var newPost = [
+                        {
+                            item_type: $scope.selectedPostType.name,
+                            text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
+                            meta: {data: $scope.freetypesData}
+                        }
+                    ];
+                    postsService.savePost(blog._id,
+                        $scope.currentPost,
+                        newPost,
+                        {post_status: 'open', sticky: $scope.sticky, highlight: $scope.highlight}
+                    ).then(function(post) {
+                        notify.pop();
+                        notify.info(gettext('Post saved'));
+                        cleanEditor();
+                        $scope.actionPending = false;
+                    }, function() {
+                        notify.pop();
+                        notify.error(gettext('Something went wrong. Please try again later'));
+                        $scope.actionPending = false;
+                    });
+
+                }
             },
             filterHighlight: function(highlight) {
                 $scope.filter.isHighlight = highlight;
