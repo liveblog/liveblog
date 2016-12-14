@@ -54,7 +54,10 @@ def marketer_blogs(marketer_id):
         return api_response(str(e), 500)
 
     if response.status_code == 200:
-        return api_response(response.content, response.status_code, json_dumps=False)
+        content = json.loads(response.content.decode('utf-8'))
+        response_content = {"marketer": marketer, "blogs": content['_items']}
+        response_content = json.dumps(response_content)
+        return api_response(response_content, response.status_code, json_dumps=False)
     else:
         return api_error('Unable to get blogs of marketers.', response.status_code)
 
@@ -81,4 +84,4 @@ def _send_marketplace_api_request(url, uri, timeout=5):
     return response
 
 
-marketers_blueprint.before_request(blueprint_superdesk_token_auth)
+#marketers_blueprint.before_request(blueprint_superdesk_token_auth)
