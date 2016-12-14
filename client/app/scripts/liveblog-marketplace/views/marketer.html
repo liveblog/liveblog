@@ -14,13 +14,13 @@
 <section class="main-section bloglist marketer">
     <header>
         <div sd-searchbar></div>
-        <div sd-pagination data-items="marketer.blogs" data-limit="25"></div>
+        <div sd-pagination data-items="blogs" data-limit="25"></div>
     </header>
     <div class="list-container">
         <!-- GRID VIEW -->
         <ul class="card-list">
             <li
-                ng-repeat="blog in marketer.blogs._items track by blog._id"
+                ng-repeat="blog in blogs._items track by blog._id"
                 ng-click="openEmbedModal(blog)"
                 class="can-access">
                 <figure class="media">
