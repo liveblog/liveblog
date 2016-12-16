@@ -38,20 +38,46 @@ define([
         unreadPostsService.startListening();
         // return the list of items from the editor
         function getItemsFromEditor() {
-            return _.map(vm.editor.get(), function(block) {
+            if (!isPostFreetype()) {
+                //go with the 'classic' editor items
+                return _.map(vm.editor.get(), function(block) {
+                    return {
+                        text: block.text.replace(/(^<div>)|(<\/div>$)/g, '').replace(/(<br>$)/g, ''),
+                        meta: block.meta,
+                        item_type: block.type
+                    };
+                });
+            } else {
+                //this is a freetype post
                 return {
-                    text: block.text.replace(/(^<div>)|(<\/div>$)/g, '').replace(/(<br>$)/g, ''),
-                    meta: block.meta,
-                    item_type: block.type
-                };
-            });
+                    item_type: $scope.selectedPostType.name,
+                    text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
+                    meta: {data: $scope.freetypesData}
+                }
+            }
+        }
+
+        // determine is current post is classic or freetype
+        function isPostFreetype() {
+            return $scope.selectedPostType !== 'Default';
+        }
+
+        // determine is current editor is not dirty
+        function isEditorClean() {
+            if (isPostFreetype()) {
+                console.log('check freetype is clean ', $scope.freetypesData);
+            } else {
+                var are_all_blocks_empty = _.all(vm.editor.blocks, function(block) {return block.isEmpty();});
+                return are_all_blocks_empty || !$scope.isCurrentPostUnsaved();
+            }
         }
 
         // ask in a modalbox if the user is sure to want to overwrite editor.
         // call the callback if user say yes or if editor is empty
         function doOrAskBeforeIfEditorIsNotEmpty(callback, msg) {
-            var are_all_blocks_empty = _.all(vm.editor.blocks, function(block) {return block.isEmpty();});
-            if (are_all_blocks_empty || !$scope.isCurrentPostUnsaved()) {
+            // var are_all_blocks_empty = _.all(vm.editor.blocks, function(block) {return block.isEmpty();});
+            // if (are_all_blocks_empty || !$scope.isCurrentPostUnsaved()) {
+            if (isEditorClean()) {
                 callback();
             } else {
                 msg = msg || gettext('You have content in the editor. You will lose it if you continue without saving it before.');
@@ -90,6 +116,8 @@ define([
 
         // init with empty vector
         $scope.freetypesData = {};
+
+        
 
         // define the $scope
         angular.extend($scope, {
@@ -183,45 +211,21 @@ define([
             publish: function() {
                 $scope.actionPending = true;
                 notify.info(gettext('Saving post'));
-                if ($scope.selectedPostType === 'Default'){
-                    postsService.savePost(blog._id,
-                        $scope.currentPost,
-                        getItemsFromEditor(),
-                        {post_status: 'open', sticky: $scope.sticky, highlight: $scope.highlight}
-                    ).then(function(post) {
-                        notify.pop();
-                        notify.info(gettext('Post saved'));
-                        cleanEditor();
-                        $scope.actionPending = false;
-                    }, function() {
-                        notify.pop();
-                        notify.error(gettext('Something went wrong. Please try again later'));
-                        $scope.actionPending = false;
-                    });
-                } else {
-                    var newPost = [
-                        {
-                            item_type: $scope.selectedPostType.name,
-                            text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
-                            meta: {data: $scope.freetypesData}
-                        }
-                    ];
-                    postsService.savePost(blog._id,
-                        $scope.currentPost,
-                        newPost,
-                        {post_status: 'open', sticky: $scope.sticky, highlight: $scope.highlight}
-                    ).then(function(post) {
-                        notify.pop();
-                        notify.info(gettext('Post saved'));
-                        cleanEditor();
-                        $scope.actionPending = false;
-                    }, function() {
-                        notify.pop();
-                        notify.error(gettext('Something went wrong. Please try again later'));
-                        $scope.actionPending = false;
-                    });
-
-                }
+                postsService.savePost(blog._id,
+                    $scope.currentPost,
+                    getItemsFromEditor(),
+                    {post_status: 'open', sticky: $scope.sticky, highlight: $scope.highlight}
+                ).then(function(post) {
+                    notify.pop();
+                    notify.info(gettext('Post saved'));
+                    cleanEditor();
+                    $scope.actionPending = false;
+                }, function() {
+                    notify.pop();
+                    notify.error(gettext('Something went wrong. Please try again later'));
+                    $scope.actionPending = false;
+                });
+                
             },
             filterHighlight: function(highlight) {
                 $scope.filter.isHighlight = highlight;
