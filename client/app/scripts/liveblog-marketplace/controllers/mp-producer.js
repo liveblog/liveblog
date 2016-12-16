@@ -21,20 +21,21 @@ liveblogMarketplace
                 $scope.currentBlog = blog;
             };
 
+            api.get('/producers/' + $routeParams.id + '/blogs')
             //api.get('/marketplace/marketers/' + $routeParams.id + '/blogs')
-            //    .then(function(data) {
-            //        console.log('data', data);
-            //        $scope.marketer = data.marketer;
+                .then(function(data) {
+                    console.log('data', data);
+                    //$scope.marketer = data.marketer;
 
-            //        $scope.blogs = {
-            //            _items: data.blogs.map(function(item) {
-            //                return angular.extend(item, {
-            //                    embed: '<iframe '+iframeAttrs+' src="'+item.public_url+'"></iframe>',
-            //                    public_url: $sce.trustAsResourceUrl(item.public_url)
-            //                });
-            //            })
-            //        };
+                    $scope.blogs = {
+                        _items: data._items.map(function(item) {
+                            return angular.extend(item, {
+                                embed: '<iframe '+iframeAttrs+' src="'+item.public_url+'"></iframe>',
+                                public_url: $sce.trustAsResourceUrl(item.public_url)
+                            });
+                        })
+                    };
 
-            //        console.log('blogs', $scope.blogs);
-            //    });
+                    console.log('blogs', $scope.blogs);
+                });
         }]);
