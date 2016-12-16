@@ -13,5 +13,5 @@ pyflakes<=1.1
 httmock
 honcho
 # Superdesk
--e git+git://github.com/liveblog/superdesk-core.git@9cb85ba56262531d9fc4cdece817a093dec481dd#egg=Superdesk-Core==1.06-fix-notification-issue
+-e git+git://github.com/nistormihai/superdesk-core.git@ea8e89da9e1e5423ad79544ee447a2bb4f340761#egg=Superdesk-Core==1.06-autoupdates-python35
 

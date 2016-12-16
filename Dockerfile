@@ -1,5 +1,5 @@
 # import base image
-FROM ubuntu:trusty
+FROM ubuntu:xenial
 
 # install system-wide dependencies,
 # python3 and the build-time dependencies for c modules
