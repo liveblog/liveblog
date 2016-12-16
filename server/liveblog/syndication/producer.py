@@ -44,7 +44,8 @@ producers_schema = {
     },
     'api_url': {
         'type': 'string',
-        'required': True
+        'required': True,
+        'unique': True
     },
     'consumer_api_key': {
         'type': 'string',
