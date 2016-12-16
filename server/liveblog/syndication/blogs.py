@@ -65,7 +65,7 @@ def _get_consumer_from_auth():
 def _create_blogs_syndicate(blog_id, consumer_blog_id, start_date=None):
     # Get the blog to be syndicated - must be enabled for syndication
     blogs_service = get_resource_service('blogs')
-    blog = blogs_service.find_one(req=None, checkUser=False, _id=blog_id) # TODO: Camel-case ist verboten!
+    blog = blogs_service.find_one(req=None, checkUser=False, _id=blog_id)  # TODO: Camel-case ist verboten!
     if blog is None:
         return api_error('No blog available for syndication with given id "{}".'.format(blog_id), 409)
     if not blog['syndication_enabled']:
