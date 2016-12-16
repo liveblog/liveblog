@@ -21,8 +21,8 @@ liveblogMarketplace
             //        $scope.marketers = marketers;
             //    });
 
-            api.producers.query()
-                .then(function(producers) {
-                    $scope.producers = producers;
-                });
+            //api.producers.query()
+            //    .then(function(producers) {
+            //        $scope.producers = producers;
+            //    });
         }]);
