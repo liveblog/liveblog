@@ -62,10 +62,10 @@ def _get_consumer_from_auth():
     return consumer
 
 
-def _create_blogs_syndicate(blog_id, consumer_blog_id):
+def _create_blogs_syndicate(blog_id, consumer_blog_id, start_date=None):
     # Get the blog to be syndicated - must be enabled for syndication
     blogs_service = get_resource_service('blogs')
-    blog = blogs_service.find_one(req=None, checkUser=False, _id=blog_id)
+    blog = blogs_service.find_one(req=None, checkUser=False, _id=blog_id) # TODO: Camel-case ist verboten!
     if blog is None:
         return api_error('No blog available for syndication with given id "{}".'.format(blog_id), 409)
     if not blog['syndication_enabled']:
@@ -76,11 +76,12 @@ def _create_blogs_syndicate(blog_id, consumer_blog_id):
     consumer_id = str(consumer['_id'])
     if out_service.is_syndicated(consumer_id, blog_id, consumer_blog_id):
         return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
-    "{}"
+
     syndication_id = out_service.post([{
         'blog_id': blog_id,
         'consumer_id': consumer_id,
-        'consumer_blog_id': consumer_blog_id
+        'consumer_blog_id': consumer_blog_id,
+        'start_date': start_date
     }])[0]
     syndication = out_service.find_one(_id=syndication_id, req=None)
     return api_response({
@@ -107,16 +108,21 @@ def _delete_blogs_syndicate(blog_id, consumer_blog_id):
         return api_response({}, 204)
 
 
-@blogs_blueprint.route('/api/syndication/blogs/<string:blog_id>/syndicate', methods=['POST', 'DELETE'])
+@blogs_blueprint.route('/api/syndication/blogs/<string:blog_id>/syndicate', methods=['POST', 'PATCH', 'DELETE'])
 def blogs_syndicate(blog_id):
-    consumer_blog_id = request.get_json().get('consumer_blog_id')
+    data = request.get_json()
+    start_date = data.get('start_date')
+    consumer_blog_id = data.get('consumer_blog_id')
     if not consumer_blog_id:
         return api_error('Missing "consumer_blog_id" in form data.', 422)
 
     if request.method == 'DELETE':
         return _delete_blogs_syndicate(blog_id, consumer_blog_id)
+    elif request.method == 'PATCH':
+        # TODO: update method
+        raise NotImplementedError()
     else:
-        return _create_blogs_syndicate(blog_id, consumer_blog_id)
+        return _create_blogs_syndicate(blog_id, consumer_blog_id, start_date)
 
 
 def _blogs_blueprint_auth():

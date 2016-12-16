@@ -33,11 +33,13 @@ syndication_out_schema = {
         'type': 'objectid',
         'required': True
     },
-    'last_delivered_post_id': Resource.rel('posts', embeddable=True, required=True,
-                                           nullable=True, type="objectid"),
     'token': {
         'type': 'string',
         'unique': True
+    },
+    'start_date': {
+        'type': 'datetime',
+        'default': None
     }
 }
 
@@ -143,6 +145,10 @@ syndication_in_schema = {
     'auto_publish': {
         'type': 'boolean',
         'default': False
+    },
+    'start_date': {
+        'type': 'datetime',
+        'default': None
     }
 }
 
