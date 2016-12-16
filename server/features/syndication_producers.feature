@@ -14,6 +14,20 @@ Feature: Producer Resource
         """
 
     @auth
+    Scenario: Check if api_url is unique
+        Given empty "producers"
+        When we post to "producers"
+        """
+        [{"name": "Producer 1", "api_url": "http://localhost:5000/api/", "consumer_api_key": "__any_value__"}]
+        """
+        Then we get OK response
+        When we post to "producers"
+        """
+        [{"name": "Producer 2", "api_url": "http://localhost:5000/api/", "consumer_api_key": "__any_value__"}]
+        """
+        Then we get response code 400
+
+    @auth
     Scenario: List producers
         Given "producers"
         """

@@ -74,9 +74,16 @@ liveblogSyndication
                     });
 
                 case 'ON_TOGGLE_MODAL':
-                    return angular.extend(state, {
-                        modalActive: action.modalActive
-                    });
+                    if (action.modalActive)
+                        return angular.extend(state, {
+                            modalActive: action.modalActive
+                        });
+                    else
+                        return angular.extend(state, {
+                            producerBlogs: {},
+                            localProducerBlogIds: [],
+                            modalActive: action.modalActive
+                        });
 
                 case 'ON_ERROR':
                     return angular.extend(state, {

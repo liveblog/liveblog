@@ -43,7 +43,8 @@ consumers_schema = {
     },
     'api_url': {
         'type': 'string',
-        'required': True
+        'required': True,
+        'unique': True
     }
 }
 
