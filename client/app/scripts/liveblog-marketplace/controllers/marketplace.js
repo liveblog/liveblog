@@ -12,9 +12,9 @@ liveblogMarketplace
                 $scope.activeState = state;
             };
 
-            $scope.open = function(producer) {
-                $location.path('/marketplace/' + producer._id);
-            };
+            //$scope.open = function(producer) {
+            //    $location.path('/marketplace/' + producer._id);
+            //};
 
             //api.get('/marketplace/marketers')
             //    .then(function(marketers) {
