@@ -8,14 +8,51 @@
                 ng-class="{active: activeState === state}" 
                 ng-repeat="state in states">
                 <button
-                    ng-click="changeState(state)" 
-                    translate>{{ ::state.text }}</button>
+                    ng-click="switchTab(state)"
+                    translate>{{ ::state }}</button>
             </li>
         </ul>
     </div>
 </div>
 
-<section class="main-section bloglist">
+<section
+    lb-marketers-grid
+    class="main-section bloglist"
+    ng-show="activeState == 'Marketers'"></section>
+
+<!--<section class="main-section bloglist" ng-if="activeState == 'Marketers'">-->
+<!--    <header>-->
+<!--        <div sd-searchbar></div>-->
+<!--        <div sd-pagination data-items="marketers" data-limit="25"></div>-->
+<!--    </header>-->
+<!--    <div class="list-container">-->
+<!--        <ul class="card-list">-->
+<!--            <li-->
+<!--                ng-repeat="marketer in marketers._items track by marketer._id" -->
+<!--                ng-click="open(marketer)"-->
+<!--                class="can-access">-->
+<!--                <figure class="media">-->
+<!--                    <div-->
+<!--                        ng-if="marketer.picture_url" -->
+<!--                        if-background-image="{{marketer.picture_url}}"></div>-->
+<!--                </figure>-->
+<!--                <div class="content">-->
+<!--                    <h3>{{ ::marketer.name }}</h3>-->
+<!--                    <div class="description">{{marketer.email}}</div>-->
+<!--                    <div class="description">{{marketer.phone}}</div>-->
+<!--                </div>-->
+<!--                <div class="footer">-->
+<!--                    <dl>-->
+<!--                        <dt>{{ ::'Syndicated blogs' | translate }}:</dt>-->
+<!--                        <dd>22</dd>-->
+<!--                    </dl>-->
+<!--                </div>-->
+<!--            </li>-->
+<!--        </ul>-->
+<!--    </div>-->
+<!--</section>-->
+
+<section class="main-section bloglist" ng-if="activeState == 'Producers'">
     <header>
         <div sd-searchbar></div>
         <div sd-pagination data-items="marketers" data-limit="25"></div>
@@ -23,18 +60,18 @@
     <div class="list-container">
         <ul class="card-list">
             <li
-                ng-repeat="marketer in marketers._items track by marketer._id" 
-                ng-click="open(marketer)"
+                ng-repeat="producer in producers._items track by producer._id" 
+                ng-click="open(producer)"
                 class="can-access">
                 <figure class="media">
                     <div
-                        ng-if="marketer.picture_url" 
-                        if-background-image="{{marketer.picture_url}}"></div>
+                        ng-if="producer.picture_url" 
+                        if-background-image="{{producer.picture_url}}"></div>
                 </figure>
                 <div class="content">
-                    <h3>{{ ::marketer.name }}</h3>
-                    <div class="description">{{marketer.email}}</div>
-                    <div class="description">{{marketer.phone}}</div>
+                    <h3>{{ ::producer.name }}</h3>
+                    <div class="description">{{producer.email}}</div>
+                    <div class="description">{{producer.phone}}</div>
                 </div>
                 <div class="footer">
                     <dl>
