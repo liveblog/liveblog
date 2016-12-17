@@ -20,11 +20,11 @@ define([
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'freetypeService', 'modal',
-        'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService'
+        'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService', '$templateCache'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext, session,
         upload, config, embedService, postsService, unreadPostsService, freetypeService, modal,
-        blogService, $route, $routeParams, blogSecurityService, themesService) {
+        blogService, $route, $routeParams, blogSecurityService, themesService, $templateCache) {
 
         var vm = this;
         // @TODO: remove this when theme at blog level.
@@ -49,11 +49,13 @@ define([
                 });
             } else {
                 //this is a freetype post
-                return {
-                    item_type: $scope.selectedPostType.name,
-                    text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
-                    meta: {data: $scope.freetypesData}
-                }
+                return [
+                    {
+                        item_type: $scope.selectedPostType.name,
+                        text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
+                        meta: {data: $scope.freetypesData}
+                    }
+                ]
             }
         }
 
@@ -62,10 +64,19 @@ define([
             return $scope.selectedPostType !== 'Default';
         }
 
+        $scope.$watch('freetypesDataReset', function(ini) {
+            console.log('watch freetypesDataReset ', ini);
+        });
+
+        $scope.$watch('freetypesData', function(ini) {
+            console.log('watch freetypesData ', ini);
+        });
+
         // determine is current editor is not dirty
         function isEditorClean() {
             if (isPostFreetype()) {
-                console.log('check freetype is clean ', $scope.freetypesData);
+                console.log($scope.freetypesData, $scope.freetypesDataReset);
+                return false;
             } else {
                 var are_all_blocks_empty = _.all(vm.editor.blocks, function(block) {return block.isEmpty();});
                 return are_all_blocks_empty || !$scope.isCurrentPostUnsaved();
@@ -86,9 +97,14 @@ define([
         }
 
         // remove and clean every items from the editor
-        function cleanEditor(actionDisabled) {
+        function cleanEditor(actionDisabled) {            
             actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
-            vm.editor.reinitialize();
+            if (isPostFreetype()) {
+                //handle freetype cleaning
+                $scope.freetypesData = angular.extend({}, $scope.freetypesDataReset);
+            } else {
+                vm.editor.reinitialize();
+            }
             $scope.actionDisabled = actionDisabled;
             $scope.currentPost = undefined;
             $scope.sticky = false;
@@ -107,7 +123,7 @@ define([
             api.freetypes.query().then(function(data) {
                 var freetypes = [{
                     name: 'scorecard',
-                    template: '<fieldset> <legend translate>Away Team:</legend> <div> <label for="away.name" translate>Name</label> <input id="away.name" name="$away.name"/> </div><div> <label for="away.score" translate>Score</label> <input id="away.score" name="$away.score"/> </div></fieldset><fieldset> <legend translate>Home Team:</legend> <div> <label for="home.name" translate>Home</label> <input id="home.name" name="$home.name"/> </div><div> <label for="home.score" translate>Score</label> <input id="home.score" name="$home.score"/> </div></fieldset><fieldset> <legend translate>Minutes played:</legend> <div> <input id="time" name="$time"/> </div></fieldset><fieldset> <legend translate translate-n="home.scorers.length" translate-plural="Home scorers">Home scorer:</legend> <ul> <li> <div> <label translate>Name</label> <input name="$home.scorers[0].name"/> </div><div> <label translate>Minute</label> <input name="$home.scorers[0].time"/> </div></li></ul></fieldset>'
+                    template: $templateCache.get('scripts/liveblog-edit/views/scorecards.html')
                 }];
                 $scope.freetypes = freetypes.concat(data._items);
             });
@@ -115,7 +131,7 @@ define([
         getFreetypes();
 
         // init with empty vector
-        $scope.freetypesData = {};
+        $scope.freetypesData = {}, $scope.freetypesDataReset = {name: 'marcel'};
 
         
 
@@ -210,7 +226,7 @@ define([
             },
             publish: function() {
                 $scope.actionPending = true;
-                notify.info(gettext('Saving post'));
+                notify.info(gettext('Saving post'));2
                 postsService.savePost(blog._id,
                     $scope.currentPost,
                     getItemsFromEditor(),

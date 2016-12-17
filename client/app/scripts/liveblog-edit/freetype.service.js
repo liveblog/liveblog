@@ -119,10 +119,12 @@
                     element.html(freetypeService.transform(freetype.template, scope));
                     $compile(element.contents())(scope);
                 });
+                scope.freetypeDataReset = {name: 'mamria'};
             },
             scope: {
                 freetype: '=',
-                freetypeData: '='
+                freetypeData: '=',
+                freetypeDataReset: '='
             }
         };
     }])
