@@ -54,8 +54,8 @@
                     <div class="field">
                         <label translate>Free Type Template *</label>
                         <div class="form-box"
-                            sd-text-editor
-                            data-config="{toolbar: {buttons: [],sticky: false,static: true,align: 'left',updateOnEmptySelection: true}}"
+                            template-editable
+                            contenteditable="true"
                             ng-model="vm.dialogFreetype.template"
                         ></div>
                     </div>
@@ -67,7 +67,7 @@
                 <button type="button" class="btn btn-default pull-left" translate ng-click="vm.cancelCreate()">Cancel</button>
                 <button type="button" class="btn btn-primary btn-info" translate ng-click="vm.saveFreetype()"
                 ng-disabled="!vm.dialogFreetype.name || !vm.dialogFreetype.template || vm.dialogPostLoading"
-                >Create</button>
+                >Save</button>
             </div>
         </div>
 </div>
