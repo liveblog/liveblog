@@ -20,15 +20,19 @@ define([
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'freetypeService', 'modal',
-        'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService'
+        'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService', '$templateCache'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext, session,
         upload, config, embedService, postsService, unreadPostsService, freetypeService, modal,
-        blogService, $route, $routeParams, blogSecurityService, themesService) {
+        blogService, $route, $routeParams, blogSecurityService, themesService, $templateCache) {
 
         var vm = this;
         // @TODO: remove this when theme at blog level.
         // check the theme setting for comments.
+
+        // init with empty vector
+        $scope.freetypesData = {}; $scope.freetypeControl = {};
+
         if (blog.blog_preferences.theme) {
             themesService.get(blog.blog_preferences.theme).then(function(themes) {
                 blog.blog_preferences.theme = themes[0];
@@ -38,20 +42,46 @@ define([
         unreadPostsService.startListening();
         // return the list of items from the editor
         function getItemsFromEditor() {
-            return _.map(vm.editor.get(), function(block) {
-                return {
-                    text: block.text.replace(/(^<div>)|(<\/div>$)/g, '').replace(/(<br>$)/g, ''),
-                    meta: block.meta,
-                    item_type: block.type
-                };
-            });
+            if (!isPostFreetype()) {
+                //go with the 'classic' editor items
+                return _.map(vm.editor.get(), function(block) {
+                    return {
+                        text: block.text.replace(/(^<div>)|(<\/div>$)/g, '').replace(/(<br>$)/g, ''),
+                        meta: block.meta,
+                        item_type: block.type
+                    };
+                });
+            } else {
+                //this is a freetype post
+                return [
+                    {
+                        item_type: $scope.selectedPostType.name,
+                        text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
+                        meta: {data: $scope.freetypesData}
+                    }
+                ]
+            }
+        }
+
+        // determine is current post is classic or freetype
+        function isPostFreetype() {
+            return $scope.selectedPostType !== 'Default';
+        }
+
+        // determine if current editor is not dirty
+        function isEditorClean() {
+            if (isPostFreetype()) {
+                return $scope.freetypeControl.isClean();
+            } else {
+                var are_all_blocks_empty = _.all(vm.editor.blocks, function(block) {return block.isEmpty();});
+                return are_all_blocks_empty || !$scope.isCurrentPostUnsaved();
+            }
         }
 
         // ask in a modalbox if the user is sure to want to overwrite editor.
         // call the callback if user say yes or if editor is empty
         function doOrAskBeforeIfEditorIsNotEmpty(callback, msg) {
-            var are_all_blocks_empty = _.all(vm.editor.blocks, function(block) {return block.isEmpty();});
-            if (are_all_blocks_empty || !$scope.isCurrentPostUnsaved()) {
+            if (isEditorClean()) {
                 callback();
             } else {
                 msg = msg || gettext('You have content in the editor. You will lose it if you continue without saving it before.');
@@ -62,7 +92,13 @@ define([
         // remove and clean every items from the editor
         function cleanEditor(actionDisabled) {
             actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
-            vm.editor.reinitialize();
+            if (isPostFreetype()) {
+                //handle freetype cleaning
+                $scope.freetypeControl.resetData();
+            } else {
+                //editor cleaning
+                vm.editor.reinitialize();
+            }
             $scope.actionDisabled = actionDisabled;
             $scope.currentPost = undefined;
             $scope.sticky = false;
@@ -81,15 +117,12 @@ define([
             api.freetypes.query().then(function(data) {
                 var freetypes = [{
                     name: 'scorecard',
-                    template: '<fieldset> <legend translate>Away Team:</legend> <div> <label for="away.name" translate>Name</label> <input id="away.name" name="$away.name"/> </div><div> <label for="away.score" translate>Score</label> <input id="away.score" name="$away.score"/> </div></fieldset><fieldset> <legend translate>Home Team:</legend> <div> <label for="home.name" translate>Home</label> <input id="home.name" name="$home.name"/> </div><div> <label for="home.score" translate>Score</label> <input id="home.score" name="$home.score"/> </div></fieldset><fieldset> <legend translate>Minutes played:</legend> <div> <input id="time" name="$time"/> </div></fieldset><fieldset> <legend translate translate-n="home.scorers.length" translate-plural="Home scorers">Home scorer:</legend> <ul> <li> <div> <label translate>Name</label> <input name="$home.scorers[0].name"/> </div><div> <label translate>Minute</label> <input name="$home.scorers[0].time"/> </div></li></ul></fieldset>'
+                    template: $templateCache.get('scripts/liveblog-edit/views/scorecards.html')
                 }];
                 $scope.freetypes = freetypes.concat(data._items);
             });
         };
         getFreetypes();
-
-        // init with empty vector
-        $scope.freetypesData = {};
 
         // define the $scope
         angular.extend($scope, {
@@ -115,8 +148,7 @@ define([
                 $scope.toggleTypePostDialog();
             },
             actionStatus: function() {
-                return false;
-                return $scope.actionDisabled || $scope.actionPending;
+                return isPostFreetype() ? $scope.freetypeControl.isClean(): $scope.actionDisabled || $scope.actionPending;
             },
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
@@ -182,46 +214,22 @@ define([
             },
             publish: function() {
                 $scope.actionPending = true;
-                notify.info(gettext('Saving post'));
-                if ($scope.selectedPostType === 'Default'){
-                    postsService.savePost(blog._id,
-                        $scope.currentPost,
-                        getItemsFromEditor(),
-                        {post_status: 'open', sticky: $scope.sticky, highlight: $scope.highlight}
-                    ).then(function(post) {
-                        notify.pop();
-                        notify.info(gettext('Post saved'));
-                        cleanEditor();
-                        $scope.actionPending = false;
-                    }, function() {
-                        notify.pop();
-                        notify.error(gettext('Something went wrong. Please try again later'));
-                        $scope.actionPending = false;
-                    });
-                } else {
-                    var newPost = [
-                        {
-                            item_type: $scope.selectedPostType.name,
-                            text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
-                            meta: {data: $scope.freetypesData}
-                        }
-                    ];
-                    postsService.savePost(blog._id,
-                        $scope.currentPost,
-                        newPost,
-                        {post_status: 'open', sticky: $scope.sticky, highlight: $scope.highlight}
-                    ).then(function(post) {
-                        notify.pop();
-                        notify.info(gettext('Post saved'));
-                        cleanEditor();
-                        $scope.actionPending = false;
-                    }, function() {
-                        notify.pop();
-                        notify.error(gettext('Something went wrong. Please try again later'));
-                        $scope.actionPending = false;
-                    });
-
-                }
+                notify.info(gettext('Saving post'));2
+                postsService.savePost(blog._id,
+                    $scope.currentPost,
+                    getItemsFromEditor(),
+                    {post_status: 'open', sticky: $scope.sticky, highlight: $scope.highlight}
+                ).then(function(post) {
+                    notify.pop();
+                    notify.info(gettext('Post saved'));
+                    cleanEditor();
+                    $scope.actionPending = false;
+                }, function() {
+                    notify.pop();
+                    notify.error(gettext('Something went wrong. Please try again later'));
+                    $scope.actionPending = false;
+                });
+                
             },
             filterHighlight: function(highlight) {
                 $scope.filter.isHighlight = highlight;
@@ -572,7 +580,10 @@ define([
                 parentIframe = vm.angularTheme.public_url.replace(/\/[0-9\.]+\/themes_assets\//, '/themes_assets/');
             }
             // loading mechanism, and load parent-iframe.js with callback.
-            var loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){var a=document,l=a.createElement("script"),o=a.getElementsByTagName("script")[0];return l.type="text/javascript",l.onload=t,l.async=!0,l.src=e,o.parentNode.insertBefore(l,o),l}};liveblog.load("' + parentIframe + 'parent-iframe.js?"+parseInt(new Date().getTime()/900000,10),function(){"function"==typeof liveblog.loadCallback&&liveblog.loadCallback()});</script>';
+            var loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){var a=document,l=a.createElement("script"),'
+            + 'o=a.getElementsByTagName("script")[0];return l.type="text/javascript",l.onload=t,l.async=!0,l.src=e,o.parentNode.insertBefore(l,o),'
+            + 'l}};liveblog.load("' + parentIframe + 'parent-iframe.js?"+parseInt(new Date().getTime()/900000,10),function(){"function"==typeof '
+            + 'liveblog.loadCallback&&liveblog.loadCallback()});</script>';
             // compute embeds code with the injected publicUrl
             vm.embeds = {
                 normal: '<iframe width="100%" height="715" src="' + vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>',
