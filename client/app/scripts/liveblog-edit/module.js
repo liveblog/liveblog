@@ -29,6 +29,10 @@ define([
         var vm = this;
         // @TODO: remove this when theme at blog level.
         // check the theme setting for comments.
+
+        // init with empty vector
+        $scope.freetypesData = {}; $scope.freetypeControl = {};
+
         if (blog.blog_preferences.theme) {
             themesService.get(blog.blog_preferences.theme).then(function(themes) {
                 blog.blog_preferences.theme = themes[0];
@@ -64,19 +68,10 @@ define([
             return $scope.selectedPostType !== 'Default';
         }
 
-        $scope.$watch('freetypesDataReset', function(ini) {
-            console.log('watch freetypesDataReset ', ini);
-        });
-
-        $scope.$watch('freetypesData', function(ini) {
-            console.log('watch freetypesData ', ini);
-        });
-
-        // determine is current editor is not dirty
+        // determine if current editor is not dirty
         function isEditorClean() {
             if (isPostFreetype()) {
-                console.log($scope.freetypesData, $scope.freetypesDataReset);
-                return false;
+                return $scope.freetypeControl.isClean();
             } else {
                 var are_all_blocks_empty = _.all(vm.editor.blocks, function(block) {return block.isEmpty();});
                 return are_all_blocks_empty || !$scope.isCurrentPostUnsaved();
@@ -86,8 +81,6 @@ define([
         // ask in a modalbox if the user is sure to want to overwrite editor.
         // call the callback if user say yes or if editor is empty
         function doOrAskBeforeIfEditorIsNotEmpty(callback, msg) {
-            // var are_all_blocks_empty = _.all(vm.editor.blocks, function(block) {return block.isEmpty();});
-            // if (are_all_blocks_empty || !$scope.isCurrentPostUnsaved()) {
             if (isEditorClean()) {
                 callback();
             } else {
@@ -97,12 +90,13 @@ define([
         }
 
         // remove and clean every items from the editor
-        function cleanEditor(actionDisabled) {            
+        function cleanEditor(actionDisabled) {
             actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
             if (isPostFreetype()) {
                 //handle freetype cleaning
-                $scope.freetypesData = angular.extend({}, $scope.freetypesDataReset);
+                $scope.freetypeControl.resetData();
             } else {
+                //editor cleaning
                 vm.editor.reinitialize();
             }
             $scope.actionDisabled = actionDisabled;
@@ -130,11 +124,6 @@ define([
         };
         getFreetypes();
 
-        // init with empty vector
-        $scope.freetypesData = {}, $scope.freetypesDataReset = {name: 'marcel'};
-
-        
-
         // define the $scope
         angular.extend($scope, {
             blog: blog,
@@ -159,8 +148,7 @@ define([
                 $scope.toggleTypePostDialog();
             },
             actionStatus: function() {
-                return false;
-                return $scope.actionDisabled || $scope.actionPending;
+                return isPostFreetype() ? $scope.freetypeControl.isClean(): $scope.actionDisabled || $scope.actionPending;
             },
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
@@ -592,7 +580,10 @@ define([
                 parentIframe = vm.angularTheme.public_url.replace(/\/[0-9\.]+\/themes_assets\//, '/themes_assets/');
             }
             // loading mechanism, and load parent-iframe.js with callback.
-            var loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){var a=document,l=a.createElement("script"),o=a.getElementsByTagName("script")[0];return l.type="text/javascript",l.onload=t,l.async=!0,l.src=e,o.parentNode.insertBefore(l,o),l}};liveblog.load("' + parentIframe + 'parent-iframe.js?"+parseInt(new Date().getTime()/900000,10),function(){"function"==typeof liveblog.loadCallback&&liveblog.loadCallback()});</script>';
+            var loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){var a=document,l=a.createElement("script"),'
+            + 'o=a.getElementsByTagName("script")[0];return l.type="text/javascript",l.onload=t,l.async=!0,l.src=e,o.parentNode.insertBefore(l,o),'
+            + 'l}};liveblog.load("' + parentIframe + 'parent-iframe.js?"+parseInt(new Date().getTime()/900000,10),function(){"function"==typeof '
+            + 'liveblog.loadCallback&&liveblog.loadCallback()});</script>';
             // compute embeds code with the injected publicUrl
             vm.embeds = {
                 normal: '<iframe width="100%" height="715" src="' + vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>',
