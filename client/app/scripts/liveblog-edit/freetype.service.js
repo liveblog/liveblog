@@ -118,13 +118,26 @@
                 scope.$watch('freetype', function(freetype) {
                     element.html(freetypeService.transform(freetype.template, scope));
                     $compile(element.contents())(scope);
+                    scope.initialData = angular.extend({}, scope.freetypeData);
                 });
-                scope.freetypeDataReset = {name: 'mamria'};
+                
+                //methods to control freetype functionality from outside the directive
+                scope.internalControl = scope.control || {};
+
+                //reset to initial data
+                scope.internalControl.resetData = function() {
+                    scope.freetypeData = angular.extend({}, scope.initialData);
+                };
+
+                //check if !dirty
+                scope.internalControl.isClean = function() {
+                    return angular.equals(scope.freetypeData, scope.initialData);
+                };
             },
             scope: {
                 freetype: '=',
                 freetypeData: '=',
-                freetypeDataReset: '='
+                control: '='
             }
         };
     }])
