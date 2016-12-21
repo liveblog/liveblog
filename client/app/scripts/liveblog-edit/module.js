@@ -20,11 +20,11 @@ define([
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'freetypeService', 'modal',
-        'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService', '$templateCache'
+        'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService', '$templateCache', '$timeout'
     ];
     function BlogEditController(api, $q, $scope, blog, notify, gettext, session,
         upload, config, embedService, postsService, unreadPostsService, freetypeService, modal,
-        blogService, $route, $routeParams, blogSecurityService, themesService, $templateCache) {
+        blogService, $route, $routeParams, blogSecurityService, themesService, $templateCache, $timeout) {
 
         var vm = this;
         // @TODO: remove this when theme at blog level.
@@ -66,7 +66,21 @@ define([
         // determine is current post is classic or freetype
         function isPostFreetype() {
             return $scope.selectedPostType !== 'Default';
+        };
+
+        // determine if the loaded item is freetype
+        function isItemFreetype(itemType) {
+            var regularItemTypes = ['text', 'image', 'embed', 'quote'];
+            if (regularItemTypes.indexOf(itemType) !== -1) {
+                return false;
+            } else {
+                return true;
+            }
         }
+
+        function setDefautPostType() {
+            return $scope.selectedPostType = 'Default'
+        };
 
         // determine if current editor is not dirty
         function isEditorClean() {
@@ -122,6 +136,19 @@ define([
                 $scope.freetypes = freetypes.concat(data._items);
             });
         };
+
+        //load freetype item 
+        function loadFreetypeItem(item) {
+            //find freetype model
+            angular.forEach($scope.freetypes, function(freetype, key) {
+                if (freetype.name === item.item_type) {
+                    $scope.selectedPostType = freetype;
+                    console.log('item.meta.data ', item.meta.data);
+                    $scope.freetypesData = item.meta.data;
+                }
+            })
+        };
+
         getFreetypes();
 
         // define the $scope
@@ -170,17 +197,30 @@ define([
             openPostInEditor: function (post) {
                 function fillEditor(post) {
                     cleanEditor(false);
+                    var delay = 0;
                     $scope.currentPost = angular.copy(post);
                     $scope.sticky = $scope.currentPost.sticky;
                     $scope.highlight = $scope.currentPost.highlight;
-                    var items = post.groups[1].refs;
-                    items.forEach(function(item) {
-                        item = item.item;
-                        if (angular.isDefined(item)) {
-                            var data = _.extend(item, item.meta);
-                            vm.editor.createBlock(item.item_type, data);
-                        }
-                    });
+                    //@TODO handle this better ASAP, remove $timeout and find the cause of the delay
+                    if (isPostFreetype()) {
+                        setDefautPostType();
+                        delay = 5;
+                    }
+                    $timeout(function() {
+                        var items = post.groups[1].refs;
+                        items.forEach(function(item) {
+                            item = item.item;
+                            if (angular.isDefined(item)) {
+                                if (isItemFreetype(item.item_type)) {
+                                    //post it freetype so we need to reder it
+                                    loadFreetypeItem(item);
+                                } else {
+                                    var data = _.extend(item, item.meta);
+                                    vm.editor.createBlock(item.item_type, data);
+                                }
+                            }
+                        });
+                    }, delay);
                 }
                 $scope.openPanel('editor');
                 doOrAskBeforeIfEditorIsNotEmpty(fillEditor.bind(null, post));
