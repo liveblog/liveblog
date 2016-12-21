@@ -197,6 +197,29 @@ def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, aut
             return api_error('Unable to syndicate producer blog.', response.status_code)
 
 
+def _update_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, start_date=None):
+    producers = get_resource_service('producers')
+    in_service = get_resource_service('syndication_in')
+    if not in_service.is_syndicated(producer_id, blog_id, consumer_blog_id):
+        return api_error('Syndication not sent for blog "{}".'.format(blog_id), 409)
+
+    try:
+        response = producers.syndicate(producer_id, blog_id, consumer_blog_id, start_date, update=True,
+                                       json_loads=False)
+    except ProducerAPIError as e:
+        return api_response(str(e), 500)
+    else:
+        if response.status_code == 200:
+            syndication_in = in_service.get_syndication(producer_id, blog_id, consumer_blog_id)
+            in_service.update(syndication_in['_id'], {'start_date': start_date}, syndication_in)
+            del syndication_in['blog_token']
+            return api_response(syndication_in, 200)
+        elif response.status_code == 404:
+            return api_error('Syndication not sent for blog "{}"'.format(blog_id), 409)
+        else:
+            return api_error('Unable to update blog syndication.', response.status_code)
+
+
 def _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
     producers = get_resource_service('producers')
     in_service = get_resource_service('syndication_in')
@@ -233,8 +256,7 @@ def producer_blogs_syndicate(producer_id, blog_id):
     if request.method == 'DELETE':
         return _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id)
     elif request.method == 'PATCH':
-        # TODO: update method
-        raise NotImplementedError()
+        return _update_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, start_date)
     else:
         return _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish, start_date)
 

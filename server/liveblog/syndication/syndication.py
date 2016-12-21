@@ -54,18 +54,21 @@ class SyndicationOutService(BaseService):
     def _get_blog(self, blog_id):
         return self._cursor('blogs').find_one({'_id': ObjectId(blog_id)})
 
-    def is_syndicated(self, consumer_id, producer_blog_id, consumer_blog_id):
+    def _lookup(self, consumer_id, producer_blog_id, consumer_blog_id):
         lookup = {'$and': [
             {'consumer_id': {'$eq': consumer_id}},
             {'blog_id': {'$eq': producer_blog_id}},
             {'consumer_blog_id': {'$eq': consumer_blog_id}}
         ]}
-        logger.debug('SyndicationOut.is_syndicated lookup: {}'.format(lookup))
-        collection = self.find(lookup)
-        if collection.count():
-            return True
-        else:
-            return False
+        return lookup
+
+    def get_syndication(self, consumer_id, producer_blog_id, consumer_blog_id):
+        collection = self.find(self._lookup(consumer_id, producer_blog_id, consumer_blog_id))
+        return collection
+
+    def is_syndicated(self, consumer_id, producer_blog_id, consumer_blog_id):
+        collection = self.get_syndication(consumer_id, producer_blog_id, consumer_blog_id)
+        return bool(collection.count())
 
     def get_blog_syndication(self, blog_id):
         blog = self._get_blog(blog_id)
@@ -156,18 +159,20 @@ syndication_in_schema = {
 class SyndicationInService(BaseService):
     notification_key = 'syndication_in'
 
-    def is_syndicated(self, producer_id, producer_blog_id, consumer_blog_id):
+    def _lookup(self, producer_id, producer_blog_id, consumer_blog_id):
         lookup = {'$and': [
             {'producer_id': {'$eq': producer_id}},
             {'blog_id': {'$eq': consumer_blog_id}},
             {'producer_blog_id': {'$eq': producer_blog_id}}
         ]}
-        logger.debug('SyndicationIn.is_syndicated lookup: {}'.format(lookup))
-        collection = self.find(lookup)
-        if collection.count():
-            return True
-        else:
-            return False
+        return lookup
+
+    def get_syndication(self, producer_id, producer_blog_id, consumer_blog_id):
+        return self.find(self._lookup(producer_id, producer_blog_id, consumer_blog_id))
+
+    def is_syndicated(self, producer_id, producer_blog_id, consumer_blog_id):
+        collection = self.get_syndication(producer_id, producer_blog_id, consumer_blog_id)
+        return bool(collection.count())
 
     def on_create(self, docs):
         super().on_create(docs)

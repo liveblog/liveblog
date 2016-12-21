@@ -91,6 +91,18 @@ def _create_blogs_syndicate(blog_id, consumer_blog_id, start_date=None):
     }, 201)
 
 
+def _update_blogs_syndicate(blog_id, consumer_blog_id, start_date=None):
+    consumer = _get_consumer_from_auth()
+    out_service = get_resource_service('syndication_out')
+    consumer_id = str(consumer['_id'])
+    if not out_service.is_syndicated(consumer_id, blog_id, consumer_blog_id):
+        return api_error('Syndication not sent for blog "{}".'.format(blog_id), 404)
+    syndication_out = out_service.get_syndication(consumer_id, blog_id, consumer_blog_id)
+    out_service.update(syndication_out['_id'], {'start_date': start_date}, syndication_out)
+    del syndication_out['token']
+    return api_response(syndication_out, 200)
+
+
 def _delete_blogs_syndicate(blog_id, consumer_blog_id):
     consumer = _get_consumer_from_auth()
     out_service = get_resource_service('syndication_out')
@@ -119,8 +131,7 @@ def blogs_syndicate(blog_id):
     if request.method == 'DELETE':
         return _delete_blogs_syndicate(blog_id, consumer_blog_id)
     elif request.method == 'PATCH':
-        # TODO: update method
-        raise NotImplementedError()
+        return _update_blogs_syndicate(blog_id, consumer_blog_id, start_date)
     else:
         return _create_blogs_syndicate(blog_id, consumer_blog_id, start_date)
 
