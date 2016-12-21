@@ -1,5 +1,5 @@
 <header>
-    <div sd-searchbar></div>
+    <!--<div sd-searchbar></div>-->
     <div sd-pagination data-items="marketers" data-limit="25"></div>
 </header>
 <div class="list-container">
@@ -15,15 +15,21 @@
             </figure>
             <div class="content">
                 <h3>{{ ::marketer.name }}</h3>
-                <div class="description">{{marketer.email}}</div>
-                <div class="description">{{marketer.phone}}</div>
             </div>
             <div class="footer">
                 <dl>
-                    <dt>{{ ::'Syndicated blogs' | translate }}:</dt>
-                    <dd>22</dd>
+                    <dt>{{ ::'Email' | translate }}:</dt>
+                    <dd>{{ ::marketer.email}}</dd>
+                    <dt>{{ ::'Phone' | translate }}:</dt>
+                    <dd><time>{{ ::marketer.phone }}</time></dd>
                 </dl>
             </div>
+<!--            <div class="footer">
+                <dl>
+                    <dt>{{ ::'Syndicated blogs' | translate }}:</dt>
+                    <dd></dd>
+                </dl>
+            </div>-->
         </li>
     </ul>
 </div>

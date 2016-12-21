@@ -11,7 +11,7 @@ class BlogResource(Resource):
         'source': 'blogs',
         'search_backend': None,
         'default_sort': [('_updated', -1)],
-        'filter': {'syndication_enabled': True},
+        'filter': {'market_enabled': True},
         'projection': {
             'title': 1,
             'description': 1,

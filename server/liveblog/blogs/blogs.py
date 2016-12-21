@@ -71,6 +71,10 @@ blogs_schema = {
     'syndication_enabled': {
         'type': 'boolean',
         'default': False
+    },
+    'market_enabled': {
+        'type': 'boolean',
+        'default': False
     }
 }
 
