@@ -6,6 +6,9 @@ from superdesk import get_resource_service
 from liveblog.blogs.blogs import blogs_schema
 from liveblog.posts.posts import PostsResource
 from flask_cors import CORS
+from eve.utils import str_to_date
+from flask import current_app as app
+
 
 from .utils import api_error, api_response
 from .auth import CustomAuthResource, ConsumerApiKeyAuth
@@ -87,7 +90,8 @@ def _create_blogs_syndicate(blog_id, consumer_blog_id, start_date=None):
     return api_response({
         'token': syndication['token'],
         'producer_blog_title': blog['title'],
-        'consumer_blog_id': consumer_blog_id  # we return it anyway for consistency.
+        'consumer_blog_id': consumer_blog_id,  # we return it anyway for consistency.
+        '_status': 'OK'
     }, 201)
 
 
@@ -100,6 +104,7 @@ def _update_blogs_syndicate(blog_id, consumer_blog_id, start_date=None):
     syndication_out = out_service.get_syndication(consumer_id, blog_id, consumer_blog_id)
     out_service.update(syndication_out['_id'], {'start_date': start_date}, syndication_out)
     del syndication_out['token']
+    syndication_out['_status'] = 'OK'
     return api_response(syndication_out, 200)
 
 
@@ -124,6 +129,12 @@ def _delete_blogs_syndicate(blog_id, consumer_blog_id):
 def blogs_syndicate(blog_id):
     data = request.get_json()
     start_date = data.get('start_date')
+    if start_date:
+        try:
+            start_date = str_to_date(start_date)
+        except ValueError:
+            return api_error('start_date is not valid.', 400)
+
     consumer_blog_id = data.get('consumer_blog_id')
     if not consumer_blog_id:
         return api_error('Missing "consumer_blog_id" in form data.', 422)

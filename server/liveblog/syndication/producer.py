@@ -6,6 +6,7 @@ from superdesk import get_resource_service
 from flask import abort, Blueprint, request
 from apps.auth import SuperdeskTokenAuth
 from flask_cors import CORS
+from eve.utils import str_to_date
 from .utils import trailing_slash, api_response, api_error, send_api_request
 from .exceptions import APIConnectionError, ProducerAPIError
 
@@ -250,8 +251,15 @@ def producer_blogs_syndicate(producer_id, blog_id):
     consumer_blog_id = data.get('consumer_blog_id')
     auto_publish = data.get('auto_publish')
     start_date = data.get('start_date')
+
     if not consumer_blog_id:
         return api_error('Missing "consumer_blog_id" in form data.', 422)
+
+    if start_date:
+        try:
+            start_date = str_to_date(start_date)
+        except ValueError:
+            return api_error('start_date is not valid.', 400)
 
     if request.method == 'DELETE':
         return _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id)

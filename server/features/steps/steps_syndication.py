@@ -3,7 +3,7 @@ from eve.methods.common import parse
 from liveblog import tests
 from unittest.mock import patch
 from superdesk import get_resource_service
-from superdesk.tests.steps import json, apply_placeholders
+from superdesk.tests.steps import json, apply_placeholders, is_user_resource
 
 
 @given('config consumer api_key')
@@ -59,3 +59,23 @@ def step_impl_given_(context, resource):
         context.data = items
         context.resource = resource
         setattr(context, resource, items[-1])
+
+
+@given('"{resource}" as item list')
+def step_impl_given_(context, resource):
+    # TODO: Add as contribution to superdesk-core.
+    data = apply_placeholders(context, context.text)
+    with context.app.test_request_context(context.app.config['URL_PREFIX']):
+        if not is_user_resource(resource):
+            get_resource_service(resource).delete_action()
+
+        items = [parse(item, resource) for item in json.loads(data)]
+        if is_user_resource(resource):
+            for item in items:
+                item.setdefault('needs_activation', False)
+
+        get_resource_service(resource).post(items)
+        context.data = items
+        context.resource = resource
+        for i, item in enumerate(items):
+            setattr(context, '{}[{}]'.format(resource, i), item)
