@@ -119,6 +119,7 @@
                     element.html(freetypeService.transform(freetype.template, scope));
                     $compile(element.contents())(scope);
                     scope.initialData = angular.extend({}, scope.freetypeData);
+                    console.log(scope.initialData, scope.freetypeData);
                 });
                 
                 //methods to control freetype functionality from outside the directive
@@ -131,6 +132,8 @@
 
                 //check if !dirty
                 scope.internalControl.isClean = function() {
+                    console.log(angular.equals(scope.freetypeData, scope.initialData));
+                    return false;
                     return angular.equals(scope.freetypeData, scope.initialData);
                 };
             },
