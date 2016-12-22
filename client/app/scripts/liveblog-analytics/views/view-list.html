@@ -12,11 +12,41 @@
 </div>
 
 <!--  |  -->
-<div ng-repeat="item in analytics._items | orderBy:predicate:reverse | filter:analyticsSearch track by item._id" class="analytics-list">
+<div class="analytics-list">
   <div class="analytics-list-table">
-    <div class="analytics-list-row">
+    <!-- Header -->
+    <div class="analytics-list-row analytics-list-row--header">
+      <div class="analytics-list-row-item">Blog embed URL</div>
+      <div class="analytics-list-row-item">Hit count</div>
+    </div>
+    <!-- Repeatable row -->
+    <div ng-repeat="item in analytics._items | orderBy:predicate:reverse | filter:analyticsSearch track by item._id" class="analytics-list-row">
       <div class="analytics-list-row-item" lb-filter-domain>{{item.context_url}}</div>
       <div class="analytics-list-row-item">{{item.hits}}</div>
     </div>
   </div>
 </div>
+<!-- Todo Pagination (static code) -->
+<ul class="pagination">
+  <li class="pagination__item pagination__item--disabled">
+    <a href="#"><i class="icon-chevron-left-thin"></i></a>
+  </li>
+  <li class="pagination__item pagination__item--active">
+    <a href="#">1</a>
+  </li>
+  <li class="pagination__item">
+    <a href="#">2</a>
+  </li>
+  <li class="pagination__item">
+    <a href="#">3</a>
+  </li>
+  <li class="pagination__item">
+    <a href="#">4</a>
+  </li>
+  <li class="pagination__item">
+    <a href="#">5</a>
+  </li>
+  <li class="pagination__item">
+    <a href="#"><i class="icon-chevron-right-thin"></i></a>
+  </li>
+</ul>
