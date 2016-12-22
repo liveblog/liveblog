@@ -32,7 +32,7 @@ Feature: Syndication Blog Resource
         When we get "/syndication/blogs/"
         Then we get list with 3 items
 
-    Scenario: Create blog syndication
+    Scenario: Create, update and delete blog syndication
         Given "themes"
         """
         [{"name": "forest"}]
@@ -55,11 +55,18 @@ Feature: Syndication Blog Resource
         ]
         """
         Given config consumer api_key
-        When we post to "/syndication/blogs/#blogs[0]._id#/syndicate/" with success
+        When we post to "/syndication/blogs/#blogs[0]._id#/syndicate/"
+        """
+        {
+            "consumer_blog_id": "#blogs[1]._id#"
+        }
+        """
+        Then we get response code 201
+        When we patch to "/syndication/blogs/#blogs[0]._id#/syndicate/"
         """
         {
             "consumer_blog_id": "#blogs[1]._id#",
             "start_date": "2016-12-01T14:00:00+0000"
         }
         """
-        Then we get response code 201
+        Then we get response code 200

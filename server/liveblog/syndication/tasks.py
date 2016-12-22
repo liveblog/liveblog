@@ -33,7 +33,15 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=25, po
     consumers = get_resource_service('consumers')
     blog_id = syndication_out['blog_id']
     posts_service = get_resource_service('posts')
-    posts = posts_service.find({'blog': blog_id, ITEM_TYPE: CONTENT_TYPE.COMPOSITE}).limit(limit)
+    start_date = syndication_out.get('start_date')
+    lookup = {'blog': blog_id, ITEM_TYPE: CONTENT_TYPE.COMPOSITE}
+    if start_date:
+        lookup['start_date'] = {'$gte': start_date}
+
+    posts = posts_service.find(lookup)
+    if not start_date:
+        posts = posts.limit(limit)
+
     try:
         for producer_post in posts:
             items = extract_post_items_data(producer_post)

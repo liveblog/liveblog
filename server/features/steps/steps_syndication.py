@@ -1,9 +1,10 @@
-from behave import then, given
+from behave import then, given, when
 from eve.methods.common import parse
 from liveblog import tests
 from unittest.mock import patch
 from superdesk import get_resource_service
-from superdesk.tests.steps import json, apply_placeholders, is_user_resource
+from superdesk.tests.steps import (json, apply_placeholders, is_user_resource, get_prefixed_url, set_user_default,
+                                   store_placeholder)
 
 
 @given('config consumer api_key')
@@ -62,7 +63,7 @@ def step_impl_given_(context, resource):
 
 
 @given('"{resource}" as item list')
-def step_impl_given_(context, resource):
+def step_impl_given_resource_as_item_list(context, resource):
     # TODO: Add as contribution to superdesk-core.
     data = apply_placeholders(context, context.text)
     with context.app.test_request_context(context.app.config['URL_PREFIX']):
@@ -79,3 +80,18 @@ def step_impl_given_(context, resource):
         context.resource = resource
         for i, item in enumerate(items):
             setattr(context, '{}[{}]'.format(resource, i), item)
+
+
+@when('we patch to "{url}"')
+def step_impl_when_patch_url(context, url):
+    with context.app.mail.record_messages() as outbox:
+        data = apply_placeholders(context, context.text)
+        url = apply_placeholders(context, url)
+        set_user_default(url, data)
+        context.response = context.client.patch(get_prefixed_url(context.app, url),
+                                                data=data, headers=context.headers)
+
+        item = json.loads(context.response.get_data())
+        context.outbox = outbox
+        store_placeholder(context, url)
+        return item

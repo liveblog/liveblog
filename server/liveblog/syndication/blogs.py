@@ -7,8 +7,6 @@ from liveblog.blogs.blogs import blogs_schema
 from liveblog.posts.posts import PostsResource
 from flask_cors import CORS
 from eve.utils import str_to_date
-from flask import current_app as app
-
 
 from .utils import api_error, api_response
 from .auth import CustomAuthResource, ConsumerApiKeyAuth
@@ -99,13 +97,11 @@ def _update_blogs_syndicate(blog_id, consumer_blog_id, start_date=None):
     consumer = _get_consumer_from_auth()
     out_service = get_resource_service('syndication_out')
     consumer_id = str(consumer['_id'])
-    if not out_service.is_syndicated(consumer_id, blog_id, consumer_blog_id):
-        return api_error('Syndication not sent for blog "{}".'.format(blog_id), 404)
     syndication_out = out_service.get_syndication(consumer_id, blog_id, consumer_blog_id)
+    if not syndication_out:
+        return api_error('Syndication not sent for blog "{}".'.format(blog_id), 404)
     out_service.update(syndication_out['_id'], {'start_date': start_date}, syndication_out)
-    del syndication_out['token']
-    syndication_out['_status'] = 'OK'
-    return api_response(syndication_out, 200)
+    return api_response({'_status': 'OK'}, 200)
 
 
 def _delete_blogs_syndicate(blog_id, consumer_blog_id):

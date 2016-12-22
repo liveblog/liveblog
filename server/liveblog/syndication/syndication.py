@@ -63,12 +63,14 @@ class SyndicationOutService(BaseService):
         return lookup
 
     def get_syndication(self, consumer_id, producer_blog_id, consumer_blog_id):
-        collection = self.find(self._lookup(consumer_id, producer_blog_id, consumer_blog_id))
-        return collection
+        try:
+            return self.find(self._lookup(consumer_id, producer_blog_id, consumer_blog_id))[0]
+        except IndexError:
+            return
 
     def is_syndicated(self, consumer_id, producer_blog_id, consumer_blog_id):
-        collection = self.get_syndication(consumer_id, producer_blog_id, consumer_blog_id)
-        return bool(collection.count())
+        item = self.get_syndication(consumer_id, producer_blog_id, consumer_blog_id)
+        return bool(item)
 
     def get_blog_syndication(self, blog_id):
         blog = self._get_blog(blog_id)
@@ -168,11 +170,14 @@ class SyndicationInService(BaseService):
         return lookup
 
     def get_syndication(self, producer_id, producer_blog_id, consumer_blog_id):
-        return self.find(self._lookup(producer_id, producer_blog_id, consumer_blog_id))
+        try:
+            return self.find(self._lookup(producer_id, producer_blog_id, consumer_blog_id))[0]
+        except IndexError:
+            return
 
     def is_syndicated(self, producer_id, producer_blog_id, consumer_blog_id):
-        collection = self.get_syndication(producer_id, producer_blog_id, consumer_blog_id)
-        return bool(collection.count())
+        item = self.get_syndication(producer_id, producer_blog_id, consumer_blog_id)
+        return bool(item)
 
     def on_create(self, docs):
         super().on_create(docs)
