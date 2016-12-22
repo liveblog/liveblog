@@ -70,7 +70,7 @@ define([
 
         // determine if the loaded item is freetype
         function isItemFreetype(itemType) {
-            var regularItemTypes = ['text', 'image', 'embed', 'quote'];
+            var regularItemTypes = ['text', 'image', 'embed', 'quote', 'comment'];
             if (regularItemTypes.indexOf(itemType) !== -1) {
                 return false;
             } else {
@@ -106,13 +106,8 @@ define([
         // remove and clean every items from the editor
         function cleanEditor(actionDisabled) {
             actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
-            if (isPostFreetype()) {
-                //handle freetype cleaning
-                $scope.freetypeControl.resetData();
-            } else {
-                //editor cleaning
-                vm.editor.reinitialize();
-            }
+            $scope.freetypesData = {};
+            vm.editor.reinitialize();
             $scope.actionDisabled = actionDisabled;
             $scope.currentPost = undefined;
             $scope.sticky = false;
@@ -143,8 +138,7 @@ define([
             angular.forEach($scope.freetypes, function(freetype, key) {
                 if (freetype.name === item.item_type) {
                     $scope.selectedPostType = freetype;
-                    console.log('item.meta.data ', item.meta.data);
-                    $scope.freetypesData = item.meta.data;
+                    $scope.freetypesData = angular.copy(item.meta.data);
                 }
             })
         };
