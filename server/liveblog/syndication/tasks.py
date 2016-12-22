@@ -36,9 +36,10 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=25, po
     start_date = syndication_out.get('start_date')
     lookup = {'blog': blog_id, ITEM_TYPE: CONTENT_TYPE.COMPOSITE}
     if start_date:
-        lookup['start_date'] = {'$gte': start_date}
+        lookup['_updated'] = {'$gte': start_date}
 
     posts = posts_service.find(lookup)
+    logger.warning(lookup)
     if not start_date:
         posts = posts.limit(limit)
 
@@ -53,6 +54,7 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=25, po
                 'post': post
             }, action)
     except APIConnectionError as e:
+        logger.warning('Unable to send posts to consumer: {}'.format(e))
         raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
 
 
