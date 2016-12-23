@@ -1,4 +1,5 @@
 import logging
+import datetime
 from bson import ObjectId
 from flask import request, abort, Blueprint
 from superdesk.services import BaseService
@@ -78,12 +79,19 @@ def _create_blogs_syndicate(blog_id, consumer_blog_id, start_date=None):
     if out_service.is_syndicated(consumer_id, blog_id, consumer_blog_id):
         return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
 
-    syndication_id = out_service.post([{
+    if not start_date:
+        # TODO: Find a way to force value to None, as it's ignoring schema settings.
+        # we are forced to set a date in the past, as python-eve is saving by default to datetime.datetime.now().
+        start_date = datetime.datetime(2010, 1, 1, 0, 0, 0)
+
+    doc = {
         'blog_id': blog_id,
         'consumer_id': consumer_id,
         'consumer_blog_id': consumer_blog_id,
         'start_date': start_date
-    }])[0]
+    }
+
+    syndication_id = out_service.post([doc])[0]
     syndication = out_service.find_one(_id=syndication_id, req=None)
     return api_response({
         'token': syndication['token'],

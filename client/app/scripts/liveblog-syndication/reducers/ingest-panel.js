@@ -58,6 +58,7 @@ liveblogSyndication
                                 .map(function(blog) {
                                     blog.checked = false;
                                     blog.auto_publish = false; // Default autopublish as false
+                                    blog.start_date = null; // Default start_date as null
 
                                     state.locallySyndicatedItems.forEach(function(localBlog) {
                                         if (localBlog.producer_blog_id == blog._id) {

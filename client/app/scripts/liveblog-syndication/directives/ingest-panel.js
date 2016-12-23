@@ -75,6 +75,7 @@ liveblogSyndication
                             producerBlogId: synd.producer_blog_id,
                             consumerBlogId: scope.consumerBlogId,
                             autoPublish: synd.auto_publish,
+                            startDate: synd.start_date,
                             method: 'DELETE'
                         });
                     };

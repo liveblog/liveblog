@@ -69,6 +69,7 @@ class SyndicationOutService(BaseService):
             return
 
     def is_syndicated(self, consumer_id, producer_blog_id, consumer_blog_id):
+        logger.warning('SyndicationOutService.is_syndicated is deprecated!')
         item = self.get_syndication(consumer_id, producer_blog_id, consumer_blog_id)
         return bool(item)
 
@@ -110,6 +111,14 @@ class SyndicationOutService(BaseService):
     def on_created(self, docs):
         super().on_created(docs)
         for doc in docs:
+            send_posts_to_consumer.delay(doc)
+
+    def on_updated(self, updates, original):
+        super().on_updated(updates, original)
+        start_date = updates.get('start_date')
+        if start_date and start_date != original['start_date']:
+            doc = original.copy()
+            doc.update(updates)
             send_posts_to_consumer.delay(doc)
 
     def on_deleted(self, doc):
@@ -176,6 +185,7 @@ class SyndicationInService(BaseService):
             return
 
     def is_syndicated(self, producer_id, producer_blog_id, consumer_blog_id):
+        logger.warning('SyndicationInService.is_syndicated is deprecated!')
         item = self.get_syndication(producer_id, producer_blog_id, consumer_blog_id)
         return bool(item)
 
