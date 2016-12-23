@@ -58,7 +58,8 @@ Feature: Syndication Blog Resource
         When we post to "/syndication/blogs/#blogs[0]._id#/syndicate/"
         """
         {
-            "consumer_blog_id": "#blogs[1]._id#"
+            "consumer_blog_id": "#blogs[1]._id#",
+            "auto_retrieve": false
         }
         """
         Then we get response code 201
@@ -66,7 +67,8 @@ Feature: Syndication Blog Resource
         """
         {
             "consumer_blog_id": "#blogs[1]._id#",
-            "start_date": "2016-12-01T14:00:00+0000"
+            "start_date": "2016-12-01T14:00:00+0000",
+            "auto_retrieve": true
         }
         """
         Then we get response code 200
