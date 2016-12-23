@@ -37,6 +37,10 @@ syndication_out_schema = {
         'type': 'string',
         'unique': True
     },
+    'auto_retrieve': {
+        'type': 'boolean',
+        'default': True
+    },
     'start_date': {
         'type': 'datetime',
         'default': None
@@ -159,6 +163,10 @@ syndication_in_schema = {
     'auto_publish': {
         'type': 'boolean',
         'default': False
+    },
+    'auto_retrieve': {
+        'type': 'boolean',
+        'default': True
     },
     'start_date': {
         'type': 'datetime',

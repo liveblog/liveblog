@@ -100,6 +100,7 @@ liveblogSyndication
                                 consumerBlogId: scope.consumerBlogId,
                                 autoPublish: blog.auto_publish,
                                 startDate: blog.start_date,
+                                autoRetrieve: blog.auto_retrieve,
                                 method: 'POST'
                             };
 

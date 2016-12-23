@@ -34,13 +34,13 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=25, po
     blog_id = syndication_out['blog_id']
     posts_service = get_resource_service('posts')
     start_date = syndication_out.get('start_date')
+    auto_retrieve = syndication_out.get('auto_retrieve')
     lookup = {'blog': blog_id, ITEM_TYPE: CONTENT_TYPE.COMPOSITE}
-    if start_date:
+    if start_date and auto_retrieve:
         lookup['_updated'] = {'$gte': start_date}
 
     posts = posts_service.find(lookup)
-    logger.warning(lookup)
-    if not start_date:
+    if not start_date and limit:
         posts = posts.limit(limit)
 
     try:
