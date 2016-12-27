@@ -33,13 +33,20 @@
         if (attr.substr(attr.length - 1, 1) === '/') {
             attr = attr.substr(0, attr.length - 1);
         }
-        return '"' + SCOPE_FREETYPEDATA + '.' + name.replace('[]', '[0]') + '" ' + attr;
+        if (name.substr(0, 1) === '$') {
+            return '"' + name.substr(1).replace('[]', '[0]') + '" ' + attr;
+        } else {
+            return '"' + SCOPE_FREETYPEDATA + '.' + name.replace('[]', '[0]') + '" ' + attr;
+        }
     }
     /**
     * Create the structure from path in the obj.
     *    this is needed to create the vectors in the angular scope.
     */
     function setStructure(obj, path, value) {
+        if (path.substr(0, 1) === '$') {
+            return;
+        }
         var parts, part, vector;
         if (angular.isString(path)) {
             parts = path.split(/\./);
@@ -124,10 +131,24 @@
                 if (!angular.isObject(scope[SCOPE_FREETYPEDATA])) {
                     scope[SCOPE_FREETYPEDATA] = {};
                 }
+                // @TODO: remove when freetype-collection mechanism is full implemented.
+                // transform collection mechaism for `scorers` or for dinamical lists.
+                template = template.replace(/\<li([^>]*)\>(.*?)\<\/li\>/g, function(all, attr, repeater) {
+                    var iteratorName = getNewIndex('iterator');
+                    var parts, vector = '';
+                    repeater = repeater.replace(/\$([\$a-z0-9_.\[\]]+)/gi, function(all, path) {
+                        console.log(path);
+                        setStructure(scope[SCOPE_FREETYPEDATA], path);
+                        parts = path.split(/[\d*]/);
+                        vector = parts[0].substr(0, parts[0].length - 1);
+                        return '$$' + iteratorName + '.' + parts[1].substr(2);
+                    });
+                    return '<li ng-repeat="' + iteratorName + ' in ' + SCOPE_FREETYPEDATA + '.' + vector + '">' + repeater + '</li><li><freetype-collection vector="' + SCOPE_FREETYPEDATA + '.' + vector + '"/></li>';
+                });
                 // transform dolar variables in the attributes of `name` or `text` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(name|text)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         // remove the dolar variable from the attributes.
                         return '';
@@ -142,13 +163,13 @@
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>(.*?)<\/\1>?/gi, function(all, tag, attr, content) {
                     var name, parts;
                     content = content.replace(/^\s+|\s+$/g, '');
-                    parts = content.match(/^\$([a-z0-9]+)/gi);
+                    parts = content.match(/^\$([\$a-z0-9]+)/gi);
                     // content should be only the variable name
                     if (parts && parts[0].length === content.length) {
                         name = content.substr(1);
                     }
                     if (name) {
-                        setStructure(scope[SCOPE_FREETYPEDATA], name); a
+                        setStructure(scope[SCOPE_FREETYPEDATA], name);
                         return '<input ng-model=' + makeAngularAttr(name, attr) + '/>';
                     }
                     return all;
@@ -156,7 +177,7 @@
                 // transform dolar variables in the attributes of `image` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         // remove the dolar variable from the attributes.
                         return '';
@@ -170,7 +191,7 @@
                 // transform dolar variables in the attributes of `link` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(link|url)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(link|url)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         // remove the dolar variable from the attributes.
                         return '';
@@ -184,7 +205,7 @@
                 // transform dolar variables in the attributes of `embed` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(embed|html)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(embed|html)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         // remove the dolar variable from the attributes.
                         return '';
@@ -195,11 +216,7 @@
                     }
                     return all;
                 });
-                // @TODO: remove when freetype-collection mechanism is full implemented.
-                // transform collection mechaism for `scorers` or for dinamical lists.
-                // template = template.replace(/\<li[^>]*\>(.*?)\<\/li\>/g, function(all) {
-                //     return all + '<li><freetype-collection/></li>';
-                // })
+                console.log(template);
                 return template;
 
             },
@@ -209,28 +226,28 @@
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name, type;
                     // transform `name` and `text` variables.
-                    attr = attr.replace(/(name|text)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         type = 'text';
                         // remove the dolar variable from the attributes.
                         return '';
                     });
 
-                    attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname + '.picture_url';
                         type = 'image';
                         // remove the dolar variable from the attributes.
                         return '';
                     });
 
-                    attr = attr.replace(/(wrap-link)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(wrap-link)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         type = 'wrap-link';
                         // remove the dolar variable from the attributes.
                         return '';
                     });
 
-                    attr = attr.replace(/(embed)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(embed)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         type = 'embed';
                         // remove the dolar variable from the attributes.
@@ -364,14 +381,17 @@
     .directive('freetypeCollection', ['$compile', function($compile) {
         return {
             restrict: 'E',
-            template: '<button ng-click="add()">+</button>',
-            controller: function() {
+            template: '<button ng-click="ftc.add()">+</button>',
+            controller: ['$scope', function($scope) {
                 this.add = function() {
-                    /* @TODO add here the mechanism for add more scorers or items */
+                    console.log('ADdd')
+                    $scope.vector.push({});
+                    console.log($scope.vector);
                 }
-            },
+            }],
+            controllerAs: 'ftc',
             scope: {
-                tmpl: '='
+                vector: '='
             }
         };
     }])
