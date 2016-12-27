@@ -50,11 +50,25 @@
                         vector[2] = parseInt(vector[2], 10);
                     }
                     part = {};
-                    variable[vector[1]] = [];
-                    variable[vector[1]][vector[2]] = part
-                    variable = part;
+                    // if the array is already set, just use that.
+                    if (angular.isArray(variable[vector[1]])){
+                        // is the array is set but not that index, make it.
+                        if (angular.isDefined(variable[vector[1]][vector[2]])) {
+                            variable = variable[vector[1]][vector[2]]
+                        } else {
+                            variable[vector[1]][vector[2]] = part
+                            variable = part;
+                        }
+                    } else {
+                        variable[vector[1]] = [];
+                        variable[vector[1]][vector[2]] = part
+                        variable = part;
+                    }
                 } else {
-                    if (i === parts.length - 1){
+                    // if the object is already set, just use that.
+                    if (angular.isDefined(variable[parts[i]])) {
+                        variable = variable[parts[i]];
+                    } else if (i === parts.length - 1){
                         variable[parts[i]] = value || '';
                     } else {
                         variable[parts[i]] = {};
