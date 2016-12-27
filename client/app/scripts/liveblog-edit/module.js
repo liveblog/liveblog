@@ -125,14 +125,20 @@ define([
         function getFreetypes() {
             api.freetypes.query().then(function(data) {
                 var freetypes = [{
-                    name: 'scorecard',
+                    name: 'Scorecard',
                     template: $templateCache.get('scripts/liveblog-edit/views/scorecards.html')
+                }, {
+                    name: 'Advertisment Local',
+                    template: $templateCache.get('scripts/liveblog-edit/views/ads-local.html')
+                }, {
+                    name: 'Advertisment Remote',
+                    template: $templateCache.get('scripts/liveblog-edit/views/ads-remote.html')
                 }];
                 $scope.freetypes = freetypes.concat(data._items);
             });
         };
 
-        //load freetype item 
+        //load freetype item
         function loadFreetypeItem(item) {
             //find freetype model
             angular.forEach($scope.freetypes, function(freetype, key) {
