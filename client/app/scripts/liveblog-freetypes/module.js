@@ -75,7 +75,7 @@
 
         getFreetypes();
     }
-    
+
     var liveblogFreetypesModule = angular.module('liveblog.freetypes', [])
     .config(['superdeskProvider', function(superdesk) {
         superdesk
