@@ -118,7 +118,7 @@ describe('Consumers', function() {
             };
 
             updateConsumer(consumer.name, contact.email).then(function() {
-                return updateConsumer(consumer.name + '1', 'test@googlemail.com');
+                return updateConsumer(consumer.name + '1');
             });
         });
 

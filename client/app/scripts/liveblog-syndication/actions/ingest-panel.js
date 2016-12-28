@@ -47,7 +47,8 @@ liveblogSyndication
                         method: (params.method == 'DELETE') ? 'DELETE' : 'POST',
                         data: { 
                             consumer_blog_id: params.consumerBlogId, 
-                            auto_publish: params.autoPublish
+                            auto_publish: params.autoPublish,
+                            auto_retrieve: params.autoRetrieve
                         },
                         headers: {
                             "Content-Type": "application/json;charset=utf-8"

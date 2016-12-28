@@ -180,7 +180,8 @@ def _fetch_and_create_image_item(renditions, **meta):
 
 def get_producer_post_id(in_syndication, post_id):
     """Helps to denormalize syndication producer blog post data and provide unique value for producer_post_id field."""
-    return '{}:{}:{}'.format(
+    return '{}:{}:{}:{}'.format(
+        in_syndication['blog_id'],
         in_syndication['producer_id'],
         in_syndication['producer_blog_id'],
         post_id
