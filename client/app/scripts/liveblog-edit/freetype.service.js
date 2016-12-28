@@ -40,7 +40,7 @@
         }
     }
     /**
-    * Creates or gets the path2obj from path in the obj.
+    * Sets and gets the obj from path.
     *    this is needed to create the vectors in the angular scope.
     */
     function path2obj(obj, path, value) {
@@ -134,7 +134,6 @@
                 if (!angular.isObject(scope[SCOPE_FREETYPEDATA])) {
                     scope[SCOPE_FREETYPEDATA] = {};
                 }
-                // @TODO: remove when freetype-collection mechanism is full implemented.
                 // transform collection mechaism for `scorers` or for dinamical lists.
                 template = template.replace(/\<li([^>]*)\>(.*?)\<\/li\>/g, function(all, attr, repeater) {
                     var iteratorName = getNewIndex('iterator');
