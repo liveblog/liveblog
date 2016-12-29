@@ -1,14 +1,58 @@
 <fieldset>
-    <legend translate>Away Team:</legend>
-    <div> <label for="away.name" translate>Name</label> <input id="away.name" name="$away.name" /> </div>
-    <div> <label for="away.score" translate>Score</label> <input id="away.score" name="$away.score" /> </div>
+    <legend>Away Team:</legend>
+    <div>
+        <label for="away.name">Name</label>
+        <input id="away.name" name="$away.name" />
+    </div>
+    <div>
+        <label for="away.score">Score</label>
+        <input id="away.score" name="$away.score" />
+    </div>
 </fieldset>
 <fieldset>
-    <legend translate>Home Team:</legend>
-    <div> <label for="home.name" translate>Home</label> <input id="home.name" name="$home.name" /> </div>
-    <div> <label for="home.score" translate>Score</label> <input id="home.score" name="$home.score" /> </div>
+    <legend>Home Team:</legend>
+    <div>
+        <label for="home.name">Home</label>
+        <input id="home.name" name="$home.name" />
+    </div>
+    <div>
+        <label for="home.score">Score</label>
+        <input id="home.score" name="$home.score" />
+    </div>
 </fieldset>
 <fieldset>
-    <legend translate>Minutes played:</legend>
-    <div> <input id="time" name="$time" /> </div>
+    <legend>Minutes played:</legend>
+    <div>
+        <input id="time" name="$time" />
+    </div>
 </fieldset>
+<fieldset>
+    <legend>Home scorer:</legend>
+    <ul>
+        <li>
+            <div>
+                <label>Name</label>
+                <input name="$home.scorers[0].name" />
+            </div>
+            <div>
+                <label>Minute</label>
+                <input name="$home.scorers[0].time" />
+            </div>
+        </li>
+    </ul>
+</fieldset>
+<fieldset>
+    <legend>Away scorer:</legend>
+    <ul>
+        <li>
+            <div>
+                <label>Name</label>
+                <input name="$away.scorers[0].name" />
+            </div>
+            <div>
+                <label>Minute</label>
+                <input name="$away.scorers[0].time" />
+            </div>
+        </li>
+    </ul>
+</fieldset> 
