@@ -33,13 +33,20 @@
         if (attr.substr(attr.length - 1, 1) === '/') {
             attr = attr.substr(0, attr.length - 1);
         }
-        return '"' + SCOPE_FREETYPEDATA + '.' + name.replace('[]', '[0]') + '" ' + attr;
+        if (name.substr(0, 1) === '$') {
+            return '"' + name.substr(1).replace('[]', '[0]') + '" ' + attr;
+        } else {
+            return '"' + SCOPE_FREETYPEDATA + '.' + name.replace('[]', '[0]') + '" ' + attr;
+        }
     }
     /**
-    * Create the structure from path in the obj.
+    * Sets and gets the obj from path.
     *    this is needed to create the vectors in the angular scope.
     */
-    function setStructure(obj, path, value) {
+    function path2obj(obj, path, value) {
+        if (path.substr(0, 1) === '$') {
+            return;
+        }
         var parts, part, vector;
         if (angular.isString(path)) {
             parts = path.split(/\./);
@@ -68,6 +75,9 @@
                     // if the object is already set, just use that.
                     if (angular.isDefined(variable[parts[i]])) {
                         variable = variable[parts[i]];
+                        if (i === parts.length - 1) {
+                            return variable;
+                        }
                     } else if (i === parts.length - 1){
                         variable[parts[i]] = value || '';
                     } else {
@@ -124,16 +134,34 @@
                 if (!angular.isObject(scope[SCOPE_FREETYPEDATA])) {
                     scope[SCOPE_FREETYPEDATA] = {};
                 }
+                // transform collection mechaism for `scorers` or for dinamical lists.
+                template = template.replace(/\<li([^>]*)\>(.*?)\<\/li\>/g, function(all, attr, repeater) {
+                    var iteratorName = getNewIndex('iterator');
+                    var parts, vector = '';
+                    repeater = repeater.replace(/\$([\$a-z0-9_.\[\]]+)/gi, function(all, path) {
+                        path2obj(scope[SCOPE_FREETYPEDATA], path);
+                        parts = path.split(/[\d*]/);
+                        if (parts.length === 2 && parts[1] != '') {
+                            vector = parts[0].substr(0, parts[0].length - 1);
+                            return '$$' + iteratorName + '.' + parts[1].substr(2);
+                        } else {
+                            return all;
+                        }
+                    });
+                    return '<li ng-repeat="' + iteratorName + ' in ' + SCOPE_FREETYPEDATA + '.' + vector + '">' +
+                            repeater + '<freetype-collection-remove index="$index" vector="' + SCOPE_FREETYPEDATA + '.' + vector + '"/>' +
+                            '</li><li><freetype-collection-add vector="' + SCOPE_FREETYPEDATA + '.' + vector + '"/></li>';
+                });
                 // transform dolar variables in the attributes of `name` or `text` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(name|text)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         // remove the dolar variable from the attributes.
                         return '';
                     });
                     if (name) {
-                        setStructure(scope[SCOPE_FREETYPEDATA], name);
+                        path2obj(scope[SCOPE_FREETYPEDATA], name);
                         return '<input ng-model=' + makeAngularAttr(name, attr) + '/>';
                     }
                     return all;
@@ -142,13 +170,13 @@
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>(.*?)<\/\1>?/gi, function(all, tag, attr, content) {
                     var name, parts;
                     content = content.replace(/^\s+|\s+$/g, '');
-                    parts = content.match(/^\$([a-z0-9]+)/gi);
+                    parts = content.match(/^\$([\$a-z0-9]+)/gi);
                     // content should be only the variable name
                     if (parts && parts[0].length === content.length) {
                         name = content.substr(1);
                     }
                     if (name) {
-                        setStructure(scope[SCOPE_FREETYPEDATA], name); a
+                        path2obj(scope[SCOPE_FREETYPEDATA], name);
                         return '<input ng-model=' + makeAngularAttr(name, attr) + '/>';
                     }
                     return all;
@@ -156,13 +184,13 @@
                 // transform dolar variables in the attributes of `image` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         // remove the dolar variable from the attributes.
                         return '';
                     });
                     if (name) {
-                        setStructure(scope[SCOPE_FREETYPEDATA], name + '.picture_url');
+                        path2obj(scope[SCOPE_FREETYPEDATA], name + '.picture_url');
                         return '<freetype-image image=' + makeAngularAttr(name, attr) + '></freetype-image>';
                     }
                     return all;
@@ -170,13 +198,13 @@
                 // transform dolar variables in the attributes of `link` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(link|url)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(link|url)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         // remove the dolar variable from the attributes.
                         return '';
                     });
                     if (name) {
-                        setStructure(scope[SCOPE_FREETYPEDATA], name);
+                        path2obj(scope[SCOPE_FREETYPEDATA], name);
                         return '<freetype-link link=' + makeAngularAttr(name, attr) + '></freetype-link>';
                     }
                     return all;
@@ -184,53 +212,72 @@
                 // transform dolar variables in the attributes of `embed` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(embed|html)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(embed|html)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
-                        // remove the dolar variable from the attributes.
+                        // remove the dolar variable from the avem o problema, attributes.
                         return '';
                     });
                     if (name) {
-                        setStructure(scope[SCOPE_FREETYPEDATA], name);
+                        path2obj(scope[SCOPE_FREETYPEDATA], name);
                         return '<freetype-embed embed=' + makeAngularAttr(name, attr) + '></freetype-embed>';
                     }
                     return all;
                 });
-                // @TODO: remove when freetype-collection mechanism is full implemented.
-                // transform collection mechaism for `scorers` or for dinamical lists.
-                // template = template.replace(/\<li[^>]*\>(.*?)\<\/li\>/g, function(all) {
-                //     return all + '<li><freetype-collection/></li>';
-                // })
                 return template;
 
             },
             htmlContent: function(template, data) {
-                var paths = {}, path, wrapBefore = '', wrapAfter = '';
+                var paths = {},
+                    path,
+                    wrapBefore = '',
+                    wrapAfter = '';
                 obj2path(paths, data);
+                template = template.replace(/\<li([^>]*)\>(.*?)\<\/li\>/g, function(all, attr, repeater) {
+                    var vector, vectorPath, parts, templ = '';
+                    repeater = repeater.replace(/\$([\$a-z0-9_.\[\]]+)/gi, function(all, path) {
+                        parts = path.split(/[\d*]/);
+                        if (parts.length === 2 && parts[1] != '') {
+                            vectorPath = parts[0].substr(0, parts[0].length - 1);
+                            return all;
+                        } else {
+                            return all;
+                        }
+                    });
+                    if (vectorPath) {
+                        vector = path2obj(data, vectorPath);
+                        for (var i = 1; i< vector.length; i++) {
+                            templ += '<li' + attr + '>' + repeater.replace('[]', '[0]').replace(/\$([\$a-z0-9_.\[\]]+)/gi, function(all) {
+                                return all.replace('[]', '[0]').replace('[0]', '[' + i  + ']');
+                            }) + '</li>';
+                        }
+                    }
+                    return all.replace('[]', '[0]') + templ;
+                });
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name, type;
                     // transform `name` and `text` variables.
-                    attr = attr.replace(/(name|text)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         type = 'text';
                         // remove the dolar variable from the attributes.
                         return '';
                     });
 
-                    attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname + '.picture_url';
                         type = 'image';
                         // remove the dolar variable from the attributes.
                         return '';
                     });
 
-                    attr = attr.replace(/(wrap-link)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(wrap-link)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         type = 'wrap-link';
                         // remove the dolar variable from the attributes.
                         return '';
                     });
 
-                    attr = attr.replace(/(embed)\w*=\w*("|')?\$([a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(embed)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         type = 'embed';
                         // remove the dolar variable from the attributes.
@@ -321,7 +368,7 @@
                     $compile(element.contents())(scope);
                     scope.initialData = angular.copy(scope.freetypeData);
                 });
-                
+
                 //methods to control freetype functionality from outside the directive
                 scope.internalControl = scope.control || {};
 
@@ -361,20 +408,37 @@
             }
         };
     }])
-    .directive('freetypeCollection', ['$compile', function($compile) {
+    .directive('freetypeCollectionAdd', ['$compile', function($compile) {
         return {
             restrict: 'E',
-            template: '<button ng-click="add()">+</button>',
-            controller: function() {
+            template: '<button ng-click="ftca.add()">+</button>',
+            controller: ['$scope', function($scope) {
                 this.add = function() {
-                    /* @TODO add here the mechanism for add more scorers or items */
+                    $scope.vector.push({});
                 }
-            },
+            }],
+            controllerAs: 'ftca',
             scope: {
-                tmpl: '='
+                vector: '='
             }
         };
     }])
+    .directive('freetypeCollectionRemove', function() {
+        return {
+            restrict: 'E',
+            template: '<button ng-click="ftcr.remove()" ng-show="vector.length!==1">-</button>',
+            controller: ['$scope', function($scope) {
+                this.remove = function() {
+                    $scope.vector.splice($scope.index, 1);
+                }
+            }],
+            controllerAs: 'ftcr',
+            scope: {
+                vector: '=',
+                index: '='
+            }
+        };
+    })
     .directive('freetypeImage', ['$compile', 'modal', 'api', 'upload', function($compile, modal, api, upload) {
         return {
             restrict: 'E',
