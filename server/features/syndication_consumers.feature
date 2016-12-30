@@ -57,6 +57,19 @@ Feature: Consumer Resource
         Then we get updated response
 
     @auth
+    Scenario: Update consumer with unsecure url
+        Given "consumers"
+        """
+        [{"name": "Consumer 1", "api_url": "http://localhost:5000/api", "contacts": [{"first_name": "Foo", "last_name": "Bar", "email": "foo@bar.tld", "phone": "+49123456789"}]}]
+        """
+        When we find for "consumers" the id as "consumer_id" by "where={"name": "Consumer 1"}"
+        And we patch "/consumers/#consumer_id#"
+        """
+        {"api_url": "http://liveblog.sourcefabric.org/api/"}
+        """
+        Then we get response code 400
+
+    @auth
     Scenario: Delete consumer
         Given "consumers"
         """
