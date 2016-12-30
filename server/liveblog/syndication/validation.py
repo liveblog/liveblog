@@ -1,6 +1,5 @@
 import urllib.parse
 from superdesk.validator import SuperdeskValidator
-from superdesk import get_resource_service
 from .utils import send_api_request, validate_secure_url
 from .exceptions import APIConnectionError
 
