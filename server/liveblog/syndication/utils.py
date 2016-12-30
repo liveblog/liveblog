@@ -267,9 +267,13 @@ def validate_secure_url(value):
     """Chech if url is secure (https or whitelist)"""
     parsed = urllib.parse.urlparse(value)
     # TODO: add whitelist app settings.
-    if parsed.netloc in ('localhost', '127.0.0.1') or parsed.netloc.endswith('.local'):
+    try:
+        netloc = parsed.netloc.split(':')[0]
+    except IndexError:
+        netloc = parsed.netloc
+    if netloc in ('localhost', '127.0.0.1') or netloc.endswith('.local'):
         return True
-    if parsed.schema != 'https':
+    if parsed.scheme != 'https':
         return False
     else:
         return True

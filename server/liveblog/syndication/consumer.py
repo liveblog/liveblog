@@ -44,7 +44,11 @@ consumers_schema = {
     'api_url': {
         'type': 'string',
         'required': True,
-        'unique': True
+        'unique': True,
+        'httpsurl': {
+            'key_field': None,
+            'check_auth': False
+        }
     }
 }
 
