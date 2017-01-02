@@ -7,8 +7,9 @@ liveblogSyndication
                 prosumer: '=',
             },
             link: function(scope) {
-                console.log('prosumer', scope.prosumer);
-                scope.contact = scope.prosumer.contacts[0];
+                scope.$watch('prosumer', function(prosumer) {
+                    scope.contact = prosumer.contacts[0];
+                })
             }
         };
     });
