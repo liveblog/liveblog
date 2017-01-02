@@ -64,23 +64,20 @@
     padding: 14px 10px;
 }
 
-.orderby__button {
-  opacity: .5;
-}
-
 .orderby__button:after {
+  opacity: .5;
   content: "\25B2";
   font-size: .6em;
   position: relative;
   top: -1px;
-  padding: 0px 6px 0px 2px;
+  padding: 0px 6px 0px 6px;
 }
 
 .orderby__button--reverse:after {
   content: "\25BC";
 }
 
-.orderby__button--active {
+.orderby__button--active:after {
   opacity: 1;
 }
 
@@ -94,6 +91,7 @@
 .pagination {
   display: block;
   margin: 20px 0;
+
   &__item {
     display: inline-block;
     text-align: center;
@@ -102,8 +100,10 @@
     border-radius: 2px;
     margin: 0 2px;
 
-    a {
+    button {
       color: @grayDark;
+      background: none;
+      border: none;
       display: inline-block;
       font-size: 14px;
       padding: 0 10px;
@@ -117,7 +117,7 @@
     &--active {
       background-color: @sd-blue;
       border-radius: 2px;
-      a { 
+      button { 
         color: #fff;
         &:hover {
           color: @white;
@@ -125,7 +125,7 @@
       }
     }
     &--disabled {
-      a {
+      button {
         cursor: default;
         color: #ccc;
       }

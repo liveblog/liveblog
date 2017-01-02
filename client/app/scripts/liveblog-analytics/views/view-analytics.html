@@ -9,7 +9,7 @@
         <span class="navbtn navbtn-active">
             <i class="svg-icon-analytics"></i>
         </span>
-        <span class="navbtn" tooltip-placement="left" tooltip="Settings" translate="">
+        <span class="navbtn">
             <i class="svg-icon-settings"></i>
         </span>
     </div>
@@ -26,12 +26,9 @@
                 <li ng-class="{active: (analytics.tab === 'embeds')}">
                     <a ng-href="" ng-click="analytics.changeTab('embeds')" translate>Embeds</a>
                 </li>
-                <li ng-class="{active: (analytics.tab === 'syndication')}" data="blog-analytics-syndication">
-                    <a ng-href="" ng-click="analytics.changeTab('syndication')" translate>Syndication</a>
-                </li>
             </ul>
             <div>
-                <!-- GENERAL -->
+                <!-- Embeds -->
                 <div class="split-content tab-content outer" ng-if="(analytics.tab === 'embeds')">
                     <div class="header">
                         <h2 translate>Embeds</h2>
@@ -43,15 +40,6 @@
                             </button>
                             <lb-analytics-list showSourceBadge="false" loadMore="loadMore()"" analytics="analytics_data"></lb-analytics-list>
                         </div>
-                    </div>
-                </div>
-                <!-- Users -->
-                <div class="split-content tab-content outer" ng-if="(analytics.tab === 'syndication')">
-                    <div class="header">
-                        <h2 translate>Syndication</h2>
-                    </div>
-                     <div class="content">
-                        
                     </div>
                 </div>
             </div>

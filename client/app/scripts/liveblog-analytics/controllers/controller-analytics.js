@@ -18,7 +18,7 @@ function LiveblogAnalyticsController($scope, $location, api, analytics, blog, no
     })
   };
 
-  loadAnalytics(); // greedy
+  loadAnalytics(); // greedy, as calls aren't expensive/don't need to scale
   
   angular.extend(vm, {
     blog: blog,
