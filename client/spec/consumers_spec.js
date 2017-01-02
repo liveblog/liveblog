@@ -6,7 +6,7 @@ var login = require('../app/scripts/bower_components/superdesk/client/spec/helpe
 
 var consumer = {
     name: 'Massey Fergusson',
-    apiUrl: 'http://www.masseyferguson.de/api'
+    webhookUrl: 'http://www.masseyferguson.de/api'
 };
 
 var contact = {
@@ -42,7 +42,7 @@ describe('Consumers', function() {
                     return element(by.css('input#name')).sendKeys(consumer.name);
                 })
                 .then(function() {
-                    return element(by.css('input#api-url')).sendKeys(consumer.apiUrl);
+                    return element(by.css('input#webhook-url')).sendKeys(consumer.webhookUrl);
                 })
                 .then(function() {
                     return element(by.css('input[name="first_name"]'))

@@ -15,15 +15,25 @@ class SyndicationValidator(SuperdeskValidator):
 
             key_field = httpsurl.get('key_field')
             check_auth = httpsurl.get('check_auth')
+            webhook = httpsurl.get('webhook')
             chech_auth_enabled = app.config.get('SYNDICATION_VALIDATE_AUTH', False)
+
+            if webhook:
+                url_path = urllib.parse.urlparse(value).path.rstrip('/')
+                if not url_path.endswith('syndication/webhook'):
+                    return self._error(field, "The provided webhook url doesn't ends with 'syndication/webhook'")
+                else:
+                    api_url = value
 
             if check_auth and key_field:
                 api_key = self.document.get(key_field)
                 if not api_key:
-                    return self._error(field, "Unable to find api_key for the given resource url.")
+                    return self._error(field, "Unable to find '{}' for the given resource url.".format(key_field))
+
 
                 if chech_auth_enabled:
-                    api_url = urllib.parse.urljoin(value, 'syndication/blogs')
+                    if not webhook:
+                        api_url = urllib.parse.urljoin(value, 'syndication/blogs')
                     try:
                         response = send_api_request(api_url, api_key, json_loads=False, timeout=5)
                     except APIConnectionError:
