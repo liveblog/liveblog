@@ -30,7 +30,6 @@ class SyndicationValidator(SuperdeskValidator):
                 if not api_key:
                     return self._error(field, "Unable to find '{}' for the given resource url.".format(key_field))
 
-
                 if chech_auth_enabled:
                     if not webhook:
                         api_url = urllib.parse.urljoin(value, 'syndication/blogs')
