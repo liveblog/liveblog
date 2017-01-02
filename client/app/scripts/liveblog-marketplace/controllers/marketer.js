@@ -8,17 +8,18 @@ liveblogMarketplace
                 'allowfullscreen'
             ].join(' ');
 
-//            $scope.states = [
-//                { text: 'Active Blogs' },
-//                { text: 'Archived Blogs' }
-//            ];
 
             $scope.embedModal = false;
             $scope.active = 'preview';
+            $scope.blogsView = 'grid';
 
             $scope.openEmbedModal = function(blog) {
                 $scope.embedModal = true;
                 $scope.currentBlog = blog;
+            };
+
+            $scope.setBlogsView = function(view) {
+                $scope.blogsView = (view == 'grid') ? 'grid' : 'list';
             };
 
             $scope.cancelEmbed = function() {

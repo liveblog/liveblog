@@ -14,11 +14,42 @@
 <section class="main-section bloglist marketer">
     <header>
         <!--<div sd-searchbar></div>-->
-        <div sd-pagination data-items="blogs" data-limit="25"></div>
+        <div class="view-select pull-right">
+            <button
+                title="{{ 'switch to grid view' | translate}}"
+                ng-show="blogsView === 'list'"
+                ng-click="setBlogsView('grid');">
+                <i class="icon-th"></i>
+            </button>
+            <button
+                title="{{ 'switch to list view' | translate}}"
+                ng-show="blogsView === 'grid'"
+                ng-click="setBlogsView('list');">
+                <i class="icon-th-list"></i>
+            </button>
+        </div>
+         <div sd-pagination data-items="blogs" data-limit="25"></div>
     </header>
     <div class="list-container">
+        <!-- LIST VIEW -->
+        <table class="row-list table table-striped" ng-if="blogsView === 'list'">
+            <tbody>
+                <tr ng-repeat="blog in blogs._items track by blog._id"
+                    ng-click="openEmbedModal(blog)"
+                    class="can-access">
+                    <td class="content">
+                        <h3>{{ ::blog.title }} <small>by {{ ::blog.original_creator | username }}</small></h3>
+                        <div class="description">{{ ::blog.description | htmlToPlaintext }}</div>
+                        <div class="time visible-phone">
+                            {{ ::'Created' | translate}} {{ ::blog._created | reldate }},
+                            {{ ::'updated' | translate }} {{ ::blog._updated | reldate }}.
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <!-- GRID VIEW -->
-        <ul class="card-list">
+        <ul class="card-list" ng-if="blogsView === 'grid'">
             <li
                 ng-repeat="blog in blogs._items track by blog._id"
                 ng-click="openEmbedModal(blog)"
