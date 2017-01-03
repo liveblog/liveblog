@@ -3,6 +3,7 @@ from .consumer import ConsumerService, ConsumerResource
 from .producer import ProducerService, ProducerResource
 from .blogs import BlogService, BlogResource, BlogPostsService, BlogPostsResource
 from .syndication import SyndicationOut, SyndicationOutService, SyndicationIn, SyndicationInService
+from .validation import SyndicationValidator
 
 
 def init_app(app):
@@ -23,6 +24,8 @@ def init_app(app):
     SyndicationOut('syndication_out', app=app, service=service)
     service = SyndicationInService('syndication_in', backend=superdesk.get_backend())
     SyndicationIn('syndication_in', app=app, service=service)
+    # Add validator for api_url & webhook_url
+    app.validator = SyndicationValidator
 
 
 superdesk.privilege(name='consumers', label='Consumers Management', description='User can manage consumers')

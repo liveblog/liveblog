@@ -25,7 +25,6 @@ WEBHOOK_METHODS = {
     'deleted': 'DELETE'
 }
 
-
 syndication_out_schema = {
     'blog_id': Resource.rel('blogs', embeddable=True, required=True, type="objectid"),
     'consumer_id': Resource.rel('consumers', embeddable=True, required=True, type="objectid"),

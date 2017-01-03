@@ -4,6 +4,7 @@ import hmac
 import logging
 import requests
 import tempfile
+import urllib.parse
 from bson import ObjectId
 from hashlib import sha1
 from flask import make_response
@@ -260,3 +261,19 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
         'producer_post_id': producer_post_id
     }
     return new_post
+
+
+def validate_secure_url(value):
+    """Chech if url is secure (https or whitelist)"""
+    parsed = urllib.parse.urlparse(value)
+    # TODO: add whitelist app settings.
+    try:
+        netloc = parsed.netloc.split(':')[0]
+    except IndexError:
+        netloc = parsed.netloc
+    if netloc in ('localhost', '127.0.0.1') or netloc.endswith('.local'):
+        return True
+    if parsed.scheme != 'https':
+        return False
+    else:
+        return True

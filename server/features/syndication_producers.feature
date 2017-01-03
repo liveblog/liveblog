@@ -57,6 +57,19 @@ Feature: Producer Resource
         Then we get updated response
 
     @auth
+    Scenario: Update producer with unsecure url
+        Given "producers"
+        """
+        [{"name": "Producer 1", "api_url": "http://localhost:5000/api/", "consumer_api_key": "__any_value__"}]
+        """
+        When we find for "producers" the id as "producer_id" by "where={"name": "Producer 1"}"
+        And we patch "/producers/#producer_id#"
+        """
+        {"api_url":"http://liveblog.sourcefabric.org/"}
+        """
+        Then we get response code 400
+
+    @auth
     Scenario: Delete producer
         Given "producers"
         """
