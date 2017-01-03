@@ -1,0 +1,36 @@
+<header>
+    <!--<div sd-searchbar></div>-->
+    <div sd-pagination data-items="marketers" data-limit="25"></div>
+</header>
+<div class="list-container">
+    <ul class="card-list">
+        <li
+            ng-repeat="marketer in marketers._items track by marketer._id" 
+            ng-click="open(marketer)"
+            class="can-access">
+            <figure class="media">
+                <div
+                    ng-if="marketer.picture_url" 
+                    if-background-image="{{marketer.picture_url}}"></div>
+            </figure>
+            <div class="content">
+                <h3>{{ ::marketer.name }}</h3>
+            </div>
+            <div class="footer">
+                <dl>
+                    <dt>{{ ::'Email' | translate }}:</dt>
+                    <dd>{{ ::marketer.email}}</dd>
+                    <dt>{{ ::'Phone' | translate }}:</dt>
+                    <dd><time>{{ ::marketer.phone }}</time></dd>
+                </dl>
+            </div>
+<!--            <div class="footer">
+                <dl>
+                    <dt>{{ ::'Syndicated blogs' | translate }}:</dt>
+                    <dd></dd>
+                </dl>
+            </div>-->
+        </li>
+    </ul>
+</div>
+

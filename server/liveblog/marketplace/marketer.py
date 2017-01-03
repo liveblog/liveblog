@@ -54,9 +54,11 @@ def marketer_blogs(marketer_id):
         return api_response(str(e), 500)
 
     if response.status_code == 200:
+        # Add marketer name to each blog
         content = json.loads(response.content.decode('utf-8'))
-        response_content = {"marketer": marketer, "blogs": content['_items']}
-        response_content = json.dumps(response_content)
+        for item in content['_items']:
+            item['marketer_name'] = marketer['name']
+        response_content = json.dumps(content)
         return api_response(response_content, response.status_code, json_dumps=False)
     else:
         return api_error('Unable to get blogs of marketers.', response.status_code)

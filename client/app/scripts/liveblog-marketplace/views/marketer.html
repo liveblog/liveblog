@@ -1,0 +1,89 @@
+<div class="subnav">
+    <div class="button-stack left-stack" >
+        <a class="navbtn hover" href="/#/marketplace">
+            <i class="icon-chevron-left-thin"></i>
+        </a>
+        <ul class="nav nav-tabs pull-left" >
+            <li ng-class="{active: activeState === state}" ng-repeat="state in states">
+                <button ng-click="changeState(state)" translate>{{ ::state.text }}</button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<section class="main-section bloglist marketer">
+    <header>
+        <!--<div sd-searchbar></div>-->
+        <div sd-pagination data-items="blogs" data-limit="25"></div>
+    </header>
+    <div class="list-container">
+        <!-- GRID VIEW -->
+        <ul class="card-list">
+            <li
+                ng-repeat="blog in blogs._items track by blog._id"
+                ng-click="openEmbedModal(blog)"
+                class="can-access">
+                <figure class="media">
+                    <div ng-if="blog.picture_url" if-background-image="{{blog.picture_url}}"></div>
+                </figure>
+                <div class="content">
+                    <h3>{{ ::blog.title }}</h3>
+                    <div class="description">{{ ::blog.description | htmlToPlaintext }}</div>
+                </div>
+                <div class="footer">
+                    <dl>
+                        <dt>{{ ::'Blog owner' | translate }}:</dt>
+                        <dd>{{ ::blog.marketer_name }}</dd>
+                        <dt>{{ ::'Created' | translate}}:</dt>
+                        <dd sd-reldate ng-model="blog._created"></dd>
+                        <dt>{{ ::'Last udpated' | translate }}:</dt>
+                        <dd><time>{{ ::blog._updated | reldate }}</time></dd>
+                    </dl>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div sd-modal="" data-model="embedModal" class="mp-embed-modal">
+        <div class="modal-header">
+            <button class="close" ng-click="cancelEmbed()">
+                <i class="icon-close-small"></i>
+            </button>
+            <h3><span>Producer Blog:</span> {{currentBlog.title}}</h3>
+        </div>
+        <div class="modal-body" style="min-height: 300px;">
+            <ul class="nav nav-tabs">
+                <li ng-class="{active: active == 'preview'}">
+                    <button
+                        type="button" 
+                        translate 
+                        ng-click="active = 'preview'">Preview</button>
+                </li>
+                <li ng-class="{active: active == 'settings'}">
+                    <button
+                        type="button"
+                        translate
+                        ng-click="active = 'settings'">Settings</button>
+                </li>
+            </ul>
+            <iframe
+                class="modal-body"
+                ng-if="active == 'preview'"
+                width="100%"
+                height="715"
+                ng-src="{{currentBlog.public_url}}"
+                frameborder="0"
+                allowfullscreen></iframe>
+            <div
+                class="settings" 
+                ng-if="active == 'settings'">
+                <p><b>{{ ::'Embed code' | translate }}:</b></p>
+                <textarea
+                    class="form-control"
+                    rows="6"
+                    readonly="readonly"
+                    select-text-on-click>{{ currentBlog.embed }}</textarea>
+            </div>
+        </div>
+    </div>
+</section>

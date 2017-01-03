@@ -430,6 +430,7 @@ define([
                     original_creator: vm.original_creator._id,
                     blog_status: vm.blog_switch === true? 'open': 'closed',
                     syndication_enabled: vm.syndication_enabled,
+                    market_enabled: vm.market_enabled,
                     members: members
                 };
                 angular.extend(vm.newBlog, changedBlog);
@@ -583,6 +584,7 @@ define([
         vm.changeTab('general');
         vm.blog_switch = vm.newBlog.blog_status === 'open'? true: false;
         vm.syndication_enabled = vm.newBlog.syndication_enabled;
+        vm.market_enabled = vm.newBlog.market_enabled;
     }
 
     /**

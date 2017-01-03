@@ -1,0 +1,30 @@
+<header>
+    <!--<div sd-searchbar></div>-->
+    <div sd-pagination data-items="marketers" data-limit="25"></div>
+</header>
+<div class="list-container">
+    <ul class="card-list">
+        <li
+            ng-repeat="producer in producers._items track by producer._id" 
+            ng-click="open(producer)"
+            class="can-access">
+            <figure class="media">
+                <div
+                    ng-if="producer.picture_url" 
+                    if-background-image="{{producer.picture_url}}"></div>
+            </figure>
+            <div class="content">
+                <h3>{{ ::producer.name }}</h3>
+                <div class="description">{{producer.email}}</div>
+                <div class="description">{{producer.phone}}</div>
+            </div>
+<!--            <div class="footer">
+                <dl>
+                    <dt>{{ ::'Syndicated blogs' | translate }}:</dt>
+                    <dd>22</dd>
+                </dl>
+            </div>-->
+        </li>
+    </ul>
+</div>
+

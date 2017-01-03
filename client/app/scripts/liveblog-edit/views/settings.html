@@ -133,6 +133,16 @@
                             <div lb-syndication-switch></div>
 
                             <div class="form-group">
+                                <label for="inputTitle" class="control-label" translate>Market</label>
+                                <div class="form-input relative">
+                                    <span class="blog-status">{{ settings.market_enabled ? 'Marketed' : 'Private' | translate }}</span>
+                                    <span style="display: block" tooltip="{{ settings.market_enabled ? 'Keep private' : 'Show in market' | translate }}" tooltip-placement="right">
+                                        <span class="pull-left" sd-switch ng-model="settings.market_enabled" data-blog-status-switch></span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="removeBlog" class="control-label" translate>Blog removal</label>
                                 <div class="form-input">
                                     <button

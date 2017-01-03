@@ -1,0 +1,23 @@
+<div class="subnav">
+    <div class="button-stack left-stack" >
+        <ul class="nav nav-tabs pull-left" >
+            <li
+                ng-class="{active: activeState === state}" 
+                ng-repeat="state in states">
+                <button
+                    ng-click="switchTab(state)"
+                    translate>{{ ::state }}</button>
+            </li>
+        </ul>
+    </div>
+</div>
+
+<section
+    lb-marketers-grid
+    class="main-section bloglist"
+    ng-show="activeState == 'Marketers'"></section>
+
+<section 
+    lb-producers-grid
+    class="main-section bloglist"
+    ng-if="activeState == 'Producers'"></section>
