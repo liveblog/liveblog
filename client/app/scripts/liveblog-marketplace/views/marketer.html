@@ -1,8 +1,8 @@
 <div class="subnav">
     <div class="button-stack left-stack" >
-        <button class="navbtn hover" href="/#/liveblog">
-            <i class="icon-th-large"></i>
-        </button>
+        <a class="navbtn hover" href="/#/marketplace">
+            <i class="icon-chevron-left-thin"></i>
+        </a>
         <ul class="nav nav-tabs pull-left" >
             <li ng-class="{active: activeState === state}" ng-repeat="state in states">
                 <button ng-click="changeState(state)" translate>{{ ::state.text }}</button>
