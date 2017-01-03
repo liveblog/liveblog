@@ -32,7 +32,11 @@ liveblogSyndication
                         if (state.error) handleError();
                     });
 
-                    IngestPanelActions.getSyndication();
+                    // Small inconsistency in the code. This function takes
+                    // the consumer blog id as a parameter.
+                    // Whereas IncomingSyndication.getSyndiction takes the
+                    // actual syndication id as a parameter.
+                    IngestPanelActions.getSyndication($routeParams._id);
 
                     scope.openSyndBlogsModal = function() {
                         IngestPanelActions.toggleModal(true);
@@ -57,7 +61,11 @@ liveblogSyndication
                     scope.updateSyndication = function(synd) {
                         IngestPanelActions.updateSyndication(
                             synd._id,
-                            { auto_publish: synd.auto_publish },
+                            {
+                                auto_publish: synd.auto_publish,
+                                auto_retrieve: synd.auto_retrieve,
+                                start_date: synd.start_date
+                            },
                             synd._etag
                         );
                     };
@@ -71,6 +79,8 @@ liveblogSyndication
                             producerBlogId: synd.producer_blog_id,
                             consumerBlogId: scope.consumerBlogId,
                             autoPublish: synd.auto_publish,
+                            startDate: synd.start_date,
+                            autoRetrieve: synd.auto_retrieve,
                             method: 'DELETE'
                         });
                     };

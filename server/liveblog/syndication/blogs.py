@@ -1,4 +1,5 @@
 import logging
+import datetime
 from bson import ObjectId
 from flask import request, abort, Blueprint
 from superdesk.services import BaseService
@@ -6,6 +7,7 @@ from superdesk import get_resource_service
 from liveblog.blogs.blogs import blogs_schema
 from liveblog.posts.posts import PostsResource
 from flask_cors import CORS
+from eve.utils import str_to_date
 
 from .utils import api_error, api_response
 from .auth import CustomAuthResource, ConsumerApiKeyAuth
@@ -62,10 +64,10 @@ def _get_consumer_from_auth():
     return consumer
 
 
-def _create_blogs_syndicate(blog_id, consumer_blog_id):
+def _create_blogs_syndicate(blog_id, consumer_blog_id, auto_retrieve, start_date):
     # Get the blog to be syndicated - must be enabled for syndication
     blogs_service = get_resource_service('blogs')
-    blog = blogs_service.find_one(req=None, checkUser=False, _id=blog_id)
+    blog = blogs_service.find_one(req=None, checkUser=False, _id=blog_id)  # TODO: Camel-case ist verboten!
     if blog is None:
         return api_error('No blog available for syndication with given id "{}".'.format(blog_id), 409)
     if not blog['syndication_enabled']:
@@ -76,18 +78,42 @@ def _create_blogs_syndicate(blog_id, consumer_blog_id):
     consumer_id = str(consumer['_id'])
     if out_service.is_syndicated(consumer_id, blog_id, consumer_blog_id):
         return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
-    "{}"
-    syndication_id = out_service.post([{
+
+    if not start_date:
+        # TODO: Find a way to force value to None, as it's ignoring schema settings.
+        # we are forced to set a date in the past, as python-eve is saving by default to datetime.datetime.now().
+        start_date = datetime.datetime(2010, 1, 1, 0, 0, 0)
+
+    doc = {
         'blog_id': blog_id,
         'consumer_id': consumer_id,
-        'consumer_blog_id': consumer_blog_id
-    }])[0]
+        'consumer_blog_id': consumer_blog_id,
+        'start_date': start_date,
+        'auto_retrieve': auto_retrieve
+    }
+
+    syndication_id = out_service.post([doc])[0]
     syndication = out_service.find_one(_id=syndication_id, req=None)
     return api_response({
         'token': syndication['token'],
         'producer_blog_title': blog['title'],
-        'consumer_blog_id': consumer_blog_id  # we return it anyway for consistency.
+        'consumer_blog_id': consumer_blog_id,  # we return it anyway for consistency.
+        '_status': 'OK'
     }, 201)
+
+
+def _update_blogs_syndicate(blog_id, consumer_blog_id, auto_retrieve, start_date):
+    consumer = _get_consumer_from_auth()
+    out_service = get_resource_service('syndication_out')
+    consumer_id = str(consumer['_id'])
+    syndication_out = out_service.get_syndication(consumer_id, blog_id, consumer_blog_id)
+    if not syndication_out:
+        return api_error('Syndication not sent for blog "{}".'.format(blog_id), 404)
+    out_service.update(syndication_out['_id'], {
+        'start_date': start_date,
+        'auto_retrieve': auto_retrieve
+    }, syndication_out)
+    return api_response({'_status': 'OK'}, 200)
 
 
 def _delete_blogs_syndicate(blog_id, consumer_blog_id):
@@ -107,16 +133,27 @@ def _delete_blogs_syndicate(blog_id, consumer_blog_id):
         return api_response({}, 204)
 
 
-@blogs_blueprint.route('/api/syndication/blogs/<string:blog_id>/syndicate', methods=['POST', 'DELETE'])
+@blogs_blueprint.route('/api/syndication/blogs/<string:blog_id>/syndicate', methods=['POST', 'PATCH', 'DELETE'])
 def blogs_syndicate(blog_id):
-    consumer_blog_id = request.get_json().get('consumer_blog_id')
+    data = request.get_json()
+    start_date = data.get('start_date')
+    auto_retrieve = data.get('auto_retrieve', True)
+    if start_date:
+        try:
+            start_date = str_to_date(start_date)
+        except ValueError:
+            return api_error('start_date is not valid.', 400)
+
+    consumer_blog_id = data.get('consumer_blog_id')
     if not consumer_blog_id:
         return api_error('Missing "consumer_blog_id" in form data.', 422)
 
     if request.method == 'DELETE':
         return _delete_blogs_syndicate(blog_id, consumer_blog_id)
+    elif request.method == 'PATCH':
+        return _update_blogs_syndicate(blog_id, consumer_blog_id, auto_retrieve, start_date)
     else:
-        return _create_blogs_syndicate(blog_id, consumer_blog_id)
+        return _create_blogs_syndicate(blog_id, consumer_blog_id, auto_retrieve, start_date)
 
 
 def _blogs_blueprint_auth():

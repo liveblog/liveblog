@@ -135,7 +135,7 @@ describe('Producers', function() {
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
             expect(firstRowName.getText()).toEqual('John Deere');
 
-            var updateProducer = function(producerName) {
+            var updateProducer = function(producerName, contactEmail) {
                 return firstRowName
                     .click()
                     .then(function() {
@@ -146,6 +146,13 @@ describe('Producers', function() {
                     })
                     .then(function() {
                         return element(by.css('input#name')).sendKeys(producerName);
+                    })
+                    .then(function() {
+                        return element(by.css('input[name="email"]')).clear();
+                    })
+                    .then(function() {
+                        return element(by.css('input[name="email"]'))
+                            .sendKeys(contactEmail);
                     })
                     .then(function() {
                         return element(by.css('#save-edit-btn')).click();
@@ -163,8 +170,8 @@ describe('Producers', function() {
                     });
             };
 
-            updateProducer(producer.name).then(function() {
-                return updateProducer(producer.name + '1');
+            updateProducer(producer.name, contact.email).then(function() {
+                return updateProducer(producer.name + '1', 'sketch@up.com');
             });
         });
 

@@ -178,9 +178,10 @@ def _fetch_and_create_image_item(renditions, **meta):
     }
 
 
-def _create_producer_post_id(in_syndication, post_id):
+def get_producer_post_id(in_syndication, post_id):
     """Helps to denormalize syndication producer blog post data and provide unique value for producer_post_id field."""
-    return '{}:{}:{}'.format(
+    return '{}:{}:{}:{}'.format(
+        in_syndication['blog_id'],
         in_syndication['producer_id'],
         in_syndication['producer_blog_id'],
         post_id
@@ -192,7 +193,21 @@ def extract_producer_post_data(post, fields=('_id', '_updated', 'highlight', 'st
     return {key: post[key] for key in fields}
 
 
-def create_syndicated_blog_post(producer_post, items, in_syndication, post_status=None):
+def get_post_creator(post):
+    """Get publisher/author from consumer post."""
+    ref = None
+    for group in post['groups']:
+        if group['id'] == 'main':
+            ref = group['refs'][0]
+    if ref:
+        items_service = get_resource_service('blog_items')
+        item = items_service.find_one(req=None, guid=ref['residRef'])
+
+        if item:
+            return item.get('original_creator')
+
+
+def create_syndicated_blog_post(producer_post, items, in_syndication):
     """Create syndicted blog post data using producer post, fetched items and incoming syndication."""
     post_items = []
     for item in items:
@@ -214,14 +229,13 @@ def create_syndicated_blog_post(producer_post, items, in_syndication, post_statu
             'residRef': str(item_id)
         })
 
-    if not post_status:
-        auto_publish = in_syndication.get('auto_publish', False)
-        if auto_publish:
-            post_status = 'open'
-        else:
-            post_status = 'submitted'
+    auto_publish = in_syndication.get('auto_publish', False)
+    if auto_publish:
+        post_status = 'open'
+    else:
+        post_status = 'submitted'
 
-    producer_post_id = _create_producer_post_id(in_syndication, producer_post['_id'])
+    producer_post_id = get_producer_post_id(in_syndication, producer_post['_id'])
     new_post = {
         'blog': in_syndication['blog_id'],
         'groups': [

@@ -6,6 +6,7 @@ from superdesk import get_resource_service
 from flask import abort, Blueprint, request
 from apps.auth import SuperdeskTokenAuth
 from flask_cors import CORS
+from eve.utils import str_to_date
 from .utils import trailing_slash, api_response, api_error, send_api_request
 from .exceptions import APIConnectionError, ProducerAPIError
 
@@ -44,7 +45,8 @@ producers_schema = {
     },
     'api_url': {
         'type': 'string',
-        'required': True
+        'required': True,
+        'unique': True
     },
     'consumer_api_key': {
         'type': 'string',
@@ -95,10 +97,19 @@ class ProducerService(BaseService):
         url_path = 'syndication/blogs/{}/posts'.format(blog_id)
         return self._send_api_request(producer_id, url_path, json_loads=json_loads)
 
-    def syndicate(self, producer_id, blog_id, consumer_blog_id, json_loads=True):
+    def syndicate(self, producer_id, blog_id, consumer_blog_id, auto_retrieve, start_date, update=False,
+                  json_loads=True):
         url_path = 'syndication/blogs/{}/syndicate'.format(blog_id)
-        data = {'consumer_blog_id': consumer_blog_id}
-        return self._send_api_request(producer_id, url_path, method='POST', data=data, json_loads=json_loads)
+        data = {
+            'start_date': start_date,
+            'auto_retrieve': auto_retrieve,
+            'consumer_blog_id': consumer_blog_id
+        }
+        if not update:
+            method = 'POST'
+        else:
+            method = 'PATCH'
+        return self._send_api_request(producer_id, url_path, method=method, data=data, json_loads=json_loads)
 
     def unsyndicate(self, producer_id, blog_id, consumer_blog_id, json_loads=True):
         url_path = 'syndication/blogs/{}/syndicate'.format(blog_id)
@@ -160,14 +171,16 @@ def producer_blog_posts(producer_id, blog_id):
             return api_error('Unable to get producer blog posts.', response.status_code)
 
 
-def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish):
+def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish, auto_retrieve,
+                                     start_date=None):
     producers = get_resource_service('producers')
     in_service = get_resource_service('syndication_in')
     if in_service.is_syndicated(producer_id, blog_id, consumer_blog_id):
         return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
 
     try:
-        response = producers.syndicate(producer_id, blog_id, consumer_blog_id, json_loads=False)
+        response = producers.syndicate(producer_id, blog_id, consumer_blog_id, auto_retrieve, start_date,
+                                       json_loads=False)
     except ProducerAPIError as e:
         return api_response(str(e), 500)
     else:
@@ -179,13 +192,41 @@ def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, aut
                 'producer_id': producer_id,
                 'producer_blog_id': blog_id,
                 'producer_blog_title': syndication['producer_blog_title'],
-                'auto_publish': auto_publish
+                'auto_publish': auto_publish,
+                'auto_retrieve': auto_retrieve,
+                'start_date': start_date
             }])
             return api_response(response.content, response.status_code, json_dumps=False)
         elif response.status_code == 409:
             return api_error('Syndication already sent for blog "{}"'.format(blog_id), 409)
         else:
             return api_error('Unable to syndicate producer blog.', response.status_code)
+
+
+def _update_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_retrieve, start_date):
+    producers = get_resource_service('producers')
+    in_service = get_resource_service('syndication_in')
+    if not in_service.is_syndicated(producer_id, blog_id, consumer_blog_id):
+        return api_error('Syndication not sent for blog "{}".'.format(blog_id), 409)
+
+    try:
+        response = producers.syndicate(producer_id, blog_id, consumer_blog_id, start_date, update=True,
+                                       json_loads=False)
+    except ProducerAPIError as e:
+        return api_response(str(e), 500)
+    else:
+        if response.status_code == 200:
+            syndication_in = in_service.get_syndication(producer_id, blog_id, consumer_blog_id)
+            in_service.update(syndication_in['_id'], {
+                'auto_retrieve': auto_retrieve,
+                'start_date': start_date
+            }, syndication_in)
+            del syndication_in['blog_token']
+            return api_response(syndication_in, 200)
+        elif response.status_code == 404:
+            return api_error('Syndication not sent for blog "{}"'.format(blog_id), 409)
+        else:
+            return api_error('Unable to update blog syndication.', response.status_code)
 
 
 def _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
@@ -212,17 +253,30 @@ def _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
             return api_error('Unable to unsyndicate producer blog.', response.status_code)
 
 
-@producers_blueprint.route('/api/producers/<producer_id>/syndicate/<blog_id>', methods=['POST', 'DELETE'])
+@producers_blueprint.route('/api/producers/<producer_id>/syndicate/<blog_id>', methods=['POST', 'PATCH', 'DELETE'])
 def producer_blogs_syndicate(producer_id, blog_id):
-    consumer_blog_id = request.get_json().get('consumer_blog_id')
-    auto_publish = request.get_json().get('auto_publish')
+    data = request.get_json()
+    consumer_blog_id = data.get('consumer_blog_id')
+    auto_publish = data.get('auto_publish')
+    auto_retrieve = data.get('auto_retrieve', True)
+    start_date = data.get('start_date')
+
     if not consumer_blog_id:
         return api_error('Missing "consumer_blog_id" in form data.', 422)
 
+    if start_date:
+        try:
+            start_date = str_to_date(start_date)
+        except ValueError:
+            return api_error('start_date is not valid.', 400)
+
     if request.method == 'DELETE':
         return _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id)
+    elif request.method == 'PATCH':
+        return _update_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_retrieve, start_date)
     else:
-        return _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish)
+        return _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish, auto_retrieve,
+                                                start_date)
 
 
 def _producers_blueprint_auth():

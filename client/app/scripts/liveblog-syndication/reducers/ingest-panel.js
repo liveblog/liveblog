@@ -57,7 +57,9 @@ liveblogSyndication
                                 })
                                 .map(function(blog) {
                                     blog.checked = false;
+                                    blog.start_date = null; // Default start_date as null
                                     blog.auto_publish = false; // Default autopublish as false
+                                    blog.auto_retrieve = true; // Default autoretrieve as true
 
                                     state.locallySyndicatedItems.forEach(function(localBlog) {
                                         if (localBlog.producer_blog_id == blog._id) {
@@ -74,9 +76,16 @@ liveblogSyndication
                     });
 
                 case 'ON_TOGGLE_MODAL':
-                    return angular.extend(state, {
-                        modalActive: action.modalActive
-                    });
+                    if (action.modalActive)
+                        return angular.extend(state, {
+                            modalActive: action.modalActive
+                        });
+                    else
+                        return angular.extend(state, {
+                            producerBlogs: {},
+                            localProducerBlogIds: [],
+                            modalActive: action.modalActive
+                        });
 
                 case 'ON_ERROR':
                     return angular.extend(state, {
