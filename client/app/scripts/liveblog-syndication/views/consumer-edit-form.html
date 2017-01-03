@@ -27,6 +27,10 @@
                     ng-model="consumer.name" 
                     required ng-readonly="consumer._readonly && consumer._readonly.name">
                   <i ng-show="consumerForm.name.$error.required" class="required-asteriks">*</i>
+                  <div 
+                      class="error" 
+                      ng-show="consumerForm.attempted && consumerForm.name.$error.required" 
+                      translate>This field is required</div>
                 </div>
                 <div sd-info-item>
                   <label for="webhook-url" translate>Webhook Url</label>
@@ -37,6 +41,10 @@
                     ng-model="consumer.webhook_url"
                     required ng-readonly="consumer._readonly && consumer._readonly.webhook_url">
                   <i ng-show="consumerForm.webhook_url.$error.required" class="required-asteriks">*</i>
+                  <div 
+                      class="error" 
+                      ng-show="consumerForm.attempted && consumerForm.webhook_url.$error.required" 
+                      translate>This field is required</div>
                 </div>
             </fieldset>
 
