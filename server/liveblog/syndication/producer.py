@@ -187,6 +187,7 @@ def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, aut
         else:
             return api_error('Unable to syndicate producer blog.', response.status_code)
 
+
 def _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
     producers = get_resource_service('producers')
     in_service = get_resource_service('syndication_in')

@@ -2,8 +2,10 @@ from superdesk.services import BaseService
 from liveblog.blogs.blogs import BlogsResource
 from superdesk.resource import Resource
 
+
 class BlogService(BaseService):
     notification_key = 'marketplace_blogs'
+
 
 class BlogResource(Resource):
     url = 'marketplace/blogs'
