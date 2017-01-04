@@ -120,14 +120,15 @@ define([
         function getFreetypes() {
             api.freetypes.query().then(function(data) {
                 var freetypes = [{
-                    name: 'Scorecard',
-                    template: $templateCache.get('scripts/liveblog-edit/views/scorecards.html')
-                }, {
                     name: 'Advertisment Local',
                     template: $templateCache.get('scripts/liveblog-edit/views/ads-local.html')
                 }, {
                     name: 'Advertisment Remote',
                     template: $templateCache.get('scripts/liveblog-edit/views/ads-remote.html')
+                }, {
+                    name: 'Scorecard',
+                    template: $templateCache.get('scripts/liveblog-edit/views/scorecards.html'),
+                    separator: true
                 }];
                 $scope.freetypes = freetypes.concat(data._items);
             });
