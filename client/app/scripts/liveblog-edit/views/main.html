@@ -129,7 +129,10 @@
                             <button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate>Preview
                             </button>
                             <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
-                            <button class="btn pull-right" ng-click="toggleTypePostDialog()" translate>Chose post type</button>
+                            <button class="btn pull-right" ng-click="toggleTypePostDialog()">
+                                <span ng-if="selectedPostType=='Default'" translate>Choose post type</span>
+                                <span ng-if="selectedPostType!='Default'" translate>{{selectedPostType.name}}</span>
+                            </button>
                         </header>
                         </div>
                         <div ng-if="preview">
@@ -183,8 +186,9 @@
                         <ul class="users-list-embed">
                             <li translate ng-click="selectPostType('Default')"
                             ng-class="{'active': selectedPostType === 'Default'}">Default</li>
+                            
                             <li ng-repeat="freetype in freetypes" ng-click="selectPostType(freetype)"
-                            ng-class="{'active': freetype == selectedPostType}"
+                            ng-class="{'active': freetype == selectedPostType, 'separator': freetype.separator}"
                             >
                                 {{ freetype.name }}
                             </li>
