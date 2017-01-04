@@ -43,6 +43,9 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=25, po
     if not start_date and limit:
         posts = posts.limit(limit)
 
+    # Sort posts by _updated ASC
+    posts = posts.sort('_updated', 1)
+
     try:
         for producer_post in posts:
             items = extract_post_items_data(producer_post)
