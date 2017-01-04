@@ -45,6 +45,10 @@
                       class="error" 
                       ng-show="consumerForm.attempted && consumerForm.webhook_url.$error.required" 
                       translate>This field is required</div>
+                  <div 
+                      class="error" 
+                      ng-show="consumerForm.attempted && consumerForm.webhook_url.issue"
+                      translate>{{consumerForm.webhook_url.issue}}
                 </div>
             </fieldset>
 
