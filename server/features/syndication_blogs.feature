@@ -67,7 +67,7 @@ Feature: Syndication Blog Resource
         """
         {
             "consumer_blog_id": "#blogs[1]._id#",
-            "start_date": "2016-12-01T14:00:00+0000",
+            "start_date": "2017-01-05T09:06:24+00:00",
             "auto_retrieve": true
         }
         """
