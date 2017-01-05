@@ -1,24 +1,24 @@
 'use strict';
 
 angular.module('liveblog.analytics')
-.directive('lbAnalyticsList', ['notify', function(notify) {
-  return {
-    restrict: 'E',
-    scope: {
-      analytics: '='
-    },
-    templateUrl: 'scripts/liveblog-analytics/views/view-list.html',
-    controllerAs: 'analyticsList',
-    controller: LbAnalyticsListCtrl
-  };
-}])
+  .directive('lbAnalyticsList', ['notify', function(notify) {
+    return {
+      restrict: 'E',
+      scope: {
+        analytics: '='
+      },
+      templateUrl: 'scripts/liveblog-analytics/views/view-list.html',
+      controllerAs: 'analyticsList',
+      controller: LbAnalyticsListCtrl
+    };
+  }])
 
-.filter('startFrom', function() {
-  return function(input, start) {
-    start = +start; // Parse to int
-    return input.slice(start);
-  }
-});
+  .filter('startFrom', function() {
+    return function(input, start) {
+      start = parseInt(start); // Parse to int
+      return input.slice(start);
+    }
+  });
 
 LbAnalyticsListCtrl.$inject = ['$scope', '$element'];
 function LbAnalyticsListCtrl($scope, $element) {

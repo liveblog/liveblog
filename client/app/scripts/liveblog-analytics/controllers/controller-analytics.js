@@ -33,4 +33,4 @@ function LiveblogAnalyticsController($scope, $location, api, analytics, blog, no
 };
 
 angular.module('liveblog.analytics')
-.controller('LiveblogAnalyticsController', LiveblogAnalyticsController)
+  .controller('LiveblogAnalyticsController', LiveblogAnalyticsController)

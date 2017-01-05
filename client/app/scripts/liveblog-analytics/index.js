@@ -3,26 +3,6 @@
 var liveblogAnalytics = angular
   .module('liveblog.analytics', ['liveblog.security'])
   
-  // .config(['superdeskProvider', function(superdesk) {
-  //   superdesk.activity('/analytics/:_id', {
-
-  //     *
-  //     * superdesk.activity is the starting point for a 'component':
-  //     * It effectively merges some ui-router functionality with
-  //     * superdesk requirements and a bit of the new angular2
-  //     * concept of components sprinkled over it.
-      
-
-  //     label: gettext('Analytics'),
-  //     controller: 'LiveblogAnalyticsController',
-  //     templateUrl: 'scripts/liveblog-analytics/views/view-analytics-list.html',
-  //     category: superdesk.MENU_MAIN,
-  //     priority: 100,
-  //     adminTools: true,
-  //     resolve: {}
-  //   })
-  // }])
-
   .config(['apiProvider', function(apiProvider) {
     apiProvider
       
