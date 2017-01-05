@@ -47,7 +47,15 @@ define('main', [
             }]);
         }])
         //show messages on websocket disconnect and connect
-        .run(['$rootScope', '$timeout', '$window', 'notify', 'gettext', 'session', function($rootScope, $timeout, $window, notify, gettext, session) {
+        .run([
+            '$rootScope',
+            '$timeout',
+            '$window',
+            'notify',
+            'gettext',
+            'session',
+
+            function($rootScope, $timeout, $window, notify, gettext, session) {
             var alertTimeout;
             $rootScope.$on('disconnected', function(event) {
                 $timeout.cancel(alertTimeout);
