@@ -101,7 +101,9 @@ define([
         // remove and clean every items from the editor
         function cleanEditor(actionDisabled) {
             actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
-            $scope.freetypesData = {};
+            if ($scope.freetypeControl.reset) {
+                $scope.freetypeControl.reset();
+            }
             vm.editor.reinitialize();
             $scope.actionDisabled = actionDisabled;
             $scope.currentPost = undefined;
