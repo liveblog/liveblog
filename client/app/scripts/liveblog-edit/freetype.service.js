@@ -411,7 +411,7 @@
     .directive('freetypeCollectionAdd', ['$compile', function($compile) {
         return {
             restrict: 'E',
-            template: '<button ng-click="ftca.add()">+</button>',
+            template: '<button ng-click="ftca.add()" class="scorecard-plus-btn">+</button>',
             controller: ['$scope', function($scope) {
                 this.add = function() {
                     $scope.vector.push({});
@@ -426,7 +426,7 @@
     .directive('freetypeCollectionRemove', function() {
         return {
             restrict: 'E',
-            template: '<button ng-click="ftcr.remove()" ng-show="vector.length!==1">-</button>',
+            template: '<button ng-click="ftcr.remove()" ng-show="vector.length!==1" class="scorecard-plus-btn">-</button>',
             controller: ['$scope', function($scope) {
                 this.remove = function() {
                     $scope.vector.splice($scope.index, 1);
