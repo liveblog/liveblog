@@ -8,11 +8,10 @@ describe('Scorecards Posts', function() {
 
     it('can publish socrecard and edit it', function() {
         var blog = blogs.openBlog(0);
-        var editor = blog.openFreetypesEditor();
+        var editor = blog.openFreetypesEditor(2);
         editor.publishScorecard().then(function(data) {
 
-            //@TODO the next two browser actions need to be removed when the notification is fixed
-            browser.sleep(2000);
+            browser.waitForAngular();
             browser.refresh();
             //we should have the post in the timeline
             expect(blogs.blog.timeline.get(0).isPresent()).toBe(true);
@@ -34,8 +33,7 @@ describe('Scorecards Posts', function() {
             editor.player2Time.sendKeys(data.player2Time);
 
             editor.publish();
-            //same @TODO as ~20 lines above
-            browser.sleep(2000);
+            browser.waitForAngular();
             browser.refresh();
 
             //check for the edited content
