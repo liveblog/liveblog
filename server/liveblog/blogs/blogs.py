@@ -226,7 +226,7 @@ class BlogService(BaseService):
         notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def on_delete(self, doc):
-        # Prevent delete of blog if has blog has consumers
+        # Prevent delete of blog if blog has consumers
         out = get_resource_service('syndication_out').find({'blog_id': doc['_id']})
         if doc['syndication_enabled'] and out.count():
             raise SuperdeskApiError.forbiddenError(message='Cannot delete syndication: blog has active consumers.')
