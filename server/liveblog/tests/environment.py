@@ -57,4 +57,3 @@ def setup_before_scenario(context, scenario, config, app_factory):
 
     if scenario.status != 'skipped' and 'notification' in scenario.tags:
         tests.setup_notification(context)
-

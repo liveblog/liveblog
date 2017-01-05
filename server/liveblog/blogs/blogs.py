@@ -203,7 +203,7 @@ class BlogService(BaseService):
         updates['version_creator'] = str(get_user().get('_id'))
         syndication_enabled = updates.get('syndication_enabled')
         out = get_resource_service('syndication_out').find({'blog_id': original['_id']})
-        if syndication_enabled == False and out.count():
+        if syndication_enabled is False and out.count():
             raise SuperdeskApiError.forbiddenError(message='Cannot disable syndication: blog has active consumers.')
 
     def on_updated(self, updates, original):
