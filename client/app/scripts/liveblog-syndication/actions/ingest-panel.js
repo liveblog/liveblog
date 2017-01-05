@@ -1,6 +1,6 @@
 liveblogSyndication
-    .factory('IngestPanelActions', ['Dispatcher', 'api', '$http', 'config', 'moment',
-        function(Dispatcher, api, $http, config, moment) {
+    .factory('IngestPanelActions', ['Dispatcher', 'api', '$http', 'config',
+        function(Dispatcher, api, $http, config) {
             return {
                 getSyndication: function(consumerBlogId) {
                      var params = {
@@ -42,15 +42,11 @@ liveblogSyndication
                         '/producers/' + params.producerId + 
                         '/syndicate/' + params.producerBlogId;
 
-                    var startDate = moment()
-                        .subtract(14, 'd')
-                        .format('YYYY-MM-DDTHH:MM:ss+00:00');
-
                     return $http({
                         url: uri,
                         method: (params.method == 'DELETE') ? 'DELETE' : 'POST',
                         data: { 
-                            start_date: startDate,
+                            start_date: params.startDate,
                             consumer_blog_id: params.consumerBlogId, 
                             auto_publish: params.autoPublish,
                             auto_retrieve: params.autoRetrieve
