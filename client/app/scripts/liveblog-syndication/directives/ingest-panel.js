@@ -48,44 +48,45 @@ liveblogSyndication
                         scope.openPanel('incoming-syndication', synd._id);
                     }
 
-                    scope.toggleDropdown = function($event, blog) {
-                        if (!blog.hasOwnProperty('isOpen'))
-                            blog.isOpen = false;
+                    //scope.toggleDropdown = function($event, blog) {
+                    //    if (!blog.hasOwnProperty('isOpen'))
+                    //        blog.isOpen = false;
 
-                        $event.preventDefault();
-                        $event.stopPropagation();
+                    //    $event.preventDefault();
+                    //    $event.stopPropagation();
 
-                        blog.isOpen = !blog.isOpen;
-                    };
+                    //    blog.isOpen = !blog.isOpen;
+                    //};
 
-                    scope.updateSyndication = function(synd) {
-                        IngestPanelActions.updateSyndication(
-                            synd._id,
-                            {
-                                auto_publish: synd.auto_publish,
-                                auto_retrieve: synd.auto_retrieve,
-                                start_date: synd.start_date
-                            },
-                            synd._etag
-                        );
-                    };
+                    //scope.updateSyndication = function(synd) {
+                    //    console.log('upd synd', synd);
+                    //    IngestPanelActions.updateSyndication(
+                    //        synd._id,
+                    //        {
+                    //            auto_publish: synd.auto_publish,
+                    //            auto_retrieve: synd.auto_retrieve,
+                    //            start_date: synd.start_date
+                    //        },
+                    //        synd._etag
+                    //    );
+                    //};
 
-                    scope.destroy = function($event, synd) {
-                        $event.preventDefault();
-                        $event.stopPropagation();
+                    //scope.destroy = function($event, synd) {
+                    //    $event.preventDefault();
+                    //    $event.stopPropagation();
 
-                        IngestPanelActions.syndicate({
-                            producerId: synd.producer_id,
-                            producerBlogId: synd.producer_blog_id,
-                            consumerBlogId: scope.consumerBlogId,
-                            autoPublish: synd.auto_publish,
-                            startDate: synd.start_date,
-                            autoRetrieve: synd.auto_retrieve,
-                            method: 'DELETE'
-                        });
-                    };
+                    //    IngestPanelActions.syndicate({
+                    //        producerId: synd.producer_id,
+                    //        producerBlogId: synd.producer_blog_id,
+                    //        consumerBlogId: scope.consumerBlogId,
+                    //        autoPublish: synd.auto_publish,
+                    //        startDate: synd.start_date,
+                    //        autoRetrieve: synd.auto_retrieve,
+                    //        method: 'DELETE'
+                    //    });
+                    //};
 
-                    scope.open = false;
+                    //scope.open = false;
                     scope.$on('$destroy', scope.store.destroy);
                 }
             };
