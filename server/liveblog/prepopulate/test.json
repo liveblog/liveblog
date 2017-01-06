@@ -966,7 +966,7 @@
     "resource": "consumers",
     "data": {
         "name": "John Deere",
-        "api_url": "http://www.deere.com/api",
+        "webhook_url": "http://www.deere.com/api/syndication/webhook",
         "api_key": "123456789qwerty",
         "contacts": [{
             "first_name": "John",

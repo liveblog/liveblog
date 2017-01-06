@@ -6,7 +6,7 @@ var login = require('../app/scripts/bower_components/superdesk/client/spec/helpe
 
 var consumer = {
     name: 'Massey Fergusson',
-    webhookUrl: 'http://www.masseyferguson.de/api/syndication/webhook'
+    webhookUrl: 'https://www.masseyferguson.de/api/syndication/webhook'
 };
 
 var contact = {
@@ -55,7 +55,7 @@ describe('Consumers', function() {
                 })
                 .then(function() {
                     var fieldName = 'div[ng-show="consumerForm.attempted &&' +
-                        ' consumerForm.api_url.$error.required"]';
+                        ' consumerForm.webhook_url.$error.required"]';
 
                     return expect(
                         $(fieldName).isDisplayed()
@@ -169,7 +169,7 @@ describe('Consumers', function() {
             };
 
             updateConsumer(consumer.name, contact.email).then(function() {
-                return updateConsumer(consumer.name + '1');
+                return updateConsumer(consumer.name + '1', contact.email);
             });
         });
 
