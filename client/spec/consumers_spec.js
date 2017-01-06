@@ -55,7 +55,7 @@ describe('Consumers', function() {
                 })
                 .then(function() {
                     var fieldName = 'div[ng-show="consumerForm.attempted &&' +
-                        ' consumerForm.api_url.$error.required"]';
+                        ' consumerForm.webhook_url.$error.required"]';
 
                     return expect(
                         $(fieldName).isDisplayed()
