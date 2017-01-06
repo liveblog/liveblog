@@ -233,7 +233,7 @@
                     wrapAfter = '';
                 obj2path(paths, data);
                 template = template.replace(/\<li([^>]*)\>(.*?)\<\/li\>/g, function(all, attr, repeater) {
-                    var vector, vectorPath, parts, templ = '';
+                    var vector, vectorPath, parts, templ = '', emptyVars = true;
                     repeater = repeater.replace(/\$([\$a-z0-9_.\[\]]+)/gi, function(all, path) {
                         parts = path.split(/[\d*]/);
                         if (parts.length === 2 && parts[1] != '') {
@@ -250,8 +250,20 @@
                                 return all.replace('[]', '[0]').replace('[0]', '[' + i  + ']');
                             }) + '</li>';
                         }
+                        repeater.replace('[]', '[0]').replace(/\$([\$a-z0-9_.\[\]]+)/gi, function(all, name) {
+                            if (vector[0][name.replace(vectorPath + '[0].', '')]) {
+                                emptyVars = false;
+                            } else {
+                                emptyVars = emptyVars && true;
+                            }
+                        });
+                        if (emptyVars) {
+                            return '';
+                        } else {
+                            return all.replace('[]', '[0]') + templ;
+                        }
                     }
-                    return all.replace('[]', '[0]') + templ;
+                    return all.replace('[]', '[0]');
                 });
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name, type;
