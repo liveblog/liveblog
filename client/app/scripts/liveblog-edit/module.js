@@ -433,6 +433,7 @@ define([
                     syndication_enabled: vm.syndication_enabled,
                     market_enabled: vm.market_enabled,
                     category: vm.category,
+                    start_date: vm.start_date,
                     members: members
                 };
                 angular.extend(vm.newBlog, changedBlog);
@@ -588,6 +589,7 @@ define([
         vm.syndication_enabled = vm.newBlog.syndication_enabled;
         vm.market_enabled = vm.newBlog.market_enabled;
         vm.category = vm.newBlog.category;
+        vm.start_date = vm.newBlog.start_date;
     }
 
     /**
