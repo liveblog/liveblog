@@ -5,11 +5,11 @@
                     'lb-post-permalink-selected': post._id === timeline.permalink._id}">
     <lb-author item="post.mainItem" timeline="timeline"></lb-author>
     <div class="lb-post-highlighted" ng-if="post.highlight">
-        <i class="fa fa-star fa-2"></i>
+        <i class="icon-star icon--orange"></i>
     </div>
     <div class="lb-post-permalink">
         <a href="{{ timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
-            <i class="fa fa-link fa-2"></i>
+            <i class="icon-link icon--blue"></i>
         </a>
     </div>
 

@@ -37,17 +37,17 @@
                 only-title="{{ 'Show highlighted post only' | translate }}"
                 all-title="{{ 'Show all posts'| translate }}"
                 title="{{ timeline.highlightsOnly? 'Show all posts': 'Show highlighted post only' | translate }}">
-                <i class="fa fa-star fa-2"></i>  
+                <i class="icon-star icon--orange"></i> 
             </div>
             <button
                 ng-if="timeline.settings.canComment"
                 class="btn comment ng-cloak"
                 ng-class="{'active': timeline.comment}"
-                ng-click="timeline.comment = !timeline.comment"><i class="fa fa-comment"></i>{{ :: "Comment" | translate }}</button>
+                ng-click="timeline.comment = !timeline.comment"><i class="icon-comment"></i>{{ :: "Comment" | translate }}</button>
         </div>
         <div class="header-bar__logo">
             <a href="https://www.sourcefabric.org/liveblog/" target="_blank">
-                <img ng-src="{{ timeline.templateDir}}images/lb-logo.png"/>
+                <img ng-src="{{ timeline.templateDir}}images/lb-logo.svg"/>
             </a>
         </div>
     </div>
@@ -83,12 +83,12 @@
                 <div class="pin-drawer-info"
                      ng-if="timeline.stickyPagesManager.hideSticky"
                      translate translate-n="timeline.stickyPagesManager.allPosts().length"
-                     translate-plural="{{$count}} pined posts">
+                     translate-plural="{{$count}} pinned posts">
                     One pinned post
                 </div>
                 <button class="pin-drawer-button" ng-class="{'chevron-active': timeline.stickyPagesManager.hideSticky}"
                 ng-click="timeline.stickyPagesManager.hideSticky = !timeline.stickyPagesManager.hideSticky">
-                    <i class="fa fa-chevron-up fa-chevron-fix"></i>
+                    <i class="icon-chevron-up"></i>
                 </button>
             </div>
             <lb-posts timeline="timeline" posts="timeline.pagesManager.allPosts"></lb-posts>
