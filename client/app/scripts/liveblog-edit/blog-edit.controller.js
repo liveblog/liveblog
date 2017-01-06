@@ -41,6 +41,7 @@ define([
                 //go with the 'classic' editor items
                 return _.map(vm.editor.get(), function(block) {
                     return {
+                        group_type: 'default',
                         text: block.text.replace(/(^<div>)|(<\/div>$)/g, '').replace(/(<br>$)/g, ''),
                         meta: block.meta,
                         item_type: block.type
@@ -50,6 +51,7 @@ define([
                 //this is a freetype post
                 return [
                     {
+                        group_type: 'freetype',
                         item_type: $scope.selectedPostType.name,
                         text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
                         meta: {data: $scope.freetypesData}
@@ -252,7 +254,7 @@ define([
             },
             publish: function() {
                 $scope.actionPending = true;
-                notify.info(gettext('Saving post'));2
+                notify.info(gettext('Saving post'));
                 postsService.savePost(blog._id,
                     $scope.currentPost,
                     getItemsFromEditor(),
@@ -267,7 +269,6 @@ define([
                     notify.error(gettext('Something went wrong. Please try again later'));
                     $scope.actionPending = false;
                 });
-                
             },
             filterHighlight: function(highlight) {
                 $scope.filter.isHighlight = highlight;
