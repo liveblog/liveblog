@@ -1,58 +1,134 @@
-<fieldset>
-    <legend>Home Team:</legend>
-    <div>
-        <label for="home.name">Home</label>
-        <input id="home.name" name="$home.name" />
-    </div>
-    <div>
-        <label for="home.score">Score</label>
-        <input id="home.score" name="$home.score" />
-    </div>
-</fieldset>
-<fieldset>
-    <legend>Away Team:</legend>
-    <div>
-        <label for="away.name">Name</label>
-        <input id="away.name" name="$away.name" />
-    </div>
-    <div>
-        <label for="away.score">Score</label>
-        <input id="away.score" name="$away.score" />
-    </div>
-</fieldset>
-<fieldset>
-    <legend>Minutes played:</legend>
-    <div>
-        <input id="time" name="$time" />
-    </div>
-</fieldset>
-<fieldset>
-    <legend>Home scorer:</legend>
-    <ul>
-        <li>
-            <div>
-                <label>Name</label>
-                <input name="$home.scorers[0].name" />
+<style>
+    .scorecard {
+        display: table;
+        padding: 14px 10px;
+        background: #eee;
+        border-radius: 4px;
+        margin: 20px 0;
+    }
+    .scorecard__column {
+        display: table-cell;
+        text-align: center;
+        padding: 0 20px;
+        width: 50%;
+    }
+    .scorecard input {
+         box-sizing: border-box;
+         height: 30px;
+    }
+    .scorecard legend {
+        font-size: 11px;
+        color: #999;
+        display: block;
+        padding: 0 6px 0 0;
+        margin-bottom: 10px;
+        line-height: 31px;
+        text-transform: uppercase;
+        font-weight: 500;
+        background-color: transparent;
+    }
+    .scorecard span {
+        display: inline-block;
+    }
+    .scorecard span.team-name {
+        font-size: 16px;
+        font-weight: 500;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        white-space: nowrap;
+    }
+    .scorecard span.team-score {
+        font-size: 60px;
+        font-weight: 500;
+        line-height: 1em;
+        margin-bottom: 24px;
+        margin-top: 6px;
+    }
+    .scorecard .scorecard__scorers {
+        list-style-type: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .scorecard .scorecard__scorers li {
+        background: white;
+        box-shadow: 0 1px 2px rgba(0,0,0,.1);
+        margin-bottom: 20px;
+        padding: 6px 12px;
+        border-radius: 2px;
+        text-align: left;
+        overflow: hidden;
+        font-size: 13px;
+    }
+    .scorecard .scorecard__scorers li > div {
+        float: left;
+    }
+    .scorecard .scorecard__scorers li > div.time {
+        float: right;
+        font-weight: 700;
+        position: relative;
+        margin-left: 12px;
+    }
+    .scorecard .scorecard__scorers li > div.time:after {
+        content: '′';
+    }
+</style>
+<div class="scorecard">
+    <div class="scorecard__column">
+        <fieldset>
+            <legend class="legend--big">Home</legend>
+            <div >
+                <label for="home.name" hide-render>Name</label>
+                <input id="home.name" name="$home.name" class="team-name" />
             </div>
             <div>
-                <label>Minute</label>
-                <input name="$home.scorers[0].time" />
+                <label for="home.score" hide-render>Score</label>
+                <input id="home.score" name="$home.score" class="team-score" />
             </div>
-        </li>
-    </ul>
-</fieldset>
-<fieldset>
-    <legend>Away scorer:</legend>
-    <ul>
-        <li>
+        </fieldset>
+        <fieldset>
+            <legend class="legend--padding-top" hide-render>Scorers:</legend>
+            <ul class="scorecard__scorers">
+                <li>
+                    <div>
+                        <label hide-render>Name</label>
+                        <input name="$home.scorers[0].name" />
+                    </div>
+                    <div class="time">
+                        <label hide-render>Minute</label>
+                        <input name="$home.scorers[0].time" />
+                    </div>
+                </li>
+            </ul>
+        </fieldset>
+    </div>
+    <div class="scorecard__column">
+        <fieldset>
+            <legend class="legend--big">Away</legend>
             <div>
-                <label>Name</label>
-                <input name="$away.scorers[0].name" />
+                <label for="away.name" hide-render>Name</label>
+                <input id="away.name" name="$away.name" class="team-name" />
             </div>
             <div>
-                <label>Minute</label>
-                <input name="$away.scorers[0].time" />
+                <label for="away.score" hide-render>Score</label>
+                <input id="away.score" name="$away.score" class="team-score" />
             </div>
-        </li>
-    </ul>
-</fieldset> 
+        </fieldset>
+
+        <fieldset>
+            <legend class="legend--padding-top" hide-render>Scorers:</legend>
+            <ul class="scorecard__scorers">
+                <li>
+                    <div>
+                        <label hide-render>Name</label>
+                        <input name="$away.scorers[0].name" />
+                    </div>
+                    <div class="time">
+                        <label hide-render>Minute</label>
+                        <input name="$away.scorers[0].time" />
+                    </div>
+                </li>
+            </ul>
+        </fieldset>
+    </div>
+</div>
