@@ -169,7 +169,7 @@ describe('Consumers', function() {
             };
 
             updateConsumer(consumer.name, contact.email).then(function() {
-                return updateConsumer(consumer.name + '1');
+                return updateConsumer(consumer.name + '1', contact.email);
             });
         });
 
