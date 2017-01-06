@@ -6,7 +6,7 @@ var login = require('../app/scripts/bower_components/superdesk/client/spec/helpe
 
 var producer = {
     name: 'Massey Fergusson',
-    apiUrl: 'http://www.masseyferguson.de/api',
+    apiUrl: 'https://www.masseyferguson.de/api',
     consumerApiKey: '1234567890qwerty'
 };
 
