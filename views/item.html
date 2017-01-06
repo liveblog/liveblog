@@ -1,23 +1,30 @@
-<div ng-switch="item.item_type" ng-class="{'lb-item': ident}">
-    <div ng-switch-when="embed">
-        <div ng-switch="item.meta.provider_name">
-            <div ng-switch-when="Twitter">
-                <lb-twitter-card lb-twitter-content="{{ item.meta.html }}"></lb-twitter-card>
+<div ng-switch="item.group_type">
+    <div ng-switch-when="freetype">
+         <article lb-bind-html html-content="{{ item.text }}"></article>
+    </div>
+    <div ng-switch-default>
+        <div ng-switch="item.item_type" ng-class="{'lb-item': ident}">
+            <div ng-switch-when="embed">
+                <div ng-switch="item.meta.provider_name">
+                    <div ng-switch-when="Twitter">
+                        <lb-twitter-card lb-twitter-content="{{ item.meta.html }}"></lb-twitter-card>
+                    </div>
+                    <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
+                </div>
             </div>
-            <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
+            <div ng-switch-when="image">
+                <figure>
+                    <img ng-src="{{ item.picture_url }}" ng-srcset="{{ item.picture_srcset }}" alt="{{ item.meta.caption }}" sizes="80vw"/>
+                    <figcaption translate>{{ item.meta.caption }} credit: {{ item.meta.credit }}</figcaption>
+                </figure>
+            </div>
+            <div ng-switch-when="quote">
+                <blockquote>
+                    <p>{{ item.meta.quote }}</p>
+                    <h4>{{ item.meta.credit }}</h4>
+                </blockquote>
+            </div>
+            <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors | fixMarkup }}"></article>
         </div>
     </div>
-    <div ng-switch-when="image">
-        <figure>
-            <img ng-src="{{ item.picture_url }}" ng-srcset="{{ item.picture_srcset }}" alt="{{ item.meta.caption }}" sizes="80vw"/>
-            <figcaption translate>{{ item.meta.caption }} credit: {{ item.meta.credit }}
-        </figure>
-    </div>
-    <div ng-switch-when="quote">
-        <blockquote>
-            <p>{{ item.meta.quote }}</p>
-            <h4>{{ item.meta.credit }}</h4>
-        </blockquote>
-    </div>
-    <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors | fixMarkup }}"></article>
 </div>
