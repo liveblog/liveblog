@@ -29,15 +29,21 @@ liveblogSyndication
                     });
 
                 case 'ON_UPDATED_SYND':
-                    return angular.extend(state, {
-                        syndicationIn: angular.extend(state.syndicationIn, {
-                            _items: state.syndicationIn._items.map(function(item) {
-                                if (item._id == action.syndEntry._id)
-                                    return action.syndEntry;
-                                else
-                                    return item;
-                            })
+                    var syndicationIn = angular.extend(state.syndicationIn, {
+                        _items: state.syndicationIn._items.map(function(item) {
+                            if (item._id == action.syndEntry._id)
+                                return action.syndEntry;
+                            else
+                                return item;
                         })
+                    });
+
+                    return angular.extend(state, {
+                        syndicationIn: syndicationIn,
+                        locallySyndicatedItems: locallySyndicatedItems(
+                            syndicationIn, 
+                            state.localSyndTokens
+                        )
                     });
 
                 case 'ON_GET_PRODUCERS':
