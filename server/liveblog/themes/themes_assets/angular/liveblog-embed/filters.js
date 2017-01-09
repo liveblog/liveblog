@@ -1,7 +1,11 @@
 (function(angular) {
     'use strict';
     angular.module('liveblog-embed')
-        .filter('prettifyIsoDate', [ 'config', function(config) {
+        .filter('varname', [ 'config', function(config) {
+            return function(varname) {
+                return varname && varname.toLowerCase().replace(' ','_');
+            };
+        }]).filter('prettifyIsoDate', [ 'config', function(config) {
             return function(input) {
                 return moment(input).format(config.settings.datetimeFormat);
             };
@@ -26,13 +30,13 @@
         }).filter('fixMarkup', function() {
             var regx = [
                 /<\/?span>/g,
-                /<(\/?)div>/g,
+                /<(\/?)div([^>]+)>/g,
                 /<([^>]+)><br><\/([^>]+)>/g,
                 /<([^>]+)><\/([^>]+)>/g,
                 /(<p>)+/
             ], replaced = [
                 '',
-                '<$1p>',
+                '<$1p$2>',
                 function(all, start, end) {
                     return '<' + start + '></' + end + '>';
                 }, //'', // maybe use <br>
