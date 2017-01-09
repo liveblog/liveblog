@@ -343,6 +343,20 @@ button.active {
 .show-author-avatar .lb-author, .show-author-avatar .lb-item {
     margin-left: 80px;
 }
+.lb-advertisment {
+    color: #767676;
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    height: 1.5rem;
+    margin: 0 auto;
+    padding: 0 0.5rem;
+}
+.lb-item-advertisment_local,lb-item-advertisment_remote {
+    text-align: center;
+}
+.lb-mainitem-advertisment_local,lb-mainitem-advertisment_remote {
+    background-color: #eaeaea;
+}
 .lb-item {
     clear: both;
 }
