@@ -23,7 +23,6 @@ describe('Scorecards Posts', function() {
             expect(editor.homeScore.getAttribute('value')).toEqual(data.homeScore);
             expect(editor.awayName.getAttribute('value')).toEqual(data.awayName);
             expect(editor.awayScore.getAttribute('value')).toEqual(data.awayScore);
-            expect(editor.scorecardsTime.getAttribute('value')).toEqual(data.scorecardsTime);
             expect(editor.player1Name.getAttribute('value')).toEqual(data.player1Name);
             expect(editor.player1Time.getAttribute('value')).toEqual(data.player1Time);
 
@@ -47,7 +46,6 @@ describe('Scorecards Posts', function() {
             expect(editor.homeScore.getAttribute('value')).toEqual('');
             expect(editor.awayName.getAttribute('value')).toEqual('');
             expect(editor.awayScore.getAttribute('value')).toEqual('');
-            expect(editor.scorecardsTime.getAttribute('value')).toEqual('');
         });
     });
 });
