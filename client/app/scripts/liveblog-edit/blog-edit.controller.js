@@ -173,7 +173,15 @@ define([
                 $scope.toggleTypePostDialog();
             },
             actionStatus: function() {
-                return isPostFreetype() ? $scope.freetypeControl.isClean(): $scope.actionDisabled || $scope.actionPending;
+                if (isPostFreetype()) {
+                    if (angular.isDefined($scope.currentPost)) {
+                        return $scope.freetypeControl.isClean() && $scope.currentPost.post_status !== 'draft' && $scope.currentPost.post_status !== 'submitted';
+                    } else {
+                        return $scope.freetypeControl.isClean()
+                    }
+                } else {
+                    return $scope.actionDisabled || $scope.actionPending;
+                }
             },
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
