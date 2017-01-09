@@ -4,6 +4,7 @@ from flask import current_app as app
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
+from superdesk.notification import push_notification
 from flask import Blueprint, request, abort
 from flask_cors import CORS
 
@@ -81,6 +82,11 @@ class SyndicationOutService(BaseService):
             return bool(out_syndication.count())
 
     def send_syndication_post(self, post, action='created'):
+        # Prevent "loops" by sending only posts without syndication_in set.
+        if post.get('syndication_in'):
+            logger.warning('Not sending post "{}": syndicated content.'.format(post['_id']))
+            return
+
         blog_id = ObjectId(post['blog'])
         out_syndication = self.get_blog_syndication(blog_id)
         for out in out_syndication:
@@ -98,6 +104,11 @@ class SyndicationOutService(BaseService):
         super().on_created(docs)
         for doc in docs:
             send_posts_to_consumer.delay(doc)
+
+    def on_deleted(self, doc):
+        super().on_deleted(doc)
+        # send notifications
+        push_notification(self.notification_key, syndication_out=doc, deleted=True)
 
 
 class SyndicationOut(Resource):
@@ -156,6 +167,11 @@ class SyndicationInService(BaseService):
         super().on_create(docs)
         for doc in docs:
             cast_to_object_id(doc, ['blog_id', 'producer_id', 'producer_blog_id', 'consumer_blog_id'])
+
+    def on_deleted(self, doc):
+        super().on_deleted(doc)
+        # send notifications
+        push_notification(self.notification_key, syndication_in=doc, deleted=True)
 
 
 class SyndicationIn(Resource):

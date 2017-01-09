@@ -298,6 +298,7 @@ define([
             availableLanguages: [],
             original_creator: {},
             availableThemes: [],
+            availableCategories: ['', 'Breaking News', 'Entertainment', 'Business and Finance', 'Sport', 'Technology'],
             //used as an aux var to be able to change members and safely cancel the changes
             blogMembers: [],
             //users to remove from the pending queue once the changes are saved
@@ -431,6 +432,8 @@ define([
                     blog_status: vm.blog_switch === true? 'open': 'closed',
                     syndication_enabled: vm.syndication_enabled,
                     market_enabled: vm.market_enabled,
+                    category: vm.category,
+                    start_date: vm.start_date,
                     members: members
                 };
                 angular.extend(vm.newBlog, changedBlog);
@@ -585,6 +588,8 @@ define([
         vm.blog_switch = vm.newBlog.blog_status === 'open'? true: false;
         vm.syndication_enabled = vm.newBlog.syndication_enabled;
         vm.market_enabled = vm.newBlog.market_enabled;
+        vm.category = vm.newBlog.category;
+        vm.start_date = vm.newBlog.start_date;
     }
 
     /**

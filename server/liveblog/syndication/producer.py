@@ -43,7 +43,8 @@ producers_schema = {
     },
     'api_url': {
         'type': 'string',
-        'required': True
+        'required': True,
+        'unique': True
     },
     'consumer_api_key': {
         'type': 'string',
@@ -185,6 +186,7 @@ def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, aut
             return api_error('Syndication already sent for blog "{}"'.format(blog_id), 409)
         else:
             return api_error('Unable to syndicate producer blog.', response.status_code)
+
 
 def _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
     producers = get_resource_service('producers')

@@ -202,16 +202,16 @@ def extract_producer_post_data(post, fields=('_id', '_updated', 'highlight', 'st
 
 def get_post_creator(post):
     """Get publisher/author from consumer post."""
-    try:
-        ref = post['groups'][1]['refs'][0]
-    except (KeyError, IndexError):
-        return
+    ref = None
+    for group in post['groups']:
+        if group['id'] == 'main':
+            ref = group['refs'][0]
+    if ref:
+        items_service = get_resource_service('blog_items')
+        item = items_service.find_one(req=None, guid=ref['residRef'])
 
-    items_service = get_resource_service('blog_items')
-    item = items_service.find_one(req=None, guid=ref['guid'])
-
-    if item:
-        return item.get('original_creator')
+        if item:
+            return item.get('original_creator')
 
 
 def create_syndicated_blog_post(producer_post, items, in_syndication):

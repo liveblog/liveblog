@@ -1,6 +1,7 @@
 import superdesk
 from liveblog.marketplace.blogs import BlogService, BlogResource
 
+
 def init_app(app):
     # Marketplace blogs
     endpoint_name = 'marketplace_blogs'
