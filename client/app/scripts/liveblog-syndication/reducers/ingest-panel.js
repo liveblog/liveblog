@@ -1,5 +1,5 @@
 liveblogSyndication
-    .factory('IngestPanelReducers', function() {
+    .factory('IngestPanelReducers', ['moment', function(moment) {
         var locallySyndicatedItems = function(syndicationIn, localSyndTokens) {
             return syndicationIn._items.filter(function(item) {
                 return (localSyndTokens.indexOf(item.blog_token) != -1);
@@ -67,6 +67,10 @@ liveblogSyndication
                                     blog.auto_publish = false; // Default autopublish as false
                                     blog.auto_retrieve = true; // Default autoretrieve as true
 
+                                    blog.start_date = moment()
+                                        .subtract(14, 'd')
+                                        .format('YYYY-MM-DDTHH:MM:ss+00:00');
+
                                     state.locallySyndicatedItems.forEach(function(localBlog) {
                                         if (localBlog.producer_blog_id == blog._id) {
                                             localProducerBlogIds.push(blog._id);
@@ -99,4 +103,4 @@ liveblogSyndication
                     });
             }
         }
-    });
+    }]);

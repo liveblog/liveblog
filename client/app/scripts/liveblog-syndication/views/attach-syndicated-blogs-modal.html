@@ -31,6 +31,13 @@
                             ng-hide="isAlreadySyndicated(blog)"
                             class="sd-toggle--vertical-middle"></span>
                     </dd>
+                    <dt class="panel-definition-list__term">Start date</dt>
+                    <dd class="panel-definition-list__definition datepicker">
+                        <span
+                            ng-hide="isAlreadySyndicated(blog)"
+                            sd-datepicker
+                            ng-model="blog.start_date"></span>
+                    </dd>
                 </dl>
             </li>
         </ul>
