@@ -201,6 +201,67 @@
                         width: 100%;
                     }
                 }
+                .freetype-btn {                       
+                    border: none;
+                    background: @sd-blue;
+                    color: @white;
+                    font-size: 18px;
+                    line-height: 140%;
+                    min-width: 28px;
+                    margin-bottom: 4px;
+                    .border-radius(2px);
+                }
+                .scorecard {
+                    background: transparent !important;
+                    padding: 0 !important;
+                    display: table !important;
+                    margin: 0 !important;
+                    width: 100%;
+                    .scorecard__column {
+                        width: 50% !important;                        
+                        text-align: left !important;
+                        padding: 0px 10px 0 0 !important;
+                        &:last-child {
+                            padding: 0 0 0 10px !important;
+                        }                                               
+                    }
+                    .scorecard__scorers {
+                        display: block !important;
+                        li {
+                            background: transparent !important;
+                            box-shadow: none !important;
+                            border-radius: 0 !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            > div {
+                                float: none !important;
+                                &.time {
+                                    float: none !important;
+                                    font-weight: initial !important;
+                                    padding: 0 !important;
+                                    margin: 0 !important;
+                                    &:after {
+                                        content: '' !important;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    legend {
+                        font-size: 13px !important;
+                        color: @grayDark !important;
+                        margin-bottom: 0 !important;
+                        &.legend--big {
+                            font-size: 18px!important;
+                            margin-bottom: 10px!important;
+                            text-transform: inherit;
+                            font-weight: 400;
+                        }
+                        &.legend--padding-top {
+                            padding-top: 20px !important;
+                        }
+                    }
+                }
                 .editor {
                     textarea {
                         border: 1px solid #dfdfdf !important;

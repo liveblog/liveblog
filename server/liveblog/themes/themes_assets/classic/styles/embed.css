@@ -72,7 +72,7 @@ button.active {
     margin-top: 50px;
     border-top: 2px solid #CBCBCB;
     overflow: hidden;
-    padding-bottom: 200px;
+    padding-bottom: 100px;
 }
 .lb-timeline__header, .lb-post {
     padding: 15px 10px;
@@ -91,7 +91,7 @@ button.active {
     background-color: #FAFAFA;
     border-top: 2px solid #CBCBCB;
     border-bottom: 1px solid #CBCBCB;
-    padding: 10px 0 0 10px;
+    padding: 12px 0 0 10px;
     margin: 10px 0 0 0;
     position: relative;
 }
@@ -118,6 +118,9 @@ button.active {
     text-decoration: none;
     text-transform: uppercase;
     vertical-align: middle;
+}
+.header-bar .btn {
+    vertical-align: initial;
 }
 .btn:hover, .header-bar__btn:focus {
   background-color: rgba(0, 0, 0, 0.235);
@@ -311,7 +314,7 @@ button.active {
     position: absolute;
     border-radius: 50%;
     overflow: hidden;
-    background: #CCCCCC url("../images/avatar_64.png") no-repeat scroll 0% 0% / 100% auto;
+    background: #FFFFFF url("../images/avatar_64.svg") no-repeat scroll 0% 0% / 100% auto;
     width: 42px;
     height: 42px;
     left: -80px;
@@ -327,17 +330,32 @@ button.active {
     position: absolute;
     border-radius: 0;
     overflow: hidden;
-    background: #FFFFFF url("../images/comment_32.png") no-repeat scroll 0% 0% / 100% auto;
+    background: #FFFFFF url("../images/comment_32.svg") no-repeat scroll 0% 0% / 100% auto;
     color: #BBBBBB;
     width: 32px;
     height: 32px;
     left: -74px;
+    opacity: .26;
 }
 .lb-author__date {
     padding-right: 20px;
 }
 .show-author-avatar .lb-author, .show-author-avatar .lb-item {
     margin-left: 80px;
+}
+.lb-advertisment {
+    color: #767676;
+    font-size: 0.75rem;
+    line-height: 1.25rem;
+    height: 1.5rem;
+    margin: 0 auto;
+    padding: 0 0.5rem;
+}
+.lb-item-advertisment_local,lb-item-advertisment_remote {
+    text-align: center;
+}
+.lb-mainitem-advertisment_local,lb-mainitem-advertisment_remote {
+    background-color: #eaeaea;
 }
 .lb-item {
     clear: both;
@@ -457,9 +475,8 @@ article blockquote li:before {
     color: #f89406;
 }
 .toggleHighlights {
-    color: #f89406;
     height: auto;
-    padding: 4px 10px 4px 10px;
+    padding: 3px 10px 4px 10px;
     background: rgba(255, 255, 255, 0.5);
     border: 1px solid rgba(215, 215, 215, 0.7);
     border-radius: 2px;
@@ -478,9 +495,10 @@ article blockquote li:before {
 }
 .pin-drawer-info {
     color: gray;
-    font-size: small;
+    font-size: 11px;
     margin-left: 4px;
     text-transform: uppercase;
+    padding: 4px 5px;
 }
 .pin-drawer-button {
     position: absolute;
@@ -557,8 +575,82 @@ article blockquote li:before {
 .nl .sorting-bar__orders {
     padding-left: 50px;
 }
+.no .sorting-bar__orders {
+    padding-left: 75px;
+}
 /* Remove this is angular-gettext is updated */
 [translate]{visibility:hidden !important;}
+
+/* Font icon */
+@font-face {
+  font-family: 'lb-icons';
+  src:  url('../fonts/lb-icons.eot?al198z');
+  src:  url('../fonts/lb-icons.eot?al198z#iefix') format('embedded-opentype'),
+    url('../fonts/lb-icons.ttf?al198z') format('truetype'),
+    url('../fonts/lb-icons.woff?al198z') format('woff'),
+    url('../fonts/lb-icons.svg?al198z#lb-icons') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: 'lb-icons' !important;
+  speak: none;
+  display: inline-block;
+  height: 16px;
+  font-size: 16px;
+  line-height: 16px;
+  color: #333;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+/* modifiers */
+.icon--large {
+  height: 32px;
+  font-size: 32px;
+  line-height: 32px;
+}
+.icon--orange {
+    color: #f89406;
+}
+.icon--blue {
+    color: #5ea9c8;
+}
+.icon--white {
+    color: #FFF;
+}
+/* icons definition */
+.icon-star:before {
+  content: "\e900";
+}
+.icon-link:before {
+  content: "\e901";
+}
+.icon-zen:before {
+  content: "\e902";
+}
+.icon-exit-zen:before {
+  content: "\e903";
+}
+.icon-chevron-up:before {
+  content: "\e904";
+}
+.icon-chevron-down:before {
+  content: "\e905";
+}
+.icon-checkmark:before {
+  content: "\e906";
+}
+.icon-comment:before {
+  content: "\e907";
+}
 
 /* Media queries */ 
 /* hide permalink on larger screens, show only on hover */
@@ -623,9 +715,8 @@ article blockquote li:before {
         float: right;
     }
     .btn.comment i {
-        display: inline-block; 
-        font-size: 14px;
-        line-height: 0.5;
+        display: inline-block;        
+        line-height: 12px;
     }
 }
 @media (max-width: 320px) {

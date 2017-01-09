@@ -471,7 +471,6 @@ function EditPostPage() {
     self.homeScore = element(by.css('[ng-model="freetypeData.home.score"]'));
     self.awayName = element(by.css('[ng-model="freetypeData.away.name"]'));
     self.awayScore = element(by.css('[ng-model="freetypeData.away.score"]'));
-    self.scorecardsTime = element(by.css('[ng-model="freetypeData.time"]'));
     self.player1Name = element.all(by.css('[ng-model="iterator__1.name"]')).get(0);
     self.player1Time = element.all(by.css('[ng-model="iterator__1.time"]')).get(0);
     self.player2Name = element.all(by.css('[ng-model="iterator__1.name"]')).get(1);
@@ -534,7 +533,6 @@ function EditPostPage() {
             homeScore: randomString(2),
             awayName: randomString(10),
             awayScore: randomString(2),
-            scorecardsTime: randomString(3),
             player1Name: randomString(10),
             player1Time: randomString(2),
             player2Name: randomString(10),
@@ -544,7 +542,6 @@ function EditPostPage() {
         self.homeScore.sendKeys(data.homeScore);
         self.awayName.sendKeys(data.awayName);
         self.awayScore.sendKeys(data.awayScore);
-        self.scorecardsTime.sendKeys(data.scorecardsTime);
         self.player1Name.sendKeys(data.player1Name);
         self.player1Time.sendKeys(data.player1Time);
 

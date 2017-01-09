@@ -12,23 +12,23 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 1.5.4\n"
 
-#: comments.html:38
+#: comments.html:37
 msgid "Cancel"
 msgstr "Annuler"
 
-#: template.html:42
+#: template.html:46
 msgid "Comment"
 msgstr "Commentaire"
 
-#: comments.html:28
+#: comments.html:27
 msgid "Comment *"
 msgstr "Commentaire *"
 
-#: comments.html:32
+#: comments.html:31
 msgid "Comment should be maximum 300 characters in length."
 msgstr "Un commentaire ne peut excéder 300 signes"
 
-#: main.js:49 template.html:13
+#: main.js:50 template.html:13
 msgid "Editorial"
 msgstr "Éditorial"
 
@@ -40,54 +40,51 @@ msgstr "Afficher plus de messages"
 msgid "Loading"
 msgstr "Chargement"
 
-#: comments.html:20
+#: comments.html:19
 msgid "Name *"
 msgstr "Nom *"
 
-#: comments.html:24
+#: comments.html:23
 msgid "Name should be maximum 30 characters in length."
 msgstr "Le nom ne peut excéder 30 signes"
 
-#: main.js:52 template.html:17
+#: main.js:53 template.html:17
 msgid "Newest first"
 msgstr "Le plus récent d'abord"
 
 #: template.html:59
-#, fuzzy
 msgid "No posts for now."
 msgstr "Aucun message pour le moment."
 
-#: main.js:55 template.html:21
+#: main.js:56 template.html:21
 msgid "Oldest first"
 msgstr "Plus ancien en premier"
 
 #: template.html:83
-#, fuzzy
 msgid "One pinned post"
-msgid_plural "{{$count}} pined posts"
+msgid_plural "{{$count}} pinned posts"
 msgstr[0] "Voir le nouveau message"
 msgstr[1] "Voir {{$count}} nouveaux messages"
 
-#: comments.html:31
+#: comments.html:30
 msgid "Please fill in your Comment."
 msgstr "Votre commentaire."
 
-#: comments.html:23
+#: comments.html:22
 msgid "Please fill in your Name."
 msgstr "Votre nom."
 
-#: comments.html:15
+#: comments.html:14
 msgid "Post a comment"
 msgstr "Envoyer un commentaire"
 
 #: template.html:67
-#, fuzzy
 msgid "See one new update"
 msgid_plural "See {{$count}} new updates"
 msgstr[0] "Voir le nouveau message"
 msgstr[1] "Voir {{$count}} nouveaux messages"
 
-#: comments.html:39
+#: comments.html:38
 msgid "Send"
 msgstr "Envoyer"
 
@@ -107,7 +104,7 @@ msgstr "Trier par:"
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
 msgstr ""
 
-#: comments.html:7
+#: comments.html:6
 msgid "Your comment was sent for approval."
 msgstr "Votre commentaire a été envoyé et est en attente de validation."
 
