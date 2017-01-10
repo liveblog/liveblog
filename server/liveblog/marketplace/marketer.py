@@ -1,7 +1,7 @@
 import logging
 import requests
 import json
-from flask import Blueprint
+from flask import Blueprint, request
 from flask_cors import CORS
 from liveblog.syndication.utils import api_response, api_error
 from liveblog.syndication.exceptions import APIConnectionError
@@ -21,7 +21,7 @@ CORS(marketers_blueprint)
 def marketers():
     # Use marketplace app url to retrieve marketers
     try:
-        response = _send_marketplace_api_request(MARKETPLACE_APP_URL, 'marketers')
+        response = _send_marketplace_api_request(MARKETPLACE_APP_URL, 'marketers', request.args)
     except APIConnectionError as e:
         return api_response(str(e), 500)
 
@@ -49,7 +49,7 @@ def marketer_blogs(marketer_id):
     # Use marketer url to call /marketplace/blogs
     url = marketer['url']
     try:
-        response = _send_marketplace_api_request(url, 'marketplace/blogs')
+        response = _send_marketplace_api_request(url, 'marketplace/blogs', request.args)
     except APIConnectionError as e:
         return api_response(str(e), 500)
 
@@ -64,7 +64,7 @@ def marketer_blogs(marketer_id):
         return api_error('Unable to get blogs of marketers.', response.status_code)
 
 
-def _send_marketplace_api_request(url, uri, timeout=5):
+def _send_marketplace_api_request(url, uri, params=None, timeout=5):
     method = 'GET'
     if not url.endswith('/'):
         url = '{}/'.format(url)
@@ -75,7 +75,7 @@ def _send_marketplace_api_request(url, uri, timeout=5):
     try:
         response = requests.request(method, url, headers={
             'Content-Type': 'application/json'
-        }, params=None, data=None, timeout=timeout)
+        }, params=params, data=None, timeout=timeout)
     except (ConnectionError, RequestException, MaxRetryError):
         raise APIConnectionError('Unable to connect to api_url "{}".'.format(url))
 
