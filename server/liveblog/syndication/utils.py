@@ -4,6 +4,7 @@ import hmac
 import logging
 import requests
 import tempfile
+import urllib.parse
 from bson import ObjectId
 from hashlib import sha1
 from flask import make_response, abort
@@ -188,7 +189,8 @@ def _fetch_and_create_image_item(renditions, **meta):
 
 def get_producer_post_id(in_syndication, post_id):
     """Helps to denormalize syndication producer blog post data and provide unique value for producer_post_id field."""
-    return '{}:{}:{}'.format(
+    return '{}:{}:{}:{}'.format(
+        in_syndication['blog_id'],
         in_syndication['producer_id'],
         in_syndication['producer_blog_id'],
         post_id
@@ -202,16 +204,16 @@ def extract_producer_post_data(post, fields=('_id', '_updated', 'highlight', 'st
 
 def get_post_creator(post):
     """Get publisher/author from consumer post."""
-    try:
-        ref = post['groups'][1]['refs'][0]
-    except (KeyError, IndexError):
-        return
+    ref = None
+    for group in post['groups']:
+        if group['id'] == 'main':
+            ref = group['refs'][0]
+    if ref:
+        items_service = get_resource_service('blog_items')
+        item = items_service.find_one(req=None, guid=ref['residRef'])
 
-    items_service = get_resource_service('blog_items')
-    item = items_service.find_one(req=None, guid=ref['guid'])
-
-    if item:
-        return item.get('original_creator')
+        if item:
+            return item.get('original_creator')
 
 
 def create_syndicated_blog_post(producer_post, items, in_syndication):
@@ -264,6 +266,24 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
         'syndication_in': in_syndication['_id'],
         'particular_type': 'post',
         'post_status': post_status,
-        'producer_post_id': producer_post_id
+        'producer_post_id': producer_post_id,
+        # TODO: python-eve doesn't allow to replace _updated value, as post/put/patch method force it to now()
+        # '_updated': producer_post['_updated']
     }
     return new_post
+
+
+def validate_secure_url(value):
+    """Chech if url is secure (https or whitelist)"""
+    parsed = urllib.parse.urlparse(value)
+    # TODO: add whitelist app settings.
+    try:
+        netloc = parsed.netloc.split(':')[0]
+    except IndexError:
+        netloc = parsed.netloc
+    if netloc in ('localhost', '127.0.0.1') or netloc.endswith('.local'):
+        return True
+    if parsed.scheme != 'https':
+        return False
+    else:
+        return True

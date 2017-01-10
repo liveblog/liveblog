@@ -11,7 +11,6 @@
     <div class="preview-layout" ng-class="{closed: !selected.consumer}">
         <div class="list-pane">
             <header>
-                <div sd-searchbar></div>
                 <div class="separator-handler"></div>
                 <div sd-pagination data-items="consumers"></div>
             </header>
@@ -20,29 +19,26 @@
                     <div class="users-table">
                         <ul class="table-header">
                             <li>
-                                <div class="row-wrapper">
-                                    <div 
-                                        class="name" 
-                                        sd-sort 
-                                        data-label="{{ 'Name' | translate }}" 
-                                        data-field="name"></div>
+                                <div class="row-wrapper four-col">
+                                    <div class="name"
+                                         sd-sort
+                                         data-label="{{ 'Name' | translate }}"
+                                         data-field="name"></div>
+
+                                    <div class="email"
+                                         sd-sort
+                                         data-label="{{ 'Webhook url' | translate }}"
+                                         data-field="webhook_url"></div>
+
+                                    <div class="name"
+                                         sd-sort
+                                         data-label="{{ 'Api key' | translate }}"
+                                         data-field="api_key"></div>
 
                                     <div
-                                        class="email"
-                                        sd-sort
-                                        data-label="{{ 'Api url' | translate }}"
-                                        data-field="api_url"></div>
-
-                                    <div 
-                                        class="name"
-                                        sd-sort 
-                                        data-label="{{ 'Api key' | translate }}" 
-                                        data-field="api_key"></div>
-
-                                    <div 
-                                        sd-sort 
-                                        data-label="{{ 'Contact' | translate }}" 
-                                        data-field="contact"></div>
+                                         sd-sort
+                                         data-label="{{ 'Contact' | translate }}"
+                                         data-field="contact"></div>
                                 </div>
                             </li>
                         </ul>

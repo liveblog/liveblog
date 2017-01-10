@@ -6,7 +6,7 @@ var login = require('../app/scripts/bower_components/superdesk/client/spec/helpe
 
 var producer = {
     name: 'Massey Fergusson',
-    apiUrl: 'http://www.masseyferguson.de/api',
+    apiUrl: 'https://www.masseyferguson.de/api',
     consumerApiKey: '1234567890qwerty'
 };
 
@@ -27,6 +27,57 @@ describe('Producers', function() {
                 .count()
                 .then(function(count) {
                     expect(count).toEqual(1);
+                });
+        });
+
+        it('can show an error when some required field are empty', function() {
+            producersManagement.openProducersManagement();
+
+            element(by.css('button.navbtn.sd-create-btn'))
+                .click()
+                .then(function() {
+                    return element(by.css('input#name')).isDisplayed();
+                })
+                .then(function() {
+                    return element(by.css('input[name="first_name"]'))
+                        .sendKeys(contact.firstName);
+                })
+                .then(function() {
+                    return element(by.css('#save-edit-btn')).click();
+                })
+                .then(function() {
+                    var fieldName = 'div[ng-show="producerForm.attempted &&' +
+                        ' producerForm.name.$error.required"]';
+
+                    return expect(
+                        $(fieldName).isDisplayed()
+                    ).toBeTruthy();
+                })
+                .then(function() {
+                    var fieldName = 'div[ng-show="producerForm.attempted &&' +
+                        ' producerForm.api_url.$error.required"]';
+
+                    return expect(
+                        $(fieldName).isDisplayed()
+                    ).toBeTruthy();
+                })
+                .then(function() {
+                    return expect(
+                        $('div[ng-show="attempted && contactForm.first_name.$error.required"]')
+                            .isDisplayed()
+                    ).toBeFalsy();
+                })
+                .then(function() {
+                    return expect(
+                        $('div[ng-show="attempted && contactForm.last_name.$error.required"]')
+                            .isDisplayed()
+                    ).toBeTruthy();
+                })
+                .then(function() {
+                    return expect(
+                        $('div[ng-show="attempted && contactForm.email.$error.required"]')
+                            .isDisplayed()
+                    ).toBeTruthy();
                 });
         });
 
@@ -84,7 +135,7 @@ describe('Producers', function() {
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
             expect(firstRowName.getText()).toEqual('John Deere');
 
-            var updateProducer = function(producerName) {
+            var updateProducer = function(producerName, contactEmail) {
                 return firstRowName
                     .click()
                     .then(function() {
@@ -95,6 +146,13 @@ describe('Producers', function() {
                     })
                     .then(function() {
                         return element(by.css('input#name')).sendKeys(producerName);
+                    })
+                    .then(function() {
+                        return element(by.css('input[name="email"]')).clear();
+                    })
+                    .then(function() {
+                        return element(by.css('input[name="email"]'))
+                            .sendKeys(contactEmail);
                     })
                     .then(function() {
                         return element(by.css('#save-edit-btn')).click();
@@ -112,8 +170,8 @@ describe('Producers', function() {
                     });
             };
 
-            updateProducer(producer.name).then(function() {
-                return updateProducer(producer.name + '1');
+            updateProducer(producer.name, contact.email).then(function() {
+                return updateProducer(producer.name + '1', 'sketch@up.com');
             });
         });
 

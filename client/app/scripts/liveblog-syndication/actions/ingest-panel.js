@@ -1,9 +1,9 @@
 liveblogSyndication
-    .factory('IngestPanelActions', ['Dispatcher', 'api', '$http', 'config', 
+    .factory('IngestPanelActions', ['Dispatcher', 'api', '$http', 'config',
         function(Dispatcher, api, $http, config) {
             return {
                 getSyndication: function(consumerBlogId) {
-                    var params = {
+                     var params = {
                         where: {
                             blog_id: consumerBlogId
                         }
@@ -46,8 +46,10 @@ liveblogSyndication
                         url: uri,
                         method: (params.method == 'DELETE') ? 'DELETE' : 'POST',
                         data: { 
+                            start_date: params.startDate,
                             consumer_blog_id: params.consumerBlogId, 
-                            auto_publish: params.autoPublish
+                            auto_publish: params.autoPublish,
+                            auto_retrieve: params.autoRetrieve
                         },
                         headers: {
                             "Content-Type": "application/json;charset=utf-8"

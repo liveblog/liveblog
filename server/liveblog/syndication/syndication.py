@@ -4,6 +4,7 @@ from flask import current_app as app
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
+from superdesk.notification import push_notification
 from flask import Blueprint, request, abort
 from flask_cors import CORS
 
@@ -24,7 +25,6 @@ WEBHOOK_METHODS = {
     'deleted': 'DELETE'
 }
 
-
 syndication_out_schema = {
     'blog_id': Resource.rel('blogs', embeddable=True, required=True, type="objectid"),
     'consumer_id': Resource.rel('consumers', embeddable=True, required=True, type="objectid"),
@@ -32,11 +32,17 @@ syndication_out_schema = {
         'type': 'objectid',
         'required': True
     },
-    'last_delivered_post_id': Resource.rel('posts', embeddable=True, required=True,
-                                           nullable=True, type="objectid"),
     'token': {
         'type': 'string',
         'unique': True
+    },
+    'auto_retrieve': {
+        'type': 'boolean',
+        'default': True
+    },
+    'start_date': {
+        'type': 'datetime',
+        'default': None
     }
 }
 
@@ -51,18 +57,24 @@ class SyndicationOutService(BaseService):
     def _get_blog(self, blog_id):
         return self._cursor('blogs').find_one({'_id': ObjectId(blog_id)})
 
-    def is_syndicated(self, consumer_id, producer_blog_id, consumer_blog_id):
+    def _lookup(self, consumer_id, producer_blog_id, consumer_blog_id):
         lookup = {'$and': [
             {'consumer_id': {'$eq': consumer_id}},
             {'blog_id': {'$eq': producer_blog_id}},
             {'consumer_blog_id': {'$eq': consumer_blog_id}}
         ]}
-        logger.debug('SyndicationOut.is_syndicated lookup: {}'.format(lookup))
-        collection = self.find(lookup)
-        if collection.count():
-            return True
-        else:
-            return False
+        return lookup
+
+    def get_syndication(self, consumer_id, producer_blog_id, consumer_blog_id):
+        try:
+            return self.find(self._lookup(consumer_id, producer_blog_id, consumer_blog_id))[0]
+        except IndexError:
+            return
+
+    def is_syndicated(self, consumer_id, producer_blog_id, consumer_blog_id):
+        logger.warning('SyndicationOutService.is_syndicated is deprecated!')
+        item = self.get_syndication(consumer_id, producer_blog_id, consumer_blog_id)
+        return bool(item)
 
     def get_blog_syndication(self, blog_id):
         blog = self._get_blog(blog_id)
@@ -81,6 +93,11 @@ class SyndicationOutService(BaseService):
             return bool(out_syndication.count())
 
     def send_syndication_post(self, post, action='created'):
+        # Prevent "loops" by sending only posts without syndication_in set.
+        if post.get('syndication_in'):
+            logger.warning('Not sending post "{}": syndicated content.'.format(post['_id']))
+            return
+
         blog_id = ObjectId(post['blog'])
         out_syndication = self.get_blog_syndication(blog_id)
         for out in out_syndication:
@@ -98,6 +115,19 @@ class SyndicationOutService(BaseService):
         super().on_created(docs)
         for doc in docs:
             send_posts_to_consumer.delay(doc)
+
+    def on_updated(self, updates, original):
+        super().on_updated(updates, original)
+        start_date = updates.get('start_date')
+        if start_date and start_date != original['start_date']:
+            doc = original.copy()
+            doc.update(updates)
+            send_posts_to_consumer.delay(doc)
+
+    def on_deleted(self, doc):
+        super().on_deleted(doc)
+        # send notifications
+        push_notification(self.notification_key, syndication_out=doc, deleted=True)
 
 
 class SyndicationOut(Resource):
@@ -132,6 +162,14 @@ syndication_in_schema = {
     'auto_publish': {
         'type': 'boolean',
         'default': False
+    },
+    'auto_retrieve': {
+        'type': 'boolean',
+        'default': True
+    },
+    'start_date': {
+        'type': 'datetime',
+        'default': None
     }
 }
 
@@ -139,23 +177,34 @@ syndication_in_schema = {
 class SyndicationInService(BaseService):
     notification_key = 'syndication_in'
 
-    def is_syndicated(self, producer_id, producer_blog_id, consumer_blog_id):
+    def _lookup(self, producer_id, producer_blog_id, consumer_blog_id):
         lookup = {'$and': [
             {'producer_id': {'$eq': producer_id}},
             {'blog_id': {'$eq': consumer_blog_id}},
             {'producer_blog_id': {'$eq': producer_blog_id}}
         ]}
-        logger.debug('SyndicationIn.is_syndicated lookup: {}'.format(lookup))
-        collection = self.find(lookup)
-        if collection.count():
-            return True
-        else:
-            return False
+        return lookup
+
+    def get_syndication(self, producer_id, producer_blog_id, consumer_blog_id):
+        try:
+            return self.find(self._lookup(producer_id, producer_blog_id, consumer_blog_id))[0]
+        except IndexError:
+            return
+
+    def is_syndicated(self, producer_id, producer_blog_id, consumer_blog_id):
+        logger.warning('SyndicationInService.is_syndicated is deprecated!')
+        item = self.get_syndication(producer_id, producer_blog_id, consumer_blog_id)
+        return bool(item)
 
     def on_create(self, docs):
         super().on_create(docs)
         for doc in docs:
             cast_to_object_id(doc, ['blog_id', 'producer_id', 'producer_blog_id', 'consumer_blog_id'])
+
+    def on_deleted(self, doc):
+        super().on_deleted(doc)
+        # send notifications
+        push_notification(self.notification_key, syndication_in=doc, deleted=True)
 
 
 class SyndicationIn(Resource):

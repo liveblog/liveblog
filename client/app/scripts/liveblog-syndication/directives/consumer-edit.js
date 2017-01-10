@@ -33,8 +33,8 @@ liveblogSyndication
                     if (!scope.consumerForm.name.$pristine)
                         data.name = scope.consumer.name;
 
-                    if (!scope.consumerForm.api_url.$pristine)
-                        data.api_url = scope.consumer.api_url;
+                    if (!scope.consumerForm.webhook_url.$pristine)
+                        data.webhook_url = scope.consumer.webhook_url;
 
                     if (scope.isEditing)
                         apiQuery = api.save('consumers', scope.origConsumer, data);
@@ -48,8 +48,21 @@ liveblogSyndication
                         scope.onsave({ consumer: result });
                     })
                     .catch(function(err) {
+                        var errorMsg = gettext('Fatal error!');
+
+                        console.log('error', err);
+
+                        if (err.data.hasOwnProperty('_error'))
+                            errorMsg = err.data._error.message;
+
+                        if (err.data.hasOwnProperty('_issues')) {
+                            Object.keys(err.data._issues).forEach(function(key) {
+                                scope.consumerForm[key].issue = err.data._issues[key];
+                            });
+                        }
+
                         notify.pop();
-                        notify.error(gettext('Fatal error!'));
+                        notify.error(errorMsg);
                     });
                 };
 

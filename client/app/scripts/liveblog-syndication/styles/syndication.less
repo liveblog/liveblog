@@ -4,9 +4,11 @@
 /*Force 4 columns layout in consumers view*/
 .users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div,
 .users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div.email,
+.users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div.username,
 .users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div.name,
 .users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div,
 .users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.email,
+.users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.username,
 .users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.name {
     width: 25%;
 }
@@ -46,7 +48,7 @@
     .blog-actions-menu {
         position: absolute;
         top: 0;
-        right: 0;    
+        right: 0;
 
         button.btn-dots-vertical {
             background: transparent;
@@ -55,6 +57,18 @@
             padding: 15px 10px;
             color: #666;
             opacity: 0.4;
+        }
+
+        label[for="start_date"] {
+            margin: auto 16px;
+        }
+
+        div.datepicker-input {
+            margin: auto 16px;
+
+            button { 
+                width: 24px; 
+            }
         }
     }
 
@@ -125,4 +139,14 @@
     font-size: 11px;
     font-weight: 400;
     margin-left: 6px;
+}
+.panel-definition-list__definition.datepicker {
+    margin-right: 0;
+    position: relative;
+    width: 96px;
+}
+
+form[name="consumerForm"] div.error, 
+form[name="producerForm"] div.error {
+    color: #fe0201;
 }

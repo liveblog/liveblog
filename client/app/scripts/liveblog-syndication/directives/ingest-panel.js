@@ -48,38 +48,6 @@ liveblogSyndication
                         scope.openPanel('incoming-syndication', synd._id);
                     }
 
-                    scope.toggleDropdown = function($event, blog) {
-                        if (!blog.hasOwnProperty('isOpen'))
-                            blog.isOpen = false;
-
-                        $event.preventDefault();
-                        $event.stopPropagation();
-
-                        blog.isOpen = !blog.isOpen;
-                    };
-
-                    scope.updateSyndication = function(synd) {
-                        IngestPanelActions.updateSyndication(
-                            synd._id,
-                            { auto_publish: synd.auto_publish },
-                            synd._etag
-                        );
-                    };
-
-                    scope.destroy = function($event, synd) {
-                        $event.preventDefault();
-                        $event.stopPropagation();
-
-                        IngestPanelActions.syndicate({
-                            producerId: synd.producer_id,
-                            producerBlogId: synd.producer_blog_id,
-                            consumerBlogId: scope.consumerBlogId,
-                            autoPublish: synd.auto_publish,
-                            method: 'DELETE'
-                        });
-                    };
-
-                    scope.open = false;
                     scope.$on('$destroy', scope.store.destroy);
                 }
             };
