@@ -7,6 +7,7 @@
         <span class="label label--simple label--no-padding">Choose Producer</span>
         <div class="select-producer">
             <select
+                ng-class="{'full': !producerBlogs._items}"
                 ng-model="producerId" 
                 ng-change="selectProducer(producerId)">
                 <option 
@@ -15,7 +16,10 @@
                     {{producer.name}}
                 </option>
             </select>
-            <button class="btn btn-primary">
+            <button
+                class="btn btn-primary"
+                ng-click="refreshBlogList()"
+                ng-if="producerBlogs._items">
                 <i class="icon-refresh"></i>
             </button>
         </div>
