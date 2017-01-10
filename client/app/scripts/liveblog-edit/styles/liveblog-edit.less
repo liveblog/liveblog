@@ -190,6 +190,7 @@
                 .ads-media {
                     img {
                         width: 100%;
+                        margin-bottom: 8px;
                     }
                 }
                 .freetype-btn {                       
@@ -201,15 +202,15 @@
                     min-width: 28px;
                     margin-bottom: 4px;
                     .border-radius(2px);
+                }                
+                .image-text {
+                    margin-top: 5px;
                 }
-                .scorecard {
-                    background: transparent !important;
-                    padding: 0 !important;
-                    display: table !important;
+                .scorecard {                                      
                     margin: 0 !important;
                     width: 100%;
-                    .scorecard__column {
-                        width: 50% !important;                        
+                    background: #f8f8f8 !important;
+                    .scorecard__column {                                         
                         text-align: left !important;
                         padding: 0px 10px 0 0 !important;
                         &:last-child {
@@ -237,21 +238,28 @@
                                 }
                             }
                         }
+                    }                    
+                }
+                legend {
+                    font-size: 13px !important;
+                    color: @grayDark !important;
+                    margin-bottom: 0 !important;
+                    &.legend--big {
+                        font-size: 18px!important;
+                        margin-bottom: 10px!important;
+                        text-transform: inherit;
+                        font-weight: 400;
                     }
-                    legend {
-                        font-size: 13px !important;
-                        color: @grayDark !important;
-                        margin-bottom: 0 !important;
-                        &.legend--big {
-                            font-size: 18px!important;
-                            margin-bottom: 10px!important;
-                            text-transform: inherit;
-                            font-weight: 400;
-                        }
-                        &.legend--padding-top {
-                            padding-top: 20px !important;
-                        }
+                    &.legend--padding-top {
+                        padding-top: 20px !important;
                     }
+                }
+                label {
+                    font-size: 11px;
+                    font-weight: 500;
+                    color: #999;
+                    text-transform: uppercase;
+                    height: 18px;
                 }
                 .editor {
                     textarea {
@@ -757,7 +765,7 @@
     width: auto;
     z-index: 2;
     position: absolute;
-    right: 70px;
+    right: 40px;
     top: 2px;
     li {
         padding: 0px 5px;
