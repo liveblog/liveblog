@@ -48,8 +48,21 @@ liveblogSyndication
                         scope.onsave({ consumer: result });
                     })
                     .catch(function(err) {
+                        var errorMsg = gettext('Fatal error!');
+
+                        console.log('error', err);
+
+                        if (err.data.hasOwnProperty('_error'))
+                            errorMsg = err.data._error.message;
+
+                        if (err.data.hasOwnProperty('_issues')) {
+                            Object.keys(err.data._issues).forEach(function(key) {
+                                scope.consumerForm[key].issue = err.data._issues[key];
+                            });
+                        }
+
                         notify.pop();
-                        notify.error(gettext('Fatal error!'));
+                        notify.error(errorMsg);
                     });
                 };
 
