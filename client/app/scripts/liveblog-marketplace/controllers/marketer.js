@@ -8,11 +8,6 @@ liveblogMarketplace
                 'allowfullscreen'
             ].join(' ');
 
-//            $scope.states = [
-//                { text: 'Active Blogs' },
-//                { text: 'Archived Blogs' }
-//            ];
-
             $scope.embedModal = false;
             $scope.active = 'preview';
 
@@ -28,18 +23,15 @@ liveblogMarketplace
             if ($routeParams.type == 'marketers')
                 api.get('/marketplace/marketers/' + $routeParams.id + '/blogs')
                     .then(function(data) {
-                        console.log('data', data);
-                        $scope.marketer = data.marketer;
-
+                        $scope.marketer = data._items[0].marketer_name;
                         $scope.blogs = data;
-                        $scope.blogs._items.map(function(item) {
+
+                        $scope.blogs._items = $scope.blogs._items.map(function(item) {
                             return angular.extend(item, {
                                 embed: '<iframe '+iframeAttrs+' src="'+item.public_url+'"></iframe>',
                                 public_url: $sce.trustAsResourceUrl(item.public_url)
                             });
                         });
-
-                        console.log('blogs', $scope.blogs);
                     });
             else
                 api.get('/producers/' + $routeParams.id + '/blogs').then(function(data) {
