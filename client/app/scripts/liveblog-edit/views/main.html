@@ -146,9 +146,10 @@
                             <button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate>Preview
                             </button>
                             <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
-                            <button class="btn pull-right" ng-click="toggleTypePostDialog()">
+                            <button class="btn pull-right btn--with-icon-right" ng-click="toggleTypePostDialog()">
                                 <span ng-if="selectedPostType=='Default'" translate>Choose post type</span>
                                 <span ng-if="selectedPostType!='Default'" translate>{{selectedPostType.name}}</span>
+                                <i class="icon-chevron-right-thin"></i>
                             </button>
                         </header>
                         </div>
