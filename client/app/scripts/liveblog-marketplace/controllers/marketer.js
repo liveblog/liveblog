@@ -10,6 +10,7 @@ liveblogMarketplace
 
             $scope.embedModal = false;
             $scope.active = 'preview';
+            $scope.pageLimit = 25;
 
             $scope.openEmbedModal = function(blog) {
                 $scope.embedModal = true;
@@ -20,27 +21,34 @@ liveblogMarketplace
                 $scope.embedModal = false;
             };
 
-            if ($routeParams.type == 'marketers')
-                api.get('/marketplace/marketers/' + $routeParams.id + '/blogs')
-                    .then(function(data) {
-                        $scope.marketer = data._items[0].marketer_name;
-                        $scope.blogs = data;
+            var onReceivedData = function(data) {
+                if (data._items.length > 0 && data._items[0].hasOwnProperty('marketer_name'))
+                    $scope.marketer = data._items[0].marketer_name;
 
-                        $scope.blogs._items = $scope.blogs._items.map(function(item) {
-                            return angular.extend(item, {
-                                embed: '<iframe '+iframeAttrs+' src="'+item.public_url+'"></iframe>',
-                                public_url: $sce.trustAsResourceUrl(item.public_url)
-                            });
-                        });
+                $scope.blogs = data;
+
+                $scope.blogs._items = $scope.blogs._items.map(function(item) {
+                    return angular.extend(item, {
+                        embed: '<iframe '+iframeAttrs+' src="'+item.public_url+'"></iframe>',
+                        public_url: $sce.trustAsResourceUrl(item.public_url)
                     });
-            else
-                api.get('/producers/' + $routeParams.id + '/blogs').then(function(data) {
-                    $scope.blogs = { _items: data._items.map(function(item) {
-                        return angular.extend(item, {
-                            embed: '<iframe '+iframeAttrs+' src="'+item.public_url+'"></iframe>',
-                            public_url: $sce.trustAsResourceUrl(item.public_url)
-                        });
-                    })};
                 });
+            };
 
+            var fetchBlogs = function() {
+                var criteria = {
+                    max_results: $scope.pageLimit,
+                    page: $routeParams.page || 1,
+                };
+
+                if ($routeParams.type == 'marketers')
+                    api.get('/marketplace/marketers/' + $routeParams.id + '/blogs', criteria)
+                        .then(onReceivedData);
+                else
+                    api.get('/producers/' + $routeParams.id + '/blogs', criteria)
+                        .then(onReceivedData);
+            }
+
+            fetchBlogs();
+            $scope.$on('$routeUpdate', fetchBlogs);
         }]);
