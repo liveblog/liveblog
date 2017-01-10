@@ -72,10 +72,15 @@
     .scorecard .scorecard__scorers li > div.time {
         float: right;
         font-weight: 700;
-        position: relative;
+        position: relative;        
+    }
+    .scorecard .scorecard__scorers li > div.time .freetype--empty {
+        display: none;
+    }
+    .scorecard .scorecard__scorers li > div.time .freetype--element {
         margin-left: 12px;
     }
-    .scorecard .scorecard__scorers li > div.time:after {
+    .scorecard .scorecard__scorers li > div.time .freetype--element:after {
         content: '′';
     }
 </style>
