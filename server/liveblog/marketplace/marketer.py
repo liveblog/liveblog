@@ -26,7 +26,17 @@ def marketers():
         return api_response(str(e), 500)
 
     if response.status_code == 200:
-        return api_response(response.content, response.status_code, json_dumps=False)
+        # Update picture_url - bit of a hack until we settle on a storage solution for the marketplace app
+        url = MARKETPLACE_APP_URL
+        if not url.endswith('/'):
+            url = '{}/'.format(url)
+        content = json.loads(response.content.decode('utf-8'))
+        for item in content['_items']:
+            picture_url = item['picture_url']
+            picture_url = picture_url.replace("/api/", "")
+            item['picture_url'] = url + picture_url
+        response_content = json.dumps(content)
+        return api_response(response_content, response.status_code, json_dumps=False)
     else:
         return api_error('Unable to get marketers.', response.status_code)
 
