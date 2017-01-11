@@ -14,7 +14,7 @@ class BlogResource(Resource):
         'search_backend': None,
         'default_sort': [('_updated', -1)],
         'elastic_filter': {'bool': {
-            'must': {'term': {'market_enabled': 'true'}},
+            'must': {'term': {'market_enabled': 'true', 'blog_status': 'open'}},
         }},
         # projection don't work
         'projection': {
