@@ -39,7 +39,7 @@
         margin-bottom: 6px;
         min-height: 64px;
         line-height: 120%;
-        word-break: break-all;
+        word-wrap: break-word;
     }
     .scorecard span.team-score {
         font-size: 34px;
@@ -83,6 +83,9 @@
     }
     .scorecard .scorecard__scorers li > div.time .freetype--element:after {
         content: '′';
+    }
+    .scorecard ul, .scorecard ol {
+        margin: 0 !important;
     }
 </style>
 <div class="scorecard">
