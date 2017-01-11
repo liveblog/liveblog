@@ -221,7 +221,6 @@
             'liveblog.posts',
             'liveblog.blog',
             'liveblog.themes',
-            'liveblog.syndication',
             'superdesk.settings',
             'superdesk.dashboard',
             'superdesk.users',
@@ -251,6 +250,9 @@
             'lb.templates',
             'ngMessages'
         ];
+
+        if (config.syndication)
+            modules.push('liveblog.syndication');
 
         require([
             'main',

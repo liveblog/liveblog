@@ -18,11 +18,11 @@ define([
 ], function(angular, _) {
     'use strict';
     BlogEditController.$inject = [
-        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session',
+        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'modal',
         'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService'
     ];
-    function BlogEditController(api, $q, $scope, blog, notify, gettext, session,
+    function BlogEditController(api, $q, $scope, blog, notify, gettext, session, $injector,
         upload, config, embedService, postsService, unreadPostsService, modal, blogService, $route, $routeParams, blogSecurityService, themesService) {
 
         var vm = this;
@@ -77,6 +77,7 @@ define([
         angular.extend($scope, {
             blog: blog,
             panels: {},
+            syndicationEnabled: $injector.has('lbNotificationsCountDirective'),
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,

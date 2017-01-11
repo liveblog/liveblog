@@ -151,7 +151,7 @@ define([
                 });
                 _completeUser(post.mainItem.item);
 
-                if (post.syndication_in) {
+                if (post.syndication_in && api.hasOwnProperty('syndicationIn')) {
                     api.syndicationIn.getById(post.syndication_in).then(function(synd) {
                         //console.log('complete user', synd.producer_blog_title);
                         post.producer_blog_title = synd.producer_blog_title;

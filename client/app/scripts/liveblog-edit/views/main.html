@@ -29,6 +29,7 @@
         </button>
         <button 
             class="navbtn" 
+            ng-if="syndicationEnabled"
             lb-notifications-count
             ng-click="openPanel('ingest')" 
             ng-class="{'active': panelState === 'ingest' || panelState === 'incoming-syndication'}">
