@@ -472,10 +472,10 @@
             }
         };
     })
-    .directive('freetypeImage', ['$compile', 'modal', 'api', 'upload', function($compile, modal, api, upload) {
+    .directive('freetypeImage', ['$compile', 'modal', 'api', 'upload', '$templateCache', function($compile, modal, api, upload, $templateCache) {
         return {
             restrict: 'E',
-            template: '<div class="form-group"><div class="form-input form-image"><figure class="ads-media" ng-show="image.picture_url"><img ng-src="{{image.picture_url}}"/><div class="ads-image-actions"><button class="btn btn-info pull-right" ng-click="ft.openUploadModal()" translate>Change</button><button class="btn btn-default pull-right" ng-click="ft.removeImage()" translate>Remove</button></div></figure><div ng-hide="image.picture_url"><button class="btn btn-info" ng-click="ft.openUploadModal()" translate>Upload Image</button><div class="image-text" translate>Image has not been set so far</div></div></div></div><div sd-modal="" data-model="ft.uploadModal"><form ng-submit="ft.upload(ft.preview)" name="uploadImageForm"><div class="modal-header"><button class="close" ng-click="ft.closeUploadModal()"><i class="icon-close-small"></i></button> <h3 translate>Upload Advertisment Image</h3> </div><div class="modal-body"> <div class="upload-form"> <section class="main" sd-image-preview="ft.preview.url" data-file="ft.preview.img" data-progress-width="ft.progress.width" > <div class="upload-progress" ng-show="progress.width"> <div class="bar" style="width:{{progress.width}}%;"></div></div><div class="computer" ng-if="!ft.preview.url" ng-hide="ft.progress.width"> <div class="dropzone" ng-file-drop="ft.preview.img=$files[0]"> <div class="text" translate>Drop it here</div><div class="input-holder"> <input type="file" accept="image/*;capture=camera" ng-file-select="ft.preview.img=$files[0]"> </div></div></div><div class="preview" ng-if="ft.preview.url"> <div class="original"> <div sd-plain-image data-src="ft.preview.url" data-progress-width="ft.progress.width" data-file="ft.preview.img" ></div></div></div></div></div><div class="modal-footer"> <button type="submit" class="btn btn-primary btn-info" translate>Upload</button> </div></form></div>',
+            template: $templateCache.get('scripts/liveblog-edit/views/freetype-image.html'),
             controller: ['$scope', function($scope) {
                 var vm = this;
                 angular.extend(vm, {
