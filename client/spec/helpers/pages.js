@@ -143,6 +143,48 @@ function BlogsPage() {
     };
 }
 
+function FreetypesManagerPage() {
+    'use strict';
+    var self = this;
+    self.title = element(by.css('[ng-model="vm.dialogFreetype.name"]'));
+    self.template = element(by.css('[ng-model="vm.dialogFreetype.template"]'));
+
+    self.getFreetypes = function() {
+        return element.all(by.repeater('freetype in vm.freetypes'));
+    };
+    self.openFreetypesManager = function() {
+        element(by.css('[ng-click="toggleMenu()"]')).click();
+        browser.wait(function() {
+            return element(by.css('[href="#/freetypes/"][title]')).isDisplayed();
+        });
+        waitAndClick(by.css('[href="#/freetypes/"][title]'));
+        return self;
+    };
+    self.saveFreetype = function() {
+        return element(by.css('[ng-click="vm.saveFreetype()"]')).click();
+    };
+    self.openNewFreetypeDialog = function() {
+        element(by.css('[ng-click="vm.openFreetypeDialog();"]')).click();
+    };
+    self.createFreetypeData = function() {
+        return {
+            title: randomString(5),
+            template: randomString(10)
+        };
+    };
+    self.editFreetype = function() {
+        var freeData = self.createFreetypeData();
+        self.title.sendKeys(freeData.title);
+        self.template.sendKeys(freeData.template);
+        return self.saveFreetype().then(function() {return freeData;});
+    };
+    self.removeFreetype = function(index) {
+        index = index || 0;
+        self.getFreetypes().get(index).click().all(by.css('[ng-click="vm.removeFreetype(freetype, $index);"]')).click();
+        okModal();
+    };
+}
+
 function ThemesManagerPage() {
     'use strict';
     var self = this;
@@ -810,3 +852,4 @@ exports.randomString = randomString;
 exports.themeManager = new ThemesManagerPage();
 exports.consumersManagement = new ConsumersManagementPage();
 exports.producersManagement = new ProducersManagementPage();
+exports.freetypesManager = new FreetypesManagerPage();
