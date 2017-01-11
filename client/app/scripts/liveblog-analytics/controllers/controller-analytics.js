@@ -4,7 +4,7 @@ LiveblogAnalyticsController.$inject = ['$scope','$location', 'api', 'analytics',
 function LiveblogAnalyticsController($scope, $location, api, analytics, blog, notify) {
   var vm = this;
 
-  var close = function() { //return to blog list page
+  var close = function() { // Return to blog list page
     $location.path('/liveblog/edit/' + blog._id);
   };
 
@@ -18,12 +18,43 @@ function LiveblogAnalyticsController($scope, $location, api, analytics, blog, no
     })
   };
 
-  loadAnalytics(); // greedy, as calls aren't expensive/don't need to scale
+  var download_csv = function() { // Convert relevant item fields to CSV
+    var fileContent = "data:text/csv;charset=utf-8,"
+      , filename = "liveblog_analytics_" + blog._id;
+
+    $scope.analytics_data._items.forEach(function(arr, index) {
+      var item = $scope.analytics_data._items[index]
+        , filtered = [item.blog_id, item.context_url, item.hits]
+      fileContent += filtered.join(",") + "\n"
+    });
+
+    var blob = new Blob([fileContent], {
+      type: 'text/csv;charset=utf-8;'
+    });
+
+    if (navigator.msSaveBlob) { // IE 10+
+      navigator.msSaveBlob(blob, filename);
+      return // early exit
+    }
+
+    var link = document.createElement("a");
+    if (link.download === undefined) return; // detect HTML5 download attribute
+
+    var url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", filename);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+  };
+
+  loadAnalytics(); // load all, calls aren't expensive
   
   angular.extend(vm, {
     blog: blog,
     close: close,
     tab: "embeds",
+    download_csv: download_csv,
     changeTab: function(tab) {
       vm.tab = tab;
       if (!vm.tab) return;
