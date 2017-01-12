@@ -19,12 +19,11 @@ function LiveblogAnalyticsController($scope, $location, api, analytics, blog, no
   };
 
   var downloadCSV = function() { // Convert relevant item fields to CSV
-    var fileContent = "data:text/csv;charset=utf-8,"
-      , filename = "liveblog_analytics_" + blog._id;
+    var fileContent = "", filename = "liveblog_analytics_" + blog._id;
 
     $scope.analytics_data._items.forEach(function(arr, index) {
       var item = $scope.analytics_data._items[index]
-        , filtered = [item.blog_id, item.context_url, item.hits]
+        , filtered = [item.blog_id, item.context_url, item.hits];
       fileContent += filtered.join(",") + "\n"
     });
 
@@ -54,7 +53,7 @@ function LiveblogAnalyticsController($scope, $location, api, analytics, blog, no
     blog: blog,
     close: close,
     tab: "embeds",
-    downloadCSV: download_csv,
+    downloadCSV: downloadCSV,
     changeTab: function(tab) {
       vm.tab = tab;
       if (!vm.tab) return;
