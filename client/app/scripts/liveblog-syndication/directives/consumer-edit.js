@@ -50,8 +50,6 @@ liveblogSyndication
                     .catch(function(err) {
                         var errorMsg = gettext('Fatal error!');
 
-                        console.log('error', err);
-
                         if (err.data.hasOwnProperty('_error'))
                             errorMsg = err.data._error.message;
 

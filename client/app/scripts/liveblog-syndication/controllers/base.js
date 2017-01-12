@@ -22,7 +22,6 @@ liveblogSyndication
 
             $scope[$scope.endPoint]._items = $scope[$scope.endPoint]._items
                 .map(function(item) {
-                    console.log('map', item._id, newEntry._id);
                     if (item._id == newEntry._id) {
                         isEditing = true;
                         return newEntry;
