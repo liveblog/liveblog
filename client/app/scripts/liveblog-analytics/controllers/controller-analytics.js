@@ -18,7 +18,7 @@ function LiveblogAnalyticsController($scope, $location, api, analytics, blog, no
     })
   };
 
-  var download_csv = function() { // Convert relevant item fields to CSV
+  var downloadCSV = function() { // Convert relevant item fields to CSV
     var fileContent = "data:text/csv;charset=utf-8,"
       , filename = "liveblog_analytics_" + blog._id;
 
@@ -54,7 +54,7 @@ function LiveblogAnalyticsController($scope, $location, api, analytics, blog, no
     blog: blog,
     close: close,
     tab: "embeds",
-    download_csv: download_csv,
+    downloadCSV: download_csv,
     changeTab: function(tab) {
       vm.tab = tab;
       if (!vm.tab) return;
