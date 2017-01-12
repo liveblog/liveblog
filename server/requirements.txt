@@ -12,6 +12,7 @@ pep8
 pyflakes<=1.1
 httmock
 honcho
+# @TODO remove this after cache clear
 # Superdesk
 -e git+git://github.com/liveblog/superdesk-core.git@2d76fb0ffaaa6aac1835fe44486144282cd0c5ce#egg=Superdesk-Core==1.06-update-sd-core
 
