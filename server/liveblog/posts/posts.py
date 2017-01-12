@@ -187,7 +187,6 @@ class PostsService(ArchiveService):
             post['id'] = doc.get('_id')
             post['syndication_in'] = doc.get('syndication_in')
             posts.append(post)
-            # post_ids.append({ id: doc.get('_id'), str('syndication_in'): doc.get('syndication_in')})
             app.blog_cache.invalidate(doc.get('blog'))
             # send post to consumer webhook
             if doc['post_status'] == 'open':
