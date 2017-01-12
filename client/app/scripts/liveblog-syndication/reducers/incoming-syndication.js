@@ -15,11 +15,17 @@ liveblogSyndication
                 case 'ON_SAVED_POST':
                 case 'ON_REMOVED_POST':
                     return angular.extend(state, {
+                        notification: action.notification || null,
                         posts: angular.extend(state.posts, {
                             _items: state.posts._items.filter(function(item) {
                                 return (item._id != action.post._id);
                             })
                         })
+                    });
+
+                case 'ON_FLUSHED_NOTIF':
+                    return angular.extend(state, {
+                        notification: null
                     });
             }
         };
