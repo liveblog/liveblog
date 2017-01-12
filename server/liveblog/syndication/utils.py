@@ -258,9 +258,7 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
         'syndication_in': in_syndication['_id'],
         'particular_type': 'post',
         'post_status': post_status,
-        'producer_post_id': producer_post_id,
-        # TODO: python-eve doesn't allow to replace _updated value, as post/put/patch method force it to now()
-        # '_updated': producer_post['_updated']
+        'producer_post_id': producer_post_id
     }
     return new_post
 
