@@ -3,11 +3,14 @@ from flask import current_app as app
 from superdesk.validator import SuperdeskValidator
 from .utils import send_api_request, validate_secure_url
 from .exceptions import APIConnectionError
-
-# TODO: add validation for webhook url.
+from .utils import trailing_slash
 
 
 class SyndicationValidator(SuperdeskValidator):
+    def _validate_uniqueurl(self, unique, field, value):
+        value = trailing_slash(value)
+        self._validate_unique(unique, field, value)
+
     def _validate_httpsurl(self, httpsurl, field, value):
         if httpsurl:
             if not validate_secure_url(value):
@@ -25,8 +28,13 @@ class SyndicationValidator(SuperdeskValidator):
                 else:
                     api_url = value
 
+            original = self._original_document or {}
+            document = original.copy()
+            updates = self.document or {}
+            document.update(updates)
+
             if check_auth and key_field:
-                api_key = self.document.get(key_field)
+                api_key = document.get(key_field)
                 if not api_key:
                     return self._error(field, "Unable to find '{}' for the given resource url.".format(key_field))
 
