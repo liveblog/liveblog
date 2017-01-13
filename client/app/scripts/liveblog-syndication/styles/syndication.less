@@ -143,7 +143,27 @@
 .panel-definition-list__definition.datepicker {
     margin-right: 0;
     position: relative;
-    width: 96px;
+    width: 102px;
+
+    div.datepicker-input {
+        min-width: 102px;
+    }
+}
+
+div.select-producer {
+    select {
+        width: 85%;
+        float: left;
+    }
+
+    select.full {
+        width: 100%;
+    }
+
+    button {
+        width: 14%;
+        float: right;
+    }
 }
 
 form[name="consumerForm"] div.error, 
