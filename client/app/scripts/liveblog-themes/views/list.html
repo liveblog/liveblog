@@ -67,6 +67,7 @@
                                 <button ng-if="!theme.abstract" ng-click="vm.makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
                             </div>
                             <button ng-click="vm.openThemeSettings(theme)" class="btn btn-default pull-right" type="button" translate>Settings</button>
+                            <button ng-click="vm.download(theme)" class="btn btn-info pull-right" type="button" translate>Download</button>
                         </div>
                         <div class="default-theme" ng-show="vm.isDefaultTheme(theme)"></div>
                     </div>

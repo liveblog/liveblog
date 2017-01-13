@@ -1,0 +1,19 @@
+{
+  "name": "blogslist",
+  "version": "1.0.0",
+  "homepage": "https://github.com/liveblog/liveblog",
+  "authors": [
+    "Nistor Mihai <Mihai.Nistor@sourcefabric.org>"
+  ],
+  "description": "blogslist core, embed and rendering",
+  "main": "main.js",
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests",
+    "vendors"
+  ]
+}

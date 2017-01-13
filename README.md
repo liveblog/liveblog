@@ -7,9 +7,146 @@
 
 [![Build Status](https://travis-ci.org/liveblog/liveblog.svg?branch=master)](https://travis-ci.org/liveblog/liveblog)
 
-## Vagrant LXC container
+## Installation
 
-### Setting things up
+### How to install Liveblog locally (recommended)
+
+Here I'm assuming you are running Ubuntu Linux 16.04 
+
+#### Install the dependencies
+
+First we need to install the necessary dependencies:
+
+```bash
+sudo apt-get install mongodb redis-server
+```
+
+We currently require a specific version of elastic search (not sure why we need that, but it might come in a handy later on):
+
+```bash
+wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+echo "deb http://packages.elastic.co/elasticsearch/1.7/debian stable main" | sudo tee --append /etc/apt/sources.list.d/elastic.list
+sudo apt-get update
+sudo apt-get install openjdk-8-jre elasticsearch
+```
+
+Remove the elasticsearch node discovery functionality:
+
+```bash
+echo "discovery.zen.ping.multicast.enabled: false" | sudo tee --append /etc/default/elasticsearch
+```
+
+Install Node.js LTS version:
+
+```bash
+curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+sudo apt-get install nodejs
+```
+
+Install The various Python requirements
+
+```bash
+sudo apt-get install \
+python3 python3-dev python3-pip python3-lxml \
+build-essential libffi-dev git \
+libtiff5-dev libjpeg8-dev zlib1g-dev \
+libfreetype6-dev liblcms2-dev libwebp-dev \
+curl libfontconfig virtualenv
+```
+
+Install the required npm tools:
+
+```bash
+sudo npm install -g grunt-cli bower
+```
+
+#### Configure the server
+
+Now we can create the python virtual environment and install the server dependencies:
+
+```bash
+cd server
+virtualenv -p python3 env
+source env/bin/activate
+pip install -r requirements.txt
+```
+
+Add the default data:
+
+```bash
+python3 manage.py app:initialize_data;
+python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
+python3 manage.py register_local_themes ;
+```
+
+Still in the virtualenv, you can now start the server
+
+```bash
+honcho -f ../docker/Procfile-dev start
+```
+
+If you encounter any connection errors from elastic search:
+
+```bash
+elasticsearch.exceptions.ConnectionError: ConnectionError(<urllib3.connection.HTTPConnection object at 0x7f9434838358>: Failed to establish a new connection: [Errno 111] Connection refused) caused by: NewConnectionError(<urllib3.connection.HTTPConnection object at 0x7f9434838358>: Failed to establish a new connection: [Errno 111] Connection refused)
+```
+
+You will need to restart and elasticsearch and wait 10 seconds before starting honcho.
+
+```bash
+sudo service elasticsearch restart
+sleep 10
+honcho -f ../docker/Procfile-dev start
+```
+
+#### Configure the client
+
+Now we can install the dependencies for the client
+
+```bash
+cd client
+npm install
+bower install
+```
+
+We can now run the client server:
+
+```bash
+grunt --force server --server='http://localhost:5000/api' --ws='ws://localhost:5100'
+```
+
+You can now access your local copy at http://localhost:9000 (user: admin, password: admin)
+
+### Docker Install
+
+Use [docker-compose](http://fig.sh "") and the config from `docker` folder or build docker images manually from the [Dockerfile](./Dockerfile).
+
+##### install docker
+
+```sh
+$ sudo apt-get install docker.io
+```
+
+and make sure you can run [docker without sudo](http://askubuntu.com/questions/477551/how-can-i-use-docker-without-sudo).
+
+##### create python virtualenv
+
+```sh
+$ sudo apt-get install python-virtualenv
+$ virtualenv env
+```
+
+##### install docker compose and run app
+
+```sh
+$ . env/bin/activate
+$ pip install -r docker/requirements.txt
+$ ./scripts/docker-local-demo.sh
+```
+
+### Vagrant LXC Installation
+
+#### Setting things up
 
 This will only work on Linux
 
@@ -50,74 +187,3 @@ Once the provisioning done whil still in the virtual machine:
 /opt/liveblog/scripts/start-dev.sh
 ```
 
-### Run the tests
-
-First you need run the startup scripts (`/opt/liveblog/scripts/start-dev.sh`) in your virtual machine. Once this is setted up, execute the following commands on your local machine:
-
-```
-cd ~/code/liveblog/client
-./node_modules/.bin/webdriver-manager update
-./node_modules/.bin/protractor protractor-conf.js
-```
-
-## Run everything in Docker (Not recommended)
-
-How to run Liveblog in a full docker environment
-
-Remove older database and packages
-
-```
-cd ~/code/liveblog
-sudo rm -rf data/ client/node_modules client/.tmp
-```
-
-We need to create the configuration file for the frontend:
-
-```
-cp client/config.sample.js client/config.js
-```
-
-Run docker
-
-``
-cd ~/code/liveblog
-docker-compose -p liveblog -f docker/docker-compose-dev.yml up
-``
-
-SSh into the superdesk docker container:
-
-```
-docker exec -i -t `docker ps | grep liveblog_superdesk | awk '{print $1}'` /bin/bash
-python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
-python3 manage.py register_local_themes ;
-python3 manage.py schema:migrate ;
-```
-
-## Old installation
-
-### Installation
-
-Use [docker-compose](http://fig.sh "") and the config from `docker` folder or build docker images manually from the [Dockerfile](./Dockerfile).
-
-##### install docker
-
-```sh
-$ sudo apt-get install docker.io
-```
-
-and make sure you can run [docker without sudo](http://askubuntu.com/questions/477551/how-can-i-use-docker-without-sudo).
-
-##### create python virtualenv
-
-```sh
-$ sudo apt-get install python-virtualenv
-$ virtualenv env
-```
-
-##### install docker compose and run app
-
-```sh
-$ . env/bin/activate
-$ pip install -r docker/requirements.txt
-$ ./scripts/docker-local-demo.sh
-```

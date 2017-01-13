@@ -2,9 +2,9 @@
     'use strict';
 
     LiveblogThemesController.$inject = ['api', '$location', 'notify', 'gettext',
-    '$q', '$sce', 'config', 'lodash', 'upload', 'blogService'];
+    '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', '$window'];
     function LiveblogThemesController(api, $location, notify, gettext,
-    $q, $sce, config, _, upload, blogService) {
+    $q, $sce, config, _, upload, blogService, $window) {
         var vm = this;
         /**
          * Return a collection that represent the hierachy of the themes
@@ -155,6 +155,11 @@
                 } else {
                     vm.themeBlogsModal = false;
                 }
+            },
+            download: function(theme) {
+                api.themes.getUrl().then(function(url) {
+                    $window.location = url.replace('/themes', '/theme-download/' + theme.name);
+                });
             },
             makeDefault: function(theme) {
                 if (vm.globalTheme) {

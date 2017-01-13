@@ -61,6 +61,7 @@ def get_app(config=None):
     app.register_blueprint(embed_blueprint)
     return app
 
+
 if __name__ == '__main__':
     debug = True
     host = '0.0.0.0'

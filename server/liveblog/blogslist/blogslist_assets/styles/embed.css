@@ -1,0 +1,203 @@
+@import url(//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic&subset=latin,latin-ext);
+
+body {
+    background-color: #FFF;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 400;
+    color: #333333;
+    line-height: 1.35em;
+    font-size: 14px;
+}
+img {
+    max-width: 100%;
+    max-height: 500px;
+    width: auto;
+    height: auto;
+}
+i {font-style: italic;}
+a {
+    color: #3394bc !important;
+}
+a:hover {
+    text-decoration: none;
+}
+ul, ol {
+    margin-left: 20px;
+}
+ul {
+    list-style-type: disc;
+}
+ol {
+    list-style-type: decimal;
+}
+button {
+    display: table;
+    margin: auto;
+    padding: 5px 25px;
+    font-size: 16px;
+    font-family: "Roboto";
+    line-height: 1;
+    appearance: none;
+    box-shadow: none;
+    color: #5ea9c8;
+    background: rgba(0,0,0,0);
+    cursor: pointer;
+    border: solid 3px #5ea9c8;
+}
+button:focus {outline: none}
+button:hover,
+button.hover {
+    border-color: #346392;
+    color: #346392;
+}
+button:active,
+button.active {
+    border-color: #27496d;
+    color: #27496d;
+}
+.border-bottom {
+    border-bottom: 1px solid #CBCBCB;
+}
+.lb-blogslist {
+    clear: both;
+    background-color: white;
+    max-width: 800px;
+    margin: 0 auto;
+    margin-top: 50px;
+    border-top: 2px solid #CBCBCB;
+    overflow: hidden;
+    padding-bottom: 200px;
+}
+.header-bar {
+    background-color: #FAFAFA;
+    border-top: 2px solid #CBCBCB;
+    border-bottom: 1px solid #CBCBCB;
+    padding: 10px 0 0 10px;
+    margin: 10px 0 0 0;
+    position: relative;
+}
+.header-bar__actions {
+    position: absolute;
+    right: 100px;
+    top: 5px; 
+}
+.btn {
+    background-color: rgba(0, 0, 0, 0.15);
+    border: 0 none;
+    border-radius: 2px;
+    box-sizing: border-box;
+    color: #333333;
+    cursor: pointer;
+    display: inline-block;
+    font-size: 12px;
+    height: 28px;
+    line-height: 12px;
+    margin-bottom: 0;
+    outline: medium none !important;
+    padding: 8px 11px;
+    text-align: center;
+    text-decoration: none;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+.btn:hover, .header-bar__btn:focus {
+  background-color: rgba(0, 0, 0, 0.235);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  text-decoration: none;
+  color: #333333;
+}
+.btn:active, .btn.active{
+    outline: none;
+    border: none;
+    outline-offset: -2px;
+    background-color: rgba(0, 0, 0, 0.25);
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.252);
+}
+.btn-primary {
+    color: #ffffff;
+    background-color: #5ea9c8;
+}
+.btn-primary:hover {
+    background-color: #5598b4;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    text-decoration: none;
+    color: #ffffff;
+}
+.btn-primary:active {
+    background-color: #5ea9c8;
+    box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.252);
+}
+.table {
+    width: 100%;
+    margin-bottom: 18px;
+}
+table {
+    max-width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background-color: transparent;
+}
+.bloglist .list-container .row-list tr {
+    cursor: default;
+}
+[ng-click], [data-ng-click], [x-ng-click] {
+    cursor: pointer;
+}
+tr {
+    display: table-row;
+    vertical-align: inherit;
+    border-color: inherit;
+}
+.table-striped tbody tr:nth-child(odd) td, .table-striped tbody tr:nth-child(odd) th {
+    background-color: #f9f9f9;
+}
+.table th, .table td {
+    padding: 8px;
+    line-height: 18px;
+    text-align: left;
+    vertical-align: top;
+    border-top: 1px solid #dddddd;
+}
+td, th {
+    display: table-cell;
+}
+h1, h2, h3, h4, h5, h6 {
+    font-family: inherit;
+    font-weight: 400;
+    text-rendering: optimizelegibility;
+}
+h3 {
+    color: #5ea9c8;
+    line-height: 110%;
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+h3 small {
+    font-size: 14px;
+}
+.content-item {
+    padding: 10px 10px 14px;
+    border-bottom: 1px solid #eee;
+}
+.content-item:hover {
+    background-color: #f2f2f2;
+}
+.list-item {
+    font-size: 11px;
+    line-height: 120%;
+}
+.list-item span {
+    font-size: 10px;
+    text-transform: uppercase;
+    color: #999;
+    font-weight: 500;
+    margin-right: 2px;
+}
+.list-item__description {
+    font-size: 14px;
+    line-height: 130%;
+    margin-top: 6px;
+}
+.list-item--margin {
+    margin-left: 8px;
+}
