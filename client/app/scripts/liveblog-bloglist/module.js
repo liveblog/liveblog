@@ -2,9 +2,9 @@
     'use strict';
 
     BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload',
-        'isArchivedFilterSelected', '$q', 'blogSecurityService', 'notify'];
+        'isArchivedFilterSelected', '$q', 'blogSecurityService', 'notify', 'config'];
     function BlogListController($scope, $location, api, gettext, upload,
-        isArchivedFilterSelected, $q, blogSecurityService, notify) {
+        isArchivedFilterSelected, $q, blogSecurityService, notify, config) {
         $scope.maxResults = 25;
         $scope.states = [
             {name: 'active', code: 'open', text: gettext('Active blogs')},
