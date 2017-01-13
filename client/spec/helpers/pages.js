@@ -590,7 +590,7 @@ function BlogSettingsPage(blog) {
         return self;
     };
     self.openTeam = function() {
-        return element(by.css('[data="blog-settings-team"]')).click().then(function() {
+        return element(by.css('[data="blog-settings-team"] a')).click().then(function() {
             browser.waitForAngular();
             return self;
         });
@@ -639,7 +639,7 @@ function BlogSettingsPage(blog) {
     };
 
     self.doneTeamEdit = function() {
-        element(by.css('[ng-click="settings.doneTeamEdit()"')).click();
+        element(by.css('[ng-click="settings.doneTeamEdit()"]')).click();
         return self;
     };
 

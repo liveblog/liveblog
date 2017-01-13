@@ -7,12 +7,15 @@
  * AUTHORS and LICENSE files distributed with this source code, or
  * at https://www.sourcefabric.org/superdesk/license
  */
+import angular from 'angular';
+import _ from 'lodash';
+import moment from 'moment';
 
-define([
-    'angular',
-    'moment',
-    'lodash'
-], function(angular, moment, _) {
+//define([
+//    'angular',
+//    'moment',
+//    'lodash'
+//], function(angular, moment, _) {
     'use strict';
 
     PostsService.$inject = [
@@ -256,6 +259,6 @@ define([
 
     angular.module('liveblog.posts', [])
         .service('postsService', PostsService);
-});
+//});
 
 // EOF

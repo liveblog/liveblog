@@ -4,6 +4,7 @@
 __pycache__/
 *.py[cod]
 *.sublime-*
+.vagrant
 
 # C extensions
 *.so
@@ -61,6 +62,16 @@ target/
 celerybeatschedule.db
 celerybeatschedule.db.*
 dump.rdb
+
+# Vim stuff
+*.swo
+*.swp
+*.swn
+*.swm
+.vimrc
+
+client/config.js
+server/test-env.local
 
 # PyCharm idea folders
 .idea/

@@ -7,6 +7,7 @@ sudo: false
 
 env:
     global:
+        - CXX=g++-4.8
         - secure: ajoP9pA/FYH+1sFwGKHlQ8PoGqRIjdmqEnwo44AA5j6c1NMsgiToA420lPm8Lp0cko5YK3ppBlGlvbRWu5JXVxl0vMtZTLf3FM2w99viddrRCkh4sMef2DzkXXYOW4Tnew/8pmaOtTn3UtNG/feJHkBzHLEDUuN0TA07Y6UaWHc=
     matrix:
         - TARGET=client
@@ -24,18 +25,28 @@ addons:
   apt:
     sources:
     - mongodb-3.0-precise
+    - ubuntu-toolchain-r-test
     packages:
     - mongodb-org-server
+    - xvfb
+    - build-essential
+    - libudev-dev
+    - clang-3.3
+    - fakeroot
+    - git
+    - libgnome-keyring-dev
+    - g++-4.8
 
 cache:
   directories:
     - $HOME/.cache/pip
     - $HOME/.npm
-    - $HOME/.cache/bower
 
 before_install:
+    - cp $TRAVIS_BUILD_DIR/client/config.sample.js $TRAVIS_BUILD_DIR/client/config.js
+    - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install 4.5.0
     - if [ "${TARGET}" = "client" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        npm install -g grunt-cli bower ;
+        npm install -g grunt-cli ;
       fi
     - if [ "${TARGET}" != "${TARGET/e2e/}" ]; then
         pip install requests &&
@@ -48,47 +59,49 @@ before_install:
 
 install:
     - if [ "${TARGET}" = "server" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        cd server &&
+        cd $TRAVIS_BUILD_DIR/server &&
         pip install -r requirements.txt &&
         cd .. ;
       fi
     - if [ "${TARGET}" = "client" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        cd client && npm install && bower install && cd .. ;
+        cd $TRAVIS_BUILD_DIR/client && npm install && cd .. ;
       fi
 
 before_script:
     - if [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        cd server ;
-        (nohup env SUPERDESK_URL='http://127.0.0.1:5000/api' SUPERDESK_CLIENT_URL='http://127.0.0.1:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &) ;
-        cd ../client ;
+        cd $TRAVIS_BUILD_DIR/client ;
         grunt build --server='http://127.0.0.1:5000/api' --ws='ws://127.0.0.1:5100' ;
-        cd dist ;
+        cd $TRAVIS_BUILD_DIR/client/dist ;
         while [ ! -f index.html ]; do sleep .5; done ;
         (nohup python3 -m http.server 9000 &) ;
-        cd ../.. ;
+        cd $TRAVIS_BUILD_DIR/server ;
+        (nohup env SUPERDESK_URL='http://127.0.0.1:5000/api' SUPERDESK_CLIENT_URL='http://127.0.0.1:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &) ;
       fi
 
 script:
     - if [ "${TARGET}" = "server" ]; then
-        cd server && nosetests --all-modules && cd .. ;
+        cd $TRAVIS_BUILD_DIR/server && nosetests --all-modules && cd .. ;
       fi
     - if [ "${TARGET}" = "server" ]; then
-        cd server &&
+        cd $TRAVIS_BUILD_DIR/server &&
         behave --format progress2 --logging-level ERROR &&
         cd .. ;
       fi
     - if [ "${TARGET}" = "server" ]; then
-        cd server && flake8 && cd .. ;
+        cd $TRAVIS_BUILD_DIR/server && flake8 && cd .. ;
       fi
     - if [ "${TARGET}" = "client" ]; then
         cd client && npm test && cd .. ;
       fi
     - if [ "${TARGET}" != "${TARGET/e2e_first/}" ]; then
-        cd server &&
+        cd $TRAVIS_BUILD_DIR/server &&
+        python3 manage.py app:initialize_data;
         python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
+        python3 manage.py register_local_themes ;
+        python3 manage.py schema:migrate ;
         cd ../client &&
         ./node_modules/.bin/webdriver-manager update &&
-        ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=5 -- protractor-conf.js --suite=a
+        ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=1 -- protractor-conf.js --suite=a
           --stackTrace --verbose
           --baseUrl 'http://127.0.0.1:9000'
           --params.baseBackendUrl 'http://127.0.0.1:5000/api'
@@ -98,11 +111,14 @@ script:
         ;
       fi
     - if [ "${TARGET}" != "${TARGET/e2e_second/}" ]; then
-        cd server &&
+        cd $TRAVIS_BUILD_DIR/server &&
+        python3 manage.py app:initialize_data;
         python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
+        python3 manage.py register_local_themes ;
+        python3 manage.py schema:migrate ;
         cd ../client &&
         ./node_modules/.bin/webdriver-manager update &&
-        ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=5 -- protractor-conf.js --suite=b
+        ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=1 -- protractor-conf.js --suite=b
           --stackTrace --verbose
           --baseUrl 'http://127.0.0.1:9000'
           --params.baseBackendUrl 'http://127.0.0.1:5000/api'
@@ -112,11 +128,14 @@ script:
         ;
       fi
     - if [ "${TARGET}" != "${TARGET/e2e_third/}" ]; then
-        cd server &&
+        cd $TRAVIS_BUILD_DIR/server &&
+        python3 manage.py app:initialize_data;
         python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
+        python3 manage.py register_local_themes ;
+        python3 manage.py schema:migrate ;
         cd ../client &&
         ./node_modules/.bin/webdriver-manager update &&
-        ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=5 -- protractor-conf.js --suite=c
+        ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=1 -- protractor-conf.js --suite=c
           --stackTrace --verbose
           --baseUrl 'http://127.0.0.1:9000'
           --params.baseBackendUrl 'http://127.0.0.1:5000/api'

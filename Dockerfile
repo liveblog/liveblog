@@ -51,7 +51,7 @@ COPY ./client/package.json /opt/superdesk/client/
 RUN cd ./client && npm install
 COPY ./client/bower.json /opt/superdesk/client/
 COPY ./client/.bowerrc /opt/superdesk/client/
-RUN cd ./client && bower --allow-root install
+#RUN cd ./client && bower --allow-root install
 
 # copy server sources
 COPY ./server /opt/superdesk
@@ -62,4 +62,4 @@ COPY ./client /opt/superdesk/client
 # TODO: this is hack to update basic themes during bamboo deployment
 COPY ./server/liveblog/themes/themes_assets/ /opt/superdesk/themes_assets/
 
-RUN cd ./client && grunt build
+RUN cd ./client && npm i

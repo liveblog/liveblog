@@ -7,16 +7,24 @@
  * AUTHORS and LICENSE files distributed with this source code, or
  * at https://www.sourcefabric.org/superdesk/license
  */
+import angular from 'angular';
+import _ from 'lodash';
+//import unreadPostsService from './unread.posts.service';
 
-define([
-    'angular',
-    'lodash',
-    './unread.posts.service',
-    'ng-sir-trevor',
-    'ng-sir-trevor-blocks',
-    'angular-embed'
-], function(angular, _) {
-    'use strict';
+import './../ng-sir-trevor';
+import './../ng-sir-trevor-blocks';
+//import 'ngsirtrevor/dist/ng-sir-trevor';
+//import '../ng-sir-trevor-blocks';
+
+//define([
+//    'angular',
+//    'lodash',
+//    './unread.posts.service',
+//    'ng-sir-trevor',
+//    'ng-sir-trevor-blocks',
+//    'angular-embed'
+//], function(angular, _) {
+    //'use strict';
     BlogEditController.$inject = [
         'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'modal',
@@ -60,6 +68,7 @@ define([
 
         // remove and clean every items from the editor
         function cleanEditor(actionDisabled) {
+            console.log('clean editor', actionDisabled);
             actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
             vm.editor.reinitialize();
             $scope.actionDisabled = actionDisabled;
@@ -87,8 +96,17 @@ define([
             sticky: false,
             highlight: false,
             filter: {isHighlight: false},
+            onEditorChanges: function() {
+                var input = $(this).text().trim();
+
+                $scope.$apply(function() {
+                    $scope.actionDisabled = _.isEmpty(input);
+                });
+            },
             actionStatus: function() {
+                //console.log('action status', $scope.actionDisabled, $scope.actionPending);
                 return $scope.actionDisabled || $scope.actionPending;
+                //return true;
             },
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
@@ -186,6 +204,7 @@ define([
             },
             stParams: {
                 disableSubmit: function(actionDisabled) {
+                    console.log('disable submit', actionDisabled);
                     $scope.actionDisabled = actionDisabled;
                     // because this is called outside of angular scope from sir-trevor.
                     if (!$scope.$$phase) {
@@ -271,6 +290,18 @@ define([
                 $scope.preview = !$scope.preview;
             }
         });
+
+        //$('.st-text-block').on('keyup', function() {
+        //    console.log('monitoring changes');
+        //    var input = $(this).text().trim();
+
+        //    if (_.isEmpty(input)) {
+        //        vm.disableSubmit(true);
+        //        return false;
+        //    }
+        //    vm.disableSubmit(false);
+        //});
+
         // initalize the view with the editor panel
         $scope.openPanel(angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor');
     }
@@ -741,5 +772,6 @@ define([
             embedService.registerHandler(ngEmbedPictureHandler); // use embed.ly, and provide a `thumbnail_url` field from the `url`
         }
     ]);
-    return app;
-});
+    //return app;
+export default app;
+//});

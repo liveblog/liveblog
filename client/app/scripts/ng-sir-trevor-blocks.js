@@ -7,12 +7,14 @@
  * AUTHORS and LICENSE files distributed with this source code, or
  * at https://www.sourcefabric.org/superdesk/license
  */
+import angular from 'angular';
+import _ from 'lodash';
 
-define([
-    'angular',
-    'lodash',
-    'ng-sir-trevor'
-], function(angular, _) {
+//define([
+//    'angular',
+//    'lodash',
+//    'ng-sir-trevor'
+//], function(angular, _) {
     'use strict';
     function createCaretPlacer(atStart) {
     return function(el) {
@@ -81,6 +83,7 @@ define([
     angular
     .module('SirTrevorBlocks', [])
         .config(['SirTrevorProvider', function(SirTrevor) {
+            console.log('sir trevor', SirTrevor);
 
             //replace the plus symbol with text description
             SirTrevor.FloatingBlockControls.prototype.attributes = function() {
@@ -731,4 +734,4 @@ define([
             });
             SirTrevor.Formatters.Link = new Link();
         }]);
-});
+//});

@@ -7,11 +7,14 @@
  * AUTHORS and LICENSE files distributed with this source code, or
  * at https://www.sourcefabric.org/superdesk/license
  */
-define([
-    'angular',
-    'lodash',
-    './module'
-], function(angular, _) {
+import angular from 'angular';
+import _ from 'lodash';
+
+//define([
+//    'angular',
+//    'lodash',
+//    './module'
+//], function(angular, _) {
     'use strict';
     UnreadPostsService.$inject = [
         '$rootScope'
@@ -86,5 +89,5 @@ define([
     }
     angular.module('liveblog.posts')
         .service('unreadPostsService', UnreadPostsService);
-});
+//});
 // EOF
