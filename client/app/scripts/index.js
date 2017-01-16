@@ -22,7 +22,7 @@ import MediumEditor from 'medium-editor';
 window.MediumEditor = MediumEditor;
 
 // core
-import 'superdesk-core/scripts/core/gettext';
+//import 'superdesk-core/scripts/core/gettext';
 import 'superdesk-core/scripts/core/activity';
 import 'superdesk-core/scripts/core/analytics';
 import 'superdesk-core/scripts/core/api';
@@ -34,9 +34,9 @@ import 'superdesk-core/scripts/core/elastic';
 import 'superdesk-core/scripts/core/filters';
 import 'superdesk-core/scripts/core/services';
 import 'superdesk-core/scripts/core/directives';
-import 'superdesk-core/scripts/core/editor/editor';
+//import 'superdesk-core/scripts/core/editor/editor';
 //import 'superdesk-core/scripts/core/editor2/editor';
-import 'superdesk-core/scripts/core/editor/spellcheck/spellcheck';
+//import 'superdesk-core/scripts/core/editor/spellcheck/spellcheck';
 import 'superdesk-core/scripts/core/features';
 import 'superdesk-core/scripts/core/list';
 import 'superdesk-core/scripts/core/keyboard';
