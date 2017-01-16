@@ -18,11 +18,11 @@ define([
 ], function(angular, _) {
     'use strict';
     BlogEditController.$inject = [
-        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session',
+        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'freetypeService', 'modal',
         'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService', '$templateCache', '$timeout'
     ];
-    function BlogEditController(api, $q, $scope, blog, notify, gettext, session,
+    function BlogEditController(api, $q, $scope, blog, notify, gettext, session, $injector,
         upload, config, embedService, postsService, unreadPostsService, freetypeService, modal,
         blogService, $route, $routeParams, blogSecurityService, themesService, $templateCache, $timeout) {
 

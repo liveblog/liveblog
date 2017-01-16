@@ -136,7 +136,7 @@ INSTALLED_APPS = [
     'liveblog.global_preferences',
     'liveblog.client_modules',
     'liveblog.syndication',
-    'liveblog.blogslist'
+    'liveblog.blogslist',
     'liveblog.freetypes',
 ]
 
