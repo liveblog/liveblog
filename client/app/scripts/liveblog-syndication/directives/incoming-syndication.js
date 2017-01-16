@@ -1,7 +1,7 @@
 liveblogSyndication
     .directive('lbIncomingSyndication',
-        ['$routeParams', 'IncomingSyndicationActions', 'IncomingSyndicationReducers', 'Store', 'modal',
-        function($routeParams, IncomingSyndicationActions, IncomingSyndicationReducers, Store, modal) {
+        ['$routeParams', 'IncomingSyndicationActions', 'IncomingSyndicationReducers', 'Store', 'modal', 'notify',
+        function($routeParams, IncomingSyndicationActions, IncomingSyndicationReducers, Store, modal, notify) {
             return {
                 templateUrl: 'scripts/liveblog-syndication/views/incoming-syndication.html',
                 scope: {
@@ -10,9 +10,22 @@ liveblogSyndication
                     syndId: '='
                 },
                 link: function(scope) {
+                    var handleNotification = function() {
+                        var msg = '';
+
+                        if (scope.notification == 'published')
+                            msg = gettext('Post published!');
+
+                        notify.pop();
+                        notify.success(msg);
+
+                        IncomingSyndicationActions.flushNotification();
+                    };
+
                     scope.blogId = $routeParams._id;
 
                     scope.store = new Store(IncomingSyndicationReducers, {
+                        notification: null,
                         posts: {},
                         syndication: {}
                     });
@@ -20,6 +33,10 @@ liveblogSyndication
                     scope.store.connect(function(state) {
                         scope.posts = state.posts;
                         scope.syndication = state.syndication;
+                        scope.notification = state.notification;
+
+                        if (state.notification)
+                            handleNotification();
                     });
 
                     scope.goBack = function() {

@@ -33,7 +33,8 @@ liveblogSyndication
                         .then(function(post) {
                             Dispatcher.dispatch({
                                 type: 'ON_SAVED_POST',
-                                post: post
+                                post: post,
+                                notification: 'published'
                             });
                         });
                 },
@@ -43,6 +44,12 @@ liveblogSyndication
                             type: 'ON_REMOVED_POST',
                             post: post
                         });
+                    });
+                },
+                flushNotification: function() {
+                    Dispatcher.dispatch({
+                        type: 'ON_FLUSHED_NOTIF',
+                        notification: null
                     });
                 }
             }
