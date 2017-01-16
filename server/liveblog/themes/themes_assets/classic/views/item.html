@@ -1,4 +1,4 @@
-<div ng-switch="item.group_type">
+<div ng-switch="item.group_type" ng-class="['lb-item-{{ item.item_type | varname }}']">
     <div ng-switch-when="freetype">
          <article lb-bind-html html-content="{{ item.text }}"></article>
     </div>
