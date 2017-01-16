@@ -29,7 +29,7 @@
 
 // Webkit-style focus
 // ------------------
-.tab-focus() {
+@mixin tab-focus() {
     // Default
     outline: thin dotted #333;
     // Webkit
@@ -39,7 +39,7 @@
 
 // Center-align a block level element
 // ----------------------------------
-.center-block() {
+@mixin center-block() {
     display: block;
     margin-left: auto;
     margin-right: auto;
@@ -47,7 +47,7 @@
 
 // IE7 inline-block
 // ----------------
-.ie7-inline-block() {
+@mixin ie7-inline-block() {
     *display: inline; /* IE7 inline-block hack */
     *zoom: 1;
 //comment
@@ -59,7 +59,7 @@
 // right version is for icons, which come before. Applying both is ok, but it will
 // mean that space between those elements will be .6em (~2 space characters) in IE7,
 // instead of the 1 space in other browsers.
-.ie7-restore-left-whitespace() {
+@mixin ie7-restore-left-whitespace() {
     *margin-left: .3em;
 
     &:first-child {
@@ -67,7 +67,7 @@
     }
 }
 
-.ie7-restore-right-whitespace() {
+@mixin ie7-restore-right-whitespace() {
     *margin-right: .3em;
 
     &:last-child {
@@ -77,17 +77,17 @@
 
 // Sizing shortcuts
 // -------------------------
-.size(@height: 5px, @width: 5px) {
-    width: @width;
-    height: @height;
+@mixin size($height: 5px, $width: 5px) {
+    width: $width;
+    height: $height;
 }
-.square(@size: 5px) {
-    .size(@size, @size);
+@mixin square($size: 5px) {
+    size($size, $size);
 }
 
 // Placeholder text
 // -------------------------
-.placeholder(@color: @placeholderText) {
+@mixin placeholder(@color: @placeholderText) {
     :-moz-placeholder {
         color: @color;
     }
@@ -99,7 +99,7 @@
 // Text overflow
 // -------------------------
 // Requires inline-block or block for proper styling
-.text-overflow() {
+@mixin text-overflow() {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -122,22 +122,22 @@
             font-family: Menlo, Monaco, "Courier New", monospace;
         }
     }
-    .shorthand(@size: @baseFontSize, @weight: normal, @lineHeight: @baseLineHeight) {
-        font-size: @size;
+    .shorthand($size: $baseFontSize, @weight: normal, $lineHeight: $baseLineHeight) {
+        font-size: $size;
         font-weight: @weight;
-        line-height: @lineHeight;
+        line-height: $lineHeight;
     }
-    .serif(@size: @baseFontSize, @weight: normal, @lineHeight: @baseLineHeight) {
+    .serif($size: $baseFontSize, @weight: normal, $lineHeight: $baseLineHeight) {
         #font > #family > .serif;
-        #font > .shorthand(@size, @weight, @lineHeight);
+        #font > .shorthand($size, @weight, $lineHeight);
     }
-    .sans-serif(@size: @baseFontSize, @weight: normal, @lineHeight: @baseLineHeight) {
+    .sans-serif($size: $baseFontSize, @weight: normal, $lineHeight: $baseLineHeight) {
         #font > #family > .sans-serif;
-        #font > .shorthand(@size, @weight, @lineHeight);
+        #font > .shorthand($size, @weight, $lineHeight);
     }
-    .monospace(@size: @baseFontSize, @weight: normal, @lineHeight: @baseLineHeight) {
+    .monospace($size: $baseFontSize, @weight: normal, $lineHeight: $baseLineHeight) {
         #font > #family > .monospace;
-        #font > .shorthand(@size, @weight, @lineHeight);
+        #font > .shorthand($size, @weight, $lineHeight);
     }
 }
     .text-light() {
@@ -161,17 +161,17 @@
 // --------------------------------------------------
 
 // Block level inputs
-.input-block-level {
+@mixin input-block-level {
     display: block;
     width: 100%;
     min-height: 28px; /* Make inputs at least the height of their button counterpart */
     /* Makes inputs behave like true block-level elements */
-    .box-sizing(border-box);
+    box-sizing(border-box);
 }
 
 
 // Mixin for form field states
-.formFieldState(@textColor: #555, @borderColor: #ccc, @backgroundColor: #f5f5f5) {
+@mixin formFieldState(@textColor: #555, @borderColor: #ccc, @backgroundColor: #f5f5f5) {
     // Set the text color
     > label,
     .help-block,
@@ -204,79 +204,79 @@
 // --------------------------------------------------
 
 // Border Radius
-.border-radius(@radius: 5px) {
+@mixin border-radius(@radius: 5px) {
     border-radius: @radius;
 }
 
 // Drop shadows
-.box-shadow(@shadow: 0 1px 3px rgba(0,0,0,.25)) {
+@mixin box-shadow(@shadow: 0 1px 3px rgba(0,0,0,.25)) {
     box-shadow: @shadow;
 }
-.box-shadow-both(@shadow1 , @shadow2) {
+@mixin box-shadow-both(@shadow1 , @shadow2) {
     box-shadow: @shadow1, @shadow2;
 }
 
 // Animate
-.animate(@animation) {
+@mixin animate(@animation) {
   animation:  @animation;
 }
 
 // Transitions
-.transition(@transition) {
+@mixin transition(@transition) {
     -webkit-transition: @transition;
              -o-transition: @transition;
                     transition: @transition;
 }
 
 // Transformations
-.rotate(@degrees) {
+@mixin rotate(@degrees) {
     -webkit-transform: rotate(@degrees);
                     transform: rotate(@degrees);
 }
-.scale(@ratio) {
+@mixin scale(@ratio) {
     -webkit-transform: scale(@ratio);
                     transform: scale(@ratio);
 }
-.scaleY(@ratio) {
+@mixin scaleY(@ratio) {
     -webkit-transform: scaleY(@ratio);
                     transform: scaleY(@ratio);
 }
-.scaleX(@ratio) {
+@mixin scaleX(@ratio) {
     -webkit-transform: scaleX(@ratio);
                     transform: scaleX(@ratio);
 }
-.translate(@x: 0, @y: 0) {
+@mixin translate(@x: 0, @y: 0) {
     -webkit-transform: translate(@x, @y);
                     transform: translate(@x, @y);
 }
-.skew(@x: 0, @y: 0) {
+@mixin skew(@x: 0, @y: 0) {
     -webkit-transform: skew(@x, @y);
                     transform: skew(@x, @y);
 }
-.translate3d(@x: 0, @y: 0, @z: 0) {
+@mixin translate3d(@x: 0, @y: 0, @z: 0) {
     -webkit-transform: translate(@x, @y, @z);
                     transform: translate(@x, @y, @z);
 }
 
 // Background clipping
 // Heads up: FF 3.6 and under need "padding" instead of "padding-box"
-.background-clip(@clip) {
+@mixin background-clip(@clip) {
     -webkit-background-clip: @clip;
          -moz-background-clip: @clip;
                     background-clip: @clip;
 }
 
 // Box sizing
-.box-sizing(@boxmodel) {
+@mixin box-sizing(@boxmodel) {
         box-sizing: @boxmodel;
 }
-.border-box() {
-    .box-sizing(border-box);
+@mixin border-box() {
+    box-sizing(border-box);
 }
 
 // User select
 // For selecting text on the page
-.user-select(@select) {
+@mixin user-select(@select) {
     -webkit-user-select: @select;
          -moz-user-select: @select;
              -o-user-select: @select;
@@ -287,13 +287,13 @@
 }
 
 // Resize anything
-.resizable(@direction: both) {
+@mixin resizable(@direction: both) {
     resize: @direction; // Options: horizontal, vertical, both
     overflow: auto; // Safari fix
 }
 
 // CSS3 Content Columns
-.content-columns(@columnCount, @columnGap: @gridColumnGutter) {
+@mixin content-columns(@columnCount, @columnGap: @gridColumnGutter) {
     -webkit-column-count: @columnCount;
          -moz-column-count: @columnCount;
                     column-count: @columnCount;
@@ -303,7 +303,7 @@
 }
 
 // Opacity
-.opacity(@opacity: 100) {
+@mixin opacity(@opacity: 100) {
     opacity: @opacity / 100;
      filter: ~"alpha(opacity=@{opacity})";
 }
@@ -315,17 +315,17 @@
 
 // Add an alphatransparency value to any background or border color (via Elyse Holladay)
 #translucent {
-    .background(@color: @white, @alpha: 1) {
+    @mixin background(@color: @white, @alpha: 1) {
         background-color: hsla(hue(@color), saturation(@color), lightness(@color), @alpha);
     }
-    .border(@color: @white, @alpha: 1) {
+    @mixin border(@color: @white, @alpha: 1) {
         border-color: hsla(hue(@color), saturation(@color), lightness(@color), @alpha);
-        .background-clip(padding-box);
+        background-clip(padding-box);
     }
 }
 
 // Reset filters for IE
-.reset-filter() {
+@mixin reset-filter() {
     filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
 }
 
@@ -336,9 +336,9 @@
 // Horizontal dividers
 // -------------------------
 // Dividers (basically an hr) within dropdowns and nav lists
-.nav-divider() {
+@mixin nav-divider() {
     height: 1px;
-    margin: ((@baseLineHeight / 2) - 1) 1px; // 8px 1px
+    margin: (($baseLineHeight / 2) - 1) 1px; // 8px 1px
     overflow: hidden;
     background-color: #e5e5e5;
     border-bottom: 1px solid @white;
@@ -354,7 +354,7 @@
 
 // Reset bootstrap
 // ------------------
-.reset-bootstrap-effects {
+@mixin reset-bootstrap-effects {
     -webkit-transition: none;
     -moz-transition: none;
     -ms-transition: none;
@@ -365,7 +365,7 @@
 
 // Reset button styling
 // ------------------
-.reset-button {
+@mixin reset-button {
     border: 0;
     background: 0;
     color: #333;
@@ -375,7 +375,7 @@
 // -------------------------
 // Vertically center elements in the navbar.
 // Example: an element has a height of 30px, so write out `.navbarVerticalAlign(30px);` to calculate the appropriate top margin.
-.navbarVerticalAlign(@elementHeight) {
+@mixin navbarVerticalAlign(@elementHeight) {
     margin-top: (@navbarHeight - @elementHeight) / 2;
 }
 
@@ -383,7 +383,7 @@
 // -------------------------
 // For tipsies and popovers
 #popoverArrow {
-    .top(@arrowWidth: 5px, @color: @black) {
+    @mixin top(@arrowWidth: 5px, @color: @black) {
         bottom: 0;
         left: 50%;
         margin-left: -@arrowWidth;
@@ -391,7 +391,7 @@
         border-right: @arrowWidth solid transparent;
         border-top: @arrowWidth solid @color;
     }
-    .left(@arrowWidth: 5px, @color: @black) {
+    @mixin left(@arrowWidth: 5px, @color: @black) {
         top: 50%;
         right: 0;
         margin-top: -@arrowWidth;
@@ -399,7 +399,7 @@
         border-bottom: @arrowWidth solid transparent;
         border-left: @arrowWidth solid @color;
     }
-    .bottom(@arrowWidth: 5px, @color: @black) {
+    @mixin bottom(@arrowWidth: 5px, @color: @black) {
         top: 0;
         left: 50%;
         margin-left: -@arrowWidth;
@@ -407,7 +407,7 @@
         border-right: @arrowWidth solid transparent;
         border-bottom: @arrowWidth solid @color;
     }
-    .right(@arrowWidth: 5px, @color: @black) {
+    @mixin right(@arrowWidth: 5px, @color: @black) {
         top: 50%;
         left: 0;
         margin-top: -@arrowWidth;
