@@ -376,6 +376,11 @@
                 scope.internalControl.isClean = function() {
                     return angular.equals(scope.freetypeData, scope.initialData);
                 };
+
+                scope.internalControl.reset = function() {
+                    scope.initialData = {};
+                    scope.freetypeData = angular.copy(scope.initialData);
+                }
             },
             scope: {
                 freetype: '=',
