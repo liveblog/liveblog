@@ -46,7 +46,7 @@ producers_schema = {
     'api_url': {
         'type': 'string',
         'required': True,
-        'unique': True,
+        'uniqueurl': True,
         'httpsurl': {
             'key_field': 'consumer_api_key',
             'check_auth': True
@@ -119,6 +119,17 @@ class ProducerService(BaseService):
         url_path = 'syndication/blogs/{}/syndicate'.format(blog_id)
         data = {'consumer_blog_id': consumer_blog_id}
         return self._send_api_request(producer_id, url_path, method='DELETE', data=data, json_loads=json_loads)
+
+    def on_create(self, docs):
+        for doc in docs:
+            if 'api_url' in doc:
+                doc['api_url'] = trailing_slash(doc['api_url'])
+        super().on_create(docs)
+
+    def on_update(self, updates, original):
+        if 'api_url' in updates:
+            updates['api_url'] = trailing_slash(updates['api_url'])
+        super().on_update(updates, original)
 
 
 class ProducerResource(Resource):

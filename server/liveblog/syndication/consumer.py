@@ -5,6 +5,7 @@ from superdesk.services import BaseService
 from .syndication import WEBHOOK_METHODS
 from .utils import generate_api_key, trailing_slash, send_api_request
 from .exceptions import APIConnectionError, ConsumerAPIError
+from .utils import trailing_slash
 
 
 logger = logging.getLogger('superdesk')
@@ -43,7 +44,7 @@ consumers_schema = {
     'webhook_url': {
         'type': 'string',
         'required': True,
-        'unique': True,
+        'uniqueurl': True,
         'httpsurl': {
             'key_field': None,
             'check_auth': False,
@@ -86,15 +87,19 @@ class ConsumerService(BaseService):
                                               data=new_post)
 
     def on_create(self, docs):
-        super().on_create(docs)
         for doc in docs:
+            if 'webhook_url' in doc:
+                doc['webhook_url'] = trailing_slash(doc['webhook_url'])
             if not doc.get('api_key'):
                 doc['api_key'] = generate_api_key()
+        super().on_create(docs)
 
     def on_update(self, updates, original):
-        super().on_update(updates, original)
+        if 'webhook_url' in updates:
+            updates['webhook_url'] = trailing_slash(updates['webhook_url'])
         if 'api_key' in updates and updates['api_key'] != original['api_key']:
             updates['api_key'] = generate_api_key()
+        super().on_update(updates, original)
 
 
 class ConsumerResource(Resource):

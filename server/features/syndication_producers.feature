@@ -26,6 +26,11 @@ Feature: Producer Resource
         [{"name": "Producer 2", "api_url": "http://localhost:5000/api/", "consumer_api_key": "__any_value__"}]
         """
         Then we get response code 400
+        When we post to "producers"
+        """
+        [{"name": "Producer 3", "api_url": "http://localhost:5000/api", "consumer_api_key": "__any_value__"}]
+        """
+        Then we get response code 400
 
     @auth
     Scenario: List producers
