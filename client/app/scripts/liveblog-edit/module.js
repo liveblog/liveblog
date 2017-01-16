@@ -18,11 +18,11 @@ define([
 ], function(angular, _) {
     'use strict';
     BlogEditController.$inject = [
-        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session',
+        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'modal',
         'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService'
     ];
-    function BlogEditController(api, $q, $scope, blog, notify, gettext, session,
+    function BlogEditController(api, $q, $scope, blog, notify, gettext, session, $injector,
         upload, config, embedService, postsService, unreadPostsService, modal, blogService, $route, $routeParams, blogSecurityService, themesService) {
 
         var vm = this;
@@ -77,6 +77,7 @@ define([
         angular.extend($scope, {
             blog: blog,
             panels: {},
+            syndicationEnabled: $injector.has('lbNotificationsCountDirective'),
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
@@ -178,10 +179,15 @@ define([
 
             // retrieve panel status from url
             panelState: undefined,
-            openPanel: function(panel) {
+            openPanel: function(panel, syndId) {
                 $scope.panelState = panel;
+                $scope.syndId = syndId;
                 // update url for deeplinking
-                $route.updateParams({panel: $scope.panelState});
+                var params = { panel: $scope.panelState, syndId: null };
+
+                if (syndId) params.syndId = syndId;
+
+                $route.updateParams(params);
                 unreadPostsService.reset(panel);
             },
             stParams: {
@@ -271,8 +277,12 @@ define([
                 $scope.preview = !$scope.preview;
             }
         });
+
         // initalize the view with the editor panel
-        $scope.openPanel(angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor');
+        var panel = angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor',
+            syndId = angular.isDefined($routeParams.syndId) ? $routeParams.syndId : null;
+
+        $scope.openPanel(panel, syndId);
     }
 
     BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
@@ -420,6 +430,7 @@ define([
                     blog_preferences: vm.blogPreferences,
                     original_creator: vm.original_creator._id,
                     blog_status: vm.blog_switch === true? 'open': 'closed',
+                    syndication_enabled: vm.syndication_enabled,
                     members: members
                 };
                 angular.extend(vm.newBlog, changedBlog);
@@ -572,6 +583,7 @@ define([
         }
         vm.changeTab('general');
         vm.blog_switch = vm.newBlog.blog_status === 'open'? true: false;
+        vm.syndication_enabled = vm.newBlog.syndication_enabled;
     }
 
     /**

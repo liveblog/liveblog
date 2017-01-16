@@ -7,7 +7,7 @@
     PagesManagerFactory.$inject = ['postsService', '$q', 'lodash', 'moment', 'instagramService'];
     function PagesManagerFactory(postsService, $q, _, moment, instagramService) {
 
-        function PagesManager (blog_id, status, max_results, sort, sticky, highlight) {
+        function PagesManager (blog_id, status, max_results, sort, sticky, highlight, noSynd) {
             var SORTS = {
                 'editorial': {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
                 'updated_first': {_updated: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
@@ -41,6 +41,9 @@
                 if (self.status === 'open') {
                     options.sticky = sticky
                 }
+
+                if (noSynd)
+                    options.noSyndication = true;
 
                 //only care about the highlight status if it is set to true
                 if (self.highlight) {

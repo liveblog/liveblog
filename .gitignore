@@ -62,6 +62,16 @@ celerybeatschedule.db
 celerybeatschedule.db.*
 dump.rdb
 
+# Vim stuff
+*.swo
+*.swp
+*.swn
+*.swm
+.vimrc
+
+# Vagrant
+.vagrant
+
 # PyCharm idea folders
 .idea/
 

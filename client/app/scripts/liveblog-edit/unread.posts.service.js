@@ -29,7 +29,14 @@ define([
 
         // check if the post is an unread contribution.
         function isContribution(post) {
-            return _.indexOf(prevContributions, post._id) !== -1;
+            var isContrib = false;
+
+            prevContributions.forEach(function(contrib) {
+                if (contrib.id == post._id)
+                    isContrib = true;
+            });
+
+            return isContrib;
         }
 
         // get the count of current contribution.
@@ -56,12 +63,16 @@ define([
 
         // add the post in the contributions vector.
         function onPostReceive(e, event_params) {
+            if (event_params.posts[0].syndication_in) {
+                return;
+            }
+
             if (event_params.post_status === 'comment') {
-                comments = comments.concat(event_params.post_ids);
+                comments = comments.concat(event_params.posts);
             }
 
             if (event_params.post_status === 'submitted') {
-                contributions = contributions.concat(event_params.post_ids);
+                contributions = contributions.concat(event_params.posts);
             }
         }
         return {
