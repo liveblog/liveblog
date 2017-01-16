@@ -12,6 +12,6 @@ pep8
 pyflakes<=1.1
 httmock
 honcho
+requests==2.12.4
 # Superdesk
--e git+git://github.com/liveblog/superdesk-core.git@9cb85ba56262531d9fc4cdece817a093dec481dd#egg=Superdesk-Core==1.06-fix-notification-issue
-
+-e git+git://github.com/superdesk/superdesk-core.git@c2f707603be67a7cbd7a613527b07bb65289c3dd#egg=Superdesk-Core==1.5

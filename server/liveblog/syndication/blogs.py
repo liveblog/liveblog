@@ -2,6 +2,7 @@ import logging
 import datetime
 from bson import ObjectId
 from flask import request, abort, Blueprint
+from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
 from liveblog.blogs.blogs import blogs_schema
@@ -10,7 +11,7 @@ from flask_cors import CORS
 from eve.utils import str_to_date
 
 from .utils import api_error, api_response
-from .auth import CustomAuthResource, ConsumerApiKeyAuth
+from .auth import ConsumerApiKeyAuth
 
 
 logger = logging.getLogger('superdesk')
@@ -22,7 +23,7 @@ class BlogService(BaseService):
     notification_key = 'syndication_blogs'
 
 
-class BlogResource(CustomAuthResource):
+class BlogResource(Resource):
     url = 'syndication/blogs'
     authentication = ConsumerApiKeyAuth
     datasource = {
@@ -47,7 +48,7 @@ class BlogPostsService(BaseService):
         return super().get(req, lookup)
 
 
-class BlogPostsResource(CustomAuthResource):
+class BlogPostsResource(Resource):
     url = 'syndication/blogs/<regex("[a-f0-9]{24}"):blog_id>/posts'
     schema = PostsResource.schema
     datasource = PostsResource.datasource
