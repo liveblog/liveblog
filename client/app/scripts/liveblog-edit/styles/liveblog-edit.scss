@@ -1,9 +1,9 @@
-// liveblog-edit.less
+// liveblog-edit.scss
 // Styling for the liveblog edit page
 // ----------------------------------------------------------------------------------------
 @import '~mixins.scss';
-@import (reference) '~lb-bootstrap.less';
-@import '~variables.less';
+@import (reference) '~lb-bootstrap.scss';
+@import '~variables.scss';
 
 .blogedit {
     //left menu
@@ -15,7 +15,7 @@
         button {
             width: 48px;
             border:0;
-            border-bottom:1px solid @grayLight;
+            border-bottom:1px solid $grayLight;
             padding: 0;
             &.active,
             &:hover {
@@ -40,18 +40,18 @@
         top: 0; bottom: 0;
         .border-box();
         header {
-            height: @nav-height;
+            height: $nav-height;
             .border-box();
             border-bottom: 1px solid #e0e0e0;
             padding: 10px 20px;
             background-color: white;
-            color: @gray;
+            color: $gray;
             font-size: 1.4em;
             line-height: 1.6em;
         }
         .content {
             position: absolute;
-            top: @nav-height; left: 0; right: 0; bottom: 0;
+            top: $nav-height; left: 0; right: 0; bottom: 0;
             overflow: auto;
             .inner-padding {
                 padding: 20px;
@@ -59,23 +59,23 @@
         }
         .content--timeline {
             top: 48px !important;
-            //padding-top: @nav-height - 10px;
+            //padding-top: $nav-height - 10px;
         }
         &--first {
             left: 0;
             width: 540px;
             // tablet
-            @media only screen and (max-width: 1024px) {
+            $media only screen and (max-width: 1024px) {
                 width: 50%;
             }
-            .box-shadow(3px 0 0 @grayLight);
+            .box-shadow(3px 0 0 $grayLight);
             z-index: 1;
         }
         &--timeline {
             right: 0;
             left: 540px;
             // tablet
-            @media only screen and (max-width: 1024px) {
+            $media only screen and (max-width: 1024px) {
                 left: 50%;
             }
             background: #f0f0f0;
@@ -94,12 +94,12 @@
             }
             &__filters {
                 .border-box();
-                background-color: @sd-background;
+                background-color: $sd-background;
                 border-bottom: 1px solid #e0e0e0;
                 padding: 10px 20px;
                 position: relative;
                 &__title {
-                    color: @grayLight;
+                    color: $grayLight;
                     text-transform: uppercase;
                     font-size: 11px;
                 }
@@ -116,7 +116,7 @@
                         background-color: #afd5e4;
                         margin: 2px 8px;
                         &:hover {
-                            background-color: @sd-blue;
+                            background-color: $sd-blue;
                         }
                     }
                     > .title {white-space: nowrap; text-transform: none;}
@@ -206,7 +206,7 @@
                         // ["+" bars]
                         .st-block-controls__top:before, .st-icon--add:after {
                             background-color: transparent;
-                            color: @blue;
+                            color: $blue;
                             padding: 0;
                             line-height: 40px;
                             height: 40px;
@@ -258,7 +258,7 @@
                                         position: absolute;
                                         left: 16px;
                                         top: 9px;
-                                        color: @gray;
+                                        color: $gray;
                                     }
                                     &:last-child {
                                         margin: 0;
@@ -291,7 +291,7 @@
                                 top: 6px;
                                 right: 6px;
                                 .st-block-ui-btn {
-                                    color: lighten(@grayLight, 20%);
+                                    color: lighten($grayLight, 20%);
                                     border: none;
                                     // background-color: transparent;
                                     width: 1.6em;
@@ -301,8 +301,8 @@
                                     background-color: transparent;
                                     vertical-align: middle;
                                     &:hover {
-                                        background-color: @grayLighter;
-                                        color: @gray;
+                                        background-color: $grayLighter;
+                                        color: $gray;
                                     }
                                     // hide the reorder button
                                     &--reorder { display: none; }
@@ -337,7 +337,7 @@
                                         }
                                     &:before {
                                         text-transform: uppercase;
-                                        font-family: @baseFontFamily; // remove the sir-trevor icon behavior
+                                        font-family: $baseFontFamily; // remove the sir-trevor icon behavior
                                     }
                                 }
                                 .st-block-ui-btn--confirm-delete {
@@ -346,23 +346,23 @@
                                         content: "delete";
                                     }
                                     &:active {
-                                        .box-shadow(inset 0 2px 0px multiply(@btnDefaultColor,rgba(0,0,0,12%)));
+                                        .box-shadow(inset 0 2px 0px multiply($btnDefaultColor,rgba(0,0,0,12%)));
                                     }
                                 }
                                 .st-block-ui-btn--deny-delete {
-                                    .buttonStates(#CDCDCD, @black); // needed to give a no transparent background in order to hide the cross
+                                    .buttonStates(#CDCDCD, $black); // needed to give a no transparent background in order to hide the cross
                                     &:active {
-                                        .box-shadow(inset 0 2px 0px multiply(@btnDangerColor,rgba(0,0,0,12%)));
+                                        .box-shadow(inset 0 2px 0px multiply($btnDangerColor,rgba(0,0,0,12%)));
                                     }
                                     &:before {content: "cancel"; }
                                 }
                             }
                             &__dropzone {
                                 background-color: transparent; // prevent style from sir-trevor.css
-                                border: 1px dashed @grayLight;
-                                padding: @main-content-padding * 2;
+                                border: 1px dashed $grayLight;
+                                padding: $main-content-padding * 2;
                                 p, .st-icon {
-                                    color: @grayLight;
+                                    color: $grayLight;
                                 }
                             }
                             &__upload-container {
@@ -385,11 +385,11 @@
                             &[data-type='quote'], &[data-type='image'], &[data-type='embed'] {
                                 .st-block__inner {
                                     padding: 20px;
-                                    background: @white;
-                                    border: 1px solid lighten(@grayLight, 25%);
+                                    background: $white;
+                                    border: 1px solid lighten($grayLight, 25%);
                                     .border-radius(3px);
                                     &:focus, &:hover {
-                                        border: 1px solid @sd-blue;
+                                        border: 1px solid $sd-blue;
                                     }
                                 }
                             }
@@ -397,8 +397,8 @@
                                 border: 0;
                                 margin: 8px 0;
                                 ::selection {
-                                    background: @sd-blue;
-                                    color: @white;
+                                    background: $sd-blue;
+                                    color: $white;
                                 }
 
                                 label { margin-bottom: auto; } // prevent style from bootstrap
@@ -410,12 +410,12 @@
                                 .st-text-block {
                                     padding: 20px;
                                     font-size: 1em;
-                                    border: 1px solid lighten(@grayLight, 25%);
+                                    border: 1px solid lighten($grayLight, 25%);
                                     word-wrap: break-word;
                                     background-color: white;
                                     .border-radius(3px);
                                     &:focus, &:hover {
-                                        border: 1px solid @sd-blue;
+                                        border: 1px solid $sd-blue;
                                     }
                                 }
                                 .st-placeholder {
@@ -430,8 +430,8 @@
                                     width: 100%;
                                     min-height: 1em;
                                     padding: 3px 5px;
-                                    margin: @main-content-padding 0;
-                                    border-bottom: 1px solid @grayLight;
+                                    margin: $main-content-padding 0;
+                                    border-bottom: 1px solid $grayLight;
                                     opacity: .7;
                                     .transition(opacity .25s ease);
                                     &:focus {

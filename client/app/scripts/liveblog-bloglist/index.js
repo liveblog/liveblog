@@ -1,4 +1,4 @@
-import "./styles/liveblog-bloglist.less"
-import "./styles/liveblog-upload.less"
+import "./styles/liveblog-bloglist.scss"
+import "./styles/liveblog-upload.scss"
 
 import "./module";

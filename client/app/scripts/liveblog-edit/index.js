@@ -1,8 +1,8 @@
-import './styles/liveblog-edit.less';
-import './styles/post.less';
-import './styles/posts-in-panel.less';
-import './styles/settings.less';
-import './styles/timeline.less';
+import './styles/liveblog-edit.scss';
+import './styles/post.scss';
+import './styles/posts-in-panel.scss';
+import './styles/settings.scss';
+import './styles/timeline.scss';
 
 import './posts.service';
 import './unread.posts.service';

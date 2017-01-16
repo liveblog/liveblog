@@ -1,2 +1,2 @@
-import './styles/general-settings.less';
+import './styles/general-settings.scss';
 import './module';

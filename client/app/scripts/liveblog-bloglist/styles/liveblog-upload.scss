@@ -1,17 +1,17 @@
-@import '~lb-mixins.less';
-@import '~lb-variables.less';
-// uploader.less
+@import '~lb-mixins.scss';
+@import '~lb-variables.scss';
+// uploader.scss
 // Styling for the liveblog upload submodule (blog image upload)
 
-.generic-upload-progress(@height:2px) {
+.generic-upload-progress($height:2px) {
     position: absolute;
-    height: @height;
+    height: $height;
     top: 0; left: 0; right: 0;
     z-index: 1;
     background: #f0f0f0;
     .bar {
-        height: @height;
-        background: @sd-blue;
+        height: $height;
+        background: $sd-blue;
     }
 }
 

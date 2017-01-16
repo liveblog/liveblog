@@ -1,14 +1,14 @@
-// planning.less
+// planning.scss
 // Styling for the superdesk content planing modules
 // ----------------------------------------------------------------------------------------
-@import '~lb-mixins.less';
-@import '~lb-variables.less';
+@import '~lb-mixins.scss';
+@import '~lb-variables.scss';
 
 .bloglist {
     header {
         position: absolute;
         top: 0; left: 0; right: 0;
-        height: @nav-height;
+        height: $nav-height;
         border-bottom: 1px solid #e0e0e0;
         .view-select {
             button {
@@ -20,7 +20,7 @@
     }
     .list-container {
         position: absolute;
-        top: @nav-height;
+        top: $nav-height;
         left: 0; right: 0; bottom: 0;
         padding: 30px;
         overflow-y: auto;
@@ -101,7 +101,7 @@
                         color: #bcbcbc;
                     }
                     h3 {
-                        color: @sd-blue;
+                        color: $sd-blue;
                         padding: 0 0 5px 0;
                         max-height: 54px;
                         font-size: 16px;
@@ -114,7 +114,7 @@
                         min-height: 30px;
                         font-size: 12px;
                         line-height: 15px;
-                        color: @gray;
+                        color: $gray;
                         overflow: hidden;
                     }
                 }

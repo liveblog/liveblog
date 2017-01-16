@@ -1,4 +1,4 @@
-import './styles/theme-bloglist.less';
+import './styles/theme-bloglist.scss';
 
 import './module';
 import './themes.services';

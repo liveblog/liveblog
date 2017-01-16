@@ -1,4 +1,4 @@
-import 'lb-bootstrap.less';
+import 'lb-bootstrap.scss';
 
 import 'jquery-ui/jquery-ui';
 import 'bootstrap';
