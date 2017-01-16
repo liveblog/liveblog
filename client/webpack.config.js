@@ -1,3 +1,5 @@
+'use strict';
+
 var path = require('path');
 var webpack = require('webpack');
 var lodash = require('lodash');
@@ -14,6 +16,19 @@ module.exports = function makeConfig(grunt) {
     }
 
     var sdConfig = lodash.defaultsDeep(require(appConfigPath)(grunt), getDefaults(grunt));
+
+    // shouldExclude returns true if the path p should be excluded from loaders
+    // such as 'babel' or 'eslint'. This is to avoid including node_modules into
+    // these loaders, but not node modules that are superdesk apps.
+    const shouldExclude = function(p) {
+        // don't exclude anything outside node_modules
+        if (p.indexOf('node_modules') === -1) {
+            return false;
+        }
+        // include only 'superdesk-core' and valid modules inside node_modules
+        let validModules = ['superdesk-core'].concat(sdConfig.apps);
+        return !validModules.some(app => p.indexOf(app) > -1);
+    };
 
     return {
         cache: true,
@@ -49,7 +64,7 @@ module.exports = function makeConfig(grunt) {
                 path.join(__dirname, '/app/scripts'),
                 path.join(__dirname, '/app/styles/less'),
                 path.join(__dirname, '/node_modules/superdesk-core/scripts'),
-                path.join(__dirname, '/node_modules/superdesk-core/styles/less'),
+                path.join(__dirname, '/node_modules/superdesk-core/styles/sass'),
                 path.join(__dirname, '/node_modules/superdesk-core')
             ],
             modulesDirectories: [ 'node_modules' ],
@@ -63,6 +78,15 @@ module.exports = function makeConfig(grunt) {
         },
         module: {
             loaders: [
+                {
+                    test: /\.jsx?$/,
+                    exclude: shouldExclude,
+                    loader: 'babel',
+                    query: {
+                        cacheDirectory: true,
+                        presets: ['es2015', 'react']
+                    }
+                },
                 {
                     test: /\.js$/,
                     exclude: function(p) {
@@ -85,6 +109,10 @@ module.exports = function makeConfig(grunt) {
                 {
                     test: /\.less$/,
                     loader: 'style!css!less'
+                },
+                {
+                    test: /\.scss$/,
+                    loader: 'style!css!sass'
                 },
                 {
                     test: /\.(png|gif|jpeg|jpg|woff|woff2|eot|ttf|svg)(\?.*$|$)/,
