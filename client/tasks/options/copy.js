@@ -6,6 +6,7 @@ module.exports = {
             cwd: '<%= appDir %>',
             dest: '<%= distDir %>',
             src: [
+                'fonts/**/*',
                 'images/**/*',
                 'favicon.ico',
                 'styles/css/*.css',

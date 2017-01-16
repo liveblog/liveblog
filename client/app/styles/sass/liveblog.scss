@@ -86,7 +86,7 @@
         position: absolute;
         top: -16px;
         left: 10px;
-        background: url(../../images/dropdown-arrow-top.png) no-repeat;
+        background: url(/images/dropdown-arrow-top.png) no-repeat;
         content: " ";
     }
     .caret {
@@ -135,8 +135,12 @@
     display: none;
 }
 // icons
-.icon-publish {background-image: url("@{iconSpritePath}"); width: 15px; background-position: -217px -187px;}
-.icon-unpublish {background-image: url("@{iconSpritePath}"); width: 15px; background-position: -217px -187px; transform: rotate(180deg);}
+.icon-publish {
+    background-image: url("#{$iconSpritePath}"); 
+    width: 15px; 
+    background-position: -217px -187px;
+}
+.icon-unpublish {background-image: url("#{$iconSpritePath}"); width: 15px; background-position: -217px -187px; transform: rotate(180deg);}
 
 //remove the "use your initials instead" text from user avatar preferences
 .remove-avatar>label {

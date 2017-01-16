@@ -27,6 +27,15 @@
     }
 }
 
+// Box sizing
+@mixin box-sizing($boxmodel) {
+    box-sizing: $boxmodel;
+}
+
+@mixin border-box() {
+    @include box-sizing(border-box);
+}
+
 // Webkit-style focus
 // ------------------
 @mixin tab-focus()
@@ -287,16 +296,6 @@
     -webkit-background-clip: $clip;
          -moz-background-clip: $clip;
                     background-clip: $clip;
-}
-
-// Box sizing
-@mixin box-sizing($boxmodel)
-{
-        box-sizing: $boxmodel;
-}
-@mixin border-box()
-{
-    @include box-sizing(border-box);
 }
 
 // User select

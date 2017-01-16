@@ -62,7 +62,7 @@ module.exports = function makeConfig(grunt) {
                 //path.join(__dirname, '/scripts'),
                 path.join(__dirname, '/app'),
                 path.join(__dirname, '/app/scripts'),
-                path.join(__dirname, '/app/styles/less'),
+                path.join(__dirname, '/app/styles/sass'),
                 path.join(__dirname, '/node_modules/superdesk-core/scripts'),
                 path.join(__dirname, '/node_modules/superdesk-core/styles/sass'),
                 path.join(__dirname, '/node_modules/superdesk-core')
@@ -101,6 +101,10 @@ module.exports = function makeConfig(grunt) {
                         cacheDirectory: true,
                         presets: ['es2015']
                     }
+                },
+                {
+                    test: /\.html$/,
+                    loader: 'html'
                 },
                 {
                     test: /\.css/,

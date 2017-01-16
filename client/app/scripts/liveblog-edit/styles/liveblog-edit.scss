@@ -1,9 +1,9 @@
 // liveblog-edit.less
 // Styling for the liveblog edit page
 // ----------------------------------------------------------------------------------------
-@import '~lb-mixins.less';
-@import '~lb-bootstrap.less';
-@import '~variables.less';
+@import '~lb-mixins.scss';
+@import '~lb-bootstrap.scss';
+@import '~variables.scss';
 
 .blogedit {
     //left menu
@@ -195,10 +195,10 @@
                         padding: 10px;
                         font-size: 14px;
                         line-height: 24px;
-                        .border-radius(5px) !important;
+                        @include border-radius(5px !important);
                         margin-bottom: 20px;
                         &:focus {
-                            .box-shadow(inset 0 3px 0 0 #f0f0f0) !important;
+                            @include box-shadow(inset 0 3px 0 0 #f0f0f0 !important);
                         }
                     }
                     // Sir-trevor elements ---------------------------
@@ -234,7 +234,7 @@
                                 flex-wrap: wrap;
                                 padding-left: 0;
                                 .st-block-control {
-                                    .btn;
+                                    //.btn;
                                     position: relative;
                                     margin: 0 10px 0 0;
                                     padding: 0 10px 0 36px;
@@ -249,7 +249,7 @@
                                     &:hover {
                                         color: inherit;
                                         font-family: inherit;
-                                        .box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5)) !important;
+                                        @include box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5) !important);
                                     } // prevent style from sir-trevor
                                     .st-icon {
                                         font-size: 20px;
@@ -329,11 +329,11 @@
                                     }
                                 }
                                 .st-block-ui-btn--confirm-delete, .st-block-ui-btn--deny-delete {
-                                        .btn;
+                                        //.btn;
                                         padding: 9px 20px;
                                         font-size: 12px !important;
                                         &:hover {
-                                            .box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5)) !important;
+                                            @include box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5) !important);
                                         }
                                     &:before {
                                         text-transform: uppercase;
@@ -341,7 +341,7 @@
                                     }
                                 }
                                 .st-block-ui-btn--confirm-delete {
-                                    .btn-danger;
+                                    //@include btn-danger;
                                     &:before {
                                         content: "delete";
                                     }
@@ -584,7 +584,7 @@
 // fix for the btns in editor
 .st-format-bar {
     padding: 0.6em 1em 0.7em 0.7em !important;
-    .border-radius(3px) !important;
+    @include border-radius(3px !important);
     &:before {
         top:2.7em !important;
     }
@@ -603,7 +603,7 @@
 // fix for the btns in editor
 .medium-editor-toolbar {
     background: #4d5358;
-    .border-radius(3px) !important;
+    @include border-radius(3px !important);
     li button {
         border-right: 1px solid #3e4245;
     }
