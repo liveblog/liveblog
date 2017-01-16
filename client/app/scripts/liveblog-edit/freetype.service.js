@@ -389,10 +389,26 @@
                     return angular.equals(scope.freetypeData, scope.initialData);
                 };
 
+                function recursiveClean(obj) {
+                    for (var key in obj) {
+                        if (angular.isObject(obj[key])) {
+                            //keep only the first item in the array
+                            if (angular.isArray(obj[key])) {
+                                obj[key].splice(1);
+                            }
+                            recursiveClean(obj[key]);
+                        } else {
+                            if (angular.isString(obj[key])) {
+                                obj[key] = '';
+                            }
+                        }
+                    }
+                };
+
                 scope.internalControl.reset = function() {
-                    scope.initialData = {};
-                    scope.freetypeData = angular.copy(scope.initialData);
-                }
+                    recursiveClean(scope.freetypeData);
+                    scope.initialData = angular.copy(scope.freetypeData);  
+                };
             },
             scope: {
                 freetype: '=',

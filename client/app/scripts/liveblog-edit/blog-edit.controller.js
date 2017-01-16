@@ -101,7 +101,9 @@ define([
         // remove and clean every items from the editor
         function cleanEditor(actionDisabled) {
             actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
-            $scope.freetypesData = {};
+            if ($scope.freetypeControl.reset) {
+                $scope.freetypeControl.reset();
+            }
             vm.editor.reinitialize();
             $scope.actionDisabled = actionDisabled;
             $scope.currentPost = undefined;
@@ -171,7 +173,15 @@ define([
                 $scope.toggleTypePostDialog();
             },
             actionStatus: function() {
-                return isPostFreetype() ? $scope.freetypeControl.isClean(): $scope.actionDisabled || $scope.actionPending;
+                if (isPostFreetype()) {
+                    if (angular.isDefined($scope.currentPost)) {
+                        return $scope.freetypeControl.isClean() && $scope.currentPost.post_status !== 'draft' && $scope.currentPost.post_status !== 'submitted';
+                    } else {
+                        return $scope.freetypeControl.isClean()
+                    }
+                } else {
+                    return $scope.actionDisabled || $scope.actionPending;
+                }
             },
             askAndResetEditor: function() {
                 doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
