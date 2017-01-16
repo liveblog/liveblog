@@ -1,9 +1,9 @@
-// liveblog-edit.scss
+// liveblog-edit.less
 // Styling for the liveblog edit page
 // ----------------------------------------------------------------------------------------
-@import '~mixins.scss';
-@import '~lb-bootstrap.scss';
-@import '~variables.scss';
+@import '~lb-mixins.less';
+@import '~lb-bootstrap.less';
+@import '~variables.less';
 
 .blogedit {
     //left menu
@@ -65,7 +65,7 @@
             left: 0;
             width: 540px;
             // tablet
-            $media only screen and (max-width: 1024px) {
+            @media only screen and (max-width: 1024px) {
                 width: 50%;
             }
             @include box-shadow(3px 0 0 $grayLight);
@@ -75,7 +75,7 @@
             right: 0;
             left: 540px;
             // tablet
-            $media only screen and (max-width: 1024px) {
+            @media only screen and (max-width: 1024px) {
                 left: 50%;
             }
             background: #f0f0f0;
@@ -195,10 +195,10 @@
                         padding: 10px;
                         font-size: 14px;
                         line-height: 24px;
-                        @include border-radius(5px) !important;
+                        .border-radius(5px) !important;
                         margin-bottom: 20px;
                         &:focus {
-                            @include box-shadow(inset 0 3px 0 0 #f0f0f0) !important;
+                            .box-shadow(inset 0 3px 0 0 #f0f0f0) !important;
                         }
                     }
                     // Sir-trevor elements ---------------------------
@@ -234,7 +234,7 @@
                                 flex-wrap: wrap;
                                 padding-left: 0;
                                 .st-block-control {
-                                    @include btn;
+                                    .btn;
                                     position: relative;
                                     margin: 0 10px 0 0;
                                     padding: 0 10px 0 36px;
@@ -249,7 +249,7 @@
                                     &:hover {
                                         color: inherit;
                                         font-family: inherit;
-                                        @include box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5)) !important;
+                                        .box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5)) !important;
                                     } // prevent style from sir-trevor
                                     .st-icon {
                                         font-size: 20px;
@@ -329,11 +329,11 @@
                                     }
                                 }
                                 .st-block-ui-btn--confirm-delete, .st-block-ui-btn--deny-delete {
-                                        @include btn;
+                                        .btn;
                                         padding: 9px 20px;
                                         font-size: 12px !important;
                                         &:hover {
-                                            @include box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5)) !important;
+                                            .box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5)) !important;
                                         }
                                     &:before {
                                         text-transform: uppercase;
@@ -341,7 +341,7 @@
                                     }
                                 }
                                 .st-block-ui-btn--confirm-delete {
-                                    @include btn-danger;
+                                    .btn-danger;
                                     &:before {
                                         content: "delete";
                                     }
@@ -402,7 +402,7 @@
                                 }
 
                                 label { margin-bottom: auto; } // prevent style from bootstrap
-                                //.transition(box-shadow .25s ease);
+                                //@include transition(box-shadow .25s ease);
                                 &:hover {
                                     @include box-shadow(0px 2px 10px rgba(0, 0, 0, 0.15));
                                 }
@@ -425,7 +425,8 @@
                                     }
                                 }
                                 // make a contenteditable div looking like a custom input
-                                .inline-field() {
+                                @mixin inline-field()
+{
                                     @include box-sizing(border-box); // width and height doesn't include the margin
                                     width: 100%;
                                     min-height: 1em;
@@ -442,11 +443,11 @@
                                     }
                                 }
                                 .st-image-block[contenteditable="true"]{
-                                    .inline-field();
+                                    @include inline-field();
                                 }
                                 .st-quote-block {
                                     &.quote-input {
-                                        .inline-field();
+                                        @include inline-field();
                                         position: relative;
                                         &:before {
                                             content: "\201C"; // “
@@ -456,7 +457,7 @@
                                         }
                                     }
                                     &.js-cite-input {
-                                        .inline-field();
+                                        @include inline-field();
                                         &:before {
                                             content: "\2014"; // —
                                             margin-left: -20px;
@@ -466,7 +467,7 @@
                                 }
                                 .st-embed-block {
                                     font-size: .9em;
-                                    &.embed-input {.inline-field();}
+                                    &.embed-input {@include inline-field();}
                                     &.embed-preview
                                         .noembed-embed {
                                             // responsive embed
@@ -496,14 +497,14 @@
                                         background-size: cover;
                                     }
                                     &.title-preview {
-                                        .inline-field();
+                                        @include inline-field();
                                         font-weight: bold;
                                     }
                                     &.description-preview {
-                                        .inline-field();
+                                        @include inline-field();
                                     }
                                     &.credit-preview {
-                                        .inline-field();
+                                        @include inline-field();
                                         text-transform: uppercase;
                                     }
                                 }
@@ -515,7 +516,7 @@
             > .actions {
                 position: absolute;
                 bottom: 0; left: 0px; right: 0px; height: 88px;
-                .border-box();
+                @include border-box();
                 bottom: 0; left: 0px; right: 0px;
                 display:table;
                 table-layout: fixed;

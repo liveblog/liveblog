@@ -48,7 +48,7 @@ import 'superdesk-core/scripts/core/notify';
 import 'superdesk-core/scripts/core/ui';
 import 'superdesk-core/scripts/core/upload';
 import 'superdesk-core/scripts/core/lang';
-import 'superdesk-core/scripts/core/superdesk';
+//import 'superdesk-core/scripts/core/superdesk';
 
 import 'superdesk-core/scripts/apps/workspace';
 import 'superdesk-core/scripts/apps/dashboard';
