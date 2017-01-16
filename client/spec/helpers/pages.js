@@ -143,6 +143,40 @@ function BlogsPage() {
     };
 }
 
+function FreetypesManagerPage() {
+    'use strict';
+    var self = this;
+    self.title = element(by.css('[ng-model="vm.dialogFreetype.name"]'));
+    self.template = element(by.css('[ng-model="vm.dialogFreetype.template"]'));
+
+    self.getFreetypes = function() {
+        return element.all(by.repeater('freetype in vm.freetypes'));
+    }
+    self.openFreetypesManager = function() {
+        element(by.css('[ng-click="toggleMenu()"]')).click();
+        browser.wait(function() {
+            return element(by.css('[href="#/freetypes/"][title]')).isDisplayed();
+        });
+        waitAndClick(by.css('[href="#/freetypes/"][title]'));
+        return self;
+    };
+    self.saveFreetype = function() {
+        return element(by.css('[ng-click="vm.saveFreetype()"]')).click();
+    }
+    self.createFreetype = function() {
+        var freeData = {
+            title: randomString(10),
+            template: randomString(200)
+        }
+        element(by.css('[ng-click="vm.openFreetypeDialog();"]')).click();
+        self.title.sendKeys(freeData.title);
+        self.template.sendKeys(freeData.tempalte);
+        return self.saveFreetype().then(function() {return freeData;});
+    };
+
+    browser.sleep(4000);
+}
+
 function ThemesManagerPage() {
     'use strict';
     var self = this;
@@ -813,3 +847,4 @@ exports.randomString = randomString;
 exports.themeManager = new ThemesManagerPage();
 exports.consumersManagement = new ConsumersManagementPage();
 exports.producersManagement = new ProducersManagementPage();
+exports.freetypesManager = new FreetypesManagerPage();
