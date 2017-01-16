@@ -10,15 +10,15 @@ var consumer = {
 };
 
 var contact = {
-    firstName: 'Chuck',
-    lastName: 'Norris',
-    email: 'gmail@chucknorris.com'
+    firstName: 'Jean',
+    lastName: 'Pierre',
+    email: 'jean.pierre@gmail.com'
 };
 
 var contact2 = {
-    firstName: 'Steven',
-    lastName: 'Seagal',
-    email: 'steven.seagal@gmail.com'
+    firstName: 'Paul',
+    lastName: 'Sabatier',
+    email: 'paul.sabatier@gmail.com'
 };
 
 describe('Consumers', function() {
