@@ -82,17 +82,17 @@
     height: $height;
 }
 @mixin square($size: 5px) {
-    size($size, $size);
+    @include size($size, $size);
 }
 
 // Placeholder text
 // -------------------------
-@mixin placeholder(@color: @placeholderText) {
+@mixin placeholder($color: $placeholderText) {
     :-moz-placeholder {
-        color: @color;
+        color: $color;
     }
     ::-webkit-input-placeholder {
-        color: @color;
+        color: $color;
     }
 }
 
@@ -112,47 +112,47 @@
 
 #font {
     #family {
-        .serif() {
+        @mixin serif() {
             font-family: Georgia, "Times New Roman", Times, serif;
         }
-        .sans-serif() {
+        @mixin sans-serif() {
             font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
-        .monospace() {
+        @mixin monospace() {
             font-family: Menlo, Monaco, "Courier New", monospace;
         }
     }
-    .shorthand($size: $baseFontSize, @weight: normal, $lineHeight: $baseLineHeight) {
+    @mixin shorthand($size: $baseFontSize, $weight: normal, $lineHeight: $baseLineHeight) {
         font-size: $size;
-        font-weight: @weight;
+        font-weight: $weight;
         line-height: $lineHeight;
     }
-    .serif($size: $baseFontSize, @weight: normal, $lineHeight: $baseLineHeight) {
-        #font > #family > .serif;
-        #font > .shorthand($size, @weight, $lineHeight);
+    @mixin serif($size: $baseFontSize, $weight: normal, $lineHeight: $baseLineHeight) {
+        #font > #family > serif;
+        #font > shorthand($size, $weight, $lineHeight);
     }
-    .sans-serif($size: $baseFontSize, @weight: normal, $lineHeight: $baseLineHeight) {
-        #font > #family > .sans-serif;
-        #font > .shorthand($size, @weight, $lineHeight);
+    @mixin sans-serif($size: $baseFontSize, $weight: normal, $lineHeight: $baseLineHeight) {
+        #font > #family > sans-serif;
+        #font > shorthand($size, $weight, $lineHeight);
     }
-    .monospace($size: $baseFontSize, @weight: normal, $lineHeight: $baseLineHeight) {
-        #font > #family > .monospace;
-        #font > .shorthand($size, @weight, $lineHeight);
+    @mixin monospace($size: $baseFontSize, $weight: normal, $lineHeight: $baseLineHeight) {
+        #font > #family > monospace;
+        #font > shorthand($size, $weight, $lineHeight);
     }
 }
-    .text-light() {
+    @mixin text-light() {
         font-weight: 300;
     }
-    .text-normal() {
+    @mixin text-normal() {
         font-weight: 400;
     }
-    .text-semibold() {
+    @mixin text-semibold() {
         font-weight: 600;
     }
-    .text-bold() {
+    @mixin text-bold() {
         font-weight: 700;
     }
-    .text-extrabold() {
+    @mixin text-extrabold() {
         font-weight: 800;
     }
 
@@ -315,11 +315,11 @@
 
 // Add an alphatransparency value to any background or border color (via Elyse Holladay)
 #translucent {
-    @mixin background(@color: @white, @alpha: 1) {
-        background-color: hsla(hue(@color), saturation(@color), lightness(@color), @alpha);
+    @mixin background($color: $white, @alpha: 1) {
+        background-color: hsla(hue($color), saturation($color), lightness($color), @alpha);
     }
-    @mixin border(@color: @white, @alpha: 1) {
-        border-color: hsla(hue(@color), saturation(@color), lightness(@color), @alpha);
+    @mixin border($color: $white, @alpha: 1) {
+        border-color: hsla(hue($color), saturation($color), lightness($color), @alpha);
         background-clip(padding-box);
     }
 }
@@ -341,7 +341,7 @@
     margin: (($baseLineHeight / 2) - 1) 1px; // 8px 1px
     overflow: hidden;
     background-color: #e5e5e5;
-    border-bottom: 1px solid @white;
+    border-bottom: 1px solid $white;
 
     // IE7 needs a set width since we gave a height. Restricting just
     // to IE7 to keep the 1px left/right space in other browsers.
@@ -383,36 +383,36 @@
 // -------------------------
 // For tipsies and popovers
 #popoverArrow {
-    @mixin top(@arrowWidth: 5px, @color: @black) {
+    @mixin top(@arrowWidth: 5px, $color: @black) {
         bottom: 0;
         left: 50%;
         margin-left: -@arrowWidth;
         border-left: @arrowWidth solid transparent;
         border-right: @arrowWidth solid transparent;
-        border-top: @arrowWidth solid @color;
+        border-top: @arrowWidth solid $color;
     }
-    @mixin left(@arrowWidth: 5px, @color: @black) {
+    @mixin left(@arrowWidth: 5px, $color: @black) {
         top: 50%;
         right: 0;
         margin-top: -@arrowWidth;
         border-top: @arrowWidth solid transparent;
         border-bottom: @arrowWidth solid transparent;
-        border-left: @arrowWidth solid @color;
+        border-left: @arrowWidth solid $color;
     }
-    @mixin bottom(@arrowWidth: 5px, @color: @black) {
+    @mixin bottom(@arrowWidth: 5px, $color: @black) {
         top: 0;
         left: 50%;
         margin-left: -@arrowWidth;
         border-left: @arrowWidth solid transparent;
         border-right: @arrowWidth solid transparent;
-        border-bottom: @arrowWidth solid @color;
+        border-bottom: @arrowWidth solid $color;
     }
-    @mixin right(@arrowWidth: 5px, @color: @black) {
+    @mixin right(@arrowWidth: 5px, $color: @black) {
         top: 50%;
         left: 0;
         margin-top: -@arrowWidth;
         border-top: @arrowWidth solid transparent;
         border-bottom: @arrowWidth solid transparent;
-        border-right: @arrowWidth solid @color;
+        border-right: @arrowWidth solid $color;
     }
 }

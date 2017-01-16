@@ -1,13 +1,13 @@
-@import "~superdesk-core/styles/less/bootstrap"; // Modify this for custom colors, font-sizes, etc
+@import "~superdesk-core/styles/sass/app"; // Modify this for custom colors, font-sizes, etc
 
 @import '~sir-trevor/sir-trevor.css';
 @import '~sir-trevor/sir-trevor-icons.css';
 @import "~jquery-jcrop/css/jquery.Jcrop.css";
 
-@import 'lb-mixins.less';
-@import 'lb-variables.less';
-@import 'liveblog.less';
-@import 'sd-icon-font.less';
+@import 'lb-mixins.scss';
+@import 'lb-variables.scss';
+@import 'liveblog.scss';
+@import 'sd-icon-font.scss';
 
 // fix button line height
 .btn {
