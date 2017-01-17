@@ -30,6 +30,9 @@ import 'lr-infinite-scroll';
 
 import _ from 'lodash';
 import moment from 'moment';
+//import sortByOrder from 'lodash.sortbyorder';
+
+_.sortByOrder = require('lodash.sortbyorder');
 
 // This is an ugly little hack required by the venerable superdesk.editor to work
 import MediumEditor from 'medium-editor';
@@ -177,7 +180,9 @@ let liveblog = angular.module('liveblog', [
     'ngMessages'
 ])
 
-//sdCore.constant('lodash', _);
+console.log('sort', _.sortByOrder);
+sdCore.constant('lodash', _);
+
 liveblog.constant('config', config);
 liveblog.constant('lodash', _);
 liveblog.constant('moment', moment);
