@@ -41,6 +41,9 @@ module.exports = function makeConfig(grunt) {
             filename: '[name].bundle.js',
             chunkFilename: '[id].bundle.js'
         },
+        stats: {
+          errorDetails: true,
+        },
         plugins: [
             new webpack.ProvidePlugin({
                 '$': 'jquery',
@@ -86,13 +89,13 @@ module.exports = function makeConfig(grunt) {
                 {
                     test: /\.jsx?$/,
                     //exclude: shouldExclude,
-                    //exclude: function(p) {
-                    //    'use strict';
-                    //    // exclude parsing node modules, but allow the 'superdesk-core'
-                    //    // node module, because it will be used when building in the
-                    //    // main 'superdesk' repository.
-                    //    return p.indexOf('node_modules') > -1 && p.indexOf('superdesk-core') < 0;
-                    //},
+                    exclude: function(p) {
+                        'use strict';
+                        // exclude parsing node modules, but allow the 'superdesk-core'
+                        // node module, because it will be used when building in the
+                        // main 'superdesk' repository.
+                        return p.indexOf('node_modules/superdesk-core/node_modules') > -1;
+                    },
                     loader: 'babel',
                     query: {
                         cacheDirectory: true,
