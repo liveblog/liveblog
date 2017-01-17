@@ -17,7 +17,7 @@ define([
     'angular-embed'
 ], function(angular, _) {
     'use strict';
-    var BlogEditController = function (api, $q, $scope, blog, notify, gettext, session,
+    var BlogEditController = function (api, $q, $scope, blog, notify, gettext, session, $injector,
         upload, config, embedService, postsService, unreadPostsService, freetypeService, modal,
         blogService, $route, $routeParams, blogSecurityService, themesService, $templateCache, $timeout) {
 
@@ -41,6 +41,7 @@ define([
                 //go with the 'classic' editor items
                 return _.map(vm.editor.get(), function(block) {
                     return {
+                        group_type: 'default',
                         text: block.text.replace(/(^<div>)|(<\/div>$)/g, '').replace(/(<br>$)/g, ''),
                         meta: block.meta,
                         item_type: block.type
@@ -50,6 +51,7 @@ define([
                 //this is a freetype post
                 return [
                     {
+                        group_type: 'freetype',
                         item_type: $scope.selectedPostType.name,
                         text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
                         meta: {data: $scope.freetypesData}
@@ -153,6 +155,7 @@ define([
         angular.extend($scope, {
             blog: blog,
             panels: {},
+            syndicationEnabled: $injector.has('lbNotificationsCountDirective'),
             selectedUsersFilter: [],
             currentPost: undefined,
             blogSecurityService: blogSecurityService,
@@ -260,7 +263,7 @@ define([
             },
             publish: function() {
                 $scope.actionPending = true;
-                notify.info(gettext('Saving post'));2
+                notify.info(gettext('Saving post'));
                 postsService.savePost(blog._id,
                     $scope.currentPost,
                     getItemsFromEditor(),
@@ -275,7 +278,6 @@ define([
                     notify.error(gettext('Something went wrong. Please try again later'));
                     $scope.actionPending = false;
                 });
-                
             },
             filterHighlight: function(highlight) {
                 $scope.filter.isHighlight = highlight;
@@ -285,10 +287,15 @@ define([
 
             // retrieve panel status from url
             panelState: undefined,
-            openPanel: function(panel) {
+            openPanel: function(panel, syndId) {
                 $scope.panelState = panel;
+                $scope.syndId = syndId;
                 // update url for deeplinking
-                $route.updateParams({panel: $scope.panelState});
+                var params = { panel: $scope.panelState, syndId: null };
+
+                if (syndId) params.syndId = syndId;
+
+                $route.updateParams(params);
                 unreadPostsService.reset(panel);
             },
             stParams: {
@@ -379,10 +386,13 @@ define([
             }
         });
         // initalize the view with the editor panel
-        $scope.openPanel(angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor');
+        var panel = angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor',
+            syndId = angular.isDefined($routeParams.syndId) ? $routeParams.syndId : null;
+
+        $scope.openPanel(panel, syndId);
     }
     BlogEditController.$inject = [
-        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session',
+        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'freetypeService', 'modal',
         'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService', '$templateCache', '$timeout'
     ];
