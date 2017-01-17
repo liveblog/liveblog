@@ -72,36 +72,48 @@ module.exports = function makeConfig(grunt) {
                 'moment-timezone': 'moment-timezone/builds/moment-timezone-with-data-2010-2020',
                 'rangy-saverestore': 'rangy/lib/rangy-selectionsaverestore',
                 'angular-embedly': 'angular-embedly/em-minified/angular-embedly.min',
-                'jquery-gridster': 'gridster/dist/jquery.gridster.min'
+                'jquery-gridster': 'gridster/dist/jquery.gridster.min',
+                'external-apps': path.join(process.cwd(), 'dist', 'app-importer.generated.js'),
+                'i18n': path.join(process.cwd(), 'dist', 'locale.generated.js'),
+                // ensure that react is loaded only once (3rd party apps can load more...)
+                'react': path.resolve('./node_modules/react')
+ 
             },
-            extensions: ['', '.js']
+            extensions: ['', '.js', '.jsx']
         },
         module: {
             loaders: [
                 {
                     test: /\.jsx?$/,
-                    exclude: shouldExclude,
+                    //exclude: shouldExclude,
+                    //exclude: function(p) {
+                    //    'use strict';
+                    //    // exclude parsing node modules, but allow the 'superdesk-core'
+                    //    // node module, because it will be used when building in the
+                    //    // main 'superdesk' repository.
+                    //    return p.indexOf('node_modules') > -1 && p.indexOf('superdesk-core') < 0;
+                    //},
                     loader: 'babel',
                     query: {
                         cacheDirectory: true,
                         presets: ['es2015', 'react']
                     }
                 },
-                {
-                    test: /\.js$/,
-                    exclude: function(p) {
-                        'use strict';
-                        // exclude parsing node modules, but allow the 'superdesk-core'
-                        // node module, because it will be used when building in the
-                        // main 'superdesk' repository.
-                        return p.indexOf('node_modules') > -1 && p.indexOf('superdesk-core') < 0;
-                    },
-                    loader: 'babel',
-                    query: {
-                        cacheDirectory: true,
-                        presets: ['es2015']
-                    }
-                },
+                //{
+                //    test: /\.js$/,
+                //    exclude: function(p) {
+                //        'use strict';
+                //        // exclude parsing node modules, but allow the 'superdesk-core'
+                //        // node module, because it will be used when building in the
+                //        // main 'superdesk' repository.
+                //        return p.indexOf('node_modules') > -1 && p.indexOf('superdesk-core') < 0;
+                //    },
+                //    loader: 'babel',
+                //    query: {
+                //        cacheDirectory: true,
+                //        presets: ['es2015']
+                //    }
+                //},
                 {
                     test: /\.html$/,
                     loader: 'html'
