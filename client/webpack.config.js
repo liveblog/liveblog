@@ -89,13 +89,14 @@ module.exports = function makeConfig(grunt) {
                 {
                     test: /\.jsx?$/,
                     //exclude: shouldExclude,
-                    exclude: function(p) {
-                        'use strict';
-                        // exclude parsing node modules, but allow the 'superdesk-core'
-                        // node module, because it will be used when building in the
-                        // main 'superdesk' repository.
-                        return p.indexOf('node_modules/superdesk-core/node_modules') > -1;
-                    },
+                    //exclude: function(p) {
+                    //    'use strict';
+                    //    // exclude parsing node modules, but allow the 'superdesk-core'
+                    //    // node module, because it will be used when building in the
+                    //    // main 'superdesk' repository.
+                    //    //return p.indexOf('node_modules/superdesk-core/node_modules') > -1;
+                    //    return p.indexOf('node_modules') > -1 && p.indexOf('superdesk-core') < 0;
+                    //},
                     loader: 'babel',
                     query: {
                         cacheDirectory: true,
