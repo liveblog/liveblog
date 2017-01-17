@@ -627,9 +627,9 @@ import './../ng-sir-trevor-blocks';
         'angular-embed',
         'angular-embed.handlers',
         'ngRoute',
-        'superdesk.services.modal',
-        'superdesk.upload',
-        'superdesk.editor',
+        'superdesk.core.services.modal',
+        'superdesk.core.upload',
+        //'superdesk.core.editor3',
         'liveblog.pages-manager',
         'lrInfiniteScroll',
         'liveblog.security'

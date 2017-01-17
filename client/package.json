@@ -89,7 +89,7 @@
     "jquery": "^3.1.1",
     "jquery-jcrop": "^0.9.13",
     "jquery-ui": "components/jqueryui#1.11.4",
-    "lodash": "3.10.1",
+    "lodash": "^4.14.1",
     "lr-infinite-scroll": "^1.0.0",
     "medium-editor": "^5.21.0",
     "medium-editor-tables": "^0.5.3",

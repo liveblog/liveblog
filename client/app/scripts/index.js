@@ -4,7 +4,7 @@ import 'jquery-ui/jquery-ui';
 import 'jquery-jcrop';
 import 'jquery-gridster';
 import 'moment-timezone';
-import 'lodash';
+//import 'lodash';
 import 'bootstrap';
 import 'angular';
 import 'angular-moment';
@@ -27,6 +27,9 @@ import 'angular-embed/dist/angular-embed';
 import 'angular-contenteditable';
 import 'angular-messages';
 import 'lr-infinite-scroll';
+
+import _ from 'lodash';
+import moment from 'moment';
 
 // This is an ugly little hack required by the venerable superdesk.editor to work
 import MediumEditor from 'medium-editor';
@@ -92,11 +95,9 @@ import 'liveblog-settings';
 
 import 'liveblog-security.service';
 
-import _ from 'lodash';
-import moment from 'moment';
 import config from './../../config';
 
-let core = angular.module('superdesk.core', [
+let sdCore = angular.module('superdesk.core', [
     'ngRoute',
     'ngResource',
     'ngFileUpload',
@@ -133,7 +134,6 @@ let core = angular.module('superdesk.core', [
     'superdesk.core.services.pageTitle',
 
     'superdesk.core.directives'
-
 ]);
 
 angular.module('superdesk.apps', [
@@ -150,7 +150,7 @@ angular.module('superdesk.apps', [
     'superdesk.apps.products',
     'superdesk.apps.authoring',
     'superdesk.apps.packaging',
-    'superdesk.apps.editor2',
+    //'superdesk.apps.editor2',
     'superdesk.apps.spellcheck',
     'superdesk.apps.notification',
     'superdesk.apps.highlights',
@@ -168,15 +168,53 @@ angular.module('superdesk.apps', [
 
 angular.module('superdesk.config').constant('config', config);
 
-core.constant('config', config);
-core.constant('lodash', _);
-core.constant('moment', moment);
+let liveblog = angular.module('liveblog', [
+    'liveblog.bloglist',
+    'liveblog.edit',
+    'liveblog.posts',
+    'liveblog.blog',
+    'liveblog.themes',
+    'ngMessages'
+])
 
-core.config(['$routeProvider', ($routeProvider) => {
-    $routeProvider.when('/', {
-        redirectTo: '/liveblog'
-    });
+//sdCore.constant('lodash', _);
+liveblog.constant('config', config);
+liveblog.constant('lodash', _);
+liveblog.constant('moment', moment);
+
+//liveblog.config(['$routeProvider', ($routeProvider) => {
+//    $routeProvider.when('/', {
+//        redirectTo: '/liveblog'
+//    });
+//}]);
+
+liveblog.config(['$routeProvider', function($routeProvider) {
+    $routeProvider.when('/', {redirectTo: '/liveblog'});
 }]);
+
+liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session',
+    function($rootScope, $timeout, notify, gettext, session) {
+        var alertTimeout;
+        $rootScope.$on('disconnected', function(event) {
+            $timeout.cancel(alertTimeout);
+            if (session && session.sessionId) {
+                alertTimeout = $timeout(function() {
+                    notify.pop();
+                    notify.error(gettext('Disconnected from Notification Server, attempting to reconnect ...'), 20000);
+                }, 100);
+            }
+        });
+        $rootScope.$on('connected', function(event) {
+            //only show the 'connected' message if there was a disconnect event
+            if (alertTimeout) {
+                $timeout.cancel(alertTimeout);
+                alertTimeout = $timeout(function() {
+                    notify.pop();
+                    notify.success(gettext('Connected to Notification Server!'));
+                }, 100);
+            }
+        });
+    }]);
 
 let body = angular.element('body');
 
@@ -191,13 +229,7 @@ body.ready(() => {
         'superdesk.config',
         'superdesk.core',
         'superdesk.apps',
-
-        'liveblog.bloglist',
-        'liveblog.edit',
-        'liveblog.posts',
-        'liveblog.blog',
-        'liveblog.themes',
-        'ngMessages'
+        'liveblog'
     ], {strictDi: true});
 
     window.superdeskIsReady = true;
