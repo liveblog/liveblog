@@ -1,7 +1,8 @@
-liveblogSyndication
-    .controller('ProducersController', ['$scope', '$controller', function($scope, $controller) {
-        $scope.endPoint = 'producers';
-        $scope.entryName = 'producer';
+producersController.$inject = ['$scope', '$controller'];
 
-        angular.extend(this, $controller('BaseController', {$scope: $scope}));
-    }]);
+export default function producersController($scope, $controller) {
+    $scope.endPoint = 'producers';
+    $scope.entryName = 'producer';
+
+    angular.extend(this, $controller('BaseController', {$scope: $scope}));
+};

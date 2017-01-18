@@ -1,7 +1,8 @@
-liveblogSyndication
-    .controller('ConsumersController', ['$scope', '$controller', function($scope, $controller) {
-        $scope.endPoint = 'consumers';
-        $scope.entryName = 'consumer';
+consumersController.$inject = ['$scope', '$controller'];
 
-        angular.extend(this, $controller('BaseController', {$scope: $scope}));
-    }]);
+export default function consumersController($scope, $controller) {
+    $scope.endPoint = 'consumers';
+    $scope.entryName = 'consumer';
+
+    angular.extend(this, $controller('BaseController', {$scope: $scope}));
+};

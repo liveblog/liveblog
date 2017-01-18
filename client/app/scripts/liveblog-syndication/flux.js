@@ -1,4 +1,5 @@
-liveblogSyndication
+export default angular
+    .module('liveblog.syndication.flux', [])
     .factory('Dispatcher', function() {
         return {
             dispatch: function(action) {
