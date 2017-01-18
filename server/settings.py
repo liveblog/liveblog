@@ -91,6 +91,7 @@ CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', REDIS_URL)
 CELERY_ALWAYS_EAGER = (env('CELERY_ALWAYS_EAGER', False) == 'True')
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']  # it's using pickle when in eager mode
+CELERY_TASK_PROTOCOL = 1
 
 CELERYBEAT_SCHEDULE_FILENAME = env('CELERYBEAT_SCHEDULE_FILENAME', './celerybeatschedule.db')
 CELERYBEAT_SCHEDULE = {
@@ -134,6 +135,7 @@ INSTALLED_APPS = [
     'liveblog.themes',
     'liveblog.global_preferences',
     'liveblog.client_modules',
+    'liveblog.syndication',
     'liveblog.blogslist'
 ]
 
@@ -261,3 +263,7 @@ DEFAULT_URGENCY_VALUE_FOR_MANUAL_ARTICLES = env('DEFAULT_URGENCY_VALUE_FOR_MANUA
 
 ORGANIZATION_NAME = "Sourcefabric"
 ORGANIZATION_NAME_ABBREVIATION = "SF"
+
+# Syndication Global Settings
+SYNDICATION_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
+SYNDICATION_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)

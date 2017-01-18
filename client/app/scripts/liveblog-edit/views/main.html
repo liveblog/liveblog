@@ -28,6 +28,13 @@
             <i class="big-icon-archive" alt="draft posts"></i>
         </button>
         <button 
+            class="navbtn" 
+            ng-if="syndicationEnabled"
+            lb-notifications-count
+            ng-click="openPanel('ingest')" 
+            ng-class="{'active': panelState === 'ingest' || panelState === 'incoming-syndication'}">
+        </button>
+        <button 
             ng-if="blog.blog_preferences.theme.settings.canComment"
             class="navbtn ng-cloak"
             ng-click="openPanel('comments')"
@@ -42,7 +49,7 @@
             <span ng-if="isBlogOpened()">
                 <!-- drafts -->
                 <div class="panel panel--draft" ng-if="panelState === 'drafts'">
-                    <header translate>Drafts</header>
+                    <header><h4 translate>Drafts</h4></header>
                     <div class="content" lr-infinite-scroll="fetchNewDraftPage">
                         <lb-posts-list
                           lb-posts-instance="blogEdit.draftPostsInstance"
@@ -65,7 +72,7 @@
                 </div>
                 <!-- contributions -->
                 <div class="panel panel--contribution" ng-if="panelState === 'contributions'">
-                    <header translate>Contributions</header>
+                    <header><h4 translate>Contributions</h4></header>
                     <div class="panel--contribution__filters">
                         <span class="panel--contribution__filters__title">Filter by user</span>
                         <lb-filter-by-member
@@ -81,6 +88,7 @@
                           lb-posts-order-by="updated_first"
                           lb-posts-allow-unpublishing="false"
                           lb-posts-allow-reordering="false"
+                          lb-posts-no-syndication="true"
                           lb-posts-is-unread-post="unreadPostsService.isContribution"
                           lb-posts-allow-editing="blogSecurityService.isUserOwnerOrCanPublishAPost"
                           lb-posts-allow-deleting="blogSecurityService.isUserOwnerOrCanPublishAPost"
@@ -100,6 +108,15 @@
                         </lb-posts-list>
                     </div>
                 </div>
+                <!-- ingest -->
+                <div lb-ingest-panel ng-if="panelState === 'ingest'"></div>
+                <!-- incoming syndication -->
+                <div
+                    lb-incoming-syndication 
+                    lb-posts-on-post-selected="openPostInEditor"
+                    open-panel="openPanel"
+                    synd-id="syndId"
+                    ng-if="panelState === 'incoming-syndication'"></div>
                 <!-- comments -->
                 <div class="panel panel--comments" ng-if="panelState === 'comments'">
                     <header translate>Comments</header>
@@ -125,7 +142,8 @@
                     <div class="panel--editor" ng-show="panelState === 'editor'">
                         <div ng-if="!preview">
                         <header>
-                            Editor<button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate>Preview
+                            <h4 translate>Editor</h4>
+                            <button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate>Preview
                                 </button>
                                 <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
                         </header>

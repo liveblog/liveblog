@@ -1,0 +1,47 @@
+<div
+    class="dropdown dropdown--more-activity blog-actions-menu" 
+    ng-click="$event.stopPropagation()"
+    dropdown 
+    dropdown-append-to-body 
+    is-open="blog.isOpen"> 
+    <button 
+        id="btn-append-to-body" 
+        type="button" 
+        class="btn-dots-vertical condensed dropdown__toggle" 
+        ng-click="toggleDropdown($event, blog)">
+        <i class="icon-dots-vertical"></i>
+    </button>
+    <ul
+        class="dropdown-menu dropdown__menu more-activity-menu" 
+        role="menu" 
+        aria-labelledby="btn-append-to-body">
+        <li><div class="dropdown__menu-label" translate>Actions</div></li>
+        <li class="divider"></li>
+        <li role="menuitem">
+            <button ng-click="destroy($event, blog)">
+                <i class="icon-trash"></i> Remove
+            </button>
+        </li>
+        <li class="divider"></li>
+        <li role="menuitem">
+            <span>Auto Publish</span>
+            <div class="dropdown__sd-toggle">
+                <span
+                sd-switch 
+                ng-change="updateSyndication()"
+                ng-model="blog.auto_publish"
+                class="sd-toggle--vertical-middle"></span>
+            </div>
+        </li>
+        <li class="divider"></li>
+        <li role="menuitem">
+            <div class="field" sd-date-param>
+                <label for="start_date" translate>Start date</label>
+                <div 
+                    sd-datepicker 
+                    ng-model="blog.start_date"></div>
+            </div>
+        </li>
+    </ul>
+</div>
+

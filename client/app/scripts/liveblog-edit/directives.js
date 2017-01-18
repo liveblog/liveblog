@@ -16,65 +16,65 @@ angular.module('liveblog.edit')
         'postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager',
         function(postsService, notify, $q, $timeout, session, PagesManager) {
 
-            LbPostsListCtrl.$inject = ['$scope', '$element'];
-            function LbPostsListCtrl($scope, $element) {
-               
-                $scope.lbSticky = $scope.lbSticky === 'true';
-                var vm = this;
-                angular.extend(vm, {
-                    isLoading: true,
-                    blogId: $scope.lbPostsBlogId,
-                    status: $scope.lbPostsStatus,
-                    sticky: $scope.lbSticky,
-                    allowUnpublishing: $scope.lbPostsAllowUnpublishing,
-                    allowReordering: $scope.lbPostsAllowReordering,
-                    allowEditing: $scope.lbPostsAllowEditing,
-                    allowDeleting: $scope.lbPostsAllowDeleting,
-                    allowPublishing: $scope.lbPostsAllowPublishing,
-                    isUnreadPost: $scope.lbPostsIsUnreadPost,
-                    onPostSelected: $scope.lbPostsOnPostSelected,
-                    showReorder: false,
-                    hideAllPosts: false,
-                    originalOrder: 0,
-                    pagesManager: new PagesManager($scope.lbPostsBlogId,
-                                                   $scope.lbPostsStatus,
-                                                   //if the list is a list with sticky posts, show them all in the 1st pages
-                                                   $scope.lbSticky === true? 100: 10,
-                                                   $scope.lbPostsOrderBy || 'editorial',
-                                                   $scope.lbSticky),
-                    fetchNewPage: function() {
-                        vm.isLoading = true;
-                        return vm.pagesManager.fetchNewPage().then(function() {
-                            vm.isLoading = false;
-                        });
-                    },
-                    startReorder: function(post) {
-                        vm.reorderPost = post;
-                    },
-                    clearReorder: function() {
-                        vm.reorderPost = false;
-                        $timeout(function() {
-                            vm.keepHighlighted = false;
-                        }, 2000);
-                        $timeout(function() {
-                            vm.hideAllPosts = false;
-                        }, 200);
-                    },
-                    getOrder: function(position) {
-                        return angular.element($element.find('.posts').find('li .lb-post').get(position)).scope().post.order;
-                    },
-                    reorder: function(index, location) {
-                        if (vm.allowReordering) {
-                            var position = index;
-                            var order, before, after;
-                            if (position === 0) {
-                                order = vm.getOrder(0) + 1;
-                            } else if (position === $element.find('.posts').find('li .lb-post').length - 1) {
-                                order = vm.getOrder(position) - 1;
-                            } else {
-                                if (location === 'above') {
-                                    before = vm.getOrder(position - 1);
-                                    after = vm.getOrder(position);
+                LbPostsListCtrl.$inject = ['$scope', '$element'];
+                function LbPostsListCtrl($scope, $element) {
+                   
+                    $scope.lbSticky = $scope.lbSticky === 'true';
+                    var vm = this;
+                    angular.extend(vm, {
+                        isLoading: true,
+                        blogId: $scope.lbPostsBlogId,
+                        status: $scope.lbPostsStatus,
+                        sticky: $scope.lbSticky,
+                        allowUnpublishing: $scope.lbPostsAllowUnpublishing,
+                        allowReordering: $scope.lbPostsAllowReordering,
+                        allowEditing: $scope.lbPostsAllowEditing,
+                        allowDeleting: $scope.lbPostsAllowDeleting,
+                        allowPublishing: $scope.lbPostsAllowPublishing,
+                        isUnreadPost: $scope.lbPostsIsUnreadPost,
+                        onPostSelected: $scope.lbPostsOnPostSelected,
+                        showReorder: false,
+                        hideAllPosts: false,
+                        originalOrder: 0,
+                        pagesManager: new PagesManager(
+                            $scope.lbPostsBlogId,
+                            $scope.lbPostsStatus,
+                            //if the list is a list with sticky posts, show them all in the 1st pages
+                            $scope.lbSticky === true? 100: 10,
+                            $scope.lbPostsOrderBy || 'editorial',
+                            $scope.lbSticky,
+                            null,
+                            $scope.lbPostsNoSyndication === true ? true : false
+                        ),
+                        fetchNewPage: function() {
+                            vm.isLoading = true;
+                            return vm.pagesManager.fetchNewPage().then(function() {
+                                vm.isLoading = false;
+                            });
+                        },
+                        startReorder: function(post) {
+                            vm.reorderPost = post;
+                        },
+                        clearReorder: function() {
+                            vm.reorderPost = false;
+                            $timeout(function() {
+                                vm.keepHighlighted = false;
+                            }, 2000);
+                            $timeout(function() {
+                                vm.hideAllPosts = false;
+                            }, 200);
+                        },
+                        getOrder: function(position) {
+                            return angular.element($element.find('.posts').find('li .lb-post').get(position)).scope().post.order;
+                        },
+                        reorder: function(index, location) {
+                            if (vm.allowReordering) {
+                                var position = index;
+                                var order, before, after;
+                                if (position === 0) {
+                                    order = vm.getOrder(0) + 1;
+                                } else if (position === $element.find('.posts').find('li .lb-post').length - 1) {
+                                    order = vm.getOrder(position) - 1;
                                 } else {
                                     before = vm.getOrder(position);
                                     after = vm.getOrder(position + 1);
@@ -82,18 +82,36 @@ angular.module('liveblog.edit')
                                 order = after + (before - after) / 2;
                             }
                             vm.updatePostOrder(vm.reorderPost, order);
+                        },
+                        updatePostOrder: function(post, order) {
+                            vm.hideAllPosts = true;
+                            postsService.savePost(post.blog, post, undefined, {order: order}).then(function() {
+                                vm.keepHighlighted = order;
+                                vm.clearReorder();
+                            }, function() {
+                                vm.hideAllPosts = false;
+                                notify.pop();
+                                notify.error(gettext('Something went wrong. Please reload and try again later'));
+                            });
                         }
-                    },
-                    updatePostOrder: function(post, order) {
-                        vm.hideAllPosts = true;
-                        postsService.savePost(post.blog, post, undefined, {order: order}).then(function() {
-                            vm.keepHighlighted = order;
-                            vm.clearReorder();
-                        }, function() {
-                            vm.hideAllPosts = false;
-                            notify.pop();
-                            notify.error(gettext('Something went wrong. Please reload and try again later'));
-                        });
+                    });
+                }
+                return {
+                    scope: {
+                        lbPostsBlogId: '=',
+                        lbPostsStatus: '@',
+                        lbSticky: '@',
+                        lbStickyInstance: '=',
+                        lbPostsNoSyndication: '=',
+                        lbPostsOrderBy: '@',
+                        lbPostsAllowUnpublishing: '=',
+                        lbPostsAllowReordering: '=',
+                        lbPostsAllowEditing: '=',
+                        lbPostsAllowDeleting: '=',
+                        lbPostsAllowPublishing: '=',
+                        lbPostsOnPostSelected: '=',
+                        lbPostsIsUnreadPost: '=',
+                        lbPostsInstance: '='
                     },
                     removePostFromList: function(post) {
                         vm.pagesManager.removePost(post);
@@ -124,7 +142,7 @@ angular.module('liveblog.edit')
                             vm.isLoading = false;
                         });
                     }
-                });
+                };
                 $scope.lbPostsInstance = vm;
                 // retrieve first page
                 vm.fetchNewPage()
@@ -144,29 +162,29 @@ angular.module('liveblog.edit')
                     });
                 });
             }
-            return {
-                scope: {
-                    lbPostsBlogId: '=',
-                    lbPostsStatus: '@',
-                    lbSticky: '@',
-                    lbStickyInstance: '=',
-                    lbPostsOrderBy: '@',
-                    lbPostsAllowUnpublishing: '=',
-                    lbPostsAllowReordering: '=',
-                    lbPostsAllowEditing: '=',
-                    lbPostsAllowDeleting: '=',
-                    lbPostsAllowPublishing: '=',
-                    lbPostsOnPostSelected: '=',
-                    lbPostsIsUnreadPost: '=',
-                    lbPostsInstance: '='
-                },
-                restrict: 'EA',
-                transclude: true,
-                templateUrl: 'scripts/liveblog-edit/views/posts.html',
-                controllerAs: 'postsList',
-                controller: LbPostsListCtrl
-            };
-        }
+            //return {
+            //    scope: {
+            //        lbPostsBlogId: '=',
+            //        lbPostsStatus: '@',
+            //        lbSticky: '@',
+            //        lbStickyInstance: '=',
+            //        lbPostsOrderBy: '@',
+            //        lbPostsAllowUnpublishing: '=',
+            //        lbPostsAllowReordering: '=',
+            //        lbPostsAllowEditing: '=',
+            //        lbPostsAllowDeleting: '=',
+            //        lbPostsAllowPublishing: '=',
+            //        lbPostsOnPostSelected: '=',
+            //        lbPostsIsUnreadPost: '=',
+            //        lbPostsInstance: '='
+            //    },
+            //    restrict: 'EA',
+            //    transclude: true,
+            //    templateUrl: 'scripts/liveblog-edit/views/posts.html',
+            //    controllerAs: 'postsList',
+            //    controller: LbPostsListCtrl
+            //};
+        //}
     ])
     .directive('lbItem', [function() {
         return {

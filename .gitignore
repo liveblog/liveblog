@@ -73,6 +73,9 @@ dump.rdb
 client/config.js
 server/test-env.local
 
+# Vagrant
+.vagrant
+
 # PyCharm idea folders
 .idea/
 
