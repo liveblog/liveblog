@@ -1,6 +1,6 @@
 'use strict';
 
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     producersManagement = require('./helpers/pages').producersManagement,
     assertToastMsg = require('./helpers/assert-toast-msg');
 
