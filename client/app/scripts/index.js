@@ -95,6 +95,7 @@ import 'liveblog-bloglist';
 import 'liveblog-edit';
 import 'liveblog-themes';
 import 'liveblog-settings';
+import 'liveblog-syndication';
 
 import 'liveblog-security.service';
 
@@ -171,27 +172,26 @@ angular.module('superdesk.apps', [
 
 angular.module('superdesk.config').constant('config', config);
 
-let liveblog = angular.module('liveblog', [
+let liveblogModules = [
     'liveblog.bloglist',
     'liveblog.edit',
     'liveblog.posts',
     'liveblog.blog',
     'liveblog.themes',
     'ngMessages'
-])
+];
 
-console.log('sort', _.sortByOrder);
+console.log('syndication', config.syndication);
+if (config.syndication)
+    liveblogModules.push('liveblog.syndication');
+
+let liveblog = angular.module('liveblog', liveblogModules);
+
 sdCore.constant('lodash', _);
 
 liveblog.constant('config', config);
 liveblog.constant('lodash', _);
 liveblog.constant('moment', moment);
-
-//liveblog.config(['$routeProvider', ($routeProvider) => {
-//    $routeProvider.when('/', {
-//        redirectTo: '/liveblog'
-//    });
-//}]);
 
 liveblog.config(['$routeProvider', function($routeProvider) {
     $routeProvider.when('/', {redirectTo: '/liveblog'});

@@ -17,6 +17,19 @@ import consumersController from './controllers/consumers';
 
 // DIRECTIVES
 import attachSyndicatedBlogsModal from './directives/attach-syndicated-blogs-modal';
+import consumerEdit from './directives/consumer-edit';
+import consumerList from './directives/consumer-list';
+import contactsEdit from './directives/contacts-edit';
+import copyToClipboard from './directives/copy-to-clipboard';
+import firstContact from './directives/first-contact';
+import incomingSyndication from './directives/incoming-syndication';
+import ingestPanel from './directives/ingest-panel';
+import ingestPanelDropdown from './directives/ingest-panel-dropdown';
+import notificationsCount from './directives/notifications-count';
+import producerEdit from './directives/producer-edit';
+import producerList from './directives/producer-list';
+import syndicationSwitch from './directives/syndication-switch';
+import syndRmBlog from './directives/synd-rm-blog';
 
 var liveblogSyndication = angular
     .module('liveblog.syndication', [
@@ -37,21 +50,20 @@ var liveblogSyndication = angular
     .controller('ConsumersController', consumersController)
 
     // directives
-    .directive('lbAttachSyndicatedBlogsModal', attachSyndicatedBlogsModal);
-
-import './directives/consumer-edit';
-import './directives/consumer-list';
-import './directives/contacts-edit';
-import './directives/copy-to-clipboard';
-import './directives/first-contact';
-import './directives/incoming-syndication';
-import './directives/ingest-panel';
-import './directives/ingest-panel-dropdown';
-import './directives/notifications-count';
-import './directives/producer-edit';
-import './directives/producer-list';
-import './directives/syndication-switch';
-import './directives/synd-rm-blog';
+    .directive('lbAttachSyndicatedBlogsModal', attachSyndicatedBlogsModal)
+    .directive('lbConsumerEdit', consumerEdit)
+    .directive('lbConsumerList', consumerList)
+    .directive('lbContactsEdit', contactsEdit)
+    .directive('lbCopyToClipboard', copyToClipboard)
+    .directive('lbFirstContact', firstContact)
+    .directive('lbIncomingSyndication', incomingSyndication)
+    .directive('lbIngestPanel', ingestPanel)
+    .directive('lbIngestPanelDropdown', ingestPanelDropdown)
+    .directive('lbNotificationsCount', notificationsCount)
+    .directive('lbProducerEdit', producerEdit)
+    .directive('lbProducerList', producerList)
+    .directive('lbSyndicationSwitch', syndicationSwitch)
+    .directive('lbSyndRmBlog', syndRmBlog);
 
 liveblogSyndication
     .config(['superdeskProvider', function(superdesk) {
