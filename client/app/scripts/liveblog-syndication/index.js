@@ -31,7 +31,11 @@ import producerList from './directives/producer-list';
 import syndicationSwitch from './directives/syndication-switch';
 import syndRmBlog from './directives/synd-rm-blog';
 
-var liveblogSyndication = angular
+// CONFIG
+import activities from './activities';
+import api from './api';
+
+export default angular
     .module('liveblog.syndication', [
       'liveblog.syndication.flux',
       'liveblog.security'
@@ -63,47 +67,8 @@ var liveblogSyndication = angular
     .directive('lbProducerEdit', producerEdit)
     .directive('lbProducerList', producerList)
     .directive('lbSyndicationSwitch', syndicationSwitch)
-    .directive('lbSyndRmBlog', syndRmBlog);
+    .directive('lbSyndRmBlog', syndRmBlog)
 
-liveblogSyndication
-    .config(['superdeskProvider', function(superdesk) {
-        superdesk
-            .activity('/consumers/', {
-                label: gettext('Consumers Management'),
-                controller: 'ConsumersController',
-                templateUrl: 'scripts/liveblog-syndication/views/consumer-list.html',
-                category: superdesk.MENU_MAIN,
-                priority: 100,
-                adminTools: true,
-                resolve: {isArchivedFilterSelected: function() {return false;}}
-            })
-            .activity('/producers/', {
-                label: gettext('Producers Management'),
-                controller: 'ProducersController',
-                templateUrl: 'scripts/liveblog-syndication/views/producer-list.html',
-                category: superdesk.MENU_MAIN,
-                priority: 100,
-                adminTools: true,
-                resolve: {isArchivedFilterSelected: function() {return false;}}
-            });
-    }])
-    .config(['apiProvider', function(apiProvider) {
-        apiProvider
-            .api('syndicationIn', {
-                type: 'http',
-                backend: {rel: 'syndication_in'}
-            })
-            .api('syndicationOut', {
-                type: 'http',
-                backend: {rel: 'syndication_out'}
-            })
-             .api('consumers', {
-                type: 'http',
-                backend: {rel: 'consumers'}
-            })
-            .api('producers', {
-                type: 'http',
-                backend: {rel: 'producers'}
-            });
-    }]);
-
+    // config
+    .config(activities)
+    .config(api);
