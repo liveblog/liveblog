@@ -181,7 +181,6 @@ let liveblogModules = [
     'ngMessages'
 ];
 
-console.log('syndication', config.syndication);
 if (config.syndication)
     liveblogModules.push('liveblog.syndication');
 
@@ -193,7 +192,8 @@ liveblog.constant('config', config);
 liveblog.constant('lodash', _);
 liveblog.constant('moment', moment);
 
-liveblog.config(['$routeProvider', function($routeProvider) {
+liveblog.config(['$routeProvider', '$locationProvider', ($routeProvider, $locationProvider) => {
+    $locationProvider.hashPrefix('');
     $routeProvider.when('/', {redirectTo: '/liveblog'});
 }]);
 

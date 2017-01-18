@@ -40,6 +40,7 @@ export default angular
       'liveblog.syndication.flux',
       'liveblog.security'
     ])
+
     // actions
     .factory('IngestPanelActions', ingestPanelActions)
     .factory('IncomingSyndicationActions', incomingSyndicationActions)
