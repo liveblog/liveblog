@@ -4,7 +4,6 @@ import 'jquery-ui/jquery-ui';
 import 'jquery-jcrop';
 import 'jquery-gridster';
 import 'moment-timezone';
-//import 'lodash';
 import 'bootstrap';
 import 'angular';
 import 'angular-moment';
@@ -15,7 +14,6 @@ import 'angular-gettext';
 import 'angular-mocks';
 import 'angular-animate';
 import 'angular-embedly';
-//import 'angular-embed';
 import 'angular-contenteditable';
 import 'angular-vs-repeat';
 import 'ng-file-upload';
@@ -30,7 +28,6 @@ import 'lr-infinite-scroll';
 
 import _ from 'lodash';
 import moment from 'moment';
-//import sortByOrder from 'lodash.sortbyorder';
 
 _.sortByOrder = require('lodash.sortbyorder');
 
@@ -69,8 +66,8 @@ import 'superdesk-core/scripts/core/loading';
 import 'superdesk-core/scripts/apps/workspace';
 import 'superdesk-core/scripts/apps/dashboard';
 import 'superdesk-core/scripts/apps/users';
-import 'superdesk-core/scripts/apps/groups';
-import 'superdesk-core/scripts/apps/products';
+//import 'superdesk-core/scripts/apps/groups';
+//import 'superdesk-core/scripts/apps/products';
 import 'superdesk-core/scripts/apps/publish';
 import 'superdesk-core/scripts/apps/templates';
 import 'superdesk-core/scripts/apps/profiling';
@@ -78,7 +75,7 @@ import 'superdesk-core/scripts/apps/desks';
 import 'superdesk-core/scripts/apps/authoring';
 import 'superdesk-core/scripts/apps/search';
 import 'superdesk-core/scripts/apps/legal-archive';
-import 'superdesk-core/scripts/apps/stream';
+//import 'superdesk-core/scripts/apps/stream';
 import 'superdesk-core/scripts/apps/packaging';
 import 'superdesk-core/scripts/apps/highlights';
 import 'superdesk-core/scripts/apps/translations';
@@ -89,7 +86,7 @@ import 'superdesk-core/scripts/apps/archive';
 import 'superdesk-core/scripts/apps/monitoring';
 import 'superdesk-core/scripts/apps/settings';
 import 'superdesk-core/scripts/apps/ingest';
-import 'superdesk-core/scripts/apps/search-providers';
+//import 'superdesk-core/scripts/apps/search-providers';
 
 import 'liveblog-bloglist';
 import 'liveblog-edit';
@@ -150,21 +147,20 @@ angular.module('superdesk.apps', [
     'superdesk.apps.archive',
     'superdesk.apps.ingest',
     'superdesk.apps.desks',
-    'superdesk.apps.groups',
-    'superdesk.apps.products',
+    //'superdesk.apps.groups',
+    //'superdesk.apps.products',
     'superdesk.apps.authoring',
     'superdesk.apps.packaging',
-    //'superdesk.apps.editor2',
     'superdesk.apps.spellcheck',
     'superdesk.apps.notification',
     'superdesk.apps.highlights',
     'superdesk.apps.translations',
-    'superdesk.apps.content_filters',
+    'superdesk.apps.content_filters', // Can't remove
     'superdesk.apps.dictionaries',
     'superdesk.apps.vocabularies',
-    'superdesk.apps.searchProviders',
-    'superdesk.apps.stream',
-    'superdesk.apps.publish',
+    //'superdesk.apps.searchProviders',
+    //'superdesk.apps.stream',
+    'superdesk.apps.publish', // Can't remove
     'superdesk.apps.templates',
     'superdesk.apps.monitoring',
     'superdesk.apps.profiling'

@@ -17,7 +17,12 @@ var contact = {
 };
 
 describe('Producers', function() {
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login()
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
 
     describe('list', function() {
         it('can open producers managements and list the producers', function() {

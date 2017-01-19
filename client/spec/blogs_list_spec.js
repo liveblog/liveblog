@@ -21,7 +21,12 @@ describe('Blogs list', function() {
     //    picture_url: './upload/-busstop-jpg-1600-900.jpg'
     };
 
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login()
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
 
     describe('list', function() {
 
