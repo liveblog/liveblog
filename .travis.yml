@@ -44,9 +44,9 @@ cache:
     - $HOME/.npm
 
 before_install:
-    - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
-    - npm -v
-    - node -v
+    #- rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
+    #- npm -v
+    #- node -v
     - npm install -g npm
     - npm install
     - cp $TRAVIS_BUILD_DIR/client/config.sample.js $TRAVIS_BUILD_DIR/client/config.js
