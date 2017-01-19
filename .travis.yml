@@ -7,6 +7,7 @@ sudo: false
 
 env:
     global:
+        - TRAVIS_NODE_VERSION="6.9.4"
         - CXX=g++-4.8
         - secure: ajoP9pA/FYH+1sFwGKHlQ8PoGqRIjdmqEnwo44AA5j6c1NMsgiToA420lPm8Lp0cko5YK3ppBlGlvbRWu5JXVxl0vMtZTLf3FM2w99viddrRCkh4sMef2DzkXXYOW4Tnew/8pmaOtTn3UtNG/feJHkBzHLEDUuN0TA07Y6UaWHc=
     matrix:
@@ -43,6 +44,10 @@ cache:
     - $HOME/.npm
 
 before_install:
+    - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install $TRAVIS_NODE_VERSION
+    - npm -v
+    - node -v
+    - npm install
     - cp $TRAVIS_BUILD_DIR/client/config.sample.js $TRAVIS_BUILD_DIR/client/config.js
     - rm -rf ~/.nvm && git clone https://github.com/creationix/nvm.git ~/.nvm && (cd ~/.nvm && git checkout `git describe --abbrev=0 --tags`) && source ~/.nvm/nvm.sh && nvm install 4.5.0
     - if [ "${TARGET}" = "client" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
