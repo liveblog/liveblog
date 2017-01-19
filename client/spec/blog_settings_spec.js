@@ -5,7 +5,13 @@ var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login
 describe('Blog settings', function() {
     'use strict';
 
-    beforeEach(function(done) {login('editor', 'editor').then(done);});
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login('editor', 'editor')
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
+
 
     it('should modify title and description for blog', function() {
         var blog = blogs.cloneBlog(0);

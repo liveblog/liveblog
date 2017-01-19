@@ -562,7 +562,7 @@ function BlogSettingsPage(blog) {
     self.team = new TeamPage();
     self.blog = blog;
     self.title = element(by.model('settings.newBlog.title'));
-    self.description = element(by.css('[ng-model="settings.newBlog.description"] [contenteditable="true"]'));
+    self.description = element(by.css('[ng-model="settings.newBlog.description"]'));
     self.file = element(by.css('input[type="file"]'));
     self.saveAndClose = element(by.css('[ng-click="settings.saveAndClose()"]'));
 
@@ -645,7 +645,7 @@ function BlogSettingsPage(blog) {
 
     self.removeBlog = function() {
         element(by.buttonText('Remove blog')).click().then(function() {
-            element(by.css('.btn-primary')).click();
+            element(by.css('.btn--primary')).click();
         });
     };
 }
