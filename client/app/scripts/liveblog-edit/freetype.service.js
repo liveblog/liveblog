@@ -514,7 +514,7 @@
                                 if (response.data._status === 'ERR'){
                                     return;
                                 }
-                                var picture_url = response.data.renditions.viewImage.href;
+                                var picture_url = response.data.renditions.original.href;
                                 $scope.image.picture_url = picture_url;
                                 $scope.image.picture = response.data._id;
                                 vm.uploadModal = false;
