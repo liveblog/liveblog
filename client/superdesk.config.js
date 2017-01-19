@@ -4,6 +4,7 @@
  * working directory, but other files may also be specified using relative paths with
  * the SUPERDESK_CONFIG environment variable or the grunt --config flag.
  */
+'use strict';
 
 module.exports = function(grunt) {
     return {

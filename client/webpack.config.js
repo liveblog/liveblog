@@ -20,15 +20,15 @@ module.exports = function makeConfig(grunt) {
     // shouldExclude returns true if the path p should be excluded from loaders
     // such as 'babel' or 'eslint'. This is to avoid including node_modules into
     // these loaders, but not node modules that are superdesk apps.
-    const shouldExclude = function(p) {
-        // don't exclude anything outside node_modules
-        if (p.indexOf('node_modules') === -1) {
-            return false;
-        }
-        // include only 'superdesk-core' and valid modules inside node_modules
-        let validModules = ['superdesk-core'].concat(sdConfig.apps);
-        return !validModules.some(app => p.indexOf(app) > -1);
-    };
+    //const shouldExclude = function(p) {
+    //    // don't exclude anything outside node_modules
+    //    if (p.indexOf('node_modules') === -1) {
+    //        return false;
+    //    }
+    //    // include only 'superdesk-core' and valid modules inside node_modules
+    //    let validModules = ['superdesk-core'].concat(sdConfig.apps);
+    //    return !validModules.some(app => p.indexOf(app) > -1);
+    //};
 
     return {
         cache: true,
@@ -91,7 +91,6 @@ module.exports = function makeConfig(grunt) {
                     //exclude: shouldExclude,
                     exclude: function(p) {
                         //console.log('p', p, p.indexOf('node_modules') > -1 && p.indexOf('superdesk-core') < 0);
-                        'use strict';
                         // exclude parsing node modules, but allow the 'superdesk-core'
                         // node module, because it will be used when building in the
                         // main 'superdesk' repository.

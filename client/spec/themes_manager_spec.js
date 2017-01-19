@@ -1,6 +1,5 @@
 var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
-    themeManager = require('./helpers/pages').themeManager,
-    path = require('path');
+    themeManager = require('./helpers/pages').themeManager;
 
 describe('Themes Manager', function() {
     'use strict';

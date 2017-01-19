@@ -11,14 +11,16 @@ function getChromeOptions() {
         chromeOptions.binary = process.env.CHROME_BIN;
     }
 
+    chromeOptions.binary = '/usr/bin/chromium-browser';
+
     return chromeOptions;
 }
 
 var config = {
     allScriptsTimeout: 34000,
-    baseUrl: 'http://127.0.0.1:9000',
+    baseUrl: 'http://localhost:9000',
     params: {
-        baseBackendUrl: 'http://127.0.0.1:5000/api/',
+        baseBackendUrl: 'http://localhost:5000/api/',
         username: 'admin',
         password: 'admin'
     },
@@ -37,11 +39,16 @@ var config = {
 
     capabilities: {
         //browserName: 'firefox',
+        //browserName: 'phantomjs',
+        //'phantomjs.binary.path': require('phantomjs-prebuilt').path,
         browserName: 'chrome',
         chromeOptions: getChromeOptions()
+        //browserName: "firefox",
+        //firefox_binary: "/opt/firefox-49.0.2/firefox",
+        //binary_: "/opt/firefox-49.0.2/firefox"
     },
 
-    directConnect: true,
+    //directConnect: true,
 
     onPrepare: function() {
         require('./node_modules/superdesk-core/spec/helpers/setup')({fixture_profile: 'test'});

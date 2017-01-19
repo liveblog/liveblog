@@ -13,11 +13,12 @@ describe('Blogs list', function() {
         title: 'new blog title',
         description: 'new blog description',
         username: 'Edwin the admin'
-    }, newBlogImage = {
-        title: 'new blog title',
-        description: 'new blog description',
-        username: 'Edwin the admin',
-        picture_url: './upload/-busstop-jpg-1600-900.jpg'
+    //}, 
+    //newBlogImage = {
+    //    title: 'new blog title',
+    //    description: 'new blog description',
+    //    username: 'Edwin the admin',
+    //    picture_url: './upload/-busstop-jpg-1600-900.jpg'
     };
 
     beforeEach(function(done) {login().then(done);});

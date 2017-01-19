@@ -28,8 +28,8 @@
 
 'use strict';
 
-var path = require('path');
-var rootDir = path.dirname(path.dirname(__dirname));
+//var path = require('path');
+//var rootDir = path.dirname(path.dirname(__dirname));
 
 var src = [
     //'node_modules/superdesk-core/scripts/**/*.html',
@@ -49,7 +49,6 @@ var options = {
     //        script + ' }]);';
     //}
     bootstrap:  function(module, script) {
-        'use strict';
         return '"use strict";' +
             'var lbtemplates = angular.module("lb.templates", []);' +
             'lbtemplates.run([\'$templateCache\', function($templateCache) {' +

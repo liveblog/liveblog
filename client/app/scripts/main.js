@@ -21,7 +21,7 @@
 //    return window.angular;
 //});
 
-import gettext from 'angular-gettext';
+//import gettext from 'angular-gettext';
 import moment from 'moment';
 import angular from 'angular';
 import superdesk from 'superdesk-core';
@@ -80,5 +80,5 @@ import superdesk from 'superdesk-core';
             angular.bootstrap(body, apps, {strictDi: true});
             window.superdeskIsReady = true;
         });
-    };
+    }
 //});
