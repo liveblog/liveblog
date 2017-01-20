@@ -27,6 +27,7 @@ addons:
     sources:
     - mongodb-3.0-precise
     - ubuntu-toolchain-r-test
+    - google-chrome
     packages:
     - mongodb-org-server
     - xvfb
@@ -57,9 +58,10 @@ before_install:
         pip install requests &&
         export DISPLAY=:99.0 &&
         /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1080x24 ;
-        ./scripts/get-chrome-url | wget -N --no-verbose -i - && unzip chrome-linux.zip &&
-        export CHROME_BIN=`pwd`/chrome-linux/chrome &&
-        $CHROME_BIN --version ;
+        #./scripts/get-chrome-url | wget -N --no-verbose -i - && unzip chrome-linux.zip &&
+        #export CHROME_BIN=`pwd`/chrome-linux/chrome &&
+        export CHROME_BIN=`which google-chrome` && $CHROME_BIN --version ;
+        #$CHROME_BIN --version ;
       fi
 
 install:
