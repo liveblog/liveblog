@@ -4,7 +4,12 @@ var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login
 describe('Contributions Posts', function() {
     'use strict';
 
-    beforeEach(function(done) {login('editor', 'editor').then(done);});
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login('editor', 'editor')
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
 
     it('can open contributions panel from url', function() {
         var contributions = blogs.openBlog(0).contributions;

@@ -4,7 +4,12 @@ var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login
 describe('Themes Manager', function() {
     'use strict';
 
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login()
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
 
     it('can open theme manager and list the themes', function() {
         themeManager.openThemesManager()

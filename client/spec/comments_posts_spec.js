@@ -1,10 +1,12 @@
 var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     blogs = require('./helpers/pages').blogs;
+
 var comment = {
     username: 'comment: first last',
     item_type: 'comment',
     text: 'comment: contents'
 };
+
 describe('Comments Posts', function() {
     'use strict';
 
