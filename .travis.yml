@@ -37,6 +37,7 @@ addons:
     - git
     - libgnome-keyring-dev
     - g++-4.8
+    - google-chrome-stable
 
 cache:
   directories:
