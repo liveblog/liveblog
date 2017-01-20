@@ -9,6 +9,7 @@ describe('Scorecards Posts', function() {
     it('can publish socrecard and edit it', function() {
         var blog = blogs.openBlog(0);
         var editor = blog.openFreetypesEditor(2);
+
         editor.publishScorecard().then(function(data) {
 
             browser.waitForAngular();

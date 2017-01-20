@@ -11,8 +11,8 @@
 define([
     'angular',
     'lodash',
-    './blog-edit.controller',
-    './blog-settings.controller',
+    'liveblog-edit/controllers/blog-edit',
+    'liveblog-edit/controllers/blog-settings',
     './unread.posts.service',
     'ng-sir-trevor',
     'ng-sir-trevor-blocks',

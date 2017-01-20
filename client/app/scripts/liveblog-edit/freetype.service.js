@@ -8,7 +8,11 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 
-(function(angular) {
+ define([
+    'angular',
+    './module'
+], 
+function(angular) {
     'use strict';
     /**
      * Name of the scope variable where the freetype data will be stored.
@@ -122,7 +126,7 @@
         }
     }
 
-    angular.module('liveblog.freetype', ['liveblog.edit'])
+    angular.module('liveblog.edit')
     .factory('freetypeService', ['$q', function ($q) {
         return {
             /**
@@ -152,12 +156,12 @@
                             repeater + '<freetype-collection-remove index="$index" vector="' + SCOPE_FREETYPEDATA + '.' + vector + '"/>' +
                             '</li><li><freetype-collection-add vector="' + SCOPE_FREETYPEDATA + '.' + vector + '"/></li>';
                 });
-                // transform dolar variables in the attributes of `name` or `text` in any standalone tag .
+                // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
                     attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
-                        // remove the dolar variable from the attributes.
+                        // remove the dollar variable from the attributes.
                         return '';
                     });
                     if (name) {
@@ -166,7 +170,7 @@
                     }
                     return all;
                 });
-                // transform dolar variables in content of any start to end tag.
+                // transform dollar variables in content of any start to end tag.
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>(.*?)<\/\1>?/gi, function(all, tag, attr, content) {
                     var name, parts;
                     content = content.replace(/^\s+|\s+$/g, '');
@@ -181,12 +185,12 @@
                     }
                     return all;
                 });
-                // transform dolar variables in the attributes of `image` in any standalone tag .
+                // transform dollar variables in the attributes of `image` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
                     attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
-                        // remove the dolar variable from the attributes.
+                        // remove the dollar variable from the attributes.
                         return '';
                     });
                     if (name) {
@@ -195,12 +199,12 @@
                     }
                     return all;
                 });
-                // transform dolar variables in the attributes of `link` in any standalone tag .
+                // transform dollar variables in the attributes of `link` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
                     attr = attr.replace(/(link|url)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
-                        // remove the dolar variable from the attributes.
+                        // remove the dollar variable from the attributes.
                         return '';
                     });
                     if (name) {
@@ -209,12 +213,12 @@
                     }
                     return all;
                 });
-                // transform dolar variables in the attributes of `embed` in any standalone tag .
+                // transform dollar variables in the attributes of `embed` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
                     attr = attr.replace(/(embed|html)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
-                        // remove the dolar variable from the avem o problema, attributes.
+                        // remove the dollar variable from the avem o problema, attributes.
                         return '';
                     });
                     if (name) {
@@ -271,28 +275,28 @@
                     attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         type = 'text';
-                        // remove the dolar variable from the attributes.
+                        // remove the dollar variable from the attributes.
                         return '';
                     });
 
                     attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname + '.picture_url';
                         type = 'image';
-                        // remove the dolar variable from the attributes.
+                        // remove the dollar variable from the attributes.
                         return '';
                     });
 
                     attr = attr.replace(/(wrap-link)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         type = 'wrap-link';
-                        // remove the dolar variable from the attributes.
+                        // remove the dollar variable from the attributes.
                         return '';
                     });
 
                     attr = attr.replace(/(embed)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         type = 'embed';
-                        // remove the dolar variable from the attributes.
+                        // remove the dollar variable from the attributes.
                         return '';
                     });
 
@@ -341,7 +345,7 @@
                         var name, type;
                         attr = attr.replace(/hide-render/gi, function(match, tag, quote, rname) {
                             type = 'hide-render';
-                            // remove the dolar variable from the attributes.
+                            // remove the dollar variable from the attributes.
                             return '';
                         });
                         if (name || type) {
@@ -366,172 +370,6 @@
                 return wrapBefore + template + wrapAfter;
             }
         };
-    }])
-    /**
-    * Main directive to render the freetype editor.
-    */
-    .directive('freetypeRender', ['$compile', 'freetypeService', function ($compile, freetypeService) {
-
-        return {
-            restrict: 'E',
-            link: function (scope, element, attrs) {
-                scope.$watch('freetype', function(freetype) {
-                    element.html(freetypeService.transform(freetype.template, scope));
-                    $compile(element.contents())(scope);
-                    scope.initialData = angular.copy(scope.freetypeData);
-                });
-
-                //methods to control freetype functionality from outside the directive
-                scope.internalControl = scope.control || {};
-
-                //check if !dirty
-                scope.internalControl.isClean = function() {
-                    return angular.equals(scope.freetypeData, scope.initialData);
-                };
-
-                function recursiveClean(obj) {
-                    for (var key in obj) {
-                        if (angular.isObject(obj[key])) {
-                            //keep only the first item in the array
-                            if (angular.isArray(obj[key])) {
-                                obj[key].splice(1);
-                            }
-                            recursiveClean(obj[key]);
-                        } else {
-                            if (angular.isString(obj[key])) {
-                                obj[key] = '';
-                            }
-                        }
-                    }
-                };
-
-                scope.internalControl.reset = function() {
-                    recursiveClean(scope.freetypeData);
-                    scope.initialData = angular.copy(scope.freetypeData);  
-                };
-            },
-            scope: {
-                freetype: '=',
-                freetypeData: '=',
-                control: '='
-            }
-        };
-    }])
-    .directive('freetypeEmbed', ['$compile', function($compile) {
-
-        return {
-            restrict: 'E',
-            template: '<textarea ng-model="embed"></textarea>',
-            controller: function() {
-            },
-            scope: {
-                embed: '='
-            }
-        };
-    }])
-    .directive('freetypeLink', ['$compile', function($compile) {
-
-        return {
-            restrict: 'E',
-            template: '<input type="url" ng-model="link"/>',
-            controller: function() {
-            },
-            scope: {
-                link: '='
-            }
-        };
-    }])
-    .directive('freetypeCollectionAdd', ['$compile', function($compile) {
-        return {
-            restrict: 'E',
-            template: '<button ng-click="ftca.add()" class="freetype-btn">+</button>',
-            controller: ['$scope', function($scope) {
-                this.add = function() {
-                    $scope.vector.push({});
-                }
-            }],
-            controllerAs: 'ftca',
-            scope: {
-                vector: '='
-            }
-        };
-    }])
-    .directive('freetypeCollectionRemove', function() {
-        return {
-            restrict: 'E',
-            template: '<button ng-click="ftcr.remove()" class="freetype-btn" ng-show="vector.length!==1">-</button>',
-            controller: ['$scope', function($scope) {
-                this.remove = function() {
-                    $scope.vector.splice($scope.index, 1);
-                }
-            }],
-            controllerAs: 'ftcr',
-            scope: {
-                vector: '=',
-                index: '='
-            }
-        };
-    })
-    .directive('freetypeImage', ['$compile', 'modal', 'api', 'upload', '$templateCache', function($compile, modal, api, upload, $templateCache) {
-        return {
-            restrict: 'E',
-            template: $templateCache.get('scripts/liveblog-edit/views/freetype-image.html'),
-            controller: ['$scope', function($scope) {
-                var vm = this;
-                angular.extend(vm, {
-                    preview: {},
-                    progress: {width: 0},
-                    openUploadModal: function() {
-                        vm.uploadModal = true;
-                    },
-                    closeUploadModal: function() {
-                        vm.uploadModal = false;
-                        vm.preview = {};
-                        vm.progress = {width: 0};
-                    },
-                    removeImage: function() {
-                        modal.confirm(gettext('Are you sure you want to remove the blog image?')).then(function() {
-                            $scope.image.picture_url = null;
-                        });
-                    },
-                    upload: function(config) {
-                        var form = {};
-                        if (config.img) {
-                            form.media = config.img;
-                        } else if (config.url) {
-                            form.URL = config.url;
-                        } else {
-                            return;
-                        }
-                        // return a promise of upload which will call the success/error callback
-                        return api.archive.getUrl().then(function(url) {
-                            return upload.start({
-                                method: 'POST',
-                                url: url,
-                                data: form
-                            })
-                            .then(function(response) {
-                                if (response.data._status === 'ERR'){
-                                    return;
-                                }
-                                var picture_url = response.data.renditions.viewImage.href;
-                                $scope.image.picture_url = picture_url;
-                                $scope.image.picture = response.data._id;
-                                vm.uploadModal = false;
-                                vm.preview = {};
-                                vm.progress = {width: 0};
-                            }, null, function(progress) {
-                                vm.progress.width = Math.round(progress.loaded / progress.total * 100.0);
-                            });
-                        });
-                    }
-                });
-            }],
-            controllerAs: 'ft',
-            scope: {
-                image: '='
-            }
-        };
     }]);
-})(angular);
+});
 

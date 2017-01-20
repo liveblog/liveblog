@@ -11,7 +11,7 @@
 define([
     'angular',
     'lodash',
-    './unread.posts.service',
+    'liveblog-edit/unread.posts.service',
     'ng-sir-trevor',
     'ng-sir-trevor-blocks',
     'angular-embed'
@@ -193,10 +193,10 @@ define([
                 return deferred.promise;
             },
             askRemoveBlog: function() {
-                                modal.confirm(gettext('Are you sure you want to delete the blog?'))
-                                    .then(function() {
-                                        vm.removeBlog();
-                                    });
+                modal.confirm(gettext('Are you sure you want to delete the blog?'))
+                .then(function() {
+                    vm.removeBlog();
+                });
             },
             removeBlog: function() {
                 api.blogs.remove(angular.copy(vm.blog)).then(function(message) {

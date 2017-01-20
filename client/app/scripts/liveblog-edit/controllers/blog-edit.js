@@ -11,7 +11,7 @@
 define([
     'angular',
     'lodash',
-    './unread.posts.service',
+    'liveblog-edit/unread.posts.service',
     'ng-sir-trevor',
     'ng-sir-trevor-blocks',
     'angular-embed'
