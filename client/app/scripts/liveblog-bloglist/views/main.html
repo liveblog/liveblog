@@ -133,8 +133,10 @@
                             </div>
                             <div class="field">
                                 <label translate>Blog description</label>
+                                <!--TODO: Fix missing sd-editor-->
                                 <div class="form-box"
                                     sd-text-editor
+                                    contenteditable="true"
                                     data-config="{toolbar: {buttons: ['bold', 'italic', 'underline', 'strikethrough', 'orderedlist', 'unorderedlist'],sticky: false,static: true,align: 'left',updateOnEmptySelection: true}}"
                                     ng-model="newBlog.description"
                                 ></div>

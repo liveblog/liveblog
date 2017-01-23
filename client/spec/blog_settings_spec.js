@@ -161,11 +161,14 @@ describe('Blog settings', function() {
                 browser.waitForAngular();
                 browser.sleep(1000); // it reloads page
                 element(by.buttonText('SIGN OUT')).click();
+                browser.ignoreSynchronization = true;
                 browser.sleep(2000); // it reloads page
                 browser.waitForAngular();
                 browser.sleep(2000); // it reloads page
+
                 login('contributor', 'contributor').then(function() {
                     browser.waitForAngular();
+                    browser.ignoreSynchronization = false;
                     expect(element(by.css('.settings-link')).isPresent()).toBeFalsy();
                 });
             });

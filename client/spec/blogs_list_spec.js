@@ -78,7 +78,10 @@ describe('Blogs list', function() {
 
         it('can request access to a blog by a non member', function() {
             logout();
+            browser.ignoreSynchronization = true;
+
             login('contributor', 'contributor').then(function() {
+                browser.ignoreSynchronization = false;
                 //request for blog dialog opens instead of the the blog
                 blogs.openBlog(1);
                 browser.wait(function() {
@@ -86,7 +89,10 @@ describe('Blogs list', function() {
                 });
                 element(by.css('button[ng-click="requestAccess(accessRequestedTo)"]')).click();
                 logout();
+                browser.ignoreSynchronization = true;
+
                 login('admin', 'admin').then(function() {
+                    browser.ignoreSynchronization = false;
                     blogs.openBlog(1).openSettings().then(function(settingsPage) {
                         return settingsPage.openTeam();
                     })

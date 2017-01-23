@@ -54,7 +54,7 @@ function BlogsPage() {
     self.waitForModal = waitForModal.bind(self);
 
     self.title = element(by.model('newBlog.title'));
-    self.description = element(by.css('[ng-model="newBlog.description"] [contenteditable="true"]'));
+    self.description = element(by.css('[ng-model="newBlog.description"]'));
     self.file = element(by.css('input[type="file"]'));
 
     self.gridElement = element(by.css('.list-container table'));
