@@ -22,7 +22,12 @@ var navigateToIngestPanel = function() {
 };
 
 describe('Syndication', function() {
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+        browser.ignoreSynchronization = true;
+        login()
+            .then(() => browser.ignoreSynchronization = false)
+            .then(done);
+    });
 
     describe('Ingest Panel', function() {
         it('should list available syndications', function() {

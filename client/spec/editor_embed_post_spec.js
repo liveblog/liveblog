@@ -6,7 +6,12 @@ describe('editor embed:', function() {
 
     var youtube_url = 'https://www.youtube.com/watch?v=Ksd-a9lIIDc';
 
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+        browser.ignoreSynchronization = true;
+        login()
+            .then(() => browser.ignoreSynchronization = false)
+            .then(done);
+    });
 
     it('add a youtube iframe in the editor', function() {
         var editor = blogs.openBlog(0).editor

@@ -36,7 +36,14 @@ var posts = [
 
 describe('timeline', function() {
     'use strict';
-    beforeEach(function(done) {login().then(done);});
+
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login()
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
+
     it('can show items on the timeline', function() {
         var blog = blogs.openBlog(3);
         expect(blog.timeline.all().count()).toEqual(posts.length);

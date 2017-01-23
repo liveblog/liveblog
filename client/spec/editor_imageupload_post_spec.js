@@ -6,7 +6,12 @@ var path = require('path'),
 describe('editor image upload:', function() {
     'use strict';
 
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+        browser.ignoreSynchronization = true;
+        login()
+            .then(() => browser.ignoreSynchronization = false)
+            .then(done);
+    });
 
     it('upload an image and show it in the editor', function() {
         var editor = blogs.openBlog(0).editor

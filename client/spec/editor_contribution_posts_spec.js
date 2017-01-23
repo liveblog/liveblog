@@ -5,10 +5,10 @@ describe('Contributions Posts', function() {
     'use strict';
 
     beforeEach(function(done) {
-      browser.ignoreSynchronization = true;
-      login('editor', 'editor')
-        .then(() => browser.ignoreSynchronization = false)
-        .then(done);
+        browser.ignoreSynchronization = true;
+        login('editor', 'editor')
+            .then(() => browser.ignoreSynchronization = false)
+            .then(done);
     });
 
     it('can open contributions panel from url', function() {

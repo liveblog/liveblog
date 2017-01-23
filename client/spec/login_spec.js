@@ -7,9 +7,11 @@ describe('login', function() {
     var modal;
 
     beforeEach(function() {
+        browser.ignoreSynchronization = true;
         browser.driver.manage().window().setSize(1280, 1024);
         browser.get('/');
         modal = new Login();
+        //browser.ignoreSynchronization = false;
     });
 
     it('form renders modal on load', function() {
