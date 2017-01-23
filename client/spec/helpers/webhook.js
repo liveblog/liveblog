@@ -16,7 +16,7 @@ var Webhook = function(params) {
 
 Webhook.prototype.login = function() {
     return this.request({
-        path: 'auth',
+        path: '/auth',
         method: 'POST',
         data: {
             username: this.username,
@@ -32,7 +32,7 @@ Webhook.prototype.setAuth = function(body) {
 
 Webhook.prototype.getSyndication = function() {
     return this.request({
-        path: 'syndication_in',
+        path: '/syndication_in',
         method: 'GET'
     });
 };
@@ -45,7 +45,7 @@ Webhook.prototype.incomingPost = function(body) {
     incomingPost.producer_post.blog = prodBlogId;
 
     return this.request({
-        path: 'syndication/webhook',
+        path: '/syndication/webhook',
         method: 'POST',
         data: incomingPost
     });
@@ -77,6 +77,8 @@ Webhook.prototype.request = function(params) {
 
     }, options)
     .then(function(res) {
+        if (res.err) console.log('res', res, options.data);
+
         // Funky promises that don't catch statements
         // I'd say why not
         if (res.err) {
@@ -88,6 +90,7 @@ Webhook.prototype.request = function(params) {
 };
 
 Webhook.prototype.fire = function() {
+
     return this.login()
         .then(this.setAuth)
         .then(this.incomingPost);

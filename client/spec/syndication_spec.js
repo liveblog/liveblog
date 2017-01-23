@@ -2,7 +2,6 @@
 
 var Webhook = require('./helpers/webhook');
 var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login;
-    //assertToastMsg = require('./helpers/assert-toast-msg');
 
 var webhook = new Webhook(browser.params);
 

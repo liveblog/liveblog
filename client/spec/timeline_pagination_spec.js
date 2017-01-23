@@ -1,7 +1,7 @@
 var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     blogs = require('./helpers/pages').blogs;
 
-fdescribe('timeline pagination', function() {
+describe('timeline pagination', function() {
     'use strict';
 
     beforeEach(function(done) {
