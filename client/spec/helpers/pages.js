@@ -138,7 +138,7 @@ function BlogsPage() {
             state = stateMap[state];
         }
         browser.waitForAngular();
-        element.all(by.repeater('state in states').row(state).column('state.text')).click();
+        element.all(by.repeater('state in states').row(state)).get(0).click();
         return self;
     };
 }
