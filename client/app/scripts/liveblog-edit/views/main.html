@@ -158,7 +158,10 @@
                     <div class="content">
                         <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">
-                                <div class="editor" ng-sir-trevor st-model="blogEdit.editor" st-params="stParams"></div>
+                                <div
+                                    class="editor" 
+                                    ng-sir-trevor st-model="blogEdit.editor" st-change="onEditorChanges"
+                                    st-params="stParams"></div>
                             </div>
                         </div>
                         <div class="actions">

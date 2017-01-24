@@ -1,6 +1,6 @@
 'use strict';
 
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     consumersManagement = require('./helpers/pages').consumersManagement,
     assertToastMsg = require('./helpers/assert-toast-msg');
 
@@ -23,7 +23,12 @@ var contact2 = {
 
 describe('Consumers', function() {
 
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login()
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
 
     describe('list', function() {
         it('can open consumers managements and list the consumers', function() {

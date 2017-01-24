@@ -1,9 +1,9 @@
-@import 'mixins.less';
-@import 'variables.less';
+@import '~lb-mixins.scss';
+@import '~lb-variables.scss';
 
 .lb-post {
     .avatar-comment {
-        background: transparent url("../../images/comment_64.png") no-repeat;
+        background: transparent url("~images/comment_64.png") no-repeat;
         background-size: 100%;
         display: block;
         float: left;
@@ -24,7 +24,7 @@
         display:block;
         padding: 20px 20px 8px 20px;
         background-color: white;
-        .border-radius(3px);
+        @include border-radius(3px);
     }
     &__content {margin-left: 45px;}
     &__header {
@@ -73,7 +73,7 @@
             a {
                 padding: 5px 5px;
                 > i {
-                    .transition(opacity .25s linear);
+                    @include transition(opacity .25s linear);
                     opacity: .3;
                 }
                 &:hover {
@@ -92,14 +92,14 @@
             text-align: center;
             display: block;
             background-color: white;
-            .border-radius(0 0 3px 3px);
+            @include border-radius(0 0 3px 3px);
         }
         &-single-item {
             position: relative;
             top: -0.5em;
             width: 20px;
             height: 13px;
-            background-image: url('../../images/timeline-show-full-item.png');
+            background-image: url('~images/timeline-show-full-item.png');
             right: 40px;
             float: right;
         }
@@ -145,7 +145,7 @@
         top: -0.5em;
         width: 22px;
         height: 15px;
-        background-image: url('../../images/timeline-collapse.png');
+        background-image: url('~images/timeline-collapse.png');
         right: 86px;
         float: right;
     }
