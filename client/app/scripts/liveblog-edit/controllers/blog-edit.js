@@ -240,6 +240,7 @@ define([
                     notify.pop();
                     notify.info(gettext('Contribution submitted'));
                     cleanEditor();
+                    $scope.selectedPostType = 'Default';
                     $scope.actionPending = false;
                 }, function() {
                     notify.pop();
@@ -254,6 +255,7 @@ define([
                     notify.pop();
                     notify.info(gettext('Draft saved'));
                     cleanEditor();
+                    $scope.selectedPostType = 'Default';
                     $scope.actionPending = false;
                 }, function() {
                     notify.pop();
@@ -272,6 +274,7 @@ define([
                     notify.pop();
                     notify.info(gettext('Post saved'));
                     cleanEditor();
+                    $scope.selectedPostType = 'Default';
                     $scope.actionPending = false;
                 }, function() {
                     notify.pop();
