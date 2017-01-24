@@ -86,13 +86,22 @@ describe('Themes Manager', function() {
     it('can change theme settings', function() {
         themeManager.openThemesManager()
         .themes
-        .then(function(themes) {
-            themeManager.openSettingsForTheme(1);
-            element(by.css('[name="postsPerPage"]')).clear().sendKeys('111');
-            themeManager.saveSettings();
-            browser.waitForAngular();
-            themeManager.openSettingsForTheme(1);
-            expect(element(by.css('[name="postsPerPage"]')).getAttribute('value')).toEqual('111');
+        .then(() => themeManager.openSettingsForTheme(1))
+        .then(() => element(by.css('[name="postsPerPage"]')).clear().sendKeys('111'))
+        .then(() => themeManager.saveSettings())
+        .then(() => browser.waitForAngular())
+        .then(() => themeManager.openSettingsForTheme(1))
+        .then(() => {
+            return expect(element(by.css('[name="postsPerPage"]')).getAttribute('value'))
+                .toEqual('111');
         });
+        //.then(function(themes) {
+        //    themeManager.openSettingsForTheme(1);
+        //    element(by.css('[name="postsPerPage"]')).clear().sendKeys('111');
+        //    themeManager.saveSettings();
+        //    //browser.waitForAngular();
+        //    //themeManager.openSettingsForTheme(1);
+        //    //expect(element(by.css('[name="postsPerPage"]')).getAttribute('value')).toEqual('111');
+        //});
     });
 });

@@ -167,16 +167,23 @@ function ThemesManagerPage() {
     };
 
     self.openSettingsForTheme = function(themeIndex) {
-        self.themes.get(themeIndex).element(self.bySettings).click();
-        browser.wait(function() {
-            return element(by.css('[name="vm.themeSettingsForm"]')).isDisplayed();
-        });
-        return self;
+        //self.themes.get(themeIndex).element(self.bySettings).click();
+        //browser.wait(function() {
+        //    return element(by.css('[name="vm.themeSettingsForm"]')).isDisplayed();
+        //});
+        //return self;
+        return self.themes.get(themeIndex).element(self.bySettings).click()
+            //.then(() => {
+            //    return browser.wait();
+            //})
+            .then(() => {
+                return element(by.css('[name="vm.themeSettingsForm"]')).isDisplayed();
+            });
     };
 
     self.saveSettings = function() {
-        element(by.css('[ng-click="vm.submitSettings(true)"]')).click();
-        return self;
+        return element(by.css('[ng-click="vm.submitSettings(true)"]'))
+            .click();
     };
 
     self.remove = function(theme_index) {

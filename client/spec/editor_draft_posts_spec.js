@@ -11,8 +11,6 @@ describe('Draft Posts', function() {
             .then(done);
     });
 
-    //beforeEach(function(done) {login().then(done);});
-
     it('can open drafts panel from url', function() {
         var drafts = blogs.openBlog(0).drafts;
         browser.getCurrentUrl().then(function(url) {

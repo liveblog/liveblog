@@ -107,7 +107,10 @@ describe('Contributions Posts', function() {
             browser.executeScript('window.sessionStorage.clear();');
             browser.executeScript('window.localStorage.clear();');
             browser.sleep(2000); // it reloads page
+            browser.ignoreSynchronization = true;
+
             login('contributor', 'contributor').then(function() {
+                browser.ignoreSynchronization = false;
                 var contributions = blogs.openBlog(3).openContributions();
                 browser.wait(function() {
                     return element(contributions.byPosts).isPresent();
