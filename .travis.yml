@@ -1,8 +1,6 @@
 language: python
 
-python:
-    - "3.4"
-
+python: 3.5
 sudo: required
 dist: trusty
 
@@ -10,6 +8,9 @@ env:
     global:
         - CXX=g++-4.8
         - secure: ajoP9pA/FYH+1sFwGKHlQ8PoGqRIjdmqEnwo44AA5j6c1NMsgiToA420lPm8Lp0cko5YK3ppBlGlvbRWu5JXVxl0vMtZTLf3FM2w99viddrRCkh4sMef2DzkXXYOW4Tnew/8pmaOtTn3UtNG/feJHkBzHLEDUuN0TA07Y6UaWHc=
+        # do not load /etc/boto.cfg with Python 3 incompatible plugin
+        # https://github.com/travis-ci/travis-ci/issues/5246#issuecomment-166460882
+        - BOTO_CONFIG=/doesnotexist
     matrix:
         - TARGET=client
         - TARGET=server
@@ -26,10 +27,12 @@ addons:
   apt:
     sources:
     - mongodb-3.0-precise
+    - elasticsearch-1.7
     - ubuntu-toolchain-r-test
     - google-chrome
     packages:
     - mongodb-org-server
+    - elasticsearch
     - xvfb
     - build-essential
     - libudev-dev
@@ -74,7 +77,8 @@ install:
       fi
 
 before_script:
-    - sudo service elasticsearch restart && sleep 5
+    - ./scripts/elastic.sh
+    - sudo service elasticsearch restart && sleep 10
     - if [ "${TARGET}" != "${TARGET/e2e/}" ]; then
         cd server ;
         (nohup env SUPERDESK_URL='http://127.0.0.1:5000/api' SUPERDESK_CLIENT_URL='http://127.0.0.1:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &) ;
@@ -92,9 +96,7 @@ script:
         cd $TRAVIS_BUILD_DIR/server && nosetests --all-modules && cd .. ;
       fi
     - if [ "${TARGET}" = "server" ]; then
-        cd $TRAVIS_BUILD_DIR/server &&
-        behave --format progress2 --logging-level ERROR &&
-        cd .. ;
+        cd $TRAVIS_BUILD_DIR/server && behave --format progress2 --logging-level ERROR && cd .. ;
       fi
     - if [ "${TARGET}" = "server" ]; then
         cd $TRAVIS_BUILD_DIR/server && flake8 && cd .. ;
