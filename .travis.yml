@@ -96,9 +96,7 @@ script:
         cd $TRAVIS_BUILD_DIR/server && nosetests --all-modules && cd .. ;
       fi
     - if [ "${TARGET}" = "server" ]; then
-        cd $TRAVIS_BUILD_DIR/server &&
-        behave --format progress2 --logging-level ERROR &&
-        cd .. ;
+        cd $TRAVIS_BUILD_DIR/server && behave --format progress2 --logging-level ERROR && cd .. ;
       fi
     - if [ "${TARGET}" = "server" ]; then
         cd $TRAVIS_BUILD_DIR/server && flake8 && cd .. ;
