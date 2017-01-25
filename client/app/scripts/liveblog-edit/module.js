@@ -57,7 +57,12 @@ import './../ng-sir-trevor-blocks';
         // ask in a modalbox if the user is sure to want to overwrite editor.
         // call the callback if user say yes or if editor is empty
         function doOrAskBeforeIfEditorIsNotEmpty(callback, msg) {
-            var are_all_blocks_empty = _.all(vm.editor.blocks, function(block) {return block.isEmpty();});
+            // In lodash 4, all doesn't exists anymore.
+            // But it seems that `every` is an alias for `all`
+            var are_all_blocks_empty = _.every(vm.editor.blocks, function(block) {
+                return block.isEmpty();
+            });
+
             if (are_all_blocks_empty || !$scope.isCurrentPostUnsaved()) {
                 callback();
             } else {
