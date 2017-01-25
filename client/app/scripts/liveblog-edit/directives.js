@@ -16,8 +16,8 @@ angular.module('liveblog.edit')
         'postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager',
         function(postsService, notify, $q, $timeout, session, PagesManager) {
             LbPostsListCtrl.$inject = ['$scope', '$element'];
+
             function LbPostsListCtrl($scope, $element) {
-               
                 $scope.lbSticky = $scope.lbSticky === 'true';
                 var vm = this;
                 angular.extend(vm, {
@@ -192,6 +192,7 @@ angular.module('liveblog.edit')
                     keepHighlighted: '=',
                     //call when the user clicks on the reorder icon
                     startReorder: '&',
+                    removePostFromList: '&',
                     //call when the user escaped the reorder action
                     clearReorderAction: '=',
                     //call when the user has chosen a new place for the post
@@ -240,6 +241,7 @@ angular.module('liveblog.edit')
                             }
                         },
                         removePost: function(post) {
+                            scope.removePostFromList({post: post});
                             postsService.remove(angular.copy(post)).then(function(message) {
                                 notify.pop();
                                 notify.info(gettext('Removing post...'));
