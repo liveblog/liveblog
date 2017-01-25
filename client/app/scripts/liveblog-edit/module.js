@@ -26,11 +26,11 @@ import './../ng-sir-trevor-blocks';
 //], function(angular, _) {
     //'use strict';
     BlogEditController.$inject = [
-        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector',
+        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector', '$timeout',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'modal',
         'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService'
     ];
-    function BlogEditController(api, $q, $scope, blog, notify, gettext, session, $injector,
+    function BlogEditController(api, $q, $scope, blog, notify, gettext, session, $injector, $timeout,
         upload, config, embedService, postsService, unreadPostsService, modal, blogService, $route, $routeParams, blogSecurityService, themesService) {
 
         var vm = this;
@@ -71,15 +71,19 @@ import './../ng-sir-trevor-blocks';
             }
         }
 
+        $scope.enableEditor = true;
+
         // remove and clean every items from the editor
         function cleanEditor(actionDisabled) {
-            console.log('clean editor', actionDisabled);
+            $scope.enableEditor = false;
             actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
             vm.editor.reinitialize();
             $scope.actionDisabled = actionDisabled;
             $scope.currentPost = undefined;
             $scope.sticky = false;
             $scope.highlight = false;
+
+            $timeout(() => $scope.enableEditor = true);
         }
 
         // retieve the blog's public url
@@ -110,7 +114,6 @@ import './../ng-sir-trevor-blocks';
                 });
             },
             actionStatus: function() {
-                //console.log('action status', $scope.actionDisabled, $scope.actionPending);
                 return $scope.actionDisabled || $scope.actionPending;
                 //return true;
             },
@@ -215,7 +218,6 @@ import './../ng-sir-trevor-blocks';
             },
             stParams: {
                 disableSubmit: function(actionDisabled) {
-                    console.log('disable submit', actionDisabled);
                     $scope.actionDisabled = actionDisabled;
                     // because this is called outside of angular scope from sir-trevor.
                     if (!$scope.$$phase) {

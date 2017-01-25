@@ -160,7 +160,10 @@
                             <div class="editor">
                                 <div
                                     class="editor" 
-                                    ng-sir-trevor st-model="blogEdit.editor" st-change="onEditorChanges"
+                                    ng-if="enableEditor"
+                                    ng-sir-trevor
+                                    st-model="blogEdit.editor"
+                                    st-change="onEditorChanges"
                                     st-params="stParams"></div>
                             </div>
                         </div>
