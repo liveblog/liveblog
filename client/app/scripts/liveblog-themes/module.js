@@ -1,6 +1,5 @@
 (function() {
     'use strict';
-
     LiveblogThemesController.$inject = ['api', '$location', 'notify', 'gettext',
     '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', '$window'];
     function LiveblogThemesController(api, $location, notify, gettext,

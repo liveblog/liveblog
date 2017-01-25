@@ -143,6 +143,48 @@ function BlogsPage() {
     };
 }
 
+function FreetypesManagerPage() {
+    'use strict';
+    var self = this;
+    self.title = element(by.css('[ng-model="vm.dialogFreetype.name"]'));
+    self.template = element(by.css('[ng-model="vm.dialogFreetype.template"]'));
+
+    self.getFreetypes = function() {
+        return element.all(by.repeater('freetype in vm.freetypes'));
+    };
+    self.openFreetypesManager = function() {
+        element(by.css('[ng-click="toggleMenu()"]')).click();
+        browser.wait(function() {
+            return element(by.css('[href="#/freetypes/"][title]')).isDisplayed();
+        });
+        waitAndClick(by.css('[href="#/freetypes/"][title]'));
+        return self;
+    };
+    self.saveFreetype = function() {
+        return element(by.css('[ng-click="vm.saveFreetype()"]')).click();
+    };
+    self.openNewFreetypeDialog = function() {
+        element(by.css('[ng-click="vm.openFreetypeDialog();"]')).click();
+    };
+    self.createFreetypeData = function() {
+        return {
+            title: randomString(5),
+            template: randomString(10)
+        };
+    };
+    self.editFreetype = function() {
+        var freeData = self.createFreetypeData();
+        self.title.sendKeys(freeData.title);
+        self.template.sendKeys(freeData.template);
+        return self.saveFreetype().then(function() {return freeData;});
+    };
+    self.removeFreetype = function(index) {
+        index = index || 0;
+        self.getFreetypes().get(index).click().all(by.css('[ng-click="vm.removeFreetype(freetype, $index);"]')).click();
+        okModal();
+    };
+}
+
 function ThemesManagerPage() {
     'use strict';
     var self = this;
@@ -246,6 +288,15 @@ function BlogPage(blogs) {
 
     self.openEditor = function() {
         element(by.css('[ng-click="openPanel(\'editor\')"]')).click();
+        return self.editor;
+    };
+
+    self.openFreetypesEditor = function(index) {
+        var freetypeIndex = index || 0;
+        element(by.css('[ng-click="toggleTypePostDialog()"]')).click()
+        .then(function() {
+            element(by.repeater('freetype in freetypes').row(freetypeIndex)).click();
+        });
         return self.editor;
     };
 
@@ -457,6 +508,15 @@ function EditPostPage() {
     self.embedElement = element(by.css('.embed-input'));
     self.iframe = element(by.css('.liveblog--card iframe'));
     self.publishElement = element(by.css('[ng-click="publish()"]'));
+    //for scorecards
+    self.homeName = element(by.css('[ng-model="freetypeData.home.name"]'));
+    self.homeScore = element(by.css('[ng-model="freetypeData.home.score"]'));
+    self.awayName = element(by.css('[ng-model="freetypeData.away.name"]'));
+    self.awayScore = element(by.css('[ng-model="freetypeData.away.score"]'));
+    self.player1Name = element.all(by.css('[ng-model="iterator__1.name"]')).get(0);
+    self.player1Time = element.all(by.css('[ng-model="iterator__1.time"]')).get(0);
+    self.player2Name = element.all(by.css('[ng-model="iterator__1.name"]')).get(1);
+    self.player2Time = element.all(by.css('[ng-model="iterator__1.time"]')).get(1);
 
     self.addTop = function() {
         // click on the "+" bar
@@ -509,6 +569,27 @@ function EditPostPage() {
         return data;
     };
 
+    self.publishScorecard = function() {
+        var data = {
+            homeName: randomString(10),
+            homeScore: randomString(2),
+            awayName: randomString(10),
+            awayScore: randomString(2),
+            player1Name: randomString(10),
+            player1Time: randomString(2),
+            player2Name: randomString(10),
+            player2Time: randomString(2)
+        };
+        self.homeName.sendKeys(data.homeName);
+        self.homeScore.sendKeys(data.homeScore);
+        self.awayName.sendKeys(data.awayName);
+        self.awayScore.sendKeys(data.awayScore);
+        self.player1Name.sendKeys(data.player1Name);
+        self.player1Time.sendKeys(data.player1Time);
+
+        return self.publish().then(function() {return data;});
+    };
+
     self.getPublishStatus = function(data) {
         self.textElement.clear().sendKeys(data);
         return self.publishElement.isEnabled();
@@ -537,12 +618,15 @@ function EditPostPage() {
         return self.saveContribution().then(function() {return data;});
     };
 
-    self.resetEditor = function() {
+    self.resetEditor = function(freestyle) {
+        var isFreestyle = freestyle || false;
         element(by.css('[ng-click="askAndResetEditor()"]')).click().then(function() {
-            browser.wait(function() {
-                return element(by.css('.editor .st-text-block')).isPresent();
-            });
-            expect(element(by.css('.editor .st-text-block')).getText()).toEqual('');
+            if (!isFreestyle) {
+                browser.wait(function() {
+                    return element(by.css('.editor .st-text-block')).isPresent();
+                });
+                expect(element(by.css('.editor .st-text-block')).getText()).toEqual('');
+            }
         });
         return self;
     };
@@ -768,3 +852,4 @@ exports.randomString = randomString;
 exports.themeManager = new ThemesManagerPage();
 exports.consumersManagement = new ConsumersManagementPage();
 exports.producersManagement = new ProducersManagementPage();
+exports.freetypesManager = new FreetypesManagerPage();

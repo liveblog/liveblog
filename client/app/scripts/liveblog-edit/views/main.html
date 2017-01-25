@@ -142,10 +142,15 @@
                     <div class="panel--editor" ng-show="panelState === 'editor'">
                         <div ng-if="!preview">
                         <header>
-                            <h4 translate>Editor</h4>
+                            Editor
                             <button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate>Preview
-                                </button>
-                                <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
+                            </button>
+                            <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
+                            <button class="btn pull-right btn--with-icon-right" ng-click="toggleTypePostDialog()">
+                                <span ng-if="selectedPostType=='Default'" translate>Choose post type</span>
+                                <span ng-if="selectedPostType!='Default'" translate>{{selectedPostType.name}}</span>
+                                <i class="icon-chevron-right-thin"></i>
+                            </button>
                         </header>
                         </div>
                         <div ng-if="preview">
@@ -158,8 +163,18 @@
                     <div class="content">
                         <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">
-                                <div class="editor" ng-sir-trevor st-model="blogEdit.editor" st-params="stParams"></div>
+                                <div 
+                                    class="editor"
+                                    ng-sir-trevor
+                                    st-model="blogEdit.editor"
+                                    st-params="stParams"
+                                    ng-if="selectedPostType=='Default'"></div>
                             </div>
+                            <freetype-render
+                                    ng-if="selectedPostType!='Default'" 
+                                    freetype="selectedPostType"
+                                    freetype-data="freetypesData"
+                                    control="freetypeControl"></freetype-render>
                         </div>
                         <div class="actions">
                             <div style="display:table-row">
@@ -185,6 +200,19 @@
                             </div>
                         </div>
                     </div>
+                    <div class="freetype-selector" ng-click="$event.stopPropagation();" ng-if="selectPostTypeDialog">
+                        <ul class="users-list-embed">
+                            <li translate ng-click="selectPostType('Default')"
+                            ng-class="{'active': selectedPostType === 'Default'}">Default</li>
+                            
+                            <li ng-repeat="freetype in freetypes" ng-click="selectPostType(freetype)"
+                            ng-class="{'active': freetype == selectedPostType, 'separator': freetype.separator}"
+                            >
+                                {{ freetype.name }}
+                            </li>
+                        </ul>
+                    </div>
+
                 </div>
             </span>
             <span ng-if="!isBlogOpened()">

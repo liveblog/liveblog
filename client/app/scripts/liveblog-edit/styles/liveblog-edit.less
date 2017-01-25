@@ -196,6 +196,80 @@
                 bottom: 88px; left: 0; right: 0; top:0;
                 padding: 20px;
                 overflow: auto;
+                .ads-media {
+                    img {
+                        width: 100%;
+                        margin-bottom: 8px;
+                    }
+                }
+                .freetype-btn {                       
+                    border: none;
+                    background: @sd-blue;
+                    color: @white;
+                    font-size: 18px;
+                    line-height: 140%;
+                    min-width: 28px;
+                    margin-bottom: 4px;
+                    .border-radius(2px);
+                }                
+                .image-text {
+                    margin-top: 5px;
+                }
+                .scorecard {                                      
+                    margin: 0 !important;
+                    width: 100%;
+                    background: #f8f8f8 !important;
+                    .scorecard__column {                                         
+                        text-align: left !important;
+                        padding: 0px 10px 0 0 !important;
+                        &:last-child {
+                            padding: 0 0 0 10px !important;
+                        }                                               
+                    }
+                    .scorecard__scorers {
+                        display: block !important;
+                        li {
+                            background: transparent !important;
+                            box-shadow: none !important;
+                            border-radius: 0 !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            > div {
+                                float: none !important;
+                                &.time {
+                                    float: none !important;
+                                    font-weight: initial !important;
+                                    padding: 0 !important;
+                                    margin: 0 !important;
+                                    &:after {
+                                        content: '' !important;
+                                    }
+                                }
+                            }
+                        }
+                    }                    
+                }
+                legend {
+                    font-size: 13px !important;
+                    color: @grayDark !important;
+                    margin-bottom: 0 !important;
+                    &.legend--big {
+                        font-size: 18px!important;
+                        margin-bottom: 10px!important;
+                        text-transform: inherit;
+                        font-weight: 400;
+                    }
+                    &.legend--padding-top {
+                        padding-top: 20px !important;
+                    }
+                }
+                label {
+                    font-size: 11px;
+                    font-weight: 500;
+                    color: #999;
+                    text-transform: uppercase;
+                    height: 18px;
+                }
                 .editor {
                     textarea {
                         border: 1px solid #dfdfdf !important;
@@ -690,4 +764,45 @@
     .js-cite-input.st-quote-block {
         font-size:13px!important;
     }
+    input {
+        border: 0px!important;
+        box-shadow: none;
+    }
+    .local-ad-image {
+        max-height: 60vh;
+    }
+}
+
+.freetype-selector {
+    background-color: #fff;
+    border: 1px solid #c6c6c6;
+    border-radius: 3px;
+    box-shadow: 0 3px 5px rgba(0,0,0,.2);
+    padding: 10px 10px 5px 10px;
+    min-width: 100px;
+    width: auto;
+    z-index: 2;
+    position: absolute;
+    right: 40px;
+    top: 2px;
+    li {
+        padding: 0px 5px;
+        border-radius: 2px;
+        margin-right: 0px;
+        margin-bottom: 1px;
+    }
+}
+.freetype-selector::before {
+    width: 15px;
+    height: 22px;
+    display: block;
+    z-index: 100;
+    position: absolute;
+    left: -15px;
+    top: 10px;
+    background: url(../../images/dropdown-arrow-side.png) no-repeat;
+    content: " ";
+}
+.freetype-selector .separator {
+    border-bottom: 1px solid #ebebeb;
 }
