@@ -3,6 +3,7 @@ export default {
         url: 'http://localhost:5000/api',
         ws: 'ws://localhost:5100'
     },
+    syndication: true,
     editor: {
         disableEditorToolbar: false
     },
