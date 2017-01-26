@@ -88,6 +88,8 @@ def check_webhook_status(self, consumer_id):
             # on update.
             cursor = consumers._cursor()
             if response.status_code == 401:
-                cursor.find_one_and_update({'_id': consumer['_id']}, {'$set': {'webhook_enabled': True}})
+                webhook_enabled = True
             else:
-                cursor.find_one_and_update({'_id': consumer['_id']}, {'$set': {'webhook_enabled': False}})
+                webhook_enabled = False
+
+            cursor.find_one_and_update({'_id': consumer['_id']}, {'$set': {'webhook_enabled': webhook_enabled}})
