@@ -49,7 +49,7 @@ before_install:
 install:
     - if [ "${TARGET}" = "server" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
         cd server &&
-        pip install -r requirements.txt &&
+        pip install -r dev-requirements.txt &&
         cd .. ;
       fi
     - if [ "${TARGET}" = "client" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
