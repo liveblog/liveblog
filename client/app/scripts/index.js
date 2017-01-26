@@ -98,6 +98,9 @@ import 'liveblog-security.service';
 
 import config from './../../config';
 
+// Commented angular modules are not required to run liveblog
+// But they are shown here to give a perspective of
+// what is required to run liveblog
 let sdCore = angular.module('superdesk.core', [
     'ngRoute',
     'ngResource',
