@@ -51,7 +51,6 @@ COPY ./client/package.json /opt/superdesk/client/
 RUN cd ./client && npm install
 COPY ./client/bower.json /opt/superdesk/client/
 COPY ./client/.bowerrc /opt/superdesk/client/
-#RUN cd ./client && bower --allow-root install
 
 # copy server sources
 COPY ./server /opt/superdesk
