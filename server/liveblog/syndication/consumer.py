@@ -1,12 +1,12 @@
 import logging
+from flask import current_app as app
 from bson import ObjectId
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from .syndication import WEBHOOK_METHODS
 from .utils import generate_api_key, trailing_slash, send_api_request
 from .exceptions import APIConnectionError, ConsumerAPIError
-from .utils import trailing_slash
-
+from .tasks import check_webhook_status
 
 logger = logging.getLogger('superdesk')
 
@@ -50,12 +50,21 @@ consumers_schema = {
             'check_auth': False,
             'webhook': True
         }
+    },
+    'webhook_enabled': {
+        'type': 'boolean',
+        'default': False,
+        'required': False
     }
 }
 
 
 class ConsumerService(BaseService):
     notification_key = 'consumers'
+
+    def _cursor(self, resource=None):
+        resource = resource or self.datasource
+        return app.data.mongo.pymongo(resource=resource).db[resource]
 
     def _get_consumer(self, consumer):
         if isinstance(consumer, (str, ObjectId)):
@@ -92,6 +101,9 @@ class ConsumerService(BaseService):
                 doc['webhook_url'] = trailing_slash(doc['webhook_url'])
             if not doc.get('api_key'):
                 doc['api_key'] = generate_api_key()
+
+            check_webhook_status.delay(doc['_id'])
+
         super().on_create(docs)
 
     def on_update(self, updates, original):
@@ -99,6 +111,8 @@ class ConsumerService(BaseService):
             updates['webhook_url'] = trailing_slash(updates['webhook_url'])
         if 'api_key' in updates and updates['api_key'] != original['api_key']:
             updates['api_key'] = generate_api_key()
+
+        check_webhook_status.delay(original['_id'])
         super().on_update(updates, original)
 
 

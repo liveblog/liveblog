@@ -65,17 +65,20 @@ def cast_to_object_id(doc, fields):
         doc[field] = ObjectId(value)
 
 
-def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_loads=True, timeout=5):
+def send_api_request(api_url, api_key=None, method='GET', args=None, data=None, json_loads=True, timeout=5):
     """Utility function to send http requests for consumer/producer api endpoints."""
     if data:
         data = json.dumps(data, cls=MongoJSONEncoder)
 
     logger.info('API {} request to {} with params={} and data={}'.format(method, api_url, args, data))
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    if api_key:
+        headers['Authorization'] = api_key
+
     try:
-        response = requests.request(method, api_url, headers={
-            'Authorization': api_key,
-            'Content-Type': 'application/json'
-        }, params=args, data=data, timeout=timeout)
+        response = requests.request(method, api_url, headers=headers, params=args, data=data, timeout=timeout)
     except (ConnectionError, RequestException, MaxRetryError):
         raise APIConnectionError('Unable to connect to api_url "{}".'.format(api_url))
 
