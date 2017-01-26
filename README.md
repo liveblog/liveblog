@@ -57,7 +57,7 @@ curl libfontconfig virtualenv
 Install the required npm tools:
 
 ```bash
-sudo npm install -g grunt-cli bower
+sudo npm install -g grunt-cli
 ```
 
 #### Configure the server
@@ -106,7 +106,6 @@ Now we can install the dependencies for the client
 ```bash
 cd client
 npm install
-bower install
 ```
 
 We can now run the client server:
