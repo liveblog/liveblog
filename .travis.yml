@@ -11,12 +11,6 @@ env:
         # do not load /etc/boto.cfg with Python 3 incompatible plugin
         # https://github.com/travis-ci/travis-ci/issues/5246#issuecomment-166460882
         - BOTO_CONFIG=/doesnotexist
-    #matrix:
-    #    - TARGET=client
-    #    - TARGET=server
-    #    - TARGET=e2e_first_chrome
-    #    - TARGET=e2e_second_chrome
-    #    - TARGET=e2e_third_chrome
 
 services:
     - mongodb
@@ -73,6 +67,7 @@ before_script:
     - cd $TRAVIS_BUILD_DIR/server
     - (nohup env SUPERDESK_URL='http://localhost:5000/api' SUPERDESK_CLIENT_URL='http://localhost:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &)
     - cd $TRAVIS_BUILD_DIR/client
+    - cp config.sample.js config.js
     - SYNDICATION=true grunt build --server='http://localhost:5000/api' --ws='ws://localhost:5100'
     - cd dist
     - while [ ! -f index.html ]; do sleep .5; done
