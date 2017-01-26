@@ -39,7 +39,7 @@ echo "discovery.zen.ping.multicast.enabled: false" | sudo tee --append /etc/defa
 Install Node.js LTS version:
 
 ```bash
-curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 sudo apt-get install nodejs
 ```
 
