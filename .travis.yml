@@ -11,12 +11,12 @@ env:
         # do not load /etc/boto.cfg with Python 3 incompatible plugin
         # https://github.com/travis-ci/travis-ci/issues/5246#issuecomment-166460882
         - BOTO_CONFIG=/doesnotexist
-    matrix:
-        - TARGET=client
-        - TARGET=server
-        - TARGET=e2e_first_chrome
-        - TARGET=e2e_second_chrome
-        - TARGET=e2e_third_chrome
+    #matrix:
+    #    - TARGET=client
+    #    - TARGET=server
+    #    - TARGET=e2e_first_chrome
+    #    - TARGET=e2e_second_chrome
+    #    - TARGET=e2e_third_chrome
 
 services:
     - mongodb
@@ -55,94 +55,41 @@ before_install:
     - npm config set loglevel warn
     - npm install -g npm@latest grunt-cli
     - cp $TRAVIS_BUILD_DIR/client/config.sample.js $TRAVIS_BUILD_DIR/client/config.js
-    - if [ "${TARGET}" = "client" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        npm install -g grunt-cli ;
-      fi
-    - if [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        pip install requests &&
-        export DISPLAY=:99.0 &&
-        /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1080x24 &&
-        export CHROME_BIN=`which google-chrome` &&
-        $CHROME_BIN --version ;
-      fi
+    - npm install -g grunt-cli ;
+    - pip install requests
+    - export DISPLAY=:99.0
+    - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1080x24
+    - export CHROME_BIN=`which google-chrome`
+    - $CHROME_BIN --version
 
 install:
-    - if [ "${TARGET}" = "server" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        cd $TRAVIS_BUILD_DIR/server &&
-        pip install -r requirements.txt &&
-        cd .. ;
-      fi
-    - if [ "${TARGET}" = "client" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        cd $TRAVIS_BUILD_DIR/client && npm install && cd .. ;
-      fi
+    - cd $TRAVIS_BUILD_DIR/server
+    - pip install -r requirements.txt
+    - cd $TRAVIS_BUILD_DIR/client && npm install && cd .. ;
 
 before_script:
     - ./scripts/elastic.sh
     - sudo service elasticsearch restart && sleep 10
-    - if [ "${TARGET}" != "${TARGET/e2e/}" ]; then
-        cd server ;
-        (nohup env SUPERDESK_URL='http://127.0.0.1:5000/api' SUPERDESK_CLIENT_URL='http://127.0.0.1:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &) ;
-        cd ../client ;
-        SYNDICATION=true grunt build --server='http://127.0.0.1:5000/api' --ws='ws://127.0.0.1:5100' ;
-        cd dist ;
-        while [ ! -f index.html ]; do sleep .5; done ;
-        (nohup python3 -m http.server 9000 &) ;
-        cd $TRAVIS_BUILD_DIR/server ;
-        (nohup env SUPERDESK_URL='http://127.0.0.1:5000/api' SUPERDESK_CLIENT_URL='http://127.0.0.1:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &) ;
-      fi
+    - cd $TRAVIS_BUILD_DIR/server
+    - (nohup env SUPERDESK_URL='http://localhost:5000/api' SUPERDESK_CLIENT_URL='http://localhost:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &)
+    - cd $TRAVIS_BUILD_DIR/client
+    - SYNDICATION=true grunt build --server='http://localhost:5000/api' --ws='ws://localhost:5100'
+    - cd dist
+    - while [ ! -f index.html ]; do sleep .5; done
+    - (nohup python3 -m http.server 9000 &)
 
 script:
-    - if [ "${TARGET}" = "server" ]; then
-        cd $TRAVIS_BUILD_DIR/server && nosetests --all-modules && cd .. ;
-      fi
-    - if [ "${TARGET}" = "server" ]; then
-        cd $TRAVIS_BUILD_DIR/server && behave --format progress2 --logging-level ERROR && cd .. ;
-      fi
-    - if [ "${TARGET}" = "server" ]; then
-        cd $TRAVIS_BUILD_DIR/server && flake8 && cd .. ;
-      fi
-    - if [ "${TARGET}" = "client" ]; then
-        cd client && npm test && cd .. ;
-      fi
-    - if [ "${TARGET}" != "${TARGET/e2e_first/}" ]; then
-        cd $TRAVIS_BUILD_DIR/server &&
-        python3 manage.py app:initialize_data;
-        python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
-        python3 manage.py register_local_themes ;
-        python3 manage.py schema:migrate ;
-        cd ../client &&
-        ./node_modules/.bin/webdriver-manager update &&
-        ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=1 -- protractor-conf.js --suite=a
-          --stackTrace --verbose
-          --capabilities.browserName "${TARGET/e2e_first_/}"
-        ;
-      fi
-    - if [ "${TARGET}" != "${TARGET/e2e_second/}" ]; then
-        cd $TRAVIS_BUILD_DIR/server &&
-        python3 manage.py app:initialize_data;
-        python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
-        python3 manage.py register_local_themes ;
-        python3 manage.py schema:migrate ;
-        cd ../client &&
-        ./node_modules/.bin/webdriver-manager update &&
-        ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=1 -- protractor-conf.js --suite=b
-          --stackTrace --verbose
-          --capabilities.browserName "${TARGET/e2e_second_/}"
-        ;
-      fi
-    - if [ "${TARGET}" != "${TARGET/e2e_third/}" ]; then
-        cd $TRAVIS_BUILD_DIR/server &&
-        python3 manage.py app:initialize_data;
-        python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
-        python3 manage.py register_local_themes ;
-        python3 manage.py schema:migrate ;
-        cd ../client &&
-        ./node_modules/.bin/webdriver-manager update &&
-        ./node_modules/.bin/protractor-flake --node-bin node --max-attempts=1 -- protractor-conf.js --suite=c
-          --stackTrace --verbose
-          --capabilities.browserName "${TARGET/e2e_third_/}"
-        ;
-      fi
+    - cd $TRAVIS_BUILD_DIR/server && nosetests --all-modules ;
+    - cd $TRAVIS_BUILD_DIR/server && behave --format progress2 --logging-level ERROR ;
+    - cd $TRAVIS_BUILD_DIR/server && flake8 ;
+    - cd $TRAVIS_BUILD_DIR/client && npm test ;
+    - cd $TRAVIS_BUILD_DIR/server
+    - python3 manage.py app:initialize_data;
+    - python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
+    - python3 manage.py register_local_themes ;
+    - cd $TRAVIS_BUILD_DIR/client
+    - ./node_modules/.bin/webdriver-manager update
+    - ./node_modules/.bin/protractor protractor-conf.js
 
 after_script:
     - killall -9 python
