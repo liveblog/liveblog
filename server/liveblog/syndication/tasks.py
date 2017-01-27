@@ -2,6 +2,7 @@ import logging
 from werkzeug.datastructures import FileStorage
 from superdesk.celery_app import celery
 from superdesk import get_resource_service
+from superdesk.notification import push_notification
 from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
 from .exceptions import APIConnectionError, DownloadError
 from settings import SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOWN
@@ -93,3 +94,7 @@ def check_webhook_status(self, consumer_id):
                 webhook_enabled = False
 
             cursor.find_one_and_update({'_id': consumer['_id']}, {'$set': {'webhook_enabled': webhook_enabled}})
+            push_notification(consumers.notification_key, consumer={
+                '_id': consumer['_id'],
+                'webhook_enabled': webhook_enabled
+            }, updated=True)
