@@ -102,9 +102,13 @@ class ConsumerService(BaseService):
             if not doc.get('api_key'):
                 doc['api_key'] = generate_api_key()
 
+        super().on_create(docs)
+
+    def on_created(self, docs):
+        for doc in docs:
             check_webhook_status.delay(doc['_id'])
 
-        super().on_create(docs)
+        super().on_created(docs)
 
     def on_update(self, updates, original):
         if 'webhook_url' in updates:
