@@ -90,9 +90,10 @@ import 'superdesk-core/scripts/apps/ingest';
 
 import 'liveblog-bloglist';
 import 'liveblog-edit';
-import 'liveblog-themes';
+import 'liveblog-freetypes';
 import 'liveblog-settings';
 import 'liveblog-syndication';
+import 'liveblog-themes';
 
 import 'liveblog-security.service';
 
@@ -177,6 +178,7 @@ let liveblogModules = [
     'liveblog.posts',
     'liveblog.blog',
     'liveblog.themes',
+    'liveblog.freetypes',
     'ngMessages'
 ];
 

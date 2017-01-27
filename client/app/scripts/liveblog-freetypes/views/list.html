@@ -1,0 +1,73 @@
+<div class="subnav ng-scope items-manager">
+    <h3 class="page-nav-title" translate>Free types manager</h3>
+    <div class="button-stack right-stack">
+        <button class="navbtn navbtn-info" ng-click="vm.openFreetypeDialog();">
+            <i class="svg-icon-add inverse"></i> <span class="title" translate>Create Free Type</span>
+        </button>
+    </div>
+</div>
+    
+<section class="main-section freetypeslist">
+    <div class="loading-indicator" ng-show="vm.loading"><span translate>loading</span></div>
+    <div class="list-container content desk-settings">
+        <!-- LIST VIEW -->
+        <div class="scroll-shadow">
+            <div class="inner"></div>
+        </div>
+        <div class="shadow-list-holder" sd-shadow>
+            <ul class="pills-list">
+                <li ng-repeat="freetype in vm.freetypes">
+                    <h6 class="pull-left">
+                        {{ freetype.name }}
+                    </h6>
+                    <div class="actions">
+                        <button ng-click="vm.openFreetypeDialog(freetype);" title="Edit">
+                            <i class="icon-pencil"></i>
+                        </button>&nbsp;
+                        <button ng-click="vm.removeFreetype(freetype, $index);" title="Delete">
+                            <i class="icon-trash"></i>
+                        </button>    
+                    </div>
+                </li>
+                <li ng-if="vm.freetypes.length === 0">
+                    {{ 'No Free Types for now' | translate }}
+                </li>
+            </ul>    
+        </div>
+        
+    </div>
+</section>
+
+
+<div sd-modal="" data-model="vm.freetypeModalActive">
+        <div class="modal-header">
+            <button class="close" ng-click="vm.cancelCreate()"><i class="icon-close-small"></i></button>
+            <h3 translate>Create New Free Type</h3>
+        </div>
+        <div class="modal-body" style="min-height: 300px;">
+            <div class="item-creation">
+                <fieldset>
+                    <div class="field">
+                        <label translate>Free Type Title *</label>
+                        <input type="text" ng-model="vm.dialogFreetype.name" required>
+                    </div>
+                    <div class="field">
+                        <label translate>Free Type Template *</label>
+                        <div class="form-box"
+                            template-editable
+                            contenteditable="true"
+                            ng-model="vm.dialogFreetype.template"
+                        ></div>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div>
+                <button type="button" class="btn btn-default pull-left" translate ng-click="vm.cancelCreate()">Cancel</button>
+                <button type="button" class="btn btn-primary btn-info" translate ng-click="vm.saveFreetype()"
+                ng-disabled="!vm.dialogFreetype.name || !vm.dialogFreetype.template || vm.dialogPostLoading"
+                >Save</button>
+            </div>
+        </div>
+</div>
