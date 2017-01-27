@@ -28,6 +28,10 @@ define([
         // init with empty vector
         $scope.freetypesData = {}; $scope.freetypeControl = {};
 
+        $scope.freetypeControl.toggleRememberScore = function() {
+            console.log('this is it from here man ', $scope.freetypesData.remember);
+        };
+
         if (blog.blog_preferences.theme) {
             themesService.get(blog.blog_preferences.theme).then(function(themes) {
                 blog.blog_preferences.theme = themes[0];
@@ -62,8 +66,36 @@ define([
 
         // determine is current post is classic or freetype
         function isPostFreetype() {
+            //console.log('selectedPostType ', $scope.selectedPostType);
             return $scope.selectedPostType !== 'Default';
         };
+
+        //determine if post is 'scorecard'
+        function isPostScorecard() {
+            return isPostFreetype() && $scope.selectedPostType.name === 'Scorecard';
+        }
+
+
+        //save the 'keep scoarers' if needed
+        function saveScoarers() {
+            if (isPostScorecard()) {
+                console.log('blog ', $scope.blog);
+                var bp = $scope.blog.blog_preferences;
+                bp.keep_score = true;
+                // api('blogs').save($scope.blog, { blog_preferences: bp }).then(function(blog) {
+                //     //no need to do anything
+                //     console.log('saved scoarers');
+                // }, function() { 
+                //     //something went wrong
+                //     console.log('something went wrong');
+                // });
+                api('blogs').save({ _links: $scope.blog._links }, { blog_preferences: bp }).then(function(blog) {
+                   console.log('all good');
+                }, function() {
+                    console.log('not good');
+                });
+            }
+        }
 
         // determine if the loaded item is freetype
         function isItemFreetype(itemType) {
@@ -203,6 +235,7 @@ define([
                 }
             },
             openPostInEditor: function (post) {
+                console.log('opening post ');
                 function fillEditor(post) {
                     cleanEditor(false);
                     var delay = 0;
@@ -273,6 +306,10 @@ define([
                 ).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
+
+                    //save the keep scoreres setting( if needed)
+                    saveScoarers();
+
                     cleanEditor();
                     $scope.selectedPostType = 'Default';
                     $scope.actionPending = false;
