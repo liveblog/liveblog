@@ -1,4 +1,4 @@
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     freetypesManager = require('./helpers/pages').freetypesManager;
 
 describe('Free types Manager', function() {
