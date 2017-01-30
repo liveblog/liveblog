@@ -6,21 +6,12 @@ liveblogMarketplace
                 'Producers'
             ];
 
-            $scope.searchPanel = false;
+            $scope.searchPanel = true;
             $scope.activeState = $scope.states[0];
 
             $scope.switchTab = function(state) {
                 $scope.activeState = state;
             };
-
-            //$scope.open = function(producer) {
-            //    $location.path('/marketplace/' + producer._id);
-            //};
-
-            //api.get('/marketplace/marketers')
-            //    .then(function(marketers) {
-            //        $scope.marketers = marketers;
-            //    });
 
             api.get('/marketplace/blogs')
                 .then(function(blogs) {

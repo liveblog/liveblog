@@ -1,0 +1,58 @@
+<div>
+    <div class="header">
+      <div class="backlink-toolbar">
+        <ul ng-show="!editingSearch || activateSearchPane">
+            <li translate>Filter Marketers</li>
+        </ul>
+        <div class="doopen" ng-click="closeFacets()"><i class="icon-close-small"></i></div>
+    </div>
+
+    <div class="content">
+        <div class="filter-content">
+            <div
+                sd-toggle-box
+                data-title="{{:: 'Categories' | translate }}"
+                ng-hide="isEmpty('type')"
+                data-open="true">
+                <ul class="filter-box content-type-filters">
+                    <li
+                        ng-repeat="(key,value) in aggregations.type"
+                        ng-click="toggleFilter('category', key)"
+                        ng-class="{checked: hasFilter('category',key)}">
+                        <span class="hover-box">
+                            <i class="filetype-icon-{{key}}"></i>
+                            <span
+                                id="filetype-icon-{{key}}"
+                                class="sd-checkbox"
+                                ng-checked="hasFilter('type',key)"></span>
+                        </span>
+                        <span>{{ key | translate}} <i>{{ value }}</i></span>
+                        <span class="icon-close-small pull-right remove-aggregate"
+                              title="{{ :: 'Remove' | translate }}"
+                              ng-click="excludeFacet('type', key, $event)"></span>
+                    </li>
+                </ul>
+            </div>
+
+            <div
+                sd-toggle-box
+                data-title="{{:: 'Marketers' | translate }}"
+                ng-hide="isEmpty('marketer')"
+                data-open="true">
+                <ul class="filter-box">
+                    <li
+                        ng-repeat="(key,value) in aggregations.marketer"
+                        ng-click="toggleFilter('marketer', value.id)">
+                        <span class="sd-checkbox" ng-checked="hasFilter('marketer', value.id)"></span>
+                        <span>{{ key | translate}} <i>{{ value.count }}</i></span>
+                        <span class="icon-close-small pull-right remove-aggregate"
+                              title="{{ :: 'Remove' | translate }}"
+                              ng-click="excludeFacet('marketer', value.id, $event)"></span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div sd-save-search></div>
+</div>
