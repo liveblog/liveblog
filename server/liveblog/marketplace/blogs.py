@@ -7,6 +7,7 @@ class BlogService(BaseService):
     notification_key = 'marketplace_blogs'
 
 
+# Outgoing endpoint used by the central marketplace app
 class BlogResource(Resource):
     url = 'marketed/blogs'
     datasource = {

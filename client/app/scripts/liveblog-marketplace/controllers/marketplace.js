@@ -6,6 +6,7 @@ liveblogMarketplace
                 'Producers'
             ];
 
+            $scope.searchPanel = false;
             $scope.activeState = $scope.states[0];
 
             $scope.switchTab = function(state) {
@@ -21,8 +22,13 @@ liveblogMarketplace
             //        $scope.marketers = marketers;
             //    });
 
-            //api.producers.query()
-            //    .then(function(producers) {
-            //        $scope.producers = producers;
-            //    });
+            api.get('/marketplace/blogs')
+                .then(function(blogs) {
+                    $scope.blogs = blogs;
+                });
+
+            api.producers.query()
+                .then(function(producers) {
+                    $scope.producers = producers;
+                });
         }]);
