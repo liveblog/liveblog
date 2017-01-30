@@ -16,6 +16,20 @@ marketers_blueprint = Blueprint('marketers', __name__)
 CORS(marketers_blueprint)
 
 
+@marketers_blueprint.route('/api/marketplace/blogs', methods=['GET'])
+def blogs():
+    # Use marketplace app to retrieve blogs of all marketers
+    try:
+        response = _send_marketplace_api_request(MARKETPLACE_APP_URL, 'blogs', request.args)
+    except APIConnectionError as e:
+        return api_response(str(e), 500)
+
+    if response.status_code == 200:
+        return api_response(response.content, 200, json_dumps=False)
+    else:
+        return api_error('Unable to get blogs from marketplace.', response.status_code)
+
+
 # For retrieving a list of marketers from the market place app
 @marketers_blueprint.route('/api/marketplace/marketers', methods=['GET'])
 def marketers():
@@ -59,7 +73,7 @@ def marketer_blogs(marketer_id):
     # Use marketer url to call /marketplace/blogs
     url = marketer['url']
     try:
-        response = _send_marketplace_api_request(url, 'marketplace/blogs', request.args)
+        response = _send_marketplace_api_request(url, 'marketed/blogs', request.args)
     except APIConnectionError as e:
         return api_response(str(e), 500)
 

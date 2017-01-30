@@ -79,7 +79,7 @@ blogs_schema = {
     'category': {
         'type': 'string',
         'allowed': ["", "Breaking News", "Entertainment", "Business and Finance", "Sport", "Technology"],
-        'default': "" # unsetting a variable is a world of pain
+        'default': ""  # unsetting a variable is a world of pain
     },
     'start_date': {
         'type': 'datetime',

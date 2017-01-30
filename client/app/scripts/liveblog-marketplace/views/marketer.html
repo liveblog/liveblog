@@ -52,7 +52,7 @@
             </button>
             <h3><span>Producer Blog:</span> {{currentBlog.title}}</h3>
         </div>
-        <div class="modal-body" style="min-height: 300px;">
+        <div class="modal-body">
             <ul class="nav nav-tabs">
                 <li ng-class="{active: active == 'preview'}">
                     <button
@@ -67,11 +67,9 @@
                         ng-click="active = 'settings'">Settings</button>
                 </li>
             </ul>
-            <iframe
-                class="modal-body"
+            <iframe                
                 ng-if="active == 'preview'"
                 width="100%"
-                height="715"
                 ng-src="{{currentBlog.public_url}}"
                 frameborder="0"
                 allowfullscreen></iframe>
@@ -85,6 +83,13 @@
                     readonly="readonly"
                     select-text-on-click>{{ currentBlog.embed }}</textarea>
             </div>
+        </div>
+        <div class="modal-footer">
+            <button
+                type="button"
+                class="btn btn-default"
+                translate
+                ng-click="cancelEmbed()">Close</button>
         </div>
     </div>
 </section>

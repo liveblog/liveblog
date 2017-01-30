@@ -8,7 +8,7 @@ class BlogService(BaseService):
 
 
 class BlogResource(Resource):
-    url = 'marketplace/blogs'
+    url = 'marketed/blogs'
     datasource = {
         'source': 'blogs',
         'search_backend': None,
