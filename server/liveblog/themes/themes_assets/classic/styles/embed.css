@@ -17,6 +17,10 @@ img {
     width: auto;
     height: auto;
 }
+img.pswp__img {
+    max-width: none;
+    max-height: none;
+}
 .content-item {
     margin: 15px 10px;
 }
@@ -341,6 +345,9 @@ button.active {
     padding-right: 20px;
 }
 .show-author-avatar .lb-author, .show-author-avatar .lb-item {
+    margin-left: 80px;
+}
+.lb-gallery {
     margin-left: 80px;
 }
 .lb-advertisment {
