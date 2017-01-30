@@ -73,7 +73,7 @@ class ProducerService(BaseService):
             return urljoin(api_url, url_path)
         return api_url
 
-    def _send_api_request(self, producer_id, url_path, method='GET', data=None, json_loads=True, timeout=5):
+    def _send_api_request(self, producer_id, url_path, method='GET', data=None, json_loads=True, timeout=10):
         producer = self._get_producer(producer_id)
         if not producer:
             raise ProducerAPIError('Unable to get producer "{}".'.format(producer_id))
@@ -86,6 +86,7 @@ class ProducerService(BaseService):
             response = send_api_request(api_url, producer['consumer_api_key'], method=method, args=request.args,
                                         data=data, json_loads=json_loads, timeout=timeout)
         except APIConnectionError as e:
+            logger.exception('Unable to connect to {}'.format(api_url))
             raise ProducerAPIError(e)
         else:
             return response
@@ -144,6 +145,13 @@ class ProducerResource(Resource):
     schema = producers_schema
 
 
+def _response_status(code):
+    """If unauthorized, it returns 400 instead of 401 to prevent"""
+    if code == 401:
+        return 400
+    return code
+
+
 @producers_blueprint.route('/api/producers/<producer_id>/blogs', methods=['GET'])
 def producer_blogs(producer_id):
     producers = get_resource_service('producers')
@@ -155,7 +163,7 @@ def producer_blogs(producer_id):
         if response.status_code == 200:
             return api_response(response.content, response.status_code, json_dumps=False)
         else:
-            return api_error('Unable to get producer blogs.', response.status_code)
+            return api_error('Unable to get producer blogs.', _response_status(response.status_code))
 
 
 @producers_blueprint.route('/api/producers/<producer_id>/blogs/<blog_id>', methods=['GET'])
@@ -169,7 +177,8 @@ def producer_blog(producer_id, blog_id):
         if response.status_code == 200:
             return api_response(response.content, response.status_code, json_dumps=False)
         else:
-            return api_error('Unable to get producer blog "{}".'.format(blog_id), response.status_code)
+            return api_error('Unable to get producer blog "{}".'.format(blog_id),
+                             _response_status(response.status_code))
 
 
 @producers_blueprint.route('/api/producers/<producer_id>/blogs/<blog_id>/posts', methods=['GET'])
@@ -183,7 +192,7 @@ def producer_blog_posts(producer_id, blog_id):
         if response.status_code == 200:
             return api_response(response.content, response.status_code, json_dumps=False)
         else:
-            return api_error('Unable to get producer blog posts.', response.status_code)
+            return api_error('Unable to get producer blog posts.', _response_status(response.status_code))
 
 
 def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish, auto_retrieve,
@@ -215,7 +224,7 @@ def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, aut
         elif response.status_code == 409:
             return api_error('Syndication already sent for blog "{}"'.format(blog_id), 409)
         else:
-            return api_error('Unable to syndicate producer blog.', response.status_code)
+            return api_error('Unable to syndicate producer blog.', _response_status(response.status_code))
 
 
 def _update_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_retrieve, start_date):
@@ -241,7 +250,7 @@ def _update_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, aut
         elif response.status_code == 404:
             return api_error('Syndication not sent for blog "{}"'.format(blog_id), 409)
         else:
-            return api_error('Unable to update blog syndication.', response.status_code)
+            return api_error('Unable to update blog syndication.', _response_status(response.status_code))
 
 
 def _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
@@ -265,7 +274,7 @@ def _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
             })
             return api_response(response.content, response.status_code, json_dumps=False)
         else:
-            return api_error('Unable to unsyndicate producer blog.', response.status_code)
+            return api_error('Unable to unsyndicate producer blog.', _response_status(response.status_code))
 
 
 @producers_blueprint.route('/api/producers/<producer_id>/syndicate/<blog_id>', methods=['POST', 'PATCH', 'DELETE'])
