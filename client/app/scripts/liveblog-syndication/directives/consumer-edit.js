@@ -42,7 +42,7 @@ liveblogSyndication
                         apiQuery = api.consumers.save(data);
 
                     apiQuery.then(function(result) {
-                        var successMsg = gettext('Producer saved.');
+                        var successMsg = gettext('Consumer saved.');
 
                         notify.pop();
                         notify.success(successMsg);
