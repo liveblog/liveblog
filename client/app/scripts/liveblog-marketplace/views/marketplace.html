@@ -26,7 +26,10 @@
     </header>
 
     <div class="list-container">
-        <div lb-search-panel class="archive-sidebar" data-items="blogs" data-repo="repo" data-context="context" ng-if="searchPanel"></div>
+        <div
+            lb-search-panel
+            class="archive-sidebar"
+            ng-if="searchPanel"></div>
         <!-- GRID VIEW -->
         <ul class="card-list" ng-class="{'open': searchPanel}">
             <li
