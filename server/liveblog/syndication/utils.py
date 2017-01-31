@@ -1,21 +1,22 @@
-import json
-import uuid
 import hmac
+import json
 import logging
-import requests
 import tempfile
 import urllib.parse
-from bson import ObjectId
+import uuid
 from hashlib import sha1
-from flask import make_response
+
+import requests
+from bson import ObjectId
 from eve.io.mongo import MongoJSONEncoder
-from .exceptions import APIConnectionError, DownloadError
+from flask import make_response
 from requests.exceptions import RequestException
 from requests.packages.urllib3.exceptions import MaxRetryError
 from superdesk import get_resource_service
-from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
-from .tasks import fetch_image
+from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
 
+from .exceptions import APIConnectionError, DownloadError
+from .tasks import fetch_image
 
 logger = logging.getLogger('superdesk')
 

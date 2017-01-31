@@ -1,18 +1,19 @@
 import logging
+
 from bson import ObjectId
 from flask import current_app as app
-from superdesk.resource import Resource
-from superdesk.services import BaseService
+from flask import Blueprint, abort, request
+from flask_cors import CORS
 from superdesk import get_resource_service
 from superdesk.notification import push_notification
-from flask import Blueprint, request, abort
-from flask_cors import CORS
+from superdesk.resource import Resource
+from superdesk.services import BaseService
 
 from .auth import ConsumerBlogTokenAuth
 from .tasks import send_post_to_consumer, send_posts_to_consumer
-from .utils import (generate_api_key, cast_to_object_id, api_response, api_error, create_syndicated_blog_post,
-                    get_producer_post_id, get_post_creator)
-
+from .utils import (api_error, api_response, cast_to_object_id,
+                    create_syndicated_blog_post, generate_api_key,
+                    get_post_creator, get_producer_post_id)
 
 logger = logging.getLogger('superdesk')
 syndication_blueprint = Blueprint('syndication', __name__)

@@ -1,15 +1,16 @@
 import logging
 from urllib.parse import urljoin
+
+from apps.auth import SuperdeskTokenAuth
+from eve.utils import str_to_date
+from flask import Blueprint, abort, request
+from flask_cors import CORS
+from superdesk import get_resource_service
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from superdesk import get_resource_service
-from flask import abort, Blueprint, request
-from apps.auth import SuperdeskTokenAuth
-from flask_cors import CORS
-from eve.utils import str_to_date
-from .utils import trailing_slash, api_response, api_error, send_api_request
-from .exceptions import APIConnectionError, ProducerAPIError
 
+from .exceptions import APIConnectionError, ProducerAPIError
+from .utils import api_error, api_response, send_api_request, trailing_slash
 
 logger = logging.getLogger('superdesk')
 producers_blueprint = Blueprint('producers', __name__)
