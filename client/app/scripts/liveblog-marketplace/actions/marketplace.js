@@ -17,6 +17,9 @@ liveblogMarketplace
                             marketers: marketers
                         });
                     });
+                },
+                toggleFilter: function(type, value) {
+                    console.log(type, value);
                 }
             }
         }]);

@@ -1,5 +1,5 @@
 liveblogMarketplace
-    .directive('lbSearchPanel', ['api', function(api) {
+    .directive('lbSearchPanel', ['MarketplaceActions', function(MarketplaceActions) {
         return {
             templateUrl: 'scripts/liveblog-marketplace/views/search-panel.html',
             scope: {
@@ -18,13 +18,7 @@ liveblogMarketplace
                     scope.marketers = state.marketers;
                 });
 
-                scope.toggleFilter = function(name, value) {
-                };
-
-                //api.get('/marketplace/marketers')
-                //    .then(function(marketers) {
-                //        scope.marketers = marketers;
-                //    });
+                scope.toggleFilter = MarketplaceActions.toggleFilter;
             }
         };
     }]);
