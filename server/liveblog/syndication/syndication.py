@@ -206,7 +206,7 @@ class SyndicationInService(BaseService):
         posts = get_resource_service('posts')
         post = posts.find_one(req=None, syndication_in=doc['_id'])
         if post:
-            posts.update(post['id'], {'syndication_in': None}, post)
+            posts.update(post['_id'], {'syndication_in': None}, post)
         # send notifications
         push_notification(self.notification_key, syndication_in=doc, deleted=True)
 

@@ -256,7 +256,8 @@ def _update_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, aut
 def _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
     producers = get_resource_service('producers')
     in_service = get_resource_service('syndication_in')
-    if not in_service.is_syndicated(producer_id, blog_id, consumer_blog_id):
+    syndication_in = in_service.get_syndication(producer_id, blog_id, consumer_blog_id)
+    if not syndication_in:
         return api_error('Syndication not sent for blog "{}".'.format(blog_id), 409)
 
     try:
@@ -265,6 +266,12 @@ def _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
         return api_response(str(e), 500)
     else:
         if response.status_code == 204:
+            posts = get_resource_service('posts')
+            syndication_id = syndication_in['_id']
+            post = posts.find_one(req=None, syndication_in=syndication_id)
+            if post:
+                posts.update(post['id'], {'syndication_in': None}, post)
+
             in_service.delete({
                 '$and': [
                     {'blog_id': {'$eq': consumer_blog_id}},
