@@ -17,7 +17,7 @@
         <button
             class="filter-trigger"
             title="{{ :: 'Filters' | translate }}"
-            ng-click="searchPanel = !searchPanel"
+            ng-click="togglePanel()"
             ng-class="{'filter-trigger--active': flags.facets}">
             <i class="icon-filter-large"></i>
         </button>

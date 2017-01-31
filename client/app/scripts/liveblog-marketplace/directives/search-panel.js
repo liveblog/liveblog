@@ -19,6 +19,10 @@ liveblogMarketplace
                 });
 
                 scope.toggleFilter = MarketplaceActions.toggleFilter;
+
+                scope.close = function() {
+                    MarketplaceActions.togglePanel(false);
+                };
             }
         };
     }]);

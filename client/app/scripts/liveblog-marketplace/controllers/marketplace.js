@@ -7,20 +7,26 @@ liveblogMarketplace
                 'Producers'
             ];
 
-            $scope.searchPanel = true;
+            //$scope.searchPanel = true;
             $scope.activeState = $scope.states[0];
 
             $scope.switchTab = function(state) {
                 $scope.activeState = state;
             };
 
+            $scope.togglePanel = function() {
+                MarketplaceActions.togglePanel(!$scope.searchPanel);
+            };
+
             $scope.store = new Store(MarketplaceReducers, {
                 blogs: {},
-                marketers: {}
+                marketers: {},
+                searchPanel: true
             });
 
             $scope.store.connect(function(state) {
                 $scope.blogs = state.blogs;
+                $scope.searchPanel = state.searchPanel;
             });
 
             MarketplaceActions.getBlogs();

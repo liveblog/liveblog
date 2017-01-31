@@ -11,6 +11,11 @@ liveblogMarketplace
                     return angular.extend(state, {
                         marketers: action.marketers
                     });
+
+                case 'ON_TOGGLED_PANEL':
+                    return angular.extend(state, {
+                        searchPanel: action.searchPanel
+                    });
             }
         };
     });

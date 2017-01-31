@@ -20,6 +20,12 @@ liveblogMarketplace
                 },
                 toggleFilter: function(type, value) {
                     console.log(type, value);
+                },
+                togglePanel: function(value) {
+                    Dispatcher.dispatch({
+                        type: 'ON_TOGGLED_PANEL',
+                        searchPanel: value
+                    });
                 }
             }
         }]);
