@@ -1,6 +1,7 @@
 liveblogMarketplace
-    .controller('MarketplaceController', ['$scope', '$location', 'api',
-        function($scope, $location, api) {
+    .controller('MarketplaceController', 
+        ['$scope', '$location', 'api', 'Store', 'MarketplaceActions', 'MarketplaceReducers',
+        function($scope, $location, api, Store, MarketplaceActions, MarketplaceReducers) {
             $scope.states = [
                 'Marketers',
                 'Producers'
@@ -13,10 +14,17 @@ liveblogMarketplace
                 $scope.activeState = state;
             };
 
-            api.get('/marketplace/blogs')
-                .then(function(blogs) {
-                    $scope.blogs = blogs;
-                });
+            $scope.store = new Store(MarketplaceReducers, {
+                blogs: {},
+                marketers: {}
+            });
+
+            $scope.store.connect(function(state) {
+                $scope.blogs = state.blogs;
+            });
+
+            MarketplaceActions.getBlogs();
+            MarketplaceActions.getMarketers();
 
             api.producers.query()
                 .then(function(producers) {
