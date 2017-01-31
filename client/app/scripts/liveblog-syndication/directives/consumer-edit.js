@@ -55,7 +55,12 @@ liveblogSyndication
 
                         if (err.data.hasOwnProperty('_issues')) {
                             Object.keys(err.data._issues).forEach(function(key) {
-                                scope.consumerForm[key].issue = err.data._issues[key];
+                                var issue = err.data._issues[key];
+                                if (typeof issue == 'object') {
+                                    if (issue.unique == true)
+                                        issue = 'The selected field value is not unique!';
+                                }
+                                scope.consumerForm[key].issue = issue;
                             });
                         }
 
