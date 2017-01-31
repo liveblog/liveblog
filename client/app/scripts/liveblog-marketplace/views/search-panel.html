@@ -37,17 +37,15 @@
             <div
                 sd-toggle-box
                 data-title="{{:: 'Marketers' | translate }}"
-                ng-hide="isEmpty('marketer')"
                 data-open="true">
                 <ul class="filter-box">
                     <li
-                        ng-repeat="(key,value) in aggregations.marketer"
-                        ng-click="toggleFilter('marketer', value.id)">
-                        <span class="sd-checkbox" ng-checked="hasFilter('marketer', value.id)"></span>
-                        <span>{{ key | translate}} <i>{{ value.count }}</i></span>
-                        <span class="icon-close-small pull-right remove-aggregate"
-                              title="{{ :: 'Remove' | translate }}"
-                              ng-click="excludeFacet('marketer', value.id, $event)"></span>
+                        ng-repeat="marketer in marketers._items"
+                        ng-click="toggleFilter('marketer', marketer.id)">
+                        <span
+                            class="sd-checkbox"
+                            ng-checked="hasFilter('marketer', marketer.id)"></span>
+                        <span>{{ key | translate}} <i>{{ marketer.name }}</i></span>
                     </li>
                 </ul>
             </div>
