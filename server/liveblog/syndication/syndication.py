@@ -71,11 +71,6 @@ class SyndicationOutService(BaseService):
         except IndexError:
             return
 
-    def is_syndicated(self, consumer_id, producer_blog_id, consumer_blog_id):
-        logger.warning('SyndicationOutService.is_syndicated is deprecated!')
-        item = self.get_syndication(consumer_id, producer_blog_id, consumer_blog_id)
-        return bool(item)
-
     def get_blog_syndication(self, blog_id):
         blog = self._get_blog(blog_id)
         if not blog['syndication_enabled']:
@@ -201,12 +196,13 @@ class SyndicationInService(BaseService):
         for doc in docs:
             cast_to_object_id(doc, ['blog_id', 'producer_id', 'producer_blog_id', 'consumer_blog_id'])
 
-    def on_deleted(self, doc):
-        super().on_deleted(doc)
-        posts = get_resource_service('posts')
-        post = posts.find_one(req=None, syndication_in=doc['_id'])
-        if post:
-            posts.update(post['_id'], {'syndication_in': None}, post)
+    def on_delete(self, doc):
+        super().on_delete(doc)
+        posts = get_resource_service('archive')
+        syndicated_posts = posts.find({'syndication_in': doc['_id']})
+        for post in syndicated_posts:
+            logger.warning('Delete syndication_in: {}'.format(post['_id']))
+            posts.system_update(post['_id'], {'syndication_in': None}, post)
         # send notifications
         push_notification(self.notification_key, syndication_in=doc, deleted=True)
 

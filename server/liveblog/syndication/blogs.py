@@ -67,7 +67,7 @@ def _get_consumer_from_auth():
 def _create_blogs_syndicate(blog_id, consumer_blog_id, auto_retrieve, start_date):
     # Get the blog to be syndicated - must be enabled for syndication
     blogs_service = get_resource_service('blogs')
-    blog = blogs_service.find_one(req=None, checkUser=False, _id=blog_id)  # TODO: Camel-case ist verboten!
+    blog = blogs_service.find_one(req=None, checkUser=False, _id=blog_id)
     if blog is None:
         return api_error('No blog available for syndication with given id "{}".'.format(blog_id), 409)
     if not blog['syndication_enabled']:
@@ -76,7 +76,8 @@ def _create_blogs_syndicate(blog_id, consumer_blog_id, auto_retrieve, start_date
     consumer = _get_consumer_from_auth()
     out_service = get_resource_service('syndication_out')
     consumer_id = str(consumer['_id'])
-    if out_service.is_syndicated(consumer_id, blog_id, consumer_blog_id):
+    out_syndication = out_service.get_syndication(consumer_id, blog_id, consumer_blog_id)
+    if out_syndication:
         return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
 
     if not start_date:
@@ -120,8 +121,10 @@ def _delete_blogs_syndicate(blog_id, consumer_blog_id):
     consumer = _get_consumer_from_auth()
     out_service = get_resource_service('syndication_out')
     consumer_id = str(consumer['_id'])
-    if not out_service.is_syndicated(consumer_id, blog_id, consumer_blog_id):
-        return api_error('Syndication not sent for blog "{}".'.format(blog_id), 409)
+    out_syndication = out_service.get_syndication(consumer_id, blog_id, consumer_blog_id)
+    if not out_syndication:
+        logger.warning('Syndication already deleted for blog "{}".'.format(blog_id))
+        return api_response({}, 204)
     else:
         out_service.delete({
             '$and': [
@@ -135,7 +138,7 @@ def _delete_blogs_syndicate(blog_id, consumer_blog_id):
 
 @blogs_blueprint.route('/api/syndication/blogs/<string:blog_id>/syndicate', methods=['POST', 'PATCH', 'DELETE'])
 def blogs_syndicate(blog_id):
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     start_date = data.get('start_date')
     auto_retrieve = data.get('auto_retrieve', True)
     if start_date:

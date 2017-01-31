@@ -148,6 +148,7 @@ class ProducerResource(Resource):
 def _response_status(code):
     """If unauthorized, it returns 400 instead of 401 to prevent"""
     if code == 401:
+        logger.warning('Unauthorized. Returning 400 to prevent client logout.')
         return 400
     return code
 
@@ -199,7 +200,8 @@ def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, aut
                                      start_date=None):
     producers = get_resource_service('producers')
     in_service = get_resource_service('syndication_in')
-    if in_service.is_syndicated(producer_id, blog_id, consumer_blog_id):
+    in_syndication = in_service.get_syndication(producer_id, blog_id, consumer_blog_id)
+    if in_syndication:
         return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
 
     try:
@@ -230,7 +232,8 @@ def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, aut
 def _update_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_retrieve, start_date):
     producers = get_resource_service('producers')
     in_service = get_resource_service('syndication_in')
-    if not in_service.is_syndicated(producer_id, blog_id, consumer_blog_id):
+    in_syndication = in_service.get_syndication(producer_id, blog_id, consumer_blog_id)
+    if not in_syndication:
         return api_error('Syndication not sent for blog "{}".'.format(blog_id), 409)
 
     try:
@@ -258,35 +261,25 @@ def _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
     in_service = get_resource_service('syndication_in')
     syndication_in = in_service.get_syndication(producer_id, blog_id, consumer_blog_id)
     if not syndication_in:
-        return api_error('Syndication not sent for blog "{}".'.format(blog_id), 409)
-
-    try:
-        response = producers.unsyndicate(producer_id, blog_id, consumer_blog_id, json_loads=False)
-    except ProducerAPIError as e:
-        return api_response(str(e), 500)
+        logger.warning('Syndication not sent for blog "{}".'.format(blog_id))
+        return api_response({}, 204)
     else:
-        if response.status_code == 204:
-            posts = get_resource_service('posts')
-            syndication_id = syndication_in['_id']
-            post = posts.find_one(req=None, syndication_in=syndication_id)
-            if post:
-                posts.update(post['id'], {'syndication_in': None}, post)
-
-            in_service.delete({
-                '$and': [
-                    {'blog_id': {'$eq': consumer_blog_id}},
-                    {'producer_id': {'$eq': producer_id}},
-                    {'producer_blog_id': {'$eq': blog_id}}
-                ]
-            })
-            return api_response(response.content, response.status_code, json_dumps=False)
+        try:
+            response = producers.unsyndicate(producer_id, blog_id, consumer_blog_id, json_loads=False)
+        except ProducerAPIError as e:
+            return api_response(str(e), 500)
         else:
-            return api_error('Unable to unsyndicate producer blog.', _response_status(response.status_code))
+            if response.status_code == 204:
+                syndication_id = syndication_in['_id']
+                in_service.delete_action(lookup={'_id': syndication_id})
+                return api_response(response.content, response.status_code, json_dumps=False)
+            else:
+                return api_error('Unable to unsyndicate producer blog.', _response_status(response.status_code))
 
 
 @producers_blueprint.route('/api/producers/<producer_id>/syndicate/<blog_id>', methods=['POST', 'PATCH', 'DELETE'])
 def producer_blogs_syndicate(producer_id, blog_id):
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     consumer_blog_id = data.get('consumer_blog_id')
     auto_publish = data.get('auto_publish')
     auto_retrieve = data.get('auto_retrieve', True)
