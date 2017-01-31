@@ -158,7 +158,7 @@ describe('Producers', function() {
                         return element(by.css('#save-edit-btn')).click();
                     })
                     .then(function() {
-                        return assertToastMsg('success', 'producer saved.');
+                        return assertToastMsg('success', 'Producer saved.');
                     })
                     .then(function() {
                         var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
