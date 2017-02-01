@@ -5,12 +5,28 @@
 .btn {
     line-height: 12px;
     padding: 8px 20px;
+    &--with-icon-right {
+        padding: 8px 10px 8px 20px;
+    }
 }
 
 a[disabled] {
     cursor: default;
     opacity: .5;
     pointer-events: none;
+}
+
+input[type] {
+    display: block;
+    width: 100%;
+    min-height: 28px; /* Make inputs at least the height of their button counterpart */
+    /* Makes inputs behave like true block-level elements */
+    box-sizing: border-box;
+}
+.fieldset-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
 // modal fix

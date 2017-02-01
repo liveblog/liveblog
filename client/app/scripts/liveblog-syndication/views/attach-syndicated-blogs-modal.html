@@ -5,13 +5,24 @@
     </div>
     <div class="modal-body" style="min-height: 300px;">
         <span class="label label--simple label--no-padding">Choose Producer</span>
-        <select ng-model="producerId" ng-change="selectProducer(producerId)">
-            <option 
-                ng-repeat="producer in producers._items" 
-                value="{{producer._id}}">
-                {{producer.name}}
-            </option>
-        </select>
+        <div class="select-producer">
+            <select
+                ng-class="{'full': !producerBlogs._items}"
+                ng-model="producerId" 
+                ng-change="selectProducer(producerId)">
+                <option 
+                    ng-repeat="producer in producers._items" 
+                    value="{{producer._id}}">
+                    {{producer.name}}
+                </option>
+            </select>
+            <button
+                class="btn btn-primary"
+                ng-click="refreshBlogList()"
+                ng-if="producerBlogs._items">
+                <i class="icon-refresh"></i>
+            </button>
+        </div>
         <ul class="producers-list">
             <li
                 ng-repeat="blog in producerBlogs._items" 
@@ -22,6 +33,8 @@
                 <dl class="panel-definition-list">
                     <dt class="panel-definition-list__term">Producer:</dt>
                     <dd class="panel-definition-list__definition">{{currentProducer.name}}</dd>
+                </dl>
+                <dl class="panel-definition-list">
                     <dt class="panel-definition-list__term">Autopublish</dt>
                     <dd class="panel-definition-list__definition">
                         <span
@@ -30,6 +43,13 @@
                             ng-model="blog.auto_publish"
                             ng-hide="isAlreadySyndicated(blog)"
                             class="sd-toggle--vertical-middle"></span>
+                    </dd>
+                    <dt class="panel-definition-list__term">Start date</dt>
+                    <dd class="panel-definition-list__definition datepicker">
+                        <span
+                            ng-hide="isAlreadySyndicated(blog)"
+                            sd-datepicker
+                            ng-model="blog.start_date"></span>
                     </dd>
                 </dl>
             </li>

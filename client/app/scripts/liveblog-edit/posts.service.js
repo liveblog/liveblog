@@ -133,8 +133,6 @@ define([
                     items: post.groups[1].refs
                 });
 
-                //console.log('complete post', pos.particular_type);
-
                 // if an item has a commenter then that post hasComments.
                 post.hasComments = _.reduce(post.groups[1].refs, function(is, val) {
                     return is || !_.isUndefined(val.item.commenter);
@@ -151,9 +149,8 @@ define([
                 });
                 _completeUser(post.mainItem.item);
 
-                if (post.syndication_in) {
+                if (post.syndication_in && api.hasOwnProperty('syndicationIn')) {
                     api.syndicationIn.getById(post.syndication_in).then(function(synd) {
-                        //console.log('complete user', synd.producer_blog_title);
                         post.producer_blog_title = synd.producer_blog_title;
                         resolve(post);
                     });
@@ -164,7 +161,6 @@ define([
         }
 
         function retrievePost(post_id) {
-            console.log('retrieve post');
             return api.posts.getById(post_id)
                 .then(_completePost)
                 .then(function(post) {
@@ -173,7 +169,6 @@ define([
         }
 
         function retrievePosts(blog_id, posts_criteria) {
-            console.log('retrieve posts');
             return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
                 .query(posts_criteria)
                 .then(function(data) {
@@ -223,6 +218,7 @@ define([
                             blog: blog_id,
                             text: item.text,
                             meta: item.meta,
+                            group_type: item.group_type,
                             item_type: item.item_type,
                             commenter: item.meta && item.meta.commenter
                         };

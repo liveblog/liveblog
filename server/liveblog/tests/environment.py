@@ -6,11 +6,16 @@ from superdesk.tests import setup_auth_user
 from superdesk.tests.environment import setup_search_provider
 from superdesk.vocabularies.command import VocabulariesPopulateCommand
 from liveblog.tests import setup_auth_consumer, test_consumer
+from .test_settings import DATE_FORMAT
 
 
 def setup_before_scenario(context, scenario, config, app_factory):
     if scenario.status != 'skipped' and 'notesting' in scenario.tags:
         config['SUPERDESK_TESTING'] = False
+
+    # TODO: Temp fix for DATE_FORMAT. This will be removed when superdesk will allow to specify custom test settings.
+    config['DATE_FORMAT'] = DATE_FORMAT
+
     tests.setup(context, config, app_factory, bool(config))
 
     context.headers = [

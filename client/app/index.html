@@ -183,6 +183,7 @@
     <script src="scripts/liveblog-syndication/directives/notifications-count.js"></script>
     <script src="scripts/liveblog-syndication/directives/first-contact.js"></script>
     <script src="scripts/liveblog-syndication/directives/ingest-panel.js"></script>
+    <script src="scripts/liveblog-syndication/directives/ingest-panel-dropdown.js"></script>
     <script src="scripts/liveblog-syndication/directives/copy-to-clipboard.js"></script>
     <script src="scripts/liveblog-syndication/directives/attach-syndicated-blogs-modal.js"></script>
     <script src="scripts/liveblog-syndication/directives/incoming-syndication.js"></script>
@@ -204,6 +205,8 @@
     <script src="scripts/liveblog-marketplace/controllers/marketer.js"></script>
     <script src="scripts/liveblog-marketplace/directives/marketers-grid.js"></script>
     <script src="scripts/liveblog-marketplace/directives/producers-grid.js"></script>
+
+    <script src="scripts/liveblog-freetypes/module.js"></script>
     <!-- endbuild -->
 
     <script src="scripts/lb-templates.js"></script>
@@ -229,6 +232,7 @@
             'liveblog.themes',
             'liveblog.syndication',
             'liveblog.marketplace',
+            'liveblog.freetypes',
             'superdesk.settings',
             'superdesk.dashboard',
             'superdesk.users',
@@ -258,6 +262,9 @@
             'lb.templates',
             'ngMessages'
         ];
+
+        if (config.syndication)
+            modules.push('liveblog.syndication');
 
         require([
             'main',

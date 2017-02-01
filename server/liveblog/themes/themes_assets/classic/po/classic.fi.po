@@ -1,0 +1,113 @@
+msgid ""
+msgstr ""
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"X-Generator: Poedit 1.8.11\n"
+"Last-Translator: Karel Petrak <karel.petrak@sourcefabric.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: fi\n"
+
+#: comments.html:37
+msgid "Cancel"
+msgstr "Peruuta"
+
+#: template.html:46
+msgid "Comment"
+msgstr "Kommentoi"
+
+#: comments.html:27
+msgid "Comment *"
+msgstr "Kommentti *"
+
+#: comments.html:31
+msgid "Comment should be maximum 300 characters in length."
+msgstr "Kommentin enimmäispituus on 300 merkkiä."
+
+#: main.js:50 template.html:13
+msgid "Editorial"
+msgstr "Toimituksellinen"
+
+#: template.html:96
+msgid "Load more posts"
+msgstr "Lataa lisää julkaisuja"
+
+#: template.html:99
+msgid "Loading"
+msgstr "Lataa"
+
+#: comments.html:19
+msgid "Name *"
+msgstr "Nimi *"
+
+#: comments.html:23
+msgid "Name should be maximum 30 characters in length."
+msgstr "Nimen enimmäispituus on 30 merkkiä."
+
+#: main.js:53 template.html:17
+msgid "Newest first"
+msgstr "Uusimmat ensin"
+
+#: template.html:59
+msgid "No posts for now."
+msgstr "Ei uusia julkaisuja."
+
+#: main.js:56 template.html:21
+msgid "Oldest first"
+msgstr "Vanhimmat ensin"
+
+#: template.html:83
+msgid "One pinned post"
+msgid_plural "{{$count}} pinned posts"
+msgstr[0] "Yksi kiinnitetty julkaisu"
+msgstr[1] "{{$count}} kiinnitettyä julkaisua"
+
+#: comments.html:30
+msgid "Please fill in your Comment."
+msgstr "Lisää kommenttisi."
+
+#: comments.html:22
+msgid "Please fill in your Name."
+msgstr "Lisää nimesi."
+
+#: comments.html:14
+msgid "Post a comment"
+msgstr "Lähetä kommentti"
+
+#: template.html:67
+msgid "See one new update"
+msgid_plural "See {{$count}} new updates"
+msgstr[0] "Lataa yksi uusi julkaisu"
+msgstr[1] "Lataa {{$count}} uutta julkaisua"
+
+#: comments.html:38
+msgid "Send"
+msgstr "Lähetä"
+
+#: template.html:38
+msgid "Show all posts"
+msgstr "Näytä kaikki julkaisut"
+
+#: template.html:37
+msgid "Show highlighted post only"
+msgstr "Näytä vain korostettu julkaisu"
+
+#: template.html:11 template.html:27
+msgid "Sort by:"
+msgstr "Järjestä:"
+
+#: posts.html:27
+msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
+msgstr "Päivitetty {{post.content_updated_date | prettifyIsoDate}}"
+
+#: comments.html:6
+msgid "Your comment was sent for approval."
+msgstr "Kommenttisi lähetettiin hyväksyttäväksi."
+
+#: item.html:13
+msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
+msgstr "{{ item.meta.caption }} © {{ item.meta.credit }}"

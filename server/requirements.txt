@@ -14,5 +14,5 @@ httmock
 honcho
 # @TODO remove this after cache clear
 # Superdesk
--e git+git://github.com/liveblog/superdesk-core.git@2d76fb0ffaaa6aac1835fe44486144282cd0c5ce#egg=Superdesk-Core==1.06-update-sd-core
+-e git+git://github.com/liveblog/superdesk-core.git@9cb85ba56262531d9fc4cdece817a093dec481dd#egg=Superdesk-Core==1.06-fix-notification-issue
 

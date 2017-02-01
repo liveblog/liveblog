@@ -10,8 +10,6 @@ liveblogSyndication
                 scope.count = 0;
 
                 scope.$on('posts', function(e, data) {
-                    console.log('incoming', data, scope.panelState);
-                    //if (data.posts[0].syndication_in && scope.panelState != 'ingest')
                     if (data.posts[0].syndication_in && ingestPanels.indexOf(scope.panelState) == -1)
                         scope.count++;
                 });

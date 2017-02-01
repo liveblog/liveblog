@@ -187,7 +187,6 @@ class PostsService(ArchiveService):
             post['id'] = doc.get('_id')
             post['syndication_in'] = doc.get('syndication_in')
             posts.append(post)
-            # post_ids.append({ id: doc.get('_id'), str('syndication_in'): doc.get('syndication_in')})
             app.blog_cache.invalidate(doc.get('blog'))
             # send post to consumer webhook
             if doc['post_status'] == 'open':
@@ -258,7 +257,6 @@ class PostsService(ArchiveService):
         # send notifications
         if updates.get('deleted', False):
             out_service.send_syndication_post(original, action='deleted')
-            push_notification('posts', deleted=True, post_id=original.get('_id'))
         # NOTE: Seems unsused, to be removed later if no bug appears.
         # elif updates.get('post_status') == 'draft':
         #     push_notification('posts', drafted=True, post_id=original.get('_id'),

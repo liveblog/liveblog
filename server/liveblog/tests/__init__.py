@@ -41,3 +41,6 @@ def setup_auth_consumer(context, consumer):
             get_resource_service('consumers').post([consumer])
 
         add_consumer_auth_context(context, api_key, consumer)
+
+
+# TODO: Setup blog auth token

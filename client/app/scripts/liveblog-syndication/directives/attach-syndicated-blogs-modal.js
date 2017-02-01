@@ -64,6 +64,11 @@ liveblogSyndication
                         IngestPanelActions.getProducerBlogs(producerId);
                     };
 
+                    scope.refreshBlogList = function() {
+                        IngestPanelActions
+                            .getProducerBlogs(scope.currentProducer._id);
+                    };
+
                     scope.isAlreadySyndicated = function(blog) {
                         if (scope.localProducerBlogIds.length == 0)
                             return false;
@@ -99,6 +104,8 @@ liveblogSyndication
                                 producerBlogId: blog._id,
                                 consumerBlogId: scope.consumerBlogId,
                                 autoPublish: blog.auto_publish,
+                                startDate: blog.start_date,
+                                autoRetrieve: blog.auto_retrieve,
                                 method: 'POST'
                             };
 

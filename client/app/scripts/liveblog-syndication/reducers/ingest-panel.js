@@ -1,5 +1,5 @@
 liveblogSyndication
-    .factory('IngestPanelReducers', function() {
+    .factory('IngestPanelReducers', ['moment', function(moment) {
         var locallySyndicatedItems = function(syndicationIn, localSyndTokens) {
             return syndicationIn._items.filter(function(item) {
                 return (localSyndTokens.indexOf(item.blog_token) != -1);
@@ -29,15 +29,21 @@ liveblogSyndication
                     });
 
                 case 'ON_UPDATED_SYND':
-                    return angular.extend(state, {
-                        syndicationIn: angular.extend(state.syndicationIn, {
-                            _items: state.syndicationIn._items.map(function(item) {
-                                if (item._id == action.syndEntry._id)
-                                    return action.syndEntry;
-                                else
-                                    return item;
-                            })
+                    var syndicationIn = angular.extend(state.syndicationIn, {
+                        _items: state.syndicationIn._items.map(function(item) {
+                            if (item._id == action.syndEntry._id)
+                                return action.syndEntry;
+                            else
+                                return item;
                         })
+                    });
+
+                    return angular.extend(state, {
+                        syndicationIn: syndicationIn,
+                        locallySyndicatedItems: locallySyndicatedItems(
+                            syndicationIn, 
+                            state.localSyndTokens
+                        )
                     });
 
                 case 'ON_GET_PRODUCERS':
@@ -57,7 +63,13 @@ liveblogSyndication
                                 })
                                 .map(function(blog) {
                                     blog.checked = false;
+                                    blog.start_date = null; // Default start_date as null
                                     blog.auto_publish = false; // Default autopublish as false
+                                    blog.auto_retrieve = true; // Default autoretrieve as true
+
+                                    blog.start_date = moment()
+                                        .subtract(14, 'd')
+                                        .format('YYYY-MM-DDTHH:MM:ss+00:00');
 
                                     state.locallySyndicatedItems.forEach(function(localBlog) {
                                         if (localBlog.producer_blog_id == blog._id) {
@@ -91,4 +103,4 @@ liveblogSyndication
                     });
             }
         }
-    });
+    }]);

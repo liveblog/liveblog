@@ -6,19 +6,19 @@ var login = require('../app/scripts/bower_components/superdesk/client/spec/helpe
 
 var consumer = {
     name: 'Massey Fergusson',
-    apiUrl: 'http://www.masseyferguson.de/api'
+    webhookUrl: 'https://www.masseyferguson.de/api/syndication/webhook'
 };
 
 var contact = {
-    firstName: 'Chuck',
-    lastName: 'Norris',
-    email: 'gmail@chucknorris.com'
+    firstName: 'Jean',
+    lastName: 'Pierre',
+    email: 'jean.pierre@gmail.com'
 };
 
 var contact2 = {
-    firstName: 'Steven',
-    lastName: 'Seagal',
-    email: 'steven.seagal@gmail.com'
+    firstName: 'Paul',
+    lastName: 'Sabatier',
+    email: 'paul.sabatier@gmail.com'
 };
 
 describe('Consumers', function() {
@@ -28,6 +28,57 @@ describe('Consumers', function() {
     describe('list', function() {
         it('can open consumers managements and list the consumers', function() {
             consumersManagement.openConsumersManagement();
+        });
+
+        it('can show an error when some required field are empty', function() {
+            consumersManagement.openConsumersManagement();
+
+            element(by.css('button.navbtn.sd-create-btn'))
+                .click()
+                .then(function() {
+                    return element(by.css('input#name')).isDisplayed();
+                })
+                .then(function() {
+                    return element(by.css('input[name="first_name"]'))
+                        .sendKeys(contact.firstName);
+                })
+                .then(function() {
+                    return element(by.css('#save-edit-btn')).click();
+                })
+                .then(function() {
+                    var fieldName = 'div[ng-show="consumerForm.attempted &&' +
+                        ' consumerForm.name.$error.required"]';
+
+                    return expect(
+                        $(fieldName).isDisplayed()
+                    ).toBeTruthy();
+                })
+                .then(function() {
+                    var fieldName = 'div[ng-show="consumerForm.attempted &&' +
+                        ' consumerForm.webhook_url.$error.required"]';
+
+                    return expect(
+                        $(fieldName).isDisplayed()
+                    ).toBeTruthy();
+                })
+                .then(function() {
+                    return expect(
+                        $('div[ng-show="attempted && contactForm.first_name.$error.required"]')
+                            .isDisplayed()
+                    ).toBeFalsy();
+                })
+                .then(function() {
+                    return expect(
+                        $('div[ng-show="attempted && contactForm.last_name.$error.required"]')
+                            .isDisplayed()
+                    ).toBeTruthy();
+                })
+                .then(function() {
+                    return expect(
+                        $('div[ng-show="attempted && contactForm.email.$error.required"]')
+                            .isDisplayed()
+                    ).toBeTruthy();
+                });
         });
 
         it('can create a new consumer', function() {
@@ -42,7 +93,7 @@ describe('Consumers', function() {
                     return element(by.css('input#name')).sendKeys(consumer.name);
                 })
                 .then(function() {
-                    return element(by.css('input#api-url')).sendKeys(consumer.apiUrl);
+                    return element(by.css('input#webhook-url')).sendKeys(consumer.webhookUrl);
                 })
                 .then(function() {
                     return element(by.css('input[name="first_name"]'))
@@ -118,7 +169,7 @@ describe('Consumers', function() {
             };
 
             updateConsumer(consumer.name, contact.email).then(function() {
-                return updateConsumer(consumer.name + '1', 'test@googlemail.com');
+                return updateConsumer(consumer.name + '1', contact.email);
             });
         });
 

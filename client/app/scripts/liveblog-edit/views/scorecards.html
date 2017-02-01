@@ -1,0 +1,149 @@
+<style>
+    .scorecard {
+        display: inline-flex;
+        padding: 0;
+        background-color: transparent;
+        border-radius: 4px;
+        margin: 10px 0;
+        min-width: 340px;
+        max-width: 100%;
+    }
+    .scorecard__column {
+        text-align: center;
+        padding: 0 10px;
+        width: 50%;
+    }
+    .scorecard input {
+         box-sizing: border-box;
+         height: 30px;
+    }
+    .scorecard legend {
+        font-size: 11px;
+        color: #999;
+        display: block;
+        padding: 0 6px 0 0;
+        margin-bottom: 10px;
+        line-height: 31px;
+        text-transform: uppercase;
+        font-weight: 500;
+        background-color: transparent;
+        width: 100%;
+    }
+    .scorecard span {
+        display: inline-block;
+    }
+    .scorecard span.team-name {
+        font-size: 18px;
+        font-weight: 500;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        min-height: 64px;
+        line-height: 120%;
+        word-wrap: break-word;
+    }
+    .scorecard span.team-score {
+        font-size: 34px;
+        font-weight: 500;
+        line-height: 1em;
+        margin-bottom: 24px;
+        margin-top: 6px;
+        background: #5eadc8;
+        padding: 12px 30px;
+        border-radius: 2rem;
+        color: white;
+    }
+    .scorecard .scorecard__scorers {
+        list-style-type: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .scorecard .scorecard__scorers li {
+        background: #e4e4e4;
+        margin-bottom: 20px;
+        padding: 6px 12px;
+        border-radius: 2px;
+        text-align: left;
+        overflow: hidden;
+        font-size: 13px;
+    }
+    .scorecard .scorecard__scorers li > div {
+        float: left;
+    }
+    .scorecard .scorecard__scorers li > div.time {
+        float: right;
+        font-weight: 700;
+        position: relative;        
+    }
+    .scorecard .scorecard__scorers li > div.time .freetype--empty {
+        display: none;
+    }
+    .scorecard .scorecard__scorers li > div.time .freetype--element {
+        margin-left: 12px;
+    }
+    .scorecard .scorecard__scorers li > div.time .freetype--element:after {
+        content: '′';
+    }
+    .scorecard ul, .scorecard ol {
+        margin: 0 !important;
+    }
+</style>
+<div class="scorecard">
+    <div class="scorecard__column">
+        <fieldset>
+            <legend class="legend--big">Home</legend>
+            <div >
+                <label for="home.name" hide-render>Name</label>
+                <input id="home.name" name="$home.name" class="team-name" />
+            </div>
+            <div>
+                <label for="home.score" hide-render>Score</label>
+                <input id="home.score" name="$home.score" class="team-score" />
+            </div>
+        </fieldset>
+        <fieldset>
+            <legend class="legend--padding-top" hide-render>Scorers:</legend>
+            <ul class="scorecard__scorers">
+                <li>
+                    <div>
+                        <label hide-render>Name</label>
+                        <input name="$home.scorers[0].name" />
+                    </div>
+                    <div class="time">
+                        <label hide-render>Minute</label>
+                        <input name="$home.scorers[0].time" />
+                    </div>
+                </li>
+            </ul>
+        </fieldset>
+    </div>
+    <div class="scorecard__column">
+        <fieldset>
+            <legend class="legend--big">Away</legend>
+            <div>
+                <label for="away.name" hide-render>Name</label>
+                <input id="away.name" name="$away.name" class="team-name" />
+            </div>
+            <div>
+                <label for="away.score" hide-render>Score</label>
+                <input id="away.score" name="$away.score" class="team-score" />
+            </div>
+        </fieldset>
+
+        <fieldset>
+            <legend class="legend--padding-top" hide-render>Scorers:</legend>
+            <ul class="scorecard__scorers">
+                <li>
+                    <div>
+                        <label hide-render>Name</label>
+                        <input name="$away.scorers[0].name" />
+                    </div>
+                    <div class="time">
+                        <label hide-render>Minute</label>
+                        <input name="$away.scorers[0].time" />
+                    </div>
+                </li>
+            </ul>
+        </fieldset>
+    </div>
+</div>

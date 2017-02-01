@@ -27,16 +27,28 @@
                     ng-model="consumer.name" 
                     required ng-readonly="consumer._readonly && consumer._readonly.name">
                   <i ng-show="consumerForm.name.$error.required" class="required-asteriks">*</i>
+                  <div 
+                      class="error" 
+                      ng-show="consumerForm.attempted && consumerForm.name.$error.required" 
+                      translate>This field is required</div>
                 </div>
                 <div sd-info-item>
-                  <label for="api-url" translate>Api Url</label>
+                  <label for="webhook-url" translate>Webhook Url</label>
                   <input
                     type="text"
-                    name="api_url"
-                    id="api-url"
-                    ng-model="consumer.api_url"
-                    required ng-readonly="producer._readonly && producer._readonly.api_url">
-                  <i ng-show="consumerForm.api_url.$error.required" class="required-asteriks">*</i>
+                    name="webhook_url"
+                    id="webhook-url"
+                    ng-model="consumer.webhook_url"
+                    required ng-readonly="consumer._readonly && consumer._readonly.webhook_url">
+                  <i ng-show="consumerForm.webhook_url.$error.required" class="required-asteriks">*</i>
+                  <div 
+                      class="error" 
+                      ng-show="consumerForm.attempted && consumerForm.webhook_url.$error.required" 
+                      translate>This field is required</div>
+                  <div 
+                      class="error" 
+                      ng-show="consumerForm.attempted && consumerForm.webhook_url.issue"
+                      translate>{{consumerForm.webhook_url.issue}}
                 </div>
             </fieldset>
 
