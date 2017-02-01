@@ -108,7 +108,9 @@ describe('Consumers', function() {
                         .sendKeys(contact.email);
                 })
                 .then(function() {
-                    return element(by.css('#save-edit-btn')).click();
+                    var el = element(by.css('#save-edit-btn'));
+                    browser.driver.wait(protractor.until.elementIsVisible(el));
+                    return el.click();
                 })
                 .then(function() {
                     return assertToastMsg('success', 'Consumer saved.');
