@@ -1,12 +1,12 @@
 import logging
+
 from bson import ObjectId
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from .syndication import WEBHOOK_METHODS
-from .utils import generate_api_key, trailing_slash, send_api_request
-from .exceptions import APIConnectionError, ConsumerAPIError
-from .utils import trailing_slash
 
+from .exceptions import APIConnectionError, ConsumerAPIError
+from .syndication import WEBHOOK_METHODS
+from .utils import generate_api_key, send_api_request, trailing_slash
 
 logger = logging.getLogger('superdesk')
 

@@ -153,6 +153,8 @@ define([
                     api.syndicationIn.getById(post.syndication_in).then(function(synd) {
                         post.producer_blog_title = synd.producer_blog_title;
                         resolve(post);
+                    }, function() {
+                        resolve(post);
                     });
                 } else {
                     resolve(post)

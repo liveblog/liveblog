@@ -47,23 +47,33 @@
                       ng-show="producerForm.attempted && producerForm.api_url.$error.required" 
                       translate>This field is required</div>
                 </div>
+                <div
+                      class="error"
+                      ng-show="producerForm.attempted && producerForm.api_url.issue"
+                      translate>{{producerForm.api_url.issue}}
+                </div>
 
                 <div sd-info-item>
                   <label for="consumer_api_key" translate>Consumer Api Key</label>
-                  <input 
-                    type="text" 
-                    name="consumer_api_key" 
-                    id="consumer-api-key" 
-                    ng-model="producer.consumer_api_key" 
+                  <input
+                    type="text"
+                    name="consumer_api_key"
+                    id="consumer-api-key"
+                    ng-model="producer.consumer_api_key"
                     required ng-readonly="producer._readonly && producer._readonly.consumer_api_key">
-                  <i 
+                  <i
                       ng-show="producerForm.consumer_api_key.$error.required" 
                       class="required-asteriks">*</i>
-                  <div 
+                  <div
                       class="error" 
                       ng-show="producerForm.attempted && producerForm.consumer_api_key.$error.required" 
                       translate>This field is required</div>
+                  <div
+                      class="error"
+                      ng-show="producerForm.attempted && producerForm.consumer_api_key.issue"
+                      translate>{{producerForm.consumer_api_key.issue}}</div>
                 </div>
+
             </fieldset>
 
             <div lb-contact-edit

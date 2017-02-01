@@ -7,7 +7,7 @@ liveblogSyndication
                 link: function(scope) {
                     var handleError = function() {
                         notify.pop();
-                        notify.error(gettext('Fatal Error! Producer might have gone for lunch'));
+                        notify.error(gettext('An error has been occurred. Please try again later!'));
 
                         IngestPanelActions.flushErrors();
                     };
