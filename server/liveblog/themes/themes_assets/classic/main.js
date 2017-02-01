@@ -133,6 +133,8 @@
     }
 
     angular.module('theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll', 'gettext'])
+        // `assets_simplified_path` is set to work with the simplified assets path.
+        .constant('assets_simplified_path', true)
         .run(['gettextCatalog', 'config', function (gettextCatalog, config) {
             gettextCatalog.setCurrentLanguage(config.settings.language);
         }])
