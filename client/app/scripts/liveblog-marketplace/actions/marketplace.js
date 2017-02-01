@@ -19,7 +19,15 @@ liveblogMarketplace
                     });
                 },
                 toggleFilter: function(type, value) {
-                    console.log(type, value);
+                    if (type == 'category')
+                        api
+                            .get('/marketplace/blogs', {where: {category: value}})
+                            .then(function(blogs) {
+                                Dispatcher.dispatch({
+                                    type: 'ON_GET_BLOGS',
+                                    blogs: blogs
+                                });
+                            })
                 },
                 togglePanel: function(value) {
                     Dispatcher.dispatch({
