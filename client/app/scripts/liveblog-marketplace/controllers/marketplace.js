@@ -21,10 +21,12 @@ liveblogMarketplace
             $scope.store = new Store(MarketplaceReducers, {
                 blogs: {},
                 marketers: {},
+                filters: {},
                 searchPanel: true
             });
 
             $scope.store.connect(function(state) {
+                console.log('state', state);
                 $scope.blogs = state.blogs;
                 $scope.searchPanel = state.searchPanel;
             });

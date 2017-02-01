@@ -7,6 +7,12 @@ liveblogMarketplace
                         blogs: action.blogs
                     });
 
+                case 'ON_FILTER_BLOGS':
+                    return angular.extend(state, {
+                        blogs: action.blogs,
+                        filters: action.filters
+                    });
+
                 case 'ON_GET_MARKETERS':
                     return angular.extend(state, {
                         marketers: action.marketers
