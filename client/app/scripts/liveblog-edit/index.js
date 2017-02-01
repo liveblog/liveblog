@@ -8,5 +8,6 @@ import './posts.service';
 import './unread.posts.service';
 import './blog.service';
 import './pages-manager.service';
+import './freetype.service';
 import './module';
 import './directives';

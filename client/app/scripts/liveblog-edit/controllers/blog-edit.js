@@ -25,7 +25,7 @@ import './../unread.posts.service';
 //    'angular-embed'
 //], function(angular, _) {
     'use strict';
-    var BlogEditController = function (api, $q, $scope, blog, notify, gettext, session, $injector,
+    var BlogEditController = function (api, $q, $scope, blog, notify, gettext, session, $injector, $http,
         upload, config, embedService, postsService, unreadPostsService, freetypeService, modal,
         blogService, $route, $routeParams, blogSecurityService, themesService, $templateCache, $timeout) {
 
@@ -130,20 +130,41 @@ import './../unread.posts.service';
         $scope.selectedFreetype = undefined;
         // retrieve the freetypes
         function getFreetypes() {
-            api.freetypes.query().then(function(data) {
-                var freetypes = [{
-                    name: 'Advertisment Local',
-                    template: $templateCache.get('scripts/liveblog-edit/views/ads-local.html')
-                }, {
-                    name: 'Advertisment Remote',
-                    template: $templateCache.get('scripts/liveblog-edit/views/ads-remote.html')
-                }, {
-                    name: 'Scorecard',
-                    template: $templateCache.get('scripts/liveblog-edit/views/scorecards.html'),
-                    separator: true
-                }];
-                $scope.freetypes = freetypes.concat(data._items);
+            //these are the freetypes defined by the user with the CRUD form
+            var userFt = api.freetypes.query().then(function(data) {
+                return data._items;
             });
+
+            var scorecards = $http.get('scripts/liveblog-edit/views/scorecards.html').then(function(template) {
+                return {
+                    name: 'Scorecard',
+                    template: template.data
+                };
+            });
+
+            var adLocal = $http.get('scripts/liveblog-edit/views/ads-local.html').then(function(template) {
+                return {
+                    name: 'Advertisment Local',
+                    template: template.data
+                };
+            });
+
+            var adRemote = $http.get('scripts/liveblog-edit/views/ads-remote.html').then(function(template) {
+                return {
+                    name: 'Advertisment Remote',
+                    template: template.data
+                };
+            });
+
+            $q.all([userFt, adLocal, adRemote, scorecards]).then(function(freetypes) {
+                angular.forEach(freetypes, function(freetype) {
+                    if (angular.isArray(freetype)) {
+                        $scope.freetypes = $scope.freetypes.concat(freetype);
+                    } else {
+                        $scope.freetypes.push(freetype);
+                    }
+                });
+            })
         };
 
         //load freetype item
@@ -403,7 +424,7 @@ import './../unread.posts.service';
         $scope.openPanel(panel, syndId);
     }
     BlogEditController.$inject = [
-        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector',
+        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector', '$http',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'freetypeService', 'modal',
         'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService', '$templateCache', '$timeout'
     ];

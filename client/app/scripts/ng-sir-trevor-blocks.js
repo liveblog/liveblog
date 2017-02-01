@@ -83,7 +83,6 @@ import _ from 'lodash';
     angular
     .module('SirTrevorBlocks', [])
         .config(['SirTrevorProvider', function(SirTrevor) {
-            console.log('sir trevor', SirTrevor);
 
             //replace the plus symbol with text description
             SirTrevor.FloatingBlockControls.prototype.attributes = function() {
