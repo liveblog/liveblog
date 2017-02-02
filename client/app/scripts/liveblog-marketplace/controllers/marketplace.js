@@ -36,6 +36,7 @@ liveblogMarketplace
             $scope.store.connect(function(state) {
                 $scope.blogs = state.blogs;
                 $scope.searchPanel = state.searchPanel;
+                $scope.embedModal = state.embedModal;
 
                 $route.updateParams({
                     filters: JSON.stringify(state.filters)

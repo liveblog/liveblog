@@ -18,14 +18,23 @@ liveblogMarketplace
 
                     scope.closeEmbedModal = MarketplaceActions.closeEmbedModal;
 
+                    // This is unfortunately not the cleanest way to proceed,
+                    // but it avoid having a non empty current blog value
+                    // when closing the modal by clicking outside of it.
+                    scope.$watch('embedModal', function(embedModal) {
+                        if (!embedModal && scope.currentBlog)
+                            MarketplaceActions.closeEmbedModal();
+                    });
+
                     scope.store.connect(function(state) {
                         scope.embedModal = state.embedModal;
+                        scope.currentBlog = state.currentBlog;
 
                         if (state.currentBlog)
-                            scope.currentBlog = angular.extend(state.currentBlog, {
+                            scope.currentBlog = angular.extend(scope.currentBlog, {
                                 embed: '<iframe '+iframeAttrs+' src="'
-                                    + state.currentBlog.public_url+'"></iframe>',
-                                public_url: $sce.trustAsResourceUrl(state.currentBlog.public_url)
+                                    + scope.currentBlog.public_url+'"></iframe>',
+                                iframeUrl: $sce.trustAsResourceUrl(scope.currentBlog.public_url)
                             });
                     });
                 }
