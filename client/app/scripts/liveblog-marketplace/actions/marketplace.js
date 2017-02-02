@@ -47,6 +47,13 @@ liveblogMarketplace
                         type: 'ON_TOGGLED_PANEL',
                         searchPanel: value
                     });
+                },
+                openEmbedModal: function(blog) {
+                    Dispatcher.dispatch({
+                        type: 'ON_OPENED_MODAL',
+                        embedModal: true,
+                        currentBlog: blog
+                    });
                 }
             }
         }]);

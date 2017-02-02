@@ -22,11 +22,15 @@ liveblogMarketplace
                 MarketplaceActions.togglePanel(!$scope.searchPanel);
             };
 
+            $scope.openEmbedModal = MarketplaceActions.openEmbedModal;
+
             $scope.store = new Store(MarketplaceReducers, {
+                currentBlog: {},
                 blogs: { _items: {} },
                 marketers: { _items: {} },
                 filters: filters,
-                searchPanel: true
+                searchPanel: true,
+                embedModal: false
             });
 
             $scope.store.connect(function(state) {

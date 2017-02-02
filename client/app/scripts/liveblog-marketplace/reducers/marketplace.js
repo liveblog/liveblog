@@ -22,6 +22,12 @@ liveblogMarketplace
                     return angular.extend(state, {
                         searchPanel: action.searchPanel
                     });
+
+                case 'ON_OPENED_MODAL':
+                    return angular.extend(state, {
+                        embedModal: action.embedModal,
+                        currentBlog: action.currentBlog
+                    });
             }
         };
     });
