@@ -1,7 +1,12 @@
 liveblogMarketplace
     .controller('MarketplaceController', 
-        ['$scope', 'Store', 'MarketplaceActions', 'MarketplaceReducers',
-        function($scope, Store, MarketplaceActions, MarketplaceReducers) {
+        ['$scope', 'Store', 'MarketplaceActions', 'MarketplaceReducers', '$route',
+        function($scope, Store, MarketplaceActions, MarketplaceReducers, $route) {
+            var filters = {}
+
+            if ($route.current.params.hasOwnProperty('filters'))
+                filters = JSON.parse($route.current.params.filters);
+
             $scope.states = [
                 'Marketers',
                 'Producers'
@@ -20,15 +25,19 @@ liveblogMarketplace
             $scope.store = new Store(MarketplaceReducers, {
                 blogs: { _items: {} },
                 marketers: { _items: {} },
-                filters: {},
+                filters: filters,
                 searchPanel: true
             });
 
             $scope.store.connect(function(state) {
                 $scope.blogs = state.blogs;
                 $scope.searchPanel = state.searchPanel;
+
+                $route.updateParams({
+                    filters: JSON.stringify(state.filters)
+                });
             });
 
-            MarketplaceActions.getBlogs();
+            MarketplaceActions.getBlogs(filters);
             MarketplaceActions.getMarketers();
         }]);

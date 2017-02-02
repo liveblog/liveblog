@@ -2,13 +2,14 @@ liveblogMarketplace
     .factory('MarketplaceActions', ['Dispatcher', 'api', '$http', 'lodash',
         function(Dispatcher, api, $http, _) {
             return {
-                getBlogs: function() {
-                    api.get('/marketplace/blogs').then(function(blogs) {
-                        Dispatcher.dispatch({
-                            type: 'ON_GET_BLOGS',
-                            blogs: blogs
+                getBlogs: function(filters) {
+                    api.get('/marketplace/blogs', { where: filters })
+                        .then(function(blogs) {
+                            Dispatcher.dispatch({
+                                type: 'ON_GET_BLOGS',
+                                blogs: blogs
+                            });
                         });
-                    });
                 },
                 getMarketers: function() {
                     api.get('/marketplace/marketers').then(function(marketers) {
