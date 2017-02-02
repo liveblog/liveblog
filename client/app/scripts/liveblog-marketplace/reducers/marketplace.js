@@ -23,7 +23,7 @@ liveblogMarketplace
                         searchPanel: action.searchPanel
                     });
 
-                case 'ON_OPENED_MODAL':
+                case 'ON_TOGGLED_MODAL':
                     return angular.extend(state, {
                         embedModal: action.embedModal,
                         currentBlog: action.currentBlog

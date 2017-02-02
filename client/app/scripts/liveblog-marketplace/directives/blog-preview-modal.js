@@ -1,6 +1,6 @@
 liveblogMarketplace
-    .directive('lbBlogPreviewModal', ['IngestPanelActions', '$sce', 
-        function(IngestPanelActions, $sce) {
+    .directive('lbBlogPreviewModal', ['MarketplaceActions', '$sce', 
+        function(MarketplaceActions, $sce) {
             return {
                 templateUrl: 'scripts/liveblog-marketplace/views/blog-preview-modal.html',
                 scope: {
@@ -15,6 +15,8 @@ liveblogMarketplace
                     ].join(' ');
 
                     scope.active = 'preview';
+
+                    scope.closeEmbedModal = MarketplaceActions.closeEmbedModal;
 
                     scope.store.connect(function(state) {
                         scope.embedModal = state.embedModal;

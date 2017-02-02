@@ -12,12 +12,5 @@ liveblogMarketplace
                 adminTools: true,
                 resolve: {isArchivedFilterSelected: function() {return false;}}
             });
-    //}])
-    //.config(['apiProvider', function(apiProvider) {
-    //    apiProvider
-    //        .api('mpBlogs', {
-    //            type: 'http',
-    //            backend: {rel: '/marketplace/blogs'}
-    //        });
     }]);
 

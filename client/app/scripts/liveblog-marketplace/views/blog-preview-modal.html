@@ -1,6 +1,6 @@
 <div sd-modal="" data-model="embedModal" class="mp-embed-modal">
     <div class="modal-header">
-        <button class="close" ng-click="cancelEmbed()">
+        <button class="close" ng-click="closeEmbedModal()">
             <i class="icon-close-small"></i>
         </button>
         <h3><span>Producer Blog:</span> {{currentBlog.title}}</h3>
@@ -42,7 +42,7 @@
             type="button"
             class="btn btn-default"
             translate
-            ng-click="cancelEmbed()">Close</button>
+            ng-click="closeEmbedModal()">Close</button>
     </div>
 </div>
 

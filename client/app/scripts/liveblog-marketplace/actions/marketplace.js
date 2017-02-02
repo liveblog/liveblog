@@ -50,9 +50,16 @@ liveblogMarketplace
                 },
                 openEmbedModal: function(blog) {
                     Dispatcher.dispatch({
-                        type: 'ON_OPENED_MODAL',
+                        type: 'ON_TOGGLED_MODAL',
                         embedModal: true,
                         currentBlog: blog
+                    });
+                },
+                closeEmbedModal: function() {
+                    Dispatcher.dispatch({
+                        type: 'ON_TOGGLED_MODAL',
+                        embedModal: false,
+                        currentBlog: {}
                     });
                 }
             }
