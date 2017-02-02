@@ -34,10 +34,10 @@
                 <ul class="filter-box">
                     <li
                         ng-repeat="marketer in marketers._items"
-                        ng-click="toggleFilter('marketer', marketer._id)">
+                        ng-click="toggleFilter('marketer._id', marketer._id)">
                         <span
                             class="sd-checkbox"
-                            ng-checked="hasFilter('marketer', marketer._id)"></span>
+                            ng-checked="hasFilter('marketer._id', marketer._id)"></span>
                         <span>{{ key | translate}} <i>{{ marketer.name }}</i></span>
                     </li>
                 </ul>

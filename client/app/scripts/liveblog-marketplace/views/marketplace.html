@@ -21,7 +21,6 @@
             ng-class="{'filter-trigger--active': flags.facets}">
             <i class="icon-filter-large"></i>
         </button>
-        <!--<div sd-searchbar></div>-->
         <div sd-pagination data-items="blogs" data-limit="pageLimit"></div>
     </header>
 
@@ -32,7 +31,11 @@
             class="archive-sidebar"
             ng-if="searchPanel"></div>
         <!-- GRID VIEW -->
-        <ul class="card-list" ng-class="{'open': searchPanel}">
+        <div ng-hide="blogs._items" class="not-found">
+            <p>Not found</p>
+        </div>
+
+        <ul class="card-list" ng-class="{'open': searchPanel}" ng-show="blogs._items">
             <li
                 ng-repeat="blog in blogs._items track by blog._id"
                 ng-click="openEmbedModal(blog)"

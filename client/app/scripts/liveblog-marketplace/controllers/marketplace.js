@@ -7,7 +7,6 @@ liveblogMarketplace
                 'Producers'
             ];
 
-            //$scope.searchPanel = true;
             $scope.activeState = $scope.states[0];
 
             $scope.switchTab = function(state) {
@@ -19,23 +18,17 @@ liveblogMarketplace
             };
 
             $scope.store = new Store(MarketplaceReducers, {
-                blogs: {},
-                marketers: {},
+                blogs: { _items: {} },
+                marketers: { _items: {} },
                 filters: {},
                 searchPanel: true
             });
 
             $scope.store.connect(function(state) {
-                console.log('state', state);
                 $scope.blogs = state.blogs;
                 $scope.searchPanel = state.searchPanel;
             });
 
             MarketplaceActions.getBlogs();
             MarketplaceActions.getMarketers();
-
-            //api.producers.query()
-            //    .then(function(producers) {
-            //        $scope.producers = producers;
-            //    });
         }]);
