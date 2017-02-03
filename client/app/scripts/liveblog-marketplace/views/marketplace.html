@@ -1,23 +1,63 @@
-<div class="subnav">
-    <div class="button-stack left-stack" >
-        <ul class="nav nav-tabs pull-left" >
+<section class="main-section bloglist marketer">
+    <header>
+        <button
+            class="filter-trigger"
+            title="{{ :: 'Filters' | translate }}"
+            ng-click="togglePanel()"
+            ng-class="{'filter-trigger--active': flags.facets}">
+            <i class="icon-filter-large"></i>
+        </button>
+        <div sd-pagination data-items="blogs" data-limit="pageLimit"></div>
+    </header>
+
+    <div class="list-container">
+        <div
+            lb-search-panel
+            store="store"
+            class="archive-sidebar"
+            ng-if="searchPanel"></div>
+        <!-- GRID VIEW -->
+        <div ng-hide="blogs._items" class="not-found">
+            <p>Not found</p>
+        </div>
+
+        <ul class="card-list" ng-class="{'open': searchPanel}" ng-show="blogs._items">
             <li
-                ng-class="{active: activeState === state}" 
-                ng-repeat="state in states">
-                <button
-                    ng-click="switchTab(state)"
-                    translate>{{ ::state }}</button>
+                ng-repeat="blog in blogs._items track by blog._id"
+                ng-click="openEmbedModal(blog)"
+                class="can-access">
+                <figure class="media">
+                    <div ng-if="blog.picture_url" if-background-image="{{blog.picture_url}}"></div>
+                </figure>
+                <div class="content">
+                    <h3>{{ ::blog.title }}</h3>
+                    <div class="description">{{ ::blog.description | htmlToPlaintext }}</div>
+                </div>
+                <div class="footer">
+                    <dl>
+                        <dt>{{ ::'Blog owner' | translate }}:</dt>
+                        <dd>{{ ::blog.marketer_name }}</dd>
+                        <dt>{{ ::'Created' | translate}}:</dt>
+                        <dd sd-reldate ng-model="blog._created"></dd>
+                        <dt>{{ ::'Last udpated' | translate }}:</dt>
+                        <dd><time>{{ ::blog._updated | reldate }}</time></dd>
+                        <dt>{{ ::'Category' | translate }}:</dt>
+                        <dd>{{ ::blog.category }}</dd>
+                    </dl>
+                </div>
             </li>
         </ul>
     </div>
-</div>
 
-<section
-    lb-marketers-grid
-    class="main-section bloglist"
-    ng-show="activeState == 'Marketers'"></section>
+    <div lb-blog-preview-modal store="store"></div>
+</section>
 
-<section 
-    lb-producers-grid
-    class="main-section bloglist"
-    ng-if="activeState == 'Producers'"></section>
+<!--<section-->
+<!--    lb-marketers-grid-->
+<!--    class="main-section bloglist"-->
+<!--    ng-show="activeState == 'Marketers'"></section>-->
+
+<!--<section -->
+<!--    lb-producers-grid-->
+<!--    class="main-section bloglist"-->
+<!--    ng-if="activeState == 'Producers'"></section>-->

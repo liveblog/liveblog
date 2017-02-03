@@ -1,6 +1,12 @@
 liveblogMarketplace
-    .controller('MarketplaceController', ['$scope', '$location', 'api',
-        function($scope, $location, api) {
+    .controller('MarketplaceController', 
+        ['$scope', 'Store', 'MarketplaceActions', 'MarketplaceReducers', '$route',
+        function($scope, Store, MarketplaceActions, MarketplaceReducers, $route) {
+            var filters = {}
+
+            if ($route.current.params.hasOwnProperty('filters'))
+                filters = JSON.parse($route.current.params.filters);
+
             $scope.states = [
                 'Marketers',
                 'Producers'
@@ -12,17 +18,31 @@ liveblogMarketplace
                 $scope.activeState = state;
             };
 
-            //$scope.open = function(producer) {
-            //    $location.path('/marketplace/' + producer._id);
-            //};
+            $scope.togglePanel = function() {
+                MarketplaceActions.togglePanel(!$scope.searchPanel);
+            };
 
-            //api.get('/marketplace/marketers')
-            //    .then(function(marketers) {
-            //        $scope.marketers = marketers;
-            //    });
+            $scope.openEmbedModal = MarketplaceActions.openEmbedModal;
 
-            //api.producers.query()
-            //    .then(function(producers) {
-            //        $scope.producers = producers;
-            //    });
+            $scope.store = new Store(MarketplaceReducers, {
+                currentBlog: {},
+                blogs: { _items: {} },
+                marketers: { _items: {} },
+                filters: filters,
+                searchPanel: true,
+                embedModal: false
+            });
+
+            $scope.store.connect(function(state) {
+                $scope.blogs = state.blogs;
+                $scope.searchPanel = state.searchPanel;
+                $scope.embedModal = state.embedModal;
+
+                $route.updateParams({
+                    filters: JSON.stringify(state.filters)
+                });
+            });
+
+            MarketplaceActions.getBlogs(filters);
+            MarketplaceActions.getMarketers();
         }]);
