@@ -18,13 +18,14 @@ define([
 ], function(angular, _) {
     'use strict';
     var BlogSettingsController = function($scope, blog, api, blogService, $location, notify,
-        gettext, modal, $q, upload) {
+        gettext, modal, $q, upload, config) {
 
         // set view's model
         var vm = this;
         angular.extend(vm, {
             blog: blog,
             newBlog: angular.copy(blog),
+            deactivateTheme: (config.subscriptionLevel == 'solo') ? true : false,
             blogPreferences: angular.copy(blog.blog_preferences),
             availableLanguages: [],
             original_creator: {},
@@ -319,6 +320,6 @@ define([
         vm.syndication_enabled = vm.newBlog.syndication_enabled;
     }
     BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
-        'gettext', 'modal', '$q', 'upload'];
+        'gettext', 'modal', '$q', 'upload', 'config'];
     return BlogSettingsController;
 });
