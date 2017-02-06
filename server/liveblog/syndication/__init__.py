@@ -25,7 +25,7 @@ def init_app(app):
     service = SyndicationInService('syndication_in', backend=superdesk.get_backend())
     SyndicationIn('syndication_in', app=app, service=service)
     # Add validator for api_url & webhook_url
-    app.validator = SyndicationValidator
+    #app.validator = SyndicationValidator
 
 
 superdesk.privilege(name='consumers', label='Consumers Management', description='User can manage consumers')
