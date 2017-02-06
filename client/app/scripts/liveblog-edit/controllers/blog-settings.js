@@ -18,7 +18,7 @@ define([
 ], function(angular, _) {
     'use strict';
     var BlogSettingsController = function($scope, blog, api, blogService, $location, notify,
-        gettext, modal, $q, upload, config) {
+        gettext, modal, $q, upload, config, blogSecurityService) {
 
         // set view's model
         var vm = this;
@@ -318,8 +318,13 @@ define([
         vm.changeTab('general');
         vm.blog_switch = vm.newBlog.blog_status === 'open'? true: false;
         vm.syndication_enabled = vm.newBlog.syndication_enabled;
+
+        // Deactivate status input, when too many blogs are active
+        blogSecurityService.showUpgradeModal().then(function(showUpgradeModal) {
+            vm.deactivateStatus = vm.blog_switch ? false : showUpgradeModal;
+        });
     }
     BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
-        'gettext', 'modal', '$q', 'upload', 'config'];
+        'gettext', 'modal', '$q', 'upload', 'config', 'blogSecurityService'];
     return BlogSettingsController;
 });
