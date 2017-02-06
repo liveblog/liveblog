@@ -2,8 +2,8 @@
 
 angular.module('liveblog.security', [])
 .service('blogSecurityService',
-    ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges', 'config',
-    function($q, $rootScope, $route, blogService, $location, privileges, config) {
+    ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges', 'config', 'api',
+    function($q, $rootScope, $route, blogService, $location, privileges, config, api) {
         function canPublishAPost() {
             return privileges.userHasPrivileges({'publish_post': 1});
         }
@@ -19,17 +19,21 @@ angular.module('liveblog.security', [])
             }
             return ids.indexOf($rootScope.currentUser._id) > -1;
         }
-        function showUpgradeModal(blogs) {
+        function showUpgradeModal() {
             if (!config.blogCreationRestrictions.hasOwnProperty(config.subscriptionLevel))
                 return false;
 
             var numberOfAllowedBlogs = config.blogCreationRestrictions[config.subscriptionLevel];
 
-            var ownBlogs = blogs._items.filter(function(blog) {
-                return (blog.original_creator._id == $rootScope.currentUser._id);
-            })
+            var criteria = {
+                source: {
+                    query: {filtered: {filter: {term: {blog_status: 'open'}}}}
+                }
+            };
 
-            return (ownBlogs.length >= numberOfAllowedBlogs);
+            return api.blogs.query(criteria).then(function(blogs) {
+                return (blogs._items.length >= numberOfAllowedBlogs);
+            });
         }
         function canAccessBlog(blog) {
             return isAdmin() || isMemberOfBlog(blog);
