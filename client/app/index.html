@@ -221,7 +221,6 @@
             'liveblog.edit',
             'liveblog.posts',
             'liveblog.blog',
-            'liveblog.themes',
             'liveblog.freetypes',
             'superdesk.settings',
             'superdesk.dashboard',
@@ -252,6 +251,9 @@
             'lb.templates',
             'ngMessages'
         ];
+
+        if (config.subscriptionLevel != 'solo')
+            modules.push('liveblog.themes');
 
         if (config.syndication)
             modules.push('liveblog.syndication');
