@@ -66,7 +66,11 @@
             $scope.newBlogModalActive = false;
         };
         $scope.openNewBlog = function() {
-            $scope.newBlogModalActive = true;
+            //console.log('blogs', $scope.blogs);
+            if (blogSecurityService.showUpgradeModal($scope.blogs))
+                $scope.embedUpgrade = true;
+            else
+                $scope.newBlogModalActive = true;
         };
 
         $scope.createBlog = function() {

@@ -20,6 +20,10 @@ module.exports = function(grunt) {
             facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
             syndication: process.env.SYNDICATION || false,
             subscriptionLevel: process.env.SUBSCRIPTION_LEVEL || '',
+            blogCreationRestrictions: {
+                solo: 1,
+                team: 3
+            },
             analytics: {
                 piwik: {
                     url: process.env.PIWIK_URL || '',
