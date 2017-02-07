@@ -731,3 +731,7 @@ article blockquote li:before {
         padding: 10px;
     }
 }
+
+.justified-gallery>a>.caption {
+    max-height: 45%;
+}
