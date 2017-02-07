@@ -6,7 +6,29 @@
     line-height: 12px;
     padding: 8px 20px;
     &--with-icon-right {
-        padding: 8px 10px 8px 20px;
+        padding: 0px 20px 0px 10px;
+        [class^="icon-"], [class*=" icon-"] {
+            position: absolute;
+            right: 2px;
+            top: 9px;
+        }
+    }
+    &--with-label {
+        position: relative;
+        span {
+            display: inline-block;
+        }
+    }
+    .btn-toggle-label {
+        font-size: 8px;
+        color: white;
+        text-transform: uppercase;
+        background-color: #999;
+        letter-spacing: .1em;
+        border-radius: 1px;
+        padding: 0px 3px 1px 4px;
+        margin: 0 4px 0 2px;
+        line-height: 1.4;
     }
 }
 
