@@ -1,12 +1,27 @@
 <div class="subnav ng-scope themes-manager">
     <h3 class="page-nav-title" translate>Theme Manager</h3>
     <div class="button-stack right-stack">
-        <form action="#" method="post" enctype="multipart/form-data">
+        <form
+            action="#"
+            method="post"
+            enctype="multipart/form-data"
+            ng-if="!vm.hasReachedThemesLimit()">
             <label class="navbtn navbtn-info" for="uploadAThemeFile">
                 <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
             </label>
-            <input type="file" name="uploadAThemeFile" id="uploadAThemeFile" onchange="angular.element(this).controller().uploadThemeFile(this)">
+            <input
+                type="file" 
+                name="uploadAThemeFile" 
+                id="uploadAThemeFile" 
+                onchange="angular.element(this).controller().uploadThemeFile(this)">
         </form>
+
+        <button
+            ng-if="vm.hasReachedThemesLimit()"
+            class="navbtn navbtn-info"
+            ng-click="vm.showUpgradeModal()">
+            <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
+        </button>
     </div>
 </div>
 
@@ -115,5 +130,17 @@
             full-height-offset-bottom="50"/>
     </div>
 </div>
+
+<div sd-modal="" data-model="vm.upgradeModal">
+    <div class="modal-header">
+        <button class="close" ng-click="vm.closeUpgradeModal()">
+            <i class="icon-close-small"></i>
+        </button>
+    </div>
+    <div class="modal-body">
+        <p>Please ugrade if you want to add more themes</p>
+    </div>
+</div>
+
 
 <theme-settings-modal theme="vm.themeSettingsModalTheme" ng-if="vm.themeSettingsModalTheme"></theme-settings-modal>

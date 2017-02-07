@@ -89,6 +89,7 @@
             // TODO: Pagination
             return api.themes.query().then(function(data) {
                 var themes = data._items;
+                console.log('themes', themes);
                 themes.forEach(function(theme) {
                     // create criteria to load blogs with the theme.
                     var criteria = {
@@ -229,6 +230,19 @@
             openThemeSettings: function(theme) {
                 vm.themeSettingsModal = true;
                 vm.themeSettingsModalTheme = theme;
+            },
+            hasReachedThemesLimit: function() {
+                if (config.subscriptionLevel != 'team')
+                    return false;
+                else
+                    return true;
+            },
+            upgradeModal: false,
+            showUpgradeModal: function() {
+                vm.upgradeModal = true;
+            },
+            closeUpgradeModal: function() {
+                vm.upgradeModal = false;
             }
         });
 
