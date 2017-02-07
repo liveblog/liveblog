@@ -92,7 +92,7 @@ import './../unread.posts.service';
             if (isPostFreetype()) {
                 return $scope.freetypeControl.isClean();
             } else {
-                var are_all_blocks_empty = _.all(vm.editor.blocks, function(block) {return block.isEmpty();});
+                var are_all_blocks_empty = _.every(vm.editor.blocks, function(block) {return block.isEmpty();});
                 return are_all_blocks_empty || !$scope.isCurrentPostUnsaved();
             }
         }
@@ -108,8 +108,12 @@ import './../unread.posts.service';
             }
         }
 
+        $scope.enableEditor = true;
+
         // remove and clean every items from the editor
         function cleanEditor(actionDisabled) {
+            $scope.enableEditor = false;
+
             actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
             if ($scope.freetypeControl.reset) {
                 $scope.freetypeControl.reset();
@@ -119,6 +123,8 @@ import './../unread.posts.service';
             $scope.currentPost = undefined;
             $scope.sticky = false;
             $scope.highlight = false;
+
+            $timeout(() => $scope.enableEditor = true);
         }
 
         // retieve the blog's public url
@@ -203,6 +209,13 @@ import './../unread.posts.service';
             selectPostType: function(postType) {
                 $scope.selectedPostType = postType;
                 $scope.toggleTypePostDialog();
+            },
+            onEditorChanges: function() {
+                var input = $(this).text().trim();
+
+                $scope.$apply(function() {
+                    $scope.actionDisabled = _.isEmpty(input);
+                });
             },
             actionStatus: function() {
                 if (isPostFreetype()) {

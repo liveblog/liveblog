@@ -4,7 +4,13 @@ var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login
 describe('Free types Manager', function() {
     'use strict';
 
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login()
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
+
 
     it('can open freetypes manager and do CRUD operations on them', function() {
         freetypesManager.openFreetypesManager();
