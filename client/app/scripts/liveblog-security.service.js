@@ -21,7 +21,7 @@ angular.module('liveblog.security', [])
         }
         function showUpgradeModal() {
             if (!config.blogCreationRestrictions.hasOwnProperty(config.subscriptionLevel))
-                return false;
+                return $q.when(false);
 
             var numberOfAllowedBlogs = config.blogCreationRestrictions[config.subscriptionLevel];
 
