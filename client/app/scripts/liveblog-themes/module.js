@@ -89,7 +89,6 @@
             // TODO: Pagination
             return api.themes.query().then(function(data) {
                 var themes = data._items;
-                console.log('themes', themes);
                 themes.forEach(function(theme) {
                     // create criteria to load blogs with the theme.
                     var criteria = {
@@ -232,10 +231,17 @@
                 vm.themeSettingsModalTheme = theme;
             },
             hasReachedThemesLimit: function() {
-                if (config.subscriptionLevel != 'team')
+                if (!vm.themes)
                     return false;
+
+                var themes = vm.themes.filter(function(theme) {
+                    return (theme.name != config.excludedTheme);
+                });
+
+                if (config.subscriptionLevel == 'team')
+                    return (themes.length >= config.themeCreationRestrictions.team);
                 else
-                    return true;
+                    return false;
             },
             upgradeModal: false,
             showUpgradeModal: function() {
