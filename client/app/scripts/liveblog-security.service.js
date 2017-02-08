@@ -2,8 +2,8 @@
 
 angular.module('liveblog.security', [])
 .service('blogSecurityService',
-    ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges',
-    function($q, $rootScope, $route, blogService, $location, privileges) {
+    ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges', 'config', 'api',
+    function($q, $rootScope, $route, blogService, $location, privileges, config, api) {
         function canPublishAPost() {
             return privileges.userHasPrivileges({'publish_post': 1});
         }
@@ -18,6 +18,22 @@ angular.module('liveblog.security', [])
                 ids.push.apply(ids, blog.members.map(function(member) {return member.user;}));
             }
             return ids.indexOf($rootScope.currentUser._id) > -1;
+        }
+        function showUpgradeModal() {
+            if (!config.blogCreationRestrictions.hasOwnProperty(config.subscriptionLevel))
+                return $q.when(false);
+
+            var numberOfAllowedBlogs = config.blogCreationRestrictions[config.subscriptionLevel];
+
+            var criteria = {
+                source: {
+                    query: {filtered: {filter: {term: {blog_status: 'open'}}}}
+                }
+            };
+
+            return api.blogs.query(criteria).then(function(blogs) {
+                return (blogs._items.length >= numberOfAllowedBlogs);
+            });
         }
         function canAccessBlog(blog) {
             return isAdmin() || isMemberOfBlog(blog);
@@ -52,6 +68,7 @@ angular.module('liveblog.security', [])
         }
         return {
             goToSettings: goToSettings,
+            showUpgradeModal: showUpgradeModal,
             isAdmin: isAdmin,
             isUserOwnerOrAdmin: isUserOwnerOrAdmin,
             isUserOwnerOrCanPublishAPost: isUserOwnerOrCanPublishAPost,
