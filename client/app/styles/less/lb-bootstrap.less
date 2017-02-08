@@ -16,7 +16,7 @@ a[disabled] {
     pointer-events: none;
 }
 
-input[type] {
+input[type="text"] {
     display: block;
     width: 100%;
     min-height: 28px; /* Make inputs at least the height of their button counterpart */
@@ -61,4 +61,9 @@ input[type] {
             width: 100%;
         }
     }
+}
+
+// search input fix
+.flat-searchbar .search-handler input {
+    display: inline-block;
 }
