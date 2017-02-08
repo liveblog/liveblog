@@ -136,6 +136,8 @@ INSTALLED_APPS = [
     'liveblog.global_preferences',
     'liveblog.client_modules',
     'liveblog.blogslist',
+    'liveblog.syndication',
+    'liveblog.freetypes',
     'liveblog.analytics'
 ]
 
@@ -263,3 +265,7 @@ DEFAULT_URGENCY_VALUE_FOR_MANUAL_ARTICLES = env('DEFAULT_URGENCY_VALUE_FOR_MANUA
 
 ORGANIZATION_NAME = "Sourcefabric"
 ORGANIZATION_NAME_ABBREVIATION = "SF"
+
+# Syndication Global Settings
+SYNDICATION_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
+SYNDICATION_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)

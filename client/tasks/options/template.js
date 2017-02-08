@@ -18,6 +18,7 @@ module.exports = function(grunt) {
                 key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
             },
             facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
+            syndication: process.env.SYNDICATION || false,
             analytics: {
                 piwik: {
                     url: process.env.PIWIK_URL || '',
