@@ -236,17 +236,18 @@
     }
 
     var liveblogThemeModule = angular.module('liveblog.themes', [])
-    .config(['superdeskProvider', function(superdesk) {
-        superdesk
-            .activity('/themes/', {
-                label: gettext('Theme Manager'),
-                controller: LiveblogThemesController,
-                controllerAs: 'vm',
-                category: superdesk.MENU_MAIN,
-                adminTools: true,
-                privileges: {'global_preferences': 1},
-                templateUrl: 'scripts/liveblog-themes/views/list.html'
-            });
+    .config(['superdeskProvider', 'config', function(superdesk, config) {
+        if (config.subscriptionLevel != 'solo')
+            superdesk
+                .activity('/themes/', {
+                    label: gettext('Theme Manager'),
+                    controller: LiveblogThemesController,
+                    controllerAs: 'vm',
+                    category: superdesk.MENU_MAIN,
+                    adminTools: true,
+                    privileges: {'global_preferences': 1},
+                    templateUrl: 'scripts/liveblog-themes/views/list.html'
+                });
     }])
     .filter('githubUrlFromGit', function() {
         return function(string) {
