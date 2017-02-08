@@ -28,10 +28,6 @@ define([
         // init with empty vector
         $scope.freetypesData = {}; $scope.freetypeControl = {};
 
-        $scope.freetypeControl.toggleRememberScore = function() {
-            console.log('this is it from here man ', $scope.freetypesData.remember);
-        };
-
         if (blog.blog_preferences.theme) {
             themesService.get(blog.blog_preferences.theme).then(function(themes) {
                 blog.blog_preferences.theme = themes[0];
@@ -79,21 +75,13 @@ define([
         //save the 'keep scoarers' if needed
         function saveScoarers() {
             if (isPostScorecard()) {
-                console.log('blog ', $scope.blog);
-                var bp = $scope.blog.blog_preferences;
-                bp.keep_score = true;
-                // api('blogs').save($scope.blog, { blog_preferences: bp }).then(function(blog) {
-                //     //no need to do anything
-                //     console.log('saved scoarers');
-                // }, function() { 
-                //     //something went wrong
-                //     console.log('something went wrong');
-                // });
-                api('blogs').save({ _links: $scope.blog._links }, { blog_preferences: bp }).then(function(blog) {
-                   console.log('all good');
-                }, function() {
-                    console.log('not good');
-                });
+                var bp = angular.copy($scope.currentBlog.blog_preferences);
+                bp.last_scorecard = $scope.freetypesData;
+                blogService.update($scope.currentBlog, {'blog_preferences': bp}).then(function(nb) {
+                    //move along nothing to see here
+                }, function(error) {
+                    //something went wrong
+                }); 
             }
         }
 
@@ -186,6 +174,7 @@ define([
         // define the $scope
         angular.extend($scope, {
             blog: blog,
+            currentBlog: {},
             panels: {},
             syndicationEnabled: $injector.has('lbNotificationsCountDirective'),
             selectedUsersFilter: [],
@@ -206,6 +195,18 @@ define([
             selectPostType: function(postType) {
                 $scope.selectedPostType = postType;
                 $scope.toggleTypePostDialog();
+                if (isPostScorecard()) {
+                    blogService.get($scope.blog._id).then(function(currentBlog) {
+                        $scope.currentBlog = currentBlog;
+                        
+                        if ($scope.currentBlog.blog_preferences.last_scorecard) {
+                            //load latest scorecard
+                            if ($scope.currentBlog.blog_preferences.last_scorecard.remember) {
+                                $scope.freetypesData = angular.copy($scope.currentBlog.blog_preferences.last_scorecard);
+                            }
+                        }                     
+                    });
+                }
             },
             actionStatus: function() {
                 if (isPostFreetype()) {
@@ -298,6 +299,8 @@ define([
             },
             publish: function() {
                 $scope.actionPending = true;
+                //save the keep scoreres setting( if needed)
+                saveScoarers();
                 notify.info(gettext('Saving post'));
                 postsService.savePost(blog._id,
                     $scope.currentPost,
@@ -306,9 +309,6 @@ define([
                 ).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
-
-                    //save the keep scoreres setting( if needed)
-                    saveScoarers();
 
                     cleanEditor();
                     $scope.selectedPostType = 'Default';

@@ -25,7 +25,7 @@ describe('Draft Posts', function() {
             .expectPost(1, dataDraft1.quote);
     });
 
-    fit('can open a draft in the editor and publish it', function() {
+    it('can open a draft in the editor and publish it', function() {
         var blog = blogs.openBlog(0);
         var dataDraft = blog.editor.createDraft();
         var drafts = blog.openDrafts();
