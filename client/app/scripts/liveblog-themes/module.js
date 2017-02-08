@@ -229,6 +229,26 @@
             openThemeSettings: function(theme) {
                 vm.themeSettingsModal = true;
                 vm.themeSettingsModalTheme = theme;
+            },
+            hasReachedThemesLimit: function() {
+                if (!vm.themes)
+                    return false;
+
+                var themes = vm.themes.filter(function(theme) {
+                    return (theme.name != config.excludedTheme);
+                });
+
+                if (config.subscriptionLevel == 'team')
+                    return (themes.length >= config.themeCreationRestrictions.team);
+                else
+                    return false;
+            },
+            upgradeModal: false,
+            showUpgradeModal: function() {
+                vm.upgradeModal = true;
+            },
+            closeUpgradeModal: function() {
+                vm.upgradeModal = false;
             }
         });
 

@@ -19,6 +19,8 @@ module.exports = function(grunt) {
             },
             facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
             syndication: process.env.SYNDICATION || false,
+            themeCreationRestrictions: {team: 3},
+            excludedTheme: 'angular',
             assignableUsers: {
                 solo: 3,
                 team: 10

@@ -1,12 +1,27 @@
 <div class="subnav ng-scope themes-manager">
     <h3 class="page-nav-title" translate>Theme Manager</h3>
     <div class="button-stack right-stack">
-        <form action="#" method="post" enctype="multipart/form-data">
+        <form
+            action="#"
+            method="post"
+            enctype="multipart/form-data"
+            ng-if="!vm.hasReachedThemesLimit()">
             <label class="navbtn navbtn-info" for="uploadAThemeFile">
                 <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
             </label>
-            <input type="file" name="uploadAThemeFile" id="uploadAThemeFile" onchange="angular.element(this).controller().uploadThemeFile(this)">
+            <input
+                type="file" 
+                name="uploadAThemeFile" 
+                id="uploadAThemeFile" 
+                onchange="angular.element(this).controller().uploadThemeFile(this)">
         </form>
+
+        <button
+            ng-if="vm.hasReachedThemesLimit()"
+            class="navbtn navbtn-info"
+            ng-click="vm.showUpgradeModal()">
+            <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
+        </button>
     </div>
 </div>
 
@@ -115,5 +130,25 @@
             full-height-offset-bottom="50"/>
     </div>
 </div>
+
+<div sd-modal="" data-model="vm.upgradeModal">
+    <div class="modal-header">
+        <button class="close" ng-click="vm.closeUpgradeModal()">
+            <i class="icon-close-small"></i>
+        </button>
+        <h3>Sorry</h3>
+    </div>
+    <div class="modal-body">
+      <p>You have reached the maximum number of themes on your Live Blog plan. You can either:</p>
+      <ul>
+        <li>1. Remove an existing theme or</li>
+        <li>2. Subscribe to a bigger plan.</li>
+      </ul>
+      <br/>
+      <p>To remove a theme from your Live Blog instance, click on the burger menu on the top left and open the Theme Manager. You can now delete a theme by clicking on the “Remove” button.</p>
+      <p>Want to upgrade to a plan more suitable to your needs? Email us at <a href="mailto:upgrade@liveblog.pro">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
+    </div>
+</div>
+
 
 <theme-settings-modal theme="vm.themeSettingsModalTheme" ng-if="vm.themeSettingsModalTheme"></theme-settings-modal>
