@@ -119,7 +119,7 @@
                     ng-if="panelState === 'incoming-syndication'"></div>
                 <!-- comments -->
                 <div class="panel panel--comments" ng-if="panelState === 'comments'">
-                    <header translate>Comments</header>
+                    <header><h4>{{'Comments' | translate}}</h4></header>
                     <div class="content" lr-infinite-scroll="fetchNewCommentsPage">
                         <lb-posts-list
                           lb-posts-instance="blogEdit.commentPostsInstance"
@@ -142,7 +142,7 @@
                     <div class="panel--editor" ng-show="panelState === 'editor'">
                         <div ng-if="!preview">
                         <header>
-                            Editor
+                            <h4>{{'Editor' | translate}}</h4>
                             <button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate>Preview
                             </button>
                             <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
@@ -155,7 +155,7 @@
                         </div>
                         <div ng-if="preview">
                         <header>
-                            Preview<span ng-click="togglePreview()" class="close-preview pull-right" tooltip-placement="bottom" tooltip="{{ 'Back to edit' | translate }}">
+                            <h4>{{'Preview' | translate}}</h4><span ng-click="togglePreview()" class="close-preview pull-right" tooltip-placement="bottom" tooltip="{{ 'Back to edit' | translate }}">
                             ⨯
                             </span>
                         </header>
