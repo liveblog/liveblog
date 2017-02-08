@@ -72,7 +72,7 @@ define([
 
 
         //save the 'keep scoarers' if needed
-        function saveScoarers() {
+        function saveScorers() {
             if (isPostScorecard()) {
                 var bp = angular.copy($scope.currentBlog.blog_preferences);
                 bp.last_scorecard = $scope.freetypesData;
@@ -298,7 +298,7 @@ define([
             publish: function() {
                 $scope.actionPending = true;
                 //save the keep scoreres setting( if needed)
-                saveScoarers();
+                saveScorers();
                 notify.info(gettext('Saving post'));
                 postsService.savePost(blog._id,
                     $scope.currentPost,
