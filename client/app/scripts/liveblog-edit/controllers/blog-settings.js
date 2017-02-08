@@ -147,6 +147,12 @@ define([
                 vm.memberRequests.splice(vm.memberRequests.indexOf(user), 1);
                 vm.acceptedMembers.push(user);
             },
+            hasReachedMembersLimit: function() {
+              if (!config.assignableUsers.hasOwnProperty(config.subscriptionLevel))
+                return false;
+
+              return vm.blogMembers.length >= config.assignableUsers[config.subscriptionLevel];
+            },
             removeMember: function(user) {
                 vm.blogMembers.splice(vm.blogMembers.indexOf(user), 1);
             },
