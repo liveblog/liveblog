@@ -39,7 +39,8 @@
                         <form class="form-horizontal" name="settings.forms.general">
                             <div class="form-group">
                                 <label for="inputTitle" class="control-label" translate>Blog Status</label>
-                                <div class="form-input relative">
+                                <p ng-if="settings.deactivateStatus">Too many active blogs</p>
+                                <div class="form-input relative" ng-if="!settings.deactivateStatus">
                                     <span class="blog-status">{{ settings.blog_switch ? 'Active' : 'Archived' | translate }}</span>
                                     <span style="display: block" tooltip="{{ settings.blog_switch ? 'Archive Blog' : 'Activate Blog' | translate }}" tooltip-placement="right">
                                         <span class="pull-left" sd-switch ng-model="settings.blog_switch" data-blog-status-switch></span>

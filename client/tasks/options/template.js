@@ -24,6 +24,10 @@ module.exports = function(grunt) {
                 team: 10
             },
             subscriptionLevel: process.env.SUBSCRIPTION_LEVEL || '',
+            blogCreationRestrictions: {
+                solo: 1,
+                team: 3
+            },
             analytics: {
                 piwik: {
                     url: process.env.PIWIK_URL || '',

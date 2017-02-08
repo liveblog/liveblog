@@ -65,8 +65,20 @@
             clearCreateBlogForm();
             $scope.newBlogModalActive = false;
         };
+
+        $scope.cancelUpgrade = function() {
+            $scope.embedUpgrade = false;
+        };
+
         $scope.openNewBlog = function() {
-            $scope.newBlogModalActive = true;
+            blogSecurityService
+                .showUpgradeModal()
+                .then(function(showUpgradeModal) {
+                    if (showUpgradeModal)
+                        $scope.embedUpgrade = true;
+                    else
+                        $scope.newBlogModalActive = true;
+                });
         };
 
         $scope.createBlog = function() {
