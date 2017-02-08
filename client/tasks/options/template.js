@@ -25,7 +25,7 @@ module.exports = function(grunt) {
                 solo: 3,
                 team: 10
             },
-            subscriptionLevel: process.env.SUBSCRIPTION_LEVEL || '',
+            subscriptionLevel: process.env.SUBSCRIPTION_LEVEL || 'solo',
             blogCreationRestrictions: {
                 solo: 1,
                 team: 3
