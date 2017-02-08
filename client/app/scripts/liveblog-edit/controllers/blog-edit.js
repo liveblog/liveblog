@@ -62,7 +62,6 @@ define([
 
         // determine is current post is classic or freetype
         function isPostFreetype() {
-            //console.log('selectedPostType ', $scope.selectedPostType);
             return $scope.selectedPostType !== 'Default';
         };
 
@@ -236,7 +235,6 @@ define([
                 }
             },
             openPostInEditor: function (post) {
-                console.log('opening post ');
                 function fillEditor(post) {
                     cleanEditor(false);
                     var delay = 0;

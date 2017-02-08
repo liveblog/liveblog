@@ -494,10 +494,6 @@ define([
                         return angular.equals(scope.freetypeData, scope.initialData);
                     };
 
-                    scope.internalControl.dir = function() {
-                        console.log('from the dir');
-                    }
-
                     function recursiveClean(obj) {
                         for (var key in obj) {
                             if (angular.isObject(obj[key])) {
