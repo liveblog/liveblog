@@ -19,6 +19,7 @@ module.exports = function(grunt) {
             },
             facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
             syndication: process.env.SYNDICATION || false,
+            marketplace: process.env.MARKETPLACE || true,
             analytics: {
                 piwik: {
                     url: process.env.PIWIK_URL || '',

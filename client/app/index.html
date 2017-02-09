@@ -234,8 +234,6 @@
             'liveblog.posts',
             'liveblog.blog',
             'liveblog.themes',
-            'liveblog.syndication',
-            'liveblog.marketplace',
             'liveblog.freetypes',
             'superdesk.settings',
             'superdesk.dashboard',
@@ -269,6 +267,9 @@
 
         if (config.syndication)
             modules.push('liveblog.syndication');
+
+        if (config.marketplace)
+            modules.push('liveblog.marketplace');
 
         require([
             'main',
