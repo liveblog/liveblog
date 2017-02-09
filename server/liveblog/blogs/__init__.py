@@ -2,7 +2,6 @@ import superdesk
 from liveblog.blogs.blogs import BlogService, BlogsResource, UserBlogsResource, UserBlogsService
 from liveblog.blogs.request_membership import MembershipService, MembershipResource
 from liveblog.blogs.request_membership import MemberListService, MemberListResource
-from .validation import BlogValidator
 
 
 def init_app(app):
@@ -21,9 +20,6 @@ def init_app(app):
     endpoint_name = 'user_requests'
     service = MemberListService(endpoint_name, backend=superdesk.get_backend())
     MemberListResource(endpoint_name, app=app, service=service)
-
-    # Add validator for api_url & webhook_url
-    app.validator = BlogValidator
 
 
 superdesk.privilege(name='blogs', label='Blog Management', description='User can manage blogs')

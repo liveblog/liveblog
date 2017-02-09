@@ -202,8 +202,10 @@ class BlogService(BaseService):
         return doc
 
     def on_update(self, updates, original):
-        if (updates['blog_status']=='open' and original['blog_status']=='closed'):
+        blog_status = updates.get('blog_status')
+        if blog_status == 'open' and original['blog_status'] == 'closed':
             self._check_max_active(1)
+
         updates['versioncreated'] = utcnow()
         updates['version_creator'] = str(get_user().get('_id'))
         syndication_enabled = updates.get('syndication_enabled')
