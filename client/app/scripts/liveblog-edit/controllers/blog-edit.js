@@ -73,15 +73,9 @@ define([
 
         //save the 'keep scoarers' if needed
         function saveScorers() {
-            if (isPostScorecard()) {
                 var bp = angular.copy($scope.currentBlog.blog_preferences);
                 bp.last_scorecard = $scope.freetypesData;
-                blogService.update($scope.currentBlog, {'blog_preferences': bp}).then(function(nb) {
-                    //move along nothing to see here
-                }, function(error) {
-                    //something went wrong
-                }); 
-            }
+                return blogService.update($scope.currentBlog, {'blog_preferences': bp});
         }
 
         // determine if the loaded item is freetype
@@ -298,7 +292,13 @@ define([
             publish: function() {
                 $scope.actionPending = true;
                 //save the keep scoreres setting( if needed)
-                saveScorers();
+                if (isPostScorecard()) {
+                    saveScorers().then(function() {
+                        //no need to show anything on success
+                    }, function() {
+                        notify.error(gettext('Something went wrong with scoarers status. Please try again later'));
+                    });
+                }
                 notify.info(gettext('Saving post'));
                 postsService.savePost(blog._id,
                     $scope.currentPost,
