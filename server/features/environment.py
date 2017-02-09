@@ -9,7 +9,8 @@
 # at https://www.sourcefabric.org/superdesk/license
 
 from app import get_app
-from superdesk.tests.environment import setup_before_all, setup_before_scenario
+from liveblog.tests.environment import setup_before_scenario
+from superdesk.tests.environment import setup_before_all
 from settings import INSTALLED_APPS, BEHAVE_TESTS_FIXTURES_PATH
 
 

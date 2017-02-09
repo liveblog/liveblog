@@ -290,3 +290,27 @@ Feature: Blog operations
         """
         Then we get response code 400
 
+    @auth
+    Scenario: Check syndication_enabled
+    	Given "themes"
+        """
+        [{"name": "forest"}]
+        """
+        Given "blogs"
+        """
+        [
+           {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "testBlog1", "syndication_enabled": true},
+           {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "testBlog2", "syndication_enabled": true},
+           {"blog_preferences": {"theme": "forest", "language": "fr"}, "title": "testBlog3", "syndication_enabled": false}
+         ]
+        """
+        When we get "/blogs?source={"query": {"filtered": {"filter": {"term": {"syndication_enabled": true}}}}}"
+        Then we get list with 2 items
+        """
+        {"_items": [{"title": "testBlog1"}, {"title": "testBlog2"}]}
+        """
+        When we get "/blogs?source={"query": {"filtered": {"filter": {"term": {"syndication_enabled": false}}}}}"
+        Then we get list with 1 items
+        """
+        {"_items": [{"title": "testBlog3"}]}
+        """

@@ -36,7 +36,9 @@ define([
             filters.excludeDeleted = angular.isDefined(filters.excludeDeleted) ? filters.excludeDeleted : true;
             var posts_criteria = {
                 source: {
-                    query: {filtered: {filter: {and: []}}}
+                    query: {filtered: {filter: {
+                        and: []
+                    }}}
                 },
                 page: page,
                 max_results: max_results
@@ -93,6 +95,20 @@ define([
             if (angular.isDefined(filters.sticky)) {
                 posts_criteria.source.query.filtered.filter.and.push({term: {sticky: filters.sticky}});
             }
+
+            // filters.status
+            if (angular.isDefined(filters.syndicationIn)) {
+                posts_criteria.source.query.filtered.filter.and.push({
+                    term: {syndication_in: filters.syndicationIn}
+                });
+            }
+
+            if (angular.isDefined(filters.noSyndication)) {
+                posts_criteria.source.query.filtered.filter.and.push({
+                    missing: { field: 'syndication_in' }
+                });
+            }
+
             return retrievePosts(blog_id, posts_criteria);
         }
 
@@ -107,47 +123,61 @@ define([
             return obj;
         }
         function _completePost(post) {
-            angular.extend(post, {
-                // add a `multiple_items` field. Can be false or a positive integer.
-                // FIXME: left like that to support other feature, but this need to be in camelcase
-                multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
-                // add a `mainItem` field containing the first item
-                mainItem: post.groups[1].refs[0],
-                items: post.groups[1].refs
-            });
-            // if an item has a commenter then that post hasComments.
-            post.hasComments = _.reduce(post.groups[1].refs, function(is, val) {
-                return is || !_.isUndefined(val.item.commenter);
-            }, false);
-            // `fullDetails` is a business logic that can be compiled from other objects.
-            post.fullDetails = post.hasComments;
-            // special cases for comments.
-            post.showUpdate = (post.content_updated_date !== post.published_date) &&
-                               (!post.hasComments) && (post.mainItem.item.item_type !== 'comment');
-            angular.forEach(post.items, function(val) {
-                if (post.fullDetails) {
-                    _completeUser(val.item);
+            return $q(function(resolve, reject) {
+                angular.extend(post, {
+                    // add a `multiple_items` field. Can be false or a positive integer.
+                    // FIXME: left like that to support other feature, but this need to be in camelcase
+                    multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
+                    // add a `mainItem` field containing the first item
+                    mainItem: post.groups[1].refs[0],
+                    items: post.groups[1].refs
+                });
+
+                // if an item has a commenter then that post hasComments.
+                post.hasComments = _.reduce(post.groups[1].refs, function(is, val) {
+                    return is || !_.isUndefined(val.item.commenter);
+                }, false);
+                // `fullDetails` is a business logic that can be compiled from other objects.
+                post.fullDetails = post.hasComments;
+                // special cases for comments.
+                post.showUpdate = (post.content_updated_date !== post.published_date) &&
+                                   (!post.hasComments) && (post.mainItem.item.item_type !== 'comment');
+                angular.forEach(post.items, function(val) {
+                    if (post.fullDetails) {
+                        _completeUser(val.item);
+                    }
+                });
+                _completeUser(post.mainItem.item);
+
+                if (post.syndication_in && api.hasOwnProperty('syndicationIn')) {
+                    api.syndicationIn.getById(post.syndication_in).then(function(synd) {
+                        post.producer_blog_title = synd.producer_blog_title;
+                        resolve(post);
+                    }, function() {
+                        resolve(post);
+                    });
+                } else {
+                    resolve(post)
                 }
             });
-            _completeUser(post.mainItem.item);
-            return post;
         }
 
         function retrievePost(post_id) {
-            return api.posts.getById(post_id).then(function(post) {
-                _completePost(post);
-                return post;
-            });
+            return api.posts.getById(post_id)
+                .then(_completePost)
+                .then(function(post) {
+                    return post;
+                });
         }
 
         function retrievePosts(blog_id, posts_criteria) {
             return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
                 .query(posts_criteria)
                 .then(function(data) {
-                    data._items.forEach(function(post) {
-                        _completePost(post);
-                    });
-                    return data;
+                    return $q.all(data._items.map(_completePost))
+                        .then(function(result) {
+                            return angular.extend(data, { _items: result });
+                        });
                 });
         }
 
@@ -190,6 +220,7 @@ define([
                             blog: blog_id,
                             text: item.text,
                             meta: item.meta,
+                            group_type: item.group_type,
                             item_type: item.item_type,
                             commenter: item.meta && item.meta.commenter
                         };

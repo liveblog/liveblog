@@ -478,6 +478,10 @@
                 /**
                  * Return all the posts from the local pages
                  */
+                updateLatestDates: updateLatestDates,
+                /**
+                 * Return all the posts from the local pages
+                 */
                 allPosts: function () {
                     var posts = self.pages.map(function(page) {
                         return page.posts.map(function(post) {

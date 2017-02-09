@@ -36,3 +36,25 @@ mongorestore -h 10.0.250.27 temporarymaster
 
 Now, we have the database and the elasticsearch content safely saved in our testinstance.
 All we need to do next is follow all the steps in order to put back the content from testinstance into master instance.
+
+### Protractor is not working
+
+The current version of liveblog is relying in a old version of protractor. If you are experiencing issues, it is probably due to the fact that your web browser is too recent for protractor. One way to solve this problem is to download and install an older version of firefox:
+
+```bash
+wget -c https://ftp.mozilla.org/pub/firefox/releases/35.0/linux-x86_64/en-US/firefox-35.0.tar.bz2
+tar xvzf firefox-35.0.tar.bz2
+rm firefox-35.0.tar.bz2
+sudo mv firefox /opt/protractor-firefox
+``` 
+
+and then add the following lines to your protractor config (in capabilities):
+
+```javascript
+capabilities: {
+    browserName: "firefox",
+    firefox_binary: "/opt/protractor-firefox/firefox",
+    binary_: "/opt/protractor-firefox/firefox"
+},
+```
+

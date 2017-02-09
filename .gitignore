@@ -78,5 +78,4 @@ server/liveblog/themes/themes_assets/*
 .vimrc
 
 # Vagrant
-Vagrantfile
 .vagrant
