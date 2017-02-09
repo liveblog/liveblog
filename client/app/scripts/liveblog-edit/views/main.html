@@ -6,7 +6,7 @@
     </div>
     <h3 class="page-nav-title">{{ blog.title }}</h3>
     <div class="button-stack right-stack" ng-if="blogSecurityService.canAccessSettings(blog)">
-        <a class="navbtn settings-link" ng-href="#/liveblog/analytics/{{::blog._id}}">
+        <a class="navbtn analytics-link" ng-href="#/liveblog/analytics/{{::blog._id}}">
             <i class="svg-icon-analytics"></i>
         </a>
         <a class="navbtn settings-link" ng-href="#/liveblog/settings/{{::blog._id}}">
