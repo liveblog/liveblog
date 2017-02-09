@@ -11,7 +11,7 @@
  define([
     'angular',
     './module'
-], 
+],
 function(angular) {
     'use strict';
     /**
@@ -34,6 +34,7 @@ function(angular) {
         attr = attr || '';
         // remove any trailing `/` character from attr.
         // the trailing character is composed.
+        attr = attr.replace(/compulsory\w*=\w*("|')?([^\"\']+)("|')/g, 'compulsory="' + SCOPE_FREETYPEDATA + '.$2"');
         if (attr.substr(attr.length - 1, 1) === '/') {
             attr = attr.substr(0, attr.length - 1);
         }
@@ -166,7 +167,7 @@ function(angular) {
                     });
                     if (name) {
                         path2obj(scope[SCOPE_FREETYPEDATA], name);
-                        return '<input ng-model=' + makeAngularAttr(name, attr) + '/>';
+                        return '<freetype-text text=' + makeAngularAttr(name, attr) + ' validation="validation"></freetype-text>';
                     }
                     return all;
                 });
@@ -195,7 +196,7 @@ function(angular) {
                     });
                     if (name) {
                         path2obj(scope[SCOPE_FREETYPEDATA], name + '.picture_url');
-                        return '<freetype-image image=' + makeAngularAttr(name, attr) + '></freetype-image>';
+                        return '<freetype-image image=' + makeAngularAttr(name, attr) + ' validation="validation"></freetype-image>';
                     }
                     return all;
                 });
@@ -209,7 +210,7 @@ function(angular) {
                     });
                     if (name) {
                         path2obj(scope[SCOPE_FREETYPEDATA], name);
-                        return '<freetype-link link=' + makeAngularAttr(name, attr) + '></freetype-link>';
+                        return '<freetype-link link=' + makeAngularAttr(name, attr) + ' validation="validation"></freetype-link>';
                     }
                     return all;
                 });

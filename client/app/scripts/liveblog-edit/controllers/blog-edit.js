@@ -26,7 +26,7 @@ define([
         // check the theme setting for comments.
 
         // init with empty vector
-        $scope.freetypesData = {}; $scope.freetypeControl = {};
+        $scope.freetypesData = {}; $scope.freetypeControl = {}; $scope.validation = {};
 
         if (blog.blog_preferences.theme) {
             themesService.get(blog.blog_preferences.theme).then(function(themes) {
@@ -211,9 +211,9 @@ define([
             actionStatus: function() {
                 if (isPostFreetype()) {
                     if (angular.isDefined($scope.currentPost)) {
-                        return $scope.freetypeControl.isClean() && $scope.currentPost.post_status !== 'draft' && $scope.currentPost.post_status !== 'submitted';
+                        return $scope.freetypeControl.isValid() && $scope.currentPost.post_status !== 'draft' && $scope.currentPost.post_status !== 'submitted';
                     } else {
-                        return $scope.freetypeControl.isClean()
+                        return $scope.freetypeControl.isValid();
                     }
                 } else {
                     return $scope.actionDisabled || $scope.actionPending;
