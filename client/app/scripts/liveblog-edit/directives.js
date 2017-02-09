@@ -493,7 +493,13 @@ define([
                     scope.internalControl.isClean = function() {
                         return angular.equals(scope.freetypeData, scope.initialData);
                     };
-
+                    scope.internalControl.isValid = function() {
+                        var isClean = scope.internalControl.isClean(),
+                            isValid = _.reduce(scope.validation, function(memo, val) {
+                                return memo && val;
+                        }, true);
+                        return !isValid || isClean;
+                    }
                     function recursiveClean(obj) {
                         for (var key in obj) {
                             if (angular.isObject(obj[key])) {
@@ -512,12 +518,13 @@ define([
 
                     scope.internalControl.reset = function() {
                         recursiveClean(scope.freetypeData);
-                        scope.initialData = angular.copy(scope.freetypeData);  
+                        scope.initialData = angular.copy(scope.freetypeData);
                     };
                 },
                 scope: {
                     freetype: '=',
                     freetypeData: '=',
+                    validation: '=',
                     control: '='
                 }
             };
@@ -534,15 +541,44 @@ define([
                 }
             };
         }])
-        .directive('freetypeLink', ['$compile', function($compile) {
+        .directive('freetypeText', ['$templateCache', function($templateCache) {
 
             return {
                 restrict: 'E',
-                template: '<input type="url" ng-model="link"/>',
-                controller: function() {
-                },
+                template: $templateCache.get('scripts/liveblog-edit/views/freetype-text.html'),
+                controller: ['$scope', function($scope) {
+                    $scope.valid = true;
+                    $scope._id = _.uniqueId('text');
+                    if ($scope.compulsory !== undefined) {
+                        $scope.$watch('[text,compulsory]', function(value) {
+                                $scope.compulsoryFlag = (value[0] === '' && value[1] === '');
+                                $scope.validation['compulsory__' + $scope._id] = !$scope.compulsoryFlag;
+                        }, true);
+                    }
+                }],
                 scope: {
-                    link: '='
+                    text: '=',
+                    compulsory: '=',
+                    validation: '='
+                }
+            };
+        }])
+        .directive('freetypeLink', ['$templateCache', function($templateCache) {
+
+            return {
+                restrict: 'E',
+                template: $templateCache.get('scripts/liveblog-edit/views/freetype-link.html'),
+                controller: ['$scope', function($scope) {
+                    var regex = new RegExp("(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})");
+                    $scope._id = _.uniqueId('link');
+                    $scope.$watch('link', function(value) {
+                        $scope.valid = !value || regex.test(value);
+                        $scope.validation[$scope._id] = $scope.valid;
+                    });
+                }],
+                scope: {
+                    link: '=',
+                    validation: '='
                 }
             };
         }])
@@ -582,6 +618,13 @@ define([
                 restrict: 'E',
                 template: $templateCache.get('scripts/liveblog-edit/views/freetype-image.html'),
                 controller: ['$scope', function($scope) {
+                    $scope.valid = true;
+                    $scope._id = _.uniqueId('image');
+                    if ($scope.compulsory !== undefined) {
+                        $scope.$watch('[image,compulsory]', function(value) {
+                                $scope.compulsoryFlag = (value[0].picture_url === '' && value[1] === '');
+                        }, true);
+                    }
                     var vm = this;
                     angular.extend(vm, {
                         preview: {},
@@ -596,7 +639,7 @@ define([
                         },
                         removeImage: function() {
                             modal.confirm(gettext('Are you sure you want to remove the blog image?')).then(function() {
-                                $scope.image.picture_url = null;
+                                $scope.image.picture_url = '';
                             });
                         },
                         upload: function(config) {
@@ -634,7 +677,9 @@ define([
                 }],
                 controllerAs: 'ft',
                 scope: {
-                    image: '='
+                    image: '=',
+                    compulsory: '=',
+                    validation: '='
                 }
             };
         }]);

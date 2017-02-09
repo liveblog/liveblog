@@ -1,0 +1,17 @@
+<div class="form-group">
+    <div class="form-input">
+        <input type="text" ng-model="text"/>
+        <span
+            class="freetype--error freetype--error-text"
+            ng-hide="valid"
+            hide-render
+            translate>Required!</span>
+        <span
+            class="freetype--error freetype--error-text"
+            ng-show="compulsoryFlag"
+            hide-render
+            translate>One of these is required!</span>
+
+    </div>
+</div>
+
