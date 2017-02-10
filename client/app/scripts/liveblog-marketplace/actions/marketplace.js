@@ -3,11 +3,18 @@ liveblogMarketplace
         function(Dispatcher, api, $http, _) {
             return {
                 getBlogs: function(filters) {
+                    //var marketer = {};
+
+                    //if (filters.hasOwnProperty('marketer._id'))
+                    //    marketer = filters['marketer._id'];
+
                     api.get('/marketplace/blogs', { where: filters })
                         .then(function(blogs) {
                             Dispatcher.dispatch({
                                 type: 'ON_GET_BLOGS',
-                                blogs: blogs
+                                blogs: blogs,
+                                filters: filters
+                                //currentMarketer: marketer
                             });
                         });
                 },
@@ -25,20 +32,27 @@ liveblogMarketplace
                     else
                         filters[type] = value;
 
+                    //var marketer = {};
+
+                    //if (filters.hasOwnProperty('marketer._id'))
+                    //    marketer = filters['marketer._id'];
+
                     api
                         .get('/marketplace/blogs', { where: filters })
                         .then(function(blogs) {
                             Dispatcher.dispatch({
-                                type: 'ON_FILTER_BLOGS',
+                                type: 'ON_GET_BLOGS',
                                 blogs: blogs,
                                 filters: filters
+                                //currentMarketer: marketer
                             });
                         })
                         .catch(function(error) {
                             Dispatcher.dispatch({
-                                type: 'ON_FILTER_BLOGS',
+                                type: 'ON_GET_BLOGS',
                                 blogs: { _items: {} },
                                 filters: filters
+                                //currentMarketer: marketer
                             });
                         })
                 },

@@ -2,12 +2,12 @@ liveblogMarketplace
     .factory('MarketplaceReducers', function() {
         return function(state, action) {
             switch (action.type) {
-                case 'ON_GET_BLOGS':
-                    return angular.extend(state, {
-                        blogs: action.blogs
-                    });
+                //case 'ON_GET_BLOGS':
+                //    return angular.extend(state, {
+                //        blogs: action.blogs
+                //    });
 
-                case 'ON_FILTER_BLOGS':
+                case 'ON_GET_BLOGS':
                     return angular.extend(state, {
                         blogs: action.blogs,
                         filters: action.filters

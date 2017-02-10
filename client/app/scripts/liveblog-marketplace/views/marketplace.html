@@ -16,12 +16,11 @@
             store="store"
             class="archive-sidebar"
             ng-if="searchPanel"></div>
-        <!-- GRID VIEW -->
-        <!--<div ng-hide="blogs._items" class="not-found">-->
-        <!--    <p>Not found</p>-->
-        <!--</div>-->
 
-        <div class="marketer-banner" ng-class="{'open': searchPanel}">
+        <div
+            class="marketer-banner"
+            ng-class="{'open': searchPanel}"
+            ng-if="!emptyMarketer()">
             <img
                 src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Logo_DPA_neu.svg/2000px-Logo_DPA_neu.svg.png"
                 class="logo" />
