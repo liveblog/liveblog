@@ -23,29 +23,27 @@ liveblogMarketplace
             };
 
             $scope.emptyMarketer = function() {
-                console.log('filters', $scope.filters);
-                return !$scope.filters || !$scope.filters.hasOwnProperty('marketer');
+                return !$scope.filters || !$scope.filters.hasOwnProperty('marketer._id');
             };
 
             $scope.openEmbedModal = MarketplaceActions.openEmbedModal;
 
             $scope.store = new Store(MarketplaceReducers, {
                 currentBlog: {},
-                //currentMarketer: {},
-                blogs: { _items: {} },
-                marketers: { _items: {} },
+                currentMarketer: {},
+                blogs: { _items: [] },
+                marketers: { _items: [] },
                 filters: filters,
                 searchPanel: true,
                 embedModal: false
             });
 
             $scope.store.connect(function(state) {
-                console.log('state', state);
                 $scope.blogs = state.blogs;
                 $scope.searchPanel = state.searchPanel;
                 $scope.embedModal = state.embedModal;
-                //$scope.currentMarketer = state.currentMarketer;
                 $scope.filters = state.filters;
+                $scope.currentMarketer = state.currentMarketer;
 
                 $route.updateParams({
                     filters: JSON.stringify(state.filters)
