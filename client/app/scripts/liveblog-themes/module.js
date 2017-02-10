@@ -121,6 +121,10 @@
             });
         }
         angular.extend(vm, {
+            mailto: 'mailto:upgrade@liveblog.pro?subject='+
+                encodeURIComponent(location.hostname) +
+                ' ' +
+                config.subscriptionLevel,
             // Modal is disabled by default.
             themeBlogsModal: false,
             // this is used to when a blog is selected.
