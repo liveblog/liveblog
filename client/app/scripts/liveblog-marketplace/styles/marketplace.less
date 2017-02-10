@@ -1,9 +1,5 @@
 @import 'variables.less';
 
-/*#main-menu {*/
-/*    z-index: 2;*/
-/*}*/
-
 section.marketer {
     top: 48px;
 }
@@ -25,10 +21,6 @@ section.marketer button.filter-trigger {
     }
 }
 
-section.marketer ul.card-list.open {
-    margin-left: 300px;
-}
-
 section.marketer div.archive-sidebar {
     position: fixed;
     top: 97px;
@@ -44,6 +36,50 @@ section.marketer div.archive-sidebar {
             height: auto;
         }
     }
+}
+
+section.marketer div.marketer-banner {
+    padding: 20px 0;
+    width: 100%;
+    border-bottom: 1px solid #e0e0e0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 84px;
+    max-height: 84px;
+
+    h3 {
+        color: @sd-blue;
+    }
+
+    dt, dd {
+        float: left;
+        padding-right: 10px;
+    }
+
+    img {
+        width: 250px;
+        float: left;
+        margin-left: 30px;
+    }
+
+    div.content {
+        float: left;
+        margin-left: 44px;
+    }
+}
+
+section.marketer ul.card-list {
+    margin-top: 125px;
+}
+
+section.marketer div.marketer-banner.open,
+section.marketer ul.card-list.open {
+    margin-left: 300px;
+}
+
+section.marketer div.marketer-banner.open {
+    width: ~"calc(100% - 300px)";
 }
 
 .mp-embed-modal {

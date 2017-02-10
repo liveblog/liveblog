@@ -17,8 +17,26 @@
             class="archive-sidebar"
             ng-if="searchPanel"></div>
         <!-- GRID VIEW -->
-        <div ng-hide="blogs._items" class="not-found">
-            <p>Not found</p>
+        <!--<div ng-hide="blogs._items" class="not-found">-->
+        <!--    <p>Not found</p>-->
+        <!--</div>-->
+
+        <div class="marketer-banner" ng-class="{'open': searchPanel}">
+            <img
+                src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/91/Logo_DPA_neu.svg/2000px-Logo_DPA_neu.svg.png"
+                class="logo" />
+            <div class="content">
+                <h3>Deutsche Presse-Agentur</h3>
+                <p>Wisbyerstr. 22a, 10900 Berlin, Germany</p>
+                <dl>
+                    <dt>Tel:</dt>
+                    <dd>+49 1636884263</dd>
+                    <dt>Fax:</dt>
+                    <dd>+49 1636884263</dd>
+                    <dt>Email:</dt>
+                    <dd><a href="mailto:internationalsales@dpa.com">internationalsales@dpa.com</a></dd>
+                </dl>
+            </div>
         </div>
 
         <ul class="card-list" ng-class="{'open': searchPanel}" ng-show="blogs._items">
@@ -27,7 +45,9 @@
                 ng-click="openEmbedModal(blog)"
                 class="can-access">
                 <figure class="media">
-                    <div ng-if="blog.picture_url" if-background-image="{{blog.picture_url}}"></div>
+                    <div
+                        ng-if="blog.picture_url"
+                        if-background-image="{{blog.picture_url}}"></div>
                 </figure>
                 <div class="content">
                     <h3>{{ ::blog.title }}</h3>
@@ -49,13 +69,3 @@
 
     <div lb-blog-preview-modal store="store"></div>
 </section>
-
-<!--<section-->
-<!--    lb-marketers-grid-->
-<!--    class="main-section bloglist"-->
-<!--    ng-show="activeState == 'Marketers'"></section>-->
-
-<!--<section -->
-<!--    lb-producers-grid-->
-<!--    class="main-section bloglist"-->
-<!--    ng-if="activeState == 'Producers'"></section>-->
