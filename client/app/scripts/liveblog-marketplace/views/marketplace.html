@@ -39,7 +39,10 @@
             </div>
         </div>
 
-        <ul class="card-list" ng-class="{'open': searchPanel}" ng-show="blogs._items">
+        <ul
+            class="card-list"
+            ng-class="{'open': searchPanel, move: !emptyMarketer()}"
+            ng-show="blogs._items">
             <li
                 ng-repeat="blog in blogs._items track by blog._id"
                 ng-click="openEmbedModal(blog)"
