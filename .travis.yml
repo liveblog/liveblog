@@ -1,8 +1,5 @@
 language: python
 
-python:
-    - "3.4"
-
 sudo: false
 
 env:
@@ -12,12 +9,17 @@ env:
 matrix:
     include:
     - env: TARGET=client
+      python: "3.4"
     - env: TARGET=server
+      python: "3.4"
     - env: TARGET=docs
-      python: 2.7
+      python: "2.7"
     - env: TARGET=e2e_first_chrome
+      python: "3.4"
     - env: TARGET=e2e_second_chrome
+      python: "3.4"
     - env: TARGET=e2e_third_chrome
+      python: "3.4"
 
 services:
     - mongodb
