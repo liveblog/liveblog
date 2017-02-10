@@ -8,13 +8,16 @@ sudo: false
 env:
     global:
         - secure: ajoP9pA/FYH+1sFwGKHlQ8PoGqRIjdmqEnwo44AA5j6c1NMsgiToA420lPm8Lp0cko5YK3ppBlGlvbRWu5JXVxl0vMtZTLf3FM2w99viddrRCkh4sMef2DzkXXYOW4Tnew/8pmaOtTn3UtNG/feJHkBzHLEDUuN0TA07Y6UaWHc=
-    matrix:
-        - TARGET=client
-        - TARGET=server
-        - TARGET=docs
-        - TARGET=e2e_first_chrome
-        - TARGET=e2e_second_chrome
-        - TARGET=e2e_third_chrome
+
+matrix:
+    include:
+    - env: TARGET=client
+    - env: TARGET=server
+    - env: TARGET=docs
+      python: 2.7
+    - env: TARGET=e2e_first_chrome
+    - env: TARGET=e2e_second_chrome
+    - env: TARGET=e2e_third_chrome
 
 services:
     - mongodb
