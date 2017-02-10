@@ -195,6 +195,9 @@ define([
                     scope: {
                         post: '=',
                         onEditAction: '=',
+                        file: '=',
+                        src: '=',
+                        maxFileSize: '='
                         //the post that is in the process of being reordered
                         reorderPost: '=',
                         //the order property of the post that was reordered and should stay highlighted a bit more
@@ -219,6 +222,12 @@ define([
                                 scope.clearReorder();
                             }
                         }
+                        scope.$watch('src', function(src) {
+                        elem.empty();
+                        if (scope.maxFileSize && ((scope.file.size / 1048576) > parseInt(scope.maxFileSize, 10))) {
+                            notify.info(gettext('Image is bigger then ' + scope.maxFileSize + 'MB, upload file size may be limited!'));
+                        }
+                    });
                         function changePostStatus(post, status) {
                             // don't save the original post coming for the posts list, because it needs
                             // to conserve its original update date in the posts list directive
