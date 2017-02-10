@@ -2,7 +2,7 @@
   "name": "liveblog-api-docs",
   "description": "Liveblog API blueprint",
   "dependencies": {
-    "protagonist": "~1.6.4"
+    "protagonist": "~1.2.5"
   },
   "devDependencies": {
     "aglio": "^2.3.0",
