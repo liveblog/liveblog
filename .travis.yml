@@ -11,6 +11,7 @@ env:
     matrix:
         - TARGET=client
         - TARGET=server
+        - TARGET=docs
         - TARGET=e2e_first_chrome
         - TARGET=e2e_second_chrome
         - TARGET=e2e_third_chrome
@@ -55,6 +56,9 @@ install:
     - if [ "${TARGET}" = "client" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
         cd client && npm install && bower install && cd .. ;
       fi
+    - if [ "${TARGET}" = "docs" ]; then
+        cd api-docs && npm install && cd .. ;
+      fi
 
 before_script:
     - if [ "${TARGET}" != "${TARGET/e2e/}" ]; then
@@ -79,6 +83,9 @@ script:
       fi
     - if [ "${TARGET}" = "server" ]; then
         cd server && flake8 && cd .. ;
+      fi
+    - if [ "${TARGET}" = "docs" ]; then
+        cd api-docs && npm test && cd .. ;
       fi
     - if [ "${TARGET}" = "client" ]; then
         cd client && npm test && cd .. ;

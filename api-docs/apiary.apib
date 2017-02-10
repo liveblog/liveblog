@@ -1,0 +1,1325 @@
+FORMAT: 1A
+
+# Liveblog
+
+# Group Resources
+
+## GET /
+
+List available resources.
+
++ Response 200 (application/json)
+
+        {
+            "_links": {
+                "child": [
+                    {
+                        "title": "users",
+                        "href": "/users"
+                    },
+                    {
+                        "title": "blogs",
+                        "href": "/blogs"
+                    },
+                    {
+                        "title": "items",
+                        "href": "/items"
+                    },
+                    {
+                        "title": "posts",
+                        "href": "/posts"
+                    },
+                    {
+                        "title": "blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts",
+                        "href": "/blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts"
+                    },
+                    {
+                        "title": "themes",
+                        "href": "/themes"
+                    },
+                    {
+                        "title": "roles",
+                        "href": "/roles"
+                    },
+                    {
+                        "title": "request_membership",
+                        "href": "/request_membership"
+                    },
+                    {
+                        "title": "client_blogs",
+                        "href": "/client_blogs"
+                    },
+                    {
+                        "title": "client_posts",
+                        "href": "/client_posts"
+                    },
+                    {
+                        "title": "client_users",
+                        "href": "/client_users"
+                    }
+                ]
+            }
+        }
+# Group User Management
+
+## User [/users/{_id}]
+
+A single User resource.
+
++ Parameters
+    + _id (string) ... User id.
+
++ Model (application/json) 
+
+        {
+            "_links": {"self": {"href": "/users/123"}},
+            "_id": "123",
+            "username": "john",
+            "email": "john.doe@email.com",
+            "first_name": "John",
+            "last_name": "Doe",
+            "display_name": "John Doe",
+            "phone_number": "0123456789",
+            "_created": "2014-02-18T14:42:16Z",
+            "_updated": "2014-02-18T14:42:16Z",
+            "_etag": "xyz",
+            "picture_url": "http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50?s=200",
+            "workspace": {
+                "widgets": [
+                    {
+                        "col": 1,
+                        "configuration": {
+                            "zones": ["Europe/London", "Asia/Tokyo", "Europe/Prague"]
+                        },
+                        "row": 1,
+                        "sizex": 1,
+                        "sizey": 1,
+                        "_id" : "world-clock"
+                    }
+                ]
+            },
+            "_readonly": ["username", "display_name", "password", "email", "phone", "first_name", "last_name"],
+            "privileges": {
+                "users": 1,
+                "ingest": 0
+            }
+        }
+### Retrieve a User [GET]
+
+"_readonly" attribute is included only if AD is enabled.
++ Request (application/json)
+
++ Response 200
+
+    [User][]
+
++ Response 404
+
+### Update User [PATCH]
+
++ Request (application/json)
+    + Headers
+    
+            If-Match: xyz
+    
+    + Body
+            {"last_name": "Baz"}
+
++ Response 200 (application/json)
+
+        {"_status": "OK"}
+
++ Response 403
+
+### Hard Delete a User [DELETE]
+
++ Request
+    + Headers
+    
+            If-Match: xyz
+
++ Response 204
+
+## User Search [/users{?page,max_results,where,sort}]
+
+### List all Users [GET]
+
+"_readonly" attribute is included only if AD is enabled.
++ Parameters
+    + page = `0`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of users to be returned
+    + where (optional, object) ... Filtering
+    + sort (optional, object) ... Sorting
+
++ Response 200 (application/json)
+        
+        {
+            "_items": [
+                {
+                    "_links": {"self": {"href": "/users/2"}},
+                    "_id": "2",
+                    "email": "john.doe@email.com",
+                    "first_name": "John",
+                    "display_name": "John Doe",
+                    "last_name": "Doe",
+                    "username": "john",
+                    "phone_number": "0123456789",
+                    "_created": "2014-02-18T14:42:16Z",
+                    "_updated": "2014-02-18T14:42:16Z",
+                    "picture_url": "http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+                    "_etag": "xyz",
+                    "_readonly": ["username", "display_name", "password", "email", "phone", "first_name", "last_name"]
+                },
+                {
+                    "_links": {"self": {"href": "/users/3"}},
+                    "_id": "3",
+                    "email": "joe.hammer@email.com",
+                    "first_name": "Joe",
+                    "display_name": "Joe Hammer",
+                    "last_name": "Hammer",
+                    "username": "joe",
+                    "phone_number": "0223456789",
+                    "_created": "2014-02-18T14:43:27Z",
+                    "_updated": "2014-02-18T14:43:27Z",
+                    "picture_url": "http://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+                    "_etag": "xyz",
+                    "_readonly": ["username", "display_name", "password", "email", "phone", "first_name", "last_name"]
+                }
+            ]
+        }
+
+## User collection [/users]
+
+### Create user [POST]
+
++ Request (application/json)
+        {
+            "first_name": "John",
+            "last_name": "Doe",
+            "username": "john",
+            "email": "john.doe@email.com",
+            "password": "a3r546465676bgyhyyehy",
+            "phone_number": "0223456789"
+        }
+
++ Response 201 (application/json)
+
+        {
+            "_links": {"self": {"href": "/users/5"}},
+            "_status": "OK",
+            "_etag": "xyz"
+        }
+
++ Response 400 (application/json)
+        {
+            "_status": "ERR",
+            "_issues": {
+                "username": {
+                    "unique": {
+                        "msg": "There is already an active user with this name"
+                    }
+                },
+                "email": {
+                    "unique": { "msg": "Unique constraint failed" }
+                },
+                "email": {
+                    "format": { "msg": "Invalid EMail" }
+                },
+                "phone": {
+                    "format": {
+                        "msg": "Invalid phone number format"
+                        "example": "+123123456789 or 0123456789 or 123456789"
+                    }
+                },
+                "password": {
+                    "required": { "msg": "Mandatory value is missing" }
+                }
+            }
+        }
+
+## Reset user password [/reset_user_password]
+
+### Initiate reset user password [POST]
+
++ Request (application/json)
+        {
+            "email": "foo@bar.com"
+        }
++ Response 201 (application/json)
+        {
+            "email": "foo@bar.com",
+            "_status": "OK",
+            "_links": {
+                "self": {
+                    "href": "/reset_user_password/53d607c48e4eba1fc50645ff",
+                    "title": "Reset_user_password"
+                }
+            }
+        }
+
+# Group Authentication
+
+## Auth [/auth]
+
+### Authenticate [POST]
+
+The rest of the endpoints requiring authorization will have to supply the following header: "Authorization": b'basic ' + b64encode(token + b':')
+
++ Request (application/json;charset=UTF-8)
+
+        {
+            "username": "admin",
+            "password": "admin"
+        }
+
++ Response 200 (application/json)
+
+        {
+            "_links": {"self": {"href": "/auth/123"}},
+            "token": "aNcdefgH",
+            "user": "abc"
+        }
+
+# Group Roles Management
+
+## Roles [/roles/{_id}]
+
+A single Roles resource.
++ Parameters
+    + _id (string) ... Roles id.
++ Model (application/json) 
+        {
+            "_links": {"self": {"href": "/roles/123"}},
+            "_id": "123",
+            "name": "editor",
+            "privileges": {
+                "ingest": 1,
+                "users": 0
+            }
+        }
+### Retrieve a Roles [GET]
+
++ Response 200 (application/json)
+            {
+            "_links": {
+                "self": {
+                    "title": "Role",
+                    "href": "/roles/541061621d41c8ac80ff3b6e"
+                }
+            },
+            "_id": "541061621d41c8ac80ff3b6e",
+            "_created": "2014-09-10T14:34:10+0000",
+            "_status": "OK",
+            "name": "editor",
+            "_updated": "2014-09-10T14:34:10+0000"
+        }
++ Response 404
+
+### Update Roles [PATCH]
+
++ Request (application/json)
+    + Headers
+    
+            If-Match: xyz
+    
+    + Body
+            {"name": "Editor"}
+
++ Response 200 (application/json)
+
+        {
+            "privileges": {
+                "users": 1
+            },
+            "_links": {
+                "self": {
+                    "title": "Role",
+                    "href": "/roles/541061621d41c8ac80ff3b6e"
+                }
+            },
+            "_id": "541061621d41c8ac80ff3b6e",
+            "_created": "2014-09-10T14:34:10+0000",
+            "_status": "OK",
+            "name": "Editor",
+            "_updated": "2014-09-10T14:44:36+0000"
+        }
++ Response 403
+
+### Hard Delete a Roles [DELETE]
+
++ Request
+    + Headers
+    
+            If-Match: xyz
+
++ Response 200
+
+## Roles Search [/roles{?page,max_results,where,sort}]
+
+### List all Roles [GET]
+
++ Parameters
+    + page = `0`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of roles to be returned
+    + where (optional, object) ... Filtering
+    + sort (optional, object) ... Sorting
+
++ Response 200 (application/json)
+
+        {
+            "_meta": {
+                "max_results": 25,
+                "page": 1,
+                "total": 3
+            },
+            "_items": [
+                {
+                    "name": "Editor",
+                    "_links": {
+                        "self": {
+                            "title": "Role",
+                            "href": "/roles/5410641c1d41c8ac80ff3b73"
+                        }
+                    },
+                    "_updated": "2014-09-10T14:45:48+0000",
+                    "_id": "5410641c1d41c8ac80ff3b73",
+                    "_created": "2014-09-10T14:45:48+0000"
+                },
+                {
+                    "_created": "2014-09-10T14:34:10+0000",
+                    "_links": {
+                        "self": {
+                            "title": "Role",
+                            "href": "/roles/541061621d41c8ac80ff3b6e"
+                        }
+                    },
+                    "_id": "541061621d41c8ac80ff3b6e",
+                    "privileges": {
+                        "search": 1
+                    },
+                    "name": "Contributor",
+                    "_updated": "2014-09-10T14:44:36+0000"
+                }
+            ],
+            "_links": {
+                "parent": {
+                    "title": "home",
+                    "href": "/"
+                },
+                "self": {
+                    "title": "roles",
+                    "href": "/roles"
+                }
+            }
+        }
+
+
+# Group Blogs
+
+## Blogs item [/blogs/{_id}]
+
+A single Blogs resource
+
++ Parameters
+    - _id (string, `1`) ... Blogs item identifier.
+    
++ Model (application/json)
+
+        {
+            "_links": {"self": {"href": "/blogs/1"}},
+            "title": "Test Blog",
+            "_updated": "2014-10-16T08:34:00+0000",
+            "_id": "543cc4c8ea8e150cd9ecd8f0",
+            "_created": "2014-10-16T08:23:49+0000",
+            "state": "open",
+            "original_creator":"543cc18bea8e150c58ac14bf"
+            "description": "this is a test blog",
+            "_etag": "8a1ae4b1de1feff66922f9ff830d21a797e0617c",
+            "members": []
+        }
+### Retrieve a Blog [GET]
+
++ Response 200 (application/json)
+
+    [Blogs item][]
+
++ Response 404
+
+### Update Blog [PATCH]
+
++ Request (application/json)
+    
+        {"title": "Foo"}
+
++ Response 200 (application/json)
+
+        {"_status": "OK"}
+
++ Response 403
+
+### Delete a Blog [DELETE]
+
++ Request (application/json)
+        {}
++ Response 204
+
+## Blogs collection [/blogs{?page,max_results}]
+
+### Create blog [POST]
+
++ Request (application/json)
+        {
+            "title": "Foo"
+        }
++ Response 201 (application/json)
+        {
+            "_links": {"self": {"href": "/blogs/2"}},
+            "_status": "OK"
+        }
+### List all blogs [GET]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+    
++ Response 200 (application/json)
+        {
+            "_items": [
+                {
+                    "_links": {"self": {"href": "/blogs/1"}},
+                    "title": "Test Blog",
+                    "_updated": "2014-10-16T08:34:00+0000",
+                    "_id": "543cc4c8ea8e150cd9ecd8f0",
+                    "_created": "2014-10-16T08:23:49+0000",
+                    "state": "open",
+                    "original_creator":"543cc18bea8e150c58ac14bf",
+                    "description": "this is a test blog",
+                    "_etag": "8a1ae4b1de1feff66922f9ff830d21a797e0617c",
+                    "members": []
+                },
+                {
+                    "_links": {"self": {"href": "/blogs/2"}},
+                    "title": "Bar",
+                    "_updated": "2014-10-17T09:34:00+0000",
+                    "_id": "543cc4c8ea8e150cd9ecar56",
+                    "_created": "2014-10-17T09:33:49+0000",
+                    "state": "closed",
+                    "description": "this is the second blog",
+                    "_etag": "998d130f94ea009c0b675a666662f66d40e7c170",
+                    "original_creator":"543cc18bea8e150c58ac14bf",
+                    "members": []
+                }
+            ]
+        }
+### List open blogs [/blogs{?page,max_results,where}]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+    + where (optional, object) ... Filtering
+    
++ Response 200 (application/json)
+        {
+            "_items": [
+                {
+                    "_links": {"self": {"href": "/blogs/1"}},
+                    "title": "Test Blog",
+                    "_updated": "2014-10-16T08:34:00+0000",
+                    "_id": "543cc4c8ea8e150cd9ecd8f0",
+                    "_created": "2014-10-16T08:23:49+0000",
+                    "state": "open",
+                    "original_creator":"543cc18bea8e150c58ac14bf",
+                    "description": "this is a test blog",
+                    "_etag": "8a1ae4b1de1feff66922f9ff830d21a797e0617c",
+                    "members": []
+                }
+            ]
+        }
+### List closed blogs [/blogs{?page,max_results,where}]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+    + where (optional, object) ... Filtering
+
++ Response 200 (application/json)
+        {
+            "_items": [
+                {
+                    "_links": {"self": {"href": "/blogs/2"}},
+                    "title": "Bar",
+                    "_updated": "2014-10-17T09:34:00+0000",
+                    "_id": "543cc4c8ea8e150cd9ecar56",
+                    "_created": "2014-10-17T09:33:49+0000",
+                    "state": "closed",
+                    "description": "this is the second blog",
+                    "_etag": "998d130f94ea009c0b675a666662f66d40e7c170",
+                    "original_creator":"543cc18bea8e150c58ac14bf",
+                    "members": []
+                }
+            ]
+        }
+### Create a membership request to a blog [POST]
+
++ Request (application/json)
+        {
+            "blog": "543cc4c8ea8e150cd9ecar56"
+        }
++ Response 201 (application/json)
+        {
+            "_links": {"self": {"href": "/request_membership/1"}},
+            "_status": "OK"
+        }
+
+
+# Group Items
+
+## Items item
+
+## Items item [/items/{_id}]
+
+A single Items resource
+
++ Parameters
+    - _id (string, `1`) ... Items item identifier.
+    
++ Model (application/json)
+        {
+            "_links": {"self": {"href": "/items/1"}},
+            "_created": "2015-11-20T11:25:59+00:00"
+            "_current_version": 1
+            "_etag": "a10e545acd087de636f7a562afa535300fa2f6c0"
+            "_id": "urn:newsml:localhost:2015-11-20T13:25:59.450287:202058e9-3d41-4712-b26a-1553d9c7cbcb"
+            "_latest_version": 1
+            "_status": "OK"
+            "_updated": "2015-11-20T11:25:59+00:00"
+            "blog": "564eea09ea8e15459e0043c5"
+            "dateline": {date: "2015-11-20T11:25:59+00:00", located: null, source: "SF", text: null}
+            "event_id": "tag:localhost:2015:0fbd45c4-b214-4e6d-9cf3-835d475ae545"
+            "expiry": "2015-12-20T11:25:59+00:00"
+            "family_id": "urn:newsml:localhost:2015-11-20T13:25:59.450287:202058e9-3d41-4712-b26a-1553d9c7cbcb"
+            "firstcreated": "2015-11-20T11:25:59+00:00"
+            "guid": "urn:newsml:localhost:2015-11-20T13:25:59.450287:202058e9-3d41-4712-b26a-1553d9c7cbcb"
+            "item_type": "text"
+            "language": "en"
+            "marked_for_not_publication": false
+            "more_coming": false
+            "operation": "create"
+            "original_creator": "564dc322ea8e15264e299609"
+            "particular_type": "item"
+            "place": []
+            "priority": 3
+            "pubstatus": "usable"
+            "sign_off": "abc"
+            "source": "Liveblog"
+            "state": "draft"
+            "text": "my item-1"
+            "type": "text"
+            "unique_id": 10272
+            "unique_name": "#10272"
+            "urgency": 3
+            "version_creator": "564dc322ea8e15264e299609"
+            "versioncreated": "2015-11-20T11:25:59+00:00"
+        }
+### Retrieve an Item [GET]
+
++ Response 200 (application/json)
+
+    [Items item][]
+
++ Response 404
+
+### Update Item [PATCH]
+
++ Request (application/json)
+    
+        {"text": "new item"}
+
++ Response 200 (application/json)
+
+        {"_status": "OK"}
+
++ Response 403
+
+### Delete an Item [DELETE]
+
++ Request (application/json)
+        {}
++ Response 204
+
+## Items collection [/items{?page,max_results}]
+
+### Create  an item [POST]
+
++ Request (application/json)
+        {
+            "text": "foo-item"
+        }
++ Response 201 (application/json)
+        {
+            "_links": {"self": {"href": "/items/2"}},
+            "_status": "OK"
+        }
+
+### List all items [GET]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+    
++ Response 200 (application/json)
+        {
+            "_items": [
+               {
+                "_created": "2015-11-20T11:25:59+00:00",
+                "_current_version": 1,
+                "_etag": "a10e545acd087de636f7a562afa535300fa2f6c0",
+                "_id": "urn:newsml:localhost:2015-11-20T13:25:59.450287:202058e9-3d41-4712-b26a-1553d9c7cbcb",
+                "_latest_version": 1,
+                "_links": {
+                "self": {
+                    "href": "items/urn:newsml:localhost:2015-11-20T13:25:59.450287:202058e9-3d41-4712-b26a-1553d9c7cbcb",
+                    "title": "Item"
+                        }
+                    },
+                "_type": "archive",
+                "_updated": "2015-11-20T11:25:59+00:00",
+                "blog": "564eea09ea8e15459e0043c5",
+                "dateline": {
+                    "date": "2015-11-20T11:25:59+00:00",
+                    "located": null,
+                    "source": "SF"
+                        },
+                "event_id": "tag:localhost:2015:0fbd45c4-b214-4e6d-9cf3-835d475ae545",
+                "expiry": "2015-12-20T11:25:59+00:00",
+                "family_id": "urn:newsml:localhost:2015-11-20T13:25:59.450287:202058e9-3d41-4712-b26a-1553d9c7cbcb",
+                "firstcreated": "2015-11-20T11:25:59+00:00",
+                "guid": "urn:newsml:localhost:2015-11-20T13:25:59.450287:202058e9-3d41-4712-b26a-1553d9c7cbcb",
+                "item_type": "text",
+                "language": "en",
+                "linked_in_packages": [1]
+                    0:  {
+                        "package": "urn:newsml:localhost:2015-11-20T13:25:59.510455:a0a2a4db-cafa-44ce-9577-9f5fb90e75bc"
+                        },
+                "marked_for_not_publication": false,
+                "more_coming": false,
+                "operation": "create",
+                "original_creator": "564dc322ea8e15264e299609",
+                "particular_type": "item",
+                "place": [0],
+                "priority": 3,
+                "pubstatus": "usable",
+                "sign_off": "abc",
+                "source": "Liveblog",
+                "state": "draft",
+                "text": "my item-1",
+                "type": "text",
+                "unique_id": 10272,
+                "unique_name": "#10272",
+                "urgency": 3,
+                "version_creator": "564dc322ea8e15264e299609",
+                "versioncreated": "2015-11-20T11:25:59+00:00"
+                },
+                {
+                "_created": "2015-11-20T07:22:58+00:00",
+                "_current_version": 1,
+                "_etag": "fd931d19bc208dc03247350bb60c276279d06867",
+                "_id": "urn:newsml:localhost:2015-11-20T09:22:58.285618:baba4932-aee4-487d-a7c5-37d25334acc7",
+                "_latest_version": 1,
+                "_links": {
+                    "self": {
+                    "href": "items/urn:newsml:localhost:2015-11-20T09:22:58.285618:baba4932-aee4-487d-a7c5-37d25334acc7",
+                    "title": "Item"
+                        }
+                    },
+                "type": "archive",
+                "_updated": "2015-11-20T07:22:58+00:00",
+                "blog": "564dca11ea8e152f915f7067",
+                "contents": [1]
+                    0:  "aa bb",
+                "dateline": {
+                    "date": "2015-11-20T07:22:58+00:00",
+                    "located": null,
+                    "source": "SF"
+                        },
+                "event_id": "tag:localhost:2015:11e66f40-4073-4234-a613-fedadc9f5b69",
+                "expiry": "2015-12-20T07:22:58+00:00",
+                "f"amily_id": "urn:newsml:localhost:2015-11-20T09:22:58.285618:baba4932-aee4-487d-a7c5-37d25334acc7",
+                "firstcreated": "2015-11-20T07:22:58+00:00",
+                "guid": "urn:newsml:localhost:2015-11-20T09:22:58.285618:baba4932-aee4-487d-a7c5-37d25334acc7",
+                "language": "en",
+                "linked_in_packages": [1]
+                    0:  {
+                        "package": "urn:newsml:localhost:2015-11-20T09:24:32.410728:97aca68e-5d59-46d2-8d78-4cfbae1185af"
+                        },
+                "marked_for_not_publication": false,
+                "more_coming": false,
+                "text": "my item-2",
+                "operation": "create",
+                "original_creator": "None",
+                "particular_type": "item",
+                "priority": 3,
+                "pubstatus": "usable",
+                "source": "Liveblog",
+                "state": "draft",
+                "type": "text",
+                "unique_id": 10268,
+                "unique_name": "#10268",
+                "urgency": 3,
+                "version_creator": "",
+                "versioncreated": "2015-11-20T07:22:58+00:00"
+                }
+            ]
+        }
+
+
+# Group Posts
+
+## Posts item
+
+## Posts item [/items/{_id}]
+
+A single Posts resource
+
++ Parameters
+    - _id (string, `1`) ... Posts item identifier.
+    
++ Model (application/json)
+         {
+        "_created": "2015-11-23T09:43:55+00:00",
+        "_current_version": 1,
+        "_etag": "f83d22933e9993daccc3949ebb41bb7bfeb2d890",,
+        "_id": "urn:newsml:localhost:2015-11-23T09:43:56.035337:9a409d04-2443-488b-9380-58fffb5075ce"
+        "_latest_version": 1,
+        "_links": {
+            "self": {
+                "href": "posts/urn:newsml:localhost:2015-11-23T09:43:56.035337:9a409d04-2443-488b-9380-58fffb5075ce",
+                "title": "Post"},
+        "_type": "archive",
+        "_updated": "2015-11-23T09:43:55+00:00",
+        "blog": "564dd0b300fca10022e6b846",
+        "dateline": {
+            "date": "2015-11-23T09:43:56+00:00",
+            "located": null,
+            "source": "SF",
+            "text": null},
+        "deleted": false,
+        "event_id": "tag:localhost:2015:06336914-8c0d-4bc2-a62f-b372133046c3",
+        "expiry": "2015-12-23T09:43:56+00:00"
+        "family_id": "urn:newsml:localhost:2015-11-23T09:43:56.035337:9a409d04-2443-488b-9380-58fffb5075ce"
+        "firstcreated": "2015-11-23T09:43:56+00:00"
+        "groups": {
+            "0": {
+                "id": "root",
+                "refs": {
+                    "0": {idRef: "main"},
+                "role": "grpRole:NEP",
+            "1": {
+                "id": "main",
+                "refs": {
+                    "0": {
+                        "guid": "urn:newsml:localhost:2015-11-23T09:43:55.638473:e8d82622-3207-40f1-8d04-7a345c313f4c",
+                        "residRef": "urn:newsml:localhost:2015-11-23T09:43:55.638473:e8d82622-3207-40f1-8d04-7a345c313f4c",
+                        "type": "text"},
+                "role": "grpRole:Main",
+        "guid": "urn:newsml:localhost:2015-11-23T09:43:56.035337:9a409d04-2443-488b-9380-58fffb5075ce",
+        "language": "en",
+        "marked_for_not_publication": false
+        "more_coming": false
+        "operation": "create"
+        "order": 1
+        "original_creator": "564dc9d967ed6100147023f3"
+        "particular_type": "post"
+        "place": []
+        "post_status": "open"
+        "priority": 3
+        "published_date": "2015-11-23T09:43:56+00:00"
+        "publisher": {
+            "_created": "2015-11-19T13:08:41+00:00"
+            "_etag": "97b5ab74b2110f154a224e49e0214760e9d87236"
+            "_id": "564dc9d967ed6100147023f3"
+            "_updated": "2015-11-20T07:29:42+00:00"
+            "active_privileges": {archive: 1, blogs: 1, desks: 1, global_preferences: 1, groups: 1, hold: 1, ingest: 1}
+            "display_name": "admin"
+            "email": "admin@example.com"
+            "is_active": true
+            "is_enabled": true
+            "needs_activation": false
+            "role": null
+            "username": "admin"}
+        "pubstatus": "usable"
+        "sign_off": "ADM"
+        "source": "Liveblog"
+        "state": "draft"
+        "type": "composite"
+        "unique_id": 2
+        "unique_name": "#2"
+        "urgency": 3
+        "version_creator": "564dc9d967ed6100147023f3"
+        "versioncreated": "2015-11-23T09:43:56+00:00"
+}
+
+### Retrieve a Post [GET]
+
++ Response 200 (application/json)
+
+    [Posts item][]
+
++ Response 404
+
+### Update Post [PATCH]
+
++ Request (application/json)
+    
+        {"headline": "new post"}
+
++ Response 200 (application/json)
+
+        {"_status": "OK"}
+
++ Response 403
+
+### Delete a Post [DELETE]
+
++ Request (application/json)
+        {}
++ Response 204
+
+## Posts collection [/posts{?page,max_results}]
+
+### Create  a post [POST]
+
++ Request (application/json)
+        {
+            "headline": "foo-post"
+        }
++ Response 201 (application/json)
+        {
+            "_links": {"self": {"href": "/posts/2"}},
+            "_status": "OK"
+        }
+
+### List all posts [GET]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+    
++ Response 200 (application/json)
+        {
+            "_items": [
+               {
+                "_created": "2015-11-23T09:43:55+00:00",
+        "_current_version": 1,
+        "_etag": "f83d22933e9993daccc3949ebb41bb7bfeb2d890",,
+        "_id": "urn:newsml:localhost:2015-11-23T09:43:56.035337:9a409d04-2443-488b-9380-58fffb5075ce",
+        "_latest_version": 1,
+        "_links": {
+            "self": {
+                "href": "posts/urn:newsml:localhost:2015-11-23T09:43:56.035337:9a409d04-2443-488b-9380-58fffb5075ce",
+                "title": "Post"},
+        "_type": "archive",
+        "_updated": "2015-11-23T09:43:55+00:00",
+        "blog": "564dd0b300fca10022e6b846",
+        "dateline": {
+            "date": "2015-11-23T09:43:56+00:00",
+            "located": null,
+            "source": "SF",
+            "text": null},
+        "deleted": false,
+        "event_id": "tag:localhost:2015:06336914-8c0d-4bc2-a62f-b372133046c3",
+        "expiry": "2015-12-23T09:43:56+00:00",
+        "family_id": "urn:newsml:localhost:2015-11-23T09:43:56.035337:9a409d04-2443-488b-9380-58fffb5075ce",
+        "firstcreated": "2015-11-23T09:43:56+00:00",
+        "groups": {
+            "0": {
+                "id": "root",
+                "refs": {
+                    "0": {idRef: "main"},
+                "role": "grpRole:NEP",
+            "1": {
+                "id": "main",
+                "refs": {
+                    "0": {
+                        "guid": "urn:newsml:localhost:2015-11-23T09:43:55.638473:e8d82622-3207-40f1-8d04-7a345c313f4c",
+                        "residRef": "urn:newsml:localhost:2015-11-23T09:43:55.638473:e8d82622-3207-40f1-8d04-7a345c313f4c",
+                        "type": "text"},
+                "role": "grpRole:Main",
+        "guid": "urn:newsml:localhost:2015-11-23T09:43:56.035337:9a409d04-2443-488b-9380-58fffb5075ce",
+        "language": "en",
+        "marked_for_not_publication": false,
+        "more_coming": false,
+        "operation": "create",
+        "order": 1,
+        "original_creator": "564dc9d967ed6100147023f3",
+        "particular_type": "post",
+        "place": [],
+        "post_status": "open",
+        "priority": 3,
+        "published_date": "2015-11-23T09:43:56+00:00",
+        "publisher": {
+            "_created": "2015-11-19T13:08:41+00:00",
+            "_etag": "97b5ab74b2110f154a224e49e0214760e9d87236",
+            "_id": "564dc9d967ed6100147023f3",
+            "_updated": "2015-11-20T07:29:42+00:00",
+            "active_privileges": {archive: 1, blogs: 1, desks: 1, global_preferences: 1, groups: 1, hold: 1, ingest: 1}
+            "display_name": "admin",
+            "email": "admin@example.com",
+            "is_active": true,
+            "is_enabled": true,
+            "needs_activation": false,
+            "role": null,
+            "username": "admin"}
+        "pubstatus": "usable",
+        "sign_off": "ADM",
+        "source": "Liveblog",
+        "state": "draft",
+        "type": "composite",
+        "unique_id": 2,
+        "unique_name": "#2",
+        "urgency": 3,
+        "version_creator": "564dc9d967ed6100147023f3",
+        "versioncreated": "2015-11-23T09:43:56+00:00"
+                },
+        {
+                "_created": "2015-11-23T11:43:55+00:00",
+        "_current_version": 1,
+        "_etag": "f83d22933e9993daccc3949ebb41bb7cgeb2d892",
+        "_id": "urn:newsml:localhost:2015-11-23T11:43:56.035337:9a409d04-2443-488b-9380-58fffb6078de",
+        "_latest_version": 1,
+        "_links": {
+            "self": {
+                "href": "posts/urn:newsml:localhost:2015-11-23T09:43:56.035337:9a409d04-2443-488b-9380-58fffb5075ce",
+                "title": "Post"},
+        "_type": "archive",
+        "_updated": "2015-11-23T09:43:55+00:00",
+        "blog": "564dd0b300fca10022e6b846",
+        "dateline": {
+            "date": "2015-11-23T09:43:56+00:00",
+            "located": null,
+            "source": "SF",
+            "text": null},
+        "deleted": false,
+        "event_id": "tag:localhost:2015:06336914-8c0d-4bc2-a62f-b372133046c3",
+        "expiry": "2015-12-23T09:43:56+00:00",
+        "family_id": "urn:newsml:localhost:2015-11-23T09:43:56.035337:9a409d04-2443-488b-9380-58fffb5075ce",
+        "firstcreated": "2015-11-23T09:43:56+00:00",
+        "groups": {
+            "0": {
+                "id": "root",
+                "refs": {
+                    "0": {idRef: "main"},
+                "role": "grpRole:NEP",
+            "1": {
+                "id": "main",
+                "refs": {
+                    "0": {
+                        "guid": "urn:newsml:localhost:2015-11-23T11:43:55.638473:e8d82622-3207-40f1-8d04-7a345c313g5h",
+                        "residRef": "urn:newsml:localhost:2015-11-23T11:43:55.638473:e8d82622-3207-40f1-8d04-7a345c313g5h",
+                        "type": "text"},
+                "role": "grpRole:Main",
+        "guid": "urn:newsml:localhost:2015-11-23T11:43:56.035337:9a409d04-2443-488b-9380-58fffb5075de",
+        "language": "en",
+        "marked_for_not_publication": false,
+        "more_coming": false,
+        "operation": "create",
+        "order": 1,
+        "original_creator": "564dc9d967ed6100147023f3",
+        "particular_type": "post",
+        "place": [],
+        "post_status": "open",
+        "priority": 3,
+        "published_date": "2015-11-23T11:43:56+00:00",
+        "publisher": {
+            "_created": "2015-11-19T14:08:41+00:00",
+            "_etag": "97b5ab74b2110f154a224e49e0214760e9d84567",
+            "_id": "564dc9d967ed6100147023t3",
+            "_updated": "2015-11-20T09:29:42+00:00",
+            "active_privileges": {archive: 1, blogs: 1, desks: 1, global_preferences: 1, groups: 1, hold: 1, ingest: 1},
+            "display_name": "admin",
+            "email": "admin@example.com",
+            "is_active": true,
+            "is_enabled": true,
+            "needs_activation": false,
+            "role": null,
+            "username": "admin"},
+        "pubstatus": "usable",
+        "sign_off": "ADM",
+        "source": "Liveblog",
+        "state": "draft",
+        "type": "composite",
+        "unique_id": 2,
+        "unique_name": "#2",
+        "urgency": 3,
+        "version_creator": "564dc9d967ed6100147023f3",
+        "versioncreated": "2015-11-23T011:43:56+00:00"
+                }
+            ]
+        }
+
+## Blog posts [/blogs/{_id}/posts]
+
++ Parameters
+    - _id (string) ... Blog id.
+
+### List the posts for given blogs [GET]
+
++ Response 200 (application/json)
+        {
+            "_items": [
+                {
+                    "_links": {"self": {"href": "blogs/1/posts/1"}},
+                    "text": "my first post for this blog",
+                    "blog": "545b2656ea8e154e6db9aeb4",
+                    "_updated": "2014-11-06T08:34:52+0000",
+                    "_etag": "26db7ac8d445a162be5eb19288f0bc134e25252c",
+                    "original_creator": 
+                    {
+                        "email": "admin@sourcefabric.org",
+                        "_updated": "2014-10-28T12:04:34+0000",
+                        "user_type": "administrator",
+                        "_etag": "0e110e74d03c5ca4017de6aa28c9981ca70ad083",
+                        "is_active": "true",
+                        "_id:" "543cc18bea8e150c58ac14bf",
+                        "username": "admin",
+                        "_created": "2014-10-14T06:24:11+0000"
+                    },
+                    "_created": "2014-11-06T08:34:52+0000",
+                    "_id": "545b32acea8e154e6db9aeb8"
+                },
+                {
+                    "_links": {"self": {"href": "blogs/1/posts/2"}},
+                    "text": "my second post for this blog",
+                    "_etag": "26db7ac8d445a162be5eb19288f0bc134e23456d",
+                    "blog": "545b2656ea8e154e6db9aeb4",
+                    "_updated": "2014-11-06T08:36:52+0000",
+                    "original_creator": 
+                    {
+                        "email": "admin@sourcefabric.org",
+                        "_updated": "2014-10-28T12:04:34+0000",
+                        "user_type": "administrator",
+                        "_etag": "0e110e74d03c5ca4017de6aa28c9981ca70ad083",
+                        "is_active": "true",
+                        "_id:" "543cc18bea8e150c58ac14bf",
+                        "username": "admin",
+                        "_created": "2014-10-14T06:24:11+0000"
+                    },
+                    "_created": "2014-11-06T08:36:52+0000",
+                    "_id": "545b32acea8e154e6db9acb6"
+                }
+            ]
+        }
+
+# Group Themes
+
+## Themes item [/themes/{_id}]
+
+A single Themes resource
+
++ Parameters
+    - _id (string, `1`) ... Themes item identifier.
+    
++ Model (application/json)
+
+        {
+        "_created": "1970-01-01T00:00:00+00:00",
+        "_etag": "f24c098514f50b78099a8fff9e190064edb60813",
+        "_id": "564dc9dd67ed61001ba590f5",
+        "_links": {
+            "self": {
+                "href": "themes/564dc9dd67ed61001ba590f5",
+                "title": "Theme"}},
+        "_updated": "1970-01-01T00:00:00+00:00",
+        "abstract": true,
+        "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
+        "label": "Angular Based Theme",
+        "license": "AGPL-3.0",
+        "name": "angular",
+        "options": {
+            "0": {
+                "default": 20,
+                "help": "Set the number of posts you want to see at the initialization",
+                "label": "Number of posts per page",
+                "name": "postsPerPage",
+                "type": "number"
+                 },
+            "1": {
+                "default": "?",
+                "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?...",
+                "label": "Permalink Delimiter",
+                "name": "permalinkDelimiter"
+                 },
+        "repository": {
+            "type": "git",
+            "url": "git@github.com:liveblog/lb-theme-angular.git",
+            "scripts": ["//code.jquery.com/jquery-1.11.3.min.js"],
+            "version": "1.1.0"
+            }
+        }
+
+### Retrieve a Theme [GET]
+
++ Response 200 (application/json)
+
+    [Themes item][]
+
++ Response 404
+
+### Update Theme [PATCH]
+
++ Request (application/json)
+    
+        {"name": "new-theme"}
++ Response 200 (application/json)
+        {"_status": "OK"}
++ Response 403
+
+### Delete a Theme [DELETE]
+
++ Request (application/json)
+        {}
++ Response 204
+
+### List all themes [GET]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+    
++ Response 200 (application/json)
+        {
+            "_items": [
+                {
+                    "_links": {"self": {"href": "/blogs/1"}},
+                    "title": "Test Blog",
+                    "_updated": "2014-10-16T08:34:00+0000",
+                    "_id": "543cc4c8ea8e150cd9ecd8f0",
+                    "_created": "2014-10-16T08:23:49+0000",
+                    "state": "open",
+                    "original_creator":"543cc18bea8e150c58ac14bf",
+                    "description": "this is a test blog",
+                    "_etag": "8a1ae4b1de1feff66922f9ff830d21a797e0617c",
+                    "members": []
+                },
+                {
+                    "_links": {"self": {"href": "/blogs/2"}},
+                    "title": "Bar",
+                    "_updated": "2014-10-17T09:34:00+0000",
+                    "_id": "543cc4c8ea8e150cd9ecar56",
+                    "_created": "2014-10-17T09:33:49+0000",
+                    "state": "closed",
+                    "description": "this is the second blog",
+                    "_etag": "998d130f94ea009c0b675a666662f66d40e7c170",
+                    "original_creator":"543cc18bea8e150c58ac14bf",
+                    "members": []
+                }
+            ]
+        }
+
+### List all themes [GET]
+
++ Parameters
+    + page = `1`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of items to be returned
+    
++ Response 200 (application/json)
+        {
+            "_items": [
+                {
+                    "_links": {"self": {"href": "/thems/1"}},
+                    "name": "angular_based",
+                    "_updated": "2015-10-16T08:34:00+0000",
+                    "_id": "564dc9dd67ed61001ba590f5",
+                    "_created": "2014-10-16T08:23:49+0000",
+                    "author":"Edouard Richard <edouard.richard@sourcefabric.org>",
+                    "_etag": "f24c098514f50b78099a8fff9e190064edb60813"
+                },
+                {
+                    "_links": {"self": {"href": "/thems/2"}},
+                    "name": "Actual Dog",
+                    "_updated": "2015-11-16T08:34:00+0000",
+                    "_id": "564dc9dd67ed61001ba590f5",
+                    "_created": "2014-10-16T08:23:49+0000",
+                    "author":"Edouard Richard <edouard.richard@sourcefabric.org>",
+                    "_etag": "f24c098514f40c78099a8fff9e190064edb60916"
+                }
+            ]
+        }
+
+# Group Embeds
+
+## Blogs [/client_blogs/{_id}]
+
+A single Blog resource.
++ Parameters
+    + _id (string) ... Blogs id.
++ Model (application/json) 
+        {
+            "_links": {"self": {"href": "/client_blogs/123"}},
+            "_id": "123",
+            "title": "Test embed",
+            "_updated": "2016-06-11T08:34:00+0000",
+            "_id": "543cc4c8ea8e150cd9ecd990",
+            "state": "open",
+            "_created": "2016-06-11T06:23:49+0000",
+            "original_creator":"543cc18bea8e150c58ac14bf",
+            "description": "this is a test embed blog",
+            "_etag": "8a1ae4b1de1feff66922f9ff830d21a797e0617c",
+            "members": []
+        }
+### Retrieve a single Blog [GET]
+
++ Response 200 (application/json)
+            {
+            "_links": {
+                "self": {
+                    "title": "Client_blogs",
+                    "href": "/client_blogs/543cc4c8ea8e150cd9ecd990"
+                }
+            },
+            "_id": "543cc4c8ea8e150cd9ecd990",
+            "_created": "2014-09-10T14:34:10+0000",
+            "_status": "OK",
+            "title": "Test embed",
+            "_updated": "2016-06-11T08:34:00+0000"
+        }
++ Response 404
+
+
+### List all Blogs [GET]
+
++ Parameters
+    + page = `0`(optional, integer) ... Page number
+    + max_results = `25`(optional, integer) ... Number of blogs to be returned
+
+
++ Response 200 (application/json)
+
+       {
+            "_items": [
+                {
+                    "_links": {"self": {"href": "/client_blogs/1"}},
+                    "title": "Test embed one",
+                    "_updated": "2016-06-11T08:34:00+0000",
+                    "_id": "543cc4c8ea8e150cd9ecd990",
+                    "_created": "2014-09-10T14:34:10+0000",
+                    "state": "open",
+                    "original_creator":"543cc18bea8e150c58ac14bf",
+                    "description": "this is a test embed blog",
+                    "_etag": "8a1ae4b1de1feff66922f9ff830d21a797e0617c",
+                    "members": []
+                },
+                {
+                    "_links": {"self": {"href": "/client_blogs/2"}},
+                    "title": "Bar embed blog",
+                    "_updated": "2016-06-27T09:34:00+0000",
+                    "_id": "543cc4c8ea8e150cd9ecab56",
+                    "_created": "2016-05-17T09:33:49+0000",
+                    "state": "open",
+                    "description": "this is the second embed blog",
+                    "_etag": "998d130f94ea009c0b675a666662f66d40e7g170",
+                    "original_creator":"543cc18bea8e150c58ac14bf",
+                    "members": []
+                }
+            ]
+        }
