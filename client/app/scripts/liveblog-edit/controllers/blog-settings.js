@@ -23,6 +23,10 @@ define([
         // set view's model
         var vm = this;
         angular.extend(vm, {
+            mailto: 'mail:upgrade@liveblog.pro?subject='+
+                encodeURIComponent(location.hostname) +
+                ' ' +
+                config.subscriptionLevel,
             blog: blog,
             newBlog: angular.copy(blog),
             deactivateTheme: (config.subscriptionLevel == 'solo') ? true : false,

@@ -21,6 +21,11 @@
         };
         $scope.modalActive = false;
 
+        $scope.mailto = 'mailto:upgrade@liveblog.pro?subject='+
+            encodeURIComponent(location.hostname) +
+            ' ' +
+            config.subscriptionLevel;
+
         function clearCreateBlogForm() {
             $scope.preview = {};
             $scope.progress = {width: 0};
