@@ -70,12 +70,20 @@ define([
             return isPostFreetype() && $scope.selectedPostType.name === 'Scorecard';
         }
 
-
         //save the 'keep scoarers' if needed
         function saveScorers() {
-                var bp = angular.copy($scope.currentBlog.blog_preferences);
-                bp.last_scorecard = $scope.freetypesData;
-                return blogService.update($scope.currentBlog, {'blog_preferences': bp});
+                if ($scope.currentBlog.blog_preferences) {
+                    var bp = angular.copy($scope.currentBlog.blog_preferences);
+                    bp.last_scorecard = $scope.freetypesData;
+                    return blogService.update($scope.currentBlog, {'blog_preferences': bp});
+                } else {
+                    return blogService.get($scope.blog._id).then(function(currentBlog) {
+                        $scope.currentBlog = currentBlog;
+                        var bp = angular.copy($scope.currentBlog.blog_preferences);
+                        bp.last_scorecard = $scope.freetypesData;
+                        return blogService.update($scope.currentBlog, {'blog_preferences': bp});
+                    })
+                }
         }
 
         // determine if the loaded item is freetype
@@ -191,7 +199,6 @@ define([
                 if (isPostScorecard()) {
                     blogService.get($scope.blog._id).then(function(currentBlog) {
                         $scope.currentBlog = currentBlog;
-                        
                         if ($scope.currentBlog.blog_preferences.last_scorecard) {
                             //load latest scorecard
                             if ($scope.currentBlog.blog_preferences.last_scorecard.remember) {
