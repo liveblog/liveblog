@@ -87,6 +87,12 @@
     .scorecard ul, .scorecard ol {
         margin: 0 !important;
     }
+    .inline {
+        display: inline;
+    }
+    .marginleft10 {
+        margin-left: 10px!important;
+    }
 </style>
 <div class="scorecard">
     <div class="scorecard__column">
@@ -146,9 +152,9 @@
             </ul>
         </fieldset>
     </div>
-    
 </div>
 <div hide-render>
-    <label for="remember"> Remember scorers</label>
-    <input id="remember" name="$remember" type="checkbox">
+    <label for="remember" class="inline" tooltip-placement="top"
+    tooltip="If checked the last scorecard will be loaded when choosing a new one">Remember last scorecard</label>
+    <input id="remember" class="marginleft10" name="$remember" type="checkbox">
 </div>
