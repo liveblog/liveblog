@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "2.3.30",
+    "version": "2.3.35",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -43,16 +43,28 @@
                     "label": "English"
                 },
                 {
-                    "value": "nl",
-                    "label": "Dutch"
+                    "value": "fi",
+                    "label": "Finnish"
                 },
                 {
                     "value": "de",
-                    "label": "German"
+                    "label": "Deutsch"
                 },
                 {
                     "value": "fr",
                     "label": "Français"
+                },
+                {
+                    "value": "nl",
+                    "label": "Nederlands"
+                },
+                {
+                    "value": "no",
+                    "label": "Norsk"
+                },
+                {
+                    "value": "cs",
+                    "label": "Čeština"
                 },
                 {
                     "value": "ro",
@@ -66,7 +78,7 @@
             "label": "Number of posts per page",
             "type": "number",
             "default": 20,
-            "help": "Set the number of posts you want to see at the initialization"
+            "help": "Set the number of posts you want to see per page"
         },
         {
             "name": "postOrder",
@@ -169,7 +181,7 @@
             "dependsOn": {
                 "showAuthor": true
             },
-            "help": "A click to the author name will create a new mail to be sent to the author."
+            "help": "A click on the author name will create a new email to be sent to the author."
         },
         {
             "name": "permalinkDelimiter",
@@ -193,14 +205,14 @@
             "label": "Users can comment",
             "type": "checkbox",
             "default": false,
-            "help": "If the users can comment from embed page"
+            "help": "If the users can comment on the blog"
         },
         {
             "name": "hasHighlights",
-            "label": "Has highlights",
+            "label": "Display highlights",
             "type": "checkbox",
             "default": false,
-            "help": "If the users see the highlight button in embed"
+            "help": "If the users see the highlight button in the blog"
         },
         {
             "name": "blockSearchEngines",

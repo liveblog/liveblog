@@ -328,7 +328,9 @@
             scope: {
                 src: '=',
                 file: '=',
-                progressWidth: '='
+                progressWidth: '=',
+                minWidth: '@',
+                minHeight: '@'
             },
             link: function(scope, elem) {
                 scope.$watch('src', function(src) {
@@ -340,10 +342,11 @@
                         var img = new Image();
                         img.onload = function() {
                             scope.progressWidth = 80;
-
-                            if (this.width < 320 || this.height < 240) {
+                            var minWidth = scope.minWidth || 320,
+                                minHeight = scope.minHeight || 240;
+                            if (this.width < minWidth || this.height < minHeight) {
                                 scope.$apply(function() {
-                                    notify.error(gettext('Sorry, but blog image must be at least 320x240 pixels big!'));
+                                    notify.error(gettext('Sorry, but blog image must be at least ' + minWidth + 'x' + minHeight + ' pixels big!'));
                                     scope.src = null;
                                     scope.progressWidth = 0;
                                 });

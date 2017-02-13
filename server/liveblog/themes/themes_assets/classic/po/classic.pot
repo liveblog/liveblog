@@ -4,23 +4,23 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 
-#: comments.html:38
+#: comments.html:37
 msgid "Cancel"
 msgstr ""
 
-#: template.html:42
+#: template.html:46
 msgid "Comment"
 msgstr ""
 
-#: comments.html:28
+#: comments.html:27
 msgid "Comment *"
 msgstr ""
 
-#: comments.html:32
+#: comments.html:31
 msgid "Comment should be maximum 300 characters in length."
 msgstr ""
 
-#: main.js:49
+#: main.js:50
 #: template.html:13
 msgid "Editorial"
 msgstr ""
@@ -33,15 +33,15 @@ msgstr ""
 msgid "Loading"
 msgstr ""
 
-#: comments.html:20
+#: comments.html:19
 msgid "Name *"
 msgstr ""
 
-#: comments.html:24
+#: comments.html:23
 msgid "Name should be maximum 30 characters in length."
 msgstr ""
 
-#: main.js:52
+#: main.js:53
 #: template.html:17
 msgid "Newest first"
 msgstr ""
@@ -50,26 +50,26 @@ msgstr ""
 msgid "No posts for now."
 msgstr ""
 
-#: main.js:55
+#: main.js:56
 #: template.html:21
 msgid "Oldest first"
 msgstr ""
 
 #: template.html:83
 msgid "One pinned post"
-msgid_plural "{{$count}} pined posts"
+msgid_plural "{{$count}} pinned posts"
 msgstr[0] ""
 msgstr[1] ""
 
-#: comments.html:31
+#: comments.html:30
 msgid "Please fill in your Comment."
 msgstr ""
 
-#: comments.html:23
+#: comments.html:22
 msgid "Please fill in your Name."
 msgstr ""
 
-#: comments.html:15
+#: comments.html:14
 msgid "Post a comment"
 msgstr ""
 
@@ -79,7 +79,7 @@ msgid_plural "See {{$count}} new updates"
 msgstr[0] ""
 msgstr[1] ""
 
-#: comments.html:39
+#: comments.html:38
 msgid "Send"
 msgstr ""
 
@@ -100,7 +100,7 @@ msgstr ""
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
 msgstr ""
 
-#: comments.html:7
+#: comments.html:6
 msgid "Your comment was sent for approval."
 msgstr ""
 

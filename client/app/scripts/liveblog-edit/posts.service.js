@@ -207,6 +207,21 @@ function PostsService(api, $q, userList) {
                         return item.item;
                     });
                 }
+                // save every items
+                _.each(items, function(item) {
+                    // because it fails when item has a `_id` field without `_links`
+                    if (angular.isDefined(item, '_id')) {
+                        item = {
+                            blog: blog_id,
+                            text: item.text,
+                            meta: item.meta,
+                            group_type: item.group_type,
+                            item_type: item.item_type,
+                            commenter: item.meta && item.meta.commenter
+                        };
+                    }
+                    dfds.push(api.items.save(item));
+                });
             }
             // save every items
             _.each(items, function(item) {
