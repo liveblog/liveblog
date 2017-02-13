@@ -138,7 +138,7 @@ import './module';
                     scope[SCOPE_FREETYPEDATA] = {};
                 }
                 // transform collection mechaism for `scorers` or for dinamical lists.
-                template = template.replace(/\<li([^>]*)\>(.*?)\<\/li\>/g, function(all, attr, repeater) {
+                template = template.replace(/<li([^>]*)>((.|\n)*?)<\/li>/g, function(all, attr, repeater) {
                     var iteratorName = getNewIndex('iterator');
                     var parts, vector = '';
                     repeater = repeater.replace(/\$([\$a-z0-9_.\[\]]+)/gi, function(all, path) {
@@ -235,7 +235,7 @@ import './module';
                     wrapBefore = '',
                     wrapAfter = '';
                 obj2path(paths, data);
-                template = template.replace(/\<li([^>]*)\>(.*?)\<\/li\>/g, function(all, attr, repeater) {
+                template = template.replace(/<li([^>]*)>((.|\n)*?)<\/li>/g, function(all, attr, repeater) {
                     var vector, vectorPath, parts, templ = '', emptyVars = true;
                     repeater = repeater.replace(/\$([\$a-z0-9_.\[\]]+)/gi, function(all, path) {
                         parts = path.split(/[\d*]/);
