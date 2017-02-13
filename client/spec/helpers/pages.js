@@ -520,14 +520,10 @@ function EditPostPage() {
     self.homeScore = element(by.css('[ng-model="freetypeData.home.score"]'));
     self.awayName = element(by.css('[ng-model="freetypeData.away.name"]'));
     self.awayScore = element(by.css('[ng-model="freetypeData.away.score"]'));
-    //self.player1Name = element.all(by.css('[ng-model="iterator__1.name"]')).get(0);
-    self.player1Name = element(by.css('[ng-model="freetypeData.home.scorers[0].name"]'));
-    //self.player1Time = element.all(by.css('[ng-model="iterator__1.time"]')).get(0);
-    self.player1Time = element(by.css('[ng-model="freetypeData.home.scorers[0].time"]'));
-    //self.player2Name = element.all(by.css('[ng-model="iterator__1.name"]')).get(1);
-    self.player2Name = element(by.css('[ng-model="freetypeData.away.scorers[0].name"]'));
-    //self.player2Time = element.all(by.css('[ng-model="iterator__1.time"]')).get(1);
-    self.player2Time = element(by.css('[ng-model="freetypeData.away.scorers[0].time"]'));
+    self.player1Name = element.all(by.css('[ng-model="iterator__1.name"]')).get(0);
+    self.player1Time = element.all(by.css('[ng-model="iterator__1.time"]')).get(0);
+    self.player2Name = element.all(by.css('[ng-model="iterator__1.name"]')).get(1);
+    self.player2Time = element.all(by.css('[ng-model="iterator__1.time"]')).get(1);
 
     self.addTop = function() {
         // click on the "+" bar
