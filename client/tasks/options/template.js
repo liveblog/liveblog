@@ -23,7 +23,7 @@ module.exports = function(grunt) {
             excludedTheme: 'angular',
             assignableUsers: {
                 solo: 3,
-                team: 10
+                team: 5
             },
             subscriptionLevel: process.env.SUBSCRIPTION_LEVEL || '',
             blogCreationRestrictions: {
