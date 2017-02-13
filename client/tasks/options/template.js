@@ -28,6 +28,21 @@ module.exports = function(grunt) {
                 ga: {
                     id: process.env.TRACKING_ID || ''
                 }
+            },
+
+            // default timezone for the app
+            defaultTimezone: grunt.option('defaultTimezone') || 'Europe/London',
+
+            // model date and time formats
+            model: {
+                dateformat: 'DD/MM/YYYY',
+                timeformat: 'HH:mm:ss'
+            },
+
+            // view formats for datepickers/timepickers
+            view: {
+                dateformat: process.env.VIEW_DATE_FORMAT || 'DD/MM/YYYY',
+                timeformat: process.env.VIEW_TIME_FORMAT || 'HH:mm'
             }
         };
 
