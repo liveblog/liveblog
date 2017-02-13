@@ -1,22 +1,21 @@
-import json
-import uuid
 import hmac
+import json
 import logging
-import requests
 import tempfile
 import urllib.parse
-from bson import ObjectId
+import uuid
 from hashlib import sha1
 from flask import make_response, abort
+import requests
+from bson import ObjectId
 from eve.io.mongo import MongoJSONEncoder
-from .exceptions import APIConnectionError, DownloadError
 from requests.exceptions import RequestException
 from requests.packages.urllib3.exceptions import MaxRetryError
 from superdesk import get_resource_service
 from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
-from .tasks import fetch_image
 from apps.auth import SuperdeskTokenAuth
-
+from .exceptions import APIConnectionError, DownloadError
+from .tasks import fetch_image
 
 logger = logging.getLogger('superdesk')
 
@@ -71,9 +70,11 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
     if data:
         data = json.dumps(data, cls=MongoJSONEncoder)
 
+    session = requests.Session()
+    session.trust_env = False
     logger.info('API {} request to {} with params={} and data={}'.format(method, api_url, args, data))
     try:
-        response = requests.request(method, api_url, headers={
+        response = session.request(method, api_url, headers={
             'Authorization': api_key,
             'Content-Type': 'application/json'
         }, params=args, data=data, timeout=timeout)

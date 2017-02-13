@@ -12,7 +12,7 @@
                     <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
                 </div>
             </div>
-            <div ng-switch-when="image">
+            <div ng-switch-when="image" ng-if="!gallery">
                 <figure>
                     <img ng-src="{{ item.picture_url }}" ng-srcset="{{ item.picture_srcset }}" alt="{{ item.meta.caption }}" sizes="80vw"/>
                     <figcaption translate>{{ item.meta.caption }} credit: {{ item.meta.credit }}</figcaption>

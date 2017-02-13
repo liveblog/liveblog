@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "2.3.35",
+    "version": "2.3.36",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -13,6 +13,9 @@
         "styles/reset.css",
         "styles/embed.css",
         "styles/dropdown.css",
+        "styles/justifiedGallery.min.css",
+        "styles/photoswipe.css",
+        "styles/default-skin/default-skin.css",
         "https://fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic",
         "https://maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css"
     ],
@@ -25,6 +28,10 @@
         "https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.5.3/angular-animate.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/ngInfiniteScroll/1.2.2/ng-infinite-scroll.min.js",
         "vendors/angular-gettext.js",
+        "vendors/jquery.justifiedGallery.min.js",
+        "vendors/photoswipe.min.js",
+        "vendors/photoswipe-ui-default.min.js",
+        "vendors/jquery.photoswipe-global.js",
         "main.js"
     ],
     "scripts": [
@@ -220,6 +227,13 @@
             "type": "checkbox",
             "default": false,
             "help": "Block search engines from indexing my blogs"
+        },
+        {
+            "name": "showGallery",
+            "label": "Show slideshow gallery",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users will see the slideshow gallery for multiple images posts"
         }
     ]
 }

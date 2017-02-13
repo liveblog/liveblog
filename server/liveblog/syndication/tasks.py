@@ -1,11 +1,13 @@
 import logging
-from werkzeug.datastructures import FileStorage
-from superdesk.celery_app import celery
-from superdesk import get_resource_service
-from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
-from .exceptions import APIConnectionError, DownloadError
-from settings import SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOWN
 
+from settings import (SYNDICATION_CELERY_COUNTDOWN,
+                      SYNDICATION_CELERY_MAX_RETRIES)
+from superdesk import get_resource_service
+from superdesk.celery_app import celery
+from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
+from werkzeug.datastructures import FileStorage
+
+from .exceptions import APIConnectionError, DownloadError
 
 logger = logging.getLogger('superdesk')
 

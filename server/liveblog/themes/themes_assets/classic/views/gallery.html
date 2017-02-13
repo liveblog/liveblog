@@ -1,0 +1,10 @@
+<div class="lb-gallery">
+    <div class="justified-gallery gallery">
+        <a class="picture" href="#" ng-repeat="item in gallery.images track by item._id">
+            <img ng-src="{{ item.picture_url }}" ng-srcset="{{ item.picture_srcset }}" alt="{{ item.meta.full_caption }}"
+                data-original-src="{{ item.meta.media.renditions.baseImage.href }}"
+                data-original-src-height="{{ item.meta.media.renditions.baseImage.height }}"
+                data-original-src-width="{{ item.meta.media.renditions.baseImage.width }}" />
+        </a>
+    </div>
+</div>
