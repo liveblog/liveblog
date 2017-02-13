@@ -27,6 +27,7 @@ import magic
 from liveblog.blogs.blogs import publish_blog_embed_on_s3
 import logging
 from flask import make_response
+from settings import (SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
 
 logger = logging.getLogger('superdesk')
 ASSETS_DIR = 'themes_assets'
@@ -282,6 +283,13 @@ class ThemesService(BaseService):
                         publish_blog_embed_on_s3.delay(str(blog['_id']))
                         break
         return blogs
+
+    def on_create(self, docs):
+        subscription = SUBSCRIPTION_LEVEL
+        if subscription in SUBSCRIPTION_MAX_THEMES:
+            all = self.find()
+            if (all.count() + len(docs) > SUBSCRIPTION_MAX_THEMES[subscription]):
+                raise SuperdeskApiError.forbiddenError(message='Cannot add another theme.')
 
     def on_updated(self, updates, original):
         # Republish the related blogs if the settings have been changed

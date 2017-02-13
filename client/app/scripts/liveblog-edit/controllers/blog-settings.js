@@ -18,13 +18,18 @@ define([
 ], function(angular, _) {
     'use strict';
     var BlogSettingsController = function($scope, blog, api, blogService, $location, notify,
-        gettext, modal, $q, upload) {
+        gettext, modal, $q, upload, config, blogSecurityService) {
 
         // set view's model
         var vm = this;
         angular.extend(vm, {
+            mailto: 'mail:upgrade@liveblog.pro?subject='+
+                encodeURIComponent(location.hostname) +
+                ' ' +
+                config.subscriptionLevel,
             blog: blog,
             newBlog: angular.copy(blog),
+            deactivateTheme: (config.subscriptionLevel == 'solo') ? true : false,
             blogPreferences: angular.copy(blog.blog_preferences),
             availableLanguages: [],
             original_creator: {},
@@ -145,6 +150,12 @@ define([
                 vm.forms.dirty = true;
                 vm.memberRequests.splice(vm.memberRequests.indexOf(user), 1);
                 vm.acceptedMembers.push(user);
+            },
+            hasReachedMembersLimit: function() {
+              if (!config.assignableUsers.hasOwnProperty(config.subscriptionLevel))
+                return false;
+
+              return vm.blogMembers.length >= config.assignableUsers[config.subscriptionLevel];
             },
             removeMember: function(user) {
                 vm.blogMembers.splice(vm.blogMembers.indexOf(user), 1);
@@ -317,8 +328,13 @@ define([
         vm.changeTab('general');
         vm.blog_switch = vm.newBlog.blog_status === 'open'? true: false;
         vm.syndication_enabled = vm.newBlog.syndication_enabled;
+
+        // Deactivate status input, when too many blogs are active
+        blogSecurityService.showUpgradeModal().then(function(showUpgradeModal) {
+            vm.deactivateStatus = vm.blog_switch ? false : showUpgradeModal;
+        });
     }
     BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
-        'gettext', 'modal', '$q', 'upload'];
+        'gettext', 'modal', '$q', 'upload', 'config', 'blogSecurityService'];
     return BlogSettingsController;
 });
