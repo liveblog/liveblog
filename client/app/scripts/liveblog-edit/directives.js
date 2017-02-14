@@ -517,7 +517,6 @@ define([
                     };
 
                     scope.internalControl.reset = function() {
-                        console.log('RESET');
                         scope.validation = {};
                         recursiveClean(scope.freetypeData);
                         scope.initialData = angular.copy(scope.freetypeData);
