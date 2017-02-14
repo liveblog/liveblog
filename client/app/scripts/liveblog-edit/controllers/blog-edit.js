@@ -113,12 +113,16 @@ define([
         // ask in a modalbox if the user is sure to want to overwrite editor.
         // call the callback if user say yes or if editor is empty
         function doOrAskBeforeIfEditorIsNotEmpty(callback, msg) {
+             var deferred = $q.defer();
+
             if (isEditorClean()) {
                 callback();
+                deferred.resolve();
             } else {
                 msg = msg || gettext('You have content in the editor. You will lose it if you continue without saving it before.');
-                modal.confirm(msg).then(callback);
+                modal.confirm(msg).then(callback).then(deferred.resolve, deferred.reject);
             }
+            return deferred.promise;
         }
 
         // remove and clean every items from the editor
@@ -194,19 +198,21 @@ define([
                 $scope.selectPostTypeDialog = !$scope.selectPostTypeDialog;
             },
             selectPostType: function(postType) {
-                $scope.selectedPostType = postType;
-                $scope.toggleTypePostDialog();
-                if (isPostScorecard()) {
-                    blogService.get($scope.blog._id).then(function(currentBlog) {
-                        $scope.currentBlog = currentBlog;
-                        if ($scope.currentBlog.blog_preferences.last_scorecard) {
-                            //load latest scorecard
-                            if ($scope.currentBlog.blog_preferences.last_scorecard.remember) {
-                                $scope.freetypesData = angular.copy($scope.currentBlog.blog_preferences.last_scorecard);
+                doOrAskBeforeIfEditorIsNotEmpty(cleanEditor).then(function() {
+                    $scope.selectedPostType = postType;
+                    $scope.toggleTypePostDialog();
+                    if (isPostScorecard()) {
+                        blogService.get($scope.blog._id).then(function(currentBlog) {
+                            $scope.currentBlog = currentBlog;
+                            if ($scope.currentBlog.blog_preferences.last_scorecard) {
+                                //load latest scorecard
+                                if ($scope.currentBlog.blog_preferences.last_scorecard.remember) {
+                                    $scope.freetypesData = angular.copy($scope.currentBlog.blog_preferences.last_scorecard);
+                                }
                             }
-                        }                     
-                    });
-                }
+                        });
+                    }
+                });
             },
             actionStatus: function() {
                 if (isPostFreetype()) {

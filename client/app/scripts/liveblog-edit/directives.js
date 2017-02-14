@@ -517,6 +517,8 @@ define([
                     };
 
                     scope.internalControl.reset = function() {
+                        console.log('RESET');
+                        scope.validation = {};
                         recursiveClean(scope.freetypeData);
                         scope.initialData = angular.copy(scope.freetypeData);
                     };
@@ -550,14 +552,16 @@ define([
                     $scope.valid = true;
                     $scope._id = _.uniqueId('text');
                     if ($scope.compulsory !== undefined) {
-                        $scope.$watch('[text,compulsory]', function(value) {
+                        var sentinel = $scope.$watch('[text,compulsory]', function(value) {
                                 $scope.compulsoryFlag = (value[0] === '' && value[1] === '');
                                 $scope.validation['compulsory__' + $scope._id] = !$scope.compulsoryFlag;
                         }, true);
+                        $scope.$on('$destroy', sentinel);
                     }
                 }],
                 scope: {
                     text: '=',
+                    // `compulsory` indicates a variable that is needed if the current value is empty.
                     compulsory: '=',
                     validation: '='
                 }
@@ -571,10 +575,11 @@ define([
                 controller: ['$scope', function($scope) {
                     var regex = new RegExp("(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})");
                     $scope._id = _.uniqueId('link');
-                    $scope.$watch('link', function(value) {
+                    var sentinel = $scope.$watch('link', function(value) {
                         $scope.valid = !value || regex.test(value);
                         $scope.validation[$scope._id] = $scope.valid;
                     });
+                    $scope.$on('$destroy', sentinel);
                 }],
                 scope: {
                     link: '=',
@@ -621,9 +626,10 @@ define([
                     $scope.valid = true;
                     $scope._id = _.uniqueId('image');
                     if ($scope.compulsory !== undefined) {
-                        $scope.$watch('[image,compulsory]', function(value) {
+                        var sentinel = $scope.$watch('[image,compulsory]', function(value) {
                                 $scope.compulsoryFlag = (value[0].picture_url === '' && value[1] === '');
                         }, true);
+                        $scope.$on('$destroy', sentinel);
                     }
                     var vm = this;
                     angular.extend(vm, {
@@ -678,6 +684,7 @@ define([
                 controllerAs: 'ft',
                 scope: {
                     image: '=',
+                    // `compulsory` indicates a variable that is needed if the current value is empty.
                     compulsory: '=',
                     validation: '='
                 }
