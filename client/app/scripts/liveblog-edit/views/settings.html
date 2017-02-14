@@ -42,7 +42,8 @@
                         <form class="form-horizontal" name="settings.forms.general">
                             <div class="form-group">
                                 <label for="inputTitle" class="control-label" translate>Blog Status</label>
-                                <div class="form-input relative">
+                                <p ng-if="settings.deactivateStatus">Too many active blogs</p>
+                                <div class="form-input relative" ng-if="!settings.deactivateStatus">
                                     <span class="blog-status">{{ settings.blog_switch ? 'Active' : 'Archived' | translate }}</span>
                                     <span style="display: block" tooltip="{{ settings.blog_switch ? 'Archive Blog' : 'Activate Blog' | translate }}" tooltip-placement="right">
                                         <span class="pull-left" sd-switch ng-model="settings.blog_switch" data-blog-status-switch></span>
@@ -108,6 +109,7 @@
                                 <label for="inputTheme" class="control-label" translate>Theme</label>
                                 <div class="form-input">
                                     <select
+                                      ng-disabled="settings.deactivateTheme"
                                       ng-model="settings.selectedTheme"
                                       ng-change="settings.blogPreferences.theme = settings.selectedTheme.name"
                                       ng-options="theme as theme.label for theme in settings.availableThemes track by theme.name"
@@ -314,7 +316,21 @@
                                 <div class="modal-body">
                                     <div translate class="add-label">ADD PEOPLE</div>
                                     <div class="team_settings edit-contributors">
-                                        <div lb-user-select-list data-members="settings.posibleMembers" data-onchoose="settings.addMember(user)"></div>
+                                        <div ng-if="settings.hasReachedMembersLimit()">
+                                          <h3>Sorry.</h3>
+                                          <p>You have reached the maximum number of users who are assigned as team members to your active blogs. You can either: </p>
+                                          <ul>
+                                              <li>1. Unassign a team member from one of your active blogs or</li>
+                                              <li>2. Subscribe to a bigger plan.</li>
+                                          </ul>
+                                          <p>To unassign a team member from one of your active blogs, go to “Blog settings”, choose “Team” and open the “Team members” section. Unassign a team member by clicking on the X.</p>
+                                          <p>Want to upgrade to a plan more suitable to your needs? Email us at <a href="{{settings.mailto}}">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
+                                        </div>
+                                        <div 
+                                            lb-user-select-list
+                                            ng-if="!settings.hasReachedMembersLimit()"
+                                            data-members="settings.posibleMembers"
+                                            data-onchoose="settings.addMember(user)"></div>
                                         <div class="content">
                                             <p ng-if="message">{{ message }}</p>
                                             <div class="member-list clearfix">
@@ -354,8 +370,7 @@
                     class="main"
                     sd-image-preview="settings.preview.url"
                     data-file="settings.preview.img"
-                    data-progress-width="settings.progress.width"
-                >
+                    data-progress-width="settings.progress.width">
                     <div class="upload-progress" ng-show="progress.width">
                         <div class="bar" style="width: {{ progress.width }}%;"></div>
                     </div>

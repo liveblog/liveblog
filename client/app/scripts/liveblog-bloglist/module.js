@@ -21,6 +21,11 @@
         };
         $scope.modalActive = false;
 
+        $scope.mailto = 'mailto:upgrade@liveblog.pro?subject='+
+            encodeURIComponent(location.hostname) +
+            ' ' +
+            config.subscriptionLevel;
+
         function clearCreateBlogForm() {
             $scope.preview = {};
             $scope.progress = {width: 0};
@@ -65,8 +70,20 @@
             clearCreateBlogForm();
             $scope.newBlogModalActive = false;
         };
+
+        $scope.cancelUpgrade = function() {
+            $scope.embedUpgrade = false;
+        };
+
         $scope.openNewBlog = function() {
-            $scope.newBlogModalActive = true;
+            blogSecurityService
+                .showUpgradeModal()
+                .then(function(showUpgradeModal) {
+                    if (showUpgradeModal)
+                        $scope.embedUpgrade = true;
+                    else
+                        $scope.newBlogModalActive = true;
+                });
         };
 
         $scope.createBlog = function() {
