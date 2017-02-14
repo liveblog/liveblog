@@ -35,7 +35,9 @@ CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 CONTENT_TYPES = {
     '.css': 'text/css',
     '.js': 'application/javascript',
-    '.json': 'application/json'
+    '.json': 'application/json',
+    '.svg': 'image/svg+xml',
+    '.svgz': 'image/svg+xml'
 }
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
 download_theme_blueprint = superdesk.Blueprint('download_theme', __name__)
