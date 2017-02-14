@@ -3,7 +3,12 @@ liveblogMarketplace
         function(Dispatcher, api, $http, _) {
             return {
                 getBlogs: function(filters) {
-                    api.get('/marketplace/blogs', { where: filters })
+                    var params = {
+                        where: filters,
+                        sort: '-start_date'
+                    };
+
+                    api.get('/marketplace/blogs', params)
                         .then(function(blogs) {
                             Dispatcher.dispatch({
                                 type: 'ON_GET_BLOGS',
@@ -26,8 +31,13 @@ liveblogMarketplace
                     else
                         filters[type] = value;
 
+                    var params = {
+                        where: filters,
+                        sort: '-start_date'
+                    };
+
                     api
-                        .get('/marketplace/blogs', { where: filters })
+                        .get('/marketplace/blogs', params)
                         .then(function(blogs) {
                             Dispatcher.dispatch({
                                 type: 'ON_GET_BLOGS',
