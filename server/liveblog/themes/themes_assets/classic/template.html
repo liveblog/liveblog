@@ -91,7 +91,10 @@
                     <i class="icon-chevron-up"></i>
                 </button>
             </div>
-            <lb-posts timeline="timeline" posts="timeline.pagesManager.allPosts"></lb-posts>
+            <lb-posts
+                ng-if='!timeline.loading'
+                timeline="timeline"
+                posts="timeline.pagesManager.allPosts"></lb-posts>
         </section>
         <button ng-click="timeline.fetchNewPage()"
                 class="ng-cloak"
