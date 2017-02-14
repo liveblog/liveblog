@@ -2,11 +2,10 @@ import logging
 from urllib.parse import urljoin
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from flask import Blueprint, abort, request
+from flask import Blueprint, request
 from flask_cors import CORS
 from eve.utils import str_to_date
 from superdesk import get_resource_service
-from apps.auth import SuperdeskTokenAuth
 from .exceptions import APIConnectionError, ProducerAPIError
 from .utils import trailing_slash, api_response, api_error, send_api_request, blueprint_superdesk_token_auth
 
