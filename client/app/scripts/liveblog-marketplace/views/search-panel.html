@@ -16,7 +16,7 @@
                 data-open="true">
                 <ul class="filter-box">
                     <li
-                        ng-repeat="category in categories"
+                        ng-repeat="category in categories track by category._id"
                         ng-click="toggleFilter('category', category)">
                         <span
                             class="sd-checkbox"
@@ -33,7 +33,7 @@
                 data-open="true">
                 <ul class="filter-box">
                     <li
-                        ng-repeat="marketer in marketers._items"
+                        ng-repeat="marketer in marketers._items track by marketer._id"
                         ng-click="toggleFilter('marketer._id', marketer._id)">
                         <span
                             class="sd-checkbox"
