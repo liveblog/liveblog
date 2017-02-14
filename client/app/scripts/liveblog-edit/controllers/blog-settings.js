@@ -338,9 +338,11 @@ define([
             }
         }
 
-        var splitDate = moment.tz(vm.newBlog.start_date, config.defaultTimezone);
-        vm.start_date = splitDate.format();
-        vm.start_time = splitDate.format(config.model.timeformat);
+        if (vm.newBlog.start_date) {
+            var splitDate = moment.tz(vm.newBlog.start_date, config.defaultTimezone);
+            vm.start_date = splitDate.format();
+            vm.start_time = splitDate.format(config.model.timeformat);
+        }
 
         vm.changeTab('general');
         vm.blog_switch = vm.newBlog.blog_status === 'open'? true: false;
