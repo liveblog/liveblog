@@ -26,7 +26,7 @@ liveblogMarketplace
                     });
                 },
                 toggleFilter: function(filters, type, value) {
-                    if (filters.hasOwnProperty(type) && filters[type] == value)
+                    if (filters && filters[type] === value)
                         filters = _.omit(filters, type);
                     else
                         filters[type] = value;

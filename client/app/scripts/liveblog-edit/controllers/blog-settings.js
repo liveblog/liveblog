@@ -23,10 +23,6 @@ define([
         // set view's model
         var vm = this;
 
-        //splitDate: datetimeHelper.splitDateTime(vm.start_date),
-        //start_date: splitDate.date,
-        //start_time: splitDate.time,
-
         angular.extend(vm, {
             mailto: 'mail:upgrade@liveblog.pro?subject='+
                 encodeURIComponent(location.hostname) +
@@ -174,7 +170,6 @@ define([
                 vm.blogMembers.splice(vm.blogMembers.indexOf(user), 1);
             },
             save: function() {
-                console.log('save', vm.start_date, vm.start_time);
                 // save on backend
                 var deferred = $q.defer();
                 var members = _.map(vm.members, function(member) {
@@ -188,9 +183,7 @@ define([
                     syndication_enabled: vm.syndication_enabled,
                     market_enabled: vm.market_enabled,
                     category: vm.category,
-                    //start_date: vm.start_date,
                     start_date: datetimeHelper.mergeDateTime(vm.start_date, vm.start_time),
-
                     members: members
                 };
                 angular.extend(vm.newBlog, changedBlog);
