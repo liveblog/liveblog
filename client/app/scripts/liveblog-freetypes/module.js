@@ -78,16 +78,17 @@
 
     var liveblogFreetypesModule = angular.module('liveblog.freetypes', [])
     .config(['superdeskProvider', function(superdesk) {
-        superdesk
-            .activity('/freetypes/', {
-                label: gettext('Free types manager'),
-                controller: LiveblogFreetypesController,
-                controllerAs: 'vm',
-                category: superdesk.MENU_MAIN,
-                adminTools: true,
-                privileges: {'global_preferences': 1},
-                templateUrl: 'scripts/liveblog-freetypes/views/list.html'
-            });
+        if (config.subscriptionLevel != 'solo')
+            superdesk
+                .activity('/freetypes/', {
+                    label: gettext('Free types manager'),
+                    controller: LiveblogFreetypesController,
+                    controllerAs: 'vm',
+                    category: superdesk.MENU_MAIN,
+                    adminTools: true,
+                    privileges: {'global_preferences': 1},
+                    templateUrl: 'scripts/liveblog-freetypes/views/list.html'
+                });
     }])
     .config(['apiProvider', function(apiProvider) {
         apiProvider.api('freetypes', {
