@@ -13,6 +13,8 @@ import superdesk
 from superdesk import get_backend, get_resource_service
 from superdesk.resource import Resource
 from superdesk.services import BaseService
+from liveblog.validator import LiveblogValidator
+
 
 _preferences_key = 'global_preferences'
 
@@ -21,6 +23,7 @@ def init_app(app):
     endpoint_name = _preferences_key
     service = GlobalPreferencesService(endpoint_name, backend=get_backend())
     GlobalPreferencesResource(endpoint_name, app=app, service=service)
+    app.validator = LiveblogValidator
 
 
 superdesk.privilege(name='global_preferences', label='Global Settings Management',
