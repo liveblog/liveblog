@@ -41,65 +41,14 @@
         <div
             class="card-list-container"
             ng-class="{'open': searchPanel, move: !emptyMarketer()}">
-            <h3>Forthcoming Blogs</h3>
-            <ul
-                class="card-list"
-                ng-show="forthcomingBlogs._items">
-                <li
-                    ng-repeat="blog in forthcomingBlogs._items track by blog._id"
-                    ng-click="openEmbedModal(blog)"
-                    class="can-access">
-                    <figure class="media">
-                        <div
-                            ng-if="blog.picture_url"
-                            if-background-image="{{blog.picture_url}}"></div>
-                    </figure>
-                    <div class="content">
-                        <h3>{{ ::blog.title }}</h3>
-                        <div class="description">{{ ::blog.description | htmlToPlaintext }}</div>
-                    </div>
-                    <div class="footer">
-                        <dl>
-                            <dt>{{ ::'Blog owner' | translate }}:</dt>
-                            <dd>{{ ::blog.marketer_name }}</dd>
-                            <dt>{{ ::'Start date' | translate }}:</dt>
-                            <dd><time>{{ ::blog.start_date | reldate }}</time></dd>
-                            <dt>{{ ::'Category' | translate }}:</dt>
-                            <dd>{{ ::blog.category }}</dd>
-                        </dl>
-                    </div>
-                </li>
-            </ul>
-
-            <h3>Past Blogs</h3>
-            <ul
-                class="card-list"
-                ng-show="blogs._items">
-                <li
-                    ng-repeat="blog in blogs._items track by blog._id"
-                    ng-click="openEmbedModal(blog)"
-                    class="can-access">
-                    <figure class="media">
-                        <div
-                            ng-if="blog.picture_url"
-                            if-background-image="{{blog.picture_url}}"></div>
-                    </figure>
-                    <div class="content">
-                        <h3>{{ ::blog.title }}</h3>
-                        <div class="description">{{ ::blog.description | htmlToPlaintext }}</div>
-                    </div>
-                    <div class="footer">
-                        <dl>
-                            <dt>{{ ::'Blog owner' | translate }}:</dt>
-                            <dd>{{ ::blog.marketer_name }}</dd>
-                            <dt>{{ ::'Start date' | translate }}:</dt>
-                            <dd><time>{{ ::blog.start_date | reldate }}</time></dd>
-                            <dt>{{ ::'Category' | translate }}:</dt>
-                            <dd>{{ ::blog.category }}</dd>
-                        </dl>
-                    </div>
-                </li>
-            </ul>
+            <div
+                lb-blogs-list
+                title="Forthcoming Blogs"
+                blogs="forthcomingBlogs"></div>
+            <div
+                lb-blogs-list
+                title="Current Blogs"
+                blogs="blogs"></div>
         </div>
     </div>
 
