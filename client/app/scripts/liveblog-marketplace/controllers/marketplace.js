@@ -1,7 +1,7 @@
 liveblogMarketplace
     .controller('MarketplaceController', 
-        ['$scope', 'Store', 'MarketplaceActions', 'MarketplaceReducers', '$route',
-        function($scope, Store, MarketplaceActions, MarketplaceReducers, $route) {
+        ['$scope', 'Store', 'MarketplaceActions', 'MarketplaceReducers', '$route', 'moment',
+        function($scope, Store, MarketplaceActions, MarketplaceReducers, $route, moment) {
             var filters = {}
 
             if ($route.current.params.hasOwnProperty('filters'))
@@ -39,7 +39,7 @@ liveblogMarketplace
             });
 
             $scope.store.connect(function(state) {
-                $scope.blogs = state.blogs;
+                //$scope.blogs = state.blogs;
                 $scope.searchPanel = state.searchPanel;
                 $scope.embedModal = state.embedModal;
                 $scope.filters = state.filters;
@@ -47,6 +47,16 @@ liveblogMarketplace
 
                 $route.updateParams({
                     filters: JSON.stringify(state.filters)
+                });
+
+                $scope.blogs = { _items: [] };
+                $scope.forthcomingBlogs = { _items: [] };
+
+                state.blogs._items.forEach(function(blog) {
+                    if (moment().diff(blog.start_date) < 0)
+                        $scope.forthcomingBlogs._items.push(blog);
+                    else
+                        $scope.blogs._items.push(blog);
                 });
             });
 
