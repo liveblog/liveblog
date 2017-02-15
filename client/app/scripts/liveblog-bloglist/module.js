@@ -218,6 +218,13 @@
             $scope.blogMembers.splice($scope.blogMembers.indexOf(user), 1);
         };
 
+        $scope.hasReachedMembersLimit = function() {
+            if (!config.assignableUsers.hasOwnProperty(config.subscriptionLevel))
+            return false;
+
+            return $scope.blogMembers.length >= config.assignableUsers[config.subscriptionLevel];
+        };
+
         //set grid or list view
         $scope.setBlogsView = function(blogsView) {
             if (typeof blogsView !== 'undefined') {
