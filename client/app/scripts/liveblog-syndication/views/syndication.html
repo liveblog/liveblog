@@ -5,7 +5,11 @@
             <i class="icon-th-large"></i>
         </button>
         <ul class="nav nav-tabs pull-left" >
-            <li ng-class="{active: activeState === state}" ng-repeat="state in states"><button ng-click="changeState(state)" translate>{{ ::state.text }}</button></li>
+            <li
+                ng-class="{active: activeState === state.name}"
+                ng-repeat="state in states">
+                <button ng-click="changeState(state)" translate>{{ ::state.text }}</button>
+            </li>
         </ul>
     </div>
 
