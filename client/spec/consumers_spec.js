@@ -182,9 +182,9 @@ describe('Consumers', function() {
 
             var elemToHover = element(by.css('ul.table-body div.row-wrapper'));
 
-            browser.actions().mouseMove(elemToHover, {x: 3, y: 3}).perform()
+            browser.actions().mouseMove(elemToHover).perform()
                 .then(function() {
-                    return element(by.css('ul.table-body li a.delete-consumer'))
+                    return element(by.css('a.delete-consumer'))
                         .click();
                 })
                 .then(function() {
