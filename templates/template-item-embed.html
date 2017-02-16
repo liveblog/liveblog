@@ -1,0 +1,8 @@
+<!-- <div ng-if="isEmbedCode" class="item--embed" lb-bind-html html-content="{{item.meta.html}}" load-script></div>
+<article class="item--embed">
+    <img ng-if="!isEmbedCode && item.meta.thumbnail_url" ng-src="{{ item.meta.thumbnail_url }}" class="item--embed__illustration"/>
+</article> -->
+<div class="item--embed">{{ item.meta.html | safe }}</div>
+<article class="item--embed">
+    <img ng-if="!isEmbedCode && item.meta.thumbnail_url" ng-src="{{ item.meta.thumbnail_url }}" class="item--embed__illustration"/>
+</article>
