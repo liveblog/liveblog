@@ -73,6 +73,19 @@ blogs_schema = {
     'syndication_enabled': {
         'type': 'boolean',
         'default': False
+    },
+    'market_enabled': {
+        'type': 'boolean',
+        'default': False
+    },
+    'category': {
+        'type': 'string',
+        'allowed': ["", "Breaking News", "Entertainment", "Business and Finance", "Sport", "Technology"],
+        'default': ""  # unsetting a variable is a world of pain
+    },
+    'start_date': {
+        'type': 'datetime',
+        'default': None
     }
 }
 

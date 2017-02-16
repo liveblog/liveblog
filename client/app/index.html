@@ -170,6 +170,8 @@
     <script src="scripts/liveblog-themes/themes.services.js"></script>    
     <script src="scripts/liveblog-themes/directives.js"></script>
 
+    <script src="scripts/flux.js"></script>
+
     <!--Liveblog Analytics-->
     <script src="scripts/liveblog-analytics/index.js"></script>
     <script src="scripts/liveblog-analytics/controllers/controller-analytics.js"></script>
@@ -177,7 +179,6 @@
 
     <!--Liveblog Syndication-->
     <script src="scripts/liveblog-syndication/index.js"></script>
-    <script src="scripts/liveblog-syndication/flux.js"></script>
     <script src="scripts/liveblog-syndication/controllers/base.js"></script>
 
     <script src="scripts/liveblog-syndication/actions/ingest-panel.js"></script>
@@ -203,7 +204,17 @@
     <script src="scripts/liveblog-syndication/controllers/producers.js"></script>
     <script src="scripts/liveblog-syndication/directives/producer-edit.js"></script>
     <script src="scripts/liveblog-syndication/directives/producer-list.js"></script>
+
     <script src="scripts/liveblog-freetypes/module.js"></script>
+
+    <!--Liveblog Marketplace-->
+    <script src="scripts/liveblog-marketplace/index.js"></script>
+    <script src="scripts/liveblog-marketplace/controllers/marketplace.js"></script>
+    <script src="scripts/liveblog-marketplace/directives/search-panel.js"></script>
+    <script src="scripts/liveblog-marketplace/directives/blog-preview-modal.js"></script>
+    <script src="scripts/liveblog-marketplace/directives/blogs-list.js"></script>
+    <script src="scripts/liveblog-marketplace/actions/marketplace.js"></script>
+    <script src="scripts/liveblog-marketplace/reducers/marketplace.js"></script>
     <!-- endbuild -->
 
     <script src="scripts/lb-templates.js"></script>
@@ -229,6 +240,7 @@
             'liveblog.analytics',
             'liveblog.freetypes',
             'liveblog.themes',
+            'liveblog.flux',
             'superdesk.settings',
             'superdesk.dashboard',
             'superdesk.users',
@@ -261,6 +273,9 @@
 
         if (config.syndication)
             modules.push('liveblog.syndication');
+
+        if (config.marketplace)
+            modules.push('liveblog.marketplace');
 
         require([
             'main',
