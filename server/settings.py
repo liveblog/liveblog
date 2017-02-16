@@ -138,6 +138,7 @@ INSTALLED_APPS = [
     'liveblog.blogslist',
     'liveblog.syndication',
     'liveblog.freetypes',
+    'liveblog.marketplace',
     'liveblog.analytics'
 ]
 
@@ -269,6 +270,9 @@ ORGANIZATION_NAME_ABBREVIATION = "SF"
 # Syndication Global Settings
 SYNDICATION_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
 SYNDICATION_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)
+
+# Marketplace Settings
+MARKETPLACE_APP_URL = env('MARKETPLACE_APP_URL', 'https://lb-market.lab.sourcefabric.org/api')
 
 # Settings related to subscription levels
 SUBSCRIPTION_LEVEL_SOLO = 'solo'

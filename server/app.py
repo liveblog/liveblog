@@ -18,6 +18,7 @@ import flask_s3
 from liveblog.syndication.producer import producers_blueprint
 from liveblog.syndication.syndication import syndication_blueprint
 from liveblog.syndication.blogs import blogs_blueprint as syndication_blogs_blueprint
+from liveblog.marketplace.marketer import marketers_blueprint
 
 from liveblog.analytics.analytics import analytics_blueprint
 
@@ -70,6 +71,9 @@ def get_app(config=None):
     app.register_blueprint(producers_blueprint)
     app.register_blueprint(syndication_blueprint)
     app.register_blueprint(syndication_blogs_blueprint)
+
+    # Market place
+    app.register_blueprint(marketers_blueprint)
 
     return app
 

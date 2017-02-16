@@ -138,6 +138,49 @@
                             <div lb-syndication-switch></div>
 
                             <div class="form-group">
+                                <label for="inputTitle" class="control-label" translate>Market</label>
+                                <div class="form-input relative">
+                                    <span class="blog-status">{{ settings.market_enabled ? 'Marketed' : 'Private' | translate }}</span>
+                                    <span style="display: block" tooltip="{{ settings.market_enabled ? 'Keep private' : 'Show in market' | translate }}" tooltip-placement="right">
+                                        <span class="pull-left" sd-switch ng-model="settings.market_enabled" data-blog-status-switch></span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="category" class="control-label" translate>Category</label>
+                                <div class="form-input">
+                                    <select
+                                      ng-model="settings.category"
+                                      ng-options="category as category for category in settings.availableCategories"
+                                      class="form-control">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label
+                                    for="start_date"
+                                    class="control-label"
+                                    translate>Start date</label>
+                                <div
+                                    sd-datepicker
+                                    ng-model="settings.start_date"
+                                    class="form-input"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label
+                                    for="start_time"
+                                    class="control-label"
+                                    translate>Start time</label>
+                                <div
+                                    sd-timepicker
+                                    ng-model="settings.start_time"
+                                    class="form-input"></div>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="removeBlog" class="control-label" translate>Blog removal</label>
                                 <div class="form-input">
                                     <button
