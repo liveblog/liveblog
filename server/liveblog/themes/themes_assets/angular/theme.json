@@ -76,7 +76,7 @@
             "label": "Date time Format",
             "type": "datetimeformat",
             "default": "lll",
-            "help": "Sets the date time format to pe used in embed it need to be valid  moment.js format http://momentjs.com/docs/#/parsing/string-format"
+            "help": "Sets the date time format to be used in the embed. Please enter a custom format in valid moment.js format http://momentjs.com/docs/#/parsing/string-format"
         }
     ],
     "scripts": [

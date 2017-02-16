@@ -7,11 +7,29 @@ export default {
     editor: {
         disableEditorToolbar: false
     },
+    syndication: process.env.SYNDICATION || false,
+    marketplace: process.env.MARKETPLACE || false,
+    themeCreationRestrictions: {team: 3},
+    excludedTheme: 'angular',
+    assignableUsers: {
+        solo: 3,
+        team: 5
+    },
+    subscriptionLevel: process.env.SUBSCRIPTION_LEVEL || '',
+    blogCreationRestrictions: {
+        solo: 1,
+        team: 3
+    },
     analytics: {
         piwik: '',
         ga: ''
     },
     embedly: {
-        key: '1163b640a11444e39ec77aa3735720e6'
-    }
+        key: ''
+    },
+    // model date and time formats
+    model: {
+        dateformat: 'DD/MM/YYYY',
+        timeformat: 'HH:mm:ss'
+    },
 };

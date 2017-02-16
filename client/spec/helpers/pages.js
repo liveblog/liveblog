@@ -832,9 +832,13 @@ function ConsumersManagementPage() {
     self.openConsumersManagement = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
         browser.wait(function() {
-            return element(by.css('[href="#/consumers/"][title]')).isDisplayed();
+            return element(by.css('[href="#/syndication/"][title]')).isDisplayed();
         });
-        waitAndClick(by.css('[href="#/consumers/"][title]'));
+        waitAndClick(by.css('[href="#/syndication/"][title]'));
+
+        browser.waitForAngular();
+        element.all(by.repeater('state in states').row(1).column('state.text')).click();
+
         return self;
     };
 }
@@ -846,9 +850,13 @@ function ProducersManagementPage() {
     self.openProducersManagement = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
         browser.wait(function() {
-            return element(by.css('[href="#/producers/"][title]')).isDisplayed();
+            return element(by.css('[href="#/syndication/"][title]')).isDisplayed();
         });
-        waitAndClick(by.css('[href="#/producers/"][title]'));
+        waitAndClick(by.css('[href="#/syndication/"][title]'));
+
+        browser.waitForAngular();
+        element.all(by.repeater('state in states').row(0).column('state.text')).click();
+
         return self;
     };
 }

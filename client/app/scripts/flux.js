@@ -1,5 +1,5 @@
-export default angular
-    .module('liveblog.syndication.flux', [])
+angular
+    .module('liveblog.flux', [])
     .factory('Dispatcher', function() {
         return {
             dispatch: function(action) {

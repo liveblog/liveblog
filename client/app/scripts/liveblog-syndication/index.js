@@ -1,7 +1,5 @@
 import './styles/syndication.scss';
 
-import './flux';
-
 // ACTIONS
 import ingestPanelActions from './actions/ingest-panel';
 import incomingSyndicationActions from './actions/incoming-syndication';
@@ -12,10 +10,11 @@ import incomingSyndicationReducers from './reducers/incoming-syndication';
 
 // CONTROLLERS
 import baseController from './controllers/base';
-import producersController from './controllers/producers';
-import consumersController from './controllers/consumers';
+import syndicationController from './controllers/syndication';
 
 // DIRECTIVES
+import lbProducers from './directives/producers';
+import lbConsumers from './directives/consumers';
 import attachSyndicatedBlogsModal from './directives/attach-syndicated-blogs-modal';
 import consumerEdit from './directives/consumer-edit';
 import consumerList from './directives/consumer-list';
@@ -37,7 +36,6 @@ import api from './api';
 
 export default angular
     .module('liveblog.syndication', [
-      'liveblog.syndication.flux',
       'liveblog.security'
     ])
 
@@ -51,10 +49,11 @@ export default angular
 
     // controllers
     .controller('BaseController', baseController)
-    .controller('ProducersController', producersController)
-    .controller('ConsumersController', consumersController)
+    .controller('SyndicationController', syndicationController)
 
     // directives
+    .directive('lbConsumers', lbConsumers)
+    .directive('lbProducers', lbProducers)
     .directive('lbAttachSyndicatedBlogsModal', attachSyndicatedBlogsModal)
     .directive('lbConsumerEdit', consumerEdit)
     .directive('lbConsumerList', consumerList)

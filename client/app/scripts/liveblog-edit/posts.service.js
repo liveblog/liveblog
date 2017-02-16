@@ -151,6 +151,8 @@ function PostsService(api, $q, userList) {
                 api.syndicationIn.getById(post.syndication_in).then(function(synd) {
                     post.producer_blog_title = synd.producer_blog_title;
                     resolve(post);
+                }, function() {
+                    resolve(post);
                 });
             } else {
                 resolve(post)
@@ -176,6 +178,25 @@ function PostsService(api, $q, userList) {
                     });
             });
     }
+//<<<<<<< HEAD
+//    function retrievePosts(blog_id, posts_criteria) {
+//        return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
+//            .query(posts_criteria)
+//            .then(function(data) {
+//                return $q.all(data._items.map(_completePost))
+//                    .then(function(result) {
+//                        return angular.extend(data, { _items: result });
+//=======
+//                if (post.syndication_in && api.hasOwnProperty('syndicationIn')) {
+//                    api.syndicationIn.getById(post.syndication_in).then(function(synd) {
+//                        post.producer_blog_title = synd.producer_blog_title;
+//                        resolve(post);
+//                    }, function() {
+//                        resolve(post);
+//>>>>>>> upstream/devel
+//                    });
+//            });
+//    }
 
     function getLatestUpdateDate(posts) {
         if (!angular.isDefined(posts) || posts.length < 1) {

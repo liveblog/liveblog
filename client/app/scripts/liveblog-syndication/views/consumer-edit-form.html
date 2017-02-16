@@ -40,7 +40,7 @@
                     id="webhook-url"
                     ng-model="consumer.webhook_url"
                     required ng-readonly="consumer._readonly && consumer._readonly.webhook_url">
-                  <i ng-show="consumerForm.webhook_url.$error.required" class="required-asteriks">*</i>
+                  <i class="required-asteriks">*</i>
                   <div 
                       class="error" 
                       ng-show="consumerForm.attempted && consumerForm.webhook_url.$error.required" 
@@ -48,7 +48,7 @@
                   <div 
                       class="error" 
                       ng-show="consumerForm.attempted && consumerForm.webhook_url.issue"
-                      translate>{{consumerForm.webhook_url.issue}}
+                      translate>{{consumerForm.webhook_url.issue}}</div>
                 </div>
             </fieldset>
 

@@ -78,6 +78,18 @@ import BlogSettingsController from './controllers/blog-settings.js'
                     return blogSecurityService.goToSettings();
                 }]
             }
+        }).activity('/liveblog/analytics/:_id', {
+            label: gettext('Blog Analytics'),
+            auth: true,
+            controller: 'LiveblogAnalyticsController',
+            controllerAs: 'analytics',
+            templateUrl: 'scripts/liveblog-analytics/views/view-analytics.html',
+            resolve: {
+                blog: BlogResolver,
+                security: ['blogSecurityService', function(blogSecurityService) {
+                    return blogSecurityService.goToSettings();
+                }]
+            }
         });
     }]).config(['apiProvider', function(apiProvider) {
         apiProvider.api('posts', {

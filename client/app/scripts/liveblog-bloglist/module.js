@@ -21,6 +21,11 @@
         };
         $scope.modalActive = false;
 
+        $scope.mailto = 'mailto:upgrade@liveblog.pro?subject='+
+            encodeURIComponent(location.hostname) +
+            ' ' +
+            config.subscriptionLevel;
+
         function clearCreateBlogForm() {
             $scope.preview = {};
             $scope.progress = {width: 0};
@@ -65,8 +70,20 @@
             clearCreateBlogForm();
             $scope.newBlogModalActive = false;
         };
+
+        $scope.cancelUpgrade = function() {
+            $scope.embedUpgrade = false;
+        };
+
         $scope.openNewBlog = function() {
-            $scope.newBlogModalActive = true;
+            blogSecurityService
+                .showUpgradeModal()
+                .then(function(showUpgradeModal) {
+                    if (showUpgradeModal)
+                        $scope.embedUpgrade = true;
+                    else
+                        $scope.newBlogModalActive = true;
+                });
         };
 
         $scope.createBlog = function() {
@@ -201,6 +218,13 @@
             $scope.blogMembers.splice($scope.blogMembers.indexOf(user), 1);
         };
 
+        $scope.hasReachedMembersLimit = function() {
+            if (!config.assignableUsers.hasOwnProperty(config.subscriptionLevel))
+            return false;
+
+            return $scope.blogMembers.length >= config.assignableUsers[config.subscriptionLevel];
+        };
+
         //set grid or list view
         $scope.setBlogsView = function(blogsView) {
             if (typeof blogsView !== 'undefined') {
@@ -261,6 +285,8 @@
                         });
                     });
                 });
+
+                console.log('blogs', $scope.blogs);
                 $scope.blogsLoading = false;
             });
         }

@@ -35,6 +35,8 @@ _.sortByOrder = require('lodash.sortbyorder');
 import MediumEditor from 'medium-editor';
 window.MediumEditor = MediumEditor;
 
+import './flux';
+
 import 'superdesk-core/scripts/core/activity';
 import 'superdesk-core/scripts/core/analytics';
 import 'superdesk-core/scripts/core/api';
@@ -91,6 +93,7 @@ import 'superdesk-core/scripts/apps/ingest';
 import 'liveblog-bloglist';
 import 'liveblog-edit';
 import 'liveblog-freetypes';
+import 'liveblog-marketplace';
 import 'liveblog-settings';
 import 'liveblog-syndication';
 import 'liveblog-themes';
@@ -184,6 +187,9 @@ let liveblogModules = [
 
 if (config.syndication)
     liveblogModules.push('liveblog.syndication');
+
+if (config.marketplace)
+    liveblogModules.push('liveblog.marketplace');
 
 let liveblog = angular.module('liveblog', liveblogModules);
 

@@ -1,7 +1,7 @@
 from eve.auth import BasicAuth
-from flask import request, abort
-from superdesk.resource import Resource
+from flask import abort, request
 from superdesk import get_resource_service
+from superdesk.resource import Resource
 
 
 class SyndicationTokenAuth(BasicAuth):

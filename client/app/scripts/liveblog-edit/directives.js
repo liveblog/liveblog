@@ -573,7 +573,7 @@ angular.module('liveblog.edit')
     .directive('freetypeImage', ['$compile', 'modal', 'api', 'upload', '$templateCache', function($compile, modal, api, upload, $templateCache) {
         return {
             restrict: 'E',
-            templateUrl: 'scripts/liveblog-edit/views/freetype-image.html',
+            template: $templateCache.get('scripts/liveblog-edit/views/freetype-image.html'),
             controller: ['$scope', function($scope) {
                 var vm = this;
                 angular.extend(vm, {
@@ -612,7 +612,7 @@ angular.module('liveblog.edit')
                                 if (response.data._status === 'ERR'){
                                     return;
                                 }
-                                var picture_url = response.data.renditions.viewImage.href;
+                                var picture_url = response.data.renditions.original.href;
                                 $scope.image.picture_url = picture_url;
                                 $scope.image.picture = response.data._id;
                                 vm.uploadModal = false;
@@ -631,4 +631,138 @@ angular.module('liveblog.edit')
             }
         };
     }]);
+//    .directive('freetypeCollectionRemove', function() {
+//        return {
+//            restrict: 'E',
+//            template: '<button ng-click="ftcr.remove()" class="freetype-btn" ng-show="vector.length!==1">-</button>',
+//            controller: ['$scope', function($scope) {
+//                this.remove = function() {
+//                    $scope.vector.splice($scope.index, 1);
+//                }
+//<<<<<<< HEAD
+//            }],
+//            controllerAs: 'ftcr',
+//            scope: {
+//                vector: '=',
+//                index: '='
+//            }
+//        };
+//    })
+//    .directive('freetypeImage', ['$compile', 'modal', 'api', 'upload', '$templateCache', function($compile, modal, api, upload, $templateCache) {
+//        return {
+//            restrict: 'E',
+//            templateUrl: 'scripts/liveblog-edit/views/freetype-image.html',
+//            controller: ['$scope', function($scope) {
+//                var vm = this;
+//                angular.extend(vm, {
+//                    preview: {},
+//                    progress: {width: 0},
+//                    openUploadModal: function() {
+//                        vm.uploadModal = true;
+//                    },
+//                    closeUploadModal: function() {
+//                        vm.uploadModal = false;
+//                        vm.preview = {};
+//                        vm.progress = {width: 0};
+//                    },
+//                    removeImage: function() {
+//                        modal.confirm(gettext('Are you sure you want to remove the blog image?')).then(function() {
+//                            $scope.image.picture_url = null;
+//                        });
+//                    },
+//                    upload: function(config) {
+//                        var form = {};
+//                        if (config.img) {
+//                            form.media = config.img;
+//                        } else if (config.url) {
+//                            form.URL = config.url;
+//                        } else {
+//                            return;
+//=======
+//            };
+//        })
+//        .directive('freetypeImage', ['$compile', 'modal', 'api', 'upload', '$templateCache', function($compile, modal, api, upload, $templateCache) {
+//            return {
+//                restrict: 'E',
+//                template: $templateCache.get('scripts/liveblog-edit/views/freetype-image.html'),
+//                controller: ['$scope', function($scope) {
+//                    var vm = this;
+//                    angular.extend(vm, {
+//                        preview: {},
+//                        progress: {width: 0},
+//                        openUploadModal: function() {
+//                            vm.uploadModal = true;
+//                        },
+//                        closeUploadModal: function() {
+//                            vm.uploadModal = false;
+//                            vm.preview = {};
+//                            vm.progress = {width: 0};
+//                        },
+//                        removeImage: function() {
+//                            modal.confirm(gettext('Are you sure you want to remove the blog image?')).then(function() {
+//                                $scope.image.picture_url = null;
+//                            });
+//                        },
+//                        upload: function(config) {
+//                            var form = {};
+//                            if (config.img) {
+//                                form.media = config.img;
+//                            } else if (config.url) {
+//                                form.URL = config.url;
+//                            } else {
+//                                return;
+//                            }
+//                            // return a promise of upload which will call the success/error callback
+//                            return api.archive.getUrl().then(function(url) {
+//                                return upload.start({
+//                                    method: 'POST',
+//                                    url: url,
+//                                    data: form
+//                                })
+//                                .then(function(response) {
+//                                    if (response.data._status === 'ERR'){
+//                                        return;
+//                                    }
+//                                    var picture_url = response.data.renditions.original.href;
+//                                    $scope.image.picture_url = picture_url;
+//                                    $scope.image.picture = response.data._id;
+//                                    vm.uploadModal = false;
+//                                    vm.preview = {};
+//                                    vm.progress = {width: 0};
+//                                }, null, function(progress) {
+//                                    vm.progress.width = Math.round(progress.loaded / progress.total * 100.0);
+//                                });
+//                            });
+//>>>>>>> upstream/devel
+//                        }
+//                        // return a promise of upload which will call the success/error callback
+//                        return api.archive.getUrl().then(function(url) {
+//                            return upload.start({
+//                                method: 'POST',
+//                                url: url,
+//                                data: form
+//                            })
+//                            .then(function(response) {
+//                                if (response.data._status === 'ERR'){
+//                                    return;
+//                                }
+//                                var picture_url = response.data.renditions.viewImage.href;
+//                                $scope.image.picture_url = picture_url;
+//                                $scope.image.picture = response.data._id;
+//                                vm.uploadModal = false;
+//                                vm.preview = {};
+//                                vm.progress = {width: 0};
+//                            }, null, function(progress) {
+//                                vm.progress.width = Math.round(progress.loaded / progress.total * 100.0);
+//                            });
+//                        });
+//                    }
+//                });
+//            }],
+//            controllerAs: 'ft',
+//            scope: {
+//                image: '='
+//            }
+//        };
+    //}]);
 

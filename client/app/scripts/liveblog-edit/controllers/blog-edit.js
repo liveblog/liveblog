@@ -73,6 +73,27 @@ import './../unread.posts.service';
             return $scope.selectedPostType !== 'Default';
         };
 
+        //determine if post is 'scorecard'
+        function isPostScorecard() {
+            return isPostFreetype() && $scope.selectedPostType.name === 'Scorecard';
+        }
+
+        //save the 'keep scoarers' if needed
+        function saveScorers() {
+                if ($scope.currentBlog.blog_preferences) {
+                    var bp = angular.copy($scope.currentBlog.blog_preferences);
+                    bp.last_scorecard = $scope.freetypesData;
+                    return blogService.update($scope.currentBlog, {'blog_preferences': bp});
+                } else {
+                    return blogService.get($scope.blog._id).then(function(currentBlog) {
+                        $scope.currentBlog = currentBlog;
+                        var bp = angular.copy($scope.currentBlog.blog_preferences);
+                        bp.last_scorecard = $scope.freetypesData;
+                        return blogService.update($scope.currentBlog, {'blog_preferences': bp});
+                    })
+                }
+        }
+
         // determine if the loaded item is freetype
         function isItemFreetype(itemType) {
             var regularItemTypes = ['text', 'image', 'embed', 'quote', 'comment'];
@@ -189,6 +210,7 @@ import './../unread.posts.service';
         // define the $scope
         angular.extend($scope, {
             blog: blog,
+            currentBlog: {},
             panels: {},
             syndicationEnabled: $injector.has('lbNotificationsCountDirective'),
             selectedUsersFilter: [],
@@ -209,6 +231,17 @@ import './../unread.posts.service';
             selectPostType: function(postType) {
                 $scope.selectedPostType = postType;
                 $scope.toggleTypePostDialog();
+                if (isPostScorecard()) {
+                    blogService.get($scope.blog._id).then(function(currentBlog) {
+                        $scope.currentBlog = currentBlog;
+                        if ($scope.currentBlog.blog_preferences.last_scorecard) {
+                            //load latest scorecard
+                            if ($scope.currentBlog.blog_preferences.last_scorecard.remember) {
+                                $scope.freetypesData = angular.copy($scope.currentBlog.blog_preferences.last_scorecard);
+                            }
+                        }                     
+                    });
+                }
             },
             onEditorChanges: function() {
                 var input = $(this).text().trim();
@@ -307,6 +340,14 @@ import './../unread.posts.service';
             },
             publish: function() {
                 $scope.actionPending = true;
+                //save the keep scoreres setting( if needed)
+                if (isPostScorecard()) {
+                    saveScorers().then(function() {
+                        //no need to show anything on success
+                    }, function() {
+                        notify.error(gettext('Something went wrong with scoarers status. Please try again later'));
+                    });
+                }
                 notify.info(gettext('Saving post'));
                 postsService.savePost(blog._id,
                     $scope.currentPost,
@@ -315,6 +356,7 @@ import './../unread.posts.service';
                 ).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
+
                     cleanEditor();
                     $scope.selectedPostType = 'Default';
                     $scope.actionPending = false;

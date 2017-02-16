@@ -21,6 +21,12 @@ gulp.task('pot', function () {
         .pipe(gulp.dest('po/'));
 });
  
+// copy the vendors needed files in the destination folder.
+gulp.task('copy_vendors', function () {
+    return gulp.src(['styles/default-skin/*.*'])
+        .pipe(gulp.dest(config.dest));
+});
+
 gulp.task('translations', function () {
     return gulp.src('po/*.po')
         .pipe($.angularGettext.compile({format: 'json'}))
@@ -51,7 +57,7 @@ gulp.task('templates', function () {
 
 // build `scripts` and `styles` for theme
 // excludes external links, and runs `translations` and `templates` tasks before running build.
-gulp.task('build', ['translations', 'templates'], function() {
+gulp.task('build', ['translations', 'templates', 'copy_vendors'], function() {
     var externalUrlCheck = /^(http(s)?:)?\/\//;
     var theme = JSON.parse(fs.readFileSync('./theme.json')),
         build = {

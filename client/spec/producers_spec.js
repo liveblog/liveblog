@@ -48,7 +48,9 @@ describe('Producers', function() {
                         .sendKeys(contact.firstName);
                 })
                 .then(function() {
-                    return element(by.css('#save-edit-btn')).click();
+                    var el = element(by.css('#save-edit-btn'));
+                    browser.driver.wait(protractor.until.elementIsVisible(el));
+                    return el.click();
                 })
                 .then(function() {
                     var fieldName = 'div[ng-show="producerForm.attempted &&' +
@@ -122,7 +124,7 @@ describe('Producers', function() {
                     return element(by.css('#save-edit-btn')).click();
                 })
                 .then(function() {
-                    return assertToastMsg('success', 'producer saved.');
+                    return assertToastMsg('success', 'Producer saved.');
                 })
                 .then(function() {
                     var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
@@ -163,7 +165,7 @@ describe('Producers', function() {
                         return element(by.css('#save-edit-btn')).click();
                     })
                     .then(function() {
-                        return assertToastMsg('success', 'producer saved.');
+                        return assertToastMsg('success', 'Producer saved.');
                     })
                     .then(function() {
                         var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
