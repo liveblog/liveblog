@@ -1,4 +1,5 @@
 'use strict';
+var DEBUG = false;
 
 var gulp = require('gulp')
   , browserify = require('browserify')
@@ -9,16 +10,14 @@ var gulp = require('gulp')
   , path = require('path')
   , del = require('del');
 
-var DEBUG = false;
-
 var paths = {
   less: 'less/*.less',
   js : ['js/*.js', 'js/*/*.js'],
   html : ['template.html'],
   jsfile: 'dpa-liveblog.js',
-  cssfile: 'dpa-liveblog.css'
+  cssfile: 'dpa-liveblog.css',
+  templates: 'templates/*.html'
 };
-
 
 gulp.task('inject-index', ['browserify', 'less'], function () {
   var template = gulp.src(paths.html);
@@ -39,7 +38,6 @@ gulp.task('inject-index', ['browserify', 'less'], function () {
     .pipe(plugins.inject(template, template_opts))
     .pipe(gulp.dest('.'));
 });
-
 
 // Browserify
 gulp.task('browserify', ['clean-js'], function() {
@@ -74,20 +72,37 @@ gulp.task('less', ['clean-css'], function () {
     .pipe(gulp.dest(''));
 });
 
+// Inject API response into template for dev/test purposes
+gulp.task('state-inject', function() {
+  var api_response = require('./test').grammy_awards;
+  gulp.src('./templates/template-index.html')
+      .pipe(plugins.nunjucks.compile(api_response))
+      .pipe(gulp.dest('.'))
+});
 
 // Replace assets paths in theme.json
 gulp.task('theme-replace', ['browserify', 'less'], function() {
   var manifest = require("./dist/rev-manifest.json");
   var base = './';
+
   gulp.src('theme.json', {base: base})
     .pipe(plugins.replace(/dpa-liveblog-.*\.css/g, manifest[paths.cssfile]))
     .pipe(plugins.replace(/dpa-liveblog-.*\.js/g, manifest[paths.jsfile]))
     .pipe(gulp.dest(base));
 });
 
+// Serve
+gulp.task('serve', function() {
+  plugins.connect.server({
+    port: 8000,
+    root: '.',
+    fallback: 'template-index.html',
+    livereload: true
+  });
+});
+
 // Watch
-gulp.task('watch', function() {
-  DEBUG = true;
+gulp.task('watch', ['set-debug'], function() {
   var jswatch = gulp.watch(paths.js, ['browserify', 'inject-index']);
   var lesswatch = gulp.watch(paths.less, ['less', 'inject-index']);
   var htmlwatch = gulp.watch(paths.html, ['inject-index']);
@@ -99,25 +114,29 @@ gulp.task('watch', function() {
   });
 });
 
+// Watch
+gulp.task('watch-static', ['state-inject', 'serve'], function() {
+  var templates_watch = gulp.watch(paths.templates, ['state-inject']);
+  templates_watch.on('error', function(e) {
+    console.log(e.toString())
+  });
+});
+
 // Set debug 
 gulp.task('set-debug', function() {
   DEBUG = true;
 });
-
 
 // Clean CSS
 gulp.task('clean-css', function() {
   del(['dist/*.css'])
 });
 
-
 // Clean JS
 gulp.task('clean-js', function() {
   del(['dist/*.js'])
 });
 
-
 // Default build for production
 gulp.task('default', ['browserify', 'less', 'theme-replace']);
 gulp.task('debug', ['set-debug', 'browserify', 'less', 'inject-index']);
-
