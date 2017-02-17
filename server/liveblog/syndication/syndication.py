@@ -104,7 +104,6 @@ class SyndicationOutService(BaseService):
         blog_id = ObjectId(post['blog'])
         out_syndication = self.get_blog_syndication(blog_id)
         for out in out_syndication:
-            logger.info('syndication_out:"{}" post:"{}" blog:"{}"'.format(out['_id'], post['_id'], blog_id))
             send_post_to_consumer.delay(out, post, action)
 
     def on_create(self, docs):
