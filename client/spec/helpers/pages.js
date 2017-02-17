@@ -837,7 +837,7 @@ function ConsumersManagementPage() {
         waitAndClick(by.css('[href="#/syndication/"][title]'));
 
         browser.waitForAngular();
-        element.all(by.repeater('state in states').row(1).column('state.text')).click();
+        element.all(by.repeater('state in states').row(1)).click();
 
         return self;
     };
@@ -855,7 +855,7 @@ function ProducersManagementPage() {
         waitAndClick(by.css('[href="#/syndication/"][title]'));
 
         browser.waitForAngular();
-        element.all(by.repeater('state in states').row(0).column('state.text')).click();
+        element.all(by.repeater('state in states').row(0)).click();
 
         return self;
     };
