@@ -89,22 +89,26 @@ class SyndicationOutService(BaseService):
         else:
             return bool(out_syndication.count())
 
-    def send_syndication_post(self, post, action='created'):
+    def _is_post_for_syndication(self, post):
         # Prevent "loops" by sending only posts without syndication_in set.
         if post.get('syndication_in'):
             logger.debug('Not sending post "{}": syndicated content.'.format(post['_id']))
-            return
+            return False
 
         items = extract_post_items_data(post)
         for item in items:
             if item['group_type'] == 'freetype' and item['item_type'] in app.config['SYNDICATION_EXCLUDED_ITEMS']:
                 logger.debug('Not sending post "{}": syndicated content contains excluded items.'.format(post['_id']))
-                return
+                return False
 
-        blog_id = ObjectId(post['blog'])
-        out_syndication = self.get_blog_syndication(blog_id)
-        for out in out_syndication:
-            send_post_to_consumer.delay(out, post, action)
+        return True
+
+    def send_syndication_post(self, post, action='created'):
+        if self._is_post_for_syndication(post):
+            blog_id = ObjectId(post['blog'])
+            out_syndication = self.get_blog_syndication(blog_id)
+            for out in out_syndication:
+                send_post_to_consumer.delay(out, post, action)
 
     def on_create(self, docs):
         super().on_create(docs)
