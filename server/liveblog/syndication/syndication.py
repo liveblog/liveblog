@@ -13,7 +13,8 @@ from .auth import ConsumerBlogTokenAuth
 from .tasks import send_post_to_consumer, send_posts_to_consumer
 from .utils import (api_error, api_response, cast_to_object_id,
                     create_syndicated_blog_post, generate_api_key,
-                    get_post_creator, get_producer_post_id)
+                    get_post_creator, get_producer_post_id,
+                    extract_post_items_data)
 
 logger = logging.getLogger('superdesk')
 syndication_blueprint = Blueprint('syndication', __name__)
@@ -25,6 +26,8 @@ WEBHOOK_METHODS = {
     'updated': 'PUT',
     'deleted': 'DELETE'
 }
+SYNDICATION_EXCLUDED_ITEMS = ('Advertisment Local', 'Advertisment Remote')
+
 
 syndication_out_schema = {
     'blog_id': Resource.rel('blogs', embeddable=True, required=True, type="objectid"),
@@ -93,6 +96,12 @@ class SyndicationOutService(BaseService):
         if post.get('syndication_in'):
             logger.warning('Not sending post "{}": syndicated content.'.format(post['_id']))
             return
+
+        items = extract_post_items_data(post)
+        for item in items:
+            if item['group_type'] == 'freetype' and item['item_type'] in SYNDICATION_EXCLUDED_ITEMS:
+                logger.warning('Not sending post "{}": syndicated content contains excluded items.'.format(post['_id']))
+                return
 
         blog_id = ObjectId(post['blog'])
         out_syndication = self.get_blog_syndication(blog_id)
