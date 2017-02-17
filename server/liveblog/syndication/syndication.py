@@ -92,13 +92,13 @@ class SyndicationOutService(BaseService):
     def send_syndication_post(self, post, action='created'):
         # Prevent "loops" by sending only posts without syndication_in set.
         if post.get('syndication_in'):
-            logger.warning('Not sending post "{}": syndicated content.'.format(post['_id']))
+            logger.debug('Not sending post "{}": syndicated content.'.format(post['_id']))
             return
 
         items = extract_post_items_data(post)
         for item in items:
             if item['group_type'] == 'freetype' and item['item_type'] in app.config['SYNDICATION_EXCLUDED_ITEMS']:
-                logger.warning('Not sending post "{}": syndicated content contains excluded items.'.format(post['_id']))
+                logger.debug('Not sending post "{}": syndicated content contains excluded items.'.format(post['_id']))
                 return
 
         blog_id = ObjectId(post['blog'])
