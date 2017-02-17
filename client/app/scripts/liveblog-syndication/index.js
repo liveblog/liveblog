@@ -1,4 +1,5 @@
 import './styles/syndication.scss';
+import './../flux';
 
 // ACTIONS
 import ingestPanelActions from './actions/ingest-panel';
@@ -36,7 +37,8 @@ import api from './api';
 
 export default angular
     .module('liveblog.syndication', [
-      'liveblog.security'
+        'liveblog.security',
+        'liveblog.flux'
     ])
 
     // actions

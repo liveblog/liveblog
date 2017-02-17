@@ -35,8 +35,6 @@ _.sortByOrder = require('lodash.sortbyorder');
 import MediumEditor from 'medium-editor';
 window.MediumEditor = MediumEditor;
 
-import './flux';
-
 import 'superdesk-core/scripts/core/activity';
 import 'superdesk-core/scripts/core/analytics';
 import 'superdesk-core/scripts/core/api';

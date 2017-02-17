@@ -1,3 +1,6 @@
+import './styles/marketplace.scss';
+import './../flux';
+
 import marketplaceController from './controllers/marketplace';
 
 import marketplaceActions from './actions/marketplace';
@@ -8,8 +11,8 @@ import lbSearchPanel from './directives/search-panel';
 import lbBlogPreviewModal from './directives/blog-preview-modal';
 
 export default angular
-    .module('liveblog.marketplace', [])
-    .controller('marketplaceController', marketplaceController)
+    .module('liveblog.marketplace', ['liveblog.flux'])
+    .controller('MarketplaceController', marketplaceController)
     .factory('MarketplaceActions', marketplaceActions)
     .factory('MarketplaceReducers', marketplaceReducers)
     .directive('lbBlogsList', lbBlogsList)

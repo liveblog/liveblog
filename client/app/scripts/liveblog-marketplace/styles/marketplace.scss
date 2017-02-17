@@ -1,4 +1,4 @@
-@import 'variables.less';
+@import '~lb-variables.scss';
 
 section.marketer {
     top: 48px;
@@ -13,11 +13,11 @@ section.marketer button.filter-trigger {
     float: left;
     width: 48px;
     height: 48px;
-    background: @sd-blue;
+    background: $sd-blue;
     border: none;
 
     i.icon-filter-large {
-        color: @white;
+        color: $white;
     }
 }
 
@@ -43,7 +43,7 @@ section.marketer div.marketer-banner {
     max-height: 100px;
 
     h3 {
-        color: @sd-blue;
+        color: $sd-blue;
     }
 
     dt, dd {
@@ -73,7 +73,7 @@ section.marketer div.card-list-container.open {
 }
 
 section.marketer div.marketer-banner.open {
-    width: ~"calc(100% - 300px)";
+    width: calc(100% - 300px);
 }
 
 .mp-embed-modal {
@@ -103,7 +103,7 @@ section.marketer div.marketer-banner.open {
                 position: relative;
             }
             iframe {
-                height: calc(~"100% - 48px");
+                height: calc(100% - 48px);
             }
             .settings {
                 padding: 10px 15px;

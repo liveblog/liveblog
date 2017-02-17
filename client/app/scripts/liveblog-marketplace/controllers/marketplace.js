@@ -7,7 +7,7 @@ marketplaceController.$inject = [
     'moment'
 ];
 
-export default function marketplaceController($scope, store, MarketplaceActions, MarketplaceReducers, $route, moment) {
+export default function marketplaceController($scope, Store, MarketplaceActions, MarketplaceReducers, $route, moment) {
     var filters = {}
 
     if ($route.current.params.hasOwnProperty('filters'))
