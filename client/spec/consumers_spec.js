@@ -113,9 +113,10 @@ describe('Consumers', function() {
                         .sendKeys(contact.email);
                 })
                 .then(function() {
-                    var el = element(by.css('#save-edit-btn'));
-                    browser.driver.wait(protractor.until.elementIsVisible(el));
-                    return el.click();
+                    //var el = element(by.css('#save-edit-btn'));
+                    //browser.driver.wait(protractor.until.elementIsVisible(el));
+                    //return el.click();
+                    return element(by.css('#save-edit-btn')).click();
                 })
                 .then(function() {
                     return assertToastMsg('success', 'Consumer saved.');
