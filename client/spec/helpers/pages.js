@@ -854,8 +854,7 @@ function ProducersManagementPage() {
         });
         waitAndClick(by.css('[href="#/syndication/"][title]'));
 
-        browser.waitForAngular();
-        element.all(by.repeater('state in states').row(0)).click();
+        //browser.waitForAngular();
 
         return self;
     };
