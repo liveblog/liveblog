@@ -26,8 +26,6 @@ WEBHOOK_METHODS = {
     'updated': 'PUT',
     'deleted': 'DELETE'
 }
-SYNDICATION_EXCLUDED_ITEMS = ('Advertisment Local', 'Advertisment Remote')
-
 
 syndication_out_schema = {
     'blog_id': Resource.rel('blogs', embeddable=True, required=True, type="objectid"),
@@ -99,7 +97,7 @@ class SyndicationOutService(BaseService):
 
         items = extract_post_items_data(post)
         for item in items:
-            if item['group_type'] == 'freetype' and item['item_type'] in SYNDICATION_EXCLUDED_ITEMS:
+            if item['group_type'] == 'freetype' and item['item_type'] in app.config['SYNDICATION_EXCLUDED_ITEMS']:
                 logger.warning('Not sending post "{}": syndicated content contains excluded items.'.format(post['_id']))
                 return
 
