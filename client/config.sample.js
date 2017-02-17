@@ -7,8 +7,8 @@ export default {
     editor: {
         disableEditorToolbar: false
     },
-    syndication: process.env.SYNDICATION || false,
-    marketplace: process.env.MARKETPLACE || false,
+    syndication: true,
+    marketplace: true,
     themeCreationRestrictions: {team: 3},
     excludedTheme: 'angular',
     assignableUsers: {
