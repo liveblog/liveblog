@@ -124,13 +124,15 @@ def extract_post_items_data(original_doc):
         if group['id'] == 'main':
             for ref in group['refs']:
                 item = items_service.find_one(req=None, guid=ref['guid'])
+                text = item.get('text')
                 item_type = item.get('item_type')
                 group_type = item.get('group_type')
+                meta = item.get('meta', {})
                 data = {
-                    'text': item['text'],
+                    'text': text,
                     'item_type': item_type,
                     'group_type': group_type,
-                    'meta': item.get('meta', {})
+                    'meta': meta
                 }
                 items.append(data)
     return items
