@@ -3,7 +3,7 @@ Flask-Cache==0.13.1
 Flask-Cors==2.1.0
 # Flask-S3 with support for python3
 git+git://github.com/joehand/flask-s3@8fe9f27ebb5251b7cf53a6684595d41dc4af2fbf#egg=Flask-S3==0.1.7
-gunicorn==19.3.0
+gunicorn==19.6.0
 behave==1.2.5
 wooper==0.4.2
 flake8
@@ -11,7 +11,8 @@ nose
 pep8
 pyflakes<=1.1
 httmock
-honcho
+honcho==0.6.6
+newrelic>=2.66,<2.67
 requests==2.12.4
 # Superdesk
--e git+git://github.com/superdesk/superdesk-core.git@c2f707603be67a7cbd7a613527b07bb65289c3dd#egg=Superdesk-Core==1.5
+git+git://github.com/superdesk/superdesk-core.git@v1.6rc4
