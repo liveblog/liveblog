@@ -14,6 +14,7 @@ pep8
 pyflakes<=1.1
 httmock
 honcho
+six==1.10.0
 # @TODO remove this after cache clear
 # Superdesk
 -e git+git://github.com/liveblog/superdesk-core.git@9cb85ba56262531d9fc4cdece817a093dec481dd#egg=Superdesk-Core==1.06-fix-notification-issue
