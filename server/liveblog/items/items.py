@@ -48,6 +48,11 @@ class ItemsResource(ArchiveResource):
             'allowed': ['post', 'item'],
             'default': 'item'
         },
+        'group_type': {
+            'type': 'string',
+            'allowed': ['freetype', 'default'],
+            'default': 'default'
+        },
         'item_type': {
             'type': 'string'
         },

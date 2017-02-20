@@ -25,7 +25,8 @@ liveblogSyndication
                     if (angular.equals(scope.origProducer, scope.producer))
                         return;
 
-                    var data = {}, apiQuery;
+                    var data = {};
+                    var apiQuery;
 
                     data.contacts = scope.producer.contacts;
 
@@ -44,14 +45,32 @@ liveblogSyndication
                         apiQuery = api.producers.save(data);
 
                     apiQuery.then(function(result) {
+                        var successMsg = gettext('Producer saved.');
+
                         notify.pop();
-                        notify.success(gettext('producer saved.'));
+                        notify.success(successMsg);
 
                         scope.onsave({ producer: result });
                     })
                     .catch(function(err) {
+                        var errorMsg = gettext('An error has occurred. Please try again later.');
+
+                        if (err.data.hasOwnProperty('_error'))
+                            errorMsg = err.data._error.message;
+
+                        if (err.data.hasOwnProperty('_issues')) {
+                            Object.keys(err.data._issues).forEach(function(key) {
+                                var issue = err.data._issues[key];
+                                if (typeof issue == 'object') {
+                                    if (issue.unique == true)
+                                        issue = gettext('The selected field value is not unique.');
+                                }
+                                scope.producerForm[key].issue = issue;
+                            });
+                        }
+
                         notify.pop();
-                        notify.error(gettext('Fatal error!'));
+                        notify.error(errorMsg);
                     });
                 };
 

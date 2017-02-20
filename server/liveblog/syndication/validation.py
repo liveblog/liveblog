@@ -1,9 +1,10 @@
 import urllib.parse
+
 from flask import current_app as app
 from superdesk.validator import SuperdeskValidator
-from .utils import send_api_request, validate_secure_url
+
 from .exceptions import APIConnectionError
-from .utils import trailing_slash
+from .utils import send_api_request, trailing_slash, validate_secure_url
 
 
 class SyndicationValidator(SuperdeskValidator):

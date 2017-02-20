@@ -1,0 +1,113 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: no\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: comments.html:37
+msgid "Cancel"
+msgstr "Avbryt"
+
+#: template.html:46
+msgid "Comment"
+msgstr "Kommentar"
+
+#: comments.html:27
+msgid "Comment *"
+msgstr "Kommentar*"
+
+#: comments.html:31
+msgid "Comment should be maximum 300 characters in length."
+msgstr "Kommentarer kan være inntil 300 tegn"
+
+#: main.js:50 template.html:13
+msgid "Editorial"
+msgstr "Redaksjonelt"
+
+#: template.html:96
+msgid "Load more posts"
+msgstr "Henter flere poster"
+
+#: template.html:99
+msgid "Loading"
+msgstr "Henter"
+
+#: comments.html:19
+msgid "Name *"
+msgstr "Navn*"
+
+#: comments.html:23
+msgid "Name should be maximum 30 characters in length."
+msgstr "Navn kan ikke ha mer enn 30 tegn"
+
+#: main.js:53 template.html:17
+msgid "Newest first"
+msgstr "Nyeste først"
+
+#: template.html:59
+msgid "No posts for now."
+msgstr "Ingen poster for øyeblikket"
+
+#: main.js:56 template.html:21
+msgid "Oldest first"
+msgstr "Eldste først"
+
+#: template.html:83
+msgid "One pinned post"
+msgid_plural "{{$count}} pinned posts"
+msgstr[0] "Én post festet til toppen"
+msgstr[1] "{{$count}} poster festet til toppen"
+
+#: comments.html:30
+msgid "Please fill in your Comment."
+msgstr "Skriv inn din kommentar"
+
+#: comments.html:22
+msgid "Please fill in your Name."
+msgstr "Skriv inn navn"
+
+#: comments.html:14
+msgid "Post a comment"
+msgstr "Post en kommentar"
+
+#: template.html:67
+msgid "See one new update"
+msgid_plural "See {{$count}} new updates"
+msgstr[0] "Se én ny oppdatering"
+msgstr[1] "Se {{$count}} nye oppdateringer"
+
+#: comments.html:38
+msgid "Send"
+msgstr "Send"
+
+#: template.html:38
+msgid "Show all posts"
+msgstr "Vis alle poster"
+
+#: template.html:37
+msgid "Show highlighted post only"
+msgstr "Vis bare høydepunkter"
+
+#: template.html:11 template.html:27
+msgid "Sort by:"
+msgstr "Sortér etter:"
+
+#: posts.html:27
+msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
+msgstr "Oppdatert {{post.content_updated_date | prettifyIsoDate}}"
+
+#: comments.html:6
+msgid "Your comment was sent for approval."
+msgstr "Din kommentar er sendt til godkjenning"
+
+#: item.html:13
+msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
+msgstr "{{ item.meta.caption }} credit: {{ item.meta.credit }}"

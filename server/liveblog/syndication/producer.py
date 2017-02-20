@@ -2,14 +2,12 @@ import logging
 from urllib.parse import urljoin
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from superdesk import get_resource_service
-from flask import abort, Blueprint, request
-from apps.auth import SuperdeskTokenAuth
+from flask import Blueprint, request
 from flask_cors import CORS
 from eve.utils import str_to_date
-from .utils import trailing_slash, api_response, api_error, send_api_request
+from superdesk import get_resource_service
 from .exceptions import APIConnectionError, ProducerAPIError
-
+from .utils import trailing_slash, api_response, api_error, send_api_request, blueprint_superdesk_token_auth
 
 logger = logging.getLogger('superdesk')
 producers_blueprint = Blueprint('producers', __name__)
@@ -73,7 +71,7 @@ class ProducerService(BaseService):
             return urljoin(api_url, url_path)
         return api_url
 
-    def _send_api_request(self, producer_id, url_path, method='GET', data=None, json_loads=True, timeout=5):
+    def _send_api_request(self, producer_id, url_path, method='GET', data=None, json_loads=True, timeout=10):
         producer = self._get_producer(producer_id)
         if not producer:
             raise ProducerAPIError('Unable to get producer "{}".'.format(producer_id))
@@ -86,6 +84,7 @@ class ProducerService(BaseService):
             response = send_api_request(api_url, producer['consumer_api_key'], method=method, args=request.args,
                                         data=data, json_loads=json_loads, timeout=timeout)
         except APIConnectionError as e:
+            logger.exception('Unable to connect to {}'.format(api_url))
             raise ProducerAPIError(e)
         else:
             return response
@@ -144,6 +143,14 @@ class ProducerResource(Resource):
     schema = producers_schema
 
 
+def _response_status(code):
+    """If unauthorized, it returns 400 instead of 401 to prevent"""
+    if code == 401:
+        logger.warning('Unauthorized. Returning 400 to prevent client logout.')
+        return 400
+    return code
+
+
 @producers_blueprint.route('/api/producers/<producer_id>/blogs', methods=['GET'])
 def producer_blogs(producer_id):
     producers = get_resource_service('producers')
@@ -155,7 +162,7 @@ def producer_blogs(producer_id):
         if response.status_code == 200:
             return api_response(response.content, response.status_code, json_dumps=False)
         else:
-            return api_error('Unable to get producer blogs.', response.status_code)
+            return api_error('Unable to get producer blogs.', _response_status(response.status_code))
 
 
 @producers_blueprint.route('/api/producers/<producer_id>/blogs/<blog_id>', methods=['GET'])
@@ -169,7 +176,8 @@ def producer_blog(producer_id, blog_id):
         if response.status_code == 200:
             return api_response(response.content, response.status_code, json_dumps=False)
         else:
-            return api_error('Unable to get producer blog "{}".'.format(blog_id), response.status_code)
+            return api_error('Unable to get producer blog "{}".'.format(blog_id),
+                             _response_status(response.status_code))
 
 
 @producers_blueprint.route('/api/producers/<producer_id>/blogs/<blog_id>/posts', methods=['GET'])
@@ -183,14 +191,15 @@ def producer_blog_posts(producer_id, blog_id):
         if response.status_code == 200:
             return api_response(response.content, response.status_code, json_dumps=False)
         else:
-            return api_error('Unable to get producer blog posts.', response.status_code)
+            return api_error('Unable to get producer blog posts.', _response_status(response.status_code))
 
 
 def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish, auto_retrieve,
                                      start_date=None):
     producers = get_resource_service('producers')
     in_service = get_resource_service('syndication_in')
-    if in_service.is_syndicated(producer_id, blog_id, consumer_blog_id):
+    in_syndication = in_service.get_syndication(producer_id, blog_id, consumer_blog_id)
+    if in_syndication:
         return api_error('Syndication already sent for blog "{}".'.format(blog_id), 409)
 
     try:
@@ -215,13 +224,14 @@ def _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, aut
         elif response.status_code == 409:
             return api_error('Syndication already sent for blog "{}"'.format(blog_id), 409)
         else:
-            return api_error('Unable to syndicate producer blog.', response.status_code)
+            return api_error('Unable to syndicate producer blog.', _response_status(response.status_code))
 
 
 def _update_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_retrieve, start_date):
     producers = get_resource_service('producers')
     in_service = get_resource_service('syndication_in')
-    if not in_service.is_syndicated(producer_id, blog_id, consumer_blog_id):
+    in_syndication = in_service.get_syndication(producer_id, blog_id, consumer_blog_id)
+    if not in_syndication:
         return api_error('Syndication not sent for blog "{}".'.format(blog_id), 409)
 
     try:
@@ -241,36 +251,33 @@ def _update_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, aut
         elif response.status_code == 404:
             return api_error('Syndication not sent for blog "{}"'.format(blog_id), 409)
         else:
-            return api_error('Unable to update blog syndication.', response.status_code)
+            return api_error('Unable to update blog syndication.', _response_status(response.status_code))
 
 
 def _delete_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id):
     producers = get_resource_service('producers')
     in_service = get_resource_service('syndication_in')
-    if not in_service.is_syndicated(producer_id, blog_id, consumer_blog_id):
-        return api_error('Syndication not sent for blog "{}".'.format(blog_id), 409)
-
-    try:
-        response = producers.unsyndicate(producer_id, blog_id, consumer_blog_id, json_loads=False)
-    except ProducerAPIError as e:
-        return api_response(str(e), 500)
+    syndication_in = in_service.get_syndication(producer_id, blog_id, consumer_blog_id)
+    if not syndication_in:
+        logger.warning('Syndication not sent for blog "{}".'.format(blog_id))
+        return api_response({}, 204)
     else:
-        if response.status_code == 204:
-            in_service.delete({
-                '$and': [
-                    {'blog_id': {'$eq': consumer_blog_id}},
-                    {'producer_id': {'$eq': producer_id}},
-                    {'producer_blog_id': {'$eq': blog_id}}
-                ]
-            })
-            return api_response(response.content, response.status_code, json_dumps=False)
+        try:
+            response = producers.unsyndicate(producer_id, blog_id, consumer_blog_id, json_loads=False)
+        except ProducerAPIError as e:
+            return api_response(str(e), 500)
         else:
-            return api_error('Unable to unsyndicate producer blog.', response.status_code)
+            if response.status_code == 204:
+                syndication_id = syndication_in['_id']
+                in_service.delete_action(lookup={'_id': syndication_id})
+                return api_response(response.content, response.status_code, json_dumps=False)
+            else:
+                return api_error('Unable to unsyndicate producer blog.', _response_status(response.status_code))
 
 
 @producers_blueprint.route('/api/producers/<producer_id>/syndicate/<blog_id>', methods=['POST', 'PATCH', 'DELETE'])
 def producer_blogs_syndicate(producer_id, blog_id):
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
     consumer_blog_id = data.get('consumer_blog_id')
     auto_publish = data.get('auto_publish')
     auto_retrieve = data.get('auto_retrieve', True)
@@ -294,11 +301,4 @@ def producer_blogs_syndicate(producer_id, blog_id):
                                                 start_date)
 
 
-def _producers_blueprint_auth():
-    auth = SuperdeskTokenAuth()
-    authorized = auth.authorized(allowed_roles=[], resource='producers', method='GET')
-    if not authorized:
-        return abort(401, 'Authorization failed.')
-
-
-producers_blueprint.before_request(_producers_blueprint_auth)
+producers_blueprint.before_request(blueprint_superdesk_token_auth)

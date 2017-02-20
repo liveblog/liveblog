@@ -1,4 +1,5 @@
-liveblogSyndication
+angular
+    .module('liveblog.flux', [])
     .factory('Dispatcher', function() {
         return {
             dispatch: function(action) {

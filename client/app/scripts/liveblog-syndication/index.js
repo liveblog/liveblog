@@ -4,24 +4,15 @@ var liveblogSyndication = angular
 liveblogSyndication
     .config(['superdeskProvider', function(superdesk) {
         superdesk
-            .activity('/consumers/', {
-                label: gettext('Consumers Management'),
-                controller: 'ConsumersController',
-                templateUrl: 'scripts/liveblog-syndication/views/consumer-list.html',
+            .activity('/syndication/', {
+                label: gettext('Syndication'),
+                controller: 'SyndicationController',
+                templateUrl: 'scripts/liveblog-syndication/views/syndication.html',
                 category: superdesk.MENU_MAIN,
                 priority: 100,
                 adminTools: true,
                 resolve: {isArchivedFilterSelected: function() {return false;}}
             })
-            .activity('/producers/', {
-                label: gettext('Producers Management'),
-                controller: 'ProducersController',
-                templateUrl: 'scripts/liveblog-syndication/views/producer-list.html',
-                category: superdesk.MENU_MAIN,
-                priority: 100,
-                adminTools: true,
-                resolve: {isArchivedFilterSelected: function() {return false;}}
-            });
     }])
     .config(['apiProvider', function(apiProvider) {
         apiProvider

@@ -134,8 +134,11 @@ INSTALLED_APPS = [
     'liveblog.themes',
     'liveblog.global_preferences',
     'liveblog.client_modules',
+    'liveblog.blogslist',
     'liveblog.syndication',
-    'liveblog.blogslist'
+    'liveblog.freetypes',
+    'liveblog.marketplace',
+    'liveblog.analytics'
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
@@ -269,3 +272,15 @@ SYNDICATION_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)
 
 # Content API Settings
 CONTENTAPI_URL = env('CONTENTAPI_URL', '')
+
+# Marketplace Settings
+MARKETPLACE_APP_URL = env('MARKETPLACE_APP_URL', 'https://lb-market.lab.sourcefabric.org/api')
+
+# Settings related to subscription levels
+SUBSCRIPTION_LEVEL_SOLO = 'solo'
+SUBSCRIPTION_LEVEL_TEAM = 'team'
+SUBSCRIPTION_LEVEL_NETWORK = 'network'
+SUBSCRIPTION_LEVEL = env('SUBSCRIPTION_LEVEL', SUBSCRIPTION_LEVEL_NETWORK)
+SUBSCRIPTION_MAX_ACTIVE_BLOGS = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 3}
+SUBSCRIPTION_MAX_BLOG_MEMBERS = {SUBSCRIPTION_LEVEL_SOLO: 3, SUBSCRIPTION_LEVEL_TEAM: 5}
+SUBSCRIPTION_MAX_THEMES = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 3}

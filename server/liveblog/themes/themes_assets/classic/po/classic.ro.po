@@ -13,23 +13,23 @@ msgstr ""
 "20)) ? 1 : 2);\n"
 "X-Generator: Poedit 1.5.4\n"
 
-#: comments.html:38
+#: comments.html:37
 msgid "Cancel"
 msgstr "Anulează"
 
-#: template.html:42
+#: template.html:46
 msgid "Comment"
 msgstr "Comentează"
 
-#: comments.html:28
+#: comments.html:27
 msgid "Comment *"
 msgstr "Comentariu *"
 
-#: comments.html:32
+#: comments.html:31
 msgid "Comment should be maximum 300 characters in length."
 msgstr "Comentariu nu poate fi mai lung de 300 de caractere."
 
-#: main.js:49 template.html:13
+#: main.js:50 template.html:13
 msgid "Editorial"
 msgstr "editorial"
 
@@ -41,56 +41,53 @@ msgstr "Încarcă mai multe posturi"
 msgid "Loading"
 msgstr "Se încarcă"
 
-#: comments.html:20
+#: comments.html:19
 msgid "Name *"
 msgstr "Numele *"
 
-#: comments.html:24
+#: comments.html:23
 msgid "Name should be maximum 30 characters in length."
 msgstr "Numele nu poate fi mai lung de 30 de caractere."
 
-#: main.js:52 template.html:17
+#: main.js:53 template.html:17
 msgid "Newest first"
 msgstr "Cele mai noi"
 
 #: template.html:59
-#, fuzzy
 msgid "No posts for now."
 msgstr "Deocamdata nu sunt articole."
 
-#: main.js:55 template.html:21
+#: main.js:56 template.html:21
 msgid "Oldest first"
 msgstr "Cele mai vechi"
 
 #: template.html:83
-#, fuzzy
 msgid "One pinned post"
-msgid_plural "{{$count}} pined posts"
+msgid_plural "{{$count}} pinned posts"
 msgstr[0] "Vezi un articol nou"
 msgstr[1] "Vezi {{$count}} articole noi"
 msgstr[2] "Vezi {{$count}} de articole noi"
 
-#: comments.html:31
+#: comments.html:30
 msgid "Please fill in your Comment."
 msgstr "Completează comentariu."
 
-#: comments.html:23
+#: comments.html:22
 msgid "Please fill in your Name."
 msgstr "Completează numele."
 
-#: comments.html:15
+#: comments.html:14
 msgid "Post a comment"
 msgstr "Scrie un comentariu"
 
 #: template.html:67
-#, fuzzy
 msgid "See one new update"
 msgid_plural "See {{$count}} new updates"
 msgstr[0] "Vezi un articol nou"
 msgstr[1] "Vezi {{$count}} articole noi"
 msgstr[2] "Vezi {{$count}} de articole noi"
 
-#: comments.html:39
+#: comments.html:38
 msgid "Send"
 msgstr "Trimite"
 
@@ -110,7 +107,7 @@ msgstr "Ordonează după:"
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
 msgstr ""
 
-#: comments.html:7
+#: comments.html:6
 msgid "Your comment was sent for approval."
 msgstr "Comentariul tău a fost trimis spre aprobare."
 

@@ -21,6 +21,11 @@
         };
         $scope.modalActive = false;
 
+        $scope.mailto = 'mailto:upgrade@liveblog.pro?subject='+
+            encodeURIComponent(location.hostname) +
+            ' ' +
+            config.subscriptionLevel;
+
         function clearCreateBlogForm() {
             $scope.preview = {};
             $scope.progress = {width: 0};
@@ -65,8 +70,20 @@
             clearCreateBlogForm();
             $scope.newBlogModalActive = false;
         };
+
+        $scope.cancelUpgrade = function() {
+            $scope.embedUpgrade = false;
+        };
+
         $scope.openNewBlog = function() {
-            $scope.newBlogModalActive = true;
+            blogSecurityService
+                .showUpgradeModal()
+                .then(function(showUpgradeModal) {
+                    if (showUpgradeModal)
+                        $scope.embedUpgrade = true;
+                    else
+                        $scope.newBlogModalActive = true;
+                });
         };
 
         $scope.createBlog = function() {
@@ -201,6 +218,13 @@
             $scope.blogMembers.splice($scope.blogMembers.indexOf(user), 1);
         };
 
+        $scope.hasReachedMembersLimit = function() {
+            if (!config.assignableUsers.hasOwnProperty(config.subscriptionLevel))
+            return false;
+
+            return $scope.blogMembers.length >= config.assignableUsers[config.subscriptionLevel];
+        };
+
         //set grid or list view
         $scope.setBlogsView = function(blogsView) {
             if (typeof blogsView !== 'undefined') {
@@ -261,6 +285,8 @@
                         });
                     });
                 });
+
+                console.log('blogs', $scope.blogs);
                 $scope.blogsLoading = false;
             });
         }
@@ -328,7 +354,9 @@
             scope: {
                 src: '=',
                 file: '=',
-                progressWidth: '='
+                progressWidth: '=',
+                minWidth: '@',
+                minHeight: '@'
             },
             link: function(scope, elem) {
                 scope.$watch('src', function(src) {
@@ -340,10 +368,11 @@
                         var img = new Image();
                         img.onload = function() {
                             scope.progressWidth = 80;
-
-                            if (this.width < 320 || this.height < 240) {
+                            var minWidth = scope.minWidth || 320,
+                                minHeight = scope.minHeight || 240;
+                            if (this.width < minWidth || this.height < minHeight) {
                                 scope.$apply(function() {
-                                    notify.error(gettext('Sorry, but blog image must be at least 320x240 pixels big!'));
+                                    notify.error(gettext('Sorry, but blog image must be at least ' + minWidth + 'x' + minHeight + ' pixels big!'));
                                     scope.src = null;
                                     scope.progressWidth = 0;
                                 });
