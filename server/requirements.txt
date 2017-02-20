@@ -7,6 +7,8 @@ gunicorn==19.3.0
 behave==1.2.5
 wooper==0.4.2
 flake8
+lxml==3.7.2
+html5lib==0.999999999
 nose
 pep8
 pyflakes<=1.1

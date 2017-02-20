@@ -1,4 +1,6 @@
 import urllib.parse
+from html5lib.html5parser import ParseError
+from lxml.html.html5parser import fragments_fromstring, HTMLParser
 
 from flask import current_app as app
 from liveblog.syndication.exceptions import APIConnectionError
@@ -16,6 +18,12 @@ class LiveblogValidator(SuperdeskValidator):
                     field,
                     'Maximum of {} allowed on this blog'.format(members[subscription])
                 )
+
+    def _validate_htmloutput(self, htmloutput, field, value):
+        try:
+            fragments_fromstring(value.encode('utf-8'), parser=HTMLParser(strict=True))
+        except ParseError as e:
+            return self._error(field, 'The provided HTML is not valid: {}'.format(e))
 
     def _validate_uniqueurl(self, unique, field, value):
         value = trailing_slash(value)
