@@ -26,8 +26,6 @@ liveblogMarketplace
                 return !$scope.filters || !$scope.filters.hasOwnProperty('marketer._id');
             };
 
-            $scope.openEmbedModal = MarketplaceActions.openEmbedModal;
-
             $scope.store = new Store(MarketplaceReducers, {
                 currentBlog: {},
                 currentMarketer: {},
