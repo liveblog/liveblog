@@ -27,9 +27,8 @@ import './../unread.posts.service';
 //], function(angular, _) {
     'use strict';
     var BlogSettingsController = function($scope, blog, api, blogService, $location, notify,
-        gettext, modal, $q, upload, datetimeHelper, config, blogSecurityService) {
+        gettext, modal, $q, upload, datetimeHelper, config, blogSecurityService, moment) {
 
-        console.log('moment', moment);
         // set view's model
         var vm = this;
 
@@ -348,7 +347,6 @@ import './../unread.posts.service';
             }
         }
 
-        console.log('start date', vm.newBlog.start_date);
         if (vm.newBlog.start_date) {
             var splitDate = datetimeHelper.splitDateTime(
                 vm.newBlog.start_date, 
@@ -357,6 +355,11 @@ import './../unread.posts.service';
 
             vm.start_date = splitDate.date;
             vm.start_time = splitDate.time;
+
+        } else {
+            var today = moment.tz(config.defaultTimezone);
+            vm.start_date = today.format(config.model.dateformat);
+            vm.start_time = today.format(config.model.timeformat);
         }
 
         vm.changeTab('general');
@@ -384,7 +387,8 @@ import './../unread.posts.service';
         'upload',
         'datetimeHelper',
         'config',
-        'blogSecurityService'
+        'blogSecurityService',
+        'moment'
     ];
 
 export default BlogSettingsController;
