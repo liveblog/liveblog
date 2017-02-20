@@ -1,10 +1,16 @@
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     freetypesManager = require('./helpers/pages').freetypesManager;
 
 describe('Free types Manager', function() {
     'use strict';
 
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login()
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
+
 
     it('can open freetypes manager and do CRUD operations on them', function() {
         freetypesManager.openFreetypesManager();

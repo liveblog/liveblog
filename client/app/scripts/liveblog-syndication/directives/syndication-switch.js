@@ -1,20 +1,21 @@
-liveblogSyndication
-    .directive('lbSyndicationSwitch', ['api', '$routeParams', function(api, $routeParams) {
-        return {
-            templateUrl: 'scripts/liveblog-syndication/views/syndication-switch.html',
-            link: function(scope) {
-                scope.enableSyndSwitch = true;
+syndicationSwitch.$inject = ['api', '$routeParams'];
 
-                var params = {
-                    where: {
-                        blog_id: $routeParams._id
-                    }
-                };
+export default function syndicationSwitch(api, $routeParams) {
+    return {
+        templateUrl: 'scripts/liveblog-syndication/views/syndication-switch.html',
+        link: function(scope) {
+            scope.enableSyndSwitch = true;
 
-                api.syndicationOut.query(params).then(function(syndOuts) {
-                    if (syndOuts._items.length > 0)
-                        scope.enableSyndSwitch = false;
-                });
-            }
-        };
-    }]);
+            var params = {
+                where: {
+                    blog_id: $routeParams._id
+                }
+            };
+
+            api.syndicationOut.query(params).then(function(syndOuts) {
+                if (syndOuts._items.length > 0)
+                    scope.enableSyndSwitch = false;
+            });
+        }
+    };
+};

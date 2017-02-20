@@ -8,18 +8,28 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 
-define([
-    'angular',
-    'lodash',
-    'liveblog-edit/unread.posts.service',
-    'ng-sir-trevor',
-    'ng-sir-trevor-blocks',
-    'angular-embed'
-], function(angular, _) {
+import angular from 'angular';
+import _ from 'lodash';
+import moment from 'moment-timezone';
+
+//import 'angular-embed';
+import './../../ng-sir-trevor';
+import './../../ng-sir-trevor-blocks';
+import './../unread.posts.service';
+
+//define([
+//    'angular',
+//    'lodash',
+//    'liveblog-edit/unread.posts.service',
+//    'ng-sir-trevor',
+//    'ng-sir-trevor-blocks',
+//    'angular-embed'
+//], function(angular, _) {
     'use strict';
     var BlogSettingsController = function($scope, blog, api, blogService, $location, notify,
-        gettext, modal, $q, upload, datetimeHelper, moment, config, blogSecurityService) {
+        gettext, modal, $q, upload, datetimeHelper, config, blogSecurityService) {
 
+        console.log('moment', moment);
         // set view's model
         var vm = this;
 
@@ -338,10 +348,15 @@ define([
             }
         }
 
+        console.log('start date', vm.newBlog.start_date);
         if (vm.newBlog.start_date) {
-            var splitDate = moment.tz(vm.newBlog.start_date, config.defaultTimezone);
-            vm.start_date = splitDate.format();
-            vm.start_time = splitDate.format(config.model.timeformat);
+            var splitDate = datetimeHelper.splitDateTime(
+                vm.newBlog.start_date, 
+                config.defaultTimezone
+            );
+
+            vm.start_date = splitDate.date;
+            vm.start_time = splitDate.time;
         }
 
         vm.changeTab('general');
@@ -356,7 +371,6 @@ define([
         });
 
     }
-
     BlogSettingsController.$inject = [
         '$scope',
         'blog',
@@ -369,10 +383,8 @@ define([
         '$q',
         'upload',
         'datetimeHelper',
-        'moment',
         'config',
         'blogSecurityService'
     ];
 
-    return BlogSettingsController;
-});
+export default BlogSettingsController;

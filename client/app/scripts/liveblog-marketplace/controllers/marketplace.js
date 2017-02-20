@@ -1,63 +1,71 @@
-liveblogMarketplace
-    .controller('MarketplaceController', 
-        ['$scope', 'Store', 'MarketplaceActions', 'MarketplaceReducers', '$route', 'moment',
-        function($scope, Store, MarketplaceActions, MarketplaceReducers, $route, moment) {
-            var filters = {}
+marketplaceController.$inject = [
+    '$scope',
+    'Store',
+    'MarketplaceActions',
+    'MarketplaceReducers',
+    '$route',
+    'moment'
+];
 
-            if ($route.current.params.hasOwnProperty('filters'))
-                filters = JSON.parse($route.current.params.filters);
+export default function marketplaceController($scope, Store, MarketplaceActions, MarketplaceReducers, $route, moment) {
+    var filters = {}
 
-            $scope.states = [
-                'Marketers',
-                'Producers'
-            ];
+    if ($route.current.params.hasOwnProperty('filters'))
+        filters = JSON.parse($route.current.params.filters);
 
-            $scope.activeState = $scope.states[0];
+    $scope.states = [
+        'Marketers',
+        'Producers'
+    ];
 
-            $scope.switchTab = function(state) {
-                $scope.activeState = state;
-            };
+    $scope.activeState = $scope.states[0];
 
-            $scope.togglePanel = function() {
-                MarketplaceActions.togglePanel(!$scope.searchPanel);
-            };
+    $scope.switchTab = function(state) {
+        $scope.activeState = state;
+    };
 
-            $scope.emptyMarketer = function() {
-                return !$scope.filters || !$scope.filters.hasOwnProperty('marketer._id');
-            };
+    $scope.togglePanel = function() {
+        MarketplaceActions.togglePanel(!$scope.searchPanel);
+    };
 
-            $scope.store = new Store(MarketplaceReducers, {
-                currentBlog: {},
-                currentMarketer: {},
-                blogs: { _items: [] },
-                marketers: { _items: [] },
-                filters: filters,
-                searchPanel: true,
-                embedModal: false
-            });
+    $scope.emptyMarketer = function() {
+        return !$scope.filters || !$scope.filters.hasOwnProperty('marketer._id');
+    };
 
-            $scope.store.connect(function(state) {
-                //$scope.blogs = state.blogs;
-                $scope.searchPanel = state.searchPanel;
-                $scope.embedModal = state.embedModal;
-                $scope.filters = state.filters;
-                $scope.currentMarketer = state.currentMarketer;
+    $scope.openEmbedModal = MarketplaceActions.openEmbedModal;
 
-                $route.updateParams({
-                    filters: JSON.stringify(state.filters)
-                });
+    $scope.store = new Store(MarketplaceReducers, {
+        currentBlog: {},
+        currentMarketer: {},
+        blogs: { _items: [] },
+        marketers: { _items: [] },
+        filters: filters,
+        searchPanel: true,
+        embedModal: false
+    });
 
-                $scope.blogs = { _items: [] };
-                $scope.forthcomingBlogs = { _items: [] };
+    $scope.store.connect(function(state) {
+        //$scope.blogs = state.blogs;
+        $scope.searchPanel = state.searchPanel;
+        $scope.embedModal = state.embedModal;
+        $scope.filters = state.filters;
+        $scope.currentMarketer = state.currentMarketer;
 
-                state.blogs._items.forEach(function(blog) {
-                    if (moment().diff(blog.start_date) < 0)
-                        $scope.forthcomingBlogs._items.push(blog);
-                    else
-                        $scope.blogs._items.push(blog);
-                });
-            });
+        $route.updateParams({
+            filters: JSON.stringify(state.filters)
+        });
 
-            MarketplaceActions.getBlogs(filters);
-            MarketplaceActions.getMarketers();
-        }]);
+        $scope.blogs = { _items: [] };
+        $scope.forthcomingBlogs = { _items: [] };
+
+        state.blogs._items.forEach(function(blog) {
+            if (moment().diff(blog.start_date) < 0)
+                $scope.forthcomingBlogs._items.push(blog);
+            else
+                $scope.blogs._items.push(blog);
+        });
+    });
+
+    MarketplaceActions.getBlogs(filters);
+    MarketplaceActions.getMarketers();
+}

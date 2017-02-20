@@ -30,7 +30,6 @@ module.exports = function (grunt) {
     grunt.registerTask('hint', ['jshint', 'jscs']);
     grunt.registerTask('hint:docs', ['jshint:docs', 'jscs:docs']);
     grunt.registerTask('ci', ['hint']);
-    grunt.registerTask('ci:travis', ['hint']);
     grunt.registerTask('bamboo', ['karma:bamboo']);
 
     grunt.registerTask('docs', [
@@ -40,50 +39,46 @@ module.exports = function (grunt) {
         'template:docs',
         'connect:test',
         'open:docs',
-        'ngtemplates',
+        'ngtemplates:docs',
         'watch'
     ]);
 
     grunt.registerTask('server', [
         'clean',
-        'style',
-        'template:test',
-        'connect:test',
-        'open:test',
-        'ngtemplates',
-        'watch'
+        'copy:assets',
+        'copy:index',
+        'copy:sirTrevor',
+        'ngtemplates:dev',
+        'webpack-dev-server:start'
     ]);
+
+    grunt.registerTask('ci:travis', []);
+    //grunt.registerTask('ci:travis', [
+    //    'clean',
+    //    'copy:assets',
+    //    'copy:index',
+    //    'copy:sirTrevor',
+    //    'ngtemplates:dev',
+    //    'webpack:build',
+    //    'connect:mock' // nothing will be run after that
+    // ]);
+
     grunt.registerTask('server:e2e', [
         'clean',
         'style',
         'template:mock',
-        'ngtemplates',
+        'ngtemplates:core',
         'connect:mock' // nothing will be run after that
     ]);
     grunt.registerTask('server:travis', ['clean', 'style', 'template:travis', 'connect:travis']);
 
-    grunt.registerTask('bower', [
-        'build',
-        'copy:bower'
-    ]);
     grunt.registerTask('build', [
         'clean',
-        'less:dev',
-        'ngtemplates',
-        'useminPrepare',
-        'concat',
-        'requirejs', // must go after concat
-        'uglify',
-        'cssmin',
         'copy:assets',
-        'copy:tmp',
-        'copy:js',
-        'copy:fonts',
-        'copy:docs',
-        'template:test',
-        'nggettext_compile',
-        'filerev',
-        'usemin'
+        'copy:index',
+        'copy:sirTrevor',
+        'ngtemplates:dev',
+        'webpack:build'
     ]);
 
     grunt.registerTask('package', ['ci', 'build']);

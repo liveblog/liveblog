@@ -21,7 +21,7 @@
                     </div>
                     <div class="computer" ng-if="!ft.preview.url" ng-hide="ft.progress.width">
                         <div class="dropzone" ng-file-drop="ft.preview.img=$files[0]">
-                            <div class="text" translate>Drop it here</div>
+                            <div class="text" translate>Drop it here{{ ft.preview.img }}</div>
                             <div class="input-holder"> <input type="file" accept="image/*;capture=camera" ng-file-select="ft.preview.img=$files[0]"> </div>
                         </div>
                     </div>

@@ -1,12 +1,12 @@
-@PADDING: 20px;
+$PADDING: 20px;
 .general-settings {
     .content {
-        padding: @PADDING;
+        padding: $PADDING;
         .form-group {
             display: table;
             content: " ";
             width: 100%;
-            padding: @PADDING/2 0;
+            padding: $PADDING/2 0;
             .control-label {
                 text-align: left;
             }

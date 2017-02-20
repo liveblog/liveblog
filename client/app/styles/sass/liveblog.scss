@@ -1,6 +1,6 @@
-@import 'mixins.less';
-@import 'variables.less';
-@import 'superdesk-overrides.less';
+//@import 'mixins.less';
+//@import 'variables.less';
+//@import 'superdesk-overrides.less';
 
 .main-section {
 	z-index: auto;
@@ -147,7 +147,7 @@
         position: absolute;
         top: -16px;
         left: 10px;
-        background: url(../../images/dropdown-arrow-top.png) no-repeat;
+        background: url(/images/dropdown-arrow-top.png) no-repeat;
         content: " ";
     }
     .caret {
@@ -196,8 +196,12 @@
     display: none;
 }
 // icons
-.icon-publish {background-image: url("@{iconSpritePath}"); width: 15px; background-position: -217px -187px;}
-.icon-unpublish {background-image: url("@{iconSpritePath}"); width: 15px; background-position: -217px -187px; transform: rotate(180deg);}
+.icon-publish {
+    background-image: url("#{$iconSpritePath}"); 
+    width: 15px; 
+    background-position: -217px -187px;
+}
+.icon-unpublish {background-image: url("#{$iconSpritePath}"); width: 15px; background-position: -217px -187px; transform: rotate(180deg);}
 
 //remove the "use your initials instead" text from user avatar preferences
 .remove-avatar>label {
@@ -221,23 +225,23 @@
 // style for medium editor element.
 .form-box {
     width: 100%;
-    .box-sizing(border-box);
+    @include box-sizing(border-box);
     line-height:15px;
     display:inline-block;
     font-size:12px;
     color:#000;
     vertical-align:middle;
     margin:0px;
-    .border-radius(2px) !important;
+    @include border-radius(2px !important);
     border: 1px solid  #d0d0d0 !important;
     padding: 6px;
     outline:none !important;
-    .box-shadow(inset 0 0 0 #000) !important;
-    .box-shadow(none) !important;
+    @include box-shadow(inset 0 0 0 #000 !important);
+    @include box-shadow(none !important);
     -moz-appearance: none !important;
     background: #fff;
     &:focus {
-        .box-shadow(0px 0px 5px 0px #d0d0d0) !important;
+        @include box-shadow(0px 0px 5px 0px #d0d0d0 !important);
         border-color: #b8b8b8 !important;
         outline:none !important;
     }
@@ -260,7 +264,7 @@
 }
 .label--simple {
     background: transparent;
-    color: @gray;
+    color: $gray;
     font-size: 10px;
     text-transform: uppercase;
     font-weight: 400;

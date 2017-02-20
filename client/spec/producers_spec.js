@@ -1,6 +1,6 @@
 'use strict';
 
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     producersManagement = require('./helpers/pages').producersManagement,
     assertToastMsg = require('./helpers/assert-toast-msg');
 
@@ -17,7 +17,12 @@ var contact = {
 };
 
 describe('Producers', function() {
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login()
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
 
     describe('list', function() {
         it('can open producers managements and list the producers', function() {
@@ -43,9 +48,10 @@ describe('Producers', function() {
                         .sendKeys(contact.firstName);
                 })
                 .then(function() {
-                    var el = element(by.css('#save-edit-btn'));
-                    browser.driver.wait(protractor.until.elementIsVisible(el));
-                    return el.click();
+                    //var el = element(by.css('#save-edit-btn'));
+                    //browser.driver.wait(protractor.until.elementIsVisible(el));
+                    //return el.click();
+                    return element(by.css('#save-edit-btn')).click();
                 })
                 .then(function() {
                     var fieldName = 'div[ng-show="producerForm.attempted &&' +

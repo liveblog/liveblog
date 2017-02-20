@@ -1,8 +1,9 @@
-@SUBNAV_HEIGHT: 48px;
-@SUBSETTINGS_WIDTH: 60%;
-@PADDING: 20px;
-@import 'mixins.less';
-@import 'variables.less';
+$SUBNAV_HEIGHT: 48px;
+$SUBSETTINGS_WIDTH: 60%;
+$PADDING: 20px;
+@import '~lb-mixins.scss';
+@import '~lb-variables.scss';
+
 .settings-disabled {
     .navbtn {
         opacity: 0.3;
@@ -10,29 +11,29 @@
 }
 .blog-settings-view {
     .settings-page {
-        top: @SUBNAV_HEIGHT*3;
+        top: $SUBNAV_HEIGHT*3;
         > .subnav {
-            top: 1 - @SUBNAV_HEIGHT;
+            top: 1 - $SUBNAV_HEIGHT;
             background-color: #eaeaea;
         }
         .tab-content {
             > .header {
-                height: @SUBNAV_HEIGHT;
+                height: $SUBNAV_HEIGHT;
                 border-bottom: 1px solid #e0e0e0;
-                padding: @PADDING/2 @PADDING;
+                padding: $PADDING/2 $PADDING;
                 box-sizing: border-box;
             }
             > .content {
-                padding: @PADDING;
-                .box-sizing(border-box);
+                padding: $PADDING;
+                @include box-sizing(border-box);
                 > * {
-                    width: @SUBSETTINGS_WIDTH;
+                    width: $SUBSETTINGS_WIDTH;
                 }
                 .form-group {
                     display: table;
                     content: " ";
                     width: 100%;
-                    padding: @PADDING/2 0;
+                    padding: $PADDING/2 0;
                     .control-label {
                         text-align: left;
                         font-size: 11px;
@@ -79,7 +80,7 @@
         width: 290px;
         z-index: 1;
         position: absolute;
-        left: @SUBSETTINGS_WIDTH;
+        left: $SUBSETTINGS_WIDTH;
         top:78px;
     }
     .footer {
@@ -100,7 +101,7 @@
     .first-block {
             min-width: 180px;
             margin-right: 60px;
-            .box-sizing(border-box);
+            @include box-sizing(border-box);
     }
     .padded-right {
         padding-right: 20px;
@@ -158,7 +159,7 @@
         width: 84px!important;
     }
     .blog-media {
-        .border-box();
+        @include border-box();
         border: 1px solid #d0d0d0 !important;
         img {
             padding: 7px;
