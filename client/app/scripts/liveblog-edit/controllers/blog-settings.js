@@ -10,6 +10,7 @@
 
 import angular from 'angular';
 import _ from 'lodash';
+import moment from 'moment-timezone';
 
 //import 'angular-embed';
 import './../../ng-sir-trevor';
@@ -26,8 +27,9 @@ import './../unread.posts.service';
 //], function(angular, _) {
     'use strict';
     var BlogSettingsController = function($scope, blog, api, blogService, $location, notify,
-        gettext, modal, $q, upload, datetimeHelper, moment, config, blogSecurityService) {
+        gettext, modal, $q, upload, datetimeHelper, config, blogSecurityService) {
 
+        console.log('moment', moment);
         // set view's model
         var vm = this;
 
@@ -346,10 +348,15 @@ import './../unread.posts.service';
             }
         }
 
+        console.log('start date', vm.newBlog.start_date);
         if (vm.newBlog.start_date) {
-            var splitDate = moment.tz(vm.newBlog.start_date, config.defaultTimezone);
-            vm.start_date = splitDate.format();
-            vm.start_time = splitDate.format(config.model.timeformat);
+            var splitDate = datetimeHelper.splitDateTime(
+                vm.newBlog.start_date, 
+                config.defaultTimezone
+            );
+
+            vm.start_date = splitDate.date;
+            vm.start_time = splitDate.time;
         }
 
         vm.changeTab('general');
@@ -376,7 +383,6 @@ import './../unread.posts.service';
         '$q',
         'upload',
         'datetimeHelper',
-        'moment',
         'config',
         'blogSecurityService'
     ];

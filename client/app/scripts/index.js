@@ -3,7 +3,7 @@ import 'lb-bootstrap.scss';
 import 'jquery-ui/jquery-ui';
 import 'jquery-jcrop';
 import 'jquery-gridster';
-import 'moment-timezone';
+//import 'moment-timezone';
 import 'bootstrap';
 import 'angular';
 import 'angular-moment';
@@ -27,7 +27,7 @@ import 'angular-messages';
 import 'lr-infinite-scroll';
 
 import _ from 'lodash';
-import moment from 'moment';
+import moment from 'moment-timezone';
 
 _.sortByOrder = require('lodash.sortbyorder');
 
@@ -192,6 +192,7 @@ if (config.marketplace)
 let liveblog = angular.module('liveblog', liveblogModules);
 
 sdCore.constant('lodash', _);
+sdCore.constant('moment', moment);
 
 liveblog.constant('config', config);
 liveblog.constant('lodash', _);
