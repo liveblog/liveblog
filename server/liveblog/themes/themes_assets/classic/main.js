@@ -221,7 +221,9 @@
                     var slideSelector = 'img';
                     var slideOptions = {
                         showHideOpacity: true,
-                        getThumbBoundsFn: false
+                        getThumbBoundsFn: false,
+                        //temp disable of photoswipe sharing
+                        shareButtons:[]
                     };
                     var justifiedGalleryOptions = {
                         margins: 3
