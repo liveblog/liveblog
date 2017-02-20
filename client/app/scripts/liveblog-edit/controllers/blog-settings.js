@@ -18,17 +18,31 @@ define([
 ], function(angular, _) {
     'use strict';
     var BlogSettingsController = function($scope, blog, api, blogService, $location, notify,
-        gettext, modal, $q, upload) {
+        gettext, modal, $q, upload, datetimeHelper, moment, config, blogSecurityService) {
 
         // set view's model
         var vm = this;
+
         angular.extend(vm, {
+            mailto: 'mail:upgrade@liveblog.pro?subject='+
+                encodeURIComponent(location.hostname) +
+                ' ' +
+                config.subscriptionLevel,
             blog: blog,
             newBlog: angular.copy(blog),
+            deactivateTheme: (config.subscriptionLevel == 'solo') ? true : false,
             blogPreferences: angular.copy(blog.blog_preferences),
             availableLanguages: [],
             original_creator: {},
             availableThemes: [],
+            availableCategories: [
+                '', 
+                'Breaking News', 
+                'Entertainment', 
+                'Business and Finance', 
+                'Sport', 
+                'Technology'
+            ],
             //used as an aux var to be able to change members and safely cancel the changes
             blogMembers: [],
             //users to remove from the pending queue once the changes are saved
@@ -146,6 +160,12 @@ define([
                 vm.memberRequests.splice(vm.memberRequests.indexOf(user), 1);
                 vm.acceptedMembers.push(user);
             },
+            hasReachedMembersLimit: function() {
+              if (!config.assignableUsers.hasOwnProperty(config.subscriptionLevel))
+                return false;
+
+              return vm.blogMembers.length >= config.assignableUsers[config.subscriptionLevel];
+            },
             removeMember: function(user) {
                 vm.blogMembers.splice(vm.blogMembers.indexOf(user), 1);
             },
@@ -161,6 +181,9 @@ define([
                     original_creator: vm.original_creator._id,
                     blog_status: vm.blog_switch === true? 'open': 'closed',
                     syndication_enabled: vm.syndication_enabled,
+                    market_enabled: vm.market_enabled,
+                    category: vm.category,
+                    start_date: datetimeHelper.mergeDateTime(vm.start_date, vm.start_time),
                     members: members
                 };
                 angular.extend(vm.newBlog, changedBlog);
@@ -314,11 +337,42 @@ define([
                 });
             }
         }
+
+        if (vm.newBlog.start_date) {
+            var splitDate = moment.tz(vm.newBlog.start_date, config.defaultTimezone);
+            vm.start_date = splitDate.format();
+            vm.start_time = splitDate.format(config.model.timeformat);
+        }
+
         vm.changeTab('general');
         vm.blog_switch = vm.newBlog.blog_status === 'open'? true: false;
         vm.syndication_enabled = vm.newBlog.syndication_enabled;
+        vm.market_enabled = vm.newBlog.market_enabled;
+        vm.category = vm.newBlog.category;
+
+        // Deactivate status input, when too many blogs are active
+        blogSecurityService.showUpgradeModal().then(function(showUpgradeModal) {
+            vm.deactivateStatus = vm.blog_switch ? false : showUpgradeModal;
+        });
+
     }
-    BlogSettingsController.$inject = ['$scope', 'blog', 'api', 'blogService', '$location', 'notify',
-        'gettext', 'modal', '$q', 'upload'];
+
+    BlogSettingsController.$inject = [
+        '$scope',
+        'blog',
+        'api',
+        'blogService',
+        '$location',
+        'notify',
+        'gettext',
+        'modal',
+        '$q',
+        'upload',
+        'datetimeHelper',
+        'moment',
+        'config',
+        'blogSecurityService'
+    ];
+
     return BlogSettingsController;
 });

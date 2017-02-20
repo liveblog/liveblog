@@ -4,14 +4,16 @@ liveblogSyndication
             template: '<a ' +
                     'title="Copy to clipboard" ' +
                     'ng-href="" ' +
-                    'ng-click="copyToClipboard()"' +
+                    'ng-click="copyToClipboard($event)"' +
                     'class="ng-scope">' +
                     '<i class="icon-copy true"></i>' +
                 '</a>',
             link: function(scope, elem, attrs) {
-                scope.copyToClipboard = function() {
+                scope.copyToClipboard = function(e) {
                     if (!attrs.for)
                         return;
+
+                    e.stopPropagation();
 
                     var apiKey = document.getElementById(attrs.for),
                         range = document.createRange(),

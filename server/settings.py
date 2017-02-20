@@ -135,9 +135,11 @@ INSTALLED_APPS = [
     'liveblog.themes',
     'liveblog.global_preferences',
     'liveblog.client_modules',
-    'liveblog.syndication',
     'liveblog.blogslist',
+    'liveblog.syndication',
     'liveblog.freetypes',
+    'liveblog.marketplace',
+    'liveblog.analytics'
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
@@ -268,3 +270,15 @@ ORGANIZATION_NAME_ABBREVIATION = "SF"
 # Syndication Global Settings
 SYNDICATION_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
 SYNDICATION_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)
+
+# Marketplace Settings
+MARKETPLACE_APP_URL = env('MARKETPLACE_APP_URL', 'https://lb-market.lab.sourcefabric.org/api')
+
+# Settings related to subscription levels
+SUBSCRIPTION_LEVEL_SOLO = 'solo'
+SUBSCRIPTION_LEVEL_TEAM = 'team'
+SUBSCRIPTION_LEVEL_NETWORK = 'network'
+SUBSCRIPTION_LEVEL = env('SUBSCRIPTION_LEVEL', SUBSCRIPTION_LEVEL_NETWORK)
+SUBSCRIPTION_MAX_ACTIVE_BLOGS = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 3}
+SUBSCRIPTION_MAX_BLOG_MEMBERS = {SUBSCRIPTION_LEVEL_SOLO: 3, SUBSCRIPTION_LEVEL_TEAM: 5}
+SUBSCRIPTION_MAX_THEMES = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 3}

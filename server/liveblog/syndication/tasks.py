@@ -1,9 +1,12 @@
 import logging
-from werkzeug.datastructures import FileStorage
-from superdesk.celery_app import celery
+
+from settings import (SYNDICATION_CELERY_COUNTDOWN,
+                      SYNDICATION_CELERY_MAX_RETRIES)
 from superdesk import get_resource_service
-from superdesk.notification import push_notification
-from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
+from superdesk.celery_app import celery
+from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
+from werkzeug.datastructures import FileStorage
+
 from .exceptions import APIConnectionError, DownloadError
 from settings import SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOWN
 
@@ -70,7 +73,6 @@ def fetch_image(self, url, mimetype):
         return FileStorage(stream=fetch_url(url), content_type=mimetype)
     except DownloadError as e:
         raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
-
 
 @celery.task(bind=True)
 def check_webhook_status(self, consumer_id):

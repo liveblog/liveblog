@@ -7,6 +7,9 @@
     <h3 class="page-nav-title">{{ settings.blog.title }}</h3>
     <div class="button-stack right-stack active settings-disabled">
         <span class="navbtn">
+            <i class="svg-icon-analytics"></i>
+        </span>
+        <span class="navbtn  navbtn-active">
             <i class="svg-icon-settings"></i>
         </span>
     </div>
@@ -39,7 +42,8 @@
                         <form class="form-horizontal" name="settings.forms.general">
                             <div class="form-group">
                                 <label for="inputTitle" class="control-label" translate>Blog Status</label>
-                                <div class="form-input relative">
+                                <p ng-if="settings.deactivateStatus">Too many active blogs</p>
+                                <div class="form-input relative" ng-if="!settings.deactivateStatus">
                                     <span class="blog-status">{{ settings.blog_switch ? 'Active' : 'Archived' | translate }}</span>
                                     <span style="display: block" tooltip="{{ settings.blog_switch ? 'Archive Blog' : 'Activate Blog' | translate }}" tooltip-placement="right">
                                         <span class="pull-left" sd-switch ng-model="settings.blog_switch" data-blog-status-switch></span>
@@ -105,6 +109,7 @@
                                 <label for="inputTheme" class="control-label" translate>Theme</label>
                                 <div class="form-input">
                                     <select
+                                      ng-disabled="settings.deactivateTheme"
                                       ng-model="settings.selectedTheme"
                                       ng-change="settings.blogPreferences.theme = settings.selectedTheme.name"
                                       ng-options="theme as theme.label for theme in settings.availableThemes track by theme.name"
@@ -131,6 +136,49 @@
                             </div>
 
                             <div lb-syndication-switch></div>
+
+                            <div class="form-group">
+                                <label for="inputTitle" class="control-label" translate>Market</label>
+                                <div class="form-input relative">
+                                    <span class="blog-status">{{ settings.market_enabled ? 'Marketed' : 'Private' | translate }}</span>
+                                    <span style="display: block" tooltip="{{ settings.market_enabled ? 'Keep private' : 'Show in market' | translate }}" tooltip-placement="right">
+                                        <span class="pull-left" sd-switch ng-model="settings.market_enabled" data-blog-status-switch></span>
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="category" class="control-label" translate>Category</label>
+                                <div class="form-input">
+                                    <select
+                                      ng-model="settings.category"
+                                      ng-options="category as category for category in settings.availableCategories"
+                                      class="form-control">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label
+                                    for="start_date"
+                                    class="control-label"
+                                    translate>Start date</label>
+                                <div
+                                    sd-datepicker
+                                    ng-model="settings.start_date"
+                                    class="form-input"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label
+                                    for="start_time"
+                                    class="control-label"
+                                    translate>Start time</label>
+                                <div
+                                    sd-timepicker
+                                    ng-model="settings.start_time"
+                                    class="form-input"></div>
+                            </div>
 
                             <div class="form-group">
                                 <label for="removeBlog" class="control-label" translate>Blog removal</label>
@@ -268,7 +316,21 @@
                                 <div class="modal-body">
                                     <div translate class="add-label">ADD PEOPLE</div>
                                     <div class="team_settings edit-contributors">
-                                        <div lb-user-select-list data-members="settings.posibleMembers" data-onchoose="settings.addMember(user)"></div>
+                                        <div ng-if="settings.hasReachedMembersLimit()">
+                                          <h3>Sorry.</h3>
+                                          <p>You have reached the maximum number of users who are assigned as team members to your active blogs. You can either: </p>
+                                          <ul>
+                                              <li>1. Unassign a team member from one of your active blogs or</li>
+                                              <li>2. Subscribe to a bigger plan.</li>
+                                          </ul>
+                                          <p>To unassign a team member from one of your active blogs, go to “Blog settings”, choose “Team” and open the “Team members” section. Unassign a team member by clicking on the X.</p>
+                                          <p>Want to upgrade to a plan more suitable to your needs? Email us at <a href="{{settings.mailto}}">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
+                                        </div>
+                                        <div 
+                                            lb-user-select-list
+                                            ng-if="!settings.hasReachedMembersLimit()"
+                                            data-members="settings.posibleMembers"
+                                            data-onchoose="settings.addMember(user)"></div>
                                         <div class="content">
                                             <p ng-if="message">{{ message }}</p>
                                             <div class="member-list clearfix">
@@ -308,8 +370,7 @@
                     class="main"
                     sd-image-preview="settings.preview.url"
                     data-file="settings.preview.img"
-                    data-progress-width="settings.progress.width"
-                >
+                    data-progress-width="settings.progress.width">
                     <div class="upload-progress" ng-show="progress.width">
                         <div class="bar" style="width: {{ progress.width }}%;"></div>
                     </div>

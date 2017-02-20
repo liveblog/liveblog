@@ -42,20 +42,27 @@ liveblogSyndication
                         apiQuery = api.consumers.save(data);
 
                     apiQuery.then(function(result) {
+                        var successMsg = gettext('Consumer saved.');
+
                         notify.pop();
-                        notify.success(gettext('consumer saved.'));
+                        notify.success(successMsg);
 
                         scope.onsave({ consumer: result });
                     })
                     .catch(function(err) {
-                        var errorMsg = gettext('Fatal error!');
+                        var errorMsg = gettext('An error has occurred. Please try again later.');
 
                         if (err.data.hasOwnProperty('_error'))
                             errorMsg = err.data._error.message;
 
                         if (err.data.hasOwnProperty('_issues')) {
                             Object.keys(err.data._issues).forEach(function(key) {
-                                scope.consumerForm[key].issue = err.data._issues[key];
+                                var issue = err.data._issues[key];
+                                if (typeof issue == 'object') {
+                                    if (issue.unique == true)
+                                        issue = gettext('The selected field value is not unique.');
+                                }
+                                scope.consumerForm[key].issue = issue;
                             });
                         }
 

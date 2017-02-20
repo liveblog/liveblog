@@ -266,7 +266,14 @@ class PostsService(ArchiveService):
             doc = original.copy()
             doc.update(updates)
             logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
-            out_service.send_syndication_post(doc, action='updated')
+
+            if original['post_status'] in ('submitted', 'draft') and updates.get('post_status') == 'open':
+                # Post has been published as contribution, then published.
+                # Syndication will be sent with 'created' action.
+                out_service.send_syndication_post(doc, action='created')
+            else:
+                out_service.send_syndication_post(doc, action='updated')
+
             push_notification('posts', updated=True)
 
     def get_item_update_data(self, item, links, delete=True):
