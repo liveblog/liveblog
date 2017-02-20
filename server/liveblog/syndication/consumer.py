@@ -3,10 +3,12 @@ import logging
 from bson import ObjectId
 from superdesk.resource import Resource
 from superdesk.services import BaseService
+from flask import current_app as app
 
 from .exceptions import APIConnectionError, ConsumerAPIError
 from .syndication import WEBHOOK_METHODS
 from .utils import generate_api_key, send_api_request, trailing_slash
+from .tasks import check_webhook_status
 
 logger = logging.getLogger('superdesk')
 

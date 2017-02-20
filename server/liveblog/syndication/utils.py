@@ -114,11 +114,13 @@ def fetch_url(url, timeout=5):
     fd.seek(0)
     return fd
 
+
 def blueprint_superdesk_token_auth():
     auth = SuperdeskTokenAuth()
     authorized = auth.authorized(allowed_roles=[], resource='producers', method='GET')
     if not authorized:
         return abort(401, 'Authorization failed.')
+
 
 def extract_post_items_data(original_doc):
     """Extract blog post items."""
