@@ -2,6 +2,7 @@ import logging
 import datetime
 from bson import ObjectId
 from flask import request, abort, Blueprint
+from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
 from liveblog.blogs.blogs import blogs_schema
