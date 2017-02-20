@@ -736,7 +736,7 @@ function BlogSettingsPage(blog) {
 
     self.removeBlog = function() {
         element(by.buttonText('Remove blog')).click().then(function() {
-            element(by.css('.btn--primary')).click();
+            element(by.css('button[ng-click="ok()"]')).click();
         });
     };
 }
