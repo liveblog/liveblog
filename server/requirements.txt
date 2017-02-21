@@ -14,5 +14,5 @@ httmock
 honcho
 # @TODO remove this after cache clear
 # Superdesk
--e git+git://github.com/liveblog/superdesk-core.git@470984887610844d96829f8f1555a42897a8747e#egg=Superdesk-Core==1.06-fix-celery-issue
+-e git+git://github.com/liveblog/superdesk-core.git@4656deb0fd9a336df663c2e4e90f66ec4d276716#egg=Superdesk-Core==1.2-fix-celery-issue
 
