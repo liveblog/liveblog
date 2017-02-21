@@ -12,6 +12,7 @@ pep8
 pyflakes<=1.1
 httmock
 honcho
+requests==2.13.0
 # @TODO remove this after cache clear
 # Superdesk
 -e git+git://github.com/liveblog/superdesk-core.git@d1a859c1640cb6b964006c7dfa94c4a8dc017d78#egg=Superdesk-Core==1.6-saas-celery-prefix
