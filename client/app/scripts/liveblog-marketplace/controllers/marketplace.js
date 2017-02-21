@@ -26,6 +26,14 @@ liveblogMarketplace
                 return !$scope.filters || !$scope.filters.hasOwnProperty('marketer._id');
             };
 
+            $scope.emptyBlogs = function() {
+                console.log('empty blogs', $scope.blogs._items.length, $scope.forthcomingBlogs._items.length)
+                return $scope.blogs._items.length === 0
+                    && $scope.forthcomingBlogs._items.length === 0;
+            }
+
+            $scope.openEmbedModal = MarketplaceActions.openEmbedModal;
+
             $scope.store = new Store(MarketplaceReducers, {
                 currentBlog: {},
                 currentMarketer: {},
