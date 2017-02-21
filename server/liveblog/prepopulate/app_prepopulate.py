@@ -182,4 +182,5 @@ class AppPrepopulateCommand(superdesk.Command):
             get_resource_service('users').post([get_default_user()])
         prepopulate_data(prepopulate_file, get_default_user())
 
+
 superdesk.command('app:prepopulate', AppPrepopulateCommand())
