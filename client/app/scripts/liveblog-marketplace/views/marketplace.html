@@ -40,7 +40,9 @@
 
         <div
             class="card-list-container"
+            ng-if="blogs || forthcomingBlogs"
             ng-class="{'open': searchPanel, move: !emptyMarketer()}">
+            <div ng-show="emptyBlogs()" class="not-found">¯\_(ツ)_/¯</div>
             <div
                 lb-blogs-list
                 class="blogs-list"
