@@ -100,11 +100,11 @@
             <legend class="legend--big">Home</legend>
             <div >
                 <label for="home.name" hide-render>Name</label>
-                <input id="home.name" name="$home.name" class="team-name" />
+                <input id="home.name" name="$home.name" class="team-name" necessary="true" />
             </div>
             <div>
                 <label for="home.score" hide-render>Score</label>
-                <input id="home.score" name="$home.score" class="team-score" />
+                <input id="home.score" name="$home.score" class="team-score" number="true" necessary="true" initial="0" />
             </div>
         </fieldset>
         <fieldset>
@@ -113,11 +113,11 @@
                 <li>
                     <div>
                         <label hide-render>Name</label>
-                        <input name="$home.scorers[0].name" />
+                        <input name="$home.scorers[0].name" tandem="$home.scorers[0].time"/>
                     </div>
                     <div class="time">
                         <label hide-render>Minute</label>
-                        <input name="$home.scorers[0].time" />
+                        <input name="$home.scorers[0].time" tandem="$home.scorers[0].name" number="true" />
                     </div>
                 </li>
             </ul>
@@ -128,11 +128,11 @@
             <legend class="legend--big">Away</legend>
             <div>
                 <label for="away.name" hide-render>Name</label>
-                <input id="away.name" name="$away.name" class="team-name" />
+                <input id="away.name" name="$away.name" class="team-name" necessary="true"/>
             </div>
             <div>
                 <label for="away.score" hide-render>Score</label>
-                <input id="away.score" name="$away.score" class="team-score" />
+                <input id="away.score" name="$away.score" class="team-score" necessary="true" initial="0" number="true" />
             </div>
         </fieldset>
 
@@ -142,11 +142,11 @@
                 <li>
                     <div>
                         <label hide-render>Name</label>
-                        <input name="$away.scorers[0].name" />
+                        <input name="$away.scorers[0].name" tandem="$away.scorers[0].time"/>
                     </div>
                     <div class="time">
                         <label hide-render>Minute</label>
-                        <input name="$away.scorers[0].time" />
+                        <input name="$away.scorers[0].time" tandem="$away.scorers[0].name" number="true"/>
                     </div>
                 </li>
             </ul>
