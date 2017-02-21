@@ -37,6 +37,11 @@ export default function consumerEdit(api, notify, _) {
                 if (!scope.consumerForm.webhook_url.$pristine)
                     data.webhook_url = scope.consumer.webhook_url;
 
+                if (scope.isEditing)
+                        apiQuery = api.save('consumers', scope.origConsumer, data);
+                    else
+                        apiQuery = api.consumers.save(data);
+
                 apiQuery.then(function(result) {
                     var successMsg = gettext('Consumer saved.');
 
