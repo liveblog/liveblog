@@ -156,7 +156,6 @@
             post.showGallery = config.settings.showGallery && _.filter(post.items, function(item) {
                 return item.item_type === 'image';
             }).length > 1;
-            console.log('show if it has: ', post.showGallery);
         });
         vm.all_posts = all_posts;
     }
