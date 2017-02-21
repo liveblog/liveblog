@@ -3,15 +3,29 @@
         <input type="text" ng-model="text"/>
         <span
             class="freetype--error freetype--error-text"
-            ng-hide="valid"
+            ng-show="necessaryFlag"
             hide-render
-            translate>Required!</span>
+            translate>It is necessary!</span>
         <span
             class="freetype--error freetype--error-text"
             ng-show="compulsoryFlag"
             hide-render
-            translate>One of these is required!</span>
-
+            translate>One of these is needed!</span>
+        <span
+            class="freetype--error freetype--error-text"
+            ng-show="tandemFlag"
+            hide-render
+            translate>It is necessary!</span>
+        <span
+            class="freetype--error freetype--error-text"
+            ng-show="numberFlag"
+            hide-render
+            translate>Needs to be number!</span>
+        <span
+            class="freetype--error freetype--error-text"
+            ng-show="orderFlag"
+            hide-render
+            translate>Needs to be in order!</span>
     </div>
 </div>
 
