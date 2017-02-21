@@ -1,3 +1,5 @@
+behave==1.2.5
+flake8==3.3.0
 Flask>=0.10,<0.11
 Flask-Cache==0.13.1
 Flask-Cors==2.1.0
