@@ -3,6 +3,7 @@ var DEBUG = false;
 
 var gulp = require('gulp')
   , browserify = require('browserify')
+  , nunjucksify = require('nunjucksify')
   , gulpLoadPlugins = require('gulp-load-plugins')
   , source = require('vinyl-source-stream')
   , buffer = require('vinyl-buffer')
@@ -13,42 +14,31 @@ var gulp = require('gulp')
 var paths = {
   less: 'less/*.less',
   js : ['js/*.js', 'js/*/*.js'],
-  html : ['template.html'],
-  jsfile: 'dpa-liveblog.js',
-  cssfile: 'dpa-liveblog.css',
+  jsfile: 'liveblog.js',
+  cssfile: 'liveblog.css',
   templates: 'templates/*.html'
 };
 
-gulp.task('inject-index', ['browserify', 'less'], function () {
-  var template = gulp.src(paths.html);
-  var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
-    read: false // We're only after the file paths
-  });
-
-  var template_opts = {
-      starttag: '<!-- inject:template -->',
-      transform: function (filePath, file) {
-        // return file contents as string
-        return file.contents.toString('utf8')
-      }
-    };
-
-  return gulp.src('index.html')
-    .pipe(plugins.inject(sources))
-    .pipe(plugins.inject(template, template_opts))
-    .pipe(gulp.dest('.'));
-});
-
 // Browserify
-gulp.task('browserify', ['clean-js'], function() {
+gulp.task('browserify', ['clean-js'], function(cb) {
   var b = browserify({
-    entries: './js/dpa-liveblog.js',
+    entries: './js/liveblog.js',
     debug: DEBUG
   });
 
+  var rewriteFilenames = function(filename) {
+    var parts = filename.split("/");
+    return parts[parts.length-1]
+  };
+
   // Source-mapped
   return b
-    .bundle().on('error', plugins.util.log)
+    .transform(nunjucksify, {
+      extension: '.html',
+      nameFunction: rewriteFilenames
+    })
+    .bundle()
+    .on('error', plugins.util.log)
     .pipe(source(paths.jsfile))
     .pipe(buffer())
     .pipe(plugins.rev())
@@ -61,10 +51,11 @@ gulp.task('browserify', ['clean-js'], function() {
 
 // Compile LESS files
 gulp.task('less', ['clean-css'], function () {
-  return gulp.src('./less/dpa-liveblog.less')
+  return gulp.src('./less/liveblog.less')
     .pipe(plugins.less({
       paths: [path.join(__dirname, 'less', 'includes')]
     }))
+
     .pipe(plugins.if(!DEBUG, plugins.minifyCss({compatibility: 'ie8'})))
     .pipe(plugins.rev())
     .pipe(gulp.dest('./dist'))
@@ -73,11 +64,22 @@ gulp.task('less', ['clean-css'], function () {
 });
 
 // Inject API response into template for dev/test purposes
-gulp.task('state-inject', function() {
-  var api_response = require('./test').grammy_awards;
-  gulp.src('./templates/template-index.html')
-      .pipe(plugins.nunjucks.compile(api_response))
-      .pipe(gulp.dest('.'))
+gulp.task('index-inject', ['less', 'browserify'], function() {
+  var testdata = require('./test');
+  var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
+    read: false // We're only after the file paths
+  });
+
+  return gulp.src('./templates/template-index.html')
+    .pipe(plugins.inject(sources))
+    .pipe(plugins.nunjucks.compile({
+      api_response: testdata.grammy_awards,
+      options: JSON.stringify(testdata.options, null, 4)
+    }))
+
+    .pipe(plugins.rename("index.html"))
+    .pipe(gulp.dest('.'))
+    .pipe(plugins.connect.reload());
 });
 
 // Replace assets paths in theme.json
@@ -86,40 +88,32 @@ gulp.task('theme-replace', ['browserify', 'less'], function() {
   var base = './';
 
   gulp.src('theme.json', {base: base})
-    .pipe(plugins.replace(/dpa-liveblog-.*\.css/g, manifest[paths.cssfile]))
-    .pipe(plugins.replace(/dpa-liveblog-.*\.js/g, manifest[paths.jsfile]))
+    .pipe(plugins.replace(/liveblog-.*\.css/g, manifest[paths.cssfile]))
+    .pipe(plugins.replace(/liveblog-.*\.js/g, manifest[paths.jsfile]))
     .pipe(gulp.dest(base));
 });
 
 // Serve
-gulp.task('serve', function() {
+gulp.task('serve', ['browserify', 'less', 'index-inject'], function() {
   plugins.connect.server({
-    port: 8000,
+    port: 8008,
     root: '.',
-    fallback: 'template-index.html',
+    fallback: 'index.html',
     livereload: true
   });
 });
 
 // Watch
-gulp.task('watch', ['set-debug'], function() {
-  var jswatch = gulp.watch(paths.js, ['browserify', 'inject-index']);
-  var lesswatch = gulp.watch(paths.less, ['less', 'inject-index']);
-  var htmlwatch = gulp.watch(paths.html, ['inject-index']);
+gulp.task('watch-static', ['debug', 'serve'], function() {
+  var js = gulp.watch(paths.js, ['browserify', 'index-inject'])
+    , less = gulp.watch(paths.less, ['less', 'index-inject'])
+    , templates = gulp.watch(paths.templates, ['index-inject']);
 
-  [jswatch, lesswatch, htmlwatch].forEach(function(el, i) {
+  [js, less, templates].forEach(function(el, i) {
     el.on('error', function(e) {
       console.log(e.toString())
     });
-  });
-});
-
-// Watch
-gulp.task('watch-static', ['state-inject', 'serve'], function() {
-  var templates_watch = gulp.watch(paths.templates, ['state-inject']);
-  templates_watch.on('error', function(e) {
-    console.log(e.toString())
-  });
+  })
 });
 
 // Set debug 
@@ -129,14 +123,14 @@ gulp.task('set-debug', function() {
 
 // Clean CSS
 gulp.task('clean-css', function() {
-  del(['dist/*.css'])
+  return del(['dist/*.css'])
 });
 
 // Clean JS
 gulp.task('clean-js', function() {
-  del(['dist/*.js'])
+  return del(['dist/*.js'])
 });
 
 // Default build for production
-gulp.task('default', ['browserify', 'less', 'theme-replace']);
-gulp.task('debug', ['set-debug', 'browserify', 'less', 'inject-index']);
+gulp.task('default', ['browserify', 'less', 'theme-replace', 'index-inject']);
+gulp.task('debug', ['set-debug', 'browserify', 'less', 'index-inject']);

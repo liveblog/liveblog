@@ -7,29 +7,24 @@
         <div class="sorting-bar__order" onClick="timeline.orderBy('oldest_first')">&Auml;lteste</div>
       </div>
     </div>
-    <div class="header-bar__actions">
-      <div class="header-bar__highlights header-bar__highlights--active" onClick="timeline.toggleHighlighsOnly()">
-        Das Wichtigste
-      </div>
-    </div>
+    <div class="header-bar__actions"></div>
   </div>
   <!-- Header End -->
   
   <!-- Timeline -->
   <div class="timeline-body timeline-body--loaded">
-    <!-- <div class="lb-post emtpy-message" ng-show="timeline.getAllPosts().length < 1 && !timeline.loading">
-        <div>Derzeit keine Eintr&auml;ge.</div>
-    </div> -->
-
-    <section class="lb-posts list-group">
-        {% for item in _items %}
+    {% if api_response._items|length == 0 %}
+      <div class="lb-post emtpy-message" ng-show="timeline.getAllPosts().length < 1 && !timeline.loading">
+          <div>Derzeit keine Eintr&auml;ge.</div>
+      </div>
+    {% else %}
+      <section class="lb-posts list-group">
+        {% for item in api_response._items %}
           {% include "template-post.html" %}
         {% endfor %}
-    </section>
-
-    <button class="ng-cloak lb-button load-more-posts" onClick="timeline.fetchNewPage()"
-        ng-if="timeline.isAllowedToLoadMore()">Mehr laden</button>
+      </section>
+      <button class="ng-cloak lb-button load-more-posts" data-js-loadmore>Mehr laden</button>
+    {% endif %}
   </div>
   <!-- Timeline End -->
-
 </div>

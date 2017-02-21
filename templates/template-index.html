@@ -6,67 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <!-- inject:css -->
-      <link rel="stylesheet" href="/dist/dpa-liveblog-c90192a451.css">
     <!-- endinject -->
   </head>
   <body>
-    {% include "template-timeline.html" %}
+    <div class="" data-js-target="timeline">
+      {% include "template-timeline.html" %}
+    </div>
     <script type="text/javascript">
-      window.LB = {
-        blog: {
-            "title": "Kurioses",
-            "blog_status": "open",
-             "_id": "576bdc46c158bd066b856006",
-            "original_creator": "5759bdafc158bd067436267e",
-            "members": [], "_created": "2016-06-23T12:55:34+00:00",
-            "versioncreated": "2016-06-23T12:55:34+00:00",
-            "_etag": "af9593580f9eee86dcd34ca75bca6c753d027ecf",
-            "_updated": "2016-06-23T12:55:34+00:00",
-            "description": "", "posts_order_sequence": 0,
-            "blog_preferences": {"theme": "liveblog-theme-dpa", "language": "en"}
-        },
-
-        "theme_settings": {
-            "showDescription": false,
-            "autoApplyUpdates": false,
-            "autoApplyEdits": true,
-            "showTitle": false,
-            "showAuthorAvatar": true,
-            "postsPerPage": 5,
-            "authorNameFormat": "display_name",
-            "postOrder": "editorial",
-            "showImage": true,
-            "hasHighlights": false,
-            "showAuthor": true,
-            "language": "de",
-            "permalinkDelimiter": "?"
-        },
-
-        "settings": {
-            "showDescription": false,
-            "autoApplyUpdates": false,
-            "autoApplyEdits": true,
-            "showTitle": false,
-            "showAuthorAvatar": true,
-            "postsPerPage": 5,
-            "authorNameFormat": "display_name",
-            "postOrder": "editorial",
-            "showImage": true,
-            "hasHighlights": false,
-            "showAuthor": true,
-            "language": "de",
-            "permalinkDelimiter": "?"
-        },
-        
-        api_host: '//dpa-api.liveblog.pro/',
-        assets_root: '/themes_assets/liveblog-theme-dpa/',
-        debug: false
-      };
-
+      window.LB = {{ options|safe }}
     </script>
-
     <!-- inject:js -->
-      <!-- <script src="/dist/dpa-liveblog-c17fb7584f.js"></script> -->
     <!-- endinject --> 
   </body>
 </html>
