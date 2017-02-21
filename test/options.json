@@ -1,0 +1,53 @@
+{
+    "blog": {
+        "title": "Grammy-Awards 2017",
+        "blog_status": "open",
+        "_id": "587e2689c158bd066fe2e620",
+        "original_creator": "5759bdafc158bd067436267e",
+        "members": [], "_created": "2016-06-23T12:55:34+00:00",
+        "versioncreated": "2016-06-23T12:55:34+00:00",
+        "_etag": "af9593580f9eee86dcd34ca75bca6c753d027ecf",
+        "_updated": "2016-06-23T12:55:34+00:00",
+        "description": "", "posts_order_sequence": 0,
+        "blog_preferences": {
+            "theme": "liveblog-theme-dpa",
+            "language": "en"
+        }
+    },
+
+    "theme_settings": {
+        "showDescription": false,
+        "autoApplyUpdates": false,
+        "autoApplyEdits": true,
+        "showTitle": false,
+        "showAuthorAvatar": true,
+        "postsPerPage": 10,
+        "authorNameFormat": "display_name",
+        "postOrder": "editorial",
+        "showImage": true,
+        "hasHighlights": false,
+        "showAuthor": true,
+        "language": "de",
+        "permalinkDelimiter": "?"
+    },
+
+    "settings": {
+        "showDescription": false,
+        "autoApplyUpdates": false,
+        "autoApplyEdits": true,
+        "showTitle": false,
+        "showAuthorAvatar": true,
+        "postsPerPage": 10,
+        "authorNameFormat": "display_name",
+        "postOrder": "editorial",
+        "showImage": true,
+        "hasHighlights": false,
+        "showAuthor": true,
+        "language": "de",
+        "permalinkDelimiter": "?"
+    },
+    
+    "api_host": "//dpa-api.liveblog.pro/",
+    "assets_root": "/themes_assets/liveblog-theme-dpa/",
+    "debug": false
+  }
