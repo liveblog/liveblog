@@ -479,6 +479,13 @@ define([
                     this.$inputs.find('input').on('change', _.bind(function(ev) {
                         this.onDrop(ev.currentTarget);
                     }, this));
+
+                    this.$inputs.find('.st-block__dropzone')[0].addEventListener('drop', _.bind(function(ev) {
+                        // Check for an existing URL
+                        if (ev.dataTransfer.getData('text/html'))
+                            console.log('drop', ev, ev.dataTransfer.getData('text/html'));
+                    }, this));
+                    //console.log('dropzone', this.$inputs.find('.st-block__dropzone'));
                 },
                 onDrop: function(transferData) {
                     var that = this;
@@ -487,6 +494,11 @@ define([
                     if (typeof urlAPI === 'undefined') {
                         urlAPI = window.webkitURL;
                     }
+
+                    if (!file)
+                        return false;
+
+                    console.log('transfer data', transferData);
                     // Handle one upload at a time
                     if (/image/.test(file.type)) {
                         this.loading();
