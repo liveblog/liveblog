@@ -1,7 +1,6 @@
 from eve.auth import BasicAuth
-from flask import abort, request
+from flask import request, abort
 from superdesk import get_resource_service
-from superdesk.resource import Resource
 
 
 class SyndicationTokenAuth(BasicAuth):
@@ -35,16 +34,3 @@ class ConsumerApiKeyAuth(SyndicationTokenAuth):
 class ConsumerBlogTokenAuth(SyndicationTokenAuth):
     resource_name = 'syndication_in'
     token_field = 'blog_token'
-
-
-class CustomAuthResource(Resource):
-    """ This has been added as superdesk.resource.Resource doesnt support endpoint-level authentication.
-    TODO: make pull-request for superdesk-core then remove this class when approved.
-    """
-    def __init__(self, endpoint_name, app, service, endpoint_schema=None):
-        super().__init__(endpoint_name, app, service, endpoint_schema=endpoint_schema)
-        authentication = getattr(self, 'authentication', None)
-        if authentication:
-            # Add endpont-level auth to endpoint_schema attribute and register the resource again.
-            self.endpoint_schema['authentication'] = authentication
-            app.register_resource(self.endpoint_name, self.endpoint_schema)

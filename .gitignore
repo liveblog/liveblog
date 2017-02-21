@@ -4,6 +4,7 @@
 __pycache__/
 *.py[cod]
 *.sublime-*
+.vagrant
 
 # C extensions
 *.so
@@ -76,6 +77,9 @@ server/liveblog/themes/themes_assets/*
 *.swn
 *.swm
 .vimrc
+
+client/config.js
+server/test-env.local
 
 # Vagrant
 .vagrant

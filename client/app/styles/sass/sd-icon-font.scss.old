@@ -12,8 +12,8 @@
 
 @font-face {
   font-family: 'sd_icons';
-  src:url('../../fonts/sd_icons.eot?-r9v51w');
-  src:url('../../fonts/sd_icons.eot?#iefix-r9v51w') format('embedded-opentype'),
+  src:url('/fonts/sd_icons.eot?-r9v51w');
+  src:url('/fonts/sd_icons.eot?#iefix-r9v51w') format('embedded-opentype'),
     url('../../fonts/sd_icons.woff?-r9v51w') format('woff'),
     url('../../fonts/sd_icons.ttf?-r9v51w') format('truetype'),
     url('../../fonts/sd_icons.svg?-r9v51w#sd_icons') format('svg');
@@ -29,7 +29,7 @@
   line-height: 16px;
   font-family: 'sd_icons';
   font-size: 16px;
-  color: @grayDark; 
+  color: $grayDark; 
   speak: none;
   font-style: normal;
   font-weight: normal;
@@ -43,27 +43,27 @@
 
 }
 .icon-white {
-  color: @white;
+  color: $white;
 }
 [class^="icon-"].blue {
-  color: @sd-blue;
+  color: $sd-blue;
 }
 [class^="icon-"].red {
-  color: @red;
+  color: $red;
 }
 [class^="icon-"].orange {
-  color: @orange;
+  color: $orange;
 }
 [class^="icon-"].white {
-  color: @white;
+  color: $white;
 }
 [class^="icon-"].rotate {
  transform: rotate(90deg);
 }
 
 .icon-round {
-  .border-radius(50%);
-  background-color: @sd-blue;
+  @include border-radius(50%);
+  background-color: $sd-blue;
 }
 
 // Icons definition

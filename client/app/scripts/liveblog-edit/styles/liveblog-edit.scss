@@ -1,9 +1,9 @@
 // liveblog-edit.less
 // Styling for the liveblog edit page
 // ----------------------------------------------------------------------------------------
-@import 'mixins.less';
-@import (reference) 'bootstrap.less';
-@import 'variables.less';
+@import '~lb-mixins.scss';
+@import '~lb-bootstrap.scss';
+@import '~variables.scss';
 
 .blogedit {
     //left menu
@@ -15,7 +15,7 @@
         button {
             width: 48px;
             border:0;
-            border-bottom:1px solid @grayLight;
+            border-bottom:1px solid $grayLight;
             padding: 0;
             line-height: 0;
             &.active,
@@ -39,15 +39,15 @@
     .column {
         position: absolute;
         top: 0; bottom: 0;
-        .border-box();
+        @include border-box();
         header {
-            height: @nav-height;
-            .border-box();           
+            height: $nav-height;
+            @include border-box();
             box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
             padding: 10px 20px;
             background-color: white;            
             h4 {
-                color: @gray;
+                color: $gray;
                 font-size: 1.4em;
                 line-height: 1.6em;
                 font-weight: 400;
@@ -56,7 +56,7 @@
         }
         .content {
             position: absolute;
-            top: @nav-height; left: 0; right: 0; bottom: 0;
+            top: $nav-height; left: 0; right: 0; bottom: 0;
             overflow: auto;
             .inner-padding {
                 padding: 20px;
@@ -64,7 +64,7 @@
         }
         .content--timeline {
             top: 48px !important;
-            //padding-top: @nav-height - 10px;
+            //padding-top: $nav-height - 10px;
         }
         &--first {
             left: 0;
@@ -73,7 +73,7 @@
             @media only screen and (max-width: 1024px) {
                 width: 50%;
             }
-            .box-shadow(3px 0 0 @grayLight);
+            @include box-shadow(3px 0 0 $grayLight);
             z-index: 1;
         }
         &--timeline {
@@ -86,7 +86,7 @@
             background: #f0f0f0;
             header {
                 background: #fff;                
-                color: @gray;
+                color: $gray;
                 font-size: 1.4em;
                 line-height: 1.6em;
                 font-weight: 400;
@@ -102,13 +102,13 @@
                 top: 0;
             }
             &__filters {
-                .border-box();
-                //background-color: @sd-background;
+                @include border-box();
+                //background-color: $sd-background;
                 border-bottom: 1px solid #e0e0e0;
                 padding: 10px 20px;
                 position: relative;
                 &__title {
-                    color: @grayLight;
+                    color: $grayLight;
                     text-transform: uppercase;
                     font-size: 11px;
                 }
@@ -125,7 +125,7 @@
                         background-color: #afd5e4;
                         margin: 2px 8px;
                         &:hover {
-                            background-color: @sd-blue;
+                            background-color: $sd-blue;
                         }
                     }
                     > .title {white-space: nowrap; text-transform: none;}
@@ -143,7 +143,7 @@
                         padding: 10px 0 0;
                         font-size: 1.8em;
                         line-height: 0 !important;
-                        .box-sizing(border-box);
+                        @include box-sizing(border-box);
                     }
                 }
                 .dropdown-content {
@@ -171,7 +171,7 @@
                         position: absolute;
                         left: -15px;
                         top: 10px;
-                        background: url('../../images/dropdown-arrow-side.png') no-repeat;
+                        background: url('~images/dropdown-arrow-side.png') no-repeat;
                         content: " ";
                     }
                     .footer {
@@ -180,7 +180,7 @@
                         margin: 0 -10px;
                         border-top: 1px solid #e8e8e8;
                         padding: 10px;
-                        .border-radius(0 0 2px 2px);
+                        @include border-radius(0 0 2px 2px);
                     }
                 }
             }
@@ -204,13 +204,13 @@
                 }
                 .freetype-btn {                       
                     border: none;
-                    background: @sd-blue;
-                    color: @white;
+                    background: $sd-blue;
+                    color: $white;
                     font-size: 18px;
                     line-height: 140%;
                     min-width: 28px;
                     margin-bottom: 4px;
-                    .border-radius(2px);
+                    @include border-radius(2px);
                 }                
                 .image-text {
                     margin-top: 5px;
@@ -251,7 +251,7 @@
                 }
                 legend {
                     font-size: 13px !important;
-                    color: @grayDark !important;
+                    color: $grayDark !important;
                     margin-bottom: 0 !important;
                     &.legend--big {
                         font-size: 18px!important;
@@ -278,10 +278,10 @@
                         padding: 10px;
                         font-size: 14px;
                         line-height: 24px;
-                        .border-radius(5px) !important;
+                        @include border-radius(5px !important);
                         margin-bottom: 20px;
                         &:focus {
-                            .box-shadow(inset 0 3px 0 0 #f0f0f0) !important;
+                            @include box-shadow(inset 0 3px 0 0 #f0f0f0 !important);
                         }
                     }
                     // Sir-trevor elements ---------------------------
@@ -289,7 +289,7 @@
                         // ["+" bars]
                         .st-block-controls__top:before, .st-icon--add:after {
                             background-color: transparent;
-                            color: @blue;
+                            color: $blue;
                             padding: 0;
                             line-height: 40px;
                             height: 40px;
@@ -317,7 +317,7 @@
                                 flex-wrap: wrap;
                                 padding-left: 0;
                                 .st-block-control {
-                                    .btn;
+                                    //.btn;
                                     position: relative;
                                     margin: 0 10px 0 0;
                                     padding: 0 10px 0 36px;
@@ -332,7 +332,7 @@
                                     &:hover {
                                         color: inherit;
                                         font-family: inherit;
-                                        .box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5)) !important;
+                                        @include box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5) !important);
                                     } // prevent style from sir-trevor
                                     .st-icon {
                                         font-size: 20px;
@@ -341,7 +341,7 @@
                                         position: absolute;
                                         left: 16px;
                                         top: 9px;
-                                        color: @gray;
+                                        color: $gray;
                                     }
                                     &:last-child {
                                         margin: 0;
@@ -374,7 +374,7 @@
                                 top: 6px;
                                 right: 6px;
                                 .st-block-ui-btn {
-                                    color: lighten(@grayLight, 20%);
+                                    color: lighten($grayLight, 20%);
                                     border: none;
                                     // background-color: transparent;
                                     width: 1.6em;
@@ -384,8 +384,8 @@
                                     background-color: transparent;
                                     vertical-align: middle;
                                     &:hover {
-                                        background-color: @grayLighter;
-                                        color: @gray;
+                                        background-color: $grayLighter;
+                                        color: $gray;
                                     }
                                     // hide the reorder button
                                     &--reorder { display: none; }
@@ -412,40 +412,40 @@
                                     }
                                 }
                                 .st-block-ui-btn--confirm-delete, .st-block-ui-btn--deny-delete {
-                                        .btn;
+                                        //.btn;
                                         padding: 9px 20px;
                                         font-size: 12px !important;
                                         &:hover {
-                                            .box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5)) !important;
+                                            @include box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5) !important);
                                         }
                                     &:before {
                                         text-transform: uppercase;
-                                        font-family: @baseFontFamily; // remove the sir-trevor icon behavior
+                                        font-family: $baseFontFamily; // remove the sir-trevor icon behavior
                                     }
                                 }
                                 .st-block-ui-btn--confirm-delete {
-                                    .btn-danger;
+                                    //@include btn-danger;
                                     &:before {
                                         content: "delete";
                                     }
                                     &:active {
-                                        .box-shadow(inset 0 2px 0px multiply(@btnDefaultColor,rgba(0,0,0,12%)));
+                                        @include box-shadow(inset 0 2px 0px multiply($btnDefaultColor,rgba(0,0,0,12%)));
                                     }
                                 }
                                 .st-block-ui-btn--deny-delete {
-                                    .buttonStates(#CDCDCD, @black); // needed to give a no transparent background in order to hide the cross
+                                    @include buttonStates(#CDCDCD, $black); // needed to give a no transparent background in order to hide the cross
                                     &:active {
-                                        .box-shadow(inset 0 2px 0px multiply(@btnDangerColor,rgba(0,0,0,12%)));
+                                        @include box-shadow(inset 0 2px 0px multiply($btnDangerColor,rgba(0,0,0,12%)));
                                     }
                                     &:before {content: "cancel"; }
                                 }
                             }
                             &__dropzone {
                                 background-color: transparent; // prevent style from sir-trevor.css
-                                border: 1px dashed @grayLight;
-                                padding: @main-content-padding * 2;
+                                border: 1px dashed $grayLight;
+                                padding: $main-content-padding * 2;
                                 p, .st-icon {
-                                    color: @grayLight;
+                                    color: $grayLight;
                                 }
                             }
                             &__upload-container {
@@ -468,11 +468,11 @@
                             &[data-type='quote'], &[data-type='image'], &[data-type='embed'] {
                                 .st-block__inner {
                                     padding: 20px;
-                                    background: @white;
-                                    border: 1px solid lighten(@grayLight, 25%);
-                                    .border-radius(3px);
+                                    background: $white;
+                                    border: 1px solid lighten($grayLight, 25%);
+                                    @include border-radius(3px);
                                     &:focus, &:hover {
-                                        border: 1px solid @sd-blue;
+                                        border: 1px solid $sd-blue;
                                     }
                                 }
                             }
@@ -480,25 +480,25 @@
                                 border: 0;
                                 margin: 8px 0;
                                 ::selection {
-                                    background: @sd-blue;
-                                    color: @white;
+                                    background: $sd-blue;
+                                    color: $white;
                                 }
 
                                 label { margin-bottom: auto; } // prevent style from bootstrap
-                                //.transition(box-shadow .25s ease);
+                                //@include transition(box-shadow .25s ease);
                                 &:hover {
-                                    .box-shadow(0px 2px 10px rgba(0, 0, 0, 0.15));
+                                    @include box-shadow(0px 2px 10px rgba(0, 0, 0, 0.15));
                                 }
                                 // for text input field (div[content-editable] looking like a textarea)
                                 .st-text-block {
                                     padding: 20px;
                                     font-size: 1em;
-                                    border: 1px solid lighten(@grayLight, 25%);
+                                    border: 1px solid lighten($grayLight, 25%);
                                     word-wrap: break-word;
                                     background-color: white;
-                                    .border-radius(3px);
+                                    @include border-radius(3px);
                                     &:focus, &:hover {
-                                        border: 1px solid @sd-blue;
+                                        border: 1px solid $sd-blue;
                                     }
                                 }
                                 .st-placeholder {
@@ -508,15 +508,16 @@
                                     }
                                 }
                                 // make a contenteditable div looking like a custom input
-                                .inline-field() {
-                                    .box-sizing(border-box); // width and height doesn't include the margin
+                                @mixin inline-field()
+{
+                                    @include box-sizing(border-box); // width and height doesn't include the margin
                                     width: 100%;
                                     min-height: 1em;
                                     padding: 3px 5px;
-                                    margin: @main-content-padding 0;
-                                    border-bottom: 1px solid @grayLight;
+                                    margin: $main-content-padding 0;
+                                    border-bottom: 1px solid $grayLight;
                                     opacity: .7;
-                                    .transition(opacity .25s ease);
+                                    @include transition(opacity .25s ease);
                                     &:focus {
                                         opacity: 1;
                                     }
@@ -525,11 +526,11 @@
                                     }
                                 }
                                 .st-image-block[contenteditable="true"]{
-                                    .inline-field();
+                                    @include inline-field();
                                 }
                                 .st-quote-block {
                                     &.quote-input {
-                                        .inline-field();
+                                        @include inline-field();
                                         position: relative;
                                         &:before {
                                             content: "\201C"; // “
@@ -539,7 +540,7 @@
                                         }
                                     }
                                     &.js-cite-input {
-                                        .inline-field();
+                                        @include inline-field();
                                         &:before {
                                             content: "\2014"; // —
                                             margin-left: -20px;
@@ -549,7 +550,7 @@
                                 }
                                 .st-embed-block {
                                     font-size: .9em;
-                                    &.embed-input {.inline-field();}
+                                    &.embed-input {@include inline-field();}
                                     &.embed-preview
                                         .noembed-embed {
                                             // responsive embed
@@ -579,14 +580,14 @@
                                         background-size: cover;
                                     }
                                     &.title-preview {
-                                        .inline-field();
+                                        @include inline-field();
                                         font-weight: bold;
                                     }
                                     &.description-preview {
-                                        .inline-field();
+                                        @include inline-field();
                                     }
                                     &.credit-preview {
-                                        .inline-field();
+                                        @include inline-field();
                                         text-transform: uppercase;
                                     }
                                 }
@@ -598,7 +599,7 @@
             > .actions {
                 position: absolute;
                 bottom: 0; left: 0px; right: 0px; height: 88px;
-                .border-box();
+                @include border-box();
                 bottom: 0; left: 0px; right: 0px;
                 display:table;
                 table-layout: fixed;
@@ -627,32 +628,32 @@
 
 // Icons LB custom
     .big-icon-ingest {
-        background-image: url('../../images/ingest.svg');
+        background-image: url('~images/ingest.svg');
     }
     .active .big-icon-ingest {
-        background-image: url('../../images/ingest_active.svg');
+        background-image: url('~images/ingest_active.svg');
     }
     .big-icon-contributions {
-        background-image: url('../../images/contributions.svg');
+        background-image: url('~images/contributions.svg');
     }
     .active .big-icon-contributions {
-        background-image: url('../../images/contributions_active.svg');
+        background-image: url('~images/contributions_active.svg');
     }
     .big-icon-editor {
-        background-image: url('../../images/editor.svg');
+        background-image: url('~images/editor.svg');
     }
     .active .big-icon-editor {
-        background-image: url('../../images/editor_active.svg');
+        background-image: url('~images/editor_active.svg');
     }
     .big-icon-archive {
         height: 28px;
         background-position: 0 0;
     }
     .big-icon-comments {
-        background-image: url('../../images/comments-sidetab.svg');
+        background-image: url('~images/comments-sidetab.svg');
     }
     .active .big-icon-comments {
-        background-image: url('../../images/comments-sidetab_active.svg');
+        background-image: url('~images/comments-sidetab_active.svg');
     }    
     .icon-archive {
         background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCIgdmlld0JveD0iMCAwIDE2IDE2IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxNiAxNiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPHBhdGggZD0iTTIgMXYxM2gydjFoM3YtMWgzdjFoM3YtMWgyVjFIMnogTTEzIDEySDRWM2g5VjEyeiIvPgoJPHBhdGggZD0iTTEyIDRINXYzaDdWNHogTTExIDZINlY1aDVWNnoiLz4KCTxwYXRoIGQ9Ik0xMiA4SDV2M2g3Vjh6IE0xMSAxMEg2VjloNVYxMHoiLz4KPC9nPgo8L3N2Zz4K);
@@ -672,7 +673,7 @@
 // fix for the btns in editor
 .st-format-bar {
     padding: 0.6em 1em 0.7em 0.7em !important;
-    .border-radius(3px) !important;
+    @include border-radius(3px !important);
     &:before {
         top:2.7em !important;
     }
@@ -691,7 +692,7 @@
 // fix for the btns in editor
 .medium-editor-toolbar {
     background: #4d5358;
-    .border-radius(3px) !important;
+    @include border-radius(3px !important);
     li button {
         border-right: 1px solid #3e4245;
     }
@@ -800,7 +801,7 @@
     position: absolute;
     left: -15px;
     top: 10px;
-    background: url(../../images/dropdown-arrow-side.png) no-repeat;
+    background: url(/images/dropdown-arrow-side.png) no-repeat;
     content: " ";
 }
 .freetype-selector .separator {

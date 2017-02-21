@@ -1,3 +1,4 @@
+
 /**
  * This file is part of Superdesk.
  *
@@ -8,16 +9,24 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 
-define([
-    'angular',
-    'lodash',
-    'liveblog-edit/controllers/blog-edit',
-    'liveblog-edit/controllers/blog-settings',
-    './unread.posts.service',
-    'ng-sir-trevor',
-    'ng-sir-trevor-blocks',
-    'angular-embed'
-], function(angular, _, BlogEditController, BlogSettingsController) {
+import angular from 'angular';
+import _ from 'lodash';
+
+//import './../ng-sir-trevor';
+//import './../ng-sir-trevor-blocks';
+import BlogEditController from './controllers/blog-edit.js'
+import BlogSettingsController from './controllers/blog-settings.js'
+
+//define([
+//    'angular',
+//    'lodash',
+//    'liveblog-edit/controllers/blog-edit',
+//    'liveblog-edit/controllers/blog-settings',
+//    './unread.posts.service',
+//    'ng-sir-trevor',
+//    'ng-sir-trevor-blocks',
+//    'angular-embed'
+//], function(angular, _, BlogEditController, BlogSettingsController) {
     'use strict';
     /**
      * Resolve a blog by route id and redirect to /liveblog if such blog does not exist
@@ -41,9 +50,9 @@ define([
         'angular-embed',
         'angular-embed.handlers',
         'ngRoute',
-        'superdesk.services.modal',
-        'superdesk.upload',
-        'superdesk.editor',
+        'superdesk.core.services.modal',
+        'superdesk.core.upload',
+        //'superdesk.editor',
         'liveblog.pages-manager',
         'lrInfiniteScroll',
         'liveblog.security',
@@ -199,5 +208,6 @@ define([
             embedService.registerHandler(ngEmbedPictureHandler); // use embed.ly, and provide a `thumbnail_url` field from the `url`
         }
     ]);
-    return app;
-});
+
+export default app;
+//});

@@ -1,9 +1,16 @@
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     blogs = require('./helpers/pages').blogs;
 
 describe('timeline deletions', function() {
     'use strict';
-    beforeEach(function(done) {login().then(done);});
+
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login()
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
+
     it('can delete posts on the timeline', function() {
         var blog = blogs.openBlog(3);
         blog.timeline.all().then(function(posts) {

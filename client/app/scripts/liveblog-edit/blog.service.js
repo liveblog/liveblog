@@ -8,9 +8,11 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 
-define([
-    'angular'
-], function(angular) {
+import angular from 'angular';
+
+//define([
+//    'angular'
+//], function(angular) {
     'use strict';
 
     angular.module('liveblog.blog', [])
@@ -68,6 +70,6 @@ define([
             getPublicUrl: getPublicUrl
         };
     }]);
-});
+//});
 
 // EOF
