@@ -482,8 +482,37 @@ define([
 
                     this.$inputs.find('.st-block__dropzone')[0].addEventListener('drop', _.bind(function(ev) {
                         // Check for an existing URL
-                        if (ev.dataTransfer.getData('text/html'))
-                            console.log('drop', ev, ev.dataTransfer.getData('text/html'));
+                        if (ev.dataTransfer.getData('text/html')) {
+                            var remoteTag = ev.dataTransfer.getData('text/html');
+                            var srcAttr = remoteTag.match(/src="?([^"\s]+)"?\s*/)[1];
+                            console.log('drop', ev);
+
+                            this.loading();
+                            // Show this image on here
+                            this.$inputs.hide();
+                            this.loadData({
+                                file: {
+                                    url: srcAttr
+                                }
+                            });
+
+                            //this.getOptions().uploader(
+                            //    { url: srcAttr },
+                            //    function(data) {
+                                    //console.log('data', data);
+                                    this.getOptions().disableSubmit(false);
+                                    this.setData({ media: { _url: srcAttr }});
+                                    //this.setData({ url: srcAttr });
+                                    this.ready();
+                            //    },
+                            //    function(error) {
+                            //        var message = error || window.i18n.t('blocks:image:upload_error');
+                            //        that.addMessage(message);
+                            //        that.ready();
+                            //    }
+                            //);
+
+                        }
                     }, this));
                     //console.log('dropzone', this.$inputs.find('.st-block__dropzone'));
                 },
@@ -498,7 +527,6 @@ define([
                     if (!file)
                         return false;
 
-                    console.log('transfer data', transferData);
                     // Handle one upload at a time
                     if (/image/.test(file.type)) {
                         this.loading();
@@ -513,6 +541,7 @@ define([
                         this.getOptions().uploader(
                             file,
                             function(data) {
+                                console.log('img upload data', data);
                                 that.getOptions().disableSubmit(false);
                                 that.setData(data);
                                 that.ready();
@@ -534,18 +563,27 @@ define([
                 },
                 toHTML: function() {
                     var data = this.retrieveData();
-                    var srcset = '';
-                    _.forEach(data.media.renditions, function(value) {
-                        srcset += ', ' + value.href + ' ' + value.width + 'w';
-                    });
-                    return [
-                        '<figure>',
-                        '    <img src="' + data.media._url + '" alt="' + data.caption + '"',
-                        srcset? ' srcset="' + srcset.substring(2) + '"' : '',
-                        '/>',
-                        '    <figcaption>' + data.caption + (data.credit === '' ? '' : ' Credit: ' + data.credit) + '</figcaption>',
-                        '</figure>'
-                    ].join('');
+                    console.log('data', data);
+
+                    if (data.media.hasOwnProperty('renditions')) {
+                        var srcset = '';
+                        _.forEach(data.media.renditions, function(value) {
+                            console.log('value', value);
+                            srcset += ', ' + value.href + ' ' + value.width + 'w';
+                        });
+                        return [
+                            '<figure>',
+                            '    <img src="' + data.media._url + '" alt="' + data.caption + '"',
+                            srcset? ' srcset="' + srcset.substring(2) + '"' : '',
+                            '/>',
+                            '    <figcaption>' + data.caption + (data.credit === '' ? '' : ' Credit: ' + data.credit) + '</figcaption>',
+                            '</figure>'
+                        ].join('');
+
+                    // When drag & dropping from an external web page
+                    } else {
+                        return '<figure><img src="' + data.media._url + '" /></figure>';
+                    }
                 },
                 toMeta: function() {
                     return this.retrieveData();
