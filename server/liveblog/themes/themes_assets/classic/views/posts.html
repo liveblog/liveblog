@@ -17,7 +17,7 @@
             </a>
         </div>
     </span>
-    <lb-gallery items="post.items" ng-if="post.showGallery"></lb-gallery>
+    <lb-gallery items="post.items" ng-if="ctrl.timeline.settings.showGallery && ctrl.imageItemNo(post) > 1"></lb-gallery>
     
     <span ng-if="post.mainItem.item_type.indexOf('Advertisment') !== -1">
         <div class="lb-advertisment" translate>Advertisment</div>
@@ -32,7 +32,7 @@
             </div>
         </div>                
         <div ng-if="!post.fullDetails || $first">
-            <lb-item item="item" gallery="post.showGallery"></lb-item>
+            <lb-item item="item" gallery="ctrl.imageItemNo(post) > 1"></lb-item>
         </div>
     </div>
     <div class="lb-updated-date ng-cloak" ng-show="post.showUpdate" translate>
