@@ -2,7 +2,7 @@
     "label": "Angular Liveblog Toolkit",
     "name": "angular",
     "abstract": true,
-    "version": "1.4.31",
+    "version": "1.4.36",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -17,6 +17,7 @@
         "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.8.2/lodash.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/angular-cache/4.5.0/angular-cache.min.js",
         "https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.5/iframeResizer.contentWindow.min.js",
+        "liveblog-embed/analytics.js",
         "liveblog-embed/main.js",
         "liveblog-embed/resources.service.js",
         "liveblog-embed/comments.service.js",
