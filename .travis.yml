@@ -49,6 +49,7 @@ before_install:
 install:
     - if [ "${TARGET}" = "server" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
         cd server &&
+        pip install --upgrade setuptools &&
         pip install -r requirements.txt &&
         cd .. ;
       fi
