@@ -273,7 +273,7 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
 
 
 def validate_secure_url(value):
-    """Chech if url is secure (https or whitelist)"""
+    """Check if url is secure (https or whitelist)"""
     parsed = urllib.parse.urlparse(value)
     # TODO: add whitelist app settings.
     try:

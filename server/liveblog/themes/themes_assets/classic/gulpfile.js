@@ -48,7 +48,7 @@ gulp.task('templates', function () {
         collapseWhitespace: true,
         removeComments: true,
     })).pipe($.angularTemplatecache({
-        root:'/themes_assets/classic/views/',
+        root:'views/',
         module: 'theme'
     }))
     .pipe($.rename(config.templates))
