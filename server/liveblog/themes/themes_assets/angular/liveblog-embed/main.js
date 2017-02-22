@@ -1,10 +1,5 @@
 (function(angular) {
     'use strict';
     angular.module('liveblog-embed', ['ngResource', 'angular-cache'])
-        .constant('config', {
-            blog: window.LB.blog,
-            settings: window.LB.settings,
-            api_host:  window.LB.api_host,
-            assets_root: window.LB.assets_root
-        });
+        .constant('config', window.LB);
 })(angular);
