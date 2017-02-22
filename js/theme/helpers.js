@@ -5,12 +5,11 @@
 'use strict';
 var moment;
 
-var convertTimestamp = function(elem) {
-  /**
-   * Convert ISO timestamps to relative moment timestamps
-   * @param {Node} elem - a DOM element with ISO timestamp in data-js-timestamp attr
-   */
-
+/**
+ * Convert ISO timestamps to relative moment timestamps
+ * @param {Node} elem - a DOM element with ISO timestamp in data-js-timestamp attr
+ */
+function convertTimestamp(elem) {
   var d = new Date() // Now
     , date = elem.dataset.jsTimestamp;
 
@@ -24,26 +23,24 @@ var convertTimestamp = function(elem) {
   };
 
   window.setInterval(updateMoment, 10*1000)
-}
+};
 
-var getElems = function(query) {
-  /**
-   * Wrap element selector api
-   * @param {string} query - a jQuery syntax DOM query (with dots)
-   */
-
+/**
+ * Wrap element selector api
+ * @param {string} query - a jQuery syntax DOM query (with dots)
+ */
+function getElems(query) {
   var isDataAttr = -1 < query.indexOf("data-");
   return isDataAttr
     ? document.querySelectorAll(query)
     : document.getElementsByClassName(query);
-}
+};
 
-var getJSON = function(url) {
-  /**
-   * jQuery's $.getJSON in a nutshell
-   * @param {string} url - a request URL
-   */
-
+/**
+ * jQuery's $.getJSON in a nutshell
+ * @param {string} url - a request URL
+ */
+function getJSON(url) {
   return new Promise(function(resolve, reject) {
     var promise = Promise;
     var xhr = new XMLHttpRequest();
@@ -55,7 +52,6 @@ var getJSON = function(url) {
     };
 
     xhr.send();
-    
   });
 }
 

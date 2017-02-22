@@ -14,16 +14,20 @@
   <!-- Timeline -->
   <div class="timeline-body timeline-body--loaded">
     {% if api_response._items|length == 0 %}
-      <div class="lb-post emtpy-message" ng-show="timeline.getAllPosts().length < 1 && !timeline.loading">
+      <div class="lb-post emtpy-message">
           <div>Derzeit keine Eintr&auml;ge.</div>
       </div>
     {% else %}
       <section class="lb-posts list-group">
         {% for item in api_response._items %}
-          {% include "template-post.html" %}
+          {% if not item.deleted %}
+            {% include "template-post.html" %}
+          {% endif %}
         {% endfor %}
       </section>
-      <button class="ng-cloak lb-button load-more-posts" data-js-loadmore>Mehr laden</button>
+      {% if api_response._meta.max_results <= api_response._meta.total %}
+        <button class="ng-cloak lb-button load-more-posts" data-js-loadmore>Mehr laden</button>
+      {% endif %}
     {% endif %}
   </div>
   <!-- Timeline End -->

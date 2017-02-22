@@ -3,10 +3,10 @@
 var Promise = require('promise-polyfill');
 
 /*
-  All polyfills go here
-  - IE10 custom 'Events'
-  - IE9 elem.classList polyfill
-*/
+ * All polyfills go here
+ * - IE10 custom 'Events'
+ * - IE9 elem.classList polyfill
+ */
 
 function enableCustomEvent() {
   function CustomEvent (event, params) {
