@@ -485,7 +485,6 @@ define([
                         if (ev.dataTransfer.getData('text/html')) {
                             var remoteTag = ev.dataTransfer.getData('text/html');
                             var srcAttr = remoteTag.match(/src="?([^"\s]+)"?\s*/)[1];
-                            console.log('drop', ev);
 
                             this.loading();
                             // Show this image on here
@@ -496,22 +495,11 @@ define([
                                 }
                             });
 
-                            //this.getOptions().uploader(
-                            //    { url: srcAttr },
-                            //    function(data) {
-                                    //console.log('data', data);
-                                    this.getOptions().disableSubmit(false);
-                                    this.setData({ media: { _url: srcAttr }});
-                                    //this.setData({ url: srcAttr });
-                                    this.ready();
-                            //    },
-                            //    function(error) {
-                            //        var message = error || window.i18n.t('blocks:image:upload_error');
-                            //        that.addMessage(message);
-                            //        that.ready();
-                            //    }
-                            //);
-
+                            console.log('type', this.type);
+                            this.type = 'embed';
+                            this.getOptions().disableSubmit(false);
+                            this.setData({ media: { _url: srcAttr }});
+                            this.ready();
                         }
                     }, this));
                     //console.log('dropzone', this.$inputs.find('.st-block__dropzone'));
@@ -563,12 +551,10 @@ define([
                 },
                 toHTML: function() {
                     var data = this.retrieveData();
-                    console.log('data', data);
 
                     if (data.media.hasOwnProperty('renditions')) {
                         var srcset = '';
                         _.forEach(data.media.renditions, function(value) {
-                            console.log('value', value);
                             srcset += ', ' + value.href + ' ' + value.width + 'w';
                         });
                         return [
