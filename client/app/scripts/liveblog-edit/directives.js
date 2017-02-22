@@ -553,32 +553,28 @@ define([
                         $scope.text = String($scope.initial);
                     }
                     if ($scope.number !== undefined) {
-                        let sentinel = $scope.$watch('text', function(value) {
+                        $scope.$on('$destroy', $scope.$watch('text', function(value) {
                                 $scope.numberFlag = (value !== '') && (value != parseInt(value, 10));
                                 $scope.validation['number__' + $scope._id] = !$scope.numberFlag;
-                        }, true);
-                        $scope.$on('$destroy', sentinel);
+                        }, true));
                     }
                     if ($scope.compulsory !== undefined) {
-                        let sentinel = $scope.$watch('[text,compulsory]', function(value) {
+                        $scope.$on('$destroy', $scope.$watch('[text,compulsory]', function(value) {
                                 $scope.compulsoryFlag = (value[0] === '' && value[1] === '');
                                 $scope.validation['compulsory__' + $scope._id] = !$scope.compulsoryFlag;
-                        }, true);
-                        $scope.$on('$destroy', sentinel);
+                        }, true));
                     }
                     if ($scope.tandem !== undefined) {
-                        let sentinel = $scope.$watch('[text,tandem]', function(value) {
+                        $scope.$on('$destroy', $scope.$watch('[text,tandem]', function(value) {
                                 $scope.tandemFlag = (value[0] === '' && value[1] !== '');
                                 $scope.validation['tandem__' + $scope._id] = !$scope.tandemFlag;
-                        }, true);
-                        $scope.$on('$destroy', sentinel);
+                        }, true));
                     }
                     if ($scope.necessary !== undefined) {
-                        let sentinel = $scope.$watch('text', function(value) {
+                        $scope.$on('$destroy', $scope.$watch('text', function(value) {
                                 $scope.necessaryFlag = (value === '');
                                 $scope.validation['necessary__' + $scope._id] = !$scope.necessaryFlag;
-                        }, true);
-                        $scope.$on('$destroy', sentinel);
+                        }, true));
                     }
 
                 }],
