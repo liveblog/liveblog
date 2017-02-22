@@ -151,17 +151,21 @@
 
         var vm = this;
         var all_posts = vm.posts();
-        _.each(all_posts, function(post) {
-            // Show gallery only for posts with more than 1 image.
-            post.showGallery = config.settings.showGallery && _.filter(post.items, function(item) {
-                return item.item_type === 'image';
-            }).length > 1;
-            console.log('show if it has: ', post.showGallery);
-        });
+        vm.imageItemNo = function(post) {
+            var no = 0;
+            angular.forEach(post.items, function(item) {
+                if (item.item_type === 'image') {
+                    no++;
+                }
+            });
+            return no;
+        } 
         vm.all_posts = all_posts;
     }
 
     angular.module('theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll', 'gettext'])
+        // `assets_simplified_path` is set to work with the simplified assets path.
+        .constant('assets_simplified_path', true)
         .run(['gettextCatalog', 'config', function (gettextCatalog, config) {
             gettextCatalog.setCurrentLanguage(config.settings.language);
         }])
@@ -221,7 +225,9 @@
                     var slideSelector = 'img';
                     var slideOptions = {
                         showHideOpacity: true,
-                        getThumbBoundsFn: false
+                        getThumbBoundsFn: false,
+                        //temp disable of photoswipe sharing
+                        shareButtons:[]
                     };
                     var justifiedGalleryOptions = {
                         margins: 3

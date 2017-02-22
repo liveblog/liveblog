@@ -5,16 +5,15 @@ import tempfile
 import urllib.parse
 import uuid
 from hashlib import sha1
-
+from flask import make_response, abort
 import requests
 from bson import ObjectId
 from eve.io.mongo import MongoJSONEncoder
-from flask import make_response
 from requests.exceptions import RequestException
 from requests.packages.urllib3.exceptions import MaxRetryError
 from superdesk import get_resource_service
-from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
-
+from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
+from apps.auth import SuperdeskTokenAuth
 from .exceptions import APIConnectionError, DownloadError
 from .tasks import fetch_image
 
@@ -104,6 +103,13 @@ def fetch_url(url, timeout=5):
             fd.write(chunk)
     fd.seek(0)
     return fd
+
+
+def blueprint_superdesk_token_auth():
+    auth = SuperdeskTokenAuth()
+    authorized = auth.authorized(allowed_roles=[], resource='producers', method='GET')
+    if not authorized:
+        return abort(401, 'Authorization failed.')
 
 
 def extract_post_items_data(original_doc):
