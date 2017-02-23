@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "2.3.41",
+    "version": "2.3.43",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -32,6 +32,7 @@
         "vendors/photoswipe.min.js",
         "vendors/photoswipe-ui-default.min.js",
         "vendors/jquery.photoswipe-global.js",
+        "classic.js",
         "main.js"
     ],
     "scripts": [
