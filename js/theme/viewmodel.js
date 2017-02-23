@@ -11,61 +11,81 @@ var templates = require('./templates')
 var endpoint = LB.api_host + "api/client_blogs/" + LB.blog._id + "/posts"
   , settings = LB.settings;
 
-var vm = LB.vm = {
+var vm = {
   _items: [],
   currentPage: 1,
-  offset: 0
+  totalPosts: 0
 };
 
 /**
  * Private API request method
- * @param {number} page - desired page/subset of posts.
+ * @param {object} opts - query builder options.
+ * @param {number} opts.page - desired page/subset of posts, leave empty for polling.
+ * @param {number} opts.fromDate - needed for polling.
  * @returns {object} Liveblog 3 API response
  */
-function getPosts(page) {
-  var dbQuery = getQuery({sort: settings.postOrder, highlightsOnly: false})
-    , qs = "?max_results=" + LB.settings.postsPerPage + "&page=" + page + "&source="
+function getPosts(opts) {
+  var dbQuery = getQuery({
+    sort: settings.postOrder || opts.sort,
+    highlightsOnly: false || opts.highlightsOnly,
+    fromDate: opts.fromDate
+      ? opts.fromDate
+      : false
+  })
+
+  var page = opts.fromDate ? 1 : opts.page;
+  var qs = "?max_results=" + LB.settings.postsPerPage + "&page=" + page + "&source="
     , fullPath = endpoint + qs + dbQuery;
 
-  return helpers.getJSON(fullPath);
+  return helpers.getJSON(fullPath)
+    .then(function(api_response) {
+      updateViewModel(api_response, opts);
+      renderPosts(api_response, opts);
+    })
 };
 
 /**
- * Calls API, returns results
- * @param {number} page - desired page of posts, subset length controlled by settings.postsPerPage
- * @param {number} offset - current offset sum of loaded and deleted posts, needed for paging
- * @returns {array} - an array of Liveblog post items
+ * Get next page of posts from API.
+ * @param {object} opts - query builder options.
+ * @returns {promise} resolves to posts array.
  */
-function loadPosts(currentPage, offset) {
-  var currentPage = currentPage || vm.currentPage
-    , offset = offset || vm.offset
-    , page;
+function loadPostsPage(opts) {
+  var opts = opts || {}
+  opts.page = ++vm.currentPage;
 
-  page = ++currentPage + getPageBoundary(offset);
-  vm.currentPage = page;
+  return getPosts(opts).catch(function(err) {
+    // catch all errors here
+  })
+};
 
-  return getPosts(page)
-    .then(function(api_response) {
-      updateViewModel(api_response);
-      return api_response._items;
-    })
-    
-    .catch(function(err) {})
+/**
+ * Poll API for new posts.
+ * @param {object} opts - query builder options.
+ * @returns {promise} resolves to posts array.
+ */
+function loadPosts(opts) {
+  var opts = opts || {};
+  opts.fromDate = vm.latestUpdate;
+
+  return getPosts(opts).catch(function(err) {
+    // catch all errors here
+  })
 };
 
 /**
  * Render posts currently in pipeline to template, store results in viewmodel
  * To reduce DOM calls/paints we hand off add operations to view in bulk.
- * @param {array} posts - an array of Liveblog post items
+ * @param {object} api_response - liveblog API response JSON.
  */
-function renderPosts(posts) {
-  var renderedPosts = []; // temporary store
+function renderPosts(api_response, opts) {
+  var renderedPosts = [] // temporary store
+    , posts = api_response._items;
 
-  for (var i = 0, offset = 0; i < posts.length; i++) {
+  for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
 
     if ("delete" === posts.operation) {
-      view.deletePost(post._id)
+      view.deletePost(post._id);
       return; // early
     };
 
@@ -80,24 +100,28 @@ function renderPosts(posts) {
     
     renderedPosts.push(renderedPost) // create operation
   };
-
-  // todo Update Offset on new posts and delete
-  // todo update viewmodel
   
   if (!renderedPosts.length) return // early
   if (settings.postOrder === "descending") renderedPosts.reverse()
 
-  view.addPosts(renderedPosts) // if creates
+  view.addPosts(renderedPosts, { // if creates
+    position: opts.fromDate ? "top" : "bottom"
+  }) 
 };
 
 /**
  * Add items in api response & latest update timestamp to viewmodel.
  * @param {object} api_response - liveblog API response JSON.
  */
-function updateViewModel(api_response) {
-  vm.latest_update = getLatestUpdate(api_response);
+function updateViewModel(api_response, opts) {
   vm._items.push.apply(vm._items, api_response._items);
-  view.toggleLoadMore(isTimelineEnd(api_response)) // the end?
+  
+  if (!opts.fromDate) { // Means we're not polling
+    view.toggleLoadMore(isTimelineEnd(api_response)) // the end?
+  } else { // Means we're polling for new posts
+    if (!api_response._items.length) return;
+    vm.latestUpdate = getLatestUpdate(api_response);
+  }
 };
 
 /**
@@ -106,10 +130,9 @@ function updateViewModel(api_response) {
  * @returns {string} - ISO 8601 encoded date
  */
 function getLatestUpdate(api_response) {
-  if (!api_response) return new Date().toISOString(); // initial
   var timestamps = api_response._items.map(function(post) {
     return new Date(post._updated)
-  })
+  });
 
   var latest = new Date(Math.max.apply(null, timestamps));
   return latest.toISOString() // convert timestamp to ISO
@@ -126,11 +149,12 @@ function isTimelineEnd(api_response) {
 };
 
 /**
- * Check to see if we need to require a higher/lower page number
- * @returns {integer} of page boundaries crossed by the sum of posts loaded
+ * Set up viewmodel.
  */
-function getPageBoundary(offset) {
-  return Math.floor(offset / settings.postsPerPage);
+function init() {
+  vm.latestUpdate = new Date().toISOString();
+  vm.timeInitialized = new Date().toISOString();
+  return vm.latestUpdate;
 };
 
 /**
@@ -150,30 +174,31 @@ function getQuery(opts) {
           "and": [
             {"term": {"sticky": false}},
             {"term": {"post_status": "open"}},
-            {"not": {"term": {"deleted": true}}}
+            {"not": {"term": {"deleted": true}}},
+            {"range": {"_updated": {"lt": vm.timeInitialized}}}
           ]
         }
       }
     },
     "sort":[{
-      "order": {"order": "desc"}
+      "_updated": {"order": "desc"}
     }]
   };
 
   if (opts.fromDate) {
-    _query.filtered.filter.and.push({
-      "range": {"_updated": {"gt": fromDate}}
-    })
+    query.query.filtered.filter.and[3].range._updated = {
+      "gt": opts.fromDate
+    }
   };
 
   if (opts.highlightsOnly === true) {
-    _query.filtered.filter.and.push({
+    query.query.filtered.filter.and.push({
         term: {highlight: true}
     })
   };
 
   if (opts.sort === "oldest_first") {
-    _query.sort[0].order.order = "asc"
+    query.sort[0].order.order = "asc"
   }
 
   return encodeURI(JSON.stringify(query));
@@ -182,5 +207,7 @@ function getQuery(opts) {
 module.exports = {
   getLatestUpdate: getLatestUpdate,
   loadPosts: loadPosts,
-  renderPosts: renderPosts
+  loadPostsPage: loadPostsPage,
+  renderPosts: renderPosts,
+  init: init
 }

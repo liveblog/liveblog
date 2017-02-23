@@ -4,27 +4,28 @@
 
 'use strict';
 
-var viewmodel = require('./viewmodel')
+var view = require('./view')
+  , viewmodel = require('./viewmodel')
   , helpers = require('./helpers');
 
 /**
  * Contains a mapping of element data-selectors and click handlers
- * {object} attach {function} - registers handlers found in _handlers object
+ * buttons.attach {function} - registers handlers found in handlers object
  */
 var buttons = {
-  _handlers: {
+  handlers: {
     "[data-js-loadmore]": function() {
-      viewmodel.loadPosts()
-        .then(function(posts) {
-          viewmodel.renderPosts(posts);
+      viewmodel.loadPostsPage()
+        .then(function() {
+          view.displayNewPosts();
         })
     }
   },
 
   attach: function() {
-    for (var handler in buttons._handlers) {
+    for (var handler in buttons.handlers) {
       helpers.getElems(handler)[0].addEventListener('click',
-        buttons._handlers[handler], false);
+        buttons.handlers[handler], false);
     }
   }
 };

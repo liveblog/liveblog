@@ -73,7 +73,7 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
   return gulp.src('./templates/template-index.html')
     .pipe(plugins.inject(sources))
     .pipe(plugins.nunjucks.compile({
-      api_response: testdata.grammy_awards,
+      api_response: testdata.test_blog,
       options: JSON.stringify(testdata.options, null, 4)
     }))
 

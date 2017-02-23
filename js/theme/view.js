@@ -80,9 +80,22 @@ function updatePost(postId, renderedPost) {
   loadEmbeds();
 };
 
+/**
+ * Delete post <article> DOM node by data attribute.
+ * @param {string} - a post URN
+ */
+function updateTimestamps() {
+  var timestamps = helpers.getElems("lb-post-date");
+  for (var i = 0; i < timestamps.length; i++) {
+    // todo
+  }
+  return null
+};
+
 module.exports = {
   addPosts: addPosts,
   deletePost: deletePost,
+  displayNewPosts: displayNewPosts,
   updatePost: updatePost,
   toggleLoadMore: toggleLoadMore
 }
