@@ -154,7 +154,7 @@
                                     {{'Choose post type' | translate}}
                                     <sup class="btn-toggle-label">Beta</sup>
                                 </span>
-                                <span ng-if="selectedPostType!='Default'" translate>{{selectedPostType.name | limitTo : 32 }}</span>
+                                <span ng-if="selectedPostType!='Default'" translate class="selector-size-limit">{{selectedPostType.name}}</span>
                                 <i class="icon-chevron-right-thin"></i>
                             </button>
                         </header>
@@ -214,7 +214,7 @@
                             <li ng-repeat="freetype in freetypes" ng-click="selectPostType(freetype)"
                             ng-class="{'active': freetype == selectedPostType, 'separator': freetype.separator}"
                             >
-                                {{ freetype.name | limitTo : 32 }}
+                                {{ freetype.name }}
                             </li>
                         </ul>
                     </div>
