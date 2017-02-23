@@ -1,4 +1,4 @@
-# Liveblog 3 Lean Theme
+# Liveblog 3 Lean Theme ALPHA
 Goals for this rewrite: Be usable, indexable and fast.    
 We got a fraction of the lines of code, faster DOM ready, enabled SEO through template isomorphism.
 Development is possible without the local Liveblog server running, the directory tree is simplified,
