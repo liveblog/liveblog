@@ -151,15 +151,19 @@
 
         var vm = this;
         var all_posts = vm.posts();
-        vm.imageItemNo = function(post) {
+        vm.showGallery = function(post) {
             var no = 0;
             angular.forEach(post.items, function(item) {
                 if (item.item_type === 'image') {
                     no++;
                 }
             });
-            return no;
-        } 
+            return (no > 1) && vm.timeline.settings.showGallery;
+        }
+
+        vm.isAd = function(post) {
+            return (post.mainItem.item_type.indexOf('Advertisement') === -1)
+        }
         vm.all_posts = all_posts;
     }
 
@@ -168,6 +172,14 @@
         .constant('assets_simplified_path', true)
         .run(['gettextCatalog', 'config', function (gettextCatalog, config) {
             gettextCatalog.setCurrentLanguage(config.settings.language);
+            // moment js uses a diffrent country code for Norks
+            // added a mapper for this, internal Norks is `no` and for moment is `nn`.
+            var momentMapper = { 'no': 'nn' },
+                momentLanguage = config.settings.language;
+            if (momentMapper[momentLanguage]) {
+                momentLanguage = momentMapper[momentLanguage];
+            }
+            moment.locale(momentLanguage);
         }])
         .run(['$rootScope', function($rootScope){
             angular.element(document).on("click", function(e) {
