@@ -572,13 +572,13 @@ function EditPostPage() {
     self.publishScorecard = function() {
         var data = {
             homeName: randomString(10),
-            homeScore: randomString(2),
+            homeScore: randomNumber(2),
             awayName: randomString(10),
-            awayScore: randomString(2),
+            awayScore: randomNumber(2),
             player1Name: randomString(10),
-            player1Time: randomString(2),
+            player1Time: randomNumber(2),
             player2Name: randomString(10),
-            player2Time: randomString(2)
+            player2Time: randomNumber(2),
         };
         self.homeName.sendKeys(data.homeName);
         self.homeScore.sendKeys(data.homeScore);
@@ -810,6 +810,17 @@ function randomString(maxLen) {
         text += possible.charAt(Math.floor(Math.random() * possible.length));
     }
     return text;
+}
+
+function randomNumber(maxLen) {
+    'use strict';
+    maxLen = maxLen || 15;
+    var text = '';
+    var possible = '123456789';
+    for (var i = 0; i < maxLen; i ++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return String(parseInt(text, 10));
 }
 
 function ConsumersManagementPage() {
