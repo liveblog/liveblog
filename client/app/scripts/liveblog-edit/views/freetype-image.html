@@ -6,6 +6,11 @@
         <div ng-hide="image.picture_url"><button class="btn btn-info" ng-click="ft.openUploadModal()" translate>Upload Image</button>
             <div class="image-text" translate>Image has not been set so far</div>
         </div>
+        <span
+            class="freetype--error freetype--error-text"
+            ng-show="compulsoryFlag"
+            hide-render
+            translate>One of these is required!</span>
     </div>
 </div>
 <div sd-modal="" data-model="ft.uploadModal">
