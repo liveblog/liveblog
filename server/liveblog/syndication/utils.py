@@ -1,6 +1,9 @@
 import hmac
 import json
+import uuid
+import hmac
 import logging
+import requests
 import tempfile
 import urllib.parse
 import uuid
@@ -8,7 +11,10 @@ from hashlib import sha1
 from flask import make_response, abort
 import requests
 from bson import ObjectId
+from hashlib import sha1
+from flask import make_response
 from eve.io.mongo import MongoJSONEncoder
+from .exceptions import APIConnectionError, DownloadError
 from requests.exceptions import RequestException
 from requests.packages.urllib3.exceptions import MaxRetryError
 from superdesk import get_resource_service
@@ -16,6 +22,7 @@ from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
 from apps.auth import SuperdeskTokenAuth
 from .exceptions import APIConnectionError, DownloadError
 from .tasks import fetch_image
+
 
 logger = logging.getLogger('superdesk')
 
@@ -73,11 +80,14 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
     session = requests.Session()
     session.trust_env = False
     logger.info('API {} request to {} with params={} and data={}'.format(method, api_url, args, data))
+    headers = {
+        'Content-Type': 'application/json'
+    }
+    if api_key:
+        headers['Authorization'] = api_key
+
     try:
-        response = session.request(method, api_url, headers={
-            'Authorization': api_key,
-            'Content-Type': 'application/json'
-        }, params=args, data=data, timeout=timeout)
+        response = requests.request(method, api_url, headers=headers, params=args, data=data, timeout=timeout)
     except (ConnectionError, RequestException, MaxRetryError):
         raise APIConnectionError('Unable to connect to api_url "{}".'.format(api_url))
 
