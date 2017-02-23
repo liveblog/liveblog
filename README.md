@@ -1,4 +1,4 @@
-# dpa Liveblog 3 Minimal Theme
+# Liveblog 3 Minimal Theme
 
 ## Development
 Just issue a `npm i` followed by `gulp watch-static`.    
@@ -11,3 +11,9 @@ and `.git` folders before uploading to LiveBlog.
 
 ## Documentation
 Generate documentation via `jsdoc`.
+
+## License
+This is a hard fork of the Liveblog 3 angular, classic themes => https://github.com/liveblog   
+Liveblog 3 is licensed under AGPL v3, as is this theme.
+   
+*© 2016-2017 dpa-infocom*
