@@ -145,10 +145,10 @@ define([
         function getFreetypes() {
             api.freetypes.query().then(function(data) {
                 var freetypes = [{
-                    name: 'Advertisment Local',
+                    name: 'Advertisement Local',
                     template: $templateCache.get('scripts/liveblog-edit/views/ads-local.html')
                 }, {
-                    name: 'Advertisment Remote',
+                    name: 'Advertisement Remote',
                     template: $templateCache.get('scripts/liveblog-edit/views/ads-remote.html')
                 }, {
                     name: 'Scorecard',
