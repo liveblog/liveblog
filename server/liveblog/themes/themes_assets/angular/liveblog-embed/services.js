@@ -20,7 +20,10 @@
                 /**
                  * `assets_simplified_path` constant is added 
                  * to keep backwards compatibility for old themes.
-                 */ 
+                 */
+                if(config.debug && config.templates && config.templates[path]) {
+                    return config.templates[path];
+                }
                 if(!config.debug && simplifiedPath) {
                     return ret;
                 }
