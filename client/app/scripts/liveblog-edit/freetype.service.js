@@ -11,7 +11,7 @@
  define([
     'angular',
     './module'
-], 
+],
 function(angular) {
     'use strict';
     /**
@@ -34,6 +34,8 @@ function(angular) {
         attr = attr || '';
         // remove any trailing `/` character from attr.
         // the trailing character is composed.
+        attr = attr.replace(/compulsory\w*=\w*("|')?([^\"\']+)("|')/g, 'compulsory="' + SCOPE_FREETYPEDATA + '.$2"');
+        attr = attr.replace(/\$\$/g, '');
         if (attr.substr(attr.length - 1, 1) === '/') {
             attr = attr.substr(0, attr.length - 1);
         }
@@ -141,7 +143,7 @@ function(angular) {
                 // transform collection mechaism for `scorers` or for dinamical lists.
                 template = template.replace(/\<li([^>]*)\>(.*?)\<\/li\>/g, function(all, attr, repeater) {
                     var iteratorName = getNewIndex('iterator');
-                    var parts, vector = '';
+                    var parts, vector = '', collection;
                     repeater = repeater.replace(/\$([\$a-z0-9_.\[\]]+)/gi, function(all, path) {
                         path2obj(scope[SCOPE_FREETYPEDATA], path);
                         parts = path.split(/[\d*]/);
@@ -152,9 +154,10 @@ function(angular) {
                             return all;
                         }
                     });
-                    return '<li ng-repeat="' + iteratorName + ' in ' + SCOPE_FREETYPEDATA + '.' + vector + '">' +
-                            repeater + '<freetype-collection-remove index="$index" vector="' + SCOPE_FREETYPEDATA + '.' + vector + '"/>' +
-                            '</li><li><freetype-collection-add vector="' + SCOPE_FREETYPEDATA + '.' + vector + '"/></li>';
+                    collection = SCOPE_FREETYPEDATA + '.' + vector;
+                    return '<li ng-repeat="' + iteratorName + ' in ' + collection + '">' +
+                            repeater + '<freetype-collection-remove index="$index" vector="' + collection + '"/>' +
+                            '</li><li><freetype-collection-add vector="' + collection + '"/></li>';
                 });
                 // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
@@ -166,7 +169,7 @@ function(angular) {
                     });
                     if (name) {
                         path2obj(scope[SCOPE_FREETYPEDATA], name);
-                        return '<input ng-model=' + makeAngularAttr(name, attr) + '/>';
+                        return '<freetype-text text=' + makeAngularAttr(name, attr) + ' validation="validation"></freetype-text>';
                     }
                     return all;
                 });
@@ -195,7 +198,7 @@ function(angular) {
                     });
                     if (name) {
                         path2obj(scope[SCOPE_FREETYPEDATA], name + '.picture_url');
-                        return '<freetype-image image=' + makeAngularAttr(name, attr) + '></freetype-image>';
+                        return '<freetype-image image=' + makeAngularAttr(name, attr) + ' validation="validation"></freetype-image>';
                     }
                     return all;
                 });
@@ -209,7 +212,7 @@ function(angular) {
                     });
                     if (name) {
                         path2obj(scope[SCOPE_FREETYPEDATA], name);
-                        return '<freetype-link link=' + makeAngularAttr(name, attr) + '></freetype-link>';
+                        return '<freetype-link link=' + makeAngularAttr(name, attr) + ' validation="validation"></freetype-link>';
                     }
                     return all;
                 });
