@@ -112,15 +112,14 @@ define([
 
         // ask in a modalbox if the user is sure to want to overwrite editor.
         // call the callback if user say yes or if editor is empty
-        function doOrAskBeforeIfEditorIsNotEmpty(callback, msg) {
+        function doOrAskBeforeIfEditorIsNotEmpty() {
              var deferred = $q.defer();
-
             if (isEditorClean()) {
-                callback();
                 deferred.resolve();
             } else {
-                msg = msg || gettext('You have content in the editor. You will lose it if you continue without saving it before.');
-                modal.confirm(msg).then(callback).then(deferred.resolve, deferred.reject);
+                modal
+                    .confirm(gettext('You have content in the editor. You will lose it if you continue without saving it before.'))
+                    .then(deferred.resolve, deferred.reject);
             }
             return deferred.promise;
         }
@@ -198,7 +197,8 @@ define([
                 $scope.selectPostTypeDialog = !$scope.selectPostTypeDialog;
             },
             selectPostType: function(postType) {
-                doOrAskBeforeIfEditorIsNotEmpty(cleanEditor).then(function() {
+                doOrAskBeforeIfEditorIsNotEmpty().then(function() {
+                    cleanEditor()
                     $scope.selectedPostType = postType;
                     $scope.toggleTypePostDialog();
                     if (isPostScorecard()) {
@@ -226,7 +226,7 @@ define([
                 }
             },
             askAndResetEditor: function() {
-                doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
+                doOrAskBeforeIfEditorIsNotEmpty().then(cleanEditor);
             },
             toggleSticky: function() {
                 $scope.sticky = !$scope.sticky;
@@ -270,7 +270,7 @@ define([
                     }, delay);
                 }
                 $scope.openPanel('editor');
-                doOrAskBeforeIfEditorIsNotEmpty(fillEditor.bind(null, post));
+                doOrAskBeforeIfEditorIsNotEmpty().then(fillEditor.bind(null, post));
             },
             saveAsContribution: function() {
                 $scope.actionPending = true;
