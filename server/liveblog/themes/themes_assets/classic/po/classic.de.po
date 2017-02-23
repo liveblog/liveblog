@@ -10,7 +10,11 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.8.11\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: posts.html:23
+msgid "Advertisement"
+msgstr "Werbung"
 
 #: comments.html:37
 msgid "Cancel"
@@ -28,15 +32,15 @@ msgstr "Kommentar"
 msgid "Comment should be maximum 300 characters in length."
 msgstr "Kommentar darf maximal 300 Zeichen lang sein."
 
-#: main.js:50 template.html:13
+#: main.js:49 template.html:13
 msgid "Editorial"
 msgstr "Redaktionell"
 
-#: template.html:96
+#: template.html:98
 msgid "Load more posts"
 msgstr "Mehr Einträge laden"
 
-#: template.html:99
+#: template.html:101
 msgid "Loading"
 msgstr "Lade"
 
@@ -48,7 +52,7 @@ msgstr "Name"
 msgid "Name should be maximum 30 characters in length."
 msgstr "Name darf maximal 30 Zeichen lang sein"
 
-#: main.js:53 template.html:17
+#: main.js:52 template.html:17
 msgid "Newest first"
 msgstr "Neueste zuerst"
 
@@ -56,7 +60,7 @@ msgstr "Neueste zuerst"
 msgid "No posts for now."
 msgstr "Kein Beitrag vorhanden"
 
-#: main.js:56 template.html:21
+#: main.js:55 template.html:21
 msgid "Oldest first"
 msgstr "Älteste zuerst"
 
@@ -100,7 +104,7 @@ msgstr "Anzeigen hervorgehoben Beitrag ist nur"
 msgid "Sort by:"
 msgstr "Ordnen nach"
 
-#: posts.html:27
+#: posts.html:38
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
 msgstr "Aktualisiert am {{post.content_updated_date | prettifyIsoDate}}"
 
@@ -108,6 +112,6 @@ msgstr "Aktualisiert am {{post.content_updated_date | prettifyIsoDate}}"
 msgid "Your comment was sent for approval."
 msgstr "Ihr Kommentar wartet auf Freischaltung,"
 
-#: item.html:13
+#: item.html:18
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr "{{ item.meta.caption }} Bild: {{ item.meta.credit }}"

@@ -3,6 +3,7 @@
 angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
 /* jshint -W100,-W109 */
   gettextCatalog.setStrings('cs', {
+  "Advertisement": "reklama",
   "Cancel": "Zrušit",
   "Comment": "Váš příspěvek",
   "Comment *": "Text *",
@@ -37,6 +38,7 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} autor: {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('de', {
+  "Advertisement": "Werbung",
   "Cancel": "Abbrechen",
   "Comment": "Kommentar",
   "Comment *": "Kommentar",
@@ -69,6 +71,7 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} Bild: {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('fi', {
+  "Advertisement": "Mainos",
   "Cancel": "Peruuta",
   "Comment": "Kommentoi",
   "Comment *": "Kommentti *",
@@ -101,6 +104,7 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} © {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('fr', {
+  "Advertisement": "Publicité",
   "Cancel": "Annuler",
   "Comment": "Commentaire",
   "Comment *": "Commentaire *",
@@ -125,10 +129,15 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
     "Voir {{$count}} nouveaux messages"
   ],
   "Send": "Envoyer",
+  "Show all posts": "Afficher tous les messages",
+  "Show highlighted post only": "Afficher uniquement les messages en surbrillance",
   "Sort by:": "Trier par:",
-  "Your comment was sent for approval.": "Votre commentaire a été envoyé et est en attente de validation."
+  "Updated {{post.content_updated_date | prettifyIsoDate}}": "Mise à jour {{post.content_updated_date | prettifyIsoDate}}",
+  "Your comment was sent for approval.": "Votre commentaire a été envoyé et est en attente de validation.",
+  "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} crédit: {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('nl', {
+  "Advertisement": "Advertentie",
   "Cancel": "Annuleren",
   "Comment": "Reactie",
   "Comment *": "Tekst *",
@@ -157,6 +166,7 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Your comment was sent for approval.": "Uw reactie is ontvangen ter beoordeling."
 });
   gettextCatalog.setStrings('no', {
+  "Advertisement": "Annonse",
   "Cancel": "Avbryt",
   "Comment": "Kommentar",
   "Comment *": "Kommentar*",
@@ -189,6 +199,7 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 });
   gettextCatalog.setStrings('ro', {
+  "Advertisement": "Reclamă",
   "Cancel": "Anulează",
   "Comment": "Comentează",
   "Comment *": "Comentariu *",
