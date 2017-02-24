@@ -1,15 +1,15 @@
 {
-    "label": "dpa Liveblog Theme",
-    "name": "liveblog-theme-dpa",
-    "version": "0.11.3",
+    "label": "Liveblog 3 Lean Theme",
+    "name": "liveblog-lean-theme-alpha",
+    "version": "0.1.42",
     "author": "Paul Solbach <psolbach@dpa-newslab.com>",
     "repository": {
         "type" : "git",
         "url" : "git@github.com:dpa-newslab/liveblog-theme-dpa"
     },
     "license": "UNLICENSED",
-    "styles": ["dist/dpa-liveblog-c90192a451.css"],
-    "scripts": ["dist/dpa-liveblog-d53d71a937.js"],
+    "styles": ["dist/dpa-liveblog-624bc5ab6e.css"],
+    "scripts": ["dist/dpa-liveblog-51cb2e7e5f.js"],
     "options": [
         {
             "name": "language",
@@ -119,6 +119,13 @@
             "type": "checkbox",
             "default": false,
             "help": "If the users see the highlight button in embed"
+        },
+        {
+            "name": "blockSearchEngines",
+            "label": "Block search engines",
+            "type": "checkbox",
+            "default": true,
+            "help": "Block search engines from indexing my blogs"
         }
     ]
 }

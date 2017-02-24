@@ -85,9 +85,11 @@ function updatePost(postId, renderedPost) {
  * @param {string} - a post URN
  */
 function updateTimestamps() {
-  var timestamps = helpers.getElems("lb-post-date");
-  for (var i = 0; i < timestamps.length; i++) {
-    // todo
+  var dateElems = helpers.getElems("lb-post-date");
+  for (var i = 0; i < dateElems.length; i++) {
+    var elem = dateElems[i]
+      , timestamp = elem.dataset.jsTimestamp;
+    elem.textContent = helpers.convertTimestamp(timestamp);
   }
   return null
 };
@@ -97,5 +99,6 @@ module.exports = {
   deletePost: deletePost,
   displayNewPosts: displayNewPosts,
   updatePost: updatePost,
+  updateTimestamps: updateTimestamps,
   toggleLoadMore: toggleLoadMore
 }

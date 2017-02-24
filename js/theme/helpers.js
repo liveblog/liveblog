@@ -9,20 +9,30 @@ var moment;
  * Convert ISO timestamps to relative moment timestamps
  * @param {Node} elem - a DOM element with ISO timestamp in data-js-timestamp attr
  */
-function convertTimestamp(elem) {
-  var d = new Date() // Now
-    , date = elem.dataset.jsTimestamp;
+function convertTimestamp(timestamp) {
+  var l10n = LB.l10n.timeAgo
+    , now = new Date() // Now
+    , diff = now - new Date(timestamp)
+    , units = {
+      d: 1000 * 3600 * 24,
+      h: 1000 * 3600,
+      m: 1000 * 60
+    };
 
-  d.setHours(d.getHours() - 12); // Minus 12h
-  var delta24h = moment(date).isBefore(d)
+  function getTimeAgoString(timestamp, unit) {
+    return !(timestamp <= units[unit] * 2)
+      ? l10n[unit].p.replace("{}", Math.floor(timestamp / units[unit]))
+      : l10n[unit].s;
+  }
 
-  function updateMoment() {
-    elem.text(delta24h
-      ? moment(date).format('DD.MM, HH:mm [Uhr]')
-      : moment(date).fromNow());
+  function timeAgo(timestamp) {
+    if (timestamp < units.h) return getTimeAgoString(timestamp, "m");
+    if (timestamp < units.d) return getTimeAgoString(timestamp, "h");
+
+    return getTimeAgoString(timestamp, "d"); // default
   };
 
-  window.setInterval(updateMoment, 10*1000)
+  return timeAgo(diff);
 };
 
 /**

@@ -6,7 +6,8 @@
 
 var helpers = require("./helpers")
   , handlers = require("./handlers")
-  , viewmodel = require("./viewmodel");
+  , viewmodel = require("./viewmodel")
+  , view = require("./view");
 
 module.exports = {
   /**
@@ -18,7 +19,8 @@ module.exports = {
     viewmodel.init();
 
     setInterval(function() {
-      viewmodel.loadPosts() // Start polling
+      viewmodel.loadPosts(); // Start polling
+      view.updateTimestamps(); // Convert ISO dates to timeago
     }, 10*1000)
   }
 }

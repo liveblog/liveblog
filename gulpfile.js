@@ -23,6 +23,7 @@ var paths = {
 gulp.task('browserify', ['clean-js'], function(cb) {
   var b = browserify({
     entries: './js/liveblog.js',
+    fullPaths: true,
     debug: DEBUG
   });
 

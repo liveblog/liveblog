@@ -2,7 +2,7 @@
     "blog": {
         "title": "Grammy-Awards 2017",
         "blog_status": "open",
-        "_id": "576bdc46c158bd066b856006",
+        "_id": "587e2689c158bd066fe2e620",
         "original_creator": "5759bdafc158bd067436267e",
         "members": [], "_created": "2016-06-23T12:55:34+00:00",
         "versioncreated": "2016-06-23T12:55:34+00:00",
@@ -12,6 +12,18 @@
         "blog_preferences": {
             "theme": "liveblog-theme-dpa",
             "language": "en"
+        }
+    },
+
+    "l10n": {
+        "loadMore": "Mehr laden",
+        "oldestFirst": "Älteste zuerst",
+        "newestFirst": "Neueste zuerst",
+        "loadNewPosts": "Neue Beiträge laden",
+        "timeAgo": {
+            "d": {"s": "vor einem Tag", "p": "vor {} Tagen"},
+            "h": {"s": "vor einer Stunde", "p": "vor {} Stunden"},
+            "m": {"s": "vor einer Minute", "p": "vor {} Minuten"}
         }
     },
 
