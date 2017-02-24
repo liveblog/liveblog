@@ -60,8 +60,8 @@
                                         {{ ::theme.author.name }}
                                     </div>
                                 </dd>
-                                <dt ng-if="vm.isSolo()">{{ ::'Sources' | translate }}:</dt>
-                                <dd ng-if="vm.isSolo()">
+                                <dt ng-if="!vm.isSolo()">{{ ::'Sources' | translate }}:</dt>
+                                <dd ng-if="!vm.isSolo()">
                                     <div ng-if="!theme.repository.url">unavailable</div>
                                     <a href="{{::theme.repository.url | githubUrlFromGit}}/archive/master.zip"
                                        ng-if="theme.repository.url"
