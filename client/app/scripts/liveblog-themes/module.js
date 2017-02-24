@@ -129,6 +129,7 @@
             themeBlogsModal: false,
             // this is used to when a blog is selected.
             selectedBlog: false,
+            isSolo: config.subscriptionLevel == 'solo',
             // loading indicatior for the first timeload.
             loading: true,
             getTheme: function(name) {
