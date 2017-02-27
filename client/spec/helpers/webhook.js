@@ -6,8 +6,9 @@ var Webhook = function(params) {
     this.password = params.password;
     this.auth = '';
 
-    if (!this.serverUrl.match(/\/$/))
+    if (!this.serverUrl.match(/\/$/)) {
         this.serverUrl += '/';
+    }
 
     this.request = this.request.bind(this);
     this.login = this.login.bind(this);

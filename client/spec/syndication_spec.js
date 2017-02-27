@@ -1,10 +1,10 @@
 'use strict';
 
-var Webhook = require('./helpers/webhook');
+// var Webhook = require('./helpers/webhook');
 var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login;
     //assertToastMsg = require('./helpers/assert-toast-msg');
 
-var webhook = new Webhook(browser.params);
+// var webhook = new Webhook(browser.params);
 
 var navigateToIngestPanel = function() {
     return element.all(by.repeater('blog in blogs._items track by blog._id'))
