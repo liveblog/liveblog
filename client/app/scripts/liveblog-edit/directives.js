@@ -542,11 +542,11 @@ define([
                 }
             };
         }])
-        .directive('freetypeText', ['$templateCache', function($templateCache) {
+        .directive('freetypeText',function() {
 
             return {
                 restrict: 'E',
-                template: $templateCache.get('scripts/liveblog-edit/views/freetype-text.html'),
+                templateUrl: 'scripts/liveblog-edit/views/freetype-text.html',
                 controller: ['$scope', function($scope) {
                     $scope._id = _.uniqueId('text');
                     if ($scope.initial !== undefined && $scope.text === '') {
@@ -592,12 +592,12 @@ define([
                     initial: '@'
                 }
             };
-        }])
-        .directive('freetypeLink', ['$templateCache', function($templateCache) {
+        })
+        .directive('freetypeLink', function() {
 
             return {
                 restrict: 'E',
-                template: $templateCache.get('scripts/liveblog-edit/views/freetype-link.html'),
+                templateUrl: 'scripts/liveblog-edit/views/freetype-link.html',
                 controller: ['$scope', function($scope) {
                     var regex = new RegExp("(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})");
                     $scope._id = _.uniqueId('link');
@@ -612,7 +612,7 @@ define([
                     validation: '='
                 }
             };
-        }])
+        })
         .directive('freetypeCollectionAdd', ['$compile', function($compile) {
             return {
                 restrict: 'E',
@@ -651,10 +651,10 @@ define([
                 }
             };
         })
-        .directive('freetypeImage', ['$compile', 'modal', 'api', 'upload', '$templateCache', function($compile, modal, api, upload, $templateCache) {
+        .directive('freetypeImage', ['$compile', 'modal', 'api', 'upload', function($compile, modal, api, upload) {
             return {
                 restrict: 'E',
-                template: $templateCache.get('scripts/liveblog-edit/views/freetype-image.html'),
+                templateUrl: 'scripts/liveblog-edit/views/freetype-image.html',
                 controller: ['$scope', function($scope) {
                     $scope.valid = true;
                     $scope._id = _.uniqueId('image');
