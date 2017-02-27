@@ -39,23 +39,32 @@
                 }
                 vm.freetypeModalActive = true;
             },
+            handleSaveError: function(data) {
+                var errorMsg = gettext('Saving did not work, please try again later!');
+                if (data.data._issues.template) {
+                    errorMsg = gettext(data.data._issues.template);
+                }
+                notify.error(errorMsg, 10000);
+            },
             saveFreetype: function() {
-                vm.freetypeModalActive = false;
+                
                 vm.dialogFreetype.loading = true;
                 if (vm.editFreetype) {
                     api.freetypes.save(vm.editFreetype, {name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
                         vm.dialogFreetype.loading = false;
+                        vm.freetypeModalActive = false;
                         getFreetypes();
                         vm.editFreetype = false;
                     }, function(data) {
-                        notify.error(gettext('Saving dit not work, please try again later!'));
+                        vm.handleSaveError(data);
                     });
                 } else {
                     api.freetypes.save({name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
                         vm.dialogFreetype.loading = false;
+                        vm.freetypeModalActive = false;
                         getFreetypes();
                     }, function(data) {
-                        notify.error(gettext('Saving dit not work, please try again later!'));
+                        vm.handleSaveError(data);
                     });
                 }
             },
