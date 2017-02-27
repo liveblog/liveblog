@@ -180,6 +180,7 @@
                                     ng-if="selectedPostType!='Default'" 
                                     freetype="selectedPostType"
                                     freetype-data="freetypesData"
+                                    validation="validation"
                                     control="freetypeControl"></freetype-render>
                         </div>
                         <div class="actions">
@@ -197,10 +198,12 @@
                                 </div>
                             </div>
                             <div style="display:table-row">
-                                <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell"><button class="btn btn-info" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
-                                    <span ng-switch-when="true"  translate>Update</span>
-                                    <span ng-switch-when="false" translate>Publish</span>
-                                </button></div>
+                                <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell">
+                                    <button class="btn btn-info" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
+                                        <span ng-switch-when="true"  translate>Update</span>
+                                        <span ng-switch-when="false" translate>Publish</span>
+                                    </button>
+                                </div>
                                 <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Submit</button></div>
                                 <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished() || actionStatus() || !showSaveAsDraft()" translate>Save draft</button></div>
                             </div>
