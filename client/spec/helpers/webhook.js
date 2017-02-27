@@ -6,6 +6,10 @@ var Webhook = function(params) {
     this.password = params.password;
     this.auth = '';
 
+    if (!this.serverUrl.match(/\/$/)) {
+        this.serverUrl += '/';
+    }
+
     this.request = this.request.bind(this);
     this.login = this.login.bind(this);
     this.getSyndication = this.getSyndication.bind(this);
@@ -80,7 +84,7 @@ Webhook.prototype.request = function(params) {
         // Funky promises that don't catch statements
         // I'd say why not
         if (res.err) {
-            throw(res.err);
+            console.log(res.err);
         } else {
             return JSON.parse(res.data);
         }
