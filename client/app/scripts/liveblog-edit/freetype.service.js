@@ -304,7 +304,7 @@ function(angular) {
                         switch (type) {
                             case 'text':
                                 if (paths[name]) {
-                                    return '<span ' + injectClass(attr, 'freetype--element') + '>' + paths[name] + '</span>';
+                                    return '<span ' + injectClass(attr, 'freetype--element') + '>' + _.escape(paths[name]) + '</span>';
                                 } else {
                                    return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
                                 }
