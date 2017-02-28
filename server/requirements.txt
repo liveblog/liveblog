@@ -67,7 +67,6 @@ s3transfer==0.1.10
 simplejson==3.10.0
 six==1.10.0
 statsd==3.2.1
--e git://github.com/liveblog/superdesk-core.git@9cb85ba56262531d9fc4cdece817a093dec481dd#egg=Superdesk_Core
 tzlocal==1.3
 urllib3==1.20
 vine==1.1.3
@@ -75,3 +74,5 @@ webencodings==0.5
 websockets==3.2
 Werkzeug==0.11.15
 wooper==0.4.2
+# Superdesk
+-e git+git://github.com/liveblog/superdesk-core.git@4656deb0fd9a336df663c2e4e90f66ec4d276716#egg=Superdesk-Core==1.2-fix-celery-issue
