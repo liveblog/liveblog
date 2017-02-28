@@ -24,6 +24,10 @@ flake8==3.3.0
 Flask==0.10.1
 Flask-Cache==0.13.1
 Flask-Cors==2.1.0
+Flask-Mail==0.9.1
+Flask-PyMongo==0.4.1
+Flask-S3==0.1.7
+Flask-Script==2.0.5
 python-memcached==1.58
 gunicorn==19.3.0
 hachoir3-superdesk==3.0a1.post2
