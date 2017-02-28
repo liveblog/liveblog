@@ -599,7 +599,8 @@ define([
                 restrict: 'E',
                 templateUrl: 'scripts/liveblog-edit/views/freetype-link.html',
                 controller: ['$scope', function($scope) {
-                    var regex = new RegExp("(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})");
+                    // $scope.link = 'http://';
+                    var regex = /https?:\/\/[^\s]+\.[^\s\.]+/;
                     $scope._id = _.uniqueId('link');
                     var sentinel = $scope.$watch('link', function(value) {
                         $scope.valid = !value || regex.test(value);
