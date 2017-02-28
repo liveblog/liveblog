@@ -27,6 +27,7 @@ from superdesk.users.services import is_admin
 from superdesk.errors import SuperdeskApiError
 import logging
 from liveblog.blogslist.blogslist import publish_bloglist_embed_on_s3
+from settings import (SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS)
 
 logger = logging.getLogger('superdesk')
 
@@ -57,7 +58,8 @@ blogs_schema = {
             'schema': {
                 'user': Resource.rel('users', True)
             }
-        }
+        },
+        'maxmembers': True
     },
     'blog_preferences': {
         'type': 'dict'
@@ -67,6 +69,23 @@ blogs_schema = {
     },
     'public_url': {
         'type': 'string'
+    },
+    'syndication_enabled': {
+        'type': 'boolean',
+        'default': False
+    },
+    'market_enabled': {
+        'type': 'boolean',
+        'default': False
+    },
+    'category': {
+        'type': 'string',
+        'allowed': ["", "Breaking News", "Entertainment", "Business and Finance", "Sport", "Technology"],
+        'default': ""  # unsetting a variable is a world of pain
+    },
+    'start_date': {
+        'type': 'datetime',
+        'default': None
     }
 }
 
@@ -146,6 +165,7 @@ class BlogService(BaseService):
     notification_key = 'blog'
 
     def on_create(self, docs):
+        self._check_max_active(len(docs))
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
@@ -179,10 +199,10 @@ class BlogService(BaseService):
         # Publish bloglist aswell
         publish_bloglist_embed_on_s3()
 
-    def find_one(self, req, **lookup):
+    def find_one(self, req, checkUser=True, **lookup):
         doc = super().find_one(req, **lookup)
         # check if the current user has permission to open a blog
-        if not is_admin(get_user()):
+        if checkUser and not is_admin(get_user()):
             # get members ids
             members = [str(m['user']) for m in doc.get('members', [])]
             # add owner id to members
@@ -195,8 +215,16 @@ class BlogService(BaseService):
         return doc
 
     def on_update(self, updates, original):
+        blog_status = updates.get('blog_status')
+        if blog_status == 'open' and original['blog_status'] == 'closed':
+            self._check_max_active(1)
+
         updates['versioncreated'] = utcnow()
         updates['version_creator'] = str(get_user().get('_id'))
+        syndication_enabled = updates.get('syndication_enabled')
+        out = get_resource_service('syndication_out').find({'blog_id': original['_id']})
+        if syndication_enabled is False and out.count():
+            raise SuperdeskApiError.forbiddenError(message='Cannot disable syndication: blog has active consumers.')
 
     def on_updated(self, updates, original):
         publish_blog_embed_on_s3.delay(str(original['_id']))
@@ -218,13 +246,35 @@ class BlogService(BaseService):
         notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def on_delete(self, doc):
+        # Prevent delete of blog if blog has consumers
+        out = get_resource_service('syndication_out').find({'blog_id': doc['_id']})
+        if doc['syndication_enabled'] and out.count():
+            raise SuperdeskApiError.forbiddenError(message='Cannot delete syndication: blog has active consumers.')
+
         delete_blog_embed_on_s3.delay(doc.get('_id'))
 
     def on_deleted(self, doc):
         # invalidate cache for updated blog
         app.liveblog_cache.invalidate(doc.get('_id'))
+        blog_id = doc.get('_id')
+        app.blog_cache.invalidate(blog_id)
+        delete_blog_embed_on_s3.delay(blog_id)
+
+        # Remove syndication on blog post delete.
+        syndication_in = get_resource_service('syndication_in')
+        syndication_out = get_resource_service('syndication_out')
+        lookup = {'blog_id': blog_id}
+        syndication_in.delete_action(lookup)
+        syndication_out.delete_action(lookup)
         # send notifications
         push_notification('blogs', deleted=1)
+
+    def _check_max_active(self, increment):
+        subscription = SUBSCRIPTION_LEVEL
+        if subscription in SUBSCRIPTION_MAX_ACTIVE_BLOGS:
+            active = self.find({'blog_status': 'open'})
+            if (active.count() + increment > SUBSCRIPTION_MAX_ACTIVE_BLOGS[subscription]):
+                raise SuperdeskApiError.forbiddenError(message='Cannot add another active blog.')
 
 
 class UserBlogsResource(Resource):

@@ -18,6 +18,19 @@ module.exports = function(grunt) {
                 key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
             },
             facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
+            syndication: process.env.SYNDICATION || false,
+            marketplace: process.env.MARKETPLACE || false,
+            themeCreationRestrictions: {team: 3},
+            excludedTheme: 'angular',
+            assignableUsers: {
+                solo: 3,
+                team: 5
+            },
+            subscriptionLevel: process.env.SUBSCRIPTION_LEVEL || '',
+            blogCreationRestrictions: {
+                solo: 1,
+                team: 3
+            },
             analytics: {
                 piwik: {
                     url: process.env.PIWIK_URL || '',
@@ -26,6 +39,21 @@ module.exports = function(grunt) {
                 ga: {
                     id: process.env.TRACKING_ID || ''
                 }
+            },
+
+            // default timezone for the app
+            defaultTimezone: grunt.option('defaultTimezone') || 'Europe/London',
+
+            // model date and time formats
+            model: {
+                dateformat: 'DD/MM/YYYY',
+                timeformat: 'HH:mm:ss'
+            },
+
+            // view formats for datepickers/timepickers
+            view: {
+                dateformat: process.env.VIEW_DATE_FORMAT || 'DD/MM/YYYY',
+                timeformat: process.env.VIEW_TIME_FORMAT || 'HH:mm'
             }
         };
 

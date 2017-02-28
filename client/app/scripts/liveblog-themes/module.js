@@ -1,6 +1,5 @@
 (function() {
     'use strict';
-
     LiveblogThemesController.$inject = ['api', '$location', 'notify', 'gettext',
     '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', '$window'];
     function LiveblogThemesController(api, $location, notify, gettext,
@@ -122,6 +121,10 @@
             });
         }
         angular.extend(vm, {
+            mailto: 'mailto:upgrade@liveblog.pro?subject='+
+                encodeURIComponent(location.hostname) +
+                ' ' +
+                config.subscriptionLevel,
             // Modal is disabled by default.
             themeBlogsModal: false,
             // this is used to when a blog is selected.
@@ -230,6 +233,26 @@
             openThemeSettings: function(theme) {
                 vm.themeSettingsModal = true;
                 vm.themeSettingsModalTheme = theme;
+            },
+            hasReachedThemesLimit: function() {
+                if (!vm.themes)
+                    return false;
+
+                var themes = vm.themes.filter(function(theme) {
+                    return (theme.name != config.excludedTheme);
+                });
+
+                if (config.subscriptionLevel == 'team')
+                    return (themes.length >= config.themeCreationRestrictions.team);
+                else
+                    return false;
+            },
+            upgradeModal: false,
+            showUpgradeModal: function() {
+                vm.upgradeModal = true;
+            },
+            closeUpgradeModal: function() {
+                vm.upgradeModal = false;
             }
         });
 
@@ -237,17 +260,18 @@
     }
 
     var liveblogThemeModule = angular.module('liveblog.themes', [])
-    .config(['superdeskProvider', function(superdesk) {
-        superdesk
-            .activity('/themes/', {
-                label: gettext('Theme Manager'),
-                controller: LiveblogThemesController,
-                controllerAs: 'vm',
-                category: superdesk.MENU_MAIN,
-                adminTools: true,
-                privileges: {'global_preferences': 1},
-                templateUrl: 'scripts/liveblog-themes/views/list.html'
-            });
+    .config(['superdeskProvider', 'config', function(superdesk, config) {
+        if (config.subscriptionLevel != 'solo')
+            superdesk
+                .activity('/themes/', {
+                    label: gettext('Theme Manager'),
+                    controller: LiveblogThemesController,
+                    controllerAs: 'vm',
+                    category: superdesk.MENU_MAIN,
+                    adminTools: true,
+                    privileges: {'global_preferences': 1},
+                    templateUrl: 'scripts/liveblog-themes/views/list.html'
+                });
     }])
     .filter('githubUrlFromGit', function() {
         return function(string) {

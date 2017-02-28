@@ -144,6 +144,15 @@ $ pip install -r docker/requirements.txt
 $ ./scripts/docker-local-demo.sh
 ```
 
+### Testing
+
+How to run the behaviore tests for the syndication feature:
+
+```
+cd server
+behave --format progress2 --logging-level ERROR features/syndication.feature
+```
+
 ### Vagrant LXC Installation
 
 #### Setting things up
@@ -178,12 +187,11 @@ vagrant ssh
 Once in the virtual machine:
 
 ```
-/opt/liveblog/scripts/provision.sh
+/opt/liveblog/scripts/vagrant-provision.sh
 ```
 
 Once the provisioning done whil still in the virtual machine:
 
 ```
-/opt/liveblog/scripts/start-dev.sh
+/opt/liveblog/scripts/vagrant-start-dev.sh
 ```
-

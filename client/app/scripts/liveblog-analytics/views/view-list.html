@@ -1,0 +1,39 @@
+<input ng-model="analyticsSearch.context_url" placeholder="Filter referrers">
+
+<!--  |  -->
+<div class="analytics-list">
+  <div class="analytics-list-table">
+    <!-- Header -->
+    <div class="analytics-list-row analytics-list-row--header">
+      <div class="analytics-list-row-item orderby__button" ng-class="{
+        'orderby__button--reverse': isReversePredicate('context_url'),
+        'orderby__button--active' : predicate == 'context_url'
+      }" ng-click="order('context_url')">Blog referrer URL</div>
+      <div class="analytics-list-row-item orderby__button" ng-class="{
+        'orderby__button--reverse': isReversePredicate('hits'),
+        'orderby__button--active' : predicate == 'hits'
+      }" ng-click="order('hits')">Hit count</div>
+    </div>
+    <!-- Repeatable row -->
+    <div ng-repeat="item in analytics._items | orderBy:predicate:reverse | filter:analyticsSearch | startFrom:currentPage*pageSize | limitTo:pageSize track by item._id" class="analytics-list-row">
+      <div class="analytics-list-row-item" lb-filter-domain>{{item.context_url}}</div>
+      <div class="analytics-list-row-item">{{item.hits}}</div>
+    </div>
+  </div>
+</div>
+<!-- Todo Pagination (static code) -->
+<ul class="pagination">
+  <li class="pagination__item" ng-class="{'pagination__item--disabled': currentPage == 0}">
+    <button ng-disabled="currentPage == 0" ng-click="currentPage=currentPage-1">
+      <i class="icon-chevron-left-thin"></i>
+    </button>
+  </li>
+  <li ng-repeat="page in pages track by $index" class="pagination__item" ng-class="{'pagination__item--active': currentPage == $index}">
+    <button ng-click="setPage($index)">{{ $index + 1 }}</button>
+  </li>
+  <li class="pagination__item" ng-class="{'pagination__item--disabled': currentPage == pages.length-1}">
+    <button ng-disabled="currentPage == pages.length-1" ng-click="currentPage=currentPage+1">
+      <i class="icon-chevron-right-thin"></i>
+    </button>
+  </li>
+</ul>

@@ -14,7 +14,8 @@ define([
     './module',
     './posts.service',
     './blog.service',
-    './pages-manager.service'
+    './pages-manager.service',
+    './freetype.service'
 ], function(angular, _) {
     'use strict';
 
@@ -43,12 +44,16 @@ define([
                         showReorder: false,
                         hideAllPosts: false,
                         originalOrder: 0,
-                        pagesManager: new PagesManager($scope.lbPostsBlogId,
-                                                       $scope.lbPostsStatus,
-                                                       //if the list is a list with sticky posts, show them all in the 1st pages
-                                                       $scope.lbSticky === true? 100: 10,
-                                                       $scope.lbPostsOrderBy || 'editorial',
-                                                       $scope.lbSticky),
+                        pagesManager: new PagesManager(
+                            $scope.lbPostsBlogId,
+                            $scope.lbPostsStatus,
+                            //if the list is a list with sticky posts, show them all in the 1st pages
+                            $scope.lbSticky === true? 100: 10,
+                            $scope.lbPostsOrderBy || 'editorial',
+                            $scope.lbSticky,
+                            null,
+                            $scope.lbPostsNoSyndication === true ? true : false
+                        ),
                         fetchNewPage: function() {
                             vm.isLoading = true;
                             return vm.pagesManager.fetchNewPage().then(function() {
@@ -156,6 +161,7 @@ define([
                         lbPostsStatus: '@',
                         lbSticky: '@',
                         lbStickyInstance: '=',
+                        lbPostsNoSyndication: '=',
                         lbPostsOrderBy: '@',
                         lbPostsAllowUnpublishing: '=',
                         lbPostsAllowReordering: '=',
@@ -463,6 +469,257 @@ define([
                     $scope.$watch(function() {
                         return $element.offset().top;
                     }, _.debounce(setHeight, 500));
+                }
+            };
+        }])
+        /**
+        * Main directive to render the freetype editor.
+        */
+        .directive('freetypeRender', ['$compile', 'freetypeService', function ($compile, freetypeService) {
+
+            return {
+                restrict: 'E',
+                link: function (scope, element, attrs) {
+                    scope.$watch('freetype', function(freetype) {
+                        element.html(freetypeService.transform(freetype.template, scope));
+                        $compile(element.contents())(scope);
+                        scope.initialData = angular.copy(scope.freetypeData);
+                    });
+
+                    //methods to control freetype functionality from outside the directive
+                    scope.internalControl = scope.control || {};
+
+                    //check if !dirty
+                    scope.internalControl.isClean = function() {
+                        return angular.equals(scope.freetypeData, scope.initialData);
+                    };
+                    scope.internalControl.isValid = function() {
+                        var isClean = scope.internalControl.isClean(),
+                            isValid = _.reduce(scope.validation, function(memo, val) {
+                                return memo && val;
+                        }, true);
+                        return !isValid || isClean;
+                    }
+                    function recursiveClean(obj) {
+                        for (var key in obj) {
+                            if (angular.isObject(obj[key])) {
+                                //keep only the first item in the array
+                                if (angular.isArray(obj[key])) {
+                                    obj[key].splice(1);
+                                }
+                                recursiveClean(obj[key]);
+                            } else {
+                                if (angular.isString(obj[key])) {
+                                    obj[key] = '';
+                                }
+                            }
+                        }
+                    };
+
+                    scope.internalControl.reset = function() {
+                        scope.validation = {};
+                        recursiveClean(scope.freetypeData);
+                        scope.initialData = angular.copy(scope.freetypeData);
+                    };
+                },
+                scope: {
+                    freetype: '=',
+                    freetypeData: '=',
+                    validation: '=',
+                    control: '='
+                }
+            };
+        }])
+        .directive('freetypeEmbed', ['$compile', function($compile) {
+
+            return {
+                restrict: 'E',
+                template: '<textarea ng-model="embed"></textarea>',
+                controller: function() {
+                },
+                scope: {
+                    embed: '='
+                }
+            };
+        }])
+        .directive('freetypeText',function() {
+
+            return {
+                restrict: 'E',
+                templateUrl: 'scripts/liveblog-edit/views/freetype-text.html',
+                controller: ['$scope', function($scope) {
+                    $scope._id = _.uniqueId('text');
+                    if ($scope.initial !== undefined && $scope.text === '') {
+                        $scope.text = String($scope.initial);
+                    }
+                    if ($scope.number !== undefined) {
+                        $scope.$on('$destroy', $scope.$watch('text', function(value) {
+                                $scope.numberFlag = (value !== '') && (value != parseInt(value, 10));
+                                $scope.validation['number__' + $scope._id] = !$scope.numberFlag;
+                        }, true));
+                    }
+                    if ($scope.compulsory !== undefined) {
+                        $scope.$on('$destroy', $scope.$watch('[text,compulsory]', function(value) {
+                                $scope.compulsoryFlag = (value[0] === '' && value[1] === '');
+                                $scope.validation['compulsory__' + $scope._id] = !$scope.compulsoryFlag;
+                        }, true));
+                    }
+                    if ($scope.tandem !== undefined) {
+                        $scope.$on('$destroy', $scope.$watch('[text,tandem]', function(value) {
+                                $scope.tandemFlag = (value[0] === '' && value[1] !== '');
+                                $scope.validation['tandem__' + $scope._id] = !$scope.tandemFlag;
+                        }, true));
+                    }
+                    if ($scope.necessary !== undefined) {
+                        $scope.$on('$destroy', $scope.$watch('text', function(value) {
+                                $scope.necessaryFlag = (value === '');
+                                $scope.validation['necessary__' + $scope._id] = !$scope.necessaryFlag;
+                        }, true));
+                    }
+
+                }],
+                scope: {
+                    text: '=',
+                    // `compulsory` indicates a variable that is needed if the current value is empty.
+                    compulsory: '=',
+                    // `necessary` indicates is a variable needs to be non empty.
+                    necessary: '=',
+                    // `tandem` indicates a variable that is also needed.
+                    tandem: '=',
+                    validation: '=',
+                    number: '@',
+                    order: '@',
+                    initial: '@'
+                }
+            };
+        })
+        .directive('freetypeLink', function() {
+
+            return {
+                restrict: 'E',
+                templateUrl: 'scripts/liveblog-edit/views/freetype-link.html',
+                controller: ['$scope', function($scope) {
+                    var regex = new RegExp("(https?:\/\/(?:www\.|(?!www))[^\s\.]+\.[^\s]{2,}|www\.[^\s]+\.[^\s]{2,})");
+                    $scope._id = _.uniqueId('link');
+                    var sentinel = $scope.$watch('link', function(value) {
+                        $scope.valid = !value || regex.test(value);
+                        $scope.validation[$scope._id] = $scope.valid;
+                    });
+                    $scope.$on('$destroy', sentinel);
+                }],
+                scope: {
+                    link: '=',
+                    validation: '='
+                }
+            };
+        })
+        .directive('freetypeCollectionAdd', ['$compile', function($compile) {
+            return {
+                restrict: 'E',
+                template: '<button ng-click="ftca.add()" class="freetype-btn">+</button>',
+                controller: ['$scope', function($scope) {
+                    this.add = function() {
+                        var last = _.last($scope.vector), el = {};
+                        for (var key in last) {
+                            // if the key starts with $$ it is angular internal so skip it.
+                            if (last.hasOwnProperty(key) && key.substr(0, 2) !== '$$') {
+                                el[key] = '';
+                            }
+                        }
+                        $scope.vector.push(el);
+                    }
+                }],
+                controllerAs: 'ftca',
+                scope: {
+                    vector: '='
+                }
+            };
+        }])
+        .directive('freetypeCollectionRemove', function() {
+            return {
+                restrict: 'E',
+                template: '<button ng-click="ftcr.remove()" class="freetype-btn" ng-show="vector.length!==1">-</button>',
+                controller: ['$scope', function($scope) {
+                    this.remove = function() {
+                        $scope.vector.splice($scope.index, 1);
+                    }
+                }],
+                controllerAs: 'ftcr',
+                scope: {
+                    vector: '=',
+                    index: '='
+                }
+            };
+        })
+        .directive('freetypeImage', ['$compile', 'modal', 'api', 'upload', function($compile, modal, api, upload) {
+            return {
+                restrict: 'E',
+                templateUrl: 'scripts/liveblog-edit/views/freetype-image.html',
+                controller: ['$scope', function($scope) {
+                    $scope.valid = true;
+                    $scope._id = _.uniqueId('image');
+                    if ($scope.compulsory !== undefined) {
+                        var sentinel = $scope.$watch('[image,compulsory]', function(value) {
+                                $scope.compulsoryFlag = (value[0].picture_url === '' && value[1] === '');
+                        }, true);
+                        $scope.$on('$destroy', sentinel);
+                    }
+                    var vm = this;
+                    angular.extend(vm, {
+                        preview: {},
+                        progress: {width: 0},
+                        openUploadModal: function() {
+                            vm.uploadModal = true;
+                        },
+                        closeUploadModal: function() {
+                            vm.uploadModal = false;
+                            vm.preview = {};
+                            vm.progress = {width: 0};
+                        },
+                        removeImage: function() {
+                            modal.confirm(gettext('Are you sure you want to remove the blog image?')).then(function() {
+                                $scope.image.picture_url = '';
+                            });
+                        },
+                        upload: function(config) {
+                            var form = {};
+                            if (config.img) {
+                                form.media = config.img;
+                            } else if (config.url) {
+                                form.URL = config.url;
+                            } else {
+                                return;
+                            }
+                            // return a promise of upload which will call the success/error callback
+                            return api.archive.getUrl().then(function(url) {
+                                return upload.start({
+                                    method: 'POST',
+                                    url: url,
+                                    data: form
+                                })
+                                .then(function(response) {
+                                    if (response.data._status === 'ERR'){
+                                        return;
+                                    }
+                                    var picture_url = response.data.renditions.original.href;
+                                    $scope.image.picture_url = picture_url;
+                                    $scope.image.picture = response.data._id;
+                                    vm.uploadModal = false;
+                                    vm.preview = {};
+                                    vm.progress = {width: 0};
+                                }, null, function(progress) {
+                                    vm.progress.width = Math.round(progress.loaded / progress.total * 100.0);
+                                });
+                            });
+                        }
+                    });
+                }],
+                controllerAs: 'ft',
+                scope: {
+                    image: '=',
+                    // `compulsory` indicates a variable that is needed if the current value is empty.
+                    compulsory: '=',
+                    validation: '='
                 }
             };
         }]);

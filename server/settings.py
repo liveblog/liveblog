@@ -91,6 +91,7 @@ CELERY_RESULT_BACKEND = env('CELERY_RESULT_BACKEND', REDIS_URL)
 CELERY_ALWAYS_EAGER = (env('CELERY_ALWAYS_EAGER', False) == 'True')
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_ACCEPT_CONTENT = ['pickle', 'json']  # it's using pickle when in eager mode
+CELERY_TASK_PROTOCOL = 1
 
 CELERYBEAT_SCHEDULE_FILENAME = env('CELERYBEAT_SCHEDULE_FILENAME', './celerybeatschedule.db')
 CELERYBEAT_SCHEDULE = {
@@ -134,7 +135,11 @@ INSTALLED_APPS = [
     'liveblog.themes',
     'liveblog.global_preferences',
     'liveblog.client_modules',
-    'liveblog.blogslist'
+    'liveblog.blogslist',
+    'liveblog.syndication',
+    'liveblog.freetypes',
+    'liveblog.marketplace',
+    'liveblog.analytics'
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
@@ -267,3 +272,20 @@ DEFAULT_URGENCY_VALUE_FOR_MANUAL_ARTICLES = env('DEFAULT_URGENCY_VALUE_FOR_MANUA
 
 ORGANIZATION_NAME = "Sourcefabric"
 ORGANIZATION_NAME_ABBREVIATION = "SF"
+
+# Syndication Global Settings
+SYNDICATION_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
+SYNDICATION_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)
+SYNDICATION_EXCLUDED_ITEMS = env('SYNDICATION_EXCLUDED_ITEMS', ('Advertisment Local', 'Advertisment Remote'))
+
+# Marketplace Settings
+MARKETPLACE_APP_URL = env('MARKETPLACE_APP_URL', 'https://lb-market.lab.sourcefabric.org/api')
+
+# Settings related to subscription levels
+SUBSCRIPTION_LEVEL_SOLO = 'solo'
+SUBSCRIPTION_LEVEL_TEAM = 'team'
+SUBSCRIPTION_LEVEL_NETWORK = 'network'
+SUBSCRIPTION_LEVEL = env('SUBSCRIPTION_LEVEL', SUBSCRIPTION_LEVEL_NETWORK)
+SUBSCRIPTION_MAX_ACTIVE_BLOGS = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 3}
+SUBSCRIPTION_MAX_BLOG_MEMBERS = {SUBSCRIPTION_LEVEL_SOLO: 3, SUBSCRIPTION_LEVEL_TEAM: 5}
+SUBSCRIPTION_MAX_THEMES = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 3}

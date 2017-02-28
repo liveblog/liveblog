@@ -1,6 +1,5 @@
 (function(angular) {
     'use strict';
-
     TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink', 'transformBlog', 'gettext'];
     function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, transformBlog, gettext) {
 
@@ -131,8 +130,42 @@
             window.addEventListener('message', receiveMessage, false);
         });
     }
+    
+    function GalleryCtrl() {
+        var vm = this;
+        // Filter posts getting only images
+        var _images = _.filter(vm.items, function(item) {
+            return item.item_type === 'image';
+        });
+        vm.images = _.each(_images, function(item) {
+            var credit = item.meta.credit;
+            var caption = item.meta.caption;
+            caption = caption ? '"' + caption + '"': caption;
+            var full_caption = credit ? caption + ' by ' + credit : caption;
+            item.meta.full_caption = full_caption;
+        });
+    }
+
+    PostsCtrl.$inject = ['config'];
+    function PostsCtrl(config) {
+
+        var vm = this;
+        var all_posts = vm.posts();
+        vm.imageItemNo = function(post) {
+            var no = 0;
+            angular.forEach(post.items, function(item) {
+                if (item.item_type === 'image') {
+                    no++;
+                }
+            });
+            return no;
+        } 
+        vm.all_posts = all_posts;
+    }
 
     angular.module('theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll', 'gettext'])
+        // `assets_simplified_path` is set to work with the simplified assets path.
+        .constant('assets_simplified_path', true)
         .run(['gettextCatalog', 'config', function (gettextCatalog, config) {
             gettextCatalog.setCurrentLanguage(config.settings.language);
         }])
@@ -142,12 +175,15 @@
             });
         }])
         .controller('TimelineCtrl', TimelineCtrl)
+        .controller('PostsCtrl', PostsCtrl)
+        .controller('GalleryCtrl', GalleryCtrl)
         .directive('lbItem', ['asset', function(asset) {
             return {
                 restrict: 'AE',
                 scope: {
                     ident: '=',
-                    item: '='
+                    item: '=',
+                    gallery: '='
                 },
                 templateUrl: asset.templateUrl('views/item.html'),
             }
@@ -165,11 +201,46 @@
         .directive('lbPosts', ['asset', function(asset) {
             return {
                 restrict: 'E',
-                scope: {
+                scope: true,
+                bindToController: {
                     posts: '=',
                     timeline: '='
                 },
+                controller: PostsCtrl,
+                controllerAs: 'ctrl',
                 templateUrl: asset.templateUrl('views/posts.html'),
+            }
+        }])
+        .directive('lbGallery', ['asset', function(asset) {
+            return {
+                restrict: 'AE',
+                scope: {
+                    items: '='
+                },
+                bindToController: true,
+                controller: GalleryCtrl,
+                controllerAs: 'gallery',
+                templateUrl: asset.templateUrl('views/gallery.html'),
+                link: function(scope, element, attrs, parentController) {
+                    var slideSelector = 'img';
+                    var slideOptions = {
+                        showHideOpacity: true,
+                        getThumbBoundsFn: false,
+                        //temp disable of photoswipe sharing
+                        shareButtons:[]
+                    };
+                    var justifiedGalleryOptions = {
+                        margins: 3
+                    };
+                    scope.$watch(attrs.items, function(value) {
+                        setTimeout(function() {
+                            var el = angular.element(element).find('.gallery');
+                            $(el[0]).justifiedGallery(justifiedGalleryOptions).on('jg.complete', function() {
+                                $(this).photoSwipe(slideSelector, slideOptions);
+                            });
+                        }, 100);
+                    });
+                }
             }
         }]);
     angular.module('infinite-scroll').value('THROTTLE_MILLISECONDS', 1000);

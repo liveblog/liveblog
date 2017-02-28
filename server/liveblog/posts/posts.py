@@ -1,3 +1,4 @@
+import logging
 from bson.objectid import ObjectId
 from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
@@ -12,6 +13,7 @@ import flask
 from superdesk.utc import utcnow
 from superdesk.users.services import current_user_has_privilege
 from superdesk.errors import SuperdeskApiError
+from superdesk import get_resource_service
 from liveblog.common import check_comment_length
 import logging
 
@@ -19,6 +21,8 @@ import logging
 logger = logging.getLogger('superdesk')
 
 
+
+logger = logging.getLogger('superdesk')
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
 
@@ -104,6 +108,11 @@ class PostsResource(ArchiveResource):
         'publisher': Resource.rel('users', True),
         'content_updated_date': {
             'type': 'datetime'
+        },
+        'syndication_in': Resource.rel('syndication_in', embeddable=True, required=False, nullable=True),
+        'producer_post_id': {
+            'type': 'string',
+            'nullable': True
         }
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
@@ -176,12 +185,22 @@ class PostsService(ArchiveService):
     def on_created(self, docs):
         super().on_created(docs)
         # invalidate cache for updated blog
-        post_ids = []
+        posts = []
+        out_service = get_resource_service('syndication_out')
         for doc in docs:
-            post_ids.append(doc.get('_id'))
             app.liveblog_cache.invalidate(doc.get('blog'))
+            post = {}
+            post['id'] = doc.get('_id')
+            post['syndication_in'] = doc.get('syndication_in')
+            posts.append(post)
+            app.blog_cache.invalidate(doc.get('blog'))
+            # send post to consumer webhook
+            if doc['post_status'] == 'open':
+                logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
+                out_service.send_syndication_post(doc, action='created')
+
         # send notifications
-        push_notification('posts', created=True, post_status=doc['post_status'], post_ids=post_ids)
+        push_notification('posts', created=True, post_status=doc['post_status'], posts=posts)
 
     def on_update(self, updates, original):
         # check if the timeline is reordered
@@ -237,16 +256,30 @@ class PostsService(ArchiveService):
 
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
+        out_service = get_resource_service('syndication_out')
         # invalidate cache for updated blog
         app.liveblog_cache.invalidate(original.get('blog'))
         # send notifications
         if updates.get('deleted', False):
+            out_service.send_syndication_post(original, action='deleted')
             push_notification('posts', deleted=True, post_id=original.get('_id'))
         # NOTE: Seems unsused, to be removed later if no bug appears.
         # elif updates.get('post_status') == 'draft':
         #     push_notification('posts', drafted=True, post_id=original.get('_id'),
         #                       author_id=original.get('original_creator'))
         else:
+            # Syndication
+            doc = original.copy()
+            doc.update(updates)
+            logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
+
+            if original['post_status'] in ('submitted', 'draft') and updates.get('post_status') == 'open':
+                # Post has been published as contribution, then published.
+                # Syndication will be sent with 'created' action.
+                out_service.send_syndication_post(doc, action='created')
+            else:
+                out_service.send_syndication_post(doc, action='updated')
+
             push_notification('posts', updated=True)
 
     def get_item_update_data(self, item, links, delete=True):
@@ -261,6 +294,9 @@ class PostsService(ArchiveService):
         super().on_deleted(doc)
         # invalidate cache for updated blog
         app.liveblog_cache.invalidate(doc.get('blog'))
+        # Syndication
+        out_service = get_resource_service('syndication_out')
+        out_service.send_syndication_post(doc, action='deleted')
         # send notifications
         push_notification('posts', deleted=True)
 

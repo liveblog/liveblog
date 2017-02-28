@@ -1,18 +1,34 @@
 <div class="subnav ng-scope themes-manager">
     <h3 class="page-nav-title" translate>Theme Manager</h3>
     <div class="button-stack right-stack">
-        <form action="#" method="post" enctype="multipart/form-data">
+        <form
+            action="#"
+            method="post"
+            enctype="multipart/form-data"
+            ng-if="!vm.hasReachedThemesLimit()">
             <label class="navbtn navbtn-info" for="uploadAThemeFile">
                 <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
             </label>
-            <input type="file" name="uploadAThemeFile" id="uploadAThemeFile" onchange="angular.element(this).controller().uploadThemeFile(this)">
+            <input
+                type="file" 
+                name="uploadAThemeFile" 
+                id="uploadAThemeFile" 
+                onchange="angular.element(this).controller().uploadThemeFile(this)">
         </form>
+
+        <button
+            ng-if="vm.hasReachedThemesLimit()"
+            class="navbtn navbtn-info"
+            ng-click="vm.showUpgradeModal()">
+            <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
+        </button>
     </div>
 </div>
 
 <section class="main-section themelist">
     <div class="loading-indicator" ng-show="vm.loading"><span translate>loading</span></div>
     <div class="list-container">
+        <div class="alert alert-info alert--margin-left" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="icon-close-small"></i></button>Customize your themes to the specific needs of your organisation. All you need is someone in your team with frontend development skills and a download of the classic theme as a good starting point to create your own. You find all required code and some info on Github: <a href="https://github.com/liveblog/liveblog/blob/e7945a48fcd19c1a959d8e83706114f13864871c/CUSTOM-THEME.MD" target="_blank">https://github.com/liveblog/liveblog/blob/e7945a48fcd19c1a959d8e83706114f13864871c/CUSTOM-THEME.MD</a></div>
         <!-- LIST VIEW -->
         <script type="text/ng-template" id="themeTree">
             <ul>
@@ -115,5 +131,25 @@
             full-height-offset-bottom="50"/>
     </div>
 </div>
+
+<div sd-modal="" data-model="vm.upgradeModal">
+    <div class="modal-header">
+        <button class="close" ng-click="vm.closeUpgradeModal()">
+            <i class="icon-close-small"></i>
+        </button>
+        <h3>Sorry</h3>
+    </div>
+    <div class="modal-body">
+      <p>You have reached the maximum number of themes on your Live Blog plan. You can either:</p>
+      <ul>
+        <li>1. Remove an existing theme or</li>
+        <li>2. Subscribe to a bigger plan.</li>
+      </ul>
+      <br/>
+      <p>To remove a theme from your Live Blog instance, click on the burger menu on the top left and open the Theme Manager. You can now delete a theme by clicking on the “Remove” button.</p>
+      <p>Want to upgrade to a plan more suitable to your needs? Email us at <a href="{{vm.mailto}}">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
+    </div>
+</div>
+
 
 <theme-settings-modal theme="vm.themeSettingsModalTheme" ng-if="vm.themeSettingsModalTheme"></theme-settings-modal>

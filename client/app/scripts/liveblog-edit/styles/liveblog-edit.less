@@ -17,6 +17,7 @@
             border:0;
             border-bottom:1px solid @grayLight;
             padding: 0;
+            line-height: 0;
             &.active,
             &:hover {
                 background: #b8b8b8;
@@ -41,13 +42,17 @@
         .border-box();
         header {
             height: @nav-height;
-            .border-box();
-            border-bottom: 1px solid #e0e0e0;
+            .border-box();           
+            box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
             padding: 10px 20px;
-            background-color: white;
-            color: @gray;
-            font-size: 1.4em;
-            line-height: 1.6em;
+            background-color: white;            
+            h4 {
+                color: @gray;
+                font-size: 1.4em;
+                line-height: 1.6em;
+                font-weight: 400;
+                display: inline-block;
+            }
         }
         .content {
             position: absolute;
@@ -80,7 +85,11 @@
             }
             background: #f0f0f0;
             header {
-                background: #fff;
+                background: #fff;                
+                color: @gray;
+                font-size: 1.4em;
+                line-height: 1.6em;
+                font-weight: 400;
             }
         }
     }
@@ -94,7 +103,7 @@
             }
             &__filters {
                 .border-box();
-                background-color: @sd-background;
+                //background-color: @sd-background;
                 border-bottom: 1px solid #e0e0e0;
                 padding: 10px 20px;
                 position: relative;
@@ -187,6 +196,83 @@
                 bottom: 88px; left: 0; right: 0; top:0;
                 padding: 20px;
                 overflow: auto;
+                .ads-media {
+                    img {
+                        width: 100%;
+                        margin-bottom: 8px;
+                    }
+                }
+                .freetype-btn {                       
+                    border: none;
+                    background: @sd-blue;
+                    color: @white;
+                    font-size: 18px;
+                    line-height: 140%;
+                    min-width: 28px;
+                    margin-bottom: 4px;
+                    .border-radius(2px);
+                }                
+                .image-text {
+                    margin-top: 5px;
+                }
+                .freetype--error {
+                    color: #8b0000;
+                }
+                .scorecard {                                      
+                    margin: 0 !important;
+                    width: 100%;
+                    background: #f8f8f8 !important;
+                    .scorecard__column {                                         
+                        text-align: left !important;
+                        padding: 0px 10px 0 0 !important;
+                        &:last-child {
+                            padding: 0 0 0 10px !important;
+                        }                                               
+                    }
+                    .scorecard__scorers {
+                        display: block !important;
+                        li {
+                            background: transparent !important;
+                            box-shadow: none !important;
+                            border-radius: 0 !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            > div {
+                                float: none !important;
+                                &.time {
+                                    float: none !important;
+                                    font-weight: initial !important;
+                                    padding: 0 !important;
+                                    margin: 0 !important;
+                                    &:after {
+                                        content: '' !important;
+                                    }
+                                }
+                            }
+                        }
+                    }                    
+                }
+                legend {
+                    font-size: 13px !important;
+                    color: @grayDark !important;
+                    margin-bottom: 0 !important;
+                    &.legend--big {
+                        font-size: 18px!important;
+                        margin-bottom: 10px!important;
+                        text-transform: inherit;
+                        font-weight: 400;
+                    }
+                    &.legend--padding-top {
+                        padding-top: 20px !important;
+                    }
+                }
+                label {
+                    font-size: 11px;
+                    font-weight: 500;
+                    color: #999;
+                    text-transform: uppercase;
+                    height: 18px;
+                }
                 .editor {
                     textarea {
                         border: 1px solid #dfdfdf !important;
@@ -540,9 +626,20 @@
     .margin15px {
         margin: 15px;
     }
-
+    .selector-size-limit {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px;
+    }
 
 // Icons LB custom
+    .big-icon-ingest {
+        background-image: url('../../images/ingest.svg');
+    }
+    .active .big-icon-ingest {
+        background-image: url('../../images/ingest_active.svg');
+    }
     .big-icon-contributions {
         background-image: url('../../images/contributions.svg');
     }
@@ -675,4 +772,45 @@
     .js-cite-input.st-quote-block {
         font-size:13px!important;
     }
+    input {
+        border: 0px!important;
+        box-shadow: none;
+    }
+    .local-ad-image {
+        max-height: 60vh;
+    }
+}
+
+.freetype-selector {
+    background-color: #fff;
+    border: 1px solid #c6c6c6;
+    border-radius: 3px;
+    box-shadow: 0 3px 5px rgba(0,0,0,.2);
+    padding: 10px 10px 5px 10px;
+    min-width: 100px;
+    width: auto;
+    z-index: 2;
+    position: absolute;
+    right: 40px;
+    top: 2px;
+    li {
+        padding: 0px 5px;
+        border-radius: 2px;
+        margin-right: 0px;
+        margin-bottom: 1px;
+    }
+}
+.freetype-selector::before {
+    width: 15px;
+    height: 22px;
+    display: block;
+    z-index: 100;
+    position: absolute;
+    left: -15px;
+    top: 10px;
+    background: url(../../images/dropdown-arrow-side.png) no-repeat;
+    content: " ";
+}
+.freetype-selector .separator {
+    border-bottom: 1px solid #ebebeb;
 }
