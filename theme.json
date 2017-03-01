@@ -127,5 +127,16 @@
             "default": true,
             "help": "Block search engines from indexing my blogs"
         }
-    ]
+    ],
+    "l10n": {
+        "loadMore": "Mehr laden",
+        "oldestFirst": "Älteste zuerst",
+        "newestFirst": "Neueste zuerst",
+        "loadNewPosts": "Neue Beiträge laden",
+        "timeAgo": {
+            "d": {"s": "vor einem Tag", "p": "vor {} Tagen"},
+            "h": {"s": "vor einer Stunde", "p": "vor {} Stunden"},
+            "m": {"s": "vor einer Minute", "p": "vor {} Minuten"}
+        }
+    }
 }
