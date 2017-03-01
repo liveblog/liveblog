@@ -169,7 +169,7 @@ function FreetypesManagerPage() {
     self.createFreetypeData = function() {
         return {
             title: randomString(5),
-            template: "name=$" + randomString(10)
+            template: 'name=$' + randomString(10)
         };
     };
     self.editFreetype = function() {
