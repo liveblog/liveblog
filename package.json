@@ -9,23 +9,15 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "angular": "1.4.2",
-    "angular-animate": "1.4.2",
-    "angular-cache": "^4.5.0",
-    "angular-resource": "1.4.2",
-    "angular-route": "1.4.2",
     "browserify": "^13.0.0",
-    "gulp-connect": "^5.0.0",
-    "iframe-resizer": "^3.5.3",
-    "lodash": "^4.11.1",
-    "moment": "^2.13.0",
-    "nunjucks": "^3.0.0",
     "nunjucksify": "^2.2.0",
     "promise-polyfill": "^6.0.2"
   },
   "devDependencies": {
     "del": "^2.2.0",
     "graceful-fs": "^4.1.4",
+    "gulp": "^3.9.1",
+    "gulp-connect": "^5.0.0",
     "gulp-html-replace": "^1.6.1",
     "gulp-if": "^2.0.0",
     "gulp-inject": "^4.0.0",
