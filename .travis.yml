@@ -7,7 +7,7 @@ sudo: false
 
 env:
     global:
-        - secure: ajoP9pA/FYH+1sFwGKHlQ8PoGqRIjdmqEnwo44AA5j6c1NMsgiToA420lPm8Lp0cko5YK3ppBlGlvbRWu5JXVxl0vMtZTLf3FM2w99viddrRCkh4sMef2DzkXXYOW4Tnew/8pmaOtTn3UtNG/feJHkBzHLEDUuN0TA07Y6UaWHc=
+        - secure: W+rnVtcOREv60Dixtm0NSL5YIUSEy6+Fld9VJfcV4WBUgr/bijwe6CG2V3ss9tEVWXb02xAIS6lHWj18bfoWHjarjnD+Jb3aUtnoJJqcr2EdnTlMomJaVTO7v0KiuJY8eei/dXExMVtI4xmw/lOMV4g6GYRrQ6aBMrcYUBP7W1E=
     matrix:
         - TARGET=client
         - TARGET=server
