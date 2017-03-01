@@ -233,7 +233,7 @@ class BlogService(BaseService):
             raise SuperdeskApiError.forbiddenError(message='Cannot disable syndication: blog has active consumers.')
 
         # If missing, set "start_date" to original post "_created" value.
-        if 'start_date' not in updates and original['start_date'] is None:
+        if not updates.get('start_date') and original['start_date'] is None:
             updates['start_date'] = original['_created']
 
     def on_updated(self, updates, original):
