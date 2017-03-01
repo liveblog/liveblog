@@ -285,8 +285,6 @@
                         });
                     });
                 });
-
-                console.log('blogs', $scope.blogs);
                 $scope.blogsLoading = false;
             });
         }

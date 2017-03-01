@@ -39,24 +39,44 @@
                 }
                 vm.freetypeModalActive = true;
             },
+            handleSaveError: function(data) {
+                var errorMsg = gettext('Saving did not work, please try again later!');
+                if (data.data._issues.template) {
+                    errorMsg = gettext(data.data._issues.template);
+                }
+                notify.error(errorMsg, 10000);
+            },
+            preSaveChecks: function(template) {
+                var valid = true;
+                //check for variables
+                var patt = /\$([\$a-z0-9_.\[\]]+)/gi;
+                if (!patt.test(template)) {
+                    valid = false;
+                    notify.error(gettext('Template must contain at least one variable! Check the documentation for further information'), 10000);
+                }
+                return valid
+            },
             saveFreetype: function() {
-                vm.freetypeModalActive = false;
-                vm.dialogFreetype.loading = true;
-                if (vm.editFreetype) {
-                    api.freetypes.save(vm.editFreetype, {name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
-                        vm.dialogFreetype.loading = false;
-                        getFreetypes();
-                        vm.editFreetype = false;
-                    }, function(data) {
-                        notify.error(gettext('Saving dit not work, please try again later!'));
-                    });
-                } else {
-                    api.freetypes.save({name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
-                        vm.dialogFreetype.loading = false;
-                        getFreetypes();
-                    }, function(data) {
-                        notify.error(gettext('Saving dit not work, please try again later!'));
-                    });
+                if (vm.preSaveChecks(vm.dialogFreetype.template)) {
+                    vm.dialogFreetype.loading = true;
+                    if (vm.editFreetype) {
+                        api.freetypes.save(vm.editFreetype, {name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
+                            vm.dialogFreetype.loading = false;
+                            vm.freetypeModalActive = false;
+                            getFreetypes();
+                            vm.editFreetype = false;
+                        }, function(data) {
+                            vm.handleSaveError(data);
+                        });
+                    } else {
+                        api.freetypes.save({name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
+                            vm.dialogFreetype.loading = false;
+                            vm.freetypeModalActive = false;
+                            getFreetypes();
+                        }, function(data) {
+                            vm.handleSaveError(data);
+                        });
+                    }
                 }
             },
             removeFreetype: function(freetype, $index) {
