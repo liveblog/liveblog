@@ -509,14 +509,14 @@ function EditPostPage() {
     self.iframe = element(by.css('.liveblog--card iframe'));
     self.publishElement = element(by.css('[ng-click="publish()"]'));
     //for scorecards
-    self.homeName = element(by.css('[ng-model="freetypeData.home.name"]'));
-    self.homeScore = element(by.css('[ng-model="freetypeData.home.score"]'));
-    self.awayName = element(by.css('[ng-model="freetypeData.away.name"]'));
-    self.awayScore = element(by.css('[ng-model="freetypeData.away.score"]'));
-    self.player1Name = element.all(by.css('[ng-model="iterator__1.name"]')).get(0);
-    self.player1Time = element.all(by.css('[ng-model="iterator__1.time"]')).get(0);
-    self.player2Name = element.all(by.css('[ng-model="iterator__1.name"]')).get(1);
-    self.player2Time = element.all(by.css('[ng-model="iterator__1.time"]')).get(1);
+    self.homeName = element(by.css('[text="freetypeData.home.name"] [ng-model="text"]'));
+    self.homeScore = element(by.css('[text="freetypeData.home.score"] [ng-model="text"]'));
+    self.awayName = element(by.css('[text="freetypeData.away.name"] [ng-model="text"]'));
+    self.awayScore = element(by.css('[text="freetypeData.away.score"] [ng-model="text"]'));
+    self.player1Name = element.all(by.css('[text="iterator__1.name"] [ng-model="text"]')).get(0);
+    self.player1Time = element.all(by.css('[text="iterator__1.time"] [ng-model="text"]')).get(0);
+    self.player2Name = element.all(by.css('[text="iterator__1.name"] [ng-model="text"]')).get(1);
+    self.player2Time = element.all(by.css('[text="iterator__1.time"] [ng-model="text"]')).get(1);
 
     self.addTop = function() {
         // click on the "+" bar
@@ -572,13 +572,13 @@ function EditPostPage() {
     self.publishScorecard = function() {
         var data = {
             homeName: randomString(10),
-            homeScore: randomString(2),
+            homeScore: randomNumber(2),
             awayName: randomString(10),
-            awayScore: randomString(2),
+            awayScore: randomNumber(2),
             player1Name: randomString(10),
-            player1Time: randomString(2),
+            player1Time: randomNumber(2),
             player2Name: randomString(10),
-            player2Time: randomString(2)
+            player2Time: randomNumber(2),
         };
         self.homeName.sendKeys(data.homeName);
         self.homeScore.sendKeys(data.homeScore);
@@ -812,6 +812,17 @@ function randomString(maxLen) {
     return text;
 }
 
+function randomNumber(maxLen) {
+    'use strict';
+    maxLen = maxLen || 15;
+    var text = '';
+    var possible = '123456789';
+    for (var i = 0; i < maxLen; i ++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return String(parseInt(text, 10));
+}
+
 function ConsumersManagementPage() {
     'use strict';
     var self = this;
@@ -825,9 +836,13 @@ function ConsumersManagementPage() {
     self.openConsumersManagement = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
         browser.wait(function() {
-            return element(by.css('[href="#/consumers/"][title]')).isDisplayed();
+            return element(by.css('[href="#/syndication/"][title]')).isDisplayed();
         });
-        waitAndClick(by.css('[href="#/consumers/"][title]'));
+        waitAndClick(by.css('[href="#/syndication/"][title]'));
+
+        browser.waitForAngular();
+        element.all(by.repeater('state in states').row(1).column('state.text')).click();
+
         return self;
     };
 }
@@ -839,9 +854,13 @@ function ProducersManagementPage() {
     self.openProducersManagement = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
         browser.wait(function() {
-            return element(by.css('[href="#/producers/"][title]')).isDisplayed();
+            return element(by.css('[href="#/syndication/"][title]')).isDisplayed();
         });
-        waitAndClick(by.css('[href="#/producers/"][title]'));
+        waitAndClick(by.css('[href="#/syndication/"][title]'));
+
+        browser.waitForAngular();
+        element.all(by.repeater('state in states').row(0).column('state.text')).click();
+
         return self;
     };
 }

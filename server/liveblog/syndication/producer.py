@@ -1,16 +1,13 @@
 import logging
 from urllib.parse import urljoin
-
-from apps.auth import SuperdeskTokenAuth
-from eve.utils import str_to_date
-from flask import Blueprint, abort, request
-from flask_cors import CORS
-from superdesk import get_resource_service
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-
+from flask import Blueprint, request
+from flask_cors import CORS
+from eve.utils import str_to_date
+from superdesk import get_resource_service
 from .exceptions import APIConnectionError, ProducerAPIError
-from .utils import api_error, api_response, send_api_request, trailing_slash
+from .utils import trailing_slash, api_response, api_error, send_api_request, blueprint_superdesk_token_auth
 
 logger = logging.getLogger('superdesk')
 producers_blueprint = Blueprint('producers', __name__)
@@ -304,11 +301,4 @@ def producer_blogs_syndicate(producer_id, blog_id):
                                                 start_date)
 
 
-def _producers_blueprint_auth():
-    auth = SuperdeskTokenAuth()
-    authorized = auth.authorized(allowed_roles=[], resource='producers', method='GET')
-    if not authorized:
-        return abort(401, 'Authorization failed.')
-
-
-producers_blueprint.before_request(_producers_blueprint_auth)
+producers_blueprint.before_request(blueprint_superdesk_token_auth)

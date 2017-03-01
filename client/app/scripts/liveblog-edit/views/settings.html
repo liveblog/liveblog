@@ -7,6 +7,9 @@
     <h3 class="page-nav-title">{{ settings.blog.title }}</h3>
     <div class="button-stack right-stack active settings-disabled">
         <span class="navbtn">
+            <i class="svg-icon-analytics"></i>
+        </span>
+        <span class="navbtn  navbtn-active">
             <i class="svg-icon-settings"></i>
         </span>
     </div>
@@ -133,6 +136,43 @@
                             </div>
 
                             <div lb-syndication-switch></div>
+
+                            <div
+                                lb-marketplace-switch
+                                market-enabled="settings.market_enabled"></div>
+
+                            <div class="form-group">
+                                <label for="category" class="control-label" translate>Category</label>
+                                <div class="form-input">
+                                    <select
+                                      ng-model="settings.category"
+                                      ng-options="category as category for category in settings.availableCategories"
+                                      class="form-control">
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label
+                                    for="start_date"
+                                    class="control-label"
+                                    translate>Start date</label>
+                                <div
+                                    sd-datepicker
+                                    ng-model="settings.start_date"
+                                    class="form-input"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label
+                                    for="start_time"
+                                    class="control-label"
+                                    translate>Start time</label>
+                                <div
+                                    sd-timepicker
+                                    ng-model="settings.start_time"
+                                    class="form-input"></div>
+                            </div>
 
                             <div class="form-group">
                                 <label for="removeBlog" class="control-label" translate>Blog removal</label>

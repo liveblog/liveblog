@@ -1,0 +1,16 @@
+<div class="form-group">
+    <label for="inputTitle" class="control-label" translate>Market</label>
+    <div class="form-input relative">
+        <span class="blog-status">{{ marketEnabled ? 'Marketed' : 'Private' | translate }}</span>
+        <span
+            style="display: block"
+            tooltip="{{ marketEnabled ? 'Keep private' : 'Show in market' | translate }}"
+            tooltip-placement="right">
+            <span
+                class="pull-left"
+                sd-switch
+                ng-model="marketEnabled"
+                data-blog-status-switch></span>
+        </span>
+    </div>
+</div>

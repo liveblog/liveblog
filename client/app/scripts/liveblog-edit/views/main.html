@@ -6,6 +6,9 @@
     </div>
     <h3 class="page-nav-title">{{ blog.title }}</h3>
     <div class="button-stack right-stack" ng-if="blogSecurityService.canAccessSettings(blog)">
+        <a class="navbtn analytics-link" ng-href="#/liveblog/analytics/{{::blog._id}}">
+            <i class="svg-icon-analytics"></i>
+        </a>
         <a class="navbtn settings-link" ng-href="#/liveblog/settings/{{::blog._id}}">
             <i class="svg-icon-settings"></i>
         </a>
@@ -119,7 +122,7 @@
                     ng-if="panelState === 'incoming-syndication'"></div>
                 <!-- comments -->
                 <div class="panel panel--comments" ng-if="panelState === 'comments'">
-                    <header translate>Comments</header>
+                    <header><h4>{{'Comments' | translate}}</h4></header>
                     <div class="content" lr-infinite-scroll="fetchNewCommentsPage">
                         <lb-posts-list
                           lb-posts-instance="blogEdit.commentPostsInstance"
@@ -142,20 +145,23 @@
                     <div class="panel--editor" ng-show="panelState === 'editor'">
                         <div ng-if="!preview">
                         <header>
-                            Editor
+                            <h4>{{'Editor' | translate}}</h4>
                             <button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate>Preview
                             </button>
                             <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
-                            <button class="btn pull-right btn--with-icon-right" ng-click="toggleTypePostDialog()">
-                                <span ng-if="selectedPostType=='Default'" translate>Choose post type</span>
-                                <span ng-if="selectedPostType!='Default'" translate>{{selectedPostType.name}}</span>
+                            <button class="btn pull-right btn--with-icon-right btn--with-label" ng-click="toggleTypePostDialog()">
+                                <span ng-if="selectedPostType=='Default'">
+                                    {{'Choose post type' | translate}}
+                                    <sup class="btn-toggle-label">Beta</sup>
+                                </span>
+                                <span ng-if="selectedPostType!='Default'" translate class="selector-size-limit">{{selectedPostType.name}}</span>
                                 <i class="icon-chevron-right-thin"></i>
                             </button>
                         </header>
                         </div>
                         <div ng-if="preview">
                         <header>
-                            Preview<span ng-click="togglePreview()" class="close-preview pull-right" tooltip-placement="bottom" tooltip="{{ 'Back to edit' | translate }}">
+                            <h4>{{'Preview' | translate}}</h4><span ng-click="togglePreview()" class="close-preview pull-right" tooltip-placement="bottom" tooltip="{{ 'Back to edit' | translate }}">
                             ⨯
                             </span>
                         </header>
@@ -174,6 +180,7 @@
                                     ng-if="selectedPostType!='Default'" 
                                     freetype="selectedPostType"
                                     freetype-data="freetypesData"
+                                    validation="validation"
                                     control="freetypeControl"></freetype-render>
                         </div>
                         <div class="actions">
@@ -191,10 +198,12 @@
                                 </div>
                             </div>
                             <div style="display:table-row">
-                                <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell"><button class="btn btn-info" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
-                                    <span ng-switch-when="true"  translate>Update</span>
-                                    <span ng-switch-when="false" translate>Publish</span>
-                                </button></div>
+                                <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell">
+                                    <button class="btn btn-info" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
+                                        <span ng-switch-when="true"  translate>Update</span>
+                                        <span ng-switch-when="false" translate>Publish</span>
+                                    </button>
+                                </div>
                                 <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Submit</button></div>
                                 <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished() || actionStatus() || !showSaveAsDraft()" translate>Save draft</button></div>
                             </div>

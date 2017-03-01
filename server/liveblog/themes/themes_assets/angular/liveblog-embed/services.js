@@ -14,7 +14,19 @@
         .provider('asset', [ '$injector', function ($injector) {
             this.templateUrl = function(path) {
                 var config = $injector.get('config'),
+                    simplifiedPath = $injector.has('assets_simplified_path')
+                            && $injector.get('assets_simplified_path'),
                     ret = path;
+                /**
+                 * `assets_simplified_path` constant is added 
+                 * to keep backwards compatibility for old themes.
+                 */
+                if(config.debug && config.templates && config.templates[path]) {
+                    return config.templates[path];
+                }
+                if(!config.debug && simplifiedPath) {
+                    return ret;
+                }
                 if (!/^(https?:\/\/|\/\/)/.test(path)) {
                     ret = config.assets_root +'/' + ret;
                 }

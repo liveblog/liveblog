@@ -13,7 +13,8 @@ from .auth import ConsumerBlogTokenAuth
 from .tasks import send_post_to_consumer, send_posts_to_consumer
 from .utils import (api_error, api_response, cast_to_object_id,
                     create_syndicated_blog_post, generate_api_key,
-                    get_post_creator, get_producer_post_id)
+                    get_post_creator, get_producer_post_id,
+                    extract_post_items_data)
 
 logger = logging.getLogger('superdesk')
 syndication_blueprint = Blueprint('syndication', __name__)
@@ -88,17 +89,26 @@ class SyndicationOutService(BaseService):
         else:
             return bool(out_syndication.count())
 
-    def send_syndication_post(self, post, action='created'):
+    def _is_post_for_syndication(self, post):
         # Prevent "loops" by sending only posts without syndication_in set.
         if post.get('syndication_in'):
-            logger.warning('Not sending post "{}": syndicated content.'.format(post['_id']))
-            return
+            logger.debug('Not sending post "{}": syndicated content.'.format(post['_id']))
+            return False
 
-        blog_id = ObjectId(post['blog'])
-        out_syndication = self.get_blog_syndication(blog_id)
-        for out in out_syndication:
-            logger.info('syndication_out:"{}" post:"{}" blog:"{}"'.format(out['_id'], post['_id'], blog_id))
-            send_post_to_consumer.delay(out, post, action)
+        items = extract_post_items_data(post)
+        for item in items:
+            if item['group_type'] == 'freetype' and item['item_type'] in app.config['SYNDICATION_EXCLUDED_ITEMS']:
+                logger.debug('Not sending post "{}": syndicated content contains excluded items.'.format(post['_id']))
+                return False
+
+        return True
+
+    def send_syndication_post(self, post, action='created'):
+        if self._is_post_for_syndication(post):
+            blog_id = ObjectId(post['blog'])
+            out_syndication = self.get_blog_syndication(blog_id)
+            for out in out_syndication:
+                send_post_to_consumer.delay(out, post, action)
 
     def on_create(self, docs):
         super().on_create(docs)

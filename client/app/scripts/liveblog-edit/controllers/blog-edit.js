@@ -26,7 +26,7 @@ define([
         // check the theme setting for comments.
 
         // init with empty vector
-        $scope.freetypesData = {}; $scope.freetypeControl = {};
+        $scope.freetypesData = {}; $scope.freetypeControl = {}; $scope.validation = {};
 
         if (blog.blog_preferences.theme) {
             themesService.get(blog.blog_preferences.theme).then(function(themes) {
@@ -65,6 +65,27 @@ define([
             return $scope.selectedPostType !== 'Default';
         };
 
+        //determine if post is 'scorecard'
+        function isPostScorecard() {
+            return isPostFreetype() && $scope.selectedPostType.name === 'Scorecard';
+        }
+
+        //save the 'keep scoarers' if needed
+        function saveScorers() {
+                if ($scope.currentBlog.blog_preferences) {
+                    var bp = angular.copy($scope.currentBlog.blog_preferences);
+                    bp.last_scorecard = $scope.freetypesData;
+                    return blogService.update($scope.currentBlog, {'blog_preferences': bp});
+                } else {
+                    return blogService.get($scope.blog._id).then(function(currentBlog) {
+                        $scope.currentBlog = currentBlog;
+                        var bp = angular.copy($scope.currentBlog.blog_preferences);
+                        bp.last_scorecard = $scope.freetypesData;
+                        return blogService.update($scope.currentBlog, {'blog_preferences': bp});
+                    })
+                }
+        }
+
         // determine if the loaded item is freetype
         function isItemFreetype(itemType) {
             var regularItemTypes = ['text', 'image', 'embed', 'quote', 'comment'];
@@ -91,13 +112,16 @@ define([
 
         // ask in a modalbox if the user is sure to want to overwrite editor.
         // call the callback if user say yes or if editor is empty
-        function doOrAskBeforeIfEditorIsNotEmpty(callback, msg) {
+        function doOrAskBeforeIfEditorIsNotEmpty() {
+             var deferred = $q.defer();
             if (isEditorClean()) {
-                callback();
+                deferred.resolve();
             } else {
-                msg = msg || gettext('You have content in the editor. You will lose it if you continue without saving it before.');
-                modal.confirm(msg).then(callback);
+                modal
+                    .confirm(gettext('You have content in the editor. You will lose it if you continue without saving it before.'))
+                    .then(deferred.resolve, deferred.reject);
             }
+            return deferred.promise;
         }
 
         // remove and clean every items from the editor
@@ -124,10 +148,10 @@ define([
         function getFreetypes() {
             api.freetypes.query().then(function(data) {
                 var freetypes = [{
-                    name: 'Advertisment Local',
+                    name: 'Advertisement Local',
                     template: $templateCache.get('scripts/liveblog-edit/views/ads-local.html')
                 }, {
-                    name: 'Advertisment Remote',
+                    name: 'Advertisement Remote',
                     template: $templateCache.get('scripts/liveblog-edit/views/ads-remote.html')
                 }, {
                     name: 'Scorecard',
@@ -154,6 +178,7 @@ define([
         // define the $scope
         angular.extend($scope, {
             blog: blog,
+            currentBlog: {},
             panels: {},
             syndicationEnabled: $injector.has('lbNotificationsCountDirective'),
             selectedUsersFilter: [],
@@ -172,22 +197,36 @@ define([
                 $scope.selectPostTypeDialog = !$scope.selectPostTypeDialog;
             },
             selectPostType: function(postType) {
-                $scope.selectedPostType = postType;
-                $scope.toggleTypePostDialog();
+                doOrAskBeforeIfEditorIsNotEmpty().then(function() {
+                    cleanEditor()
+                    $scope.selectedPostType = postType;
+                    $scope.toggleTypePostDialog();
+                    if (isPostScorecard()) {
+                        blogService.get($scope.blog._id).then(function(currentBlog) {
+                            $scope.currentBlog = currentBlog;
+                            if ($scope.currentBlog.blog_preferences.last_scorecard) {
+                                //load latest scorecard
+                                if ($scope.currentBlog.blog_preferences.last_scorecard.remember) {
+                                    $scope.freetypesData = angular.copy($scope.currentBlog.blog_preferences.last_scorecard);
+                                }
+                            }
+                        });
+                    }
+                });
             },
             actionStatus: function() {
                 if (isPostFreetype()) {
                     if (angular.isDefined($scope.currentPost)) {
-                        return $scope.freetypeControl.isClean() && $scope.currentPost.post_status !== 'draft' && $scope.currentPost.post_status !== 'submitted';
+                        return $scope.freetypeControl.isValid() && $scope.currentPost.post_status !== 'draft' && $scope.currentPost.post_status !== 'submitted';
                     } else {
-                        return $scope.freetypeControl.isClean()
+                        return $scope.freetypeControl.isValid();
                     }
                 } else {
                     return $scope.actionDisabled || $scope.actionPending;
                 }
             },
             askAndResetEditor: function() {
-                doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
+                doOrAskBeforeIfEditorIsNotEmpty().then(cleanEditor);
             },
             toggleSticky: function() {
                 $scope.sticky = !$scope.sticky;
@@ -231,7 +270,7 @@ define([
                     }, delay);
                 }
                 $scope.openPanel('editor');
-                doOrAskBeforeIfEditorIsNotEmpty(fillEditor.bind(null, post));
+                doOrAskBeforeIfEditorIsNotEmpty().then(fillEditor.bind(null, post));
             },
             saveAsContribution: function() {
                 $scope.actionPending = true;
@@ -265,6 +304,14 @@ define([
             },
             publish: function() {
                 $scope.actionPending = true;
+                //save the keep scoreres setting( if needed)
+                if (isPostScorecard()) {
+                    saveScorers().then(function() {
+                        //no need to show anything on success
+                    }, function() {
+                        notify.error(gettext('Something went wrong with scoarers status. Please try again later'));
+                    });
+                }
                 notify.info(gettext('Saving post'));
                 postsService.savePost(blog._id,
                     $scope.currentPost,
@@ -273,6 +320,7 @@ define([
                 ).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
+
                     cleanEditor();
                     $scope.selectedPostType = 'Default';
                     $scope.actionPending = false;

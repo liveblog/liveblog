@@ -1,0 +1,20 @@
+<div class="subnav">
+    <div class="button-stack left-stack" >
+        <ul class="nav nav-tabs pull-left" >
+            <li
+                ng-class="{active: activeState === state.name}"
+                ng-repeat="state in states">
+                <button ng-click="changeState(state)" translate>{{ ::state.text }}</button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="button-stack right-stack" ng-if="isUserAllowedToCreateABlog();">
+        <button class="navbtn navbtn-info" ng-click="openNewBlog();">
+            <i class="svg-icon-add inverse"></i> <span class="title" translate>Create Blog</span>
+        </button>
+    </div>
+</div>
+
+<div lb-producers ng-if="activeState == 'producers'"></div>
+<div lb-consumers ng-if="activeState == 'consumers'"></div>

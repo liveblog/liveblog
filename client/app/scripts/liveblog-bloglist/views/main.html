@@ -194,7 +194,22 @@
                     </div>
                     <div data-title="Team" ng-if="creationStep === 'Team'" class="team_settings">
                         <div>
-                            <div lb-user-select-list data-members="blogMembers" data-onchoose="addMember(user)"></div>
+                            <div ng-if="hasReachedMembersLimit()">
+                              <h3>Sorry.</h3>
+                              <p>You have reached the maximum number of users who are assigned as team members to your active blogs. You can either: </p>
+                              <ul>
+                                  <li>1. Unassign a team member from one of your active blogs or</li>
+                                  <li>2. Subscribe to a bigger plan.</li>
+                              </ul>
+                              <p>To unassign a team member from one of your active blogs, go to “Blog settings”, choose “Team” and open the “Team members” section. Unassign a team member by clicking on the X.</p>
+                              <p>Want to upgrade to a plan more suitable to your needs? Email us at <a href="{{settings.mailto}}">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
+                            </div>
+ 
+                            <div
+                                lb-user-select-list
+                                data-members="blogMembers"
+                                ng-if="!hasReachedMembersLimit()"
+                                data-onchoose="addMember(user)"></div>
                             <div class="content">
                                 <p ng-if="message">{{ message }}</p>
                                 <div class="member-list clearfix">

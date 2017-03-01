@@ -6,7 +6,29 @@
     line-height: 12px;
     padding: 8px 20px;
     &--with-icon-right {
-        padding: 8px 10px 8px 20px;
+        padding: 0px 25px 0px 10px;
+        [class^="icon-"], [class*=" icon-"] {
+            position: absolute;
+            right: 2px;
+            top: 9px;
+        }
+    }
+    &--with-label {
+        position: relative;
+        span {
+            display: inline-block;
+        }
+    }
+    .btn-toggle-label {
+        font-size: 8px;
+        color: white;
+        text-transform: uppercase;
+        background-color: #999;
+        letter-spacing: .1em;
+        border-radius: 1px;
+        padding: 0px 3px 1px 4px;
+        margin: 0 4px 0 2px;
+        line-height: 1.4;
     }
 }
 
@@ -16,7 +38,7 @@ a[disabled] {
     pointer-events: none;
 }
 
-input[type] {
+input[type="text"] {
     display: block;
     width: 100%;
     min-height: 28px; /* Make inputs at least the height of their button counterpart */
@@ -59,6 +81,29 @@ input[type] {
         }
         form {
             width: 100%;
+        }
+    }
+}
+
+// search input fix
+.flat-searchbar .search-handler input {
+    display: inline-block;
+}
+// alert styles
+.alert {
+    .border-radius(2px);
+    &--margin-left {
+        margin-left: 30px;
+    }
+    .close {
+        background: transparent;
+        border: none;
+        outline: none;
+    }
+    a {
+        text-decoration: underline;
+        &:hover {
+            text-decoration: none;
         }
     }
 }
