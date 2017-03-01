@@ -1,6 +1,6 @@
 # Liveblog 3 Lean Theme ALPHA
 Goals for this rewrite: Be user-friendly, indexable and fast.    
-We got a fraction of the lines of code, faster DOM ready, enabled SEO through template isomorphism, functionality reduced to an essential featureset, subject to change. Development is possible without the local Liveblog server running, the directory tree is simplified, we're making heavy use of a build system and drastically reduced dependencies. The theme is written in vanilla ES5.
+We get a fraction of the lines of code, faster DOM ready, both better SEO and support of Google's AMP through template isomorphism, functionality reduced to an essential featureset, subject to change. Development is possible without the local Liveblog server running, the directory tree is simplified, we're making heavy use of a build system and drastically reduced dependencies. The theme is written in vanilla ES5.
 
 ## Develop
 Just issue a `npm i` followed by `gulp watch-static`.    
