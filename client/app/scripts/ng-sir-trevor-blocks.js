@@ -126,7 +126,7 @@ define([
                     });
                     handlePlaceholder(this.$editor.filter('[contenteditable]'), that.embedPlaceholder);
                     // when the link field changes
-                    this.$editor.on('change', _.debounce(function callServiceAndLoadData() {
+                    function callServiceAndLoadData() {
                         var input = $(this).text().trim();
                         // exit if the input field is empty
                         if (_.isEmpty(input)) {
@@ -156,7 +156,13 @@ define([
                         } else {
                             that.loadData({html: input});
                         }
-                    }, 200));
+                    }
+                    // TODO: monitor on paste event
+                    //this.$editor.on('change', _.debounce(callServiceAndLoadData, 200));
+                    this.$editor.on('paste', _.debounce(callServiceAndLoadData, 200));
+                    //this.$editor.on('paste', function() {
+                    //    console.log('pasta!');
+                    //});
                 },
                 isEmpty: function() {
                     return _.isEmpty(this.retrieveData().url || this.retrieveData().html);
