@@ -18,7 +18,9 @@ class FreetypesResource(Resource):
         },
         'template': {
             'type': 'string',
-            'htmloutput': True
+            'htmloutput': {
+                'template_vars_required': True
+            }
         }
     }
     datasource = {
