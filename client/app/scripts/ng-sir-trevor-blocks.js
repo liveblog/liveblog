@@ -126,7 +126,7 @@ define([
                     });
                     handlePlaceholder(this.$editor.filter('[contenteditable]'), that.embedPlaceholder);
                     // when the link field changes
-                    function callServiceAndLoadData() {
+                    var callServiceAndLoadData = function() {
                         var input = $(this).text().trim();
                         // exit if the input field is empty
                         if (_.isEmpty(input)) {
@@ -141,6 +141,7 @@ define([
                         input = fixSecureEmbed(input);
                         // if the input is an url, use embed services
                         if (isURI(input)) {
+                            console.log('is uri');
                             // request the embedService with the provided url
                             that.getOptions().embedService.get(input, that.getOptions().coverMaxWidth).then(
                                 function successCallback(data) {
@@ -157,12 +158,14 @@ define([
                             that.loadData({html: input});
                         }
                     }
-                    // TODO: monitor on paste event
-                    //this.$editor.on('change', _.debounce(callServiceAndLoadData, 200));
                     this.$editor.on('paste', _.debounce(callServiceAndLoadData, 200));
-                    //this.$editor.on('paste', function() {
-                    //    console.log('pasta!');
-                    //});
+
+                    this.$editor.on('keydown', function(e) {
+                        if (e.keyCode == 13) {
+                            e.preventDefault();
+                            callServiceAndLoadData.call(this);
+                        }
+                    });
                 },
                 isEmpty: function() {
                     return _.isEmpty(this.retrieveData().url || this.retrieveData().html);
