@@ -42,6 +42,24 @@ Feature: Freetypes operations
         """
         And we patch latest without assert
         """
-        {"template": "<div><p>Not valid, dude!</p>"}
+        {"template": "<div><p>Not valid, $dude!</p>"}
+        """
+        Then we get response code 400
+
+    @auth
+    Scenario: Update freetype empty vars templates
+        Given empty "freetypes"
+        When we post to "freetypes"
+        """
+        [
+            {
+                "name": "Freetype Test #02",
+                "template": "<p>Hello $name! Valid HTML</p>"
+            }
+        ]
+        """
+        When we patch latest without assert
+        """
+        {"template": "<p>Not valid, dude!</p>"}
         """
         Then we get response code 400
