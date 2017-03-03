@@ -141,7 +141,6 @@ define([
                         input = fixSecureEmbed(input);
                         // if the input is an url, use embed services
                         if (isURI(input)) {
-                            console.log('is uri');
                             // request the embedService with the provided url
                             that.getOptions().embedService.get(input, that.getOptions().coverMaxWidth).then(
                                 function successCallback(data) {
@@ -161,7 +160,7 @@ define([
                     this.$editor.on('paste', _.debounce(callServiceAndLoadData, 200));
 
                     this.$editor.on('keydown', function(e) {
-                        if (e.keyCode == 13) {
+                        if (e.keyCode === 13) {
                             e.preventDefault();
                             callServiceAndLoadData.call(this);
                         }
