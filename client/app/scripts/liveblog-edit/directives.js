@@ -494,11 +494,10 @@ define([
                         return angular.equals(scope.freetypeData, scope.initialData);
                     };
                     scope.internalControl.isValid = function() {
-                        var isClean = scope.internalControl.isClean(),
-                            isValid = _.reduce(scope.validation, function(memo, val) {
+                        var isInvalid = _.reduce(scope.validation, function(memo, val) {
                                 return memo && val;
                         }, true);
-                        return !isValid || isClean;
+                        return !isInvalid;
                     }
                     function recursiveClean(obj) {
                         for (var key in obj) {
