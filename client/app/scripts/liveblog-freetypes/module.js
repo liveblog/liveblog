@@ -7,10 +7,13 @@
     $q, $sce, config, _, upload, blogService, modal) {
         var vm = this;
 
-        function getFreetypes() {
+        function getFreetypes(silent) {
+            silent = silent || false;
             api.freetypes.query().then(function(data) {
                 vm.freetypes = data._items;
-                notify.info('Free types loaded');
+                if (!silent) {
+                    notify.info('Free types loaded');
+                }
             }, function(data) {
                 notify.error(gettext('There was an error getting the free type'));
             })
@@ -27,7 +30,8 @@
             },
             //open dialog for adding editing an item type
             openFreetypeDialog: function(freetype) {
-
+                //refresh freetypes to make sure we use a fresh title
+                getFreetypes();
                 vm.editFreetype = freetype || false;
 
                 if (vm.editFreetype) {
@@ -46,18 +50,36 @@
                 }
                 notify.error(errorMsg, 10000);
             },
-            preSaveChecks: function(template) {
-                var valid = true;
+            preSaveChecks: function(template, name) {
+                var valid = true, unique = true;
                 //check for variables
                 var patt = /\$([\$a-z0-9_.\[\]]+)/gi;
                 if (!patt.test(template)) {
                     valid = false;
                     notify.error(gettext('Template must contain at least one variable! Check the documentation for further information'), 10000);
                 }
+                //check for unique name
+                angular.forEach(vm.freetypes, function(freetype) {
+                    if (freetype.name === name) {
+                        if (!vm.editFreetype) {
+                            //it's a new freetype so not unique
+                            unique = false;
+                        } else {
+                            if (vm.editFreetype._id !== freetype._id) {
+                                //not editing the same freetype
+                                unique = false;
+                            }
+                        }
+                    }
+                });
+                if (!unique) {
+                    valid = false;
+                    notify.error(gettext('Free types titles must be unique'), 10000);
+                }
                 return valid
             },
             saveFreetype: function() {
-                if (vm.preSaveChecks(vm.dialogFreetype.template)) {
+                if (vm.preSaveChecks(vm.dialogFreetype.template, vm.dialogFreetype.name)) {
                     vm.dialogFreetype.loading = true;
                     if (vm.editFreetype) {
                         api.freetypes.save(vm.editFreetype, {name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
