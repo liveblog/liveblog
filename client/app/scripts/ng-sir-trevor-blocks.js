@@ -427,6 +427,7 @@ define([
                 icon_name: 'image',
                 descriptionPlaceholder: window.gettext('Add a description'),
                 authorPlaceholder: window.gettext('Add author / photographer'),
+                limitedText: window.gettext('Max. amount of 300 characters is reached'),
                 loadData: function(data) {
                     var file_url = (typeof(data.file) !== 'undefined') ? data.file.url : data.media._url, that = this;
                     this.$editor.html($('<img>', {
@@ -438,12 +439,15 @@ define([
                         contenteditable: true,
                         placeholder: that.descriptionPlaceholder
                     }).html(data.caption));
-                    
+
                     this.$editor.append($('<div>', {
                         name: 'credit',
                         class: 'st-image-block',
                         contenteditable: true,
-                        placeholder: that.authorPlaceholder
+                        placeholder: that.authorPlaceholder,
+                        oninput:
+                        'if(this.innerText.length > 300) { alert("' + that.limitedText + '"); this.innerText = this.innerText.substring(0, 300); this.style="border:1px solid red"}' +
+                        ' else { this.style="border: 0px;border-bottom: 1px solid #999;" }'
                     }).html(data.credit));
 
                     //image size warning
