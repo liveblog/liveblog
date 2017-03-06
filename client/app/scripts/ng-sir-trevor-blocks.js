@@ -496,10 +496,11 @@ define([
                             });
 
                             console.log('type', this.type);
-                            this.type = 'embed';
                             this.getOptions().disableSubmit(false);
                             this.setData({ media: { _url: srcAttr }});
-                            this.ready();
+
+                            // TODO: send query to the back-end
+                            //this.ready();
                         }
                     }, this));
                     //console.log('dropzone', this.$inputs.find('.st-block__dropzone'));
