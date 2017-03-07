@@ -86,7 +86,11 @@
                 });
         };
 
+        $scope.creationInProcess = false;
+
         $scope.createBlog = function() {
+            $scope.creationInProcess = true;
+
             var members = _.map($scope.blogMembers, function(obj) {
                 return {user: obj._id};
             });
