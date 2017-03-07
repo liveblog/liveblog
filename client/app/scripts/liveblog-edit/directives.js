@@ -135,7 +135,8 @@ define([
                             return vm.pagesManager.setAuthors(users.map(function(user) {return user._id;})).then(function() {
                                 vm.isLoading = false;
                             });
-                        }
+                        },
+                        isBlogClosed: $scope.$parent.blog.blog_status == 'closed'
                     });
                     $scope.lbPostsInstance = vm;
                     // retrieve first page
