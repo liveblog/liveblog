@@ -32,7 +32,7 @@
                     <div class="inline" ng-if="post.showUpdate">
                         <span class="updated-label" translate>&nbsp;Updated</span> <time class="updated-time">{{ post.content_updated_date | reldate }}</time>
                     </div>
-                    <div class="lb-post__actions">
+                    <div class="lb-post__actions" ng-if="!postsListCtrl.isBlogClosed">
                         <ul>
                             <li ng-if="functionize(postsListCtrl.allowEditing)(post)">
                                 <a ng-click="highlightPost(post)" tooltip-placement="bottom" tooltip="{{ 'Highlight post' | translate }}">

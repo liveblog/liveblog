@@ -241,7 +241,7 @@
                     <i class="svg-icon-move fix-cancel-move-icon"></i>
                     <button class="btn btn-xs fix-cancel-move-button" translate ng-click="clearTimelineReordering();" tooltip-placement="bottom" tooltip="Cancel and exit reordering mode">Cancel</button>
                 </div>
-                <div class="header--live">
+                <div class="header--live" ng-if="isBlogOpened()">
                     <a href="{{ publicUrl }}" target="_blank" ng-disabled="!publicUrl" translate>Live</a>
                 </div>
                 <div class="header--filters">                                        
