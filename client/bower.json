@@ -26,7 +26,7 @@
     "superdesk": "https://github.com/liveblog/superdesk.git#e3b5b3741cf0935b52a1addfa3f4b4a5fd6c4925",
     "Eventable": "https://github.com/nistormihai/eventable.git",
     "ng-sir-trevor": "~2.0.2",
-    "angular-embed": "^3.0.2",
+    "angular-embed": "^2.0.2",
     "lrInfiniteScroll": "~1.0.0",
     "lodash": "~3.10.1",
     "angular-messages": "~1.4.8"
