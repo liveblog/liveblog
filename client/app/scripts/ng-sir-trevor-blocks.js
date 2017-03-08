@@ -469,9 +469,8 @@ define([
                         var that = this;
                         window.setTimeout(function() {
                             that.$editor.find('[name="size-warning"]').css('display', 'none');
-                        }, 10000);    
+                        }, 10000);
                     }
-                    
 
                     //remove placeholders
                     handlePlaceholder(this.$('[name=caption]'), that.descriptionPlaceholder)
@@ -495,12 +494,21 @@ define([
                     var that = this;
                     var file = transferData.files[0];
                     var urlAPI = window.URL;
+                    var addContentTop = $('.st-block-controls__top');
+                    var addContentBottom = $('[data-icon-after="ADD CONTENT HERE"]');
+
                     if (typeof urlAPI === 'undefined') {
                         urlAPI = window.webkitURL;
                     }
                     // Handle one upload at a time
                     if (/image/.test(file.type)) {
                         this.loading();
+                        console.log('floating blocks', SirTrevor.FloatingBlockControls, $('.st-block-controls'));
+
+                        // Hide add content buttons while uploading
+                        addContentTop.hide();
+                        addContentBottom.removeAttr('data-icon-after');
+
                         // Show this image on here
                         this.$inputs.hide();
                         this.loadData({
@@ -512,6 +520,8 @@ define([
                         this.getOptions().uploader(
                             file,
                             function(data) {
+                                addContentTop.show();
+                                addContentBottom.attr('data-icon-after', 'ADD CONTENT HERE');
                                 that.getOptions().disableSubmit(false);
                                 that.setData(data);
                                 that.ready();
