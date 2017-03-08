@@ -103,8 +103,10 @@
                     picture: $scope.newBlog.picture,
                     members: members
                 }).then(function(blog) {
+                    $scope.creationInProcess = false;
                     $scope.edit(blog);
                 }, function(error) {
+                    $scope.creationInProcess = false;
                     //error handler
                     $scope.newBlogError = gettext('Something went wrong. Please try again later');
                 });
