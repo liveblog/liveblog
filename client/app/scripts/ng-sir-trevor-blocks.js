@@ -34,6 +34,21 @@ define([
     };
     }
 
+    var AddContentBtns = function() {
+        this.top = $('.st-block-controls__top');
+        this.bottom = $('[data-icon-after="ADD CONTENT HERE"]');
+    };
+
+    AddContentBtns.prototype.hide = function() {
+        this.top.hide();
+        this.bottom.removeAttr('data-icon-after');
+    }
+
+    AddContentBtns.prototype.show = function() {
+        this.top.show();
+        this.bottom.attr('data-icon-after', 'ADD CONTENT HERE');
+    }
+
     var placeCaretAtStart = createCaretPlacer(true);
     var placeCaretAtEnd = createCaretPlacer(false);
     var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
@@ -494,8 +509,7 @@ define([
                     var that = this;
                     var file = transferData.files[0];
                     var urlAPI = window.URL;
-                    var addContentTop = $('.st-block-controls__top');
-                    var addContentBottom = $('[data-icon-after="ADD CONTENT HERE"]');
+                    var addContentBtns = new AddContentBtns();
 
                     if (typeof urlAPI === 'undefined') {
                         urlAPI = window.webkitURL;
@@ -503,11 +517,9 @@ define([
                     // Handle one upload at a time
                     if (/image/.test(file.type)) {
                         this.loading();
-                        console.log('floating blocks', SirTrevor.FloatingBlockControls, $('.st-block-controls'));
 
                         // Hide add content buttons while uploading
-                        addContentTop.hide();
-                        addContentBottom.removeAttr('data-icon-after');
+                        addContentBtns.hide();
 
                         // Show this image on here
                         this.$inputs.hide();
@@ -520,13 +532,13 @@ define([
                         this.getOptions().uploader(
                             file,
                             function(data) {
-                                addContentTop.show();
-                                addContentBottom.attr('data-icon-after', 'ADD CONTENT HERE');
+                                addContentBtns.show();
                                 that.getOptions().disableSubmit(false);
                                 that.setData(data);
                                 that.ready();
                             },
                             function(error) {
+                                addContentBtns.show();
                                 var message = error || window.i18n.t('blocks:image:upload_error');
                                 that.addMessage(message);
                                 that.ready();
