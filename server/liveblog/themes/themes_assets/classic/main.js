@@ -56,6 +56,8 @@
                 order: 'oldest_first'
             }],
             orderBy: function(order_by) {
+                //remove leftover hash from photoswipe that was causing the slideshow to start on reorder
+                window.location.href = window.location.href.replace(/&gid=[^&]+/g,'');
                 vm.loading = true;
                 vm.finished = false;
                 vm.pagesManager.changeOrder(order_by).then(function(data) {
@@ -249,6 +251,11 @@
                             var el = angular.element(element).find('.gallery');
                             $(el[0]).justifiedGallery(justifiedGalleryOptions).on('jg.complete', function() {
                                 $(this).photoSwipe(slideSelector, slideOptions);
+                            });
+                            $(el[0]).on('click', '.caption', function(e) {
+                                //redirect click action from the caption to the image to fix photoswipe bug
+                                e.preventDefault();
+                                $(this).parent().find('img').click();
                             });
                         }, 100);
                     });
