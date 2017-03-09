@@ -446,13 +446,24 @@ define([
                         contenteditable: true,
                         placeholder: that.descriptionPlaceholder
                     }).html(data.caption));
-                    
+
                     this.$editor.append($('<div>', {
                         name: 'credit',
                         class: 'st-image-block',
                         contenteditable: true,
                         placeholder: that.authorPlaceholder
                     }).html(data.credit));
+
+                    //limit characters for credit to a max of 300
+                    this.$editor.find('[name="credit"]').bind('input', function(ev) {
+                        if (this.innerText.length > 300) {
+                            alert(window.gettext('Max. amount of 300 characters is reached'));
+                            this.innerText = this.innerText.substring(0, 300);
+                            $(this).css('border', '1px solid red');
+                        } else {
+                            $(this).css({'border': '0px', 'border-bottom': '1px solid #999'});
+                        }
+                    });
 
                     //image size warning
                     var maxFileSize = 2; //in MB

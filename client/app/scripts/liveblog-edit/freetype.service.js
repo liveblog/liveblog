@@ -162,6 +162,20 @@ function(angular) {
                 // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
+                    attr = attr.replace(/(checkbox|radio)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                        name = rname;
+                        // remove the dollar variable from the attributes.
+                        return '';
+                    });
+                    if (name) {
+                        path2obj(scope[SCOPE_FREETYPEDATA], name);
+                        return '<input ng-model=' + makeAngularAttr(name, attr) + '/>';
+                    }
+                    return all;
+                });
+                // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
+                template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
+                    var name;
                     attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
                         name = rname;
                         // remove the dollar variable from the attributes.
