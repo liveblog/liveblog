@@ -26,7 +26,6 @@ define([
 
                 LbPostsListCtrl.$inject = ['$scope', '$element'];
                 function LbPostsListCtrl($scope, $element) {
-                   
                     $scope.lbSticky = $scope.lbSticky === 'true';
                     var vm = this;
                     angular.extend(vm, {
@@ -144,9 +143,12 @@ define([
                     // retrieve updates when event is recieved
                     .then(function() {
                         $scope.$on('posts', function(e, event_params) {
-
                             vm.isLoading = true;
                             vm.pagesManager.retrieveUpdate(true).then(function() {
+                                // Regenerate the embed otherwise the image doesn't appear
+                                if (window.hasOwnProperty('instgrm'))
+                                    window.instgrm.Embeds.process();
+
                                 if (event_params.deleted === true) {
                                     notify.pop();
                                     notify.info(gettext('Post removed'));
