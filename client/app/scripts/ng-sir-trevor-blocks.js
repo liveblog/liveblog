@@ -96,7 +96,8 @@ define([
             // Add toMeta method to all blocks.
             SirTrevor.Block.prototype.toMeta = function() {return;};
             SirTrevor.Block.prototype.getOptions = function() {
-                return SirTrevor.$get().getInstance(this.instanceID).options;
+                var instance = SirTrevor.$get().getInstance(this.instanceID);
+                return instance ? instance.options : null;
             };
             SirTrevor.Blocks.Embed =  SirTrevor.Block.extend({
                 type: 'embed',
@@ -237,14 +238,16 @@ define([
                     // set the credit
                     if (_.has(data, 'provider_name')) {
                         var credit_text  = data.provider_name;
-                        if (_.has(data, 'credit')) {
-                            credit_text = data.credit;
-                        }
                         if (_.has(data, 'author_name')) {
                             credit_text += ' | by <a href="' + data.author_url + '" target="_blank">' + data.author_name + '</a>';
                         }
                         html.find('.credit-preview').html(credit_text);
                     }
+
+                    if (_.has(data, 'credit')) {
+                        html.find('.credit-preview').html(data.credit);
+                    }
+
                     // remove link for some provider (included in the card)
                     if (['Facebook', 'Youtube', 'Twitter', 'Soundcloud'].indexOf(data.provider_name) > -1) {
                         html.find('.link-preview').remove();
@@ -587,9 +590,10 @@ define([
                     this.$editor.on('change', _.debounce(function () {
                         var input = $(this).text().trim();
                         if (_.isEmpty(input)) {
-                            that.getOptions().disableSubmit(true);
+                            if (that.getOptions())
+                                that.getOptions().disableSubmit(true);
                             return false;
-                        } else {
+                        } else if (that.getOptions()) {
                             that.getOptions().disableSubmit(false);
                         }
                     }, 200));
