@@ -535,7 +535,7 @@ define([
 
             return {
                 restrict: 'E',
-                template: '<textarea ng-model="embed"></textarea>',
+                template: '<textarea ng-model="embed" rows="8"></textarea>',
                 controller: function() {
                 },
                 scope: {
