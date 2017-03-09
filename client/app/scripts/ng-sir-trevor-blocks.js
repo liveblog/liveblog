@@ -34,6 +34,21 @@ define([
     };
     }
 
+    var AddContentBtns = function() {
+        this.top = $('.st-block-controls__top');
+        this.bottom = $('[data-icon-after="ADD CONTENT HERE"]');
+    };
+
+    AddContentBtns.prototype.hide = function() {
+        this.top.hide();
+        this.bottom.removeAttr('data-icon-after');
+    }
+
+    AddContentBtns.prototype.show = function() {
+        this.top.show();
+        this.bottom.attr('data-icon-after', 'ADD CONTENT HERE');
+    }
+
     var placeCaretAtStart = createCaretPlacer(true);
     var placeCaretAtEnd = createCaretPlacer(false);
     var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
@@ -469,9 +484,8 @@ define([
                         var that = this;
                         window.setTimeout(function() {
                             that.$editor.find('[name="size-warning"]').css('display', 'none');
-                        }, 10000);    
+                        }, 10000);
                     }
-                    
 
                     //remove placeholders
                     handlePlaceholder(this.$('[name=caption]'), that.descriptionPlaceholder)
@@ -495,12 +509,18 @@ define([
                     var that = this;
                     var file = transferData.files[0];
                     var urlAPI = window.URL;
+                    var addContentBtns = new AddContentBtns();
+
                     if (typeof urlAPI === 'undefined') {
                         urlAPI = window.webkitURL;
                     }
                     // Handle one upload at a time
                     if (/image/.test(file.type)) {
                         this.loading();
+
+                        // Hide add content buttons while uploading
+                        addContentBtns.hide();
+
                         // Show this image on here
                         this.$inputs.hide();
                         this.loadData({
@@ -512,11 +532,13 @@ define([
                         this.getOptions().uploader(
                             file,
                             function(data) {
+                                addContentBtns.show();
                                 that.getOptions().disableSubmit(false);
                                 that.setData(data);
                                 that.ready();
                             },
                             function(error) {
+                                addContentBtns.show();
                                 var message = error || window.i18n.t('blocks:image:upload_error');
                                 that.addMessage(message);
                                 that.ready();
