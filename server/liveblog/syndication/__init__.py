@@ -29,5 +29,6 @@ superdesk.privilege(name='consumers', label='Consumers Management', description=
 superdesk.privilege(name='producers', label='Producers Management', description='User can manage producers')
 superdesk.privilege(name='syndication_out', label='Consumer Syndication Management',
                     description='User can manage consumer syndication.')
+# IMPORTANT: the _p is here to prevent a bug when querying non syndicated posts on elasticsearch
 superdesk.privilege(name='syndication_in_p', label='Producer Syndication Management',
                     description='User can manage producer syndication.')
