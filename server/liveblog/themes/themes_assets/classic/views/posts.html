@@ -8,7 +8,7 @@
                     'lb-post-permalink-selected': post._id === timeline.permalink._id}]">
     <span ng-if="ctrl.isAd(post)">
         <lb-author item="post.mainItem" timeline="timeline"></lb-author>
-        <div class="lb-post-highlighted" ng-if="post.highlight">
+        <div class="lb-post-highlighted" ng-if="post.lb_highlight">
             <i class="icon-star icon--orange"></i>
         </div>
         <div class="lb-post-permalink">
