@@ -518,8 +518,10 @@ define([
                         urlAPI = window.webkitURL;
                     }
 
-                    if ((file.size / 1024 / 1024) > config.maxImgUploadSizeMB) {
-                        var message = "Image bigger than " + config.maxImgUploadSizeMB + "MB";
+                    if (file.size > config.maxContentLength) {
+                        var message = "Image bigger than " +
+                            (config.maxContentLength / 1024 / 1024) +
+                            "MB";
 
                         that.addMessage(message);
                         that.ready();
