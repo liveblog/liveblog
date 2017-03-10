@@ -90,7 +90,8 @@
             var members = _.map($scope.blogMembers, function(obj) {
                 return {user: obj._id};
             });
-            var promise = angular.equals({}, $scope.preview) ? $q.when() : $scope.upload($scope.preview);
+            //upload image if there is an image that was not invalidated by dimentions constrains
+            var promise = angular.equals({}, $scope.preview) || !$scope.preview.url ? $q.when() : $scope.upload($scope.preview);
             return promise.then(function() {
                 return api.blogs.save({
                     title: $scope.newBlog.title,
