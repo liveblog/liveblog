@@ -361,8 +361,8 @@
                     elem.empty();
                     if (src) {
                         var img = new Image();
-                        if ((scope.file.size / 1024 / 1024) > config.maxImgUploadSizeMB) {
-                            notify.error(gettext("Blog image is bigger than " + config.maxImgUploadSizeMB + "MB"));
+                        if (scope.file.size > config.maxContentLength) {
+                            notify.error(gettext("Blog image is bigger than " + (config.maxContentLength / 1024 / 1024) + "MB"));
                             scope.src = null;
                             scope.progressWidth = 0;
                         } else {
