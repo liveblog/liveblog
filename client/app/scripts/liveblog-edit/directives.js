@@ -231,7 +231,7 @@ define([
                             return postsService.savePost(post.blog, post, undefined, {post_status: status});
                         }
                         function changeHighlightStatus(post, status) {
-                            return postsService.savePost(post.blog, post, undefined, {highlight: status});
+                            return postsService.savePost(post.blog, post, undefined, {lb_highlight: status});
                         }
 
                         angular.extend(scope, {
@@ -305,9 +305,9 @@ define([
                                 });
                             },
                             highlightPost: function(post) {
-                                changeHighlightStatus(post, !post.highlight).then(function(post) {
+                                changeHighlightStatus(post, !post.lb_highlight).then(function(post) {
                                    notify.pop();
-                                   notify.info(post.highlight ? gettext('Post was highlighted') : gettext('Post was un-highlighted'));
+                                   notify.info(post.lb_highlight ? gettext('Post was highlighted') : gettext('Post was un-highlighted'));
                                 }, function() {
                                    notify.pop();
                                    notify.error(gettext('Something went wrong. Please try again later'));

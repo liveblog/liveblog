@@ -78,7 +78,7 @@ class PostsResource(ArchiveResource):
             'allowed': ['open', 'draft', 'submitted', 'comment'],
             'default': 'open'
         },
-        'highlight': {
+        'lb_highlight': {
             'type': 'boolean',
             'default': False
         },
