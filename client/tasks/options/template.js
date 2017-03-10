@@ -41,6 +41,8 @@ module.exports = function(grunt) {
                 }
             },
 
+            maxImgUploadSizeMB: process.env.MAX_IMG_UPLOAD_SIZE_MB || 8,
+
             // default timezone for the app
             defaultTimezone: grunt.option('defaultTimezone') || 'Europe/London',
 

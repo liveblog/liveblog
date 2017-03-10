@@ -517,6 +517,16 @@ define([
                     if (typeof urlAPI === 'undefined') {
                         urlAPI = window.webkitURL;
                     }
+
+                    if ((file.size / 1024 / 1024) > config.maxImgUploadSizeMB) {
+                        var message = "Image bigger than " + config.maxImgUploadSizeMB + "MB";
+
+                        that.addMessage(message);
+                        that.ready();
+
+                        return;
+                    }
+
                     // Handle one upload at a time
                     if (/image/.test(file.type)) {
                         this.loading();
