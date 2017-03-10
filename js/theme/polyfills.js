@@ -37,7 +37,7 @@ function enableClassList() {
         }
       }
 
-      var ret = {                    
+      var ret = {
         add: update(function(classes, index, value) {
             ~index || classes.push(value);
         }),
@@ -58,7 +58,7 @@ function enableClassList() {
             return self.className.split(/\s+/)[i] || null;
         }
       };
-      
+
       Object.defineProperty(ret, 'length', {
           get: function() {
               return self.className.split(/\s+/).length;

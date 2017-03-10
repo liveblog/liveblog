@@ -10,8 +10,8 @@
         "_updated": "2016-06-23T12:55:34+00:00",
         "description": "", "posts_order_sequence": 0,
         "blog_preferences": {
-            "theme": "liveblog-theme-dpa",
-            "language": "en"
+            "theme": "liveblog-default-theme",
+            "language": "de"
         }
     },
 
@@ -60,8 +60,8 @@
         "language": "de",
         "permalinkDelimiter": "?"
     },
-    
-    "api_host": "//dpa-api.liveblog.pro/",
-    "assets_root": "/themes_assets/liveblog-theme-dpa/",
-    "debug": false
+
+    "api_host": null,
+    "assets_root": "/themes_assets/liveblog-default-theme/",
+    "debug": true
   }

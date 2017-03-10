@@ -1,5 +1,5 @@
 'use strict';
-var DEBUG = false;
+
 
 var gulp = require('gulp')
   , browserify = require('browserify')
@@ -9,7 +9,8 @@ var gulp = require('gulp')
   , buffer = require('vinyl-buffer')
   , plugins = gulpLoadPlugins()
   , path = require('path')
-  , del = require('del');
+  , del = require('del')
+  , minimist = require('minimist');
 
 var paths = {
   less: 'less/*.less',
@@ -19,12 +20,19 @@ var paths = {
   templates: 'templates/*.html'
 };
 
+var defaultOptions = {
+  boolean: 'debug',
+  debug: process.env.DEBUG || false
+};
+
+var options = minimist(process.argv.slice(2), defaultOptions);
+
 // Browserify
 gulp.task('browserify', ['clean-js'], function(cb) {
   var b = browserify({
     entries: './js/liveblog.js',
     fullPaths: true,
-    debug: DEBUG
+    debug: options.DEBUG
   });
 
   var rewriteFilenames = function(filename) {
@@ -44,7 +52,7 @@ gulp.task('browserify', ['clean-js'], function(cb) {
     .pipe(buffer())
     .pipe(plugins.rev())
     .pipe(plugins.ngAnnotate())
-    .pipe(plugins.if(!DEBUG, plugins.uglify()))
+    .pipe(plugins.if(!options.DEBUG, plugins.uglify()))
     .pipe(gulp.dest('./dist/'))
     .pipe(plugins.rev.manifest('dist/rev-manifest.json', {merge: true}))
     .pipe(gulp.dest(''));
@@ -57,7 +65,7 @@ gulp.task('less', ['clean-css'], function () {
       paths: [path.join(__dirname, 'less', 'includes')]
     }))
 
-    .pipe(plugins.if(!DEBUG, plugins.minifyCss({compatibility: 'ie8'})))
+    .pipe(plugins.if(!options.DEBUG, plugins.minifyCss({compatibility: 'ie8'})))
     .pipe(plugins.rev())
     .pipe(gulp.dest('./dist'))
     .pipe(plugins.rev.manifest('dist/rev-manifest.json', {merge: true}))
@@ -118,11 +126,6 @@ gulp.task('watch-static', ['debug', 'serve'], function() {
   })
 });
 
-// Set debug 
-gulp.task('set-debug', function() {
-  DEBUG = true;
-});
-
 // Clean CSS
 gulp.task('clean-css', function() {
   return del(['dist/*.css'])
@@ -135,4 +138,3 @@ gulp.task('clean-js', function() {
 
 // Default build for production
 gulp.task('default', ['browserify', 'less', 'theme-replace', 'index-inject']);
-gulp.task('debug', ['set-debug', 'browserify', 'less', 'index-inject']);

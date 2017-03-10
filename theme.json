@@ -1,24 +1,25 @@
 {
-    "label": "Liveblog 3 Lean Theme",
-    "name": "liveblog-lean-theme-alpha",
+    "label": "Liveblog 3 SEO Theme",
+    "name": "liveblog-default-theme",
     "version": "0.1.42",
-    "author": "Paul Solbach <psolbach@dpa-newslab.com>",
+    "author": "Paul Solbach <psolbach@dpa-newslab.com>, Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>",
     "repository": {
         "type" : "git",
-        "url" : "git@github.com:dpa-newslab/liveblog-theme-dpa"
+        "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "UNLICENSED",
-    "styles": ["dist/dpa-liveblog-624bc5ab6e.css"],
-    "scripts": ["dist/dpa-liveblog-82b4f2d5f5.js"],
+    "styles": ["dist/liveblog-624bc5ab6e.css"],
+    "scripts": ["dist/liveblog-fe9a2dd116.js"],
     "options": [
         {
             "name": "language",
             "label": "Theme language",
             "type": "select",
             "options": [
+                {"value": "en", "label": "English"},
                 {"value": "de", "label": "German"}
             ],
-            "default": "de"
+            "default": "en"
         },
         {
             "name": "postsPerPage",
@@ -129,14 +130,14 @@
         }
     ],
     "l10n": {
-        "loadMore": "Mehr laden",
-        "oldestFirst": "Älteste zuerst",
-        "newestFirst": "Neueste zuerst",
-        "loadNewPosts": "Neue Beiträge laden",
+        "loadMore": "Load More",
+        "oldestFirst": "Oldest first",
+        "newestFirst": "Newest first",
+        "loadNewPosts": "Load new posts",
         "timeAgo": {
-            "d": {"s": "vor einem Tag", "p": "vor {} Tagen"},
-            "h": {"s": "vor einer Stunde", "p": "vor {} Stunden"},
-            "m": {"s": "vor einer Minute", "p": "vor {} Minuten"}
+            "d": {"s": "A day ago", "p": "{} days ago"},
+            "h": {"s": "An hour ago", "p": "{} hours ago"},
+            "m": {"s": "A minute ago", "p": "{} minutes ago"}
         }
     }
 }

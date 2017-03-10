@@ -97,16 +97,16 @@ function renderPosts(api_response, opts) {
       view.updatePost(renderedPost)
       return; // early
     }
-    
+
     renderedPosts.push(renderedPost) // create operation
   };
-  
+
   if (!renderedPosts.length) return // early
   if (settings.postOrder === "descending") renderedPosts.reverse()
 
   view.addPosts(renderedPosts, { // if creates
     position: opts.fromDate ? "top" : "bottom"
-  }) 
+  })
 };
 
 /**
@@ -115,7 +115,7 @@ function renderPosts(api_response, opts) {
  */
 function updateViewModel(api_response, opts) {
   vm._items.push.apply(vm._items, api_response._items);
-  
+
   if (!opts.fromDate) { // Means we're not polling
     view.toggleLoadMore(isTimelineEnd(api_response)) // the end?
   } else { // Means we're polling for new posts

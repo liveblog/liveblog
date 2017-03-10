@@ -1,4 +1,4 @@
-THEME_ARCHIVE = "liveblog-theme-dpa.zip"
+THEME_ARCHIVE = "liveblog-default-theme.zip"
 
 make:
 	make clean
