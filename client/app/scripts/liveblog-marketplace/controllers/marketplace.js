@@ -28,11 +28,14 @@ export default function marketplaceController($scope, Store, MarketplaceActions,
         MarketplaceActions.togglePanel(!$scope.searchPanel);
     };
 
+    $scope.emptyMarketer = function() {
+        return !$scope.filters || !$scope.filters.hasOwnProperty('marketer._id');
+    };
+
     $scope.emptyBlogs = function() {
         return $scope.blogs._items.length === 0
             && $scope.forthcomingBlogs._items.length === 0;
     };
-
 
     $scope.openEmbedModal = MarketplaceActions.openEmbedModal;
 

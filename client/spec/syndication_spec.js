@@ -1,7 +1,7 @@
 'use strict';
 
 // var Webhook = require('./helpers/webhook');
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login;
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     //assertToastMsg = require('./helpers/assert-toast-msg');
 
 // var webhook = new Webhook(browser.params);
