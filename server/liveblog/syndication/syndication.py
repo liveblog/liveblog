@@ -226,8 +226,8 @@ class SyndicationIn(Resource):
     }
 
     item_methods = ['GET', 'PATCH', 'PUT', 'DELETE']
-    privileges = {'POST': 'syndication_in', 'PATCH': 'syndication_in', 'PUT': 'syndication_in',
-                  'DELETE': 'syndication_in'}
+    privileges = {'POST': 'syndication_in_p', 'PATCH': 'syndication_in_p', 'PUT': 'syndication_in_p',
+                  'DELETE': 'syndication_in_p'}
     schema = syndication_in_schema
 
 

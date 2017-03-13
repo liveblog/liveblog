@@ -17,7 +17,13 @@ function(angular) {
     /**
      * Name of the scope variable where the freetype data will be stored.
      */
-    const SCOPE_FREETYPEDATA = 'freetypeData'
+    const SCOPE_FREETYPEDATA = 'freetypeData';
+
+    /**
+     * General regex for catching a $dolar variable
+     */
+    const REGEX_VARIABLE = /\$([\$a-z0-9_.\[\]]+)/gi;
+
     /**
      * Generation of new index.
      */
@@ -127,6 +133,19 @@ function(angular) {
             return attr;
         }
     }
+    /**
+     * check if an angular object has all empty values.
+     */
+    function emptyValues(obj) {
+        var empty = true;
+        _.each(obj, function(val, key) {
+            // ingnore angular key settings
+            if (key.substr(0, 2) !== '$$') {
+                empty = empty && (val === '')
+            }
+        });
+        return empty;
+    }
 
     angular.module('liveblog.edit')
     .factory('freetypeService', ['$q', function ($q) {
@@ -144,7 +163,7 @@ function(angular) {
                 template = template.replace(/\<li([^>]*)\>(.*?)\<\/li\>/g, function(all, attr, repeater) {
                     var iteratorName = getNewIndex('iterator');
                     var parts, vector = '', collection;
-                    repeater = repeater.replace(/\$([\$a-z0-9_.\[\]]+)/gi, function(all, path) {
+                    repeater = repeater.replace(REGEX_VARIABLE, function(all, path) {
                         path2obj(scope[SCOPE_FREETYPEDATA], path);
                         parts = path.split(/[\d*]/);
                         if (parts.length === 2 && parts[1] != '') {
@@ -158,6 +177,20 @@ function(angular) {
                     return '<li ng-repeat="' + iteratorName + ' in ' + collection + '">' +
                             repeater + '<freetype-collection-remove index="$index" vector="' + collection + '"/>' +
                             '</li><li><freetype-collection-add vector="' + collection + '"/></li>';
+                });
+                // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
+                template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
+                    var name;
+                    attr = attr.replace(/(checkbox|radio)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                        name = rname;
+                        // remove the dollar variable from the attributes.
+                        return '';
+                    });
+                    if (name) {
+                        path2obj(scope[SCOPE_FREETYPEDATA], name);
+                        return '<input ng-model=' + makeAngularAttr(name, attr) + '/>';
+                    }
+                    return all;
                 });
                 // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
@@ -240,8 +273,8 @@ function(angular) {
                     wrapAfter = '';
                 obj2path(paths, data);
                 template = template.replace(/\<li([^>]*)\>(.*?)\<\/li\>/g, function(all, attr, repeater) {
-                    var vector, vectorPath, parts, templ = '', emptyVars = true;
-                    repeater = repeater.replace(/\$([\$a-z0-9_.\[\]]+)/gi, function(all, path) {
+                    var vector, vectorPath, parts, templ = '', emptyIndex = [];
+                    repeater = repeater.replace(REGEX_VARIABLE, function(all, path) {
                         parts = path.split(/[\d*]/);
                         if (parts.length === 2 && parts[1] != '') {
                             vectorPath = parts[0].substr(0, parts[0].length - 1);
@@ -253,21 +286,23 @@ function(angular) {
                     if (vectorPath) {
                         vector = path2obj(data, vectorPath);
                         for (var i = 1; i< vector.length; i++) {
-                            templ += '<li' + attr + '>' + repeater.replace('[]', '[0]').replace(/\$([\$a-z0-9_.\[\]]+)/gi, function(all) {
-                                return all.replace('[]', '[0]').replace('[0]', '[' + i  + ']');
-                            }) + '</li>';
-                        }
-                        repeater.replace('[]', '[0]').replace(/\$([\$a-z0-9_.\[\]]+)/gi, function(all, name) {
-                            if (vector[0][name.replace(vectorPath + '[0].', '')]) {
-                                emptyVars = false;
+                            // if current object has empty values add it to emptyIndexs and don't render it.
+                            if (!emptyValues(vector[i])) {
+                                templ += '<li' + attr + '>' + repeater.replace(REGEX_VARIABLE, function(all) {
+                                    return all.replace('[]', '[0]').replace('[0]', '[' + i  + ']');
+                                }) + '</li>';
                             } else {
-                                emptyVars = emptyVars && true;
+                                emptyIndex.push(i);
                             }
-                        });
-                        if (emptyVars) {
-                            return '';
-                        } else {
+                        }
+                        // remove all the emptyIndexs from vector.
+                        for (var i = 0; i< emptyIndex.length; i++) {
+                            vector.splice(emptyIndex[i], 1)
+                        }
+                        if (!emptyValues(vector[0])) {
                             return all.replace('[]', '[0]') + templ;
+                        } else {
+                            return '';
                         }
                     }
                     return all.replace('[]', '[0]');

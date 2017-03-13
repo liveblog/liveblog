@@ -212,7 +212,7 @@ def get_producer_post_id(in_syndication, post_id):
     )
 
 
-def extract_producer_post_data(post, fields=('_id', '_updated', 'highlight', 'sticky', 'post_status')):
+def extract_producer_post_data(post, fields=('_id', '_updated', 'lb_highlight', 'sticky', 'post_status')):
     """Extract only useful data from original producer blog post."""
     return {key: post[key] for key in fields}
 
@@ -276,7 +276,7 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
                 'refs': item_refs
             }
         ],
-        'highlight': False,
+        'lb_highlight': False,
         'sticky': False,
         'syndication_in': in_syndication['_id'],
         'particular_type': 'post',

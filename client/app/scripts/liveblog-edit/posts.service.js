@@ -89,7 +89,7 @@ define([
             }
             // filters.highlight
             if (angular.isDefined(filters.highlight)) {
-                posts_criteria.source.query.filtered.filter.and.push({term: {highlight: filters.highlight}});
+                posts_criteria.source.query.filtered.filter.and.push({term: {lb_highlight: filters.highlight}});
             }
             // filters.sticky
             if (angular.isDefined(filters.sticky)) {
@@ -276,10 +276,10 @@ define([
             retrievePost: retrievePost,
             savePost: savePost,
             saveDraft: function(blog_id, post, items, sticky, highlight) {
-                return savePost(blog_id, post, items, {post_status: 'draft', 'sticky': sticky, 'highlight': highlight});
+                return savePost(blog_id, post, items, {post_status: 'draft', 'sticky': sticky, 'lb_highlight': highlight});
             },
             saveContribution: function(blog_id, post, items, sticky, highlight) {
-                return savePost(blog_id, post, items, {post_status: 'submitted', 'sticky': sticky, 'highlight': highlight});
+                return savePost(blog_id, post, items, {post_status: 'submitted', 'sticky': sticky, 'lb_highlight': highlight});
             },
             remove: removePost
         };
