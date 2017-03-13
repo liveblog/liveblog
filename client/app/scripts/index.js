@@ -98,7 +98,8 @@ import 'liveblog-themes';
 
 import 'liveblog-security.service';
 
-import config from './../../config';
+const config = __SUPERDESK_CONFIG__;
+//import config from './../../config';
 
 // Commented angular modules are not required to run liveblog
 // But they are shown here to give a perspective of

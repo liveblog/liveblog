@@ -191,21 +191,6 @@ function getDefaults(grunt) {
             disableEditorToolbar: grunt.option('disableEditorToolbar')
         },
 
-        // default timezone for the app
-        defaultTimezone: grunt.option('defaultTimezone') || 'Europe/London',
-
-        // model date and time formats
-        model: {
-            dateformat: 'DD/MM/YYYY',
-            timeformat: 'HH:mm:ss'
-        },
-
-        // view formats for datepickers/timepickers
-        view: {
-            dateformat: process.env.VIEW_DATE_FORMAT || 'DD/MM/YYYY',
-            timeformat: process.env.VIEW_TIME_FORMAT || 'HH:mm'
-        },
-
         // if environment name is not set
         isTestEnvironment: !!grunt.option('environmentName'),
 
@@ -222,6 +207,52 @@ function getDefaults(grunt) {
         features: {
             // tansa spellchecker
             useTansaProofing: false
+        },
+
+        debug: grunt.option('debug-mode') || false,
+        embedly: {
+            key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
+        },
+        facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
+        syndication: process.env.SYNDICATION || false,
+        marketplace: process.env.MARKETPLACE || false,
+        themeCreationRestrictions: {team: 3},
+        excludedTheme: 'angular',
+        assignableUsers: {
+            solo: 3,
+            team: 5
+        },
+        subscriptionLevel: process.env.SUBSCRIPTION_LEVEL || '',
+        blogCreationRestrictions: {
+            solo: 1,
+            team: 3
+        },
+        analytics: {
+            piwik: {
+                url: process.env.PIWIK_URL || '',
+                id: process.env.PIWIK_SITE_ID || ''
+            },
+            ga: {
+                id: process.env.TRACKING_ID || ''
+            }
+        },
+
+        maxContentLength: process.env.MAX_CONTENT_LENGTH || 8 * 1024 * 1024,
+
+        // default timezone for the app
+        defaultTimezone: grunt.option('defaultTimezone') || 'Europe/London',
+
+        // model date and time formats
+        model: {
+            dateformat: 'DD/MM/YYYY',
+            timeformat: 'HH:mm:ss'
+        },
+
+        // view formats for datepickers/timepickers
+        view: {
+            dateformat: process.env.VIEW_DATE_FORMAT || 'DD/MM/YYYY',
+            timeformat: process.env.VIEW_TIME_FORMAT || 'HH:mm'
         }
+ 
     };
 }
