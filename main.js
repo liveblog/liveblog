@@ -57,7 +57,9 @@
             }],
             orderBy: function(order_by) {
                 //remove leftover hash from photoswipe that was causing the slideshow to start on reorder
-                window.location.href = window.location.href.replace(/&gid=[^&]+/g,'');
+                if(window.location.hash) {
+                    window.location.hash = window.location.hash.replace(/&gid=[^&]+/g,'').replace(/&pid=[^&]+/g, '');
+                }
                 vm.loading = true;
                 vm.finished = false;
                 vm.pagesManager.changeOrder(order_by).then(function(data) {
