@@ -5,7 +5,7 @@
             action="#"
             method="post"
             enctype="multipart/form-data"
-            ng-if="!vm.hasReachedThemesLimit()">
+            ng-if="!vm.hasReachedThemesLimit() && !vm.isSolo()">
             <label class="navbtn navbtn-info" for="uploadAThemeFile">
                 <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
             </label>
@@ -28,7 +28,12 @@
 <section class="main-section themelist">
     <div class="loading-indicator" ng-show="vm.loading"><span translate>loading</span></div>
     <div class="list-container">
-        <div class="alert alert-info alert--margin-left" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="icon-close-small"></i></button>Customize your themes to the specific needs of your organisation. All you need is someone in your team with frontend development skills and a download of the classic theme as a good starting point to create your own. You find all required code and some info on Github: <a href="https://github.com/liveblog/liveblog/blob/e7945a48fcd19c1a959d8e83706114f13864871c/CUSTOM-THEME.MD" target="_blank">https://github.com/liveblog/liveblog/blob/e7945a48fcd19c1a959d8e83706114f13864871c/CUSTOM-THEME.MD</a></div>
+        <div 
+            ng-if="!vm.isSolo()"
+            class="alert alert-info alert--margin-left" 
+            role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="icon-close-small"></i></button>Customize your themes to the specific needs of your organisation. All you need is someone in your team with frontend development skills and a download of the classic theme as a good starting point to create your own. You find all required code and some info on Github: <a href="https://github.com/liveblog/liveblog/blob/e7945a48fcd19c1a959d8e83706114f13864871c/CUSTOM-THEME.MD" target="_blank">https://github.com/liveblog/liveblog/blob/e7945a48fcd19c1a959d8e83706114f13864871c/CUSTOM-THEME.MD</a>
+        </div>
         <!-- LIST VIEW -->
         <script type="text/ng-template" id="themeTree">
             <ul>
@@ -55,15 +60,15 @@
                                         {{ ::theme.author.name }}
                                     </div>
                                 </dd>
-                                <dt>{{ ::'Sources' | translate }}:</dt>
-                                <dd>
+                                <dt ng-if="!vm.isSolo()">{{ ::'Sources' | translate }}:</dt>
+                                <dd ng-if="!vm.isSolo()">
                                     <div ng-if="!theme.repository.url">unavailable</div>
                                     <a href="{{::theme.repository.url | githubUrlFromGit}}/archive/master.zip"
                                        ng-if="theme.repository.url"
                                        target="_blank"> <i class="icon-download"></i></a>
                                     <a href="{{::theme.repository.url | githubUrlFromGit}}"
                                        ng-if="theme.repository.url"
-                                       target="_blank">({{ ::theme.repository.url | githubUrlFromGit }})</a>
+                                       target="_blank">Github</a>
                                 </dd>
                                 <dt>{{ ::'No. of blogs using theme' | translate }}:</dt>
                                 <dd>
@@ -83,7 +88,12 @@
                                 <button ng-if="!theme.abstract" ng-click="vm.makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
                             </div>
                             <button ng-click="vm.openThemeSettings(theme)" class="btn btn-default pull-right" type="button" translate>Settings</button>
-                            <button ng-click="vm.download(theme)" class="btn btn-info pull-right" type="button" translate>Download</button>
+                            <button
+                                ng-if="!vm.isSolo()"
+                                ng-click="vm.download(theme)"
+                                class="btn btn-info pull-right"
+                                type="button"
+                                translate>Download</button>
                         </div>
                         <div class="default-theme" ng-show="vm.isDefaultTheme(theme)"></div>
                     </div>

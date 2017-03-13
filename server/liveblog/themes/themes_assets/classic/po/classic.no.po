@@ -12,6 +12,10 @@ msgstr ""
 "X-Generator: Poedit 1.5.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: posts.html:23
+msgid "Advertisement"
+msgstr "Annonse"
+
 #: comments.html:37
 msgid "Cancel"
 msgstr "Avbryt"
@@ -28,15 +32,15 @@ msgstr "Kommentar*"
 msgid "Comment should be maximum 300 characters in length."
 msgstr "Kommentarer kan være inntil 300 tegn"
 
-#: main.js:50 template.html:13
+#: main.js:49 template.html:13
 msgid "Editorial"
 msgstr "Redaksjonelt"
 
-#: template.html:96
+#: template.html:98
 msgid "Load more posts"
 msgstr "Henter flere poster"
 
-#: template.html:99
+#: template.html:101
 msgid "Loading"
 msgstr "Henter"
 
@@ -48,7 +52,7 @@ msgstr "Navn*"
 msgid "Name should be maximum 30 characters in length."
 msgstr "Navn kan ikke ha mer enn 30 tegn"
 
-#: main.js:53 template.html:17
+#: main.js:52 template.html:17
 msgid "Newest first"
 msgstr "Nyeste først"
 
@@ -56,7 +60,7 @@ msgstr "Nyeste først"
 msgid "No posts for now."
 msgstr "Ingen poster for øyeblikket"
 
-#: main.js:56 template.html:21
+#: main.js:55 template.html:21
 msgid "Oldest first"
 msgstr "Eldste først"
 
@@ -100,7 +104,7 @@ msgstr "Vis bare høydepunkter"
 msgid "Sort by:"
 msgstr "Sortér etter:"
 
-#: posts.html:27
+#: posts.html:38
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
 msgstr "Oppdatert {{post.content_updated_date | prettifyIsoDate}}"
 
@@ -108,6 +112,6 @@ msgstr "Oppdatert {{post.content_updated_date | prettifyIsoDate}}"
 msgid "Your comment was sent for approval."
 msgstr "Din kommentar er sendt til godkjenning"
 
-#: item.html:13
+#: item.html:18
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr "{{ item.meta.caption }} credit: {{ item.meta.credit }}"

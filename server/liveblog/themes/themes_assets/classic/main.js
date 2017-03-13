@@ -56,6 +56,10 @@
                 order: 'oldest_first'
             }],
             orderBy: function(order_by) {
+                //remove leftover hash from photoswipe that was causing the slideshow to start on reorder
+                if(window.location.hash) {
+                    window.location.hash = window.location.hash.replace(/&gid=[^&]+/g,'').replace(/&pid=[^&]+/g, '');
+                }
                 vm.loading = true;
                 vm.finished = false;
                 vm.pagesManager.changeOrder(order_by).then(function(data) {
@@ -151,19 +155,35 @@
 
         var vm = this;
         var all_posts = vm.posts();
-        _.each(all_posts, function(post) {
-            // Show gallery only for posts with more than 1 image.
-            post.showGallery = config.settings.showGallery && _.filter(post.items, function(item) {
-                return item.item_type === 'image';
-            }).length > 1;
-            console.log('show if it has: ', post.showGallery);
-        });
+        vm.showGallery = function(post) {
+            var no = 0;
+            angular.forEach(post.items, function(item) {
+                if (item.item_type === 'image') {
+                    no++;
+                }
+            });
+            return (no > 1) && vm.timeline.settings.showGallery;
+        }
+
+        vm.isAd = function(post) {
+            return (post.mainItem.item_type.indexOf('Advertisement') === -1)
+        }
         vm.all_posts = all_posts;
     }
 
     angular.module('theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll', 'gettext'])
+        // `assets_simplified_path` is set to work with the simplified assets path.
+        .constant('assets_simplified_path', true)
         .run(['gettextCatalog', 'config', function (gettextCatalog, config) {
             gettextCatalog.setCurrentLanguage(config.settings.language);
+            // moment js uses a diffrent country code for Norks
+            // added a mapper for this, internal Norks is `no` and for moment is `nn`.
+            var momentMapper = { 'no': 'nn' },
+                momentLanguage = config.settings.language;
+            if (momentMapper[momentLanguage]) {
+                momentLanguage = momentMapper[momentLanguage];
+            }
+            moment.locale(momentLanguage);
         }])
         .run(['$rootScope', function($rootScope){
             angular.element(document).on("click", function(e) {
@@ -221,7 +241,9 @@
                     var slideSelector = 'img';
                     var slideOptions = {
                         showHideOpacity: true,
-                        getThumbBoundsFn: false
+                        getThumbBoundsFn: false,
+                        //temp disable of photoswipe sharing
+                        shareButtons:[]
                     };
                     var justifiedGalleryOptions = {
                         margins: 3
@@ -231,6 +253,11 @@
                             var el = angular.element(element).find('.gallery');
                             $(el[0]).justifiedGallery(justifiedGalleryOptions).on('jg.complete', function() {
                                 $(this).photoSwipe(slideSelector, slideOptions);
+                            });
+                            $(el[0]).on('click', '.caption', function(e) {
+                                //redirect click action from the caption to the image to fix photoswipe bug
+                                e.preventDefault();
+                                $(this).parent().find('img').click();
                             });
                         }, 100);
                     });

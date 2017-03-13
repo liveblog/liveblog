@@ -185,6 +185,14 @@ import './../unread.posts.service';
                     return ({user: member._id});
                 });
                 notify.info(gettext('saving blog settings'));
+
+                // Set start_date to _created if date and time are empty
+                var start_date = null;
+                if (vm.start_date && vm.start_time)
+                    start_date = datetimeHelper.mergeDateTime(vm.start_date, vm.start_time);
+                else
+                    start_date = vm.blog._created;
+
                 var changedBlog = {
                     blog_preferences: vm.blogPreferences,
                     original_creator: vm.original_creator._id,
@@ -192,7 +200,7 @@ import './../unread.posts.service';
                     syndication_enabled: vm.syndication_enabled,
                     market_enabled: vm.market_enabled,
                     category: vm.category,
-                    start_date: datetimeHelper.mergeDateTime(vm.start_date, vm.start_time),
+                    start_date: start_date,
                     members: members
                 };
                 angular.extend(vm.newBlog, changedBlog);
@@ -205,6 +213,9 @@ import './../unread.posts.service';
                     vm.blog = blog;
                     vm.newBlog = angular.copy(blog);
                     vm.blogPreferences = angular.copy(blog.blog_preferences);
+                    var datetime = vm.splitDateTime(blog.start_date);
+                    vm.start_date = datetime.date;
+                    vm.start_time = datetime.time;
                     //remove accepted users from the queue
                     if (vm.acceptedMembers.length) {
                         _.each(vm.acceptedMembers, function(member) {
@@ -261,8 +272,14 @@ import './../unread.posts.service';
                         details.push(data);
                     });
                 });
+            },
+            splitDateTime: function(datetime) {
+                var splitDate = moment.tz(datetime, config.defaultTimezone);
+                return {
+                    date: splitDate.format(),
+                    time: splitDate.format(config.model.timeformat)
+                }
             }
-
         });
         // retieve the blog's public url
         var qPublicUrl = blogService.getPublicUrl(blog).then(function(url) {
@@ -357,9 +374,9 @@ import './../unread.posts.service';
             vm.start_time = splitDate.time;
 
         } else {
-            var today = moment.tz(config.defaultTimezone);
-            vm.start_date = today.format(config.model.dateformat);
-            vm.start_time = today.format(config.model.timeformat);
+            var datetime = vm.splitDateTime(vm.newBlog.start_date);
+            vm.start_date = datetime.date;
+            vm.start_time = datetime.time;
         }
 
         vm.changeTab('general');

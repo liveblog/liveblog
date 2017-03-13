@@ -4,6 +4,10 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 
+#: posts.html:23
+msgid "Advertisement"
+msgstr ""
+
 #: comments.html:37
 msgid "Cancel"
 msgstr ""
@@ -20,16 +24,16 @@ msgstr ""
 msgid "Comment should be maximum 300 characters in length."
 msgstr ""
 
-#: main.js:50
+#: main.js:49
 #: template.html:13
 msgid "Editorial"
 msgstr ""
 
-#: template.html:96
+#: template.html:98
 msgid "Load more posts"
 msgstr ""
 
-#: template.html:99
+#: template.html:101
 msgid "Loading"
 msgstr ""
 
@@ -41,7 +45,7 @@ msgstr ""
 msgid "Name should be maximum 30 characters in length."
 msgstr ""
 
-#: main.js:53
+#: main.js:52
 #: template.html:17
 msgid "Newest first"
 msgstr ""
@@ -50,7 +54,7 @@ msgstr ""
 msgid "No posts for now."
 msgstr ""
 
-#: main.js:56
+#: main.js:55
 #: template.html:21
 msgid "Oldest first"
 msgstr ""
@@ -96,7 +100,7 @@ msgstr ""
 msgid "Sort by:"
 msgstr ""
 
-#: posts.html:27
+#: posts.html:38
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
 msgstr ""
 
@@ -104,6 +108,6 @@ msgstr ""
 msgid "Your comment was sent for approval."
 msgstr ""
 
-#: item.html:13
+#: item.html:18
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr ""

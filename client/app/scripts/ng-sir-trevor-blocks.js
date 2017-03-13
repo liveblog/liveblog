@@ -36,6 +36,21 @@ import _ from 'lodash';
     };
     }
 
+    var AddContentBtns = function() {
+        this.top = $('.st-block-controls__top');
+        this.bottom = $('[data-icon-after="ADD CONTENT HERE"]');
+    };
+
+    AddContentBtns.prototype.hide = function() {
+        this.top.hide();
+        this.bottom.removeAttr('data-icon-after');
+    }
+
+    AddContentBtns.prototype.show = function() {
+        this.top.show();
+        this.bottom.attr('data-icon-after', 'ADD CONTENT HERE');
+    }
+
     var placeCaretAtStart = createCaretPlacer(true);
     var placeCaretAtEnd = createCaretPlacer(false);
     var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
@@ -98,7 +113,8 @@ import _ from 'lodash';
             // Add toMeta method to all blocks.
             SirTrevor.Block.prototype.toMeta = function() {return;};
             SirTrevor.Block.prototype.getOptions = function() {
-                return SirTrevor.$get().getInstance(this.instanceID).options;
+                var instance = SirTrevor.$get().getInstance(this.instanceID);
+                return instance ? instance.options : null;
             };
             SirTrevor.Blocks.Embed =  SirTrevor.Block.extend({
                 type: 'embed',
@@ -128,7 +144,7 @@ import _ from 'lodash';
                     });
                     handlePlaceholder(this.$editor.filter('[contenteditable]'), that.embedPlaceholder);
                     // when the link field changes
-                    this.$editor.on('change', _.debounce(function callServiceAndLoadData() {
+                    var callServiceAndLoadData = function() {
                         var input = $(this).text().trim();
                         // exit if the input field is empty
                         if (_.isEmpty(input)) {
@@ -158,7 +174,15 @@ import _ from 'lodash';
                         } else {
                             that.loadData({html: input});
                         }
-                    }, 200));
+                    }
+                    this.$editor.on('paste', _.debounce(callServiceAndLoadData, 200));
+
+                    this.$editor.on('keydown', function(e) {
+                        if (e.keyCode === 13) {
+                            e.preventDefault();
+                            callServiceAndLoadData.call(this);
+                        }
+                    });
                 },
                 isEmpty: function() {
                     return _.isEmpty(this.retrieveData().url || this.retrieveData().html);
@@ -239,14 +263,16 @@ import _ from 'lodash';
                     // set the credit
                     if (_.has(data, 'provider_name')) {
                         var credit_text  = data.provider_name;
-                        if (_.has(data, 'credit')) {
-                            credit_text = data.credit;
-                        }
                         if (_.has(data, 'author_name')) {
                             credit_text += ' | by <a href="' + data.author_url + '" target="_blank">' + data.author_name + '</a>';
                         }
                         html.find('.credit-preview').html(credit_text);
                     }
+
+                    if (_.has(data, 'credit')) {
+                        html.find('.credit-preview').html(data.credit);
+                    }
+
                     // remove link for some provider (included in the card)
                     if (['Facebook', 'Youtube', 'Twitter', 'Soundcloud'].indexOf(data.provider_name) > -1) {
                         html.find('.link-preview').remove();
@@ -440,13 +466,34 @@ import _ from 'lodash';
                         contenteditable: true,
                         placeholder: that.descriptionPlaceholder
                     }).html(data.caption));
-                    
+
+                    //add hidden credit size warning just in case
+                    this.$editor.append($('<div>', {
+                        name: 'credit-size-alert',
+                        class: 'alert alert-error',
+                        role: 'alert',
+                        style: 'display: none'
+                    })
+                    .html(window.gettext('Max. amount of 300 characters is reached')));
+
                     this.$editor.append($('<div>', {
                         name: 'credit',
                         class: 'st-image-block',
                         contenteditable: true,
                         placeholder: that.authorPlaceholder
                     }).html(data.credit));
+
+                    //limit characters for credit to a max of 300
+                    this.$editor.find('[name="credit"]').bind('input', function(ev) {
+                        if (this.innerText.length > 300) {
+                            this.innerText = this.innerText.substring(0, 300);
+                            $(this).css('border', '1px solid red');
+                            that.$editor.find('[name="credit-size-alert"]').css('display', 'block');
+                        } else {
+                            that.$editor.find('[name="credit-size-alert"]').css('display', 'none');
+                            $(this).css({'border': '0px', 'border-bottom': '1px solid #999'});
+                        }
+                    });
 
                     //image size warning
                     var maxFileSize = 2; //in MB
@@ -460,9 +507,8 @@ import _ from 'lodash';
                         var that = this;
                         window.setTimeout(function() {
                             that.$editor.find('[name="size-warning"]').css('display', 'none');
-                        }, 10000);    
+                        }, 10000);
                     }
-                    
 
                     //remove placeholders
                     handlePlaceholder(this.$('[name=caption]'), that.descriptionPlaceholder)
@@ -486,12 +532,30 @@ import _ from 'lodash';
                     var that = this;
                     var file = transferData.files[0];
                     var urlAPI = window.URL;
+                    var addContentBtns = new AddContentBtns();
+
                     if (typeof urlAPI === 'undefined') {
                         urlAPI = window.webkitURL;
                     }
+
+                    if (file.size > config.maxContentLength) {
+                        var message = "Image bigger than " +
+                            (config.maxContentLength / 1024 / 1024) +
+                            "MB";
+
+                        that.addMessage(message);
+                        that.ready();
+
+                        return;
+                    }
+
                     // Handle one upload at a time
                     if (/image/.test(file.type)) {
                         this.loading();
+
+                        // Hide add content buttons while uploading
+                        addContentBtns.hide();
+
                         // Show this image on here
                         this.$inputs.hide();
                         this.loadData({
@@ -503,11 +567,13 @@ import _ from 'lodash';
                         this.getOptions().uploader(
                             file,
                             function(data) {
+                                addContentBtns.show();
                                 that.getOptions().disableSubmit(false);
                                 that.setData(data);
                                 that.ready();
                             },
                             function(error) {
+                                addContentBtns.show();
                                 var message = error || window.i18n.t('blocks:image:upload_error');
                                 that.addMessage(message);
                                 that.ready();
@@ -578,9 +644,10 @@ import _ from 'lodash';
                     this.$editor.on('change', _.debounce(function () {
                         var input = $(this).text().trim();
                         if (_.isEmpty(input)) {
-                            that.getOptions().disableSubmit(true);
+                            if (that.getOptions())
+                                that.getOptions().disableSubmit(true);
                             return false;
-                        } else {
+                        } else if (that.getOptions()) {
                             that.getOptions().disableSubmit(false);
                         }
                     }, 200));

@@ -12,7 +12,12 @@
 .users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.email,
 .users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.username,
 .users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.name {
-    width: 25%;
+    width: 20%;
+}
+
+.users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div.api-key,
+.users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.api-key {
+    width: 40%;
 }
 
 div.subnav.pan-right {
@@ -176,4 +181,8 @@ div.select-producer {
 form[name="consumerForm"] div.error, 
 form[name="producerForm"] div.error {
     color: #fe0201;
+}
+
+div.profile-info div.details-info {
+    top: 15px;
 }

@@ -66,7 +66,7 @@ import _ from 'lodash';
 
         // add the post in the contributions vector.
         function onPostReceive(e, event_params) {
-            if (event_params.posts[0].syndication_in) {
+            if (event_params.posts && event_params.posts[0].syndication_in) {
                 return;
             }
 

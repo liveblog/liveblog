@@ -7,8 +7,8 @@
     <div class="lb-post" ng-class="{
         'active': (post.order === reorderPost.order || post.order === keepHighlighted),
         'unread': functionize(postsListCtrl.isUnreadPost)(post),
-        'pinned': post.sticky == true && !post.highlight,
-        'highlight': post.highlight == true
+        'pinned': post.sticky == true && !post.lb_highlight,
+        'lb_highlight': post.lb_highlight == true
     }">
         <div class="lb-post__holder lb-mainitem-{{ post.mainItem.item.item_type}}">
             <div class="lb-post__figure">
@@ -32,11 +32,11 @@
                     <div class="inline" ng-if="post.showUpdate">
                         <span class="updated-label" translate>&nbsp;Updated</span> <time class="updated-time">{{ post.content_updated_date | reldate }}</time>
                     </div>
-                    <div class="lb-post__actions">
+                    <div class="lb-post__actions" ng-if="!postsListCtrl.isBlogClosed">
                         <ul>
                             <li ng-if="functionize(postsListCtrl.allowEditing)(post)">
                                 <a ng-click="highlightPost(post)" tooltip-placement="bottom" tooltip="{{ 'Highlight post' | translate }}">
-                                    <i class="icon-star" ng-class="{'orange': post.highlight, 'opaque': post.highlight}"></i>
+                                    <i class="icon-star" ng-class="{'orange': post.lb_highlight, 'opaque': post.lb_highlight}"></i>
                             <li ng-if="functionize(postsListCtrl.allowEditing)(post)">
                                 <a ng-click="togglePinStatus(post)" tooltip-placement="bottom" tooltip="{{ post.sticky ? 'Unpin': 'Pin' | translate }}">
                                     <i class="icon-pin rotate" ng-class="{'blue': post.sticky, 'opaque': post.sticky}"></i>

@@ -5,9 +5,12 @@ from settings import (SYNDICATION_CELERY_COUNTDOWN,
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
 from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
+from superdesk.notification import push_notification
 from werkzeug.datastructures import FileStorage
 
 from .exceptions import APIConnectionError, DownloadError
+from settings import SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOWN
+
 
 logger = logging.getLogger('superdesk')
 
@@ -71,3 +74,31 @@ def fetch_image(self, url, mimetype):
         return FileStorage(stream=fetch_url(url), content_type=mimetype)
     except DownloadError as e:
         raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
+
+
+@celery.task(bind=True)
+def check_webhook_status(self, consumer_id):
+    """Check if consumer webhook is enabled by sending a fake http api request."""
+    from .utils import send_api_request
+    consumers = get_resource_service('consumers')
+    consumer = consumers._get_consumer(consumer_id)
+    if 'webhook_url' in consumer:
+        try:
+            response = send_api_request(consumer['webhook_url'], method='GET', json_loads=False)
+        except APIConnectionError as e:
+            raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
+        else:
+            # We can get "Authorization failed", as we are not providing an API Key.
+            # webhook_enabled field is updated using mongodb cursor to prevent multiple task execution
+            # on update.
+            cursor = consumers._cursor()
+            if response.status_code == 401:
+                webhook_enabled = True
+            else:
+                webhook_enabled = False
+
+            cursor.find_one_and_update({'_id': consumer['_id']}, {'$set': {'webhook_enabled': webhook_enabled}})
+            push_notification(consumers.notification_key, consumer={
+                '_id': consumer['_id'],
+                'webhook_enabled': webhook_enabled
+            }, updated=True)

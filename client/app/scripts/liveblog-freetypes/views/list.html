@@ -49,16 +49,20 @@
             <div class="item-creation">
                 <fieldset>
                     <div class="field">
-                        <label translate>Free Type Title *</label>
-                        <input type="text" ng-model="vm.dialogFreetype.name" maxlength="65" required>
+                        <label translate>Free Type Title <span class="ft-alert" translate ng-if="!vm.dialogFreetype.name">required</span></label>
+                        <input type="text" ng-model="vm.dialogFreetype.name" maxlength="24" required>
                     </div>
                     <div class="field">
-                        <label translate>Free Type Template *</label>
+                        <label translate>Free Type Template <span class="ft-comments">*</span> <span class="ft-alert" translate ng-if="!vm.dialogFreetype.template">required</span></label>
                         <div class="form-box"
                             template-editable
                             contenteditable="true"
                             ng-model="vm.dialogFreetype.template"
                         ></div>
+                    </div>
+                    <div class="field ft-comments">
+                    * <span translate class="c">Must contain at least one variable.<span><span>&nbsp;Do not use the DOCTYPE, BODY and HEAD tags.</span><span translate>&nbsp;All used tags must be closed.</span>
+                    <a href="https://wiki.sourcefabric.org/x/jACMAw" target="_blank" translate>See the technical documentation for further details</a>
                     </div>
                 </fieldset>
             </div>

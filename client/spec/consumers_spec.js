@@ -48,6 +48,9 @@ describe('Consumers', function() {
                         .sendKeys(contact.firstName);
                 })
                 .then(function() {
+                    return element(by.css('#save-edit-btn')).isDisplayed();
+                })
+                .then(function() {
                     return element(by.css('#save-edit-btn')).click();
                 })
                 .then(function() {

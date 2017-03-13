@@ -19,6 +19,7 @@ describe('editor embed:', function() {
                             .addEmbed();
         // write a youtube url
         editor.embedElement.sendKeys(youtube_url);
+        editor.embedElement.sendKeys(protractor.Key.ENTER);
         // wait for an iframe
         browser.wait(function() {return editor.iframe.isPresent();}, 5000);
         expect(editor.iframe.isPresent()).toBe(true);

@@ -34,7 +34,7 @@ import './../unread.posts.service';
         // check the theme setting for comments.
 
         // init with empty vector
-        $scope.freetypesData = {}; $scope.freetypeControl = {};
+        $scope.freetypesData = {}; $scope.freetypeControl = {}; $scope.validation = {};
 
         if (blog.blog_preferences.theme) {
             themesService.get(blog.blog_preferences.theme).then(function(themes) {
@@ -120,13 +120,16 @@ import './../unread.posts.service';
 
         // ask in a modalbox if the user is sure to want to overwrite editor.
         // call the callback if user say yes or if editor is empty
-        function doOrAskBeforeIfEditorIsNotEmpty(callback, msg) {
+        function doOrAskBeforeIfEditorIsNotEmpty() {
+             var deferred = $q.defer();
             if (isEditorClean()) {
-                callback();
+                deferred.resolve();
             } else {
-                msg = msg || gettext('You have content in the editor. You will lose it if you continue without saving it before.');
-                modal.confirm(msg).then(callback);
+                modal
+                    .confirm(gettext('You have content in the editor. You will lose it if you continue without saving it before.'))
+                    .then(deferred.resolve, deferred.reject);
             }
+            return deferred.promise;
         }
 
         $scope.enableEditor = true;
@@ -229,19 +232,22 @@ import './../unread.posts.service';
                 $scope.selectPostTypeDialog = !$scope.selectPostTypeDialog;
             },
             selectPostType: function(postType) {
-                $scope.selectedPostType = postType;
-                $scope.toggleTypePostDialog();
-                if (isPostScorecard()) {
-                    blogService.get($scope.blog._id).then(function(currentBlog) {
-                        $scope.currentBlog = currentBlog;
-                        if ($scope.currentBlog.blog_preferences.last_scorecard) {
-                            //load latest scorecard
-                            if ($scope.currentBlog.blog_preferences.last_scorecard.remember) {
-                                $scope.freetypesData = angular.copy($scope.currentBlog.blog_preferences.last_scorecard);
+                doOrAskBeforeIfEditorIsNotEmpty().then(function() {
+                    cleanEditor()
+                    $scope.selectedPostType = postType;
+                    $scope.toggleTypePostDialog();
+                    if (isPostScorecard()) {
+                        blogService.get($scope.blog._id).then(function(currentBlog) {
+                            $scope.currentBlog = currentBlog;
+                            if ($scope.currentBlog.blog_preferences.last_scorecard) {
+                                //load latest scorecard
+                                if ($scope.currentBlog.blog_preferences.last_scorecard.remember) {
+                                    $scope.freetypesData = angular.copy($scope.currentBlog.blog_preferences.last_scorecard);
+                                }
                             }
-                        }                     
-                    });
-                }
+                        });
+                    }
+                });
             },
             onEditorChanges: function() {
                 var input = $(this).text().trim();
@@ -253,16 +259,19 @@ import './../unread.posts.service';
             actionStatus: function() {
                 if (isPostFreetype()) {
                     if (angular.isDefined($scope.currentPost)) {
-                        return $scope.freetypeControl.isClean() && $scope.currentPost.post_status !== 'draft' && $scope.currentPost.post_status !== 'submitted';
+                        return $scope.freetypeControl.isValid()
+                                && ($scope.currentPost.post_status === 'draft'
+                                || $scope.currentPost.post_status === 'submitted');
                     } else {
-                        return $scope.freetypeControl.isClean()
+                        return $scope.freetypeControl.isValid()
+                                || $scope.freetypeControl.isClean();
                     }
                 } else {
                     return $scope.actionDisabled || $scope.actionPending;
                 }
             },
             askAndResetEditor: function() {
-                doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
+                doOrAskBeforeIfEditorIsNotEmpty().then(cleanEditor);
             },
             toggleSticky: function() {
                 $scope.sticky = !$scope.sticky;
@@ -283,7 +292,7 @@ import './../unread.posts.service';
                     var delay = 0;
                     $scope.currentPost = angular.copy(post);
                     $scope.sticky = $scope.currentPost.sticky;
-                    $scope.highlight = $scope.currentPost.highlight;
+                    $scope.highlight = $scope.currentPost.lb_highlight;
                     //@TODO handle this better ASAP, remove $timeout and find the cause of the delay
                     if (isPostFreetype()) {
                         setDefautPostType();
@@ -306,7 +315,7 @@ import './../unread.posts.service';
                     }, delay);
                 }
                 $scope.openPanel('editor');
-                doOrAskBeforeIfEditorIsNotEmpty(fillEditor.bind(null, post));
+                doOrAskBeforeIfEditorIsNotEmpty().then(fillEditor.bind(null, post));
             },
             saveAsContribution: function() {
                 $scope.actionPending = true;
@@ -352,7 +361,7 @@ import './../unread.posts.service';
                 postsService.savePost(blog._id,
                     $scope.currentPost,
                     getItemsFromEditor(),
-                    {post_status: 'open', sticky: $scope.sticky, highlight: $scope.highlight}
+                    {post_status: 'open', sticky: $scope.sticky, lb_highlight: $scope.highlight}
                 ).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));

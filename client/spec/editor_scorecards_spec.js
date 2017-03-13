@@ -26,9 +26,9 @@ describe('Scorecards Posts', function() {
             //check that edit is loading the initial values
             //usign getAttribute('value') instead of getText() because of known webdriver quirk
             expect(editor.homeName.getAttribute('value')).toEqual(data.homeName);
-            expect(editor.homeScore.getAttribute('value')).toEqual(data.homeScore);
+            expect(editor.homeScore.getAttribute('value')).toEqual('0' + data.homeScore);
             expect(editor.awayName.getAttribute('value')).toEqual(data.awayName);
-            expect(editor.awayScore.getAttribute('value')).toEqual(data.awayScore);
+            expect(editor.awayScore.getAttribute('value')).toEqual('0' + data.awayScore);
             expect(editor.player1Name.getAttribute('value')).toEqual(data.player1Name);
             expect(editor.player1Time.getAttribute('value')).toEqual(data.player1Time);
 

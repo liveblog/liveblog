@@ -1,9 +1,10 @@
 'use strict';
 
-var Webhook = require('./helpers/webhook');
-var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login;
+// var Webhook = require('./helpers/webhook');
+var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login;
+    //assertToastMsg = require('./helpers/assert-toast-msg');
 
-var webhook = new Webhook(browser.params);
+// var webhook = new Webhook(browser.params);
 
 var navigateToIngestPanel = function() {
     return element.all(by.repeater('blog in blogs._items track by blog._id'))
@@ -47,6 +48,8 @@ describe('Syndication', function() {
         // TODO: I'm deactivating this for now because of the avant-garde of the approach, 
         // should be fixed in the future.
         //it('should display an incoming syndication and delete it', function() {
+        // TODO: Update the webhook query in order to avoid error 400
+        //fit('should display an incoming syndication and delete it', function() {
         //    navigateToIngestPanel()
         //        .then(function() {
         //            return element.all(by.repeater('blog in locallySyndicatedItems'))

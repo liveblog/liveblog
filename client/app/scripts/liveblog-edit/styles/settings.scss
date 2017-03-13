@@ -211,3 +211,13 @@ $PADDING: 20px;
     margin-left: 107px;
     margin-top: 4px;
 }
+
+div.timepicker-popup div.timepicker-additional td button,
+div.datepicker-wrapper div.datepicker-additional td button {
+    padding: 0;
+}
+
+div.timepicker-popup div.timepicker-core button.btn.btn-info {
+    margin: 0;
+    float: left;
+}

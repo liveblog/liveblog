@@ -215,6 +215,9 @@
                 .image-text {
                     margin-top: 5px;
                 }
+                .freetype--error {
+                    color: #8b0000;
+                }
                 .scorecard {                                      
                     margin: 0 !important;
                     width: 100%;
@@ -551,6 +554,8 @@
                                 .st-embed-block {
                                     font-size: .9em;
                                     &.embed-input {@include inline-field();}
+                                    word-wrap: break-word;
+
                                     &.embed-preview
                                         .noembed-embed {
                                             // responsive embed
@@ -624,7 +629,12 @@
     .margin15px {
         margin: 15px;
     }
-
+    .selector-size-limit {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px;
+    }
 
 // Icons LB custom
     .big-icon-ingest {
@@ -687,6 +697,9 @@
             color: #5ea9c8;
         }
     }
+}
+.st-block__upload-container label {
+    min-height: 25px;
 }
 
 // fix for the btns in editor
