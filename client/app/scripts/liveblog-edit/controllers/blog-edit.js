@@ -250,7 +250,7 @@ define([
                     var delay = 0;
                     $scope.currentPost = angular.copy(post);
                     $scope.sticky = $scope.currentPost.sticky;
-                    $scope.highlight = $scope.currentPost.highlight;
+                    $scope.highlight = $scope.currentPost.lb_highlight;
                     //@TODO handle this better ASAP, remove $timeout and find the cause of the delay
                     if (isPostFreetype()) {
                         setDefautPostType();
@@ -319,7 +319,7 @@ define([
                 postsService.savePost(blog._id,
                     $scope.currentPost,
                     getItemsFromEditor(),
-                    {post_status: 'open', sticky: $scope.sticky, highlight: $scope.highlight}
+                    {post_status: 'open', sticky: $scope.sticky, lb_highlight: $scope.highlight}
                 ).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
