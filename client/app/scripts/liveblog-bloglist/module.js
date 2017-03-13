@@ -86,7 +86,11 @@
                 });
         };
 
+        $scope.creationInProcess = false;
+
         $scope.createBlog = function() {
+            $scope.creationInProcess = true;
+
             var members = _.map($scope.blogMembers, function(obj) {
                 return {user: obj._id};
             });
@@ -100,8 +104,10 @@
                     picture: $scope.newBlog.picture,
                     members: members
                 }).then(function(blog) {
+                    $scope.creationInProcess = false;
                     $scope.edit(blog);
                 }, function(error) {
+                    $scope.creationInProcess = false;
                     //error handler
                     $scope.newBlogError = gettext('Something went wrong. Please try again later');
                 });
