@@ -90,7 +90,8 @@
             var members = _.map($scope.blogMembers, function(obj) {
                 return {user: obj._id};
             });
-            var promise = angular.equals({}, $scope.preview) ? $q.when() : $scope.upload($scope.preview);
+            //upload image only if we have a valid one chosen
+            var promise = $scope.preview.url ? $scope.upload($scope.preview) : $q.when();
             return promise.then(function() {
                 return api.blogs.save({
                     title: $scope.newBlog.title,
