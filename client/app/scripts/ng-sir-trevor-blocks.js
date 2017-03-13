@@ -142,7 +142,7 @@ define([
                     });
                     handlePlaceholder(this.$editor.filter('[contenteditable]'), that.embedPlaceholder);
                     // when the link field changes
-                    this.$editor.on('change', _.debounce(function callServiceAndLoadData() {
+                    var callServiceAndLoadData = function() {
                         var input = $(this).text().trim();
                         // exit if the input field is empty
                         if (_.isEmpty(input)) {
@@ -172,7 +172,15 @@ define([
                         } else {
                             that.loadData({html: input});
                         }
-                    }, 200));
+                    }
+                    this.$editor.on('paste', _.debounce(callServiceAndLoadData, 200));
+
+                    this.$editor.on('keydown', function(e) {
+                        if (e.keyCode === 13) {
+                            e.preventDefault();
+                            callServiceAndLoadData.call(this);
+                        }
+                    });
                 },
                 isEmpty: function() {
                     return _.isEmpty(this.retrieveData().url || this.retrieveData().html);
