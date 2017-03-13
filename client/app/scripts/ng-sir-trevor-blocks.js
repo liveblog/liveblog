@@ -457,6 +457,15 @@ define([
                         placeholder: that.descriptionPlaceholder
                     }).html(data.caption));
 
+                    //add hidden credit size warning just in case
+                    this.$editor.append($('<div>', {
+                        name: 'credit-size-alert',
+                        class: 'alert alert-error',
+                        role: 'alert',
+                        style: 'display: none'
+                    })
+                    .html(window.gettext('Max. amount of 300 characters is reached')));
+
                     this.$editor.append($('<div>', {
                         name: 'credit',
                         class: 'st-image-block',
@@ -467,10 +476,11 @@ define([
                     //limit characters for credit to a max of 300
                     this.$editor.find('[name="credit"]').bind('input', function(ev) {
                         if (this.innerText.length > 300) {
-                            alert(window.gettext('Max. amount of 300 characters is reached'));
                             this.innerText = this.innerText.substring(0, 300);
                             $(this).css('border', '1px solid red');
+                            that.$editor.find('[name="credit-size-alert"]').css('display', 'block');
                         } else {
+                            that.$editor.find('[name="credit-size-alert"]').css('display', 'none');
                             $(this).css({'border': '0px', 'border-bottom': '1px solid #999'});
                         }
                     });
