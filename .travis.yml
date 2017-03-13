@@ -1,19 +1,25 @@
 language: python
 
-python:
-    - "3.4"
-
 sudo: false
 
 env:
     global:
         - secure: ajoP9pA/FYH+1sFwGKHlQ8PoGqRIjdmqEnwo44AA5j6c1NMsgiToA420lPm8Lp0cko5YK3ppBlGlvbRWu5JXVxl0vMtZTLf3FM2w99viddrRCkh4sMef2DzkXXYOW4Tnew/8pmaOtTn3UtNG/feJHkBzHLEDUuN0TA07Y6UaWHc=
-    matrix:
-        - TARGET=client
-        - TARGET=server
-        - TARGET=e2e_first_chrome
-        - TARGET=e2e_second_chrome
-        - TARGET=e2e_third_chrome
+
+matrix:
+    include:
+    - env: TARGET=client
+      python: "3.4"
+    - env: TARGET=server
+      python: "3.4"
+    - env: TARGET=docs
+      python: "2.7"
+    - env: TARGET=e2e_first_chrome
+      python: "3.4"
+    - env: TARGET=e2e_second_chrome
+      python: "3.4"
+    - env: TARGET=e2e_third_chrome
+      python: "3.4"
 
 services:
     - mongodb
@@ -56,6 +62,9 @@ install:
     - if [ "${TARGET}" = "client" ] || [ "${TARGET}" != "${TARGET/e2e/}" ]; then
         cd client && npm install && bower install && cd .. ;
       fi
+    - if [ "${TARGET}" = "docs" ]; then
+        cd api-docs && npm install && cd .. ;
+      fi
 
 before_script:
     - if [ "${TARGET}" != "${TARGET/e2e/}" ]; then
@@ -80,6 +89,9 @@ script:
       fi
     - if [ "${TARGET}" = "server" ]; then
         cd server && flake8 && cd .. ;
+      fi
+    - if [ "${TARGET}" = "docs" ]; then
+        cd api-docs && npm test && cd .. ;
       fi
     - if [ "${TARGET}" = "client" ]; then
         cd client && npm test && cd .. ;

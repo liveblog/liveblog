@@ -1,0 +1,28 @@
+{
+  "name": "liveblog-api-docs",
+  "description": "Liveblog API blueprint",
+  "dependencies": {
+    "protagonist": "~1.2.5"
+  },
+  "devDependencies": {
+    "aglio": "^2.3.0",
+    "aglio-theme-olio": "^1.6.3"
+  },
+  "scripts": {
+    "test": "node ./test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/liveblog/liveblog.git"
+  },
+  "keywords": [
+    "liveblog",
+    "api",
+    "blueprint"
+  ],
+  "author": "",
+  "license": "GPLv3",
+  "bugs": {
+    "url": "https://github.com/liveblog/liveblog/issues"
+  }
+}
