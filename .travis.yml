@@ -48,7 +48,6 @@ before_install:
     - node --version
     - npm config set loglevel warn
     - npm install -g npm@latest grunt-cli
-    - cp $TRAVIS_BUILD_DIR/client/config.sample.js $TRAVIS_BUILD_DIR/client/config.js
     - npm install -g grunt-cli ;
     - pip install requests
     - export DISPLAY=:99.0
@@ -68,7 +67,6 @@ before_script:
     - cd $TRAVIS_BUILD_DIR/server
     - (nohup env SUPERDESK_URL='http://localhost:5000/api' SUPERDESK_CLIENT_URL='http://localhost:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &)
     - cd $TRAVIS_BUILD_DIR/client
-    - cp config.sample.js config.js
     - MARKETPLACE=true SYNDICATION=true grunt build --server='http://localhost:5000/api' --ws='ws://localhost:5100'
     - cd dist
     - while [ ! -f index.html ]; do sleep .5; done
