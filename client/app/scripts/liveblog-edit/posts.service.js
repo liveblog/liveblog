@@ -101,7 +101,7 @@ PostsService.$inject = [
 
             if (angular.isDefined(filters.noSyndication)) {
                 posts_criteria.source.query.filtered.filter.and.push({
-                    missing: { field: 'syndication_in' }
+                    //missing: { field: 'syndication_in' }
                 });
             }
 
