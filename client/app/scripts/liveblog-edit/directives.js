@@ -19,9 +19,14 @@ import lbBindHtml from './directives/bind-html';
 import lbFilterByMember from './directives/filter-by-member';
 import autofocus from './directives/autofocus';
 import fullHeight from './directives/full-height';
+
+// Freetype related directives
 import freetypeRender from './directives/freetype-render';
 import freetypeEmbed from './directives/freetype-embed';
 import freetypeText from './directives/freetype-text';
+import freetypeLink from './directives/freetype-link';
+import freetypeCollectionAdd from './directives/freetype-collection-add';
+import freetypeCollectionRemove from './directives/freetype-collection-remove';
 
 angular.module('liveblog.edit')
     .directive('lbPostsList', lbPostsList)
@@ -172,64 +177,9 @@ angular.module('liveblog.edit')
     .directive('freetypeRender', freetypeRender)
     .directive('freetypeEmbed', freetypeEmbed)
     .directive('freetypeText', freetypeText)
-    .directive('freetypeLink', function() {
-
-        return {
-            restrict: 'E',
-            templateUrl: 'scripts/liveblog-edit/views/freetype-link.html',
-            controller: ['$scope', function($scope) {
-                var regex = /https?:\/\/[^\s]+\.[^\s\.]+/;
-                $scope._id = _.uniqueId('link');
-                var sentinel = $scope.$watch('link', function(value) {
-                    $scope.valid = !value || regex.test(value);
-                    $scope.validation[$scope._id] = $scope.valid;
-                });
-                $scope.$on('$destroy', sentinel);
-            }],
-            scope: {
-                link: '=',
-                validation: '='
-            }
-        };
-    })
-    .directive('freetypeCollectionAdd', ['$compile', function($compile) {
-        return {
-            restrict: 'E',
-            template: '<button ng-click="ftca.add()" class="freetype-btn">+</button>',
-            controller: ['$scope', function($scope) {
-                this.add = function() {
-                    var last = _.last($scope.vector), el = {};
-                    for (var key in last) {
-                        // if the key starts with $$ it is angular internal so skip it.
-                        if (last.hasOwnProperty(key) && key.substr(0, 2) !== '$$') {
-                            el[key] = '';
-                        }
-                    }
-                    $scope.vector.push(el);
-                }
-            }],
-            controllerAs: 'ftca',
-            scope: {
-                vector: '='
-            }
-        };
-    }])
-    .directive('freetypeCollectionRemove', function() {
-        return {
-            restrict: 'E',
-            template: '<button ng-click="ftcr.remove()" class="freetype-btn" ng-show="vector.length!==1">-</button>',
-            controller: ['$scope', function($scope) {
-                this.remove = function() {
-                    $scope.vector.splice($scope.index, 1);
-                }
-            }],
-            controllerAs: 'ftcr',
-            scope: {
-                vector: '=',
-                index: '='
-            }
-        };
-    })
+    .directive('freetypeLink', freetypeLink)
+    .directive('freetypeCollectionAdd', freetypeCollectionAdd)
+    .directive('freetypeCollectionRemove', freetypeCollectionRemove)
     .directive('freetypeImage', ['$compile', 'modal', 'api', 'upload', function($compile, modal, api, upload) {
         return {
             restrict: 'E',
