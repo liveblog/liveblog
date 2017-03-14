@@ -27,7 +27,8 @@ def private_draft_filter():
     """
     private_filter = {'should': [{'term': {'post_status': 'open'}},
                                  {'term': {'post_status': 'submitted'}},
-                                 {'term': {'post_status': 'comment'}}]}
+                                 {'term': {'post_status': 'comment'}},
+                                 {'term': {'post_status': 'ad'}}]}
     user = getattr(flask.g, 'user', None)
     if user:
         private_filter['should'].append(
@@ -75,7 +76,7 @@ class PostsResource(ArchiveResource):
         },
         'post_status': {
             'type': 'string',
-            'allowed': ['open', 'draft', 'submitted', 'comment'],
+            'allowed': ['open', 'draft', 'submitted', 'comment', 'ad'],
             'default': 'open'
         },
         'lb_highlight': {
