@@ -17,6 +17,7 @@ import stopEvent from './directives/stop-event';
 import selectTextOnClick from './directives/select-text-on-click';
 import lbBindHtml from './directives/bind-html';
 import lbFilterByMember from './directives/filter-by-member';
+import autofocus from './directives/autofocus';
 
 angular.module('liveblog.edit')
     .directive('lbPostsList', lbPostsList)
@@ -162,16 +163,17 @@ angular.module('liveblog.edit')
     .directive('selectTextOnClick', selectTextOnClick)
     .directive('lbBindHtml', lbBindHtml)
     .directive('lbFilterByMember', lbFilterByMember)
-    .directive('autofocus', ['$timeout', function($timeout) {
-        return {
-            restrict: 'A',
-            link: function($scope, $element) {
-                $timeout(function() {
-                    $element[0].focus();
-                });
-            }
-        };
-    }])
+    .directive('autofocus', autofocus)
+    //.directive('autofocus', ['$timeout', function($timeout) {
+    //    return {
+    //        restrict: 'A',
+    //        link: function($scope, $element) {
+    //            $timeout(function() {
+    //                $element[0].focus();
+    //            });
+    //        }
+    //    };
+    //}])
     .directive('fullHeight', ['$timeout', '$window', 'lodash', function($timeout, $window, _) {
         return {
             restrict: 'A',
