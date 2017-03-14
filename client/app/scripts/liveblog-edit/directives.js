@@ -15,6 +15,7 @@ import lbPostsList from './directives/posts-list';
 import lbItem from './directives/item';
 import stopEvent from './directives/stop-event';
 import selectTextOnClick from './directives/select-text-on-click';
+import lbBindHtml from './directives/bind-html';
 
 angular.module('liveblog.edit')
     .directive('lbPostsList', lbPostsList)
@@ -158,23 +159,7 @@ angular.module('liveblog.edit')
     ])
     .directive('stopEvent', stopEvent)
     .directive('selectTextOnClick', selectTextOnClick)
-    .directive('lbBindHtml', [function() {
-        return {
-            restrict: 'A',
-            priority: 2,
-            link: function(scope, elem, attrs) {
-                attrs.$observe('htmlContent', function() {
-                    if (attrs.htmlLocation) {
-                        //need to inject the html in a specific element
-                        elem.find('[' + attrs.htmlLocation + ']').html(attrs.htmlContent);
-                    } else {
-                        //inject streaght in the elem
-                        elem.html(attrs.htmlContent);
-                    }
-                });
-            }
-        };
-    }])
+    .directive('lbBindHtml', lbBindHtml)
     .directive('lbFilterByMember', ['api', function(api) {
         return {
             restrict: 'E',
