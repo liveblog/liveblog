@@ -8,11 +8,9 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 
- define([
-    'angular',
-    './module'
-],
-function(angular) {
+import angular from 'angular';
+import './module';
+
     'use strict';
     /**
      * Name of the scope variable where the freetype data will be stored.
@@ -156,11 +154,12 @@ function(angular) {
             *     this is special case for vector array.
             */
             transform: function(template, scope) {
+                template = template || '';
                 if (!angular.isObject(scope[SCOPE_FREETYPEDATA])) {
                     scope[SCOPE_FREETYPEDATA] = {};
                 }
                 // transform collection mechaism for `scorers` or for dinamical lists.
-                template = template.replace(/\<li([^>]*)\>(.*?)\<\/li\>/g, function(all, attr, repeater) {
+                template = template.replace(/<li([^>]*)>((.|\n)*?)<\/li>/g, function(all, attr, repeater) {
                     var iteratorName = getNewIndex('iterator');
                     var parts, vector = '', collection;
                     repeater = repeater.replace(REGEX_VARIABLE, function(all, path) {
@@ -409,5 +408,4 @@ function(angular) {
             }
         };
     }]);
-});
 

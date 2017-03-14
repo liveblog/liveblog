@@ -8,16 +8,24 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 
-define([
-    'angular',
-    'lodash',
-    'liveblog-edit/unread.posts.service',
-    'ng-sir-trevor',
-    'ng-sir-trevor-blocks',
-    'angular-embed'
-], function(angular, _) {
+import angular from 'angular';
+import _ from 'lodash';
+
+//import 'angular-embed';
+import './../../ng-sir-trevor';
+import './../../ng-sir-trevor-blocks';
+import './../unread.posts.service';
+
+//define([
+//    'angular',
+//    'lodash',
+//    'liveblog-edit/unread.posts.service',
+//    'ng-sir-trevor',
+//    'ng-sir-trevor-blocks',
+//    'angular-embed'
+//], function(angular, _) {
     'use strict';
-    var BlogEditController = function (api, $q, $scope, blog, notify, gettext, session, $injector,
+    var BlogEditController = function (api, $q, $scope, blog, notify, gettext, session, $injector, $http,
         upload, config, embedService, postsService, unreadPostsService, freetypeService, modal,
         blogService, $route, $routeParams, blogSecurityService, themesService, $templateCache, $timeout) {
 
@@ -105,7 +113,7 @@ define([
             if (isPostFreetype()) {
                 return $scope.freetypeControl.isClean();
             } else {
-                var are_all_blocks_empty = _.all(vm.editor.blocks, function(block) {return block.isEmpty();});
+                var are_all_blocks_empty = _.every(vm.editor.blocks, function(block) {return block.isEmpty();});
                 return are_all_blocks_empty || !$scope.isCurrentPostUnsaved();
             }
         }
@@ -124,8 +132,12 @@ define([
             return deferred.promise;
         }
 
+        $scope.enableEditor = true;
+
         // remove and clean every items from the editor
         function cleanEditor(actionDisabled) {
+            $scope.enableEditor = false;
+
             actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
             if ($scope.freetypeControl.reset) {
                 $scope.freetypeControl.reset();
@@ -135,6 +147,8 @@ define([
             $scope.currentPost = undefined;
             $scope.sticky = false;
             $scope.highlight = false;
+
+            $timeout(() => $scope.enableEditor = true);
         }
 
         // retieve the blog's public url
@@ -146,20 +160,41 @@ define([
         $scope.selectedFreetype = undefined;
         // retrieve the freetypes
         function getFreetypes() {
-            api.freetypes.query().then(function(data) {
-                var freetypes = [{
-                    name: 'Advertisement Local',
-                    template: $templateCache.get('scripts/liveblog-edit/views/ads-local.html')
-                }, {
-                    name: 'Advertisement Remote',
-                    template: $templateCache.get('scripts/liveblog-edit/views/ads-remote.html')
-                }, {
-                    name: 'Scorecard',
-                    template: $templateCache.get('scripts/liveblog-edit/views/scorecards.html'),
-                    separator: true
-                }];
-                $scope.freetypes = freetypes.concat(data._items);
+            //these are the freetypes defined by the user with the CRUD form
+            var userFt = api.freetypes.query().then(function(data) {
+                return data._items;
             });
+
+            var scorecards = $http.get('scripts/liveblog-edit/views/scorecards.html').then(function(template) {
+                return {
+                    name: 'Scorecard',
+                    template: template.data
+                };
+            });
+
+            var adLocal = $http.get('scripts/liveblog-edit/views/ads-local.html').then(function(template) {
+                return {
+                    name: 'Advertisment Local',
+                    template: template.data
+                };
+            });
+
+            var adRemote = $http.get('scripts/liveblog-edit/views/ads-remote.html').then(function(template) {
+                return {
+                    name: 'Advertisment Remote',
+                    template: template.data
+                };
+            });
+
+            $q.all([userFt, adLocal, adRemote, scorecards]).then(function(freetypes) {
+                angular.forEach(freetypes, function(freetype) {
+                    if (angular.isArray(freetype)) {
+                        $scope.freetypes = $scope.freetypes.concat(freetype);
+                    } else {
+                        $scope.freetypes.push(freetype);
+                    }
+                });
+            })
         };
 
         //load freetype item
@@ -212,6 +247,13 @@ define([
                             }
                         });
                     }
+                });
+            },
+            onEditorChanges: function() {
+                var input = $(this).text().trim();
+
+                $scope.$apply(function() {
+                    $scope.actionDisabled = _.isEmpty(input);
                 });
             },
             actionStatus: function() {
@@ -446,9 +488,10 @@ define([
         $scope.openPanel(panel, syndId);
     }
     BlogEditController.$inject = [
-        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector',
+        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector', '$http',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'freetypeService', 'modal',
         'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService', '$templateCache', '$timeout'
     ];
-    return BlogEditController;
-});
+
+export default BlogEditController;
+//});

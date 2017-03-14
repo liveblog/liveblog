@@ -8,18 +8,10 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 
-define([
-    'angular',
-    'lodash',
-    './module',
-    './posts.service',
-    './blog.service',
-    './pages-manager.service',
-    './freetype.service'
-], function(angular, _) {
-    'use strict';
+import angular from 'angular';
+import _ from 'lodash';
 
-    angular.module('liveblog.edit')
+angular.module('liveblog.edit')
         .directive('lbPostsList', [
             'postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager',
             function(postsService, notify, $q, $timeout, session, PagesManager) {
@@ -725,6 +717,3 @@ define([
                 }
             };
         }]);
-});
-
-// EOF

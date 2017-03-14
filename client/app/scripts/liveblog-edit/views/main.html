@@ -171,12 +171,13 @@
                     <div class="content">
                         <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">
-                                <div 
-                                    class="editor"
+                                <div
+                                    class="editor" 
+                                    ng-if="selectedPostType=='Default' && enableEditor"
                                     ng-sir-trevor
                                     st-model="blogEdit.editor"
                                     st-params="stParams"
-                                    ng-if="selectedPostType=='Default'"></div>
+                                    st-change="onEditorChanges"></div>
                             </div>
                             <freetype-render
                                     ng-if="selectedPostType!='Default'" 

@@ -1,14 +1,21 @@
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     blogs = require('./helpers/pages').blogs;
+
 var comment = {
     username: 'comment: first last',
     item_type: 'comment',
     text: 'comment: contents'
 };
+
 describe('Comments Posts', function() {
     'use strict';
 
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login('editor', 'editor')
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
 
     it('can open comments panel from url', function() {
         var comments = blogs.openBlog(0).comments;
