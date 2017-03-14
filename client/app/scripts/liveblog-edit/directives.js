@@ -20,6 +20,8 @@ import lbFilterByMember from './directives/filter-by-member';
 import autofocus from './directives/autofocus';
 import fullHeight from './directives/full-height';
 import freetypeRender from './directives/freetype-render';
+import freetypeEmbed from './directives/freetype-embed';
+import freetypeText from './directives/freetype-text';
 
 angular.module('liveblog.edit')
     .directive('lbPostsList', lbPostsList)
@@ -168,69 +170,8 @@ angular.module('liveblog.edit')
     .directive('autofocus', autofocus)
     .directive('fullHeight', fullHeight)
     .directive('freetypeRender', freetypeRender)
-    .directive('freetypeEmbed', ['$compile', function($compile) {
-
-        return {
-            restrict: 'E',
-            template: '<textarea ng-model="embed" rows="8"></textarea>',
-            controller: function() {
-            },
-            scope: {
-                embed: '='
-            }
-        };
-    }])
-    .directive('freetypeText',function() {
-
-        return {
-            restrict: 'E',
-            templateUrl: 'scripts/liveblog-edit/views/freetype-text.html',
-            controller: ['$scope', function($scope) {
-                $scope._id = _.uniqueId('text');
-                if ($scope.initial !== undefined && $scope.text === '') {
-                    $scope.text = String($scope.initial);
-                }
-                if ($scope.number !== undefined) {
-                    $scope.$on('$destroy', $scope.$watch('text', function(value) {
-                            $scope.numberFlag = (value !== '') && (value != parseInt(value, 10));
-                            $scope.validation['number__' + $scope._id] = !$scope.numberFlag;
-                    }, true));
-                }
-                if ($scope.compulsory !== undefined) {
-                    $scope.$on('$destroy', $scope.$watch('[text,compulsory]', function(value) {
-                            $scope.compulsoryFlag = (value[0] === '' && value[1] === '');
-                            $scope.validation['compulsory__' + $scope._id] = !$scope.compulsoryFlag;
-                    }, true));
-                }
-                if ($scope.tandem !== undefined) {
-                    $scope.$on('$destroy', $scope.$watch('[text,tandem]', function(value) {
-                            $scope.tandemFlag = (value[0] === '' && value[1] !== '');
-                            $scope.validation['tandem__' + $scope._id] = !$scope.tandemFlag;
-                    }, true));
-                }
-                if ($scope.necessary !== undefined) {
-                    $scope.$on('$destroy', $scope.$watch('text', function(value) {
-                            $scope.necessaryFlag = (value === '');
-                            $scope.validation['necessary__' + $scope._id] = !$scope.necessaryFlag;
-                    }, true));
-                }
-
-            }],
-            scope: {
-                text: '=',
-                // `compulsory` indicates a variable that is needed if the current value is empty.
-                compulsory: '=',
-                // `necessary` indicates is a variable needs to be non empty.
-                necessary: '=',
-                // `tandem` indicates a variable that is also needed.
-                tandem: '=',
-                validation: '=',
-                number: '@',
-                order: '@',
-                initial: '@'
-            }
-        };
-    })
+    .directive('freetypeEmbed', freetypeEmbed)
+    .directive('freetypeText', freetypeText)
     .directive('freetypeLink', function() {
 
         return {
