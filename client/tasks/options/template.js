@@ -41,6 +41,8 @@ module.exports = function(grunt) {
                 }
             },
 
+            maxContentLength: process.env.MAX_CONTENT_LENGTH || 8 * 1024 * 1024,
+
             // default timezone for the app
             defaultTimezone: grunt.option('defaultTimezone') || 'Europe/London',
 

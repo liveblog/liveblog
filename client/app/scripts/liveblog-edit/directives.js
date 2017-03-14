@@ -26,7 +26,6 @@ define([
 
                 LbPostsListCtrl.$inject = ['$scope', '$element'];
                 function LbPostsListCtrl($scope, $element) {
-                   
                     $scope.lbSticky = $scope.lbSticky === 'true';
                     var vm = this;
                     angular.extend(vm, {
@@ -135,7 +134,8 @@ define([
                             return vm.pagesManager.setAuthors(users.map(function(user) {return user._id;})).then(function() {
                                 vm.isLoading = false;
                             });
-                        }
+                        },
+                        isBlogClosed: $scope.$parent.blog.blog_status == 'closed'
                     });
                     $scope.lbPostsInstance = vm;
                     // retrieve first page
@@ -143,9 +143,12 @@ define([
                     // retrieve updates when event is recieved
                     .then(function() {
                         $scope.$on('posts', function(e, event_params) {
-
                             vm.isLoading = true;
                             vm.pagesManager.retrieveUpdate(true).then(function() {
+                                // Regenerate the embed otherwise the image doesn't appear
+                                if (window.hasOwnProperty('instgrm'))
+                                    window.instgrm.Embeds.process();
+
                                 if (event_params.deleted === true) {
                                     notify.pop();
                                     notify.info(gettext('Post removed'));
@@ -228,7 +231,7 @@ define([
                             return postsService.savePost(post.blog, post, undefined, {post_status: status});
                         }
                         function changeHighlightStatus(post, status) {
-                            return postsService.savePost(post.blog, post, undefined, {highlight: status});
+                            return postsService.savePost(post.blog, post, undefined, {lb_highlight: status});
                         }
 
                         angular.extend(scope, {
@@ -302,9 +305,9 @@ define([
                                 });
                             },
                             highlightPost: function(post) {
-                                changeHighlightStatus(post, !post.highlight).then(function(post) {
+                                changeHighlightStatus(post, !post.lb_highlight).then(function(post) {
                                    notify.pop();
-                                   notify.info(post.highlight ? gettext('Post was highlighted') : gettext('Post was un-highlighted'));
+                                   notify.info(post.lb_highlight ? gettext('Post was highlighted') : gettext('Post was un-highlighted'));
                                 }, function() {
                                    notify.pop();
                                    notify.error(gettext('Something went wrong. Please try again later'));
@@ -494,11 +497,10 @@ define([
                         return angular.equals(scope.freetypeData, scope.initialData);
                     };
                     scope.internalControl.isValid = function() {
-                        var isClean = scope.internalControl.isClean(),
-                            isValid = _.reduce(scope.validation, function(memo, val) {
+                        var isInvalid = _.reduce(scope.validation, function(memo, val) {
                                 return memo && val;
                         }, true);
-                        return !isValid || isClean;
+                        return !isInvalid;
                     }
                     function recursiveClean(obj) {
                         for (var key in obj) {
@@ -534,7 +536,7 @@ define([
 
             return {
                 restrict: 'E',
-                template: '<textarea ng-model="embed"></textarea>',
+                template: '<textarea ng-model="embed" rows="8"></textarea>',
                 controller: function() {
                 },
                 scope: {

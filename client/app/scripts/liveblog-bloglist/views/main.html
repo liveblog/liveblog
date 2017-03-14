@@ -229,14 +229,26 @@
             </div>
 
             <div class="modal-footer">
+                <div
+                    class="loading-indicator"
+                    ng-show="creationInProcess"><span translate>Creating new blog</span></div>
                 <div ng-if="creationStep === 'Details'">
                     <span class="error">{{newBlogError}}</span>
                     <button class="btn btn-primary btn-info" type="button" ng-disabled="!createBlogForm.$valid"
                     translate ng-click="switchTab('Team')">Next</button>
                 </div>
                 <div ng-if="creationStep === 'Team'">
-                    <button type="button" class="btn btn-default pull-left" translate ng-click="switchTab('Details')">Back</button>
-                    <button type="button" class="btn btn-primary btn-info" translate ng-click="createBlog()">Create</button>
+                    <button
+                        type="button"
+                        class="btn btn-default pull-left"
+                        translate
+                        ng-click="switchTab('Details')">Back</button>
+                    <button 
+                        type="button" 
+                        class="btn btn-primary btn-info" 
+                        ng-hide="creationInProcess"
+                        translate 
+                        ng-click="createBlog()">Create</button>
                 </div>
             </div>
     </div>
