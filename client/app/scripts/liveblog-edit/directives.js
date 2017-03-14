@@ -11,8 +11,10 @@
 import angular from 'angular';
 import _ from 'lodash';
 
-import lbPostsList from './directives/posts-list.js';
-import lbItem from './directives/item.js';
+import lbPostsList from './directives/posts-list';
+import lbItem from './directives/item';
+import stopEvent from './directives/stop-event';
+import selectTextOnClick from './directives/select-text-on-click';
 
 angular.module('liveblog.edit')
     .directive('lbPostsList', lbPostsList)
@@ -154,26 +156,8 @@ angular.module('liveblog.edit')
             };
         }
     ])
-    .directive('stopEvent', function () {
-        return {
-            restrict: 'A',
-            link: function (scope, element, attr) {
-                element.bind(attr.stopEvent, function (e) {
-                    e.stopPropagation();
-                });
-            }
-        };
-    })
-    .directive('selectTextOnClick', [function() {
-        return {
-            link: function(scope, elem, attrs) {
-                elem.bind('click', function() {
-                    elem.focus();
-                    elem.select();
-                });
-            }
-        };
-    }])
+    .directive('stopEvent', stopEvent)
+    .directive('selectTextOnClick', selectTextOnClick)
     .directive('lbBindHtml', [function() {
         return {
             restrict: 'A',
