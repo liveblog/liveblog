@@ -12,17 +12,11 @@ import angular from 'angular';
 import _ from 'lodash';
 
 import lbPostsList from './directives/posts-list.js';
+import lbItem from './directives/item.js';
 
 angular.module('liveblog.edit')
     .directive('lbPostsList', lbPostsList)
-    .directive('lbItem', [function() {
-        return {
-            scope: {
-                item: '='
-            },
-            templateUrl: 'scripts/liveblog-edit/views/item.html',
-        }
-    }])
+    .directive('lbItem', lbItem)
     .directive('lbPost', [
         'notify', 'gettext', 'asset', 'postsService', 'modal', 'blogSecurityService', '$document', 'instagramService',
         function(notify, gettext, asset, postsService, modal, blogSecurityService, $document, instagramService) {
