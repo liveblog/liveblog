@@ -95,6 +95,7 @@ import 'liveblog-marketplace';
 import 'liveblog-settings';
 import 'liveblog-syndication';
 import 'liveblog-themes';
+import 'liveblog-analytics';
 
 import 'liveblog-security.service';
 
@@ -175,6 +176,7 @@ angular.module('superdesk.apps', [
 angular.module('superdesk.config').constant('config', config);
 
 let liveblogModules = [
+    'liveblog.analytics',
     'liveblog.bloglist',
     'liveblog.edit',
     'liveblog.posts',

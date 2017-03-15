@@ -1,11 +1,9 @@
-'use strict'
+import liveblogAnalyticsController from './controllers/controller-analytics';
 
-var liveblogAnalytics = angular
+export default angular
   .module('liveblog.analytics', ['liveblog.security'])
-  
   .config(['apiProvider', function(apiProvider) {
     apiProvider
-      
       /*
       * 'analytics' being one of the resources that we discovered
       * earlier by requesting http://localhost:5000/api -- endpoints are described with href, title pairs.
@@ -18,4 +16,5 @@ var liveblogAnalytics = angular
         type: 'http',
         backend: {rel: 'analytics'}
       })
-  }]);
+  }])
+  .controller('LiveblogAnalyticsController', liveblogAnalyticsController)
