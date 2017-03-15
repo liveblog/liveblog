@@ -217,6 +217,8 @@
     <script src="scripts/liveblog-marketplace/directives/marketplace-switch.js"></script>
     <script src="scripts/liveblog-marketplace/actions/marketplace.js"></script>
     <script src="scripts/liveblog-marketplace/reducers/marketplace.js"></script>
+
+    <script src="config-override.js"></script>
     <!-- endbuild -->
 
     <script src="scripts/lb-templates.js"></script>
@@ -234,6 +236,10 @@
             config.paths = {
                 superdesk: 'scripts/bower_components/superdesk/client/app/'
             };
+
+            if (typeof configOverride != 'undefined')
+                angular.extend(config, configOverride)
+
             var modules = [
             'liveblog.bloglist',
             'liveblog.edit',
