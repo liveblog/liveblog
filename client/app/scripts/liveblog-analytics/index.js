@@ -1,3 +1,5 @@
+import './styles/analytics.scss';
+
 import liveblogAnalyticsController from './controllers/controller-analytics';
 import lbAnalyticsListCtrl from './directives/directives-analytics';
 
