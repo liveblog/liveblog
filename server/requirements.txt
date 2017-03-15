@@ -35,7 +35,7 @@ honcho==0.7.1
 html5lib==0.999999999
 httmock==1.2.6
 itsdangerous==0.24
-Jinja2==2.9.5
+Jinja2==2.8
 jmespath==0.9.1
 kombu==4.0.2
 lxml==3.7.2
