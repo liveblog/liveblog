@@ -12,6 +12,10 @@ msgstr ""
 "X-Generator: Poedit 1.5.4\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 
+#: posts.html:23
+msgid "Advertisement"
+msgstr "reklama"
+
 #: comments.html:37
 msgid "Cancel"
 msgstr "Zrušit"
@@ -28,15 +32,15 @@ msgstr "Text *"
 msgid "Comment should be maximum 300 characters in length."
 msgstr "Maximální délka textu je 300 znaků."
 
-#: main.js:50 template.html:13
+#: main.js:49 template.html:13
 msgid "Editorial"
 msgstr "redakční"
 
-#: template.html:96
+#: template.html:98
 msgid "Load more posts"
 msgstr "Načíst další"
 
-#: template.html:99
+#: template.html:101
 msgid "Loading"
 msgstr "Načítám"
 
@@ -48,7 +52,7 @@ msgstr "Jméno *"
 msgid "Name should be maximum 30 characters in length."
 msgstr "Maximální délka jména je 30 znaků."
 
-#: main.js:53 template.html:17
+#: main.js:52 template.html:17
 msgid "Newest first"
 msgstr "nejnovější"
 
@@ -56,7 +60,7 @@ msgstr "nejnovější"
 msgid "No posts for now."
 msgstr "Žádné příspěvky."
 
-#: main.js:56 template.html:21
+#: main.js:55 template.html:21
 msgid "Oldest first"
 msgstr "nejstarší"
 
@@ -102,7 +106,7 @@ msgstr "Zobraz jen zvýrazněné příspěvky"
 msgid "Sort by:"
 msgstr "Řazení:"
 
-#: posts.html:27
+#: posts.html:38
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
 msgstr "Aktualizace {{post.content_updated_date | prettifyIsoDate}}"
 
@@ -110,6 +114,6 @@ msgstr "Aktualizace {{post.content_updated_date | prettifyIsoDate}}"
 msgid "Your comment was sent for approval."
 msgstr "Váš text byl úspěšně odeslán. Čeká na schválení."
 
-#: item.html:13
+#: item.html:18
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr "{{ item.meta.caption }} autor: {{ item.meta.credit }}"

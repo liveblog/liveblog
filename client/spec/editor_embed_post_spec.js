@@ -1,4 +1,4 @@
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     blogs = require('./helpers/pages').blogs;
 
 describe('editor embed:', function() {
@@ -6,7 +6,12 @@ describe('editor embed:', function() {
 
     var youtube_url = 'https://www.youtube.com/watch?v=Ksd-a9lIIDc';
 
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+        browser.ignoreSynchronization = true;
+        login()
+            .then(() => browser.ignoreSynchronization = false)
+            .then(done);
+    });
 
     it('add a youtube iframe in the editor', function() {
         var editor = blogs.openBlog(0).editor
@@ -14,6 +19,7 @@ describe('editor embed:', function() {
                             .addEmbed();
         // write a youtube url
         editor.embedElement.sendKeys(youtube_url);
+        editor.embedElement.sendKeys(protractor.Key.ENTER);
         // wait for an iframe
         browser.wait(function() {return editor.iframe.isPresent();}, 5000);
         expect(editor.iframe.isPresent()).toBe(true);

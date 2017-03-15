@@ -3,7 +3,7 @@
 [Fork](https://github.com/liveblog/liveblog) •
 [License](https://github.com/liveblog/liveblog/blob/master/LICENSE) •
 [Documentation](http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/) •
-*Version 3.0.9*
+*Version 3.1.0*
 
 [![Build Status](https://travis-ci.org/liveblog/liveblog.svg?branch=master)](https://travis-ci.org/liveblog/liveblog)
 
@@ -39,7 +39,7 @@ echo "discovery.zen.ping.multicast.enabled: false" | sudo tee --append /etc/defa
 Install Node.js LTS version:
 
 ```bash
-curl -sL https://deb.nodesource.com/setup_4.x | sudo -E bash -
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
 sudo apt-get install nodejs
 ```
 
@@ -57,7 +57,7 @@ curl libfontconfig virtualenv
 Install the required npm tools:
 
 ```bash
-sudo npm install -g grunt-cli bower
+sudo npm install -g grunt-cli
 ```
 
 #### Configure the server
@@ -106,7 +106,6 @@ Now we can install the dependencies for the client
 ```bash
 cd client
 npm install
-bower install
 ```
 
 We can now run the client server:

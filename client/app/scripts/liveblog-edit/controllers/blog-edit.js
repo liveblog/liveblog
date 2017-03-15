@@ -8,16 +8,24 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 
-define([
-    'angular',
-    'lodash',
-    'liveblog-edit/unread.posts.service',
-    'ng-sir-trevor',
-    'ng-sir-trevor-blocks',
-    'angular-embed'
-], function(angular, _) {
+import angular from 'angular';
+import _ from 'lodash';
+
+//import 'angular-embed';
+import './../../ng-sir-trevor';
+import './../../ng-sir-trevor-blocks';
+import './../unread.posts.service';
+
+//define([
+//    'angular',
+//    'lodash',
+//    'liveblog-edit/unread.posts.service',
+//    'ng-sir-trevor',
+//    'ng-sir-trevor-blocks',
+//    'angular-embed'
+//], function(angular, _) {
     'use strict';
-    var BlogEditController = function (api, $q, $scope, blog, notify, gettext, session, $injector,
+    var BlogEditController = function (api, $q, $scope, blog, notify, gettext, session, $injector, $http,
         upload, config, embedService, postsService, unreadPostsService, freetypeService, modal,
         blogService, $route, $routeParams, blogSecurityService, themesService, $templateCache, $timeout) {
 
@@ -26,7 +34,7 @@ define([
         // check the theme setting for comments.
 
         // init with empty vector
-        $scope.freetypesData = {}; $scope.freetypeControl = {};
+        $scope.freetypesData = {}; $scope.freetypeControl = {}; $scope.validation = {};
 
         if (blog.blog_preferences.theme) {
             themesService.get(blog.blog_preferences.theme).then(function(themes) {
@@ -105,24 +113,31 @@ define([
             if (isPostFreetype()) {
                 return $scope.freetypeControl.isClean();
             } else {
-                var are_all_blocks_empty = _.all(vm.editor.blocks, function(block) {return block.isEmpty();});
+                var are_all_blocks_empty = _.every(vm.editor.blocks, function(block) {return block.isEmpty();});
                 return are_all_blocks_empty || !$scope.isCurrentPostUnsaved();
             }
         }
 
         // ask in a modalbox if the user is sure to want to overwrite editor.
         // call the callback if user say yes or if editor is empty
-        function doOrAskBeforeIfEditorIsNotEmpty(callback, msg) {
+        function doOrAskBeforeIfEditorIsNotEmpty() {
+             var deferred = $q.defer();
             if (isEditorClean()) {
-                callback();
+                deferred.resolve();
             } else {
-                msg = msg || gettext('You have content in the editor. You will lose it if you continue without saving it before.');
-                modal.confirm(msg).then(callback);
+                modal
+                    .confirm(gettext('You have content in the editor. You will lose it if you continue without saving it before.'))
+                    .then(deferred.resolve, deferred.reject);
             }
+            return deferred.promise;
         }
+
+        $scope.enableEditor = true;
 
         // remove and clean every items from the editor
         function cleanEditor(actionDisabled) {
+            $scope.enableEditor = false;
+
             actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
             if ($scope.freetypeControl.reset) {
                 $scope.freetypeControl.reset();
@@ -132,6 +147,8 @@ define([
             $scope.currentPost = undefined;
             $scope.sticky = false;
             $scope.highlight = false;
+
+            $timeout(() => $scope.enableEditor = true);
         }
 
         // retieve the blog's public url
@@ -143,20 +160,41 @@ define([
         $scope.selectedFreetype = undefined;
         // retrieve the freetypes
         function getFreetypes() {
-            api.freetypes.query().then(function(data) {
-                var freetypes = [{
-                    name: 'Advertisment Local',
-                    template: $templateCache.get('scripts/liveblog-edit/views/ads-local.html')
-                }, {
-                    name: 'Advertisment Remote',
-                    template: $templateCache.get('scripts/liveblog-edit/views/ads-remote.html')
-                }, {
-                    name: 'Scorecard',
-                    template: $templateCache.get('scripts/liveblog-edit/views/scorecards.html'),
-                    separator: true
-                }];
-                $scope.freetypes = freetypes.concat(data._items);
+            //these are the freetypes defined by the user with the CRUD form
+            var userFt = api.freetypes.query().then(function(data) {
+                return data._items;
             });
+
+            var scorecards = $http.get('scripts/liveblog-edit/views/scorecards.html').then(function(template) {
+                return {
+                    name: 'Scorecard',
+                    template: template.data
+                };
+            });
+
+            var adLocal = $http.get('scripts/liveblog-edit/views/ads-local.html').then(function(template) {
+                return {
+                    name: 'Advertisment Local',
+                    template: template.data
+                };
+            });
+
+            var adRemote = $http.get('scripts/liveblog-edit/views/ads-remote.html').then(function(template) {
+                return {
+                    name: 'Advertisment Remote',
+                    template: template.data
+                };
+            });
+
+            $q.all([userFt, adLocal, adRemote, scorecards]).then(function(freetypes) {
+                angular.forEach(freetypes, function(freetype) {
+                    if (angular.isArray(freetype)) {
+                        $scope.freetypes = $scope.freetypes.concat(freetype);
+                    } else {
+                        $scope.freetypes.push(freetype);
+                    }
+                });
+            })
         };
 
         //load freetype item
@@ -194,33 +232,46 @@ define([
                 $scope.selectPostTypeDialog = !$scope.selectPostTypeDialog;
             },
             selectPostType: function(postType) {
-                $scope.selectedPostType = postType;
-                $scope.toggleTypePostDialog();
-                if (isPostScorecard()) {
-                    blogService.get($scope.blog._id).then(function(currentBlog) {
-                        $scope.currentBlog = currentBlog;
-                        if ($scope.currentBlog.blog_preferences.last_scorecard) {
-                            //load latest scorecard
-                            if ($scope.currentBlog.blog_preferences.last_scorecard.remember) {
-                                $scope.freetypesData = angular.copy($scope.currentBlog.blog_preferences.last_scorecard);
+                doOrAskBeforeIfEditorIsNotEmpty().then(function() {
+                    cleanEditor()
+                    $scope.selectedPostType = postType;
+                    $scope.toggleTypePostDialog();
+                    if (isPostScorecard()) {
+                        blogService.get($scope.blog._id).then(function(currentBlog) {
+                            $scope.currentBlog = currentBlog;
+                            if ($scope.currentBlog.blog_preferences.last_scorecard) {
+                                //load latest scorecard
+                                if ($scope.currentBlog.blog_preferences.last_scorecard.remember) {
+                                    $scope.freetypesData = angular.copy($scope.currentBlog.blog_preferences.last_scorecard);
+                                }
                             }
-                        }                     
-                    });
-                }
+                        });
+                    }
+                });
+            },
+            onEditorChanges: function() {
+                var input = $(this).text().trim();
+
+                $scope.$apply(function() {
+                    $scope.actionDisabled = _.isEmpty(input);
+                });
             },
             actionStatus: function() {
                 if (isPostFreetype()) {
                     if (angular.isDefined($scope.currentPost)) {
-                        return $scope.freetypeControl.isClean() && $scope.currentPost.post_status !== 'draft' && $scope.currentPost.post_status !== 'submitted';
+                        return $scope.freetypeControl.isValid()
+                                && ($scope.currentPost.post_status === 'draft'
+                                || $scope.currentPost.post_status === 'submitted');
                     } else {
-                        return $scope.freetypeControl.isClean()
+                        return $scope.freetypeControl.isValid()
+                                || $scope.freetypeControl.isClean();
                     }
                 } else {
                     return $scope.actionDisabled || $scope.actionPending;
                 }
             },
             askAndResetEditor: function() {
-                doOrAskBeforeIfEditorIsNotEmpty(cleanEditor);
+                doOrAskBeforeIfEditorIsNotEmpty().then(cleanEditor);
             },
             toggleSticky: function() {
                 $scope.sticky = !$scope.sticky;
@@ -241,7 +292,7 @@ define([
                     var delay = 0;
                     $scope.currentPost = angular.copy(post);
                     $scope.sticky = $scope.currentPost.sticky;
-                    $scope.highlight = $scope.currentPost.highlight;
+                    $scope.highlight = $scope.currentPost.lb_highlight;
                     //@TODO handle this better ASAP, remove $timeout and find the cause of the delay
                     if (isPostFreetype()) {
                         setDefautPostType();
@@ -264,7 +315,7 @@ define([
                     }, delay);
                 }
                 $scope.openPanel('editor');
-                doOrAskBeforeIfEditorIsNotEmpty(fillEditor.bind(null, post));
+                doOrAskBeforeIfEditorIsNotEmpty().then(fillEditor.bind(null, post));
             },
             saveAsContribution: function() {
                 $scope.actionPending = true;
@@ -310,7 +361,7 @@ define([
                 postsService.savePost(blog._id,
                     $scope.currentPost,
                     getItemsFromEditor(),
-                    {post_status: 'open', sticky: $scope.sticky, highlight: $scope.highlight}
+                    {post_status: 'open', sticky: $scope.sticky, lb_highlight: $scope.highlight}
                 ).then(function(post) {
                     notify.pop();
                     notify.info(gettext('Post saved'));
@@ -437,9 +488,10 @@ define([
         $scope.openPanel(panel, syndId);
     }
     BlogEditController.$inject = [
-        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector',
+        'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector', '$http',
         'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'freetypeService', 'modal',
         'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService', '$templateCache', '$timeout'
     ];
-    return BlogEditController;
-});
+
+export default BlogEditController;
+//});

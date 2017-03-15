@@ -1,16 +1,20 @@
 msgid ""
 msgstr ""
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
 "Project-Id-Version: \n"
 "POT-Creation-Date: \n"
 "PO-Revision-Date: \n"
-"Language-Team: \n"
-"MIME-Version: 1.0\n"
-"X-Generator: Poedit 1.8.11\n"
 "Last-Translator: Karel Petrak <karel.petrak@sourcefabric.org>\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language-Team: \n"
 "Language: fi\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: posts.html:23
+msgid "Advertisement"
+msgstr "Mainos"
 
 #: comments.html:37
 msgid "Cancel"
@@ -28,15 +32,15 @@ msgstr "Kommentti *"
 msgid "Comment should be maximum 300 characters in length."
 msgstr "Kommentin enimmäispituus on 300 merkkiä."
 
-#: main.js:50 template.html:13
+#: main.js:49 template.html:13
 msgid "Editorial"
 msgstr "Toimituksellinen"
 
-#: template.html:96
+#: template.html:98
 msgid "Load more posts"
 msgstr "Lataa lisää julkaisuja"
 
-#: template.html:99
+#: template.html:101
 msgid "Loading"
 msgstr "Lataa"
 
@@ -48,7 +52,7 @@ msgstr "Nimi *"
 msgid "Name should be maximum 30 characters in length."
 msgstr "Nimen enimmäispituus on 30 merkkiä."
 
-#: main.js:53 template.html:17
+#: main.js:52 template.html:17
 msgid "Newest first"
 msgstr "Uusimmat ensin"
 
@@ -56,7 +60,7 @@ msgstr "Uusimmat ensin"
 msgid "No posts for now."
 msgstr "Ei uusia julkaisuja."
 
-#: main.js:56 template.html:21
+#: main.js:55 template.html:21
 msgid "Oldest first"
 msgstr "Vanhimmat ensin"
 
@@ -100,7 +104,7 @@ msgstr "Näytä vain korostettu julkaisu"
 msgid "Sort by:"
 msgstr "Järjestä:"
 
-#: posts.html:27
+#: posts.html:38
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
 msgstr "Päivitetty {{post.content_updated_date | prettifyIsoDate}}"
 
@@ -108,6 +112,6 @@ msgstr "Päivitetty {{post.content_updated_date | prettifyIsoDate}}"
 msgid "Your comment was sent for approval."
 msgstr "Kommenttisi lähetettiin hyväksyttäväksi."
 
-#: item.html:13
+#: item.html:18
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr "{{ item.meta.caption }} © {{ item.meta.credit }}"

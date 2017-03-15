@@ -13,6 +13,10 @@ msgstr ""
 "20)) ? 1 : 2);\n"
 "X-Generator: Poedit 1.5.4\n"
 
+#: posts.html:23
+msgid "Advertisement"
+msgstr "Reclamă"
+
 #: comments.html:37
 msgid "Cancel"
 msgstr "Anulează"
@@ -29,15 +33,15 @@ msgstr "Comentariu *"
 msgid "Comment should be maximum 300 characters in length."
 msgstr "Comentariu nu poate fi mai lung de 300 de caractere."
 
-#: main.js:50 template.html:13
+#: main.js:49 template.html:13
 msgid "Editorial"
 msgstr "editorial"
 
-#: template.html:96
+#: template.html:98
 msgid "Load more posts"
 msgstr "Încarcă mai multe posturi"
 
-#: template.html:99
+#: template.html:101
 msgid "Loading"
 msgstr "Se încarcă"
 
@@ -49,7 +53,7 @@ msgstr "Numele *"
 msgid "Name should be maximum 30 characters in length."
 msgstr "Numele nu poate fi mai lung de 30 de caractere."
 
-#: main.js:53 template.html:17
+#: main.js:52 template.html:17
 msgid "Newest first"
 msgstr "Cele mai noi"
 
@@ -57,7 +61,7 @@ msgstr "Cele mai noi"
 msgid "No posts for now."
 msgstr "Deocamdata nu sunt articole."
 
-#: main.js:56 template.html:21
+#: main.js:55 template.html:21
 msgid "Oldest first"
 msgstr "Cele mai vechi"
 
@@ -103,7 +107,7 @@ msgstr ""
 msgid "Sort by:"
 msgstr "Ordonează după:"
 
-#: posts.html:27
+#: posts.html:38
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
 msgstr ""
 
@@ -111,6 +115,6 @@ msgstr ""
 msgid "Your comment was sent for approval."
 msgstr "Comentariul tău a fost trimis spre aprobare."
 
-#: item.html:13
+#: item.html:18
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr ""

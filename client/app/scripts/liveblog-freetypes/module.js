@@ -1,16 +1,68 @@
-(function() {
-    'use strict';
+LiveblogFreetypesController.$inject = ['api', '$location', 'notify', 'gettext',
+'$q', '$sce', 'config', 'lodash', 'upload', 'blogService', 'modal'];
 
-    LiveblogFreetypesController.$inject = ['api', '$location', 'notify', 'gettext',
-    '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', 'modal'];
-    function LiveblogFreetypesController(api, $location, notify, gettext,
-    $q, $sce, config, _, upload, blogService, modal) {
-        var vm = this;
+function LiveblogFreetypesController(api, $location, notify, gettext,
+$q, $sce, config, _, upload, blogService, modal) {
+    var vm = this;
 
-        function getFreetypes() {
+//<<<<<<< HEAD
+//    function getFreetypes() {
+//        api.freetypes.query().then(function(data) {
+//            vm.freetypes = data._items;
+//            notify.info('Free types loaded');
+//        }, function(data) {
+//            notify.error(gettext('There was an error getting the free type'));
+//        })
+//    };
+
+//    angular.extend(vm, {
+//        //new item type modal is closed by default§
+//        freetypeModalActive: false,
+//        editFreetype: false,
+//        dialogFreetype: {
+//            loading: false,
+//            name: '',
+//            template: ''
+//        },
+//        //open dialog for adding editing an item type
+//        openFreetypeDialog: function(freetype) {
+
+//            vm.editFreetype = freetype || false;
+
+//            if (vm.editFreetype) {
+//                vm.dialogFreetype.name = vm.editFreetype.name;
+//                vm.dialogFreetype.template = vm.editFreetype.template;
+//            } else {
+//                vm.dialogFreetype.name = '';
+//                vm.dialogFreetype.template = '';
+//            }
+//            vm.freetypeModalActive = true;
+//        },
+//        saveFreetype: function() {
+//            vm.freetypeModalActive = false;
+//            vm.dialogFreetype.loading = true;
+//            if (vm.editFreetype) {
+//                api.freetypes.save(vm.editFreetype, {name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
+//                    vm.dialogFreetype.loading = false;
+//                    getFreetypes();
+//                    vm.editFreetype = false;
+//                }, function(data) {
+//                    notify.error(gettext('Saving dit not work, please try again later!'));
+//                });
+//            } else {
+//                api.freetypes.save({name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
+//                    vm.dialogFreetype.loading = false;
+//                    getFreetypes();
+//                }, function(data) {
+//                    notify.error(gettext('Saving dit not work, please try again later!'));
+//=======
+        function getFreetypes(silent) {
+            silent = silent || false;
             api.freetypes.query().then(function(data) {
                 vm.freetypes = data._items;
-                notify.info('Free types loaded');
+                if (!silent) {
+                    notify.info('Free types loaded');
+                }
             }, function(data) {
                 notify.error(gettext('There was an error getting the free type'));
             })
@@ -27,7 +79,8 @@
             },
             //open dialog for adding editing an item type
             openFreetypeDialog: function(freetype) {
-
+                //refresh freetypes to make sure we use a fresh title
+                getFreetypes();
                 vm.editFreetype = freetype || false;
 
                 if (vm.editFreetype) {
@@ -39,51 +92,101 @@
                 }
                 vm.freetypeModalActive = true;
             },
-            saveFreetype: function() {
-                vm.freetypeModalActive = false;
-                vm.dialogFreetype.loading = true;
-                if (vm.editFreetype) {
-                    api.freetypes.save(vm.editFreetype, {name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
-                        vm.dialogFreetype.loading = false;
-                        getFreetypes();
-                        vm.editFreetype = false;
-                    }, function(data) {
-                        notify.error(gettext('Saving dit not work, please try again later!'));
-                    });
-                } else {
-                    api.freetypes.save({name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
-                        vm.dialogFreetype.loading = false;
-                        getFreetypes();
-                    }, function(data) {
-                        notify.error(gettext('Saving dit not work, please try again later!'));
-                    });
+            handleSaveError: function(data) {
+                var errorMsg = gettext('Saving did not work, please try again later!');
+                if (data.data._issues.template) {
+                    errorMsg = gettext(data.data._issues.template);
                 }
+                notify.error(errorMsg, 10000);
             },
-            removeFreetype: function(freetype, $index) {
-                modal.confirm(gettext('Are you sure you want to remove this free type?')).then(function() {
-                    api.freetypes.remove(freetype).then(function(data) {
-                        vm.freetypes.splice($index, 1);
-                    }, function(data) {
-                        notify.errorp(gettext('Can\'t remove free type'));
-                    });
+            preSaveChecks: function(template, name) {
+                var valid = true, unique = true;
+                //check for variables
+                var patt = /\$([\$a-z0-9_.\[\]]+)/gi;
+                if (!patt.test(template)) {
+                    valid = false;
+                    notify.error(gettext('Template must contain at least one variable! Check the documentation for further information'), 10000);
+                }
+                //check for unique name
+                angular.forEach(vm.freetypes, function(freetype) {
+                    if (freetype.name === name) {
+                        if (!vm.editFreetype) {
+                            //it's a new freetype so not unique
+                            unique = false;
+                        } else {
+                            if (vm.editFreetype._id !== freetype._id) {
+                                //not editing the same freetype
+                                unique = false;
+                            }
+                        }
+                    }
                 });
+                if (!unique) {
+                    valid = false;
+                    notify.error(gettext('Free types titles must be unique'), 10000);
+                }
+                return valid
             },
-            cancelCreate: function() {
-                vm.freetypeModalActive = false;
-            }
-        });
+            saveFreetype: function() {
+                if (vm.preSaveChecks(vm.dialogFreetype.template, vm.dialogFreetype.name)) {
+                    vm.dialogFreetype.loading = true;
+                    if (vm.editFreetype) {
+                        api.freetypes.save(vm.editFreetype, {name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
+                            vm.dialogFreetype.loading = false;
+                            vm.freetypeModalActive = false;
+                            getFreetypes();
+                            vm.editFreetype = false;
+                        }, function(data) {
+                            vm.handleSaveError(data);
+                        });
+                    } else {
+                        api.freetypes.save({name: vm.dialogFreetype.name, template: vm.dialogFreetype.template}).then(function(data) {
+                            vm.dialogFreetype.loading = false;
+                            vm.freetypeModalActive = false;
+                            getFreetypes();
+                        }, function(data) {
+                            vm.handleSaveError(data);
+                        });
+                    }
+                }
+//            },
+//            removeFreetype: function(freetype, $index) {
+//                modal.confirm(gettext('Are you sure you want to remove this free type?')).then(function() {
+//                    api.freetypes.remove(freetype).then(function(data) {
+//                        vm.freetypes.splice($index, 1);
+//                    }, function(data) {
+//                        notify.errorp(gettext('Can\'t remove free type'));
+//                    });
+////>>>>>>> upstream/devel
+//                });
+//            }
+        },
+        removeFreetype: function(freetype, $index) {
+            modal.confirm(gettext('Are you sure you want to remove this free type?')).then(function() {
+                api.freetypes.remove(freetype).then(function(data) {
+                    vm.freetypes.splice($index, 1);
+                }, function(data) {
+                    notify.errorp(gettext('Can\'t remove free type'));
+                });
+            });
+        },
+        cancelCreate: function() {
+            vm.freetypeModalActive = false;
+        }
+    });
 
-        getFreetypes();
-    }
+    getFreetypes();
+}
 
     var liveblogFreetypesModule = angular.module('liveblog.freetypes', [])
-    .config(['superdeskProvider', function(superdesk) {
+    .config(['superdeskProvider', 'config', function(superdesk, config) {
         if (config.subscriptionLevel != 'solo')
             superdesk
                 .activity('/freetypes/', {
                     label: gettext('Free types manager'),
                     controller: LiveblogFreetypesController,
                     controllerAs: 'vm',
+                    betaMark: true,
                     category: superdesk.MENU_MAIN,
                     adminTools: true,
                     privileges: {'global_preferences': 1},
@@ -95,24 +198,30 @@
             type: 'http',
             backend: {rel: 'freetypes'}
         });
-    }])
-    .directive("templateEditable", function() {
-        return {
-            restrict: "A",
-            require: "ngModel",
-            link: function(scope, element, attrs, ngModel) {
-                function read() {
-                    ngModel.$setViewValue(element.text());
-                }
-                ngModel.$render = function() {
-                    element.text(ngModel.$viewValue || "");
-                };
-                element.bind("blur keyup change", function() {
-                    scope.$apply(read);
-                });
-            }
-        }
+}])
+.config(['apiProvider', function(apiProvider) {
+    apiProvider.api('freetypes', {
+        type: 'http',
+        backend: {rel: 'freetypes'}
     });
-    return liveblogFreetypesModule;
+}])
+.directive("templateEditable", function() {
+    return {
+        restrict: "A",
+        require: "ngModel",
+        link: function(scope, element, attrs, ngModel) {
+            function read() {
+                ngModel.$setViewValue(element.text());
+            }
+            ngModel.$render = function() {
+                element.text(ngModel.$viewValue || "");
+            };
+            element.bind("blur keyup change", function() {
+                scope.$apply(read);
+            });
+        }
+    }
+});
 
-})();
+export default liveblogFreetypesModule;
+

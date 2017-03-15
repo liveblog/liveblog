@@ -28,6 +28,8 @@ from superdesk.errors import SuperdeskApiError
 import logging
 from liveblog.blogslist.blogslist import publish_bloglist_embed_on_s3
 from settings import (SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS)
+from superdesk.utc import utcnow
+
 
 logger = logging.getLogger('superdesk')
 
@@ -181,6 +183,10 @@ class BlogService(BaseService):
             # save the theme settings on the blog level
             doc['theme_settings'] = default_theme_settings
 
+            # If "start_date" is set to None, change the value to utcnow().
+            if doc['start_date'] is None:
+                doc['start_date'] = utcnow()
+
     def on_created(self, docs):
         for blog in docs:
             # Publish on s3 if possible and save the public_url in the blog
@@ -225,6 +231,10 @@ class BlogService(BaseService):
         out = get_resource_service('syndication_out').find({'blog_id': original['_id']})
         if syndication_enabled is False and out.count():
             raise SuperdeskApiError.forbiddenError(message='Cannot disable syndication: blog has active consumers.')
+
+        # If missing, set "start_date" to original post "_created" value.
+        if not updates.get('start_date') and original['start_date'] is None:
+            updates['start_date'] = original['_created']
 
     def on_updated(self, updates, original):
         publish_blog_embed_on_s3.delay(str(original['_id']))

@@ -12,6 +12,10 @@ msgstr ""
 "X-Generator: Poedit 1.5.4\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
+#: posts.html:23
+msgid "Advertisement"
+msgstr "Advertentie"
+
 #: comments.html:37
 msgid "Cancel"
 msgstr "Annuleren"
@@ -28,15 +32,15 @@ msgstr "Tekst *"
 msgid "Comment should be maximum 300 characters in length."
 msgstr "Uw reactie van maximaal 300 tekens."
 
-#: main.js:50 template.html:13
+#: main.js:49 template.html:13
 msgid "Editorial"
 msgstr "Redactioneel"
 
-#: template.html:96
+#: template.html:98
 msgid "Load more posts"
 msgstr "Meer"
 
-#: template.html:99
+#: template.html:101
 msgid "Loading"
 msgstr "Laden"
 
@@ -48,7 +52,7 @@ msgstr "Naam *"
 msgid "Name should be maximum 30 characters in length."
 msgstr "Uw naam kan maximaal 30 tekens lang zijn."
 
-#: main.js:53 template.html:17
+#: main.js:52 template.html:17
 msgid "Newest first"
 msgstr "Toon nieuwste eerst"
 
@@ -56,7 +60,7 @@ msgstr "Toon nieuwste eerst"
 msgid "No posts for now."
 msgstr "Nog geen berichten beschikbaar."
 
-#: main.js:56 template.html:21
+#: main.js:55 template.html:21
 msgid "Oldest first"
 msgstr "Toon oudste eerst"
 
@@ -100,7 +104,7 @@ msgstr ""
 msgid "Sort by:"
 msgstr "Sorteer:"
 
-#: posts.html:27
+#: posts.html:38
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
 msgstr ""
 
@@ -108,6 +112,6 @@ msgstr ""
 msgid "Your comment was sent for approval."
 msgstr "Uw reactie is ontvangen ter beoordeling."
 
-#: item.html:13
+#: item.html:18
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
 msgstr ""

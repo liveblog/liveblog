@@ -2,9 +2,9 @@
     'use strict';
 
     BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload',
-        'isArchivedFilterSelected', '$q', 'blogSecurityService', 'notify'];
+        'isArchivedFilterSelected', '$q', 'blogSecurityService', 'notify', 'config'];
     function BlogListController($scope, $location, api, gettext, upload,
-        isArchivedFilterSelected, $q, blogSecurityService, notify) {
+        isArchivedFilterSelected, $q, blogSecurityService, notify, config) {
         $scope.maxResults = 25;
         $scope.states = [
             {name: 'active', code: 'open', text: gettext('Active blogs')},
@@ -86,11 +86,16 @@
                 });
         };
 
+        $scope.creationInProcess = false;
+
         $scope.createBlog = function() {
+            $scope.creationInProcess = true;
+
             var members = _.map($scope.blogMembers, function(obj) {
                 return {user: obj._id};
             });
-            var promise = angular.equals({}, $scope.preview) ? $q.when() : $scope.upload($scope.preview);
+            //upload image only if we have a valid one chosen
+            var promise = $scope.preview.url ? $scope.upload($scope.preview) : $q.when();
             return promise.then(function() {
                 return api.blogs.save({
                     title: $scope.newBlog.title,
@@ -99,8 +104,10 @@
                     picture: $scope.newBlog.picture,
                     members: members
                 }).then(function(blog) {
+                    $scope.creationInProcess = false;
                     $scope.edit(blog);
                 }, function(error) {
+                    $scope.creationInProcess = false;
                     //error handler
                     $scope.newBlogError = gettext('Something went wrong. Please try again later');
                 });
@@ -285,8 +292,6 @@
                         });
                     });
                 });
-
-                console.log('blogs', $scope.blogs);
                 $scope.blogsLoading = false;
             });
         }
@@ -361,30 +366,38 @@
             link: function(scope, elem) {
                 scope.$watch('src', function(src) {
                     elem.empty();
-                    if ((scope.file.size / 1048576) > 2) {
-                        notify.info(gettext('Blog image is big, upload can take some time!'));
-                    }
                     if (src) {
                         var img = new Image();
-                        img.onload = function() {
-                            scope.progressWidth = 80;
-                            var minWidth = scope.minWidth || 320,
-                                minHeight = scope.minHeight || 240;
-                            if (this.width < minWidth || this.height < minHeight) {
+                        if (scope.file.size > config.maxContentLength) {
+                            notify.error(gettext("Blog image is bigger than " + (config.maxContentLength / 1024 / 1024) + "MB"));
+                            scope.src = null;
+                            scope.progressWidth = 0;
+                        } else {
+                            if ((scope.file.size / 1048576) > 2) {
+                                notify.info(gettext('Blog image is big, upload can take some time!'));
+                            }
+                            img.onload = function() {
+                                scope.progressWidth = 80;
+
+                                var minWidth = scope.minWidth || 320,
+                                    minHeight = scope.minHeight || 240;
+                                if (this.width < minWidth || this.height < minHeight) {
+                                    scope.$apply(function() {
+                                        notify.error(gettext('Sorry, but blog image must be at least ' + minWidth + 'x' + minHeight + ' pixels big!'));
+                                        scope.file = null;
+                                        scope.src = null;
+                                        scope.progressWidth = 0;
+                                    });
+
+                                    return;
+                                }
+                                elem.append(img);
                                 scope.$apply(function() {
-                                    notify.error(gettext('Sorry, but blog image must be at least ' + minWidth + 'x' + minHeight + ' pixels big!'));
-                                    scope.src = null;
                                     scope.progressWidth = 0;
                                 });
-
-                                return;
-                            }
-                            elem.append(img);
-                            scope.$apply(function() {
-                                scope.progressWidth = 0;
-                            });
-                        };
-                        img.src = src;
+                            };
+                            img.src = src;
+                        }
                     }
                 });
             }
@@ -411,7 +424,7 @@
                     members: '=',
                     onchoose: '&'
                 },
-                templateUrl: 'scripts/bower_components/superdesk/client/app/scripts/superdesk-desks/views/user-select.html',
+                templateUrl: 'scripts/apps/desks/views/user-select.html',
                 link: function(scope, elem, attrs) {
 
                     var ARROW_UP = 38, ARROW_DOWN = 40, ENTER = 13;

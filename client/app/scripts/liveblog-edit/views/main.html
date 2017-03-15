@@ -6,10 +6,10 @@
     </div>
     <h3 class="page-nav-title">{{ blog.title }}</h3>
     <div class="button-stack right-stack" ng-if="blogSecurityService.canAccessSettings(blog)">
-        <a class="navbtn analytics-link" ng-href="#/liveblog/analytics/{{::blog._id}}">
+        <a class="navbtn analytics-link" ng-href="#/liveblog/analytics/{{::blog._id}}" title="{{ 'Analytics' | translate }}">
             <i class="svg-icon-analytics"></i>
         </a>
-        <a class="navbtn settings-link" ng-href="#/liveblog/settings/{{::blog._id}}">
+        <a class="navbtn settings-link" ng-href="#/liveblog/settings/{{::blog._id}}" title="{{ 'Settings' | translate }}">
             <i class="svg-icon-settings"></i>
         </a>
     </div>
@@ -19,15 +19,15 @@
 
     <!-- left sidebar -->
     <div class="side-menu">
-        <button class="navbtn" ng-click="openPanel('editor')" ng-class="{'active': panelState === 'editor'}">
+        <button class="navbtn" ng-click="openPanel('editor')" ng-class="{'active': panelState === 'editor'}" title="{{ 'Editor' | translate }}" >
             <i class="big-icon-editor" alt="editor"></i>
         </button>
-        <button class="navbtn" ng-click="openPanel('contributions')" ng-class="{'active': panelState === 'contributions'}">
+        <button class="navbtn" ng-click="openPanel('contributions')" ng-class="{'active': panelState === 'contributions'}" title="{{ 'Contributions' | translate }}">
             <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countContributions() > 0">
             {{ unreadPostsService.countContributions() }}</span>
             <i class="big-icon-contributions" alt="contributions"></i>
         </button>
-        <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}">
+        <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}" title="{{ 'Drafts' | translate }}">
             <i class="big-icon-archive" alt="draft posts"></i>
         </button>
         <button 
@@ -41,9 +41,11 @@
             ng-if="blog.blog_preferences.theme.settings.canComment"
             class="navbtn ng-cloak"
             ng-click="openPanel('comments')"
-            ng-class="{'active': panelState === 'comments'}">
+            ng-class="{'active': panelState === 'comments'}"
+            title="{{ 'Comments' | translate }}">
                 <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countComments() > 0">{{ unreadPostsService.countComments() }}</span>
                 <i class="big-icon-comments" alt="comments posts"></i>
+
         </button>        
     </div>
 
@@ -146,7 +148,7 @@
                         <div ng-if="!preview">
                         <header>
                             <h4>{{'Editor' | translate}}</h4>
-                            <button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate>Preview
+                            <button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate  ng-if="selectedPostType=='Default'">Preview
                             </button>
                             <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
                             <button class="btn pull-right btn--with-icon-right btn--with-label" ng-click="toggleTypePostDialog()">
@@ -154,7 +156,7 @@
                                     {{'Choose post type' | translate}}
                                     <sup class="btn-toggle-label">Beta</sup>
                                 </span>
-                                <span ng-if="selectedPostType!='Default'" translate>{{selectedPostType.name | limitTo : 32 }}</span>
+                                <span ng-if="selectedPostType!='Default'" translate class="selector-size-limit">{{selectedPostType.name}}</span>
                                 <i class="icon-chevron-right-thin"></i>
                             </button>
                         </header>
@@ -169,17 +171,19 @@
                     <div class="content">
                         <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">
-                                <div 
-                                    class="editor"
+                                <div
+                                    class="editor" 
+                                    ng-if="selectedPostType=='Default' && enableEditor"
                                     ng-sir-trevor
                                     st-model="blogEdit.editor"
                                     st-params="stParams"
-                                    ng-if="selectedPostType=='Default'"></div>
+                                    st-change="onEditorChanges"></div>
                             </div>
                             <freetype-render
                                     ng-if="selectedPostType!='Default'" 
                                     freetype="selectedPostType"
                                     freetype-data="freetypesData"
+                                    validation="validation"
                                     control="freetypeControl"></freetype-render>
                         </div>
                         <div class="actions">
@@ -197,10 +201,12 @@
                                 </div>
                             </div>
                             <div style="display:table-row">
-                                <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell"><button class="btn btn-info" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
-                                    <span ng-switch-when="true"  translate>Update</span>
-                                    <span ng-switch-when="false" translate>Publish</span>
-                                </button></div>
+                                <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell">
+                                    <button class="btn btn-info" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
+                                        <span ng-switch-when="true"  translate>Update</span>
+                                        <span ng-switch-when="false" translate>Publish</span>
+                                    </button>
+                                </div>
                                 <div style="display:table-cell"><button class="btn" ng-click="saveAsContribution()" ng-disabled="isCurrentPostPublished() || actionStatus()" translate>Submit</button></div>
                                 <div style="display:table-cell"><button class="btn" ng-click="saveAsDraft()" ng-disabled="isCurrentPostPublished() || actionStatus() || !showSaveAsDraft()" translate>Save draft</button></div>
                             </div>
@@ -214,7 +220,7 @@
                             <li ng-repeat="freetype in freetypes" ng-click="selectPostType(freetype)"
                             ng-class="{'active': freetype == selectedPostType, 'separator': freetype.separator}"
                             >
-                                {{ freetype.name | limitTo : 32 }}
+                                {{ freetype.name }}
                             </li>
                         </ul>
                     </div>
@@ -236,7 +242,7 @@
                     <i class="svg-icon-move fix-cancel-move-icon"></i>
                     <button class="btn btn-xs fix-cancel-move-button" translate ng-click="clearTimelineReordering();" tooltip-placement="bottom" tooltip="Cancel and exit reordering mode">Cancel</button>
                 </div>
-                <div class="header--live">
+                <div class="header--live" ng-if="isBlogOpened()">
                     <a href="{{ publicUrl }}" target="_blank" ng-disabled="!publicUrl" translate>Live</a>
                 </div>
                 <div class="header--filters">                                        

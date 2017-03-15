@@ -23,7 +23,10 @@
                 <i class="icon-refresh"></i>
             </button>
         </div>
-        <ul class="producers-list">
+        <div ng-if="producerBlogs._items.length === 0" translate>
+            The selected producer hasn't made any blogs available for syndication yet.
+        </div>
+        <ul class="producers-list" ng-if="producerBlogs._items.length > 0">
             <li
                 ng-repeat="blog in producerBlogs._items" 
                 ng-click="check(blog)" 

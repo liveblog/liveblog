@@ -1,55 +1,56 @@
-liveblogSyndication
-    .directive('lbIngestPanelDropdown', ['IngestPanelActions', function(IngestPanelActions) {
-        return {
-            templateUrl: 'scripts/liveblog-syndication/views/ingest-panel-dropdown.html',
-            scope: {
-                consumerBlogId: '=',
-                blog: '='
-            },
-            link: function(scope) {
-                scope.toggleDropdown = function($event, blog) {
-                    if (!blog.hasOwnProperty('isOpen'))
-                        blog.isOpen = false;
+ingestPanelDropdown.$inject = ['IngestPanelActions'];
 
-                    $event.preventDefault();
-                    $event.stopPropagation();
+export default function ingestPanelDropdown(IngestPanelActions) {
+    return {
+        templateUrl: 'scripts/liveblog-syndication/views/ingest-panel-dropdown.html',
+        scope: {
+            consumerBlogId: '=',
+            blog: '='
+        },
+        link: function(scope) {
+            scope.toggleDropdown = function($event, blog) {
+                if (!blog.hasOwnProperty('isOpen'))
+                    blog.isOpen = false;
 
-                    blog.isOpen = !blog.isOpen;
-                };
+                $event.preventDefault();
+                $event.stopPropagation();
 
-                scope.updateSyndication = function() {
-                    IngestPanelActions.updateSyndication(
-                        scope.blog._id,
-                        {
-                            auto_publish: scope.blog.auto_publish,
-                            auto_retrieve: scope.blog.auto_retrieve,
-                            start_date: scope.blog.start_date
-                        },
-                        scope.blog._etag
-                    );
-                };
+                blog.isOpen = !blog.isOpen;
+            };
 
-                scope.destroy = function($event) {
-                    $event.preventDefault();
-                    $event.stopPropagation();
+            scope.updateSyndication = function() {
+                IngestPanelActions.updateSyndication(
+                    scope.blog._id,
+                    {
+                        auto_publish: scope.blog.auto_publish,
+                        auto_retrieve: scope.blog.auto_retrieve,
+                        start_date: scope.blog.start_date
+                    },
+                    scope.blog._etag
+                );
+            };
 
-                    IngestPanelActions.syndicate({
-                        producerId: scope.blog.producer_id,
-                        producerBlogId: scope.blog.producer_blog_id,
-                        consumerBlogId: scope.consumerBlogId,
-                        autoPublish: scope.blog.auto_publish,
-                        startDate: scope.blog.start_date,
-                        autoRetrieve: scope.blog.auto_retrieve,
-                        method: 'DELETE'
-                    });
-                };
+            scope.destroy = function($event) {
+                $event.preventDefault();
+                $event.stopPropagation();
 
-                scope.open = false;
+                IngestPanelActions.syndicate({
+                    producerId: scope.blog.producer_id,
+                    producerBlogId: scope.blog.producer_blog_id,
+                    consumerBlogId: scope.consumerBlogId,
+                    autoPublish: scope.blog.auto_publish,
+                    startDate: scope.blog.start_date,
+                    autoRetrieve: scope.blog.auto_retrieve,
+                    method: 'DELETE'
+                });
+            };
 
-                scope.$watch('blog.start_date', function(newVal, oldVal) {
-                    if (newVal != oldVal)
-                        scope.updateSyndication();
-                })
-            }
+            scope.open = false;
+
+            scope.$watch('blog.start_date', function(newVal, oldVal) {
+                if (newVal != oldVal)
+                    scope.updateSyndication();
+            })
         }
-    }]);
+    }
+};

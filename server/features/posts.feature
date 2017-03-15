@@ -850,7 +850,7 @@ Feature: Post operations
         And we get "/posts"
         Then we get list with 1 items
         """
-        {"_items": [{"highlight": false, "sticky": true, "blog": "#blogs._id#", "post_status": "open", "order": 0}]}
+        {"_items": [{"lb_highlight": false, "sticky": true, "blog": "#blogs._id#", "post_status": "open", "order": 0}]}
         """
 
     @auth

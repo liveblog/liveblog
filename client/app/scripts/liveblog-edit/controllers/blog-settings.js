@@ -8,17 +8,26 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 
-define([
-    'angular',
-    'lodash',
-    'liveblog-edit/unread.posts.service',
-    'ng-sir-trevor',
-    'ng-sir-trevor-blocks',
-    'angular-embed'
-], function(angular, _) {
+import angular from 'angular';
+import _ from 'lodash';
+import moment from 'moment-timezone';
+
+//import 'angular-embed';
+import './../../ng-sir-trevor';
+import './../../ng-sir-trevor-blocks';
+import './../unread.posts.service';
+
+//define([
+//    'angular',
+//    'lodash',
+//    'liveblog-edit/unread.posts.service',
+//    'ng-sir-trevor',
+//    'ng-sir-trevor-blocks',
+//    'angular-embed'
+//], function(angular, _) {
     'use strict';
     var BlogSettingsController = function($scope, blog, api, blogService, $location, notify,
-        gettext, modal, $q, upload, datetimeHelper, moment, config, blogSecurityService) {
+        gettext, modal, $q, upload, datetimeHelper, config, blogSecurityService, moment) {
 
         // set view's model
         var vm = this;
@@ -176,6 +185,14 @@ define([
                     return ({user: member._id});
                 });
                 notify.info(gettext('saving blog settings'));
+
+                // Set start_date to _created if date and time are empty
+                var start_date = null;
+                if (vm.start_date && vm.start_time)
+                    start_date = datetimeHelper.mergeDateTime(vm.start_date, vm.start_time);
+                else
+                    start_date = vm.blog._created;
+
                 var changedBlog = {
                     blog_preferences: vm.blogPreferences,
                     original_creator: vm.original_creator._id,
@@ -183,7 +200,7 @@ define([
                     syndication_enabled: vm.syndication_enabled,
                     market_enabled: vm.market_enabled,
                     category: vm.category,
-                    start_date: datetimeHelper.mergeDateTime(vm.start_date, vm.start_time),
+                    start_date: start_date,
                     members: members
                 };
                 angular.extend(vm.newBlog, changedBlog);
@@ -196,6 +213,9 @@ define([
                     vm.blog = blog;
                     vm.newBlog = angular.copy(blog);
                     vm.blogPreferences = angular.copy(blog.blog_preferences);
+                    var datetime = vm.splitDateTime(blog.start_date);
+                    vm.start_date = datetime.date;
+                    vm.start_time = datetime.time;
                     //remove accepted users from the queue
                     if (vm.acceptedMembers.length) {
                         _.each(vm.acceptedMembers, function(member) {
@@ -252,8 +272,14 @@ define([
                         details.push(data);
                     });
                 });
+            },
+            splitDateTime: function(datetime) {
+                var splitDate = moment.tz(datetime, config.defaultTimezone);
+                return {
+                    date: splitDate.format(),
+                    time: splitDate.format(config.model.timeformat)
+                }
             }
-
         });
         // retieve the blog's public url
         var qPublicUrl = blogService.getPublicUrl(blog).then(function(url) {
@@ -339,9 +365,18 @@ define([
         }
 
         if (vm.newBlog.start_date) {
-            var splitDate = moment.tz(vm.newBlog.start_date, config.defaultTimezone);
-            vm.start_date = splitDate.format();
-            vm.start_time = splitDate.format(config.model.timeformat);
+            var splitDate = datetimeHelper.splitDateTime(
+                vm.newBlog.start_date, 
+                config.defaultTimezone
+            );
+
+            vm.start_date = splitDate.date;
+            vm.start_time = splitDate.time;
+
+        } else {
+            var datetime = vm.splitDateTime(vm.newBlog.start_date);
+            vm.start_date = datetime.date;
+            vm.start_time = datetime.time;
         }
 
         vm.changeTab('general');
@@ -356,7 +391,6 @@ define([
         });
 
     }
-
     BlogSettingsController.$inject = [
         '$scope',
         'blog',
@@ -369,10 +403,9 @@ define([
         '$q',
         'upload',
         'datetimeHelper',
-        'moment',
         'config',
-        'blogSecurityService'
+        'blogSecurityService',
+        'moment'
     ];
 
-    return BlogSettingsController;
-});
+export default BlogSettingsController;

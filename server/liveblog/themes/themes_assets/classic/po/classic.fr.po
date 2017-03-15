@@ -12,6 +12,10 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Generator: Poedit 1.5.4\n"
 
+#: posts.html:23
+msgid "Advertisement"
+msgstr "Publicité"
+
 #: comments.html:37
 msgid "Cancel"
 msgstr "Annuler"
@@ -28,15 +32,15 @@ msgstr "Commentaire *"
 msgid "Comment should be maximum 300 characters in length."
 msgstr "Un commentaire ne peut excéder 300 signes"
 
-#: main.js:50 template.html:13
+#: main.js:49 template.html:13
 msgid "Editorial"
 msgstr "Éditorial"
 
-#: template.html:96
+#: template.html:98
 msgid "Load more posts"
 msgstr "Afficher plus de messages"
 
-#: template.html:99
+#: template.html:101
 msgid "Loading"
 msgstr "Chargement"
 
@@ -48,7 +52,7 @@ msgstr "Nom *"
 msgid "Name should be maximum 30 characters in length."
 msgstr "Le nom ne peut excéder 30 signes"
 
-#: main.js:53 template.html:17
+#: main.js:52 template.html:17
 msgid "Newest first"
 msgstr "Le plus récent d'abord"
 
@@ -56,7 +60,7 @@ msgstr "Le plus récent d'abord"
 msgid "No posts for now."
 msgstr "Aucun message pour le moment."
 
-#: main.js:56 template.html:21
+#: main.js:55 template.html:21
 msgid "Oldest first"
 msgstr "Plus ancien en premier"
 
@@ -90,24 +94,24 @@ msgstr "Envoyer"
 
 #: template.html:38
 msgid "Show all posts"
-msgstr ""
+msgstr "Afficher tous les messages"
 
 #: template.html:37
 msgid "Show highlighted post only"
-msgstr ""
+msgstr "Afficher uniquement les messages en surbrillance"
 
 #: template.html:11 template.html:27
 msgid "Sort by:"
 msgstr "Trier par:"
 
-#: posts.html:27
+#: posts.html:38
 msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
-msgstr ""
+msgstr "Mise à jour {{post.content_updated_date | prettifyIsoDate}}"
 
 #: comments.html:6
 msgid "Your comment was sent for approval."
 msgstr "Votre commentaire a été envoyé et est en attente de validation."
 
-#: item.html:13
+#: item.html:18
 msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
-msgstr ""
+msgstr "{{ item.meta.caption }} crédit: {{ item.meta.credit }}"

@@ -49,7 +49,7 @@
              */
             function retrievePage(page, max_results) {
                 var query = self.highlight?
-                {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {term: {highlight: true}}, {not: {term: {deleted: true}}}]}}}:
+                {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {term: {lb_highlight: true}}, {not: {term: {deleted: true}}}]}}}:
                 {filtered: {filter: {and: [{term: {'sticky': sticky}}, {term: {post_status: 'open'}}, {not: {term: {deleted: true}}}]}}}
                 // set request parameters
                 var posts_criteria = {
@@ -236,7 +236,7 @@
                             self.newUpdatesApplied --;
                         } else {
                             // post updated
-                            if (post.post_status !== 'open' || post.sticky !== sticky  || (self.highlight && !post.highlight)) {
+                            if (post.post_status !== 'open' || post.sticky !== sticky  || (self.highlight && !post.lb_highlight)) {
                                removePost(post);
                                self.newUpdatesApplied --;
                             } else {

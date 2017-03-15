@@ -54,7 +54,7 @@ function BlogsPage() {
     self.waitForModal = waitForModal.bind(self);
 
     self.title = element(by.model('newBlog.title'));
-    self.description = element(by.css('[ng-model="newBlog.description"] [contenteditable="true"]'));
+    self.description = element(by.css('[ng-model="newBlog.description"]'));
     self.file = element(by.css('input[type="file"]'));
 
     self.gridElement = element(by.css('.list-container table'));
@@ -138,7 +138,7 @@ function BlogsPage() {
             state = stateMap[state];
         }
         browser.waitForAngular();
-        element.all(by.repeater('state in states').row(state).column('state.text')).click();
+        element.all(by.repeater('state in states').row(state)).get(0).click();
         return self;
     };
 }
@@ -169,7 +169,7 @@ function FreetypesManagerPage() {
     self.createFreetypeData = function() {
         return {
             title: randomString(5),
-            template: randomString(10)
+            template: 'name=$' + randomString(10)
         };
     };
     self.editFreetype = function() {
@@ -209,16 +209,23 @@ function ThemesManagerPage() {
     };
 
     self.openSettingsForTheme = function(themeIndex) {
-        self.themes.get(themeIndex).element(self.bySettings).click();
-        browser.wait(function() {
-            return element(by.css('[name="vm.themeSettingsForm"]')).isDisplayed();
-        });
-        return self;
+        //self.themes.get(themeIndex).element(self.bySettings).click();
+        //browser.wait(function() {
+        //    return element(by.css('[name="vm.themeSettingsForm"]')).isDisplayed();
+        //});
+        //return self;
+        return self.themes.get(themeIndex).element(self.bySettings).click()
+            //.then(() => {
+            //    return browser.wait();
+            //})
+            .then(() => {
+                return element(by.css('[name="vm.themeSettingsForm"]')).isDisplayed();
+            });
     };
 
     self.saveSettings = function() {
-        element(by.css('[ng-click="vm.submitSettings(true)"]')).click();
-        return self;
+        return element(by.css('[ng-click="vm.submitSettings(true)"]'))
+            .click();
     };
 
     self.remove = function(theme_index) {
@@ -509,14 +516,14 @@ function EditPostPage() {
     self.iframe = element(by.css('.liveblog--card iframe'));
     self.publishElement = element(by.css('[ng-click="publish()"]'));
     //for scorecards
-    self.homeName = element(by.css('[ng-model="freetypeData.home.name"]'));
-    self.homeScore = element(by.css('[ng-model="freetypeData.home.score"]'));
-    self.awayName = element(by.css('[ng-model="freetypeData.away.name"]'));
-    self.awayScore = element(by.css('[ng-model="freetypeData.away.score"]'));
-    self.player1Name = element.all(by.css('[ng-model="iterator__1.name"]')).get(0);
-    self.player1Time = element.all(by.css('[ng-model="iterator__1.time"]')).get(0);
-    self.player2Name = element.all(by.css('[ng-model="iterator__1.name"]')).get(1);
-    self.player2Time = element.all(by.css('[ng-model="iterator__1.time"]')).get(1);
+    self.homeName = element(by.css('[text="freetypeData.home.name"] [ng-model="text"]'));
+    self.homeScore = element(by.css('[text="freetypeData.home.score"] [ng-model="text"]'));
+    self.awayName = element(by.css('[text="freetypeData.away.name"] [ng-model="text"]'));
+    self.awayScore = element(by.css('[text="freetypeData.away.score"] [ng-model="text"]'));
+    self.player1Name = element.all(by.css('[text="iterator__1.name"] [ng-model="text"]')).get(0);
+    self.player1Time = element.all(by.css('[text="iterator__1.time"] [ng-model="text"]')).get(0);
+    self.player2Name = element.all(by.css('[text="iterator__1.name"] [ng-model="text"]')).get(1);
+    self.player2Time = element.all(by.css('[text="iterator__1.time"] [ng-model="text"]')).get(1);
 
     self.addTop = function() {
         // click on the "+" bar
@@ -572,13 +579,13 @@ function EditPostPage() {
     self.publishScorecard = function() {
         var data = {
             homeName: randomString(10),
-            homeScore: randomString(2),
+            homeScore: randomNumber(2),
             awayName: randomString(10),
-            awayScore: randomString(2),
+            awayScore: randomNumber(2),
             player1Name: randomString(10),
-            player1Time: randomString(2),
+            player1Time: randomNumber(2),
             player2Name: randomString(10),
-            player2Time: randomString(2)
+            player2Time: randomNumber(2),
         };
         self.homeName.sendKeys(data.homeName);
         self.homeScore.sendKeys(data.homeScore);
@@ -646,7 +653,7 @@ function BlogSettingsPage(blog) {
     self.team = new TeamPage();
     self.blog = blog;
     self.title = element(by.model('settings.newBlog.title'));
-    self.description = element(by.css('[ng-model="settings.newBlog.description"] [contenteditable="true"]'));
+    self.description = element(by.css('[ng-model="settings.newBlog.description"]'));
     self.file = element(by.css('input[type="file"]'));
     self.saveAndClose = element(by.css('[ng-click="settings.saveAndClose()"]'));
 
@@ -674,7 +681,7 @@ function BlogSettingsPage(blog) {
         return self;
     };
     self.openTeam = function() {
-        return element(by.css('[data="blog-settings-team"]')).click().then(function() {
+        return element(by.css('[data="blog-settings-team"] a')).click().then(function() {
             browser.waitForAngular();
             return self;
         });
@@ -723,13 +730,13 @@ function BlogSettingsPage(blog) {
     };
 
     self.doneTeamEdit = function() {
-        element(by.css('[ng-click="settings.doneTeamEdit()"')).click();
+        element(by.css('[ng-click="settings.doneTeamEdit()"]')).click();
         return self;
     };
 
     self.removeBlog = function() {
         element(by.buttonText('Remove blog')).click().then(function() {
-            element(by.css('.btn-primary')).click();
+            element(by.css('button[ng-click="ok()"]')).click();
         });
     };
 }
@@ -812,6 +819,17 @@ function randomString(maxLen) {
     return text;
 }
 
+function randomNumber(maxLen) {
+    'use strict';
+    maxLen = maxLen || 15;
+    var text = '';
+    var possible = '123456789';
+    for (var i = 0; i < maxLen; i ++) {
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+    }
+    return String(parseInt(text, 10));
+}
+
 function ConsumersManagementPage() {
     'use strict';
     var self = this;
@@ -830,7 +848,7 @@ function ConsumersManagementPage() {
         waitAndClick(by.css('[href="#/syndication/"][title]'));
 
         browser.waitForAngular();
-        element.all(by.repeater('state in states').row(1).column('state.text')).click();
+        element.all(by.repeater('state in states').row(1)).click();
 
         return self;
     };
@@ -847,8 +865,7 @@ function ProducersManagementPage() {
         });
         waitAndClick(by.css('[href="#/syndication/"][title]'));
 
-        browser.waitForAngular();
-        element.all(by.repeater('state in states').row(0).column('state.text')).click();
+        //browser.waitForAngular();
 
         return self;
     };

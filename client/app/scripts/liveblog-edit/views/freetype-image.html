@@ -6,12 +6,17 @@
         <div ng-hide="image.picture_url"><button class="btn btn-info" ng-click="ft.openUploadModal()" translate>Upload Image</button>
             <div class="image-text" translate>Image has not been set so far</div>
         </div>
+        <span
+            class="freetype--error freetype--error-text"
+            ng-show="compulsoryFlag"
+            hide-render
+            translate>One of these is required!</span>
     </div>
 </div>
 <div sd-modal="" data-model="ft.uploadModal">
     <form ng-submit="ft.upload(ft.preview)" name="uploadImageForm">
         <div class="modal-header"><button class="close" ng-click="ft.closeUploadModal()"><i class="icon-close-small"></i></button>
-            <h3 translate>Upload Advertisment Image</h3>
+            <h3 translate>Upload Advertisement Image</h3>
         </div>
         <div class="modal-body">
             <div class="upload-form">
@@ -21,7 +26,7 @@
                     </div>
                     <div class="computer" ng-if="!ft.preview.url" ng-hide="ft.progress.width">
                         <div class="dropzone" ng-file-drop="ft.preview.img=$files[0]">
-                            <div class="text" translate>Drop it here</div>
+                            <div class="text" translate>Drop it here{{ ft.preview.img }}</div>
                             <div class="input-holder"> <input type="file" accept="image/*;capture=camera" ng-file-select="ft.preview.img=$files[0]"> </div>
                         </div>
                     </div>

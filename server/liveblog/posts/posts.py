@@ -78,7 +78,7 @@ class PostsResource(ArchiveResource):
             'allowed': ['open', 'draft', 'submitted', 'comment'],
             'default': 'open'
         },
-        'highlight': {
+        'lb_highlight': {
             'type': 'boolean',
             'default': False
         },
@@ -257,6 +257,7 @@ class PostsService(ArchiveService):
         # send notifications
         if updates.get('deleted', False):
             out_service.send_syndication_post(original, action='deleted')
+            push_notification('posts', deleted=True, post_id=original.get('_id'))
         # NOTE: Seems unsused, to be removed later if no bug appears.
         # elif updates.get('post_status') == 'draft':
         #     push_notification('posts', drafted=True, post_id=original.get('_id'),

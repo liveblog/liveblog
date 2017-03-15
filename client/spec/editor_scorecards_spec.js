@@ -1,10 +1,15 @@
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     blogs = require('./helpers/pages').blogs;
 
 describe('Scorecards Posts', function() {
     'use strict';
 
-    beforeEach(function(done) {login('editor', 'editor').then(done);});
+    beforeEach(function(done) {
+        browser.ignoreSynchronization = true;
+        login('editor', 'editor')
+            .then(() => browser.ignoreSynchronization = false)
+            .then(done);
+    });
 
     it('can publish socrecard and edit it', function() {
         var blog = blogs.openBlog(0);
@@ -21,9 +26,9 @@ describe('Scorecards Posts', function() {
             //check that edit is loading the initial values
             //usign getAttribute('value') instead of getText() because of known webdriver quirk
             expect(editor.homeName.getAttribute('value')).toEqual(data.homeName);
-            expect(editor.homeScore.getAttribute('value')).toEqual(data.homeScore);
+            expect(editor.homeScore.getAttribute('value')).toEqual('0' + data.homeScore);
             expect(editor.awayName.getAttribute('value')).toEqual(data.awayName);
-            expect(editor.awayScore.getAttribute('value')).toEqual(data.awayScore);
+            expect(editor.awayScore.getAttribute('value')).toEqual('0' + data.awayScore);
             expect(editor.player1Name.getAttribute('value')).toEqual(data.player1Name);
             expect(editor.player1Time.getAttribute('value')).toEqual(data.player1Time);
 

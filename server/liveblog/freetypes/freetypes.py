@@ -12,13 +12,15 @@ from superdesk.services import BaseService
 
 
 class FreetypesResource(Resource):
-
     schema = {
         'name': {
             'type': 'string'
         },
         'template': {
-            'type': 'string'
+            'type': 'string',
+            'htmloutput': {
+                'template_vars_required': True
+            }
         }
     }
     datasource = {

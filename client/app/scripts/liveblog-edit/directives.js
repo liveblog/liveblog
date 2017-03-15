@@ -8,25 +8,16 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 
-define([
-    'angular',
-    'lodash',
-    './module',
-    './posts.service',
-    './blog.service',
-    './pages-manager.service',
-    './freetype.service'
-], function(angular, _) {
-    'use strict';
+import angular from 'angular';
+import _ from 'lodash';
 
-    angular.module('liveblog.edit')
+angular.module('liveblog.edit')
         .directive('lbPostsList', [
             'postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager',
             function(postsService, notify, $q, $timeout, session, PagesManager) {
 
                 LbPostsListCtrl.$inject = ['$scope', '$element'];
                 function LbPostsListCtrl($scope, $element) {
-                   
                     $scope.lbSticky = $scope.lbSticky === 'true';
                     var vm = this;
                     angular.extend(vm, {
@@ -135,7 +126,8 @@ define([
                             return vm.pagesManager.setAuthors(users.map(function(user) {return user._id;})).then(function() {
                                 vm.isLoading = false;
                             });
-                        }
+                        },
+                        isBlogClosed: $scope.$parent.blog.blog_status == 'closed'
                     });
                     $scope.lbPostsInstance = vm;
                     // retrieve first page
@@ -143,9 +135,12 @@ define([
                     // retrieve updates when event is recieved
                     .then(function() {
                         $scope.$on('posts', function(e, event_params) {
-
                             vm.isLoading = true;
                             vm.pagesManager.retrieveUpdate(true).then(function() {
+                                // Regenerate the embed otherwise the image doesn't appear
+                                if (window.hasOwnProperty('instgrm'))
+                                    window.instgrm.Embeds.process();
+
                                 if (event_params.deleted === true) {
                                     notify.pop();
                                     notify.info(gettext('Post removed'));
@@ -228,7 +223,7 @@ define([
                             return postsService.savePost(post.blog, post, undefined, {post_status: status});
                         }
                         function changeHighlightStatus(post, status) {
-                            return postsService.savePost(post.blog, post, undefined, {highlight: status});
+                            return postsService.savePost(post.blog, post, undefined, {lb_highlight: status});
                         }
 
                         angular.extend(scope, {
@@ -302,9 +297,9 @@ define([
                                 });
                             },
                             highlightPost: function(post) {
-                                changeHighlightStatus(post, !post.highlight).then(function(post) {
+                                changeHighlightStatus(post, !post.lb_highlight).then(function(post) {
                                    notify.pop();
-                                   notify.info(post.highlight ? gettext('Post was highlighted') : gettext('Post was un-highlighted'));
+                                   notify.info(post.lb_highlight ? gettext('Post was highlighted') : gettext('Post was un-highlighted'));
                                 }, function() {
                                    notify.pop();
                                    notify.error(gettext('Something went wrong. Please try again later'));
@@ -493,7 +488,12 @@ define([
                     scope.internalControl.isClean = function() {
                         return angular.equals(scope.freetypeData, scope.initialData);
                     };
-
+                    scope.internalControl.isValid = function() {
+                        var isInvalid = _.reduce(scope.validation, function(memo, val) {
+                                return memo && val;
+                        }, true);
+                        return !isInvalid;
+                    }
                     function recursiveClean(obj) {
                         for (var key in obj) {
                             if (angular.isObject(obj[key])) {
@@ -511,13 +511,15 @@ define([
                     };
 
                     scope.internalControl.reset = function() {
+                        scope.validation = {};
                         recursiveClean(scope.freetypeData);
-                        scope.initialData = angular.copy(scope.freetypeData);  
+                        scope.initialData = angular.copy(scope.freetypeData);
                     };
                 },
                 scope: {
                     freetype: '=',
                     freetypeData: '=',
+                    validation: '=',
                     control: '='
                 }
             };
@@ -526,7 +528,7 @@ define([
 
             return {
                 restrict: 'E',
-                template: '<textarea ng-model="embed"></textarea>',
+                template: '<textarea ng-model="embed" rows="8"></textarea>',
                 controller: function() {
                 },
                 scope: {
@@ -534,25 +536,91 @@ define([
                 }
             };
         }])
-        .directive('freetypeLink', ['$compile', function($compile) {
+        .directive('freetypeText',function() {
 
             return {
                 restrict: 'E',
-                template: '<input type="url" ng-model="link"/>',
-                controller: function() {
-                },
+                templateUrl: 'scripts/liveblog-edit/views/freetype-text.html',
+                controller: ['$scope', function($scope) {
+                    $scope._id = _.uniqueId('text');
+                    if ($scope.initial !== undefined && $scope.text === '') {
+                        $scope.text = String($scope.initial);
+                    }
+                    if ($scope.number !== undefined) {
+                        $scope.$on('$destroy', $scope.$watch('text', function(value) {
+                                $scope.numberFlag = (value !== '') && (value != parseInt(value, 10));
+                                $scope.validation['number__' + $scope._id] = !$scope.numberFlag;
+                        }, true));
+                    }
+                    if ($scope.compulsory !== undefined) {
+                        $scope.$on('$destroy', $scope.$watch('[text,compulsory]', function(value) {
+                                $scope.compulsoryFlag = (value[0] === '' && value[1] === '');
+                                $scope.validation['compulsory__' + $scope._id] = !$scope.compulsoryFlag;
+                        }, true));
+                    }
+                    if ($scope.tandem !== undefined) {
+                        $scope.$on('$destroy', $scope.$watch('[text,tandem]', function(value) {
+                                $scope.tandemFlag = (value[0] === '' && value[1] !== '');
+                                $scope.validation['tandem__' + $scope._id] = !$scope.tandemFlag;
+                        }, true));
+                    }
+                    if ($scope.necessary !== undefined) {
+                        $scope.$on('$destroy', $scope.$watch('text', function(value) {
+                                $scope.necessaryFlag = (value === '');
+                                $scope.validation['necessary__' + $scope._id] = !$scope.necessaryFlag;
+                        }, true));
+                    }
+
+                }],
                 scope: {
-                    link: '='
+                    text: '=',
+                    // `compulsory` indicates a variable that is needed if the current value is empty.
+                    compulsory: '=',
+                    // `necessary` indicates is a variable needs to be non empty.
+                    necessary: '=',
+                    // `tandem` indicates a variable that is also needed.
+                    tandem: '=',
+                    validation: '=',
+                    number: '@',
+                    order: '@',
+                    initial: '@'
                 }
             };
-        }])
+        })
+        .directive('freetypeLink', function() {
+
+            return {
+                restrict: 'E',
+                templateUrl: 'scripts/liveblog-edit/views/freetype-link.html',
+                controller: ['$scope', function($scope) {
+                    var regex = /https?:\/\/[^\s]+\.[^\s\.]+/;
+                    $scope._id = _.uniqueId('link');
+                    var sentinel = $scope.$watch('link', function(value) {
+                        $scope.valid = !value || regex.test(value);
+                        $scope.validation[$scope._id] = $scope.valid;
+                    });
+                    $scope.$on('$destroy', sentinel);
+                }],
+                scope: {
+                    link: '=',
+                    validation: '='
+                }
+            };
+        })
         .directive('freetypeCollectionAdd', ['$compile', function($compile) {
             return {
                 restrict: 'E',
                 template: '<button ng-click="ftca.add()" class="freetype-btn">+</button>',
                 controller: ['$scope', function($scope) {
                     this.add = function() {
-                        $scope.vector.push({});
+                        var last = _.last($scope.vector), el = {};
+                        for (var key in last) {
+                            // if the key starts with $$ it is angular internal so skip it.
+                            if (last.hasOwnProperty(key) && key.substr(0, 2) !== '$$') {
+                                el[key] = '';
+                            }
+                        }
+                        $scope.vector.push(el);
                     }
                 }],
                 controllerAs: 'ftca',
@@ -577,11 +645,19 @@ define([
                 }
             };
         })
-        .directive('freetypeImage', ['$compile', 'modal', 'api', 'upload', '$templateCache', function($compile, modal, api, upload, $templateCache) {
+        .directive('freetypeImage', ['$compile', 'modal', 'api', 'upload', function($compile, modal, api, upload) {
             return {
                 restrict: 'E',
-                template: $templateCache.get('scripts/liveblog-edit/views/freetype-image.html'),
+                templateUrl: 'scripts/liveblog-edit/views/freetype-image.html',
                 controller: ['$scope', function($scope) {
+                    $scope.valid = true;
+                    $scope._id = _.uniqueId('image');
+                    if ($scope.compulsory !== undefined) {
+                        var sentinel = $scope.$watch('[image,compulsory]', function(value) {
+                                $scope.compulsoryFlag = (value[0].picture_url === '' && value[1] === '');
+                        }, true);
+                        $scope.$on('$destroy', sentinel);
+                    }
                     var vm = this;
                     angular.extend(vm, {
                         preview: {},
@@ -596,7 +672,7 @@ define([
                         },
                         removeImage: function() {
                             modal.confirm(gettext('Are you sure you want to remove the blog image?')).then(function() {
-                                $scope.image.picture_url = null;
+                                $scope.image.picture_url = '';
                             });
                         },
                         upload: function(config) {
@@ -634,10 +710,10 @@ define([
                 }],
                 controllerAs: 'ft',
                 scope: {
-                    image: '='
+                    image: '=',
+                    // `compulsory` indicates a variable that is needed if the current value is empty.
+                    compulsory: '=',
+                    validation: '='
                 }
             };
         }]);
-});
-
-// EOF
