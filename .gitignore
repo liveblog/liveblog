@@ -79,5 +79,3 @@ server/liveblog/themes/themes_assets/*
 
 # Vagrant
 .vagrant
-
-client/app/config-override.js
