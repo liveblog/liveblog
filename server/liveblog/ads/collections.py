@@ -11,27 +11,15 @@ from superdesk.resource import Resource
 from superdesk.services import BaseService
 
 
-class AdsResource(Resource):
+class CollectionsResource(Resource):
     schema = {
-        'collections': Resource.rel('collections', embeddable=False, required=False,  nullable=True),
         'name': {
             'type': 'string',
             'unique': True
-        },
-        'meta': {
-            'type': 'dict',
-            'nullable': True
-        },
-        'text': {
-            'type': 'string'
-        },
-        'deleted': {
-            'type': 'boolean',
-            'default': False
         }
     }
     datasource = {
-        'source': 'ads',
+        'source': 'collections',
         'default_sort': [('name', 1)]
     }
     RESOURCE_METHODS = ['GET', 'POST']
@@ -40,5 +28,5 @@ class AdsResource(Resource):
                   'PATCH': 'global_preferences', 'DELETE': 'global_preferences'}
 
 
-class AdsService(BaseService):
+class CollectionsService(BaseService):
     pass
