@@ -26,7 +26,7 @@ Flask-Cache==0.13.1
 Flask-Cors==2.1.0
 Flask-Mail==0.9.1
 Flask-PyMongo==0.4.1
--e git+git://github.com/MaZderMind/flask-s3.git#egg=Flask-S3
+-e git+git://github.com/MaZderMind/flask-s3.git@feature/endpoint_url#egg=Flask-S3
 Flask-Script==2.0.5
 gunicorn==19.3.0
 hachoir3-superdesk==3.0a1.post2
@@ -75,4 +75,4 @@ websockets==3.2
 Werkzeug==0.11.15
 wooper==0.4.2
 # Superdesk
--e git+git://github.com/liveblog/superdesk-core.git@4656deb0fd9a336df663c2e4e90f66ec4d276716#egg=Superdesk-Core==1.2-fix-celery-issue
+-e git+git://github.com/MaZderMind/superdesk-core.git@feature/endpoint_url#egg=Superdesk-Core
