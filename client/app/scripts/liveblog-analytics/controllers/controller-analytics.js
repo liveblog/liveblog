@@ -1,7 +1,6 @@
-'use strict'
+liveblogAnalyticsController.$inject = ['$scope','$location', 'api', 'analytics', 'blog', 'notify'];
 
-LiveblogAnalyticsController.$inject = ['$scope','$location', 'api', 'analytics', 'blog', 'notify', ];
-function LiveblogAnalyticsController($scope, $location, api, analytics, blog, notify) {
+function liveblogAnalyticsController($scope, $location, api, analytics, blog, notify) {
   var vm = this;
 
   var close = function() { // Return to blog list page
@@ -62,5 +61,4 @@ function LiveblogAnalyticsController($scope, $location, api, analytics, blog, no
 
 };
 
-angular.module('liveblog.analytics')
-  .controller('LiveblogAnalyticsController', LiveblogAnalyticsController)
+export default liveblogAnalyticsController;
