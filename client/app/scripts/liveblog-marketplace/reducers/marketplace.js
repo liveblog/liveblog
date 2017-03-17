@@ -4,7 +4,7 @@ export default function marketplaceReducers() {
 
         if (marketers._items && filters['marketer._id'])
             marketers._items.forEach(function(marketer) {
-                if (filters['marketer._id'] == marketer._id)
+                if (filters['marketer._id'] === marketer._id)
                     currentMarketer = marketer;
             });
 

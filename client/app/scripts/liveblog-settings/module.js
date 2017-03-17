@@ -1,5 +1,4 @@
 (function() {
-    'use strict';
     LiveblogSettingsController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q'];
     function LiveblogSettingsController($scope, api, $location, notify, gettext, $q) {
         //prep the settings
