@@ -6,7 +6,8 @@ incomingSyndication.$inject = [
   'modal'
 ];
 
-export default function incomingSyndication($routeParams, IncomingSyndicationActions, IncomingSyndicationReducers, Store, modal) {
+export default function incomingSyndication($routeParams, IncomingSyndicationActions,
+    IncomingSyndicationReducers, Store, modal) {
     return {
         templateUrl: 'scripts/liveblog-syndication/views/incoming-syndication.html',
         scope: {

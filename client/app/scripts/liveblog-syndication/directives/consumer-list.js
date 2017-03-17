@@ -19,7 +19,7 @@ export default function consumerList(api, notify) {
 
                 api.consumers.remove(consumerToRemove).then(function(result) {
                     angular.forEach(scope.consumers, function(consumer, i) {
-                        if (consumer._id == consumerToRemove._id)
+                        if (consumer._id === consumerToRemove._id)
                             scope.consumers.splice(i, 1);
                     });
                 });

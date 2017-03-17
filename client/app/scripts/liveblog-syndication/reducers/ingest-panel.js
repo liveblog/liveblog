@@ -3,7 +3,7 @@ ingestPanelReducers.$inject = ['moment'];
 export default function ingestPanelReducers (moment) {
     var locallySyndicatedItems = function(syndicationIn, localSyndTokens) {
         return syndicationIn._items.filter(function(item) {
-            return (localSyndTokens.indexOf(item.blog_token) != -1);
+            return (localSyndTokens.indexOf(item.blog_token) !== -1);
         });
     };
 
@@ -12,7 +12,7 @@ export default function ingestPanelReducers (moment) {
             case 'ON_GET_SYND':
                 var localSyndTokens = action.syndicationIn._items
                     .filter(function(syndication) {
-                        return (syndication.blog_id == state.consumerBlogId);
+                        return (syndication.blog_id === state.consumerBlogId);
                     })
                     .map(function(syndication) {
                         return syndication.blog_token;
@@ -32,7 +32,7 @@ export default function ingestPanelReducers (moment) {
             case 'ON_UPDATED_SYND':
                 var syndicationIn = angular.extend(state.syndicationIn, {
                     _items: state.syndicationIn._items.map(function(item) {
-                        if (item._id == action.syndEntry._id)
+                        if (item._id === action.syndEntry._id)
                             return action.syndEntry;
                         else
                             return item;
@@ -73,7 +73,7 @@ export default function ingestPanelReducers (moment) {
                                     .format('YYYY-MM-DDTHH:MM:ss+00:00');
 
                                 state.locallySyndicatedItems.forEach(function(localBlog) {
-                                    if (localBlog.producer_blog_id == blog._id) {
+                                    if (localBlog.producer_blog_id === blog._id) {
                                         localProducerBlogIds.push(blog._id);
                                         blog.checked = true;
                                     }

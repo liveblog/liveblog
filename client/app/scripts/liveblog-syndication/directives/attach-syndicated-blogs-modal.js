@@ -41,9 +41,9 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
                     scope.blogsToAttach
                 );
 
-                if (toSyndicate.length > 0 && toUnSyndicate.length == 0)
+                if (toSyndicate.length > 0 && toUnSyndicate.length === 0)
                     scope.actionName = 'Attach';
-                else if (toSyndicate.length == 0 && toUnSyndicate.length > 0)
+                else if (toSyndicate.length === 0 && toUnSyndicate.length > 0)
                     scope.actionName = 'Detach';
                 else if (!scope.hasChanged)
                     scope.actionName = 'Attach/Detach';
@@ -57,7 +57,7 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
 
             scope.selectProducer = function(producerId) {
                 scope.producers._items.forEach(function(producer) {
-                    if (producer._id == producerId)
+                    if (producer._id === producerId)
                         scope.currentProducer = producer;
                 });
 
@@ -70,18 +70,18 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
             };
 
             scope.isAlreadySyndicated = function(blog) {
-                if (scope.localProducerBlogIds.length == 0)
+                if (scope.localProducerBlogIds.length === 0)
                     return false;
                 else
-                    return scope.localProducerBlogIds.indexOf(blog._id) != -1;
+                    return scope.localProducerBlogIds.indexOf(blog._id) !== -1;
             };
 
             scope.check = function(blog) {
                 blog.checked = (blog.hasOwnProperty('checked')) ? !blog.checked : true;
 
-                if (blog.checked && scope.blogsToAttach.indexOf(blog._id) == -1)
+                if (blog.checked && scope.blogsToAttach.indexOf(blog._id) === -1)
                     scope.blogsToAttach.push(blog._id);
-                else if (!blog.checked && scope.blogsToAttach.indexOf(blog._id) != -1)
+                else if (!blog.checked && scope.blogsToAttach.indexOf(blog._id) !== -1)
                     scope.blogsToAttach.splice(scope.blogsToAttach.indexOf(blog._id), 1);
 
                 compare();
@@ -109,9 +109,9 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
                         method: 'POST'
                     };
 
-                    if (toSyndicate.indexOf(blog._id) != -1)
+                    if (toSyndicate.indexOf(blog._id) !== -1)
                         IngestPanelActions.syndicate(params);
-                    else if (toUnSyndicate.indexOf(blog._id) != -1)
+                    else if (toUnSyndicate.indexOf(blog._id) !== -1)
                         IngestPanelActions.syndicate(
                             angular.extend(params, { method: 'DELETE' })
                         );
