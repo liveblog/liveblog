@@ -1,4 +1,13 @@
-lbPost.$inject = ['notify', 'gettext', 'asset', 'postsService', 'modal', 'blogSecurityService', '$document', 'instagramService'];
+lbPost.$inject = [
+    'notify',
+    'gettext',
+    'asset',
+    'postsService',
+    'modal',
+    'blogSecurityService',
+    '$document',
+    'instagramService'
+];
 
 export default function lbPost(notify, gettext, asset, postsService, modal, blogSecurityService, $document, instagramService) {
     return {
