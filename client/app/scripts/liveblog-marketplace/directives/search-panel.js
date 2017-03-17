@@ -27,7 +27,7 @@ export default function lbSearchPanel(MarketplaceActions) {
             scope.hasFilter = function(type, value) {
                 return (scope.filters
                     && scope.filters.hasOwnProperty(type)
-                    && scope.filters[type] == value);
+                    && scope.filters[type] === value);
             };
 
             scope.close = function() {

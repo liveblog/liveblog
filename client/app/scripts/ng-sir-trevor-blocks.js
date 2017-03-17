@@ -13,15 +13,15 @@ import _ from 'lodash';
 function createCaretPlacer(atStart) {
     return function(el) {
         el.focus();
-        if (typeof window.getSelection != "undefined"
-                && typeof document.createRange != "undefined") {
+        if (typeof window.getSelection !== "undefined"
+                && typeof document.createRange !== "undefined") {
             var range = document.createRange();
             range.selectNodeContents(el);
             range.collapse(atStart);
             var sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
-        } else if (typeof document.body.createTextRange != "undefined") {
+        } else if (typeof document.body.createTextRange !== "undefined") {
             var textRange = document.body.createTextRange();
             textRange.moveToElementText(el);
             textRange.collapse(atStart);
@@ -110,7 +110,7 @@ angular
             var instance = SirTrevor.$get().getInstance(this.instanceID);
             return instance ? instance.options : null;
         };
-        SirTrevor.Blocks.Embed =  SirTrevor.Block.extend({
+        SirTrevor.Blocks.Embed = SirTrevor.Block.extend({
             type: 'embed',
             data: {},
             title: function() { return 'Embed'; },
@@ -224,7 +224,10 @@ angular
                 ).addClass('hidden');
                 // set the link
                 if (_.has(data, 'url')) {
-                    html.find('.link-preview').attr('href', data.original_url).html(data.original_url).removeClass('hidden');
+                    html
+                        .find('.link-preview')
+                        .attr('href', data.original_url)
+                        .html(data.original_url).removeClass('hidden');
                 }
                 // set the embed code
                 if (_.has(data, 'html')) {
@@ -256,9 +259,10 @@ angular
                 }
                 // set the credit
                 if (_.has(data, 'provider_name')) {
-                    var credit_text  = data.provider_name;
+                    var credit_text = data.provider_name;
                     if (_.has(data, 'author_name')) {
-                        credit_text += ' | by <a href="' + data.author_url + '" target="_blank">' + data.author_name + '</a>';
+                        credit_text += ' | by <a href="' + data.author_url + '" target="_blank">' +
+                            data.author_name + '</a>';
                     }
                     html.find('.credit-preview').html(credit_text);
                 }
@@ -349,7 +353,7 @@ angular
                 return this.retrieveData();
             }
         });
-        SirTrevor.Blocks.Quote =  SirTrevor.Block.extend({
+        SirTrevor.Blocks.Quote = SirTrevor.Block.extend({
             type: 'quote',
             title: function() { return window.i18n.t('blocks:quote:title'); },
             icon_name: 'quote',
@@ -431,7 +435,8 @@ angular
             html: [
                 '<div class="row st-block__upload-container">',
                 '    <div class="col-md-6">',
-                '       <label onclick="$(this).next().trigger(\'click\');" class="btn btn-default"><%= i18n.t("general:upload") %></label>',
+                '       <label onclick="$(this).next().trigger(\'click\');" ',
+                '              class="btn btn-default"><%= i18n.t("general:upload") %></label>',
                 '       <input type="file" type="st-file-upload" />',
                 '    </div>',
                 '</div>'
@@ -439,7 +444,7 @@ angular
         };
         SirTrevor.DEFAULTS.Block.upload_options = upload_options;
         SirTrevor.Locales.en.general.upload = 'Select from folder';
-        SirTrevor.Blocks.Image =  SirTrevor.Block.extend({
+        SirTrevor.Blocks.Image = SirTrevor.Block.extend({
             type: 'image',
             title: function() {
                 return 'Image';
@@ -497,8 +502,10 @@ angular
                         class: 'alert alert-warning',
                         role: 'alert',
                     })
-                    .html(window.gettext('The image is being uploaded, please stand by. It may take a while as the file is bigger than ' + maxFileSize + 'MB.')));
-                    var that = this;
+                    .html(window.gettext(
+                        'The image is being uploaded, please stand by. ' +
+                        'It may take a while as the file is bigger than ' + maxFileSize + 'MB.'
+                    )));
                     window.setTimeout(function() {
                         that.$editor.find('[name="size-warning"]').css('display', 'none');
                     }, 10000);
@@ -593,7 +600,9 @@ angular
                     '    <img src="' + data.media._url + '" alt="' + data.caption + '"',
                     srcset? ' srcset="' + srcset.substring(2) + '"' : '',
                     '/>',
-                    '    <figcaption>' + data.caption + (data.credit === '' ? '' : ' Credit: ' + data.credit) + '</figcaption>',
+                    '    <figcaption>' + 
+                    data.caption + (data.credit === '' ? '' : ' Credit: ' + data.credit) + 
+                    '</figcaption>',
                     '</figure>'
                 ].join('');
             },
@@ -674,7 +683,7 @@ angular
         SirTrevor.Blocks.Comment = SirTrevor.Block.extend({
             type: "comment",
 
-            title: function() { return  window.i18n.t('blocks:comment:title'); },
+            title: function() { return window.i18n.t('blocks:comment:title'); },
 
             editorHTML: '<div class="st-required st-text-block"></div>',
 
@@ -772,13 +781,18 @@ angular
             text: 'link',
             onClick: function() {
                 var selection_text = document.getSelection(),
-                    link = prompt(i18n.t("general:link")),
+                    link = prompt(window.i18n.t("general:link")),
                     link_regex = /((ftp|http|https):\/\/.)|mailto(?=\:[-\.\w]+@)/;
                 if (link && link.length > 0) {
                     if (!link_regex.test(link)) {
                         link = "http://" + link;
                     }
-                document.execCommand('insertHTML', false, '<a href="' + link + '" target="_blank">' + selection_text + '</a>')
+
+                    document.execCommand(
+                        'insertHTML',
+                        false,
+                        '<a href="' + link + '" target="_blank">' + selection_text + '</a>'
+                    );
                 }
             },
             isActive: function() {
@@ -789,7 +803,7 @@ angular
                               .startContainer
                               .parentNode;
             }
-            return (node && node.nodeName == 'A');
+            return (node && node.nodeName === 'A');
           }
         });
         SirTrevor.Formatters.Link = new Link();

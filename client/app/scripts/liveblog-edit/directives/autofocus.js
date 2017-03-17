@@ -1,6 +1,6 @@
 autofocus.$inject = ['$timeout'];
 
-export default function autofocus() {
+export default function autofocus($timeout) {
     return {
         restrict: 'A',
         link: function($scope, $element) {

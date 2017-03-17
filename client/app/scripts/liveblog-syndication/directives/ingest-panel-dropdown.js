@@ -48,7 +48,7 @@ export default function ingestPanelDropdown(IngestPanelActions) {
             scope.open = false;
 
             scope.$watch('blog.start_date', function(newVal, oldVal) {
-                if (newVal != oldVal)
+                if (newVal !== oldVal)
                     scope.updateSyndication();
             })
         }

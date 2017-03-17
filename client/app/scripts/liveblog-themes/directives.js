@@ -8,8 +8,6 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 (function() {
-    'use strict';
-
     angular.module('liveblog.themes')
         .directive('lbDateFormat', [function() {
             return {

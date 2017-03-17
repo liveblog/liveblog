@@ -1,5 +1,4 @@
 (function() {
-    'use strict';
     angular.module('liveblog.themes')
     .service('themesService', ['$sce', 'api', 'blogService', function($sce, api, blogService) {
         /**
@@ -48,7 +47,7 @@
                     }
                 }
             }
-            themes.map(function(theme) {
+            themes.forEach(function(theme) {
                 addToHierarchy(theme.name, theme['extends']);
             });
             var max_loops = todo.length * todo.length;

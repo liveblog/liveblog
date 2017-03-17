@@ -16,7 +16,7 @@ export default function incomingSyndicationReducers() {
                 return angular.extend(state, {
                     posts: angular.extend(state.posts, {
                         _items: state.posts._items.filter(function(item) {
-                            return (item._id != action.post._id);
+                            return (item._id !== action.post._id);
                         })
                     })
                 });

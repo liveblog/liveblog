@@ -1,6 +1,4 @@
 (function() {
-    'use strict';
-
     BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload',
         'isArchivedFilterSelected', '$q', 'blogSecurityService', 'notify', 'config'];
     function BlogListController($scope, $location, api, gettext, upload,
@@ -43,7 +41,7 @@
         $scope.isUserAllowedToOpenBlog = blogSecurityService.canAccessBlog;
         // blog list embed code.
         function fetchBloglistEmbed() {
-            var criteria =  {source: {
+            var criteria = {source: {
                 query: {filtered: {filter: {term: {key: 'blogslist'}}}}
             }};
             api.blogslist.query(criteria, false).then(function(embed) {
@@ -54,7 +52,8 @@
                     url = 'http://localhost:5000/blogslist_embed'
                 }
                 if (url) {
-                    $scope.bloglistEmbed = '<iframe id="liveblog-bloglist" width="100%" scrolling="no" src="' + url + '" frameborder="0" allowfullscreen></iframe>';
+                    $scope.bloglistEmbed = '<iframe id="liveblog-bloglist" width="100%" ' +
+                        'scrolling="no" src="' + url + '" frameborder="0" allowfullscreen></iframe>';
                 }
             });
         }
@@ -138,7 +137,9 @@
                     $scope.newBlog.picture_url = picture_url;
                     $scope.newBlog.picture = response.data._id;
                 }, function(error) {
-                    notify.error((error.statusText !== '') ? error.statusText : gettext('There was a problem with your upload'));
+                    notify.error(
+                        (error.statusText !== '') ? error.statusText : gettext('There was a problem with your upload')
+                    );
                 }, function(progress) {
                     $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
                 });
@@ -206,7 +207,7 @@
             //prevent form submission and editor 'artifact'
             if (event.keyCode === 13) {
                 event.preventDefault();
-                switch(action) {
+                switch (action) {
                     case 'goToTeamTab':
                         //we need at least a valid title from the first tab
                         if ($scope.newBlog.title) {
@@ -237,12 +238,11 @@
             if (typeof blogsView !== 'undefined') {
                 $scope.blogsView = blogsView;
                 localStorage.setItem('blogsView', blogsView);
+            } else if (typeof (localStorage.getItem('blogsView')) === 'undefined'
+                || (localStorage.getItem('blogsView')) === null) {
+                $scope.blogsView = 'grid';
             } else {
-                if (typeof (localStorage.getItem('blogsView')) === 'undefined' || (localStorage.getItem('blogsView')) === null) {
-                    $scope.blogsView = 'grid';
-                } else {
-                    $scope.blogsView = localStorage.getItem('blogsView');
-                }
+                $scope.blogsView = localStorage.getItem('blogsView');
             }
         };
         $scope.setBlogsView();
@@ -316,9 +316,9 @@
             backend: {rel: 'blogs'}
         });
         apiProvider.api('archive', {
-            type: 'http',
-            backend: {rel: 'archive'}
-        });
+            type: 'http',
+            backend: {rel: 'archive'}
+        });
     }]).config(['superdeskProvider', function(superdesk) {
         superdesk
             .activity('/liveblog', {
@@ -354,7 +354,7 @@
             return user ? user.display_name || user.username : null;
         };
     }]);
-    app.directive('sdPlainImage', ['gettext', 'notify', function(gettext, notify) {
+    app.directive('sdPlainImage', ['gettext', 'notify', 'config', function(gettext, notify, config) {
         return {
             scope: {
                 src: '=',
@@ -369,7 +369,9 @@
                     if (src) {
                         var img = new Image();
                         if (scope.file.size > config.maxContentLength) {
-                            notify.error(gettext("Blog image is bigger than " + (config.maxContentLength / 1024 / 1024) + "MB"));
+                            notify.error(gettext(
+                                "Blog image is bigger than " + (config.maxContentLength / 1024 / 1024) + "MB"
+                            ));
                             scope.src = null;
                             scope.progressWidth = 0;
                         } else {
@@ -383,7 +385,10 @@
                                     minHeight = scope.minHeight || 240;
                                 if (this.width < minWidth || this.height < minHeight) {
                                     scope.$apply(function() {
-                                        notify.error(gettext('Sorry, but blog image must be at least ' + minWidth + 'x' + minHeight + ' pixels big!'));
+                                        notify.error(gettext(
+                                            'Sorry, but blog image must be at least ' + minWidth + 'x' +
+                                            minHeight + ' pixels big!'
+                                        ));
                                         scope.file = null;
                                         scope.src = null;
                                         scope.progressWidth = 0;
@@ -418,7 +423,7 @@
             }
         };
     })
-    .directive('lbUserSelectList', ['$filter', 'api', function($filter, api) {
+    .directive('lbUserSelectList', ['api', function(api) {
             return {
                 scope: {
                     members: '=',

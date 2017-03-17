@@ -9,7 +9,7 @@ export default function lbAnalyticsListCtrl($scope, $element) {
   };
 
   $scope.isReversePredicate = function(predicate) {
-    return $scope.reverse && $scope.predicate == predicate;
+    return $scope.reverse && $scope.predicate === predicate;
   };
 
   $scope.setPage = function($index) {

@@ -51,28 +51,18 @@ export default function consumerEdit(api, notify, _) {
                     scope.onsave({ consumer: result });
                 })
                 .catch(function(err) {
-                    var errorMsg = gettext('An error has occurred. Please try again later.');
-                    scope.onsave({ consumer: result });
-                })
-                .catch(function(err) {
                     var errorMsg = gettext('Fatal error!');
 
                     if (err.data.hasOwnProperty('_issues')) {
                         Object.keys(err.data._issues).forEach(function(key) {
                             var issue = err.data._issues[key];
-                            if (typeof issue == 'object') {
-                                if (issue.unique == true)
+                            if (typeof issue === 'object') {
+                                if (issue.unique === true)
                                     issue = gettext('The selected field value is not unique.');
                             }
                             scope.consumerForm[key].issue = issue;
                         });
                     }
-
-                    //if (err.data.hasOwnProperty('_issues')) {
-                    //    Object.keys(err.data._issues).forEach(function(key) {
-                    //        scope.consumerForm[key].issue = err.data._issues[key];
-                    //    });
-                    //}
 
                     notify.pop();
                     notify.error(errorMsg);

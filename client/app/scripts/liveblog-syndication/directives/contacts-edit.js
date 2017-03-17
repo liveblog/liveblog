@@ -5,7 +5,7 @@ export default function contactsEdit() {
             contacts: '=',
             attempted: '='
         },
-        require:"^form",
+        require: "^form",
         link: function(scope, elem, attrs, form) {
             if (!scope.contacts) {
                 scope.contacts = [{}];
