@@ -9,6 +9,11 @@ from flask import request
 from liveblog.common import check_comment_length
 from superdesk.resource import Resource
 from eve.utils import config
+from eve.utils import ParsedRequest
+import logging
+
+
+logger = logging.getLogger('superdesk')
 
 
 class ClientUsersResource(Resource):
@@ -65,7 +70,16 @@ class ClientBlogsResource(BlogsResource):
 
 
 class ClientBlogsService(BaseService):
-    pass
+    def find_one(self, req, **lookup):
+        if req is None:
+            req = ParsedRequest()
+        cache_key = 'lb_ClientBlogService_get_%s' % (hash(frozenset(req.__dict__.items())))
+        blog_id = lookup.get('_id')
+        docs = app.liveblog_cache.get(blog_id, cache_key)
+        if not docs:
+            docs = super().find_one(req, **lookup)
+            app.liveblog_cache.set(blog_id, cache_key, docs)
+        return docs
 
 
 class ClientPostsResource(PostsResource):
@@ -160,8 +174,8 @@ class ClientBlogPostsService(BlogPostsService):
     def get(self, req, lookup):
         cache_key = 'lb_ClientBlogPostsService_get_%s' % (hash(frozenset(req.__dict__.items())))
         blog_id = lookup.get('blog_id')
-        docs = app.blog_cache.get(blog_id, cache_key)
+        docs = app.liveblog_cache.get(blog_id, cache_key)
         if not docs:
             docs = super().get(req, lookup)
-            app.blog_cache.set(blog_id, cache_key, docs)
+            app.liveblog_cache.set(blog_id, cache_key, docs)
         return docs

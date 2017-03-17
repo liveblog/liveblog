@@ -15,6 +15,11 @@ from superdesk.users.services import current_user_has_privilege
 from superdesk.errors import SuperdeskApiError
 from superdesk import get_resource_service
 from liveblog.common import check_comment_length
+import logging
+
+
+logger = logging.getLogger('superdesk')
+
 
 
 logger = logging.getLogger('superdesk')
@@ -174,7 +179,7 @@ class PostsService(ArchiveService):
             if doc['post_status'] == 'open':
                 doc['published_date'] = utcnow()
                 doc['content_updated_date'] = doc['published_date']
-                doc['publisher'] = getattr(flask.g, 'user', None)
+                doc['publisher'] = {'_id': getattr(flask.g, 'user', {}).get('_id', None)}
         super().on_create(docs)
 
     def on_created(self, docs):
@@ -183,6 +188,7 @@ class PostsService(ArchiveService):
         posts = []
         out_service = get_resource_service('syndication_out')
         for doc in docs:
+            app.liveblog_cache.invalidate(doc.get('blog'))
             post = {}
             post['id'] = doc.get('_id')
             post['syndication_in'] = doc.get('syndication_in')
@@ -232,7 +238,7 @@ class PostsService(ArchiveService):
             updates['order'] = self.get_next_order_sequence(original.get('blog'))
             # if you publish a post it will save a published date and register who did it
             updates['published_date'] = utcnow()
-            updates['publisher'] = getattr(flask.g, 'user', None)
+            updates['publisher'] = {'_id': getattr(flask.g, 'user', {}).get('_id', None)}
             # if you publish a post and hasn't `content_updated_date` add it.
             if not updates.get('content_updated_date', False):
                 updates['content_updated_date'] = updates['published_date']
@@ -243,7 +249,6 @@ class PostsService(ArchiveService):
                     item_id = container.get('residRef')
                     found = item_resource.find_one(req=None, _id=item_id)
                     item_resource.update(item_id, {'original_creator': original.get('original_creator')}, found)
-
         # when unpublishing
         if original.get('post_status') == 'open' and updates.get('post_status') != 'open':
             updates['unpublished_date'] = utcnow()
@@ -253,7 +258,7 @@ class PostsService(ArchiveService):
         super().on_updated(updates, original)
         out_service = get_resource_service('syndication_out')
         # invalidate cache for updated blog
-        app.blog_cache.invalidate(original.get('blog'))
+        app.liveblog_cache.invalidate(original.get('blog'))
         # send notifications
         if updates.get('deleted', False):
             out_service.send_syndication_post(original, action='deleted')
@@ -288,7 +293,7 @@ class PostsService(ArchiveService):
     def on_deleted(self, doc):
         super().on_deleted(doc)
         # invalidate cache for updated blog
-        app.blog_cache.invalidate(doc.get('blog'))
+        app.liveblog_cache.invalidate(doc.get('blog'))
         # Syndication
         out_service = get_resource_service('syndication_out')
         out_service.send_syndication_post(doc, action='deleted')

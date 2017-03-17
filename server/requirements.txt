@@ -28,6 +28,7 @@ Flask-Mail==0.9.1
 Flask-PyMongo==0.4.1
 Flask-S3==0.1.7
 Flask-Script==2.0.5
+python-memcached==1.58
 gunicorn==19.3.0
 hachoir3-superdesk==3.0a1.post2
 HermesCache==0.6.1

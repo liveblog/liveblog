@@ -31,7 +31,7 @@ def env(variable, fallback_value=None):
         else:
             return env_value
 
-
+INSTANCE_ID = env('INSTANCE_ID', 'liveblog')
 ABS_PATH = os.path.abspath(os.path.dirname(__file__))
 BEHAVE_TESTS_FIXTURES_PATH = os.path.join(ABS_PATH, 'features', 'steps', 'fixtures')
 XML = False
@@ -220,6 +220,12 @@ LDAP_USER_FILTER = env('LDAP_USER_FILTER', "(&(objectCategory=user)(objectClass=
 # LDAP User Attributes to fetch. Keys would be LDAP Attribute Name and Value would be Supderdesk Model Attribute Name
 LDAP_USER_ATTRIBUTES = {'givenName': 'first_name', 'sn': 'last_name', 'displayName': 'display_name',
                         'mail': 'email', 'ipPhone': 'phone'}
+
+# memcached servers settings
+MEMCACHE_URI = env('MEMCACHE_URI', '')
+if MEMCACHE_URI:
+    MEMCACHE_URI = tuple(MEMCACHE_URI.split(','))
+CACHE_TTL = env('CACHE_TTL', '0')
 
 if LDAP_SERVER:
     INSTALLED_APPS.append('apps.auth.ldap')
