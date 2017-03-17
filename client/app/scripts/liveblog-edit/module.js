@@ -179,21 +179,25 @@ var app = angular.module('liveblog.edit', [
     }
     return insta;
 }])
-.config(['embedlyServiceProvider', 'embedServiceProvider', 'config', function(embedlyServiceProvider, embedServiceProvider, config) {
-    embedlyServiceProvider.setKey(config.embedly.key);
-    embedServiceProvider.setConfig('facebookAppId', config.facebookAppId);
-}]).run(['$q', 'embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',
+.config(['embedlyServiceProvider', 'embedServiceProvider', 'config', 
+    function(embedlyServiceProvider, embedServiceProvider, config) {
+        embedlyServiceProvider.setKey(config.embedly.key);
+        embedServiceProvider.setConfig('facebookAppId', config.facebookAppId);
+    }])
+    .run(['embedService', 'ngEmbedTwitterHandler', 'ngEmbedFacebookHandler',
         'ngEmbedYoutubeHandler', 'ngEmbedInstagramHandler', 'ngEmbedPictureHandler',
-    function($q, embedService, ngEmbedTwitterHandler, ngEmbedFacebookHandler,
-            ngEmbedYoutubeHandler, ngEmbedInstagramHandler, ngEmbedPictureHandler) {
-        // register all the special handlers we want to use for angular-embed
-        embedService.registerHandler(ngEmbedFacebookHandler); // use embed.ly and update the embed code with a max_width
-        embedService.registerHandler(ngEmbedYoutubeHandler); // use embed.ly
-        embedService.registerHandler(ngEmbedInstagramHandler); // Use embed.ly
-        embedService.registerHandler(ngEmbedTwitterHandler); // use embed.ly, load a script to render the card.
-        embedService.registerHandler(ngEmbedPictureHandler); // use embed.ly, and provide a `thumbnail_url` field from the `url`
-    }
-]);
+        function(embedService, ngEmbedTwitterHandler, ngEmbedFacebookHandler,
+                ngEmbedYoutubeHandler, ngEmbedInstagramHandler, ngEmbedPictureHandler) {
+            // register all the special handlers we want to use for angular-embed
+            // use embed.ly and update the embed code with a max_width
+            embedService.registerHandler(ngEmbedFacebookHandler);
+            embedService.registerHandler(ngEmbedYoutubeHandler); // use embed.ly
+            embedService.registerHandler(ngEmbedInstagramHandler); // Use embed.ly
+            embedService.registerHandler(ngEmbedTwitterHandler); // use embed.ly, load a script to render the card.
+            // use embed.ly, and provide a `thumbnail_url` field from the `url`
+            embedService.registerHandler(ngEmbedPictureHandler);
+        }
+    ]);
 
 export default app;
 //});

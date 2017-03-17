@@ -9,7 +9,8 @@ lbPost.$inject = [
     'instagramService'
 ];
 
-export default function lbPost(notify, gettext, asset, postsService, modal, blogSecurityService, $document, instagramService) {
+export default function lbPost(notify, gettext, asset, postsService, modal,
+    blogSecurityService, $document, instagramService) {
     return {
         scope: {
             post: '=',
@@ -122,8 +123,10 @@ export default function lbPost(notify, gettext, asset, postsService, modal, blog
                 },
                 highlightPost: function(post) {
                     changeHighlightStatus(post, !post.lb_highlight).then(function(post) {
-                       notify.pop();
-                       notify.info(post.lb_highlight ? gettext('Post was highlighted') : gettext('Post was un-highlighted'));
+                        notify.pop();
+                        notify.info(
+                            post.lb_highlight ? gettext('Post was highlighted') : gettext('Post was un-highlighted')
+                        );
                     }, function() {
                        notify.pop();
                        notify.error(gettext('Something went wrong. Please try again later'));

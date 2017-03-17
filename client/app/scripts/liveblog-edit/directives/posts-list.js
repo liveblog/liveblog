@@ -29,7 +29,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                 $scope.lbPostsOrderBy || 'editorial',
                 $scope.lbSticky,
                 null,
-                $scope.lbPostsNoSyndication === true ? true : false
+                $scope.lbPostsNoSyndication === true
             ),
             fetchNewPage: function() {
                 vm.isLoading = true;
@@ -113,7 +113,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                     vm.isLoading = false;
                 });
             },
-            isBlogClosed: $scope.$parent.blog.blog_status == 'closed'
+            isBlogClosed: $scope.$parent.blog.blog_status === 'closed'
         });
         $scope.lbPostsInstance = vm;
         // retrieve first page
