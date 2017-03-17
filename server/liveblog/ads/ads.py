@@ -13,8 +13,8 @@ from superdesk.services import BaseService
 
 class AdsResource(Resource):
     schema = {
-        'collections': Resource.rel('collections', embeddable=False, required=False,  nullable=True),
-        'name': {
+        'collections': Resource.rel('collections', embeddable=False, required=False, nullable=True),
+        'namea': {
             'type': 'string',
             'unique': True
         },

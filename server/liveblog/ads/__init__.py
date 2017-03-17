@@ -11,5 +11,3 @@ def init_app(app):
     endpoint_name = 'collections'
     service = CollectionsService(endpoint_name, backend=superdesk.get_backend())
     CollectionsResource(endpoint_name, app=app, service=service)
-
-
