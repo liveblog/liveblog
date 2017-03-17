@@ -287,3 +287,23 @@
 .content--syndication {
     top: 114px !important;
 }
+
+/* UI fixes */
+#main-container > div.subnav div.button-stack.right-stack {
+    margin: 0;
+}
+div.subnav div.button-stack.left-stack a.homebtn {
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+div.settings-page button {
+    margin-top: 10px;
+}
+div.settings-page button:last-child {
+    margin-right: 20px;
+}
+button.btn-info {
+    background-color: #5ea9c8;
+}
+#main-menu .footer .icon-superdesk {
+    background-size: 156px 48px;
+}
