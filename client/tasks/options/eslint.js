@@ -4,7 +4,7 @@ var root = path.dirname(path.dirname(__dirname));
 module.exports = {
     options: {
         configFile: path.join(root, '.eslintrc.json'),
-        quiet: true
+        quiet: false
     },
 
     app: {
@@ -13,18 +13,19 @@ module.exports = {
             path.join(root, 'app/scripts/**/*.jsx')
         ],
         envs: ['browser', 'amd']
-    },
-
-    specs: {
-        src: [
-            path.join(root, 'spec/**/*.js'),
-            path.join(root, 'spec/**/*.jsx')
-        ],
-        envs: ['node', 'jasmine']
-    },
-
-    tasks: {
-        src: path.join(root, 'tasks/**/*.js'),
-        envs: ['node']
     }
+
+    // TODO: lint the shit out of the specs
+    //specs: {
+    //    src: [
+    //        path.join(root, 'spec/**/*.js'),
+    //        path.join(root, 'spec/**/*.jsx')
+    //    ],
+    //    envs: ['node', 'jasmine']
+    //},
+
+    //tasks: {
+    //    src: path.join(root, 'tasks/**/*.js'),
+    //    envs: ['node']
+    //}
 };

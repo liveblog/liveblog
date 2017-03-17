@@ -11,8 +11,8 @@ function liveblogAnalyticsController($scope, $location, api, analytics, blog, no
     var q = { page: page || 1, max_results: 200 };
     api('blogs/<regex("[a-f0-9]{24}"):blog_id>/bloganalytics', {_id: blog._id})
         .query(q)
-        .then(function(data) {
-          if (q.page == 1) $scope.analytics_data = data;
+        .then(function(data) {
+          if (q.page === 1) $scope.analytics_data = data;
           else $scope.analytics_data._items.concat(data._items);
           if (data._links.next) loadAnalytics(q.page + 1)
         })
