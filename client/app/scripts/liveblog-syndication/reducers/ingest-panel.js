@@ -42,7 +42,7 @@ export default function ingestPanelReducers (moment) {
                 return angular.extend(state, {
                     syndicationIn: syndicationIn,
                     locallySyndicatedItems: locallySyndicatedItems(
-                        syndicationIn, 
+                        syndicationIn,
                         state.localSyndTokens
                     )
                 });
