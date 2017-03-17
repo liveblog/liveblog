@@ -26,9 +26,10 @@ export default function postsService(api, $q, userList) {
      * @param {integer} page - page index
      */
     function getPosts(blog_id, filters, max_results, page) {
-        filters     = filters     || {};
-        page        = page        || 1;
+        filters = filters || {};
+        page = page || 1;
         max_results = max_results || 15;
+
         // excludeDeleted: default set to true
         filters.excludeDeleted = angular.isDefined(filters.excludeDeleted) ? filters.excludeDeleted : true;
         var posts_criteria = {
@@ -273,10 +274,20 @@ export default function postsService(api, $q, userList) {
         retrievePost: retrievePost,
         savePost: savePost,
         saveDraft: function(blog_id, post, items, sticky, highlight) {
-            return savePost(blog_id, post, items, {post_status: 'draft', 'sticky': sticky, 'lb_highlight': highlight});
+            return savePost(
+                blog_id,
+                post,
+                items,
+                {post_status: 'draft', 'sticky': sticky, 'lb_highlight': highlight}
+            );
         },
         saveContribution: function(blog_id, post, items, sticky, highlight) {
-            return savePost(blog_id, post, items, {post_status: 'submitted', 'sticky': sticky, 'lb_highlight': highlight});
+            return savePost(
+                blog_id,
+                post,
+                items,
+                {post_status: 'submitted', 'sticky': sticky, 'lb_highlight': highlight}
+            );
         },
         remove: removePost
     };

@@ -28,7 +28,7 @@ export default function unreadPostsService($rootScope) {
         var isContrib = false;
 
         prevContributions.forEach(function(contrib) {
-            if (contrib.id == post._id)
+            if (contrib.id === post._id)
                 isContrib = true;
         });
 

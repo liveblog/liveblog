@@ -4,10 +4,10 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
 
     function PagesManager (blog_id, status, max_results, sort, sticky, highlight, noSynd) {
         var SORTS = {
-            'editorial': {order: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
-            'updated_first': {_updated: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
-            'newest_first': {_created: {order: 'desc', missing:'_last', unmapped_type: 'long'}},
-            'oldest_first': {_created: {order: 'asc', missing:'_last', unmapped_type: 'long'}}
+            'editorial': {order: {order: 'desc', missing: '_last', unmapped_type: 'long'}},
+            'updated_first': {_updated: {order: 'desc', missing: '_last', unmapped_type: 'long'}},
+            'newest_first': {_created: {order: 'desc', missing: '_last', unmapped_type: 'long'}},
+            'oldest_first': {_created: {order: 'asc', missing: '_last', unmapped_type: 'long'}}
         };
         var self = this;
 
@@ -123,7 +123,12 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                     var promises = [];
                     for (var i = meta.page + 1; i <= Math.floor(meta.total / meta.max_results) + 1; i++) {
                         page = i;
-                        promises.push(postsService.getPosts(self.blogId, {updatedAfter: date, excludeDeleted: false}, undefined, page));
+                        promises.push(postsService.getPosts(
+                            self.blogId, 
+                            {updatedAfter: date, excludeDeleted: false},
+                            undefined,
+                            page
+                        ));
                     }
                     return $q.all(promises).then(function(updates_pages) {
                         return angular.extend({}, updates_pages[0], {
@@ -157,7 +162,9 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                         removePost(post);
                     } else {
                         // post updated
-                        if (post.post_status !== self.status || (self.status === 'open' && post.sticky !== sticky) || (self.highlight && !post.lb_highlight)) {
+                        if (post.post_status !== self.status
+                        || (self.status === 'open' && post.sticky !== sticky)
+                        || (self.highlight && !post.lb_highlight)) {
                            removePost(post);
                         } else {
                             // update
@@ -167,7 +174,9 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                     }
                 } else {
                     // post doesn't exist in the list
-                    if (!post.deleted && post.post_status === self.status && (self.status !== 'open' || post.sticky === sticky)) {
+                    if (!post.deleted
+                    && post.post_status === self.status
+                    && (self.status !== 'open' || post.sticky === sticky)) {
                         addPost(post);
                     }
                 }

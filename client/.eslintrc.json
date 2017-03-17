@@ -68,7 +68,7 @@
         "accessor-pairs": 2,
         "array-callback-return": 2,
         "block-scoped-var": 1,
-        "complexity": [2, 15],
+        "complexity": [1, 15],
         "curly": 1,
         "dot-location": [2, "property"],
         "dot-notation": 1,
