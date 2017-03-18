@@ -1,9 +1,11 @@
+import freetypeImageTpl from 'scripts/liveblog-edit/views/freetype-image.html';
+
 freetypeImage.$inject = ['$compile', 'modal', 'api', 'upload'];
 
 export default function freetypeImage($compile, modal, api, upload) {
     return {
         restrict: 'E',
-        templateUrl: 'scripts/liveblog-edit/views/freetype-image.html',
+        templateUrl: freetypeImageTpl,
         controller: ['$scope', function($scope) {
             $scope.valid = true;
             $scope._id = _.uniqueId('image');

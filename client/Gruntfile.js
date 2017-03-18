@@ -46,7 +46,6 @@ module.exports = function (grunt) {
         'copy:assets',
         'copy:index',
         'copy:sirTrevor',
-        'ngtemplates:dev',
         'webpack-dev-server:start'
     ]);
 
@@ -66,7 +65,6 @@ module.exports = function (grunt) {
         'copy:assets',
         'copy:index',
         'copy:sirTrevor',
-        'ngtemplates:dev',
         'webpack:build'
     ]);
 

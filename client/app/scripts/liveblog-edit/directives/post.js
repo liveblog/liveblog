@@ -1,3 +1,5 @@
+import postTpl from 'scripts/liveblog-edit/views/post.html';
+
 lbPost.$inject = [
     'notify',
     'gettext',
@@ -31,7 +33,7 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
             postsListCtrl: '='
         },
         restrict: 'E',
-        templateUrl: 'scripts/liveblog-edit/views/post.html',
+        templateUrl: postTpl,
         link: function(scope, elem, attrs) {
             // if the escape key is press then clear the reorder action.
             function escClearReorder(e) {

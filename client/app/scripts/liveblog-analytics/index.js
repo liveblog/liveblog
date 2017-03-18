@@ -1,5 +1,7 @@
 import './styles/analytics.scss';
 
+import analiticsListTpl from 'scripts/liveblog-analytics/views/view-list.html';
+
 import liveblogAnalyticsController from './controllers/controller-analytics';
 import lbAnalyticsListCtrl from './directives/directives-analytics';
 
@@ -28,7 +30,7 @@ export default angular
       scope: {
         analytics: '='
       },
-      templateUrl: 'scripts/liveblog-analytics/views/view-list.html',
+      templateUrl: analiticsListTpl,
       controllerAs: 'analyticsList',
       controller: lbAnalyticsListCtrl
     };

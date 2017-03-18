@@ -1,3 +1,5 @@
+import filterByMemberTpl from 'scripts/liveblog-edit/views/filter-by-member.html';
+
 lbFilterByMember.$inject = ['api'];
 
 export default function lbFilterByMember(api) {
@@ -7,7 +9,7 @@ export default function lbFilterByMember(api) {
             blogId: '=',
             onFilterChange: '='
         },
-        templateUrl: 'scripts/liveblog-edit/views/filter-by-member.html',
+        templateUrl: filterByMemberTpl,
         controllerAs: 'vm',
         controller: ['$scope', function($scope) {
             var vm = this;

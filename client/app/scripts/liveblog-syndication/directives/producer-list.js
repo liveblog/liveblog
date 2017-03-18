@@ -1,8 +1,10 @@
+import producerListItemTpl from 'scripts/liveblog-syndication/views/producer-list-item.html';
+
 producerList.$inject = ['api'];
 
 export default function producerList(api) {
     return {
-        templateUrl: 'scripts/liveblog-syndication/views/producer-list-item.html',
+        templateUrl: producerListItemTpl,
         scope: {
             roles: '=',
             producers: '=',

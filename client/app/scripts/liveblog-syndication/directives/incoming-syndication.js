@@ -1,3 +1,5 @@
+import incomingSyndicationTpl from 'scripts/liveblog-syndication/views/incoming-syndication.html';
+
 incomingSyndication.$inject = [
   '$routeParams',
   'IncomingSyndicationActions',
@@ -9,7 +11,7 @@ incomingSyndication.$inject = [
 export default function incomingSyndication($routeParams, IncomingSyndicationActions,
     IncomingSyndicationReducers, Store, modal) {
     return {
-        templateUrl: 'scripts/liveblog-syndication/views/incoming-syndication.html',
+        templateUrl: incomingSyndicationTpl,
         scope: {
             lbPostsOnPostSelected: '=',
             openPanel: '=',
