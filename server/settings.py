@@ -160,6 +160,7 @@ INSTALLED_APPS = [
     'liveblog.client_modules',
     'liveblog.syndication',
     'liveblog.freetypes',
+    'liveblog.advertising',
     'liveblog.marketplace',
     'liveblog.analytics'
 ]
