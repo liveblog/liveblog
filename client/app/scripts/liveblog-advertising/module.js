@@ -1,9 +1,12 @@
+import adManagTemplate from 'scripts/liveblog-advertising/views/main.html';
+
 LiveblogAdvertisingController.$inject = ['api', '$location', 'notify', 'gettext',
-'$q', '$sce', 'config', 'lodash', 'upload', 'blogService', 'modal'];
+'$q', '$sce', 'config', 'lodash', 'upload', 'blogService', 'modal', '$templateCache'];
 
 function LiveblogAdvertisingController(api, $location, notify, gettext,
-$q, $sce, config, _, upload, blogService, modal) {
+$q, $sce, config, _, upload, blogService, modal, $templateCache) {
     var vm = this;
+    console.log('$templateCache ', $templateCache.get(adManagTemplate));
 }
 
 
@@ -19,7 +22,7 @@ var liveblogAdvertisingModule = angular.module('liveblog.advertising', [])
                 category: superdesk.MENU_MAIN,
                 adminTools: true,
                 privileges: {'global_preferences': 1},
-                templateUrl: 'scripts/liveblog-advertising/views/index.html'
+                templateUrl: adManagTemplate
             });
 }])
 
