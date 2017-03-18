@@ -128,7 +128,7 @@ $q, $sce, config, _, upload, blogService, modal) {
         if (config.subscriptionLevel !== 'solo')
             superdesk
                 .activity('/freetypes/', {
-                    label: gettext('Free types manager Marcel'),
+                    label: gettext('Free types manager'),
                     controller: LiveblogFreetypesController,
                     controllerAs: 'vm',
                     betaMark: true,
