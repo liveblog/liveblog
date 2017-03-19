@@ -1,1 +1,34 @@
-Advertising manager this is raw
+<div class="subnav">
+    <div class="button-stack left-stack" >
+        <ul class="nav nav-tabs pull-left" >
+            <li ng-class="{active: activeState === 'adverts'}"><button ng-click="changeState('adverts')" translate>Adverts</button></li>
+            <li ng-class="{active: activeState === 'collections'}"><button ng-click="changeState('collections')" translate>Collections</button></li>
+        </ul>
+    </div>
+</div>
+<section class="main-section bloglist">
+	<div class="ad-section" ng-if="activeState === 'adverts'">
+		<header>
+	        <div style="section-title">Adverts</div>
+	        
+	        <div class="button-stack right-stack">
+		        <button class="navbtn navbtn-info" ng-click="vm.openFreetypeDialog();">
+		            <i class="svg-icon-add inverse"></i> <span class="title" translate>Create Free Type</span>
+		        </button>
+		    </div>
+	    </header>
+	</div>
+
+	<div class="ad-section" ng-if="activeState === 'collections'">
+		<header>
+	        <div style="section-title">Collections</div>
+	        
+	        <div class="button-stack right-stack">
+		        <button class="navbtn navbtn-info" ng-click="vm.openFreetypeDialog();">
+		            <i class="svg-icon-add inverse"></i> <span class="title" translate>Create Free Type</span>
+		        </button>
+		    </div>
+	    </header>
+	</div>
+
+</section>
