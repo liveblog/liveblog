@@ -1,12 +1,16 @@
 import adManagTemplate from 'scripts/liveblog-advertising/views/main.html';
 
-LiveblogAdvertisingController.$inject = ['api', '$location', 'notify', 'gettext',
+LiveblogAdvertisingController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext',
 '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', 'modal', '$templateCache'];
 
-function LiveblogAdvertisingController(api, $location, notify, gettext,
+function LiveblogAdvertisingController($scope, api, $location, notify, gettext,
 $q, $sce, config, _, upload, blogService, modal, $templateCache) {
     var vm = this;
     console.log('$templateCache ', $templateCache.get(adManagTemplate));
+    $scope.activeState = 'adverts';
+    $scope.changeState = function(state) {
+        $scope.activeState = state;
+    }
 }
 
 
