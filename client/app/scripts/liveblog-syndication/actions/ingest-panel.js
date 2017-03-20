@@ -1,6 +1,6 @@
-ingestPanelActions.$inject = ['Dispatcher', 'api', '$http', 'config'];
+ingestPanelActions.$inject = ['Dispatcher', 'api', '$http', 'config', 'moment'];
 
-export default function ingestPanelActions(Dispatcher, api, $http, config) {
+export default function ingestPanelActions(Dispatcher, api, $http, config, moment) {
     return {
         getSyndication: function(consumerBlogId) {
              var params = {
@@ -42,15 +42,21 @@ export default function ingestPanelActions(Dispatcher, api, $http, config) {
                 '/producers/' + params.producerId + 
                 '/syndicate/' + params.producerBlogId;
 
+            let data = {
+                consumer_blog_id: params.consumerBlogId,
+                auto_publish: params.autoPublish,
+                auto_retrieve: params.autoRetrieve
+            };
+
+            if (params.method === 'POST')
+                data.start_date = moment
+                    .tz(params.startDate, config.model.dateformat, config.defaultTimezone)
+                    .format(config.system.dateTimeTZ);
+
             return $http({
                 url: uri,
                 method: (params.method === 'DELETE') ? 'DELETE' : 'POST',
-                data: { 
-                    start_date: params.startDate,
-                    consumer_blog_id: params.consumerBlogId, 
-                    auto_publish: params.autoPublish,
-                    auto_retrieve: params.autoRetrieve
-                },
+                data: data,
                 headers: {
                     "Content-Type": "application/json;charset=utf-8"
                 }

@@ -227,15 +227,6 @@ function getDefaults(grunt) {
             solo: 1,
             team: 3
         },
-        analytics: {
-            piwik: {
-                url: process.env.PIWIK_URL || '',
-                id: process.env.PIWIK_SITE_ID || ''
-            },
-            ga: {
-                id: process.env.TRACKING_ID || ''
-            }
-        },
 
         maxContentLength: process.env.MAX_CONTENT_LENGTH || 8 * 1024 * 1024,
 
@@ -252,7 +243,10 @@ function getDefaults(grunt) {
         view: {
             dateformat: process.env.VIEW_DATE_FORMAT || 'DD/MM/YYYY',
             timeformat: process.env.VIEW_TIME_FORMAT || 'HH:mm'
+        },
+
+        system: {
+            dateTimeTZ: 'YYYY-MM-DD[T]HH:mm:ssZ'
         }
- 
     };
 }
