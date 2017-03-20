@@ -19,6 +19,12 @@ class CollectionsResource(Resource):
         },
         'advertisements': {
             'type': 'list',
+            'schema': {
+                'type': 'dict',
+                'schema': {
+                    'advertisement_id': Resource.rel('advertisements'),
+                }
+            },
             'nullable': True
         }
     }
