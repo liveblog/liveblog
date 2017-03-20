@@ -1,6 +1,8 @@
+import contactsEditFormTpl from 'scripts/liveblog-syndication/views/contacts-edit-form.html';
+
 export default function contactsEdit() {
     return {
-        templateUrl: 'scripts/liveblog-syndication/views/contacts-edit-form.html',
+        templateUrl: contactsEditFormTpl,
         scope: {
             contacts: '=',
             attempted: '='

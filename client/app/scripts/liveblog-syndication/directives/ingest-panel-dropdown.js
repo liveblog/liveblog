@@ -1,8 +1,10 @@
+import ingestPanelDropdownTpl from 'scripts/liveblog-syndication/views/ingest-panel-dropdown.html';
+
 ingestPanelDropdown.$inject = ['IngestPanelActions'];
 
 export default function ingestPanelDropdown(IngestPanelActions) {
     return {
-        templateUrl: 'scripts/liveblog-syndication/views/ingest-panel-dropdown.html',
+        templateUrl: ingestPanelDropdownTpl,
         scope: {
             consumerBlogId: '=',
             blog: '='

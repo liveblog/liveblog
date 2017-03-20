@@ -1,7 +1,9 @@
+import freetypeLinkTpl from 'scripts/liveblog-edit/views/freetype-link.html';
+
 export default function freetypeLink() {
     return {
         restrict: 'E',
-        templateUrl: 'scripts/liveblog-edit/views/freetype-link.html',
+        templateUrl: freetypeLinkTpl,
         controller: ['$scope', function($scope) {
             var regex = /https?:\/\/[^\s]+\.[^\s\.]+/;
             $scope._id = _.uniqueId('link');

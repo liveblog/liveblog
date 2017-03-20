@@ -1,6 +1,8 @@
 import './styles/marketplace.scss';
 import './../flux';
 
+import marketplaceTpl from 'scripts/liveblog-marketplace/views/marketplace.html';
+
 import marketplaceController from './controllers/marketplace';
 
 import marketplaceActions from './actions/marketplace';
@@ -25,7 +27,7 @@ export default angular
             .activity('/marketplace/', {
                 label: gettext('Marketplace'),
                 controller: 'MarketplaceController',
-                templateUrl: 'scripts/liveblog-marketplace/views/marketplace.html',
+                templateUrl: marketplaceTpl,
                 category: superdesk.MENU_MAIN,
                 priority: 100,
                 adminTools: true,

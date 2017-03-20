@@ -1,3 +1,5 @@
+import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-modal.html';
+
 (function() {
     angular.module('liveblog.themes')
     .filter('exampleDate', [ 'moment', function(moment) {
@@ -8,7 +10,7 @@
     .directive('themeSettingsModal', ['api', '$q', 'notify',
         function(api, $q, notify) {
             return {
-                templateUrl: 'scripts/liveblog-themes/views/theme-settings-modal.html',
+                templateUrl: themeSettingsModalTpl,
                 scope: {
                     theme: '=',
                     modalOpened: '='

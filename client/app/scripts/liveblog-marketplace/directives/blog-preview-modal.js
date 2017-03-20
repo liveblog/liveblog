@@ -1,8 +1,10 @@
+import previewModalTpl from 'scripts/liveblog-marketplace/views/blog-preview-modal.html';
+
 lbBlogPreviewModal.$inject = ['MarketplaceActions', '$sce'];
 
 export default function lbBlogPreviewModal(MarketplaceActions, $sce) {
     return {
-        templateUrl: 'scripts/liveblog-marketplace/views/blog-preview-modal.html',
+        templateUrl: previewModalTpl,
         scope: {
             store: '='
         },

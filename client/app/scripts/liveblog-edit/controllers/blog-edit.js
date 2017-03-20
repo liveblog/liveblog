@@ -11,6 +11,10 @@
 import angular from 'angular';
 import _ from 'lodash';
 
+import scorecardsTpl from 'scripts/liveblog-edit/views/scorecards.html';
+import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.html';
+import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html'
+
 import './../../ng-sir-trevor';
 import './../../ng-sir-trevor-blocks';
 import './../unread.posts.service';
@@ -159,26 +163,20 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
             return data._items;
         });
 
-        var scorecards = $http.get('scripts/liveblog-edit/views/scorecards.html').then(function(template) {
-            return {
-                name: 'Scorecard',
-                template: template.data
-            };
-        });
+        var scorecards = {
+            name: 'Scorecard',
+            template: $templateCache.get(scorecardsTpl)
+        };
 
-        var adLocal = $http.get('scripts/liveblog-edit/views/ads-local.html').then(function(template) {
-            return {
-                name: 'Advertisment Local',
-                template: template.data
-            };
-        });
+        var adLocal = {
+            name: 'Advertisment Local',
+            template: $templateCache.get(adsLocalTpl)
+        };
 
-        var adRemote = $http.get('scripts/liveblog-edit/views/ads-remote.html').then(function(template) {
-            return {
-                name: 'Advertisment Remote',
-                template: template.data
-            };
-        });
+        var adRemote = {
+            name: 'Advertisment Remote',
+            template: $templateCache.get(adsRemoteTpl)
+        };
 
         $q.all([userFt, adLocal, adRemote, scorecards]).then(function(freetypes) {
             angular.forEach(freetypes, function(freetype) {

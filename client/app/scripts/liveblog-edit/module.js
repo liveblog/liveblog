@@ -12,6 +12,10 @@
 import angular from 'angular';
 import _ from 'lodash';
 
+import mainTpl from 'scripts/liveblog-edit/views/main.html';
+import settingsTpl from 'scripts/liveblog-edit/views/settings.html';
+import analiticsTpl from 'scripts/liveblog-analytics/views/view-analytics.html';
+
 import BlogEditController from './controllers/blog-edit.js'
 import BlogSettingsController from './controllers/blog-settings.js'
 
@@ -50,14 +54,14 @@ var app = angular.module('liveblog.edit', [
         auth: true,
         controller: BlogEditController,
         controllerAs: 'blogEdit',
-        templateUrl: 'scripts/liveblog-edit/views/main.html',
+        templateUrl: mainTpl,
         resolve: {blog: BlogResolver}
     }).activity('/liveblog/settings/:_id', {
         label: gettext('Blog Settings'),
         auth: true,
         controller: BlogSettingsController,
         controllerAs: 'settings',
-        templateUrl: 'scripts/liveblog-edit/views/settings.html',
+        templateUrl: settingsTpl,
         resolve: {
             blog: BlogResolver,
             security: ['blogSecurityService', function(blogSecurityService) {
@@ -69,7 +73,7 @@ var app = angular.module('liveblog.edit', [
         auth: true,
         controller: 'LiveblogAnalyticsController',
         controllerAs: 'analytics',
-        templateUrl: 'scripts/liveblog-analytics/views/view-analytics.html',
+        templateUrl: analiticsTpl,
         resolve: {
             blog: BlogResolver,
             security: ['blogSecurityService', function(blogSecurityService) {
