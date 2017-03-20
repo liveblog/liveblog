@@ -46,6 +46,7 @@ module.exports = function (grunt) {
     grunt.registerTask('server', [
         'clean',
         'copy:assets',
+        'copy:locales',
         'copy:index',
         'copy:sirTrevor',
         'ngtemplates:dev',
@@ -75,6 +76,7 @@ module.exports = function (grunt) {
     grunt.registerTask('build', [
         'clean',
         'copy:assets',
+        'copy:locales',
         'copy:index',
         'copy:sirTrevor',
         'ngtemplates:dev',
