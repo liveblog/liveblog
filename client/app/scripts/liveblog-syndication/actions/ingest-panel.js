@@ -3,43 +3,44 @@ ingestPanelActions.$inject = ['Dispatcher', 'api', '$http', 'config', 'moment'];
 export default function ingestPanelActions(Dispatcher, api, $http, config, moment) {
     return {
         getSyndication: function(consumerBlogId) {
-             var params = {
+            var params = {
                 where: {
                     blog_id: consumerBlogId
                 }
             };
 
-            api.syndicationIn.query(params).then(function(syndicationIn) {
-                Dispatcher.dispatch({
-                    type: 'ON_GET_SYND',
-                    syndicationIn: syndicationIn
+            api.syndicationIn.query(params)
+                .then((syndicationIn) => {
+                    Dispatcher.dispatch({
+                        type: 'ON_GET_SYND',
+                        syndicationIn: syndicationIn
+                    });
+                })
+                .catch((error) => {
+                    Dispatcher.dispatch({
+                        type: 'ON_ERROR',
+                        error: error
+                    });
                 });
-            })
-            .catch(function(error) {
-                Dispatcher.dispatch({
-                    type: 'ON_ERROR',
-                    error: error
-                });
-            });
-
         },
         getProducers: function() {
-            api.producers.query().then(function(producers) {
-                Dispatcher.dispatch({
-                    type: 'ON_GET_PRODUCERS',
-                    producers: producers
+            api.producers.query()
+                .then((producers) => {
+                    Dispatcher.dispatch({
+                        type: 'ON_GET_PRODUCERS',
+                        producers: producers
+                    });
+                })
+                .catch((error) => {
+                    Dispatcher.dispatch({
+                        type: 'ON_ERROR',
+                        error: error
+                    });
                 });
-            })
-            .catch(function(error) {
-                Dispatcher.dispatch({
-                    type: 'ON_ERROR',
-                    error: error
-                });
-             });
         },
         syndicate: function(params) {
-            var uri = config.server.url + 
-                '/producers/' + params.producerId + 
+            var uri = config.server.url +
+                '/producers/' + params.producerId +
                 '/syndicate/' + params.producerBlogId;
 
             let data = {
@@ -48,29 +49,28 @@ export default function ingestPanelActions(Dispatcher, api, $http, config, momen
                 auto_retrieve: params.autoRetrieve
             };
 
-            if (params.method === 'POST')
+            if (params.method === 'POST') {
                 data.start_date = moment
                     .tz(params.startDate, config.model.dateformat, config.defaultTimezone)
                     .format(config.system.dateTimeTZ);
+            }
 
             return $http({
                 url: uri,
-                method: (params.method === 'DELETE') ? 'DELETE' : 'POST',
+                method: params.method === 'DELETE' ? 'DELETE' : 'POST',
                 data: data,
                 headers: {
-                    "Content-Type": "application/json;charset=utf-8"
+                    'Content-Type': 'application/json;charset=utf-8'
                 }
             })
-            .then(function(response) {
-                return api('syndication_in').query();
-            })
-            .then(function(syndicationIn) {
+            .then((response) => api('syndication_in').query())
+            .then((syndicationIn) => {
                 Dispatcher.dispatch({
                     type: 'ON_GET_SYND',
                     syndicationIn: syndicationIn
                 });
             })
-            .catch(function(error) {
+            .catch((error) => {
                 Dispatcher.dispatch({
                     type: 'ON_ERROR',
                     error: error
@@ -79,13 +79,13 @@ export default function ingestPanelActions(Dispatcher, api, $http, config, momen
         },
         getProducerBlogs: function(producerId) {
             api.get('/producers/' + producerId + '/blogs')
-                .then(function(blogs) {
+                .then((blogs) => {
                     Dispatcher.dispatch({
                         type: 'ON_GET_PRODUCER_BLOGS',
                         producerBlogs: blogs
                     });
                 })
-                .catch(function(error) {
+                .catch((error) => {
                     Dispatcher.dispatch({
                         type: 'ON_ERROR',
                         error: error
@@ -104,11 +104,11 @@ export default function ingestPanelActions(Dispatcher, api, $http, config, momen
                 method: 'PATCH',
                 data: data,
                 headers: {
-                    "Content-Type": "application/json;charset=utf-8",
-                    "If-Match": etag
+                    'Content-Type': 'application/json;charset=utf-8',
+                    'If-Match': etag
                 }
             })
-            .then(function(response) {
+            .then((response) => {
                 Dispatcher.dispatch({
                     type: 'ON_UPDATED_SYND',
                     syndEntry: response.data
@@ -122,5 +122,4 @@ export default function ingestPanelActions(Dispatcher, api, $http, config, momen
             });
         }
     };
-};
-
+}
