@@ -140,7 +140,7 @@ INSTALLED_APPS = [
     'liveblog.freetypes',
     'liveblog.marketplace',
     'liveblog.analytics',
-    'liveblog.ads',
+    'liveblog.advertisements',
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']

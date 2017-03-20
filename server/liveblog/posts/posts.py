@@ -76,7 +76,7 @@ class PostsResource(ArchiveResource):
         },
         'post_status': {
             'type': 'string',
-            'allowed': ['open', 'draft', 'submitted', 'comment', 'ad'],
+            'allowed': ['open', 'draft', 'submitted', 'comment'],
             'default': 'open'
         },
         'lb_highlight': {
