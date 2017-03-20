@@ -21,6 +21,8 @@ import io
 import os
 import json
 import logging
+import pymongo
+
 
 logger = logging.getLogger('superdesk')
 THEMES_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'themes'))
@@ -95,29 +97,72 @@ def delete_embed(blog_id):
     app.media.delete(file_path)
 
 
+class BlogThemeRenderer(object):
+    order_by = ('_updated', '_created')
+    default_order_by = '_updated'
+    sort = ('asc', 'desc')
+    default_sort = 'asc'
+
+    def __init__(self, blog):
+        self.blog = blog
+        self.posts = get_resource_service('posts')
+
+    def _validate_order_by(self, order_by):
+        if order_by not in self.order_by:
+            raise ValueError(order_by)
+
+    def _validate_sort(self, sort):
+        if sort not in self.sort:
+            raise ValueError(sort)
+
+    def _posts_lookup(self, sticky, highlight):
+        return {'$and': [
+            {'blog_id': {'$eq': self.blog['id']}},
+            {'sticky': {'$eq': sticky}},
+            {'highlight': {'$eq': highlight}}
+        ]}
+
+    def get_posts(self, sticky=False, highlight=False, order_by=default_order_by, sort=default_sort, page=1, limit=25):
+        self._validate_sort(sort)
+        self._validate_order_by(order_by)
+        results = self.posts.find(self._posts_lookup(sticky, highlight))
+        if sort == 'asc':
+            sort = pymongo.ASCENDING
+        else:
+            sort = pymongo.DESCENDING
+        skip = limit * (page -1)
+        results = results.skip(skip).limit(limit).sort(order_by, sort)
+        return list(results)
+
+
 @bp.route('/embed/<blog_id>')
 def embed(blog_id, api_host=None, theme=None):
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if not blog:
         return 'blog not found', 404
+
     # retrieve picture url from relationship
     if blog.get('picture', None):
         blog['picture'] = get_resource_service('archive').find_one(req=None, _id=blog['picture'])
+
     # retrieve the wanted theme and add it to blog['theme'] if is not the registered one
     try:
         theme_name = request.args.get('theme', theme)
     except RuntimeError:
         # this method can be called outside from a request context
         theme_name = theme
+
     theme = get_resource_service('themes').find_one(req=None, name=blog['blog_preferences'].get('theme'))
     if theme is None and theme_name is None:
         raise SuperdeskApiError.badRequestError(
             message='You will be able to access the embed after you register the themes')
+
     # if a theme is provided, overwrite the default theme
     if theme_name:
         theme_package = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
         theme = json.loads(open(theme_package).read())
+
     try:
         assets, template_file = collect_theme_assets(theme)
     except UnknownTheme as e:
@@ -125,6 +170,7 @@ def embed(blog_id, api_host=None, theme=None):
     if not template_file:
         logger.error('Template file not found for theme "%s". Theme: %s' % (theme.get('name'), theme))
         return 'Template file not found', 500
+
     # compute the assets root
     if theme.get('public_url', False):
         assets_root = theme.get('public_url')
@@ -132,8 +178,16 @@ def embed(blog_id, api_host=None, theme=None):
         assets_root = [THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme')]
         assets_root = '/%s/' % ('/'.join(assets_root))
 
+
+    posts = []
+    if theme.get('seoTheme', False):
+        # Fetch initial blog posts for SEO theme
+        renderer = BlogThemeRenderer(blog)
+        posts = renderer.get_posts()
+
     scope = {
         'blog': blog,
+        'posts': posts,
         'settings': get_resource_service('themes').get_default_settings(theme),
         'assets': assets,
         'api_host': api_host,
