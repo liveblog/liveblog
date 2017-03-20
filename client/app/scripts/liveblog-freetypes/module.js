@@ -4,7 +4,6 @@ LiveblogFreetypesController.$inject = ['api', '$location', 'notify', 'gettext',
 function LiveblogFreetypesController(api, $location, notify, gettext,
 $q, $sce, config, _, upload, blogService, modal) {
     var vm = this;
-
         function getFreetypes(silent) {
             silent = silent || false;
             api.freetypes.query().then(function(data) {
