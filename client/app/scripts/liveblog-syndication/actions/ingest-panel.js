@@ -52,6 +52,7 @@ export default function ingestPanelActions(Dispatcher, api, $http, config, momen
             if (params.method === 'POST') {
                 data.start_date = moment
                     .tz(params.startDate, config.model.dateformat, config.defaultTimezone)
+                    .utc() // Date needs to be converted to UTC because of daylight savings
                     .format(config.system.dateTimeTZ);
             }
 
