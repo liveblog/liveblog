@@ -77,7 +77,7 @@
     "angular-embed": "superdesk/angular-embed#2afd7397a7179f25b66c4b5f13ea2a0daf799821",
     "angular-embedly": "Urigo/angular-embedly#0.0.8",
     "angular-gettext": "^2.0.5",
-    "angular-messages": "^1.5.8",
+    "angular-messages": "1.5.11",
     "angular-mocks": "1.5.11",
     "angular-moment": "^0.10.3",
     "angular-resource": "1.5.11",
