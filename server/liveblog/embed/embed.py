@@ -119,7 +119,9 @@ class BlogThemeRenderer(object):
         return {'$and': [
             {'blog_id': {'$eq': self.blog['id']}},
             {'sticky': {'$eq': sticky}},
-            {'highlight': {'$eq': highlight}}
+            {'highlight': {'$eq': highlight}},
+            {'post_status': {'$eq': 'open'}},
+            {'deleted': {'$not': True}}
         ]}
 
     def get_posts(self, sticky=False, highlight=False, order_by=default_order_by, sort=default_sort, page=1, limit=25):
