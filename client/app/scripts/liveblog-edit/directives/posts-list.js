@@ -1,3 +1,5 @@
+import postsTpl from 'scripts/liveblog-edit/views/posts.html';
+
 lbPostsList.$inject = ['postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager'];
 
 export default function lbPostsList(postsService, notify, $q, $timeout, session, PagesManager) {
@@ -155,7 +157,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
         },
         restrict: 'EA',
         transclude: true,
-        templateUrl: 'scripts/liveblog-edit/views/posts.html',
+        templateUrl: postsTpl,
         controllerAs: 'postsList',
         controller: LbPostsListCtrl
     };

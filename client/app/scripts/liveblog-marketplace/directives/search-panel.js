@@ -1,8 +1,10 @@
+import searchPanelTpl from 'scripts/liveblog-marketplace/views/search-panel.html';
+
 lbSearchPanel.$inject = ['MarketplaceActions'];
 
 export default function lbSearchPanel(MarketplaceActions) {
     return {
-        templateUrl: 'scripts/liveblog-marketplace/views/search-panel.html',
+        templateUrl: searchPanelTpl,
         scope: {
             store: '='
         },

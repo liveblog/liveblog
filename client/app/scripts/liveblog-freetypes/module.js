@@ -1,3 +1,5 @@
+import listViewTpl from 'scripts/liveblog-freetypes/views/list.html'
+
 LiveblogFreetypesController.$inject = ['api', '$location', 'notify', 'gettext',
 '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', 'modal'];
 
@@ -136,7 +138,7 @@ $q, $sce, config, _, upload, blogService, modal) {
                     category: superdesk.MENU_MAIN,
                     adminTools: true,
                     privileges: {'global_preferences': 1},
-                    templateUrl: 'scripts/liveblog-freetypes/views/list.html'
+                    templateUrl: listViewTpl
                 });
     }])
     .config(['apiProvider', function(apiProvider) {

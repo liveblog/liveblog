@@ -1,3 +1,5 @@
+import listTpl from 'scripts/liveblog-themes/views/list.html';
+
 (function() {
     LiveblogThemesController.$inject = ['api', '$location', 'notify', 'gettext',
     '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', '$window'];
@@ -272,7 +274,7 @@
                 category: superdesk.MENU_MAIN,
                 adminTools: true,
                 privileges: {'global_preferences': 1},
-                templateUrl: 'scripts/liveblog-themes/views/list.html'
+                templateUrl: listTpl
             });
     }])
     .filter('githubUrlFromGit', function() {

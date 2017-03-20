@@ -1,8 +1,10 @@
+import producerEditFormTpl from 'scripts/liveblog-syndication/views/producer-edit-form.html';
+
 producerEdit.$inject = ['api', 'notify', 'lodash'];
 
 export default function producerEdit(api, notify, _) {
     return {
-        templateUrl: 'scripts/liveblog-syndication/views/producer-edit-form.html',
+        templateUrl: producerEditFormTpl,
         scope: {
             producer: '=',
             onsave: '&',

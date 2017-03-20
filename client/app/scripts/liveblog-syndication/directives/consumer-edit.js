@@ -1,8 +1,10 @@
+import consumerEditFormTpl from 'scripts/liveblog-syndication/views/consumer-edit-form.html';
+
 consumerEdit.$inject = ['api', 'notify', 'lodash'];
 
 export default function consumerEdit(api, notify, _) {
     return {
-        templateUrl: 'scripts/liveblog-syndication/views/consumer-edit-form.html',
+        templateUrl: consumerEditFormTpl,
         scope: {
             consumer: '=',
             onsave: '&',

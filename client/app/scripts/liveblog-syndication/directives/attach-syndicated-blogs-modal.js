@@ -1,8 +1,10 @@
+import attachSyndicatedBlogsModalTpl from 'scripts/liveblog-syndication/views/attach-syndicated-blogs-modal.html';
+
 attachSyndicatedBlogsModal.$inject = ['$q', 'lodash', 'IngestPanelActions']; 
 
 export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
     return {
-        templateUrl: 'scripts/liveblog-syndication/views/attach-syndicated-blogs-modal.html',
+        templateUrl: attachSyndicatedBlogsModalTpl,
         scope: {
             store: '='
         },

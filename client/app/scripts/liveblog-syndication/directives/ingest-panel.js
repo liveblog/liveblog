@@ -1,3 +1,5 @@
+import ingestPanelTpl from 'scripts/liveblog-syndication/views/ingest-panel.html';
+
 ingestPanel.$inject = [
   'IngestPanelActions',
   'Store',
@@ -8,7 +10,7 @@ ingestPanel.$inject = [
 
 export default function ingestPanel(IngestPanelActions, Store, IngestPanelReducers, $routeParams, notify) {
     return {
-        templateUrl: 'scripts/liveblog-syndication/views/ingest-panel.html',
+        templateUrl: ingestPanelTpl,
         link: function(scope) {
 
             var handleError = function() {

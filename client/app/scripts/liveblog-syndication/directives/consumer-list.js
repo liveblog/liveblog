@@ -1,8 +1,10 @@
+import consumerListItemTpl from 'scripts/liveblog-syndication/views/consumer-list-item.html';
+
 consumerList.$inject = ['api', 'notify'];
 
 export default function consumerList(api, notify) {
     return {
-        templateUrl: 'scripts/liveblog-syndication/views/consumer-list-item.html',
+        templateUrl: consumerListItemTpl,
         scope: {
             roles: '=',
             consumers: '=',

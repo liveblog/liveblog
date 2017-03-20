@@ -1,6 +1,8 @@
+import marketplatplaceSwitchTpl from 'scripts/liveblog-marketplace/views/marketplace-switch.html';
+
 export default function lbMarketplaceSwitch() {
     return {
-        templateUrl: 'scripts/liveblog-marketplace/views/marketplace-switch.html',
+        templateUrl: marketplatplaceSwitchTpl,
         scope: {
             marketEnabled: '='
         }
