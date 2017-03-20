@@ -1,8 +1,8 @@
 import attachSyndicatedBlogsModalTpl from 'scripts/liveblog-syndication/views/attach-syndicated-blogs-modal.html';
 
-attachSyndicatedBlogsModal.$inject = ['$q', 'lodash', 'IngestPanelActions']; 
+attachSyndicatedBlogsModal.$inject = ['$q', 'lodash', 'IngestPanelActions', 'datetimeHelper'];
 
-export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
+export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions, datetimeHelper) {
     return {
         templateUrl: attachSyndicatedBlogsModalTpl,
         scope: {
@@ -20,6 +20,11 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
                 scope.modalActive = state.modalActive;
 
                 if (Object.keys(state.producerBlogs).length > 0) {
+                    scope.producerBlogs._items = state.producerBlogs._items.map((blog) => {
+                        blog.start_date = datetimeHelper.splitDateTime(blog.start_date).date;
+                        return blog;
+                    });
+
                     scope.blogsToAttach = angular.copy(scope.localProducerBlogIds);
                     compare();
                 }
