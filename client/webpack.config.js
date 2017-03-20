@@ -17,18 +17,19 @@ module.exports = function makeConfig(grunt) {
 
     var sdConfig = lodash.defaultsDeep(require(appConfigPath)(grunt), getDefaults(grunt));
 
+
     // shouldExclude returns true if the path p should be excluded from loaders
     // such as 'babel' or 'eslint'. This is to avoid including node_modules into
     // these loaders, but not node modules that are superdesk apps.
-    //const shouldExclude = function(p) {
-    //    // don't exclude anything outside node_modules
-    //    if (p.indexOf('node_modules') === -1) {
-    //        return false;
-    //    }
-    //    // include only 'superdesk-core' and valid modules inside node_modules
-    //    let validModules = ['superdesk-core'].concat(sdConfig.apps);
-    //    return !validModules.some(app => p.indexOf(app) > -1);
-    //};
+    const shouldExclude = function(p) {
+        // don't exclude anything outside node_modules
+        if (p.indexOf('node_modules') === -1) {
+            return false;
+        }
+        // include only 'superdesk-core' and valid modules inside node_modules
+        let validModules = ['superdesk-core'].concat(sdConfig.apps);
+        return !validModules.some(app => p.indexOf(app) > -1);
+    };
 
     return {
         cache: true,
@@ -88,37 +89,14 @@ module.exports = function makeConfig(grunt) {
             loaders: [
                 {
                     test: /\.jsx?$/,
-                    //exclude: shouldExclude,
-                    exclude: function(p) {
-                        //console.log('p', p, p.indexOf('node_modules') > -1 && p.indexOf('superdesk-core') < 0);
-                        // exclude parsing node modules, but allow the 'superdesk-core'
-                        // node module, because it will be used when building in the
-                        // main 'superdesk' repository.
-                        //return p.indexOf('node_modules/superdesk-core/node_modules') > -1;
-                        //return p.indexOf('node_modules') > -1 && p.indexOf('superdesk-core') < 0;
-                        return false;
-                    },
+                    exclude: shouldExclude,
                     loader: 'babel',
                     query: {
                         cacheDirectory: true,
-                        presets: ['es2015', 'react']
+                        presets: ['es2015', 'react'],
+                        plugins: ['transform-object-rest-spread']
                     }
                 },
-                //{
-                //    test: /\.js$/,
-                //    exclude: function(p) {
-                //        'use strict';
-                //        // exclude parsing node modules, but allow the 'superdesk-core'
-                //        // node module, because it will be used when building in the
-                //        // main 'superdesk' repository.
-                //        return p.indexOf('node_modules') > -1 && p.indexOf('superdesk-core') < 0;
-                //    },
-                //    loader: 'babel',
-                //    query: {
-                //        cacheDirectory: true,
-                //        presets: ['es2015']
-                //    }
-                //},
                 {
                     test: /\.html$/,
                     loader: 'html'
