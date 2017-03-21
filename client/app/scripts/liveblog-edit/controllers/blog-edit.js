@@ -170,12 +170,12 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
         };
 
         var adLocal = {
-            name: 'Advertisment Local',
+            name: 'Advertisement Local',
             template: $templateCache.get(adsLocalTpl)
         };
 
         var adRemote = {
-            name: 'Advertisment Remote',
+            name: 'Advertisement Remote',
             template: $templateCache.get(adsRemoteTpl)
         };
 
