@@ -21,7 +21,11 @@
 
     <body>
 
-        {{ template | safe }}
+        {% if settings.seoTheme %}
+        {% include template_file %}
+        {% else %}
+        {{ template_content | safe }}
+        {% endif %}
 
         <script type="text/javascript">
             window.LB = {

@@ -38,11 +38,15 @@ def is_relative_to_current_folder(url):
     return not (url.startswith('/') or url.startswith('http://') or url.startswith('https://'))
 
 
+def get_template_file_name(theme):
+    return os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme['name'], 'template.html')
+
+
 def collect_theme_assets(theme, assets=None, template=None):
     assets = assets or {'scripts': [], 'styles': [], 'devScripts': [], 'devStyles': []}
     # load the template
     if not template:
-        template_file_name = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme['name'], 'template.html')
+        template_file_name = get_template_file_name(theme)
         if os.path.isfile(template_file_name):
             template = open(template_file_name, encoding='utf-8').read()
     # add assets from parent theme
@@ -192,10 +196,11 @@ def embed(blog_id, api_host=None, theme=None):
         theme = json.loads(open(theme_package).read())
 
     try:
-        assets, template_file = collect_theme_assets(theme)
+        assets, template_content = collect_theme_assets(theme)
     except UnknownTheme as e:
         return str(e), 500
-    if not template_file:
+
+    if not template_content:
         logger.error('Template file not found for theme "%s". Theme: %s' % (theme.get('name'), theme))
         return 'Template file not found', 500
 
@@ -205,7 +210,6 @@ def embed(blog_id, api_host=None, theme=None):
     else:
         assets_root = [THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme')]
         assets_root = '/%s/' % ('/'.join(assets_root))
-
 
     api_response = {}
     if theme.get('seoTheme', False):
@@ -219,7 +223,8 @@ def embed(blog_id, api_host=None, theme=None):
         'settings': get_resource_service('themes').get_default_settings(theme),
         'assets': assets,
         'api_host': api_host,
-        'template': template_file,
+        'template_file': get_template_file_name(theme),
+        'template_content': template_content,
         'debug': app.config.get('LIVEBLOG_DEBUG'),
         'assets_root': assets_root
     }
