@@ -87,10 +87,6 @@ class ItemsService(ArchiveService):
         return(docs)
 
     def on_create(self, docs):
-        for doc in docs:
-            if (doc.get('remote_image_url')):
-                doc['media']=FileStorage(stream=fetch_url('remote_image_url'), content_type='image/jpeg')
-
         super().on_create(docs)
         for doc in docs:
             update_dates_for(doc)
