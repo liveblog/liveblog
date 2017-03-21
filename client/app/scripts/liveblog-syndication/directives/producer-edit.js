@@ -1,8 +1,10 @@
+import producerEditFormTpl from 'scripts/liveblog-syndication/views/producer-edit-form.html';
+
 producerEdit.$inject = ['api', 'notify', 'lodash'];
 
 export default function producerEdit(api, notify, _) {
     return {
-        templateUrl: 'scripts/liveblog-syndication/views/producer-edit-form.html',
+        templateUrl: producerEditFormTpl,
         scope: {
             producer: '=',
             onsave: '&',
@@ -61,8 +63,8 @@ export default function producerEdit(api, notify, _) {
                     if (err.data.hasOwnProperty('_issues')) {
                         Object.keys(err.data._issues).forEach(function(key) {
                             var issue = err.data._issues[key];
-                            if (typeof issue == 'object') {
-                                if (issue.unique == true)
+                            if (typeof issue === 'object') {
+                                if (issue.unique === true)
                                     issue = gettext('The selected field value is not unique.');
                             }
                             scope.producerForm[key].issue = issue;

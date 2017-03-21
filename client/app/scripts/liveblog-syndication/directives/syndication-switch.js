@@ -1,8 +1,10 @@
+import syndicationSwitchTpl from 'scripts/liveblog-syndication/views/syndication-switch.html';
+
 syndicationSwitch.$inject = ['api', '$routeParams'];
 
 export default function syndicationSwitch(api, $routeParams) {
     return {
-        templateUrl: 'scripts/liveblog-syndication/views/syndication-switch.html',
+        templateUrl: syndicationSwitchTpl,
         link: function(scope) {
             scope.enableSyndSwitch = true;
 

@@ -44,7 +44,7 @@ export default function ingestPanelActions(Dispatcher, api, $http, config) {
 
             return $http({
                 url: uri,
-                method: (params.method == 'DELETE') ? 'DELETE' : 'POST',
+                method: (params.method === 'DELETE') ? 'DELETE' : 'POST',
                 data: { 
                     start_date: params.startDate,
                     consumer_blog_id: params.consumerBlogId, 
