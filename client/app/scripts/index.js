@@ -86,7 +86,7 @@ import 'superdesk-core/scripts/apps/archive';
 import 'superdesk-core/scripts/apps/monitoring';
 import 'superdesk-core/scripts/apps/settings';
 import 'superdesk-core/scripts/apps/ingest';
-//import 'superdesk-core/scripts/apps/search-providers';
+import 'superdesk-core/scripts/apps/search-providers';
 
 import 'liveblog-bloglist';
 import 'liveblog-edit';
