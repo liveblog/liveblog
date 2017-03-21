@@ -110,6 +110,10 @@ class ThemesResource(Resource):
         },
         'public_url': {
             'type': 'string'
+        },
+        'seoTheme': {
+            'type': 'boolean',
+            'default': False
         }
     }
     datasource = {

@@ -11,6 +11,7 @@
 from superdesk.errors import SuperdeskApiError
 
 """Embed module"""
+import jinja2
 import superdesk
 from flask import render_template, json, request, current_app as app
 from eve.io.mongo import MongoJSONEncoder
@@ -129,7 +130,7 @@ class BlogThemeRenderer:
             {'sticky': {'$eq': sticky}},
             {'highlight': {'$eq': highlight}},
             {'post_status': {'$eq': 'open'}},
-            {'deleted': {'$not': True}}
+            {'deleted': {'$ne': True}}
         ]}
 
     def get_posts(self, sticky=False, highlight=False, order_by=default_order_by, sort=default_sort, page=1, limit=25,
@@ -211,19 +212,29 @@ def embed(blog_id, api_host=None, theme=None):
         assets_root = [THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme')]
         assets_root = '/%s/' % ('/'.join(assets_root))
 
+    theme_service = get_resource_service('themes')
+    theme_settings = theme_service.get_default_settings(theme)
+
     api_response = {}
     if theme.get('seoTheme', False):
         # Fetch initial blog posts for SEO theme
         renderer = BlogThemeRenderer(blog)
         api_response = renderer.get_posts(wrap=True)
+        embed_template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(template_content)
+        template_content = embed_template.render(
+            blog=blog,
+            theme=theme,
+            api_response=api_response,
+            settings=theme_settings,
+            options=theme.get('options')
+        )
 
     scope = {
         'blog': blog,
-        'api_response': api_response,
-        'settings': get_resource_service('themes').get_default_settings(theme),
+        'theme': theme,
+        'settings': theme_settings,
         'assets': assets,
         'api_host': api_host,
-        'template_file': get_template_file_name(theme),
         'template_content': template_content,
         'debug': app.config.get('LIVEBLOG_DEBUG'),
         'assets_root': assets_root
