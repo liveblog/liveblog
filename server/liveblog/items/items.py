@@ -9,10 +9,11 @@ from apps.archive.archive import ArchiveResource, ArchiveService, ArchiveVersion
 from superdesk.services import BaseService
 from superdesk.filemeta import set_filemeta, get_filemeta
 from werkzeug.datastructures import FileStorage
-from flask import Blueprint, request, make_response
+from flask import Blueprint, request, make_response, jsonify
 from flask_cors import CORS
 from superdesk import get_resource_service
 from liveblog.syndication.utils import fetch_url
+from bson.json_util import dumps
 
 drag_and_drop_blueprint = Blueprint('drag_and_drop',__name__)
 CORS(drag_and_drop_blueprint)
@@ -155,24 +156,6 @@ def drag_and_drop():
     item_data['media'] = FileStorage(stream=fetch_url(url), content_type=mimetype)
     archive_service = get_resource_service('archive')
     archive_id = archive_service.post([item_data])[0]
+    archive = archive_service.find_one(req=None, _id=archive_id)
 
-    return make_response(archive_id, 201)
-
-    # resource_def = app.config['DOMAIN']['archive']
-    #
-    # document[resource_def['id_field']] = \
-    #     document.get(resource_def['id_field'], archive_id)
-    #
-    # # build the full response document
-    # result = document
-    # build_response_document(
-    #     result, 'archive', [], document)
-    #
-    # # add extra write meta data
-    # result[config.STATUS] = config.STATUS_OK
-    #
-    # # limit what actually gets sent to minimize bandwidth usage
-    # result = marshal_write_response(result, 'archive')
-    # return send_response('archive', (result, None, None, 201))
-
-
+    return make_response(dumps(archive),201)
