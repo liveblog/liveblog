@@ -1,8 +1,8 @@
 import attachSyndicatedBlogsModalTpl from 'scripts/liveblog-syndication/views/attach-syndicated-blogs-modal.html';
 
-attachSyndicatedBlogsModal.$inject = ['$q', 'lodash', 'IngestPanelActions']; 
+attachSyndicatedBlogsModal.$inject = ['$q', 'lodash', 'IngestPanelActions', 'datetimeHelper'];
 
-export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
+export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions, datetimeHelper) {
     return {
         templateUrl: attachSyndicatedBlogsModalTpl,
         scope: {
@@ -11,7 +11,7 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
         link: function(scope) {
             scope.actionName = 'Attach';
 
-            scope.store.connect(function(state) {
+            scope.store.connect((state) => {
                 scope.producers = state.producers;
                 scope.syndicationIn = state.syndicationIn;
                 scope.producerBlogs = state.producerBlogs;
@@ -20,6 +20,11 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
                 scope.modalActive = state.modalActive;
 
                 if (Object.keys(state.producerBlogs).length > 0) {
+                    scope.producerBlogs._items = state.producerBlogs._items.map((blog) => {
+                        blog.start_date = datetimeHelper.splitDateTime(blog.start_date).date;
+                        return blog;
+                    });
+
                     scope.blogsToAttach = angular.copy(scope.localProducerBlogIds);
                     compare();
                 }
@@ -30,27 +35,28 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
 
             var compare = function() {
                 scope.hasChanged = angular.equals(
-                    scope.localProducerBlogIds.sort(), 
+                    scope.localProducerBlogIds.sort(),
                     scope.blogsToAttach.sort()
                 );
 
                 var toSyndicate = _.difference(
-                    scope.blogsToAttach, 
-                    scope.localProducerBlogIds
-                ),
-                toUnSyndicate = _.difference(
-                    scope.localProducerBlogIds, 
-                    scope.blogsToAttach
-                );
+                        scope.blogsToAttach,
+                        scope.localProducerBlogIds
+                    ),
+                    toUnSyndicate = _.difference(
+                        scope.localProducerBlogIds,
+                        scope.blogsToAttach
+                    );
 
-                if (toSyndicate.length > 0 && toUnSyndicate.length === 0)
+                if (toSyndicate.length > 0 && toUnSyndicate.length === 0) {
                     scope.actionName = 'Attach';
-                else if (toSyndicate.length === 0 && toUnSyndicate.length > 0)
+                } else if (toSyndicate.length === 0 && toUnSyndicate.length > 0) {
                     scope.actionName = 'Detach';
-                else if (!scope.hasChanged)
+                } else if (!scope.hasChanged) {
                     scope.actionName = 'Attach/Detach';
-                else
+                } else {
                     scope.actionName = 'Attach';
+                }
             };
 
             scope.cancel = function() {
@@ -58,9 +64,10 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
             };
 
             scope.selectProducer = function(producerId) {
-                scope.producers._items.forEach(function(producer) {
-                    if (producer._id === producerId)
+                scope.producers._items.forEach((producer) => {
+                    if (producer._id === producerId) {
                         scope.currentProducer = producer;
+                    }
                 });
 
                 IngestPanelActions.getProducerBlogs(producerId);
@@ -72,35 +79,36 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
             };
 
             scope.isAlreadySyndicated = function(blog) {
-                if (scope.localProducerBlogIds.length === 0)
+                if (scope.localProducerBlogIds.length === 0) {
                     return false;
-                else
-                    return scope.localProducerBlogIds.indexOf(blog._id) !== -1;
+                }
+
+                return scope.localProducerBlogIds.indexOf(blog._id) !== -1;
             };
 
             scope.check = function(blog) {
-                blog.checked = (blog.hasOwnProperty('checked')) ? !blog.checked : true;
+                blog.checked = blog.hasOwnProperty('checked') ? !blog.checked : true;
 
-                if (blog.checked && scope.blogsToAttach.indexOf(blog._id) === -1)
+                if (blog.checked && scope.blogsToAttach.indexOf(blog._id) === -1) {
                     scope.blogsToAttach.push(blog._id);
-                else if (!blog.checked && scope.blogsToAttach.indexOf(blog._id) !== -1)
+                } else if (!blog.checked && scope.blogsToAttach.indexOf(blog._id) !== -1) {
                     scope.blogsToAttach.splice(scope.blogsToAttach.indexOf(blog._id), 1);
+                }
 
                 compare();
             };
 
             scope.attach = function() {
-                var chain = [],
-                    toSyndicate = _.difference(
-                        scope.blogsToAttach, 
+                let toSyndicate = _.difference(
+                        scope.blogsToAttach,
                         scope.localProducerBlogIds
                     ),
                     toUnSyndicate = _.difference(
-                        scope.localProducerBlogIds, 
+                        scope.localProducerBlogIds,
                         scope.blogsToAttach
                     );
 
-                scope.producerBlogs._items.forEach(function (blog) {
+                scope.producerBlogs._items.forEach((blog) => {
                     var params = {
                         producerId: scope.currentProducer._id,
                         producerBlogId: blog._id,
@@ -111,16 +119,17 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
                         method: 'POST'
                     };
 
-                    if (toSyndicate.indexOf(blog._id) !== -1)
+                    if (toSyndicate.indexOf(blog._id) !== -1) {
                         IngestPanelActions.syndicate(params);
-                    else if (toUnSyndicate.indexOf(blog._id) !== -1)
+                    } else if (toUnSyndicate.indexOf(blog._id) !== -1) {
                         IngestPanelActions.syndicate(
-                            angular.extend(params, { method: 'DELETE' })
+                            angular.extend(params, {method: 'DELETE'})
                         );
+                    }
                 });
 
                 IngestPanelActions.toggleModal(false);
             };
         }
     };
-};
+}
