@@ -13,7 +13,7 @@ import _ from 'lodash';
 
 import scorecardsTpl from 'scripts/liveblog-edit/views/scorecards.html';
 import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.html';
-import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html'
+import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html';
 
 import './../../ng-sir-trevor';
 import './../../ng-sir-trevor-blocks';
@@ -169,12 +169,12 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
         };
 
         var adLocal = {
-            name: 'Advertisment Local',
+            name: 'Advertisement Local',
             template: $templateCache.get(adsLocalTpl)
         };
 
         var adRemote = {
-            name: 'Advertisment Remote',
+            name: 'Advertisement Remote',
             template: $templateCache.get(adsRemoteTpl)
         };
 

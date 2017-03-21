@@ -1,9 +1,15 @@
-.advertisment {
+.advertising {
 	.button-stack.right-stack {
-		margin: -10px -20px 0 5px!important;
+		margin: 0px!important;
 	}
 	.section-title {
 		float: left;
-		color: green;
+		padding: 7px 20px;
+	}
+	.right-important {
+		float: right!important;
+	}
+	.freetype--error {
+	    color: #8b0000;
 	}
 }
