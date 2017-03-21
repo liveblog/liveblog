@@ -63,7 +63,7 @@ import './module';
             for (var i = 0, variable = obj; i< parts.length; i++){
                 if (parts[i].indexOf('[') !== -1) {
                     vector = parts[i].match(/([^\]]*)\[([^\]]*)]/);
-                    if (parseInt(vector[2], 10) == vector[2]) {
+                    if (parseInt(vector[2], 10) === vector[2]) {
                         vector[2] = parseInt(vector[2], 10);
                     }
                     part = {};
@@ -104,7 +104,7 @@ import './module';
     */
     function obj2path(ret, obj, path) {
         ret = ret || {};
-        var gotopath, path;
+        var gotopath;
         angular.forEach(obj, function(value, key) {
             if (angular.isArray(value)) {
                 for (var i = 0; i< value.length; i++) {
@@ -146,7 +146,7 @@ import './module';
     }
 
     angular.module('liveblog.edit')
-    .factory('freetypeService', ['$q', function ($q) {
+    .factory('freetypeService', function () {
         return {
             /**
             * transformation method from dorla sign template to angular template
@@ -165,7 +165,7 @@ import './module';
                     repeater = repeater.replace(REGEX_VARIABLE, function(all, path) {
                         path2obj(scope[SCOPE_FREETYPEDATA], path);
                         parts = path.split(/[\d*]/);
-                        if (parts.length === 2 && parts[1] != '') {
+                        if (parts.length === 2 && parts[1] !== '') {
                             vector = parts[0].substr(0, parts[0].length - 1);
                             return '$$' + iteratorName + '.' + parts[1].substr(2);
                         } else {
@@ -180,7 +180,8 @@ import './module';
                 // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(checkbox|radio)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(checkbox|radio)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, 
+                        function(match, tag, quote, rname) {
                         name = rname;
                         // remove the dollar variable from the attributes.
                         return '';
@@ -194,68 +195,79 @@ import './module';
                 // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
+                    attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                        function(match, tag, quote, rname) {
                         name = rname;
                         // remove the dollar variable from the attributes.
                         return '';
                     });
                     if (name) {
                         path2obj(scope[SCOPE_FREETYPEDATA], name);
-                        return '<freetype-text text=' + makeAngularAttr(name, attr) + ' validation="validation"></freetype-text>';
+                        return '<freetype-text text=' 
+                                + makeAngularAttr(name, attr)
+                                + ' validation="validation"></freetype-text>';
                     }
                     return all;
                 });
                 // transform dollar variables in content of any start to end tag.
-                template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>(.*?)<\/\1>?/gi, function(all, tag, attr, content) {
-                    var name, parts;
-                    content = content.replace(/^\s+|\s+$/g, '');
-                    parts = content.match(/^\$([\$a-z0-9]+)/gi);
-                    // content should be only the variable name
-                    if (parts && parts[0].length === content.length) {
-                        name = content.substr(1);
-                    }
-                    if (name) {
-                        path2obj(scope[SCOPE_FREETYPEDATA], name);
-                        return '<input ng-model=' + makeAngularAttr(name, attr) + '/>';
-                    }
-                    return all;
-                });
+                template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>(.*?)<\/\1>?/gi,
+                    function(all, tag, attr, content) {
+                        var name, parts;
+                        content = content.replace(/^\s+|\s+$/g, '');
+                        parts = content.match(/^\$([\$a-z0-9]+)/gi);
+                        // content should be only the variable name
+                        if (parts && parts[0].length === content.length) {
+                            name = content.substr(1);
+                        }
+                        if (name) {
+                            path2obj(scope[SCOPE_FREETYPEDATA], name);
+                            return '<input ng-model=' + makeAngularAttr(name, attr) + '/>';
+                        }
+                        return all;
+                    });
                 // transform dollar variables in the attributes of `image` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
-                        name = rname;
-                        // remove the dollar variable from the attributes.
-                        return '';
-                    });
+                    attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                        function(match, tag, quote, rname) {
+                            name = rname;
+                            // remove the dollar variable from the attributes.
+                            return '';
+                        });
                     if (name) {
                         path2obj(scope[SCOPE_FREETYPEDATA], name + '.picture_url');
-                        return '<freetype-image image=' + makeAngularAttr(name, attr) + ' validation="validation"></freetype-image>';
+                        return '<freetype-image image='
+                                + makeAngularAttr(name, attr)
+                                + ' validation="validation"></freetype-image>';
                     }
                     return all;
                 });
                 // transform dollar variables in the attributes of `link` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(link|url)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
-                        name = rname;
-                        // remove the dollar variable from the attributes.
-                        return '';
-                    });
+                    attr = attr.replace(/(link|url)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                        function(match, tag, quote, rname) {
+                            name = rname;
+                            // remove the dollar variable from the attributes.
+                            return '';
+                        });
                     if (name) {
                         path2obj(scope[SCOPE_FREETYPEDATA], name);
-                        return '<freetype-link link=' + makeAngularAttr(name, attr) + ' validation="validation"></freetype-link>';
+                        return '<freetype-link link='
+                                + makeAngularAttr(name, attr)
+                                + ' validation="validation"></freetype-link>';
                     }
                     return all;
                 });
                 // transform dollar variables in the attributes of `embed` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(embed|html)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
-                        name = rname;
-                        // remove the dollar variable from the avem o problema, attributes.
-                        return '';
-                    });
+                    attr = attr.replace(/(embed|html)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                        function(match, tag, quote, rname) {
+                            name = rname;
+                            // remove the dollar variable from the avem o problema, attributes.
+                            return '';
+                        });
                     if (name) {
                         path2obj(scope[SCOPE_FREETYPEDATA], name);
                         return '<freetype-embed embed=' + makeAngularAttr(name, attr) + '></freetype-embed>';
@@ -272,10 +284,10 @@ import './module';
                     wrapAfter = '';
                 obj2path(paths, data);
                 template = template.replace(/\<li([^>]*)\>(.*?)\<\/li\>/g, function(all, attr, repeater) {
-                    var vector, vectorPath, parts, templ = '', emptyIndex = [];
+                    var vector, vectorPath, parts, templ = '', emptyIndex = [], i;
                     repeater = repeater.replace(REGEX_VARIABLE, function(all, path) {
                         parts = path.split(/[\d*]/);
-                        if (parts.length === 2 && parts[1] != '') {
+                        if (parts.length === 2 && parts[1] !== '') {
                             vectorPath = parts[0].substr(0, parts[0].length - 1);
                             return all;
                         } else {
@@ -284,18 +296,18 @@ import './module';
                     });
                     if (vectorPath) {
                         vector = path2obj(data, vectorPath);
-                        for (var i = 1; i< vector.length; i++) {
+                        for (i = 1; i< vector.length; i++) {
                             // if current object has empty values add it to emptyIndexs and don't render it.
                             if (!emptyValues(vector[i])) {
                                 templ += '<li' + attr + '>' + repeater.replace(REGEX_VARIABLE, function(all) {
-                                    return all.replace('[]', '[0]').replace('[0]', '[' + i  + ']');
+                                    return all.replace('[]', '[0]').replace('[0]', '[' + i + ']');
                                 }) + '</li>';
                             } else {
                                 emptyIndex.push(i);
                             }
                         }
                         // remove all the emptyIndexs from vector.
-                        for (var i = 0; i< emptyIndex.length; i++) {
+                        for (i = 0; i< emptyIndex.length; i++) {
                             vector.splice(emptyIndex[i], 1)
                         }
                         if (!emptyValues(vector[0])) {
@@ -309,43 +321,50 @@ import './module';
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name, type;
                     // transform `name` and `text` variables.
-                    attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
-                        name = rname;
-                        type = 'text';
-                        // remove the dollar variable from the attributes.
-                        return '';
-                    });
+                    attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                        function(match, tag, quote, rname) {
+                            name = rname;
+                            type = 'text';
+                            // remove the dollar variable from the attributes.
+                            return '';
+                        });
 
-                    attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
-                        name = rname + '.picture_url';
-                        type = 'image';
-                        // remove the dollar variable from the attributes.
-                        return '';
-                    });
+                    attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                        function(match, tag, quote, rname) {
+                            name = rname + '.picture_url';
+                            type = 'image';
+                            // remove the dollar variable from the attributes.
+                            return '';
+                        });
 
-                    attr = attr.replace(/(wrap-link)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
-                        name = rname;
-                        type = 'wrap-link';
-                        // remove the dollar variable from the attributes.
-                        return '';
-                    });
+                    attr = attr.replace(/(wrap-link)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                        function(match, tag, quote, rname) {
+                            name = rname;
+                            type = 'wrap-link';
+                            // remove the dollar variable from the attributes.
+                            return '';
+                        });
 
-                    attr = attr.replace(/(embed)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, function(match, tag, quote, rname) {
-                        name = rname;
-                        type = 'embed';
-                        // remove the dollar variable from the attributes.
-                        return '';
-                    });
+                    attr = attr.replace(/(embed)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                        function(match, tag, quote, rname) {
+                            name = rname;
+                            type = 'embed';
+                            // remove the dollar variable from the attributes.
+                            return '';
+                        });
 
                     if (name || type) {
                         switch (type) {
                             case 'text':
                                 if (paths[name]) {
-                                    return '<span ' + injectClass(attr, 'freetype--element') + '>' + _.escape(paths[name]) + '</span>';
+                                    return '<span '
+                                                + injectClass(attr, 'freetype--element')
+                                                + '>'
+                                                + _.escape(paths[name])
+                                                + '</span>';
                                 } else {
                                    return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
                                 }
-                                break;
 
                             case 'image':
                                 if (paths[name]) {
@@ -353,7 +372,6 @@ import './module';
                                 } else {
                                    return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
                                 }
-                                break;
 
                             case 'embed':
                                 if (paths[name]) {
@@ -361,51 +379,55 @@ import './module';
                                 } else {
                                    return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
                                 }
-                                break;
 
                             case 'wrap-link':
                                 if (paths[name]) {
-                                    wrapBefore = '<a href="' + paths[name] + '"' + injectClass(attr, 'freetype--wrap') + ' target="_blank">';
+                                    wrapBefore = '<a href="'
+                                                    + paths[name]
+                                                    + '"'
+                                                    + injectClass(attr, 'freetype--wrap')
+                                                    + ' target="_blank">';
                                     wrapAfter = '</a>'
                                 }
                                 return '';
-                                break;
                         }
                     }
                     return all;
                 });
                 template = (function recursiveContent(template) {
-                    template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>(.*?)<\/\1>?/gi, function(all, tag, attr, content) {
-                        if (content) {
-                            content = recursiveContent(content);
-                        }
-                        var name, type;
-                        attr = attr.replace(/hide-render/gi, function(match, tag, quote, rname) {
-                            type = 'hide-render';
-                            // remove the dollar variable from the attributes.
-                            return '';
-                        });
-                        if (name || type) {
-                            switch (type) {
-                                case 'text':
-                                    if (paths[name]) {
-                                        return '<span ' + injectClass(attr, 'freetype--element') + '>' + paths[name] + '</span>';
-                                    } else {
-                                       return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
+                    template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>(.*?)<\/\1>?/gi,
+                        function(all, tag, attr, content) {
+                            if (content) {
+                                content = recursiveContent(content);
+                            }
+                            var name, type;
+                            attr = attr.replace(/hide-render/gi, function(match, tag, quote, rname) {
+                                type = 'hide-render';
+                                // remove the dollar variable from the attributes.
+                                return '';
+                            });
+                            if (name || type) {
+                                switch (type) {
+                                    case 'text':
+                                        if (paths[name]) {
+                                            return '<span '
+                                                        + injectClass(attr, 'freetype--element')
+                                                        + '>' + paths[name]
+                                                        + '</span>';
+                                        } else {
+                                           return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
+                                        }
+                                    case 'hide-render': {
+                                        return '';
                                     }
-                                    break;
-                                case 'hide-render': {
-                                    return '';
-                                    break;
                                 }
                             }
-                        }
-                        return '<' + tag + attr + '>' + content + '</' + tag + '>';
-                    });
+                            return '<' + tag + attr + '>' + content + '</' + tag + '>';
+                        });
                     return template;
                 })(template);
                 return wrapBefore + template + wrapAfter;
             }
         };
-    }]);
+    });
 

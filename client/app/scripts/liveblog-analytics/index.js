@@ -1,11 +1,14 @@
-'use strict'
+import './styles/analytics.scss';
 
-var liveblogAnalytics = angular
+import analiticsListTpl from 'scripts/liveblog-analytics/views/view-list.html';
+
+import liveblogAnalyticsController from './controllers/controller-analytics';
+import lbAnalyticsListCtrl from './directives/directives-analytics';
+
+export default angular
   .module('liveblog.analytics', ['liveblog.security'])
-  
   .config(['apiProvider', function(apiProvider) {
     apiProvider
-      
       /*
       * 'analytics' being one of the resources that we discovered
       * earlier by requesting http://localhost:5000/api -- endpoints are described with href, title pairs.
@@ -18,4 +21,24 @@ var liveblogAnalytics = angular
         type: 'http',
         backend: {rel: 'analytics'}
       })
-  }]);
+  }])
+  .controller('LiveblogAnalyticsController', liveblogAnalyticsController)
+
+  .directive('lbAnalyticsList', function() {
+    return {
+      restrict: 'E',
+      scope: {
+        analytics: '='
+      },
+      templateUrl: analiticsListTpl,
+      controllerAs: 'analyticsList',
+      controller: lbAnalyticsListCtrl
+    };
+  })
+
+  .filter('startFrom', function() {
+    return function(input, start) {
+        start = parseInt(start); // Parse to int
+        return input.slice(start);
+    }
+  });

@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('liveblog.security', [])
 .service('blogSecurityService',
     ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges', 'config', 'api',

@@ -1,8 +1,10 @@
+import searchPanelTpl from 'scripts/liveblog-marketplace/views/search-panel.html';
+
 lbSearchPanel.$inject = ['MarketplaceActions'];
 
 export default function lbSearchPanel(MarketplaceActions) {
     return {
-        templateUrl: 'scripts/liveblog-marketplace/views/search-panel.html',
+        templateUrl: searchPanelTpl,
         scope: {
             store: '='
         },
@@ -27,7 +29,7 @@ export default function lbSearchPanel(MarketplaceActions) {
             scope.hasFilter = function(type, value) {
                 return (scope.filters
                     && scope.filters.hasOwnProperty(type)
-                    && scope.filters[type] == value);
+                    && scope.filters[type] === value);
             };
 
             scope.close = function() {

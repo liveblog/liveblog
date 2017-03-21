@@ -1,8 +1,10 @@
+import producerListItemTpl from 'scripts/liveblog-syndication/views/producer-list-item.html';
+
 producerList.$inject = ['api'];
 
 export default function producerList(api) {
     return {
-        templateUrl: 'scripts/liveblog-syndication/views/producer-list-item.html',
+        templateUrl: producerListItemTpl,
         scope: {
             roles: '=',
             producers: '=',
@@ -19,7 +21,7 @@ export default function producerList(api) {
 
                 api.producers.remove(producerToRemove).then(function(result) {
                     angular.forEach(scope.producers, function(producer, i) {
-                        if (producer._id == producerToRemove._id)
+                        if (producer._id === producerToRemove._id)
                             scope.producers.splice(i, 1);
                     });
                 });

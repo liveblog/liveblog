@@ -13,15 +13,15 @@ import _ from 'lodash';
 function createCaretPlacer(atStart) {
     return function(el) {
         el.focus();
-        if (typeof window.getSelection != "undefined"
-                && typeof document.createRange != "undefined") {
+        if (typeof window.getSelection !== "undefined"
+                && typeof document.createRange !== "undefined") {
             var range = document.createRange();
             range.selectNodeContents(el);
             range.collapse(atStart);
             var sel = window.getSelection();
             sel.removeAllRanges();
             sel.addRange(range);
-        } else if (typeof document.body.createTextRange != "undefined") {
+        } else if (typeof document.body.createTextRange !== "undefined") {
             var textRange = document.body.createTextRange();
             textRange.moveToElementText(el);
             textRange.collapse(atStart);
@@ -38,12 +38,12 @@ var AddContentBtns = function() {
 AddContentBtns.prototype.hide = function() {
     this.top.hide();
     this.bottom.removeAttr('data-icon-after');
-}
+};
 
 AddContentBtns.prototype.show = function() {
     this.top.show();
     this.bottom.attr('data-icon-after', 'ADD CONTENT HERE');
-}
+};
 
 var placeCaretAtStart = createCaretPlacer(true);
 var placeCaretAtEnd = createCaretPlacer(false);
@@ -51,9 +51,11 @@ var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\
 
 function fixSecureEmbed(string) {
     var ret;
+
     if (window.location.protocol === 'https:') {
         var pattern = new RegExp(uriRegx, 'i'),
             matches = string.match(pattern);
+
         if (matches && matches.length && matches[1] === 'http:') {
             ret = matches[0];
         } else {
@@ -93,27 +95,28 @@ angular
 .module('SirTrevorBlocks', [])
     .config(['SirTrevorProvider', 'config', function(SirTrevor, config) {
 
-        //replace the plus symbol with text description
+        // replace the plus symbol with text description
         SirTrevor.FloatingBlockControls.prototype.attributes = function() {
             return {
-              'data-icon': 'ADD CONTENT HERE'
+                'data-icon': 'ADD CONTENT HERE'
             };
-        }
+        };
         SirTrevor.Block.prototype.attributes = function() {
             return _.extend(SirTrevor.SimpleBlock.fn.attributes.call(this), {
-                'data-icon-after': "ADD CONTENT HERE"
+                'data-icon-after': 'ADD CONTENT HERE'
             });
-        }
+        };
         // Add toMeta method to all blocks.
         SirTrevor.Block.prototype.toMeta = function() {return;};
         SirTrevor.Block.prototype.getOptions = function() {
             var instance = SirTrevor.$get().getInstance(this.instanceID);
+
             return instance ? instance.options : null;
         };
-        SirTrevor.Blocks.Embed =  SirTrevor.Block.extend({
+        SirTrevor.Blocks.Embed = SirTrevor.Block.extend({
             type: 'embed',
             data: {},
-            title: function() { return 'Embed'; },
+            title: () => 'Embed',
             icon_name: 'embed',
             embedPlaceholder: window.gettext('url or embed code'),
             editorHTML: function() {
@@ -124,13 +127,16 @@ angular
             },
             onBlockRender: function() {
                 var that = this;
+
                 // create and trigger a 'change' event for the $editor which is a contenteditable
                 this.$editor.filter('[contenteditable]').on('focus', function(ev) {
                     var $this = $(this);
+
                     $this.data('before', $this.html());
                 });
                 this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
                     var $this = $(this);
+
                     if ($this.data('before') !== $this.html()) {
                         $this.data('before', $this.html());
                         $this.trigger('change');
@@ -139,7 +145,10 @@ angular
                 handlePlaceholder(this.$editor.filter('[contenteditable]'), that.embedPlaceholder);
                 // when the link field changes
                 var callServiceAndLoadData = function() {
-                    var input = $(this).text().trim();
+                    var input = $(this)
+                        .text()
+                        .trim();
+
                     // exit if the input field is empty
                     if (_.isEmpty(input)) {
                         that.getOptions().disableSubmit(true);
@@ -168,7 +177,7 @@ angular
                     } else {
                         that.loadData({html: input});
                     }
-                }
+                };
                 this.$editor.on('paste', _.debounce(callServiceAndLoadData, 200));
 
                 this.$editor.on('keydown', function(e) {
@@ -189,6 +198,7 @@ angular
                     description: that.$('.description-preview').text(),
                     credit: that.$('.credit-preview').text()
                 };
+
                 // remove thumbnail_url if it was removed by user
                 if (that.$('.cover-preview').hasClass('hidden')) {
                     editor_data.thumbnail_url = null;
@@ -196,8 +206,8 @@ angular
                 // add data which are not in the editor but has been saved before (like thumbnail_width)
                 _.merge(that.data, editor_data);
                 // clean data by removing empty string
-                _.forEach(that.data, function(value, key) {
-                    if (typeof(value) === 'string' && value.trim() === '') {
+                _.forEach(that.data, (value, key) => {
+                    if (typeof value === 'string' && value.trim() === '') {
                         delete that.data[key];
                     }
                 });
@@ -205,6 +215,7 @@ angular
             },
             renderCard: function(data) {
                 var card_class = 'liveblog--card';
+
                 var html = $([
                     '<div class="' + card_class + ' hidden">',
                     '  <div class="hidden st-embed-block embed-preview"></div>',
@@ -217,25 +228,34 @@ angular
                     '  <a class="hidden st-embed-block link-preview" target="_blank"></a>',
                     '</div>'
                 ].join('\n'));
+
                 // hide everything
                 html.find(
-                    ['.embed-preview',
-                    '.cover-preview-handler'].join(', ')
+                    [
+                        '.embed-preview',
+                        '.cover-preview-handler'
+                    ].join(', ')
                 ).addClass('hidden');
                 // set the link
                 if (_.has(data, 'url')) {
-                    html.find('.link-preview').attr('href', data.original_url).html(data.original_url).removeClass('hidden');
+                    html
+                        .find('.link-preview')
+                        .attr('href', data.original_url)
+                        .html(data.original_url)
+                        .removeClass('hidden');
                 }
                 // set the embed code
                 if (_.has(data, 'html')) {
                     html.find('.embed-preview')
-                        .html(data.html).removeClass('hidden');
+                        .html(data.html)
+                        .removeClass('hidden');
                 }
                 // set the cover illustration
                 if (!_.has(data, 'html') && !_.isEmpty(data.thumbnail_url)) {
                     var ratio = data.thumbnail_width / data.thumbnail_height;
                     var cover_width = Math.min(this.getOptions().coverMaxWidth, data.thumbnail_width);
                     var cover_height = cover_width / ratio;
+
                     html.find('.cover-preview').css({
                         'background-image': 'url("' + data.thumbnail_url + '")',
                         width: cover_width,
@@ -256,9 +276,11 @@ angular
                 }
                 // set the credit
                 if (_.has(data, 'provider_name')) {
-                    var credit_text  = data.provider_name;
+                    var credit_text = data.provider_name;
+
                     if (_.has(data, 'author_name')) {
-                        credit_text += ' | by <a href="' + data.author_url + '" target="_blank">' + data.author_name + '</a>';
+                        credit_text += ' | by <a href="' + data.author_url + '" target="_blank">' +
+                            data.author_name + '</a>';
                     }
                     html.find('.credit-preview').html(credit_text);
                 }
@@ -349,7 +371,7 @@ angular
                 return this.retrieveData();
             }
         });
-        SirTrevor.Blocks.Quote =  SirTrevor.Block.extend({
+        SirTrevor.Blocks.Quote = SirTrevor.Block.extend({
             type: 'quote',
             title: function() { return window.i18n.t('blocks:quote:title'); },
             icon_name: 'quote',
@@ -431,7 +453,8 @@ angular
             html: [
                 '<div class="row st-block__upload-container">',
                 '    <div class="col-md-6">',
-                '       <label onclick="$(this).next().trigger(\'click\');" class="btn btn-default"><%= i18n.t("general:upload") %></label>',
+                '       <label onclick="$(this).next().trigger(\'click\');" ',
+                '              class="btn btn-default"><%= i18n.t("general:upload") %></label>',
                 '       <input type="file" type="st-file-upload" />',
                 '    </div>',
                 '</div>'
@@ -439,7 +462,7 @@ angular
         };
         SirTrevor.DEFAULTS.Block.upload_options = upload_options;
         SirTrevor.Locales.en.general.upload = 'Select from folder';
-        SirTrevor.Blocks.Image =  SirTrevor.Block.extend({
+        SirTrevor.Blocks.Image = SirTrevor.Block.extend({
             type: 'image',
             title: function() {
                 return 'Image';
@@ -498,8 +521,10 @@ angular
                         class: 'alert alert-warning',
                         role: 'alert',
                     })
-                    .html(window.gettext('The image is being uploaded, please stand by. It may take a while as the file is bigger than ' + maxFileSize + 'MB.')));
-                    var that = this;
+                    .html(window.gettext(
+                        'The image is being uploaded, please stand by. ' +
+                        'It may take a while as the file is bigger than ' + maxFileSize + 'MB.'
+                    )));
                     window.setTimeout(function() {
                         that.$editor.find('[name="size-warning"]').css('display', 'none');
                     }, 10000);
@@ -526,6 +551,7 @@ angular
                 this.$inputs.find('.st-block__dropzone')[0].addEventListener('drop', _.bind(function(ev) {
                     // Check for an existing URL
                     if (ev.dataTransfer.getData('text/html')) {
+                        console.log(ev);
                         var remoteTag = ev.dataTransfer.getData('text/html');
                         var srcAttr = remoteTag.match(/src="?([^"\s]+)"?\s*/)[1];
 
@@ -543,7 +569,16 @@ angular
                         this.setData({ media: { _url: srcAttr }});
 
                         // TODO: send query to the back-end
-                        //this.ready();
+                        //$http({
+                        //    url: `${config.server.url}/archive/dragandrop`,
+                        //    method: 'POST',
+                        //    data: {
+                        //        image_url: srcAttr
+                        //    },
+                        //    headers: {
+                        //        "Content-Type": "application/json;charset=utf-8"
+                        //    }
+                        //});
                     }
                 }, this));
             },
@@ -622,30 +657,16 @@ angular
                     return [
                         '<figure>',
                         '    <img src="' + data.media._url + '" alt="' + data.caption + '"',
-                        srcset? ' srcset="' + srcset.substring(2) + '"' : '',
+                        srcset ? ' srcset="' + srcset.substring(2) + '"' : '',
                         '/>',
-                        '    <figcaption>' + data.caption + (data.credit === '' ? '' : ' Credit: ' + data.credit) + '</figcaption>',
+                        '    <figcaption>',
+                        data.caption + (data.credit === '' ? '' : ' Credit: ' + data.credit),
+                        '</figcaption>',
                         '</figure>'
                     ].join('');
-
-                // When drag & dropping from an external web page
-                } else {
-                    return '<figure><img src="' + data.media._url + '" /></figure>';
                 }
-
-
-                //var srcset = '';
-                //_.forEach(data.media.renditions, function(value) {
-                //    srcset += ', ' + value.href + ' ' + value.width + 'w';
-                //});
-                //return [
-                //    '<figure>',
-                //    '    <img src="' + data.media._url + '" alt="' + data.caption + '"',
-                //    srcset? ' srcset="' + srcset.substring(2) + '"' : '',
-                //    '/>',
-                //    '    <figcaption>' + data.caption + (data.credit === '' ? '' : ' Credit: ' + data.credit) + '</figcaption>',
-                //    '</figure>'
-                //].join('');
+                // When drag & dropping from an external web page
+                return '<figure><img src="' + data.media._url + '" /></figure>';
             },
             toMeta: function() {
                 return this.retrieveData();
@@ -724,7 +745,7 @@ angular
         SirTrevor.Blocks.Comment = SirTrevor.Block.extend({
             type: "comment",
 
-            title: function() { return  window.i18n.t('blocks:comment:title'); },
+            title: function() { return window.i18n.t('blocks:comment:title'); },
 
             editorHTML: '<div class="st-required st-text-block"></div>',
 
@@ -822,13 +843,18 @@ angular
             text: 'link',
             onClick: function() {
                 var selection_text = document.getSelection(),
-                    link = prompt(i18n.t("general:link")),
+                    link = prompt(window.i18n.t("general:link")),
                     link_regex = /((ftp|http|https):\/\/.)|mailto(?=\:[-\.\w]+@)/;
                 if (link && link.length > 0) {
                     if (!link_regex.test(link)) {
                         link = "http://" + link;
                     }
-                document.execCommand('insertHTML', false, '<a href="' + link + '" target="_blank">' + selection_text + '</a>')
+
+                    document.execCommand(
+                        'insertHTML',
+                        false,
+                        '<a href="' + link + '" target="_blank">' + selection_text + '</a>'
+                    );
                 }
             },
             isActive: function() {
@@ -839,7 +865,7 @@ angular
                               .startContainer
                               .parentNode;
             }
-            return (node && node.nodeName == 'A');
+            return (node && node.nodeName === 'A');
           }
         });
         SirTrevor.Formatters.Link = new Link();
