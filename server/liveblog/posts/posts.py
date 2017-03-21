@@ -26,7 +26,8 @@ def private_draft_filter():
     """
     private_filter = {'should': [{'term': {'post_status': 'open'}},
                                  {'term': {'post_status': 'submitted'}},
-                                 {'term': {'post_status': 'comment'}}]}
+                                 {'term': {'post_status': 'comment'}},
+                                 {'term': {'post_status': 'ad'}}]}
     user = getattr(flask.g, 'user', None)
     if user:
         private_filter['should'].append(
