@@ -1,5 +1,5 @@
 from bson.objectid import ObjectId
-from eve.utils import ParsedRequest
+from eve.utils import ParsedRequest, config
 from superdesk.notification import push_notification
 from superdesk.utc import utcnow
 from superdesk.resource import Resource
@@ -8,7 +8,14 @@ from liveblog.common import get_user, update_dates_for
 from apps.archive.archive import ArchiveResource, ArchiveService, ArchiveVersionsResource
 from superdesk.services import BaseService
 from superdesk.filemeta import set_filemeta, get_filemeta
+from werkzeug.datastructures import FileStorage
+from flask import Blueprint, request, make_response
+from flask_cors import CORS
+from superdesk import get_resource_service
+from liveblog.syndication.utils import fetch_url
 
+drag_and_drop_blueprint = Blueprint('drag_and_drop',__name__)
+CORS(drag_and_drop_blueprint)
 
 class ItemsVersionsResource(ArchiveVersionsResource):
     """
@@ -79,6 +86,10 @@ class ItemsService(ArchiveService):
         return(docs)
 
     def on_create(self, docs):
+        for doc in docs:
+            if (doc.get('remote_image_url')):
+                doc['media']=FileStorage(stream=fetch_url('remote_image_url'), content_type='image/jpeg')
+
         super().on_create(docs)
         for doc in docs:
             update_dates_for(doc)
@@ -131,3 +142,37 @@ class BlogItemsService(ArchiveService):
             lookup['blog'] = ObjectId(lookup['blog_id'])
             del lookup['blog_id']
         return super().get(req, lookup)
+
+
+@drag_and_drop_blueprint.route('/api/archive/draganddrop/', methods=['POST'])
+def drag_and_drop():
+    data = request.get_json()
+    url = data['image_url']
+    mimetype = data['mimetype']
+
+    item_data = dict()
+    item_data['type'] = 'picture'
+    item_data['media'] = FileStorage(stream=fetch_url(url), content_type=mimetype)
+    archive_service = get_resource_service('archive')
+    archive_id = archive_service.post([item_data])[0]
+
+    return make_response(archive_id, 201)
+
+    # resource_def = app.config['DOMAIN']['archive']
+    #
+    # document[resource_def['id_field']] = \
+    #     document.get(resource_def['id_field'], archive_id)
+    #
+    # # build the full response document
+    # result = document
+    # build_response_document(
+    #     result, 'archive', [], document)
+    #
+    # # add extra write meta data
+    # result[config.STATUS] = config.STATUS_OK
+    #
+    # # limit what actually gets sent to minimize bandwidth usage
+    # result = marshal_write_response(result, 'archive')
+    # return send_response('archive', (result, None, None, 201))
+
+
