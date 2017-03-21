@@ -1,0 +1,47 @@
+<div class="lb-timeline" data-js-target="timeline">
+
+<!-- inject:template-timeline -->
+<div class="lb-timeline {{ options.language }}">
+  <!-- Header -->
+  <div class="header-bar">
+    <div class="sorting-bar">
+      <div class="sorting-bar__orders">
+        <div class="sorting-bar__order sorting-bar__order--active" onClick="timeline.orderBy('editorial')">Neueste</div>
+        <div class="sorting-bar__order" onClick="timeline.orderBy('oldest_first')">&Auml;lteste</div>
+      </div>
+    </div>
+    <div class="header-bar__actions"></div>
+  </div>
+  <!-- Header End -->
+
+  <!-- Timeline -->
+  <div class="timeline-body timeline-body--loaded">
+    {% if api_response._items|length == 0 %}
+      <div class="lb-post emtpy-message">
+          <div>Blog posts are not currently available.</div>
+      </div>
+    {% else %}
+      <section class="lb-posts list-group">
+        {% for item in api_response._items %}
+          {% if not item.deleted %}
+            {% include "template-post.html" %}
+          {% endif %}
+        {% endfor %}
+      </section>
+      {% if api_response._meta.max_results <= api_response._meta.total %}
+        <button class="lb-button load-more-posts" data-js-loadmore>{{ theme_options.l10n.loadMore }}</button>
+      {% endif %}
+    {% endif %}
+  </div>
+  <!-- Timeline End -->
+</div>
+
+<!-- endinject -->
+
+</div>
+
+<!-- These are cached for most users anyway, so why bother with arbitrary scripts -->
+<script async defer src="//platform.instagram.com/en_US/embeds.js"></script>
+<script async defer src="//platform.twitter.com/widgets.js"></script>
+
+

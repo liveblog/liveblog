@@ -25,8 +25,8 @@ var defaultOptions = {
   boolean: 'debug',
   string: ['api_response', 'options'],
   debug: process.env.DEBUG || false,
-  api_response: {},
-  options: {}
+  api_response: null,
+  options: null
 };
 
 
@@ -102,7 +102,6 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
       api_response: testdata.grammy_awards,
       theme_settings: testdata.options.theme_settings,
       options: JSON.stringify(testdata.options, null, 4),
-      theme_options: testdata.options,
       debug: options.DEBUG
     }))
 
@@ -114,18 +113,20 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
 
 // Inject jinja/nunjucks template for production use.
 gulp.task('template-inject', ['less', 'browserify'], function() {
-  var _options = themeOptions;
+  var _options = {}
+  for (var option in themeOptions.options) {
+    _options[option.name] = option.default;
+  }
+
   var _api_response = {};
   var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
     read: false // We're only after the file paths
   });
 
-  var _theme_settings = _options.theme_settings || {};
-
   return gulp.src('./templates/template-base.html')
     .pipe(plugins.nunjucks.compile({
-      theme_settings: _theme_settings,
-      theme_options: _options.options,
+      theme_settings: _options,
+      options: JSON.stringify(_options, null, 4),
       debug: options.DEBUG
     }))
 
@@ -137,6 +138,7 @@ gulp.task('template-inject', ['less', 'browserify'], function() {
       }
     }))
 
+    // Save base template.html file.
     .pipe(plugins.rename("template.html"))
     .pipe(gulp.dest('.'))
     .pipe(plugins.connect.reload());
