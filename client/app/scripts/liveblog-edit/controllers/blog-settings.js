@@ -13,7 +13,7 @@ import _ from 'lodash';
 import moment from 'moment-timezone';
 
 import './../../ng-sir-trevor';
-import './../../ng-sir-trevor-blocks';
+import './../../sir-trevor-blocks';
 import './../unread.posts.service';
 
 var BlogSettingsController = function($scope, blog, api, blogService, $location, notify,

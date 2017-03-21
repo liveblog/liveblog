@@ -16,7 +16,7 @@ import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.html';
 import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html'
 
 import './../../ng-sir-trevor';
-import './../../ng-sir-trevor-blocks';
+import './../../sir-trevor-blocks';
 import './../unread.posts.service';
 
 var BlogEditController = function (api, $q, $scope, blog, notify, gettext, session, $injector, $http,
