@@ -102,6 +102,6 @@
     "rangy": "^1.3.0",
     "raven-js": "^3.9.1",
     "sir-trevor": "git+https://github.com/m0g/sir-trevor-js#liveblog",
-    "superdesk-core": "git+https://github.com/superdesk/superdesk-client-core"
+    "superdesk-core": "1.5.1"
   }
 }
