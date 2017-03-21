@@ -125,16 +125,15 @@ export default function imageBlock(SirTrevor, config) {
                     this.setData({ media: { _url: srcAttr }});
 
                     // TODO: send query to the back-end
-                    //$http({
-                    //    url: `${config.server.url}/archive/dragandrop`,
-                    //    method: 'POST',
-                    //    data: {
-                    //        image_url: srcAttr
-                    //    },
-                    //    headers: {
-                    //        "Content-Type": "application/json;charset=utf-8"
-                    //    }
-                    //});
+                    this.getOptions()
+                        .gogoGadgetoRemoteImage(srcAttr)
+                        .then(function(data) {
+                            console.log('data', data);
+                            //addContentBtns.show();
+                            that.getOptions().disableSubmit(false);
+                            that.setData(data);
+                            that.ready();
+                        });
                 }
             }, this));
         },

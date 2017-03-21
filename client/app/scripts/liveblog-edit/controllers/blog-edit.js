@@ -436,6 +436,35 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
                         success_callback({media: media_meta});
                     }, handleError);
                 });
+            },
+            gogoGadgetoRemoteImage: function(imgURL) {
+                return $http({
+                    url: `${config.server.url}/archive/draganddrop`,
+                    method: 'POST',
+                    data: {
+                        image_url: imgURL,
+                        mimetype: 'image/jpeg'
+                    },
+                    headers: {
+                        "Content-Type": "application/json;charset=utf-8"
+                    }
+                })
+                .then(function(response) {
+                    console.log('response', response);
+                    if (response.data._issues) {
+                        return handleError(response);
+                    }
+                    $scope.actionPending = false;
+                    // used in `SirTrevor.Blocks.Image` to fill in the block content.
+                    var media_meta = {
+                        _info: config.server.url,
+                        _id: response.data._id,
+                        _url: response.data.renditions.thumbnail.href,
+                        renditions: response.data.renditions
+                    };
+                    // media will be added latter in the `meta` if this item in this callback
+                    return {media: media_meta};
+                });
             }
         },
         fetchNewContributionPage: function() {
