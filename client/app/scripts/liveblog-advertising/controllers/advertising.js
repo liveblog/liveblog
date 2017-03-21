@@ -94,7 +94,7 @@ upload, $templateCache, freetypeService, modal) {
         $scope.dialogAdvertLoading = true;
 
         if ($scope.advert._id) {
-            // we are aditing existing ad
+            // we are editing existing ad
             api('advertisements').save($scope.advert, newAd).then(function(data) {
                 handleSaveSuccess();
             }, function(data) {
