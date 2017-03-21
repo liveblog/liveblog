@@ -3,12 +3,18 @@
     "name": "default",
     "version": "0.1.42",
     "seoTheme": true,
-    "author": "Paul Solbach <psolbach@dpa-newslab.com>, Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>",
+    "author": "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>",
+    "authors": [
+        "Paul Solbach <psolbach@dpa-newslab.com>",
+        "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>"
+    ],
     "repository": {
         "type" : "git",
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
+    "devStyles": ["dist/liveblog-624bc5ab6e.css"],
+    "devScripts": ["dist/liveblog-b5745e3bdf.js"],
     "styles": ["dist/liveblog-624bc5ab6e.css"],
     "scripts": ["dist/liveblog-b5745e3bdf.js"],
     "options": [
