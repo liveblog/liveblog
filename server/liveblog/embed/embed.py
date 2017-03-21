@@ -22,6 +22,7 @@ import os
 import json
 import logging
 import pymongo
+from bson import ObjectId
 
 
 logger = logging.getLogger('superdesk')
@@ -97,15 +98,18 @@ def delete_embed(blog_id):
     app.media.delete(file_path)
 
 
-class BlogThemeRenderer(object):
+class BlogThemeRenderer:
     order_by = ('_updated', '_created')
     default_order_by = '_updated'
     sort = ('asc', 'desc')
     default_sort = 'asc'
 
     def __init__(self, blog):
-        self.blog = blog
-        self.posts = get_resource_service('posts')
+        if isinstance(blog, (str, ObjectId)):
+            blog = get_resource_service('client_blogs').find_one(_id=blog, req=None)
+
+        self._blog = blog
+        self._posts = get_resource_service('posts')
 
     def _validate_order_by(self, order_by):
         if order_by not in self.order_by:
@@ -117,24 +121,46 @@ class BlogThemeRenderer(object):
 
     def _posts_lookup(self, sticky, highlight):
         return {'$and': [
-            {'blog_id': {'$eq': self.blog['id']}},
+            {'blog_id': {'$eq': self._blog['_id']}},
             {'sticky': {'$eq': sticky}},
             {'highlight': {'$eq': highlight}},
             {'post_status': {'$eq': 'open'}},
             {'deleted': {'$not': True}}
         ]}
 
-    def get_posts(self, sticky=False, highlight=False, order_by=default_order_by, sort=default_sort, page=1, limit=25):
+    def get_posts(self, sticky=False, highlight=False, order_by=default_order_by, sort=default_sort, page=1, limit=25,
+                  wrap=False):
+        # Validate parameters.
         self._validate_sort(sort)
         self._validate_order_by(order_by)
-        results = self.posts.find(self._posts_lookup(sticky, highlight))
+
+        # Fetch posts.
+        results = self._posts.find(self._posts_lookup(sticky, highlight))
+        total = results.count()
+
+        # Get sorting direction.
         if sort == 'asc':
             sort = pymongo.ASCENDING
         else:
             sort = pymongo.DESCENDING
-        skip = limit * (page -1)
-        results = results.skip(skip).limit(limit).sort(order_by, sort)
-        return list(results)
+
+        # Pagination and sorting.
+        skip = limit * (page - 1)
+        posts = list(results.skip(skip).limit(limit).sort(order_by, sort))
+
+        if wrap:
+            # Wrap in python-eve style data structure
+            return {
+                '_items': posts,
+                '_meta': {
+                    'page': page,
+                    'total': total,
+                    'max_results': limit
+                }
+            }
+        else:
+            # Return posts.
+            return posts
 
 
 @bp.route('/embed/<blog_id>')
@@ -181,15 +207,15 @@ def embed(blog_id, api_host=None, theme=None):
         assets_root = '/%s/' % ('/'.join(assets_root))
 
 
-    posts = []
+    api_response = {}
     if theme.get('seoTheme', False):
         # Fetch initial blog posts for SEO theme
         renderer = BlogThemeRenderer(blog)
-        posts = renderer.get_posts()
+        api_response = renderer.get_posts(wrap=True)
 
     scope = {
         'blog': blog,
-        'posts': posts,
+        'api_response': api_response,
         'settings': get_resource_service('themes').get_default_settings(theme),
         'assets': assets,
         'api_host': api_host,
