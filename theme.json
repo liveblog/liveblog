@@ -14,20 +14,10 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/liveblog-624bc5ab6e.css"],
-    "devScripts": ["dist/liveblog-b5745e3bdf.js"],
+    "devScripts": ["dist/liveblog-26cfa85337.js"],
     "styles": ["dist/liveblog-624bc5ab6e.css"],
-    "scripts": ["dist/liveblog-b5745e3bdf.js"],
+    "scripts": ["dist/liveblog-26cfa85337.js"],
     "options": [
-        {
-            "name": "language",
-            "label": "Theme language",
-            "type": "select",
-            "options": [
-                {"value": "en", "label": "English"},
-                {"value": "de", "label": "German"}
-            ],
-            "default": "en"
-        },
         {
             "name": "postsPerPage",
             "label": "Number of posts per page",
@@ -40,9 +30,9 @@
             "label": "Default posts order of the timeline",
             "type": "select",
             "options": [
-                {"value": "editorial", "label": "Topmeldungen"},
-                {"value": "newest_first", "label": "Neueste"},
-                {"value": "oldest_first", "label": "Älteste"}
+                {"value": "editorial", "label": "Editorial"},
+                {"value": "newest_first", "label": "Newest first"},
+                {"value": "oldest_first", "label": "Oldest first"}
             ],
             "default": "editorial"
         },
@@ -109,17 +99,6 @@
                 {"value": "sign_off", "label": "Sign off"}
             ],
             "help": "How to show the author name"
-        },
-        {
-            "name": "permalinkDelimiter",
-            "label": "Permalink delimiter",
-            "type": "select",
-            "options": [
-                {"value": "?", "label": "Query delimiter (?)"},
-                {"value": "#", "label": " Fragment identifier delimiter (#)"}
-            ],
-            "default": "?",
-            "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
         },
         {
             "name": "hasHighlights",

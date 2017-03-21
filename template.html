@@ -1,43 +1,41 @@
-<div class="lb-timeline" data-js-target="timeline">
+<!doctype html>
+<html>
+  <head>
+    <title>Liveblog 3</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <!-- inject:css -->
+    <!-- endinject -->
+  </head>
+  <body>
+  <div class="lb-timeline" data-js-target="timeline">
+    
+    <div class="lb-timeline ">
+        <!-- Header -->
+        <div class="header-bar">
+            <div class="sorting-bar">
+                <div class="sorting-bar__orders">
+                    <div class="sorting-bar__order sorting-bar__order--active" onClick="timeline.orderBy('newest_first')"></div>
+                    <div class="sorting-bar__order" onClick="timeline.orderBy('oldest_first')"></div>
+                </div>
+            </div>
+            <div class="header-bar__actions"></div>
+        </div>
+        <!-- Header End -->
 
-<!-- inject:template-timeline -->
-<div class="lb-timeline {{ options.language }}">
-  <!-- Header -->
-  <div class="header-bar">
-    <div class="sorting-bar">
-      <div class="sorting-bar__orders">
-        <div class="sorting-bar__order sorting-bar__order--active" onClick="timeline.orderBy('editorial')">Neueste</div>
-        <div class="sorting-bar__order" onClick="timeline.orderBy('oldest_first')">&Auml;lteste</div>
-      </div>
+        <!-- Timeline -->
+        <div class="timeline-body timeline-body--loaded">
+            
+            <div class="lb-post emtpy-message">
+                <div>Blog posts are not currently available.</div>
+            </div>
+            
+        </div>
+        <!-- Timeline End -->
     </div>
-    <div class="header-bar__actions"></div>
-  </div>
-  <!-- Header End -->
-
-  <!-- Timeline -->
-  <div class="timeline-body timeline-body--loaded">
-    {% if api_response._items|length == 0 %}
-      <div class="lb-post emtpy-message">
-          <div>Blog posts are not currently available.</div>
-      </div>
-    {% else %}
-      <section class="lb-posts list-group">
-        {% for item in api_response._items %}
-          {% if not item.deleted %}
-            {% include "template-post.html" %}
-          {% endif %}
-        {% endfor %}
-      </section>
-      {% if api_response._meta.max_results <= api_response._meta.total %}
-        <button class="lb-button load-more-posts" data-js-loadmore>{{ theme_options.l10n.loadMore }}</button>
-      {% endif %}
-    {% endif %}
-  </div>
-  <!-- Timeline End -->
-</div>
-
-<!-- endinject -->
-
+    
 </div>
 
 <!-- These are cached for most users anyway, so why bother with arbitrary scripts -->
@@ -45,3 +43,8 @@
 <script async defer src="//platform.twitter.com/widgets.js"></script>
 
 
+
+  <!-- inject:js -->
+  <!-- endinject -->
+  </body>
+</html>

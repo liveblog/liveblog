@@ -9,15 +9,15 @@
     <div class="lb-post-highlighted"></div>
   {% endif %}
 
-  <div class="lb-post-date" data-js-timestamp="{{ item._updated }}">{{ item._updated }}</div>
+  <div class="lb-post-date" data-js-timestamp="{{ item._updated }}">{{ item._updated  }}</div>
 
   <!-- item start -->
   {% for ref in item.groups[1].refs %}
     <div class="lb-item">
       {% if ref.item.item_type == "embed" %}
-        {% include "template-item-embed.html" %}
+        {% include "item-embed.html" %}
       {% elif ref.item.item_type == "image" %}
-        {% include "template-item-image.html" %}
+        {% include "item-image.html" %}
       {% else %}
         <article>{{ ref.item.text | safe }}</article>
       {% endif %}
