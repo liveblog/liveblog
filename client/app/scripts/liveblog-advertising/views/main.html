@@ -46,7 +46,7 @@
 	             
 	                </li>
 	                <li ng-if="vm.adverts.length === 0">
-	                    {{ 'No Free Adverts for now' | translate }}
+	                    {{ 'No Adverts for now' | translate }}
 	                </li>
 	            </ul>    
 	        </div>
@@ -90,7 +90,7 @@
             <div>
                 <button type="button" class="btn btn-default pull-left" translate ng-click="cancelAdvertCreate()">Cancel</button>
                 <button type="button" class="btn btn-primary btn-info" translate ng-click="saveAdvert()"
-                ng-disabled="!advert.name || dialogAdvertLoading || !validation"
+                ng-disabled="!advert.name || dialogAdvertLoading"
                 >Save</button>
             </div>
         </div>
