@@ -1,8 +1,8 @@
 import freetypeImageTpl from 'scripts/liveblog-edit/views/freetype-image.html';
 
-freetypeImage.$inject = ['$compile', 'modal', 'api', 'upload'];
+freetypeImage.$inject = ['$compile', 'modal', 'api', 'upload', 'superdesk'];
 
-export default function freetypeImage($compile, modal, api, upload) {
+export default function freetypeImage($compile, modal, api, upload, superdesk) {
     return {
         restrict: 'E',
         templateUrl: freetypeImageTpl,
@@ -20,7 +20,9 @@ export default function freetypeImage($compile, modal, api, upload) {
                 preview: {},
                 progress: {width: 0},
                 openUploadModal: function() {
-                    vm.uploadModal = true;
+                    superdesk.intent('upload', 'media');
+
+                    //vm.uploadModal = true;
                 },
                 closeUploadModal: function() {
                     vm.uploadModal = false;

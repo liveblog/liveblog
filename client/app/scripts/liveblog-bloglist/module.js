@@ -1,9 +1,9 @@
 import mainTemplate from 'scripts/liveblog-bloglist/views/main.html';
 
 BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload',
-    'isArchivedFilterSelected', '$q', 'blogSecurityService', 'notify', 'config'];
+    'isArchivedFilterSelected', '$q', 'blogSecurityService', 'notify', 'config', 'superdesk'];
 function BlogListController($scope, $location, api, gettext, upload,
-    isArchivedFilterSelected, $q, blogSecurityService, notify, config) {
+    isArchivedFilterSelected, $q, blogSecurityService, notify, config, superdesk) {
     $scope.maxResults = 25;
     $scope.states = [
         {name: 'active', code: 'open', text: gettext('Active blogs')},
