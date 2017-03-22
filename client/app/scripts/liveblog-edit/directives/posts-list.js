@@ -1,3 +1,5 @@
+import postsTpl from 'scripts/liveblog-edit/views/posts.html';
+
 lbPostsList.$inject = ['postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager'];
 
 export default function lbPostsList(postsService, notify, $q, $timeout, session, PagesManager) {
@@ -29,7 +31,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                 $scope.lbPostsOrderBy || 'editorial',
                 $scope.lbSticky,
                 null,
-                $scope.lbPostsNoSyndication === true ? true : false
+                $scope.lbPostsNoSyndication === true
             ),
             fetchNewPage: function() {
                 vm.isLoading = true;
@@ -113,7 +115,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                     vm.isLoading = false;
                 });
             },
-            isBlogClosed: $scope.$parent.blog.blog_status == 'closed'
+            isBlogClosed: $scope.$parent.blog.blog_status === 'closed'
         });
         $scope.lbPostsInstance = vm;
         // retrieve first page
@@ -155,7 +157,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
         },
         restrict: 'EA',
         transclude: true,
-        templateUrl: 'scripts/liveblog-edit/views/posts.html',
+        templateUrl: postsTpl,
         controllerAs: 'postsList',
         controller: LbPostsListCtrl
     };

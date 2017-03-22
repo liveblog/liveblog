@@ -27,9 +27,7 @@ module.exports = function (grunt) {
     grunt.registerTask('style', ['less:dev', 'cssmin']);
 
     grunt.registerTask('test', ['karma:unit']);
-    grunt.registerTask('hint', ['jshint', 'jscs']);
-    grunt.registerTask('hint:docs', ['jshint:docs', 'jscs:docs']);
-    grunt.registerTask('ci', ['hint']);
+    grunt.registerTask('ci', ['eslint']);
     grunt.registerTask('bamboo', ['karma:bamboo']);
 
     grunt.registerTask('docs', [
@@ -49,20 +47,10 @@ module.exports = function (grunt) {
         'copy:locales',
         'copy:index',
         'copy:sirTrevor',
-        'ngtemplates:dev',
         'webpack-dev-server:start'
     ]);
 
-    grunt.registerTask('ci:travis', []);
-    //grunt.registerTask('ci:travis', [
-    //    'clean',
-    //    'copy:assets',
-    //    'copy:index',
-    //    'copy:sirTrevor',
-    //    'ngtemplates:dev',
-    //    'webpack:build',
-    //    'connect:mock' // nothing will be run after that
-    // ]);
+    grunt.registerTask('ci:travis', ['eslint']);
 
     grunt.registerTask('server:e2e', [
         'clean',
@@ -79,7 +67,6 @@ module.exports = function (grunt) {
         'copy:locales',
         'copy:index',
         'copy:sirTrevor',
-        'ngtemplates:dev',
         'webpack:build'
     ]);
 

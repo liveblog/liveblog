@@ -1,22 +1,27 @@
-ingestPanelDropdown.$inject = ['IngestPanelActions'];
+import ingestPanelDropdownTpl from 'scripts/liveblog-syndication/views/ingest-panel-dropdown.html';
 
-export default function ingestPanelDropdown(IngestPanelActions) {
+ingestPanelDropdown.$inject = ['IngestPanelActions', 'datetimeHelper'];
+
+export default function ingestPanelDropdown(IngestPanelActions, datetimeHelper) {
     return {
-        templateUrl: 'scripts/liveblog-syndication/views/ingest-panel-dropdown.html',
+        templateUrl: ingestPanelDropdownTpl,
         scope: {
             consumerBlogId: '=',
             blog: '='
         },
         link: function(scope) {
             scope.toggleDropdown = function($event, blog) {
-                if (!blog.hasOwnProperty('isOpen'))
+                if (!blog.hasOwnProperty('isOpen')) {
                     blog.isOpen = false;
+                }
 
                 $event.preventDefault();
                 $event.stopPropagation();
 
                 blog.isOpen = !blog.isOpen;
             };
+
+            scope.blog.start_date = datetimeHelper.splitDateTime(scope.blog.start_date).date;
 
             scope.updateSyndication = function() {
                 IngestPanelActions.updateSyndication(
@@ -39,7 +44,7 @@ export default function ingestPanelDropdown(IngestPanelActions) {
                     producerBlogId: scope.blog.producer_blog_id,
                     consumerBlogId: scope.consumerBlogId,
                     autoPublish: scope.blog.auto_publish,
-                    startDate: scope.blog.start_date,
+                    startDate: scope.startDate,
                     autoRetrieve: scope.blog.auto_retrieve,
                     method: 'DELETE'
                 });
@@ -47,10 +52,11 @@ export default function ingestPanelDropdown(IngestPanelActions) {
 
             scope.open = false;
 
-            scope.$watch('blog.start_date', function(newVal, oldVal) {
-                if (newVal != oldVal)
+            scope.$watch('blog.start_date', (newVal, oldVal) => {
+                if (newVal !== oldVal) {
                     scope.updateSyndication();
-            })
+                }
+            });
         }
-    }
-};
+    };
+}

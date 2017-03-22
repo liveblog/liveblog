@@ -1,11 +1,13 @@
+import contactsEditFormTpl from 'scripts/liveblog-syndication/views/contacts-edit-form.html';
+
 export default function contactsEdit() {
     return {
-        templateUrl: 'scripts/liveblog-syndication/views/contacts-edit-form.html',
+        templateUrl: contactsEditFormTpl,
         scope: {
             contacts: '=',
             attempted: '='
         },
-        require:"^form",
+        require: "^form",
         link: function(scope, elem, attrs, form) {
             if (!scope.contacts) {
                 scope.contacts = [{}];

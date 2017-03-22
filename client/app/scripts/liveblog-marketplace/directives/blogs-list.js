@@ -1,8 +1,10 @@
+import blogsListTpl from 'scripts/liveblog-marketplace/views/blogs-list.html';
+
 lbBlogsList.$inject = ['MarketplaceActions'];
 
 export default function lbBlogsList(MarketplaceActions) {
     return {
-        templateUrl: 'scripts/liveblog-marketplace/views/blogs-list.html',
+        templateUrl: blogsListTpl,
         scope: {
             title: '@',
             blogs: '='

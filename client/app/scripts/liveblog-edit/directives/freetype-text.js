@@ -1,7 +1,9 @@
+import freetypeTextTpl from 'scripts/liveblog-edit/views/freetype-text.html';
+
 export default function freetypeText() {
     return {
         restrict: 'E',
-        templateUrl: 'scripts/liveblog-edit/views/freetype-text.html',
+        templateUrl: freetypeTextTpl,
         controller: ['$scope', function($scope) {
             $scope._id = _.uniqueId('text');
             if ($scope.initial !== undefined && $scope.text === '') {
@@ -9,7 +11,7 @@ export default function freetypeText() {
             }
             if ($scope.number !== undefined) {
                 $scope.$on('$destroy', $scope.$watch('text', function(value) {
-                        $scope.numberFlag = (value !== '') && (value != parseInt(value, 10));
+                        $scope.numberFlag = (value !== '') && isNaN(value);
                         $scope.validation['number__' + $scope._id] = !$scope.numberFlag;
                 }, true));
             }
