@@ -52,7 +52,7 @@ upload, $templateCache, freetypeService, modal) {
 
     function loadAdverts() {
         $scope.advertsLoading = true;
-        api('advertisements').query({deleted: false}).then(function(data) {
+        api('advertisements').query({not: {term: {deleted: true}}}).then(function(data) {
             $scope.adverts = data._items;
             notify.info('Adverts loaded');
             $scope.advertsLoading = false;
