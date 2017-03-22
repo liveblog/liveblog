@@ -27,7 +27,7 @@ export default function imageBlock(SirTrevor, config) {
         descriptionPlaceholder: window.gettext('Add a description'),
         authorPlaceholder: window.gettext('Add author / photographer'),
         loadData: function(data) {
-            var file_url = (typeof data.file !== 'undefined') ? data.file.url : data.media._url,
+            var file_url = typeof data.file !== 'undefined' ? data.file.url : data.media._url,
             that = this;
 
             this.$editor.html($('<img>', {
@@ -93,7 +93,7 @@ export default function imageBlock(SirTrevor, config) {
         onBlockRender: function() {
             var that = this;
             // assert we have an uploader function in options
-            if (typeof(this.getOptions().uploader) !== 'function') {
+            if (typeof this.getOptions().uploader !== 'function') {
                 throw 'Image block need an `uploader` function in options.';
             }
             // setup the upload button
@@ -105,60 +105,71 @@ export default function imageBlock(SirTrevor, config) {
             }, this));
 
             this.$inputs.find('.st-block__dropzone')[0].addEventListener('drop', _.bind(function(ev) {
-                // Check for an existing URL
-                if (ev.dataTransfer.getData('text/html')) {
-                    let addContentBtns = new AddContentBtns();
-                    var remoteTag = ev.dataTransfer.getData('text/html');
-                    var srcAttr = remoteTag.match(/src="?([^"\s]+)"?\s*/)[1];
-
-                    addContentBtns.hide();
-                    this.loading();
-                    // Show this image on here
-                    this.$inputs.hide();
-                    this.loadData({
-                        file: {
-                            url: srcAttr
-                        }
-                    });
-
-                    this.getOptions().disableSubmit(false);
-                    this.setData({ media: { _url: srcAttr }});
-
-                    this.getOptions()
-                        .gogoGadgetoRemoteImage(srcAttr)
-                        .then(function(data) {
-                            Object.keys(data.media.renditions).forEach((key) => {
-                                let rendition = data.media.renditions[key];
-                                rendition.media = rendition.media.$oid;
-                            });
-
-                            that.getOptions().disableSubmit(false);
-                            that.setData(data);
-                            that.ready();
-                            addContentBtns.show();
-                        });
-                }
+                this.onRemoteDrop(ev.dataTransfer);
             }, this));
         },
+        // Drag and drop from a remote web page
+        onRemoteDrop: function(transferData) {
+            // Check for an existing URL
+            if (transferData.getData('text/html')) {
+                let addContentBtns = new AddContentBtns();
+                var remoteTag = transferData.getData('text/html');
+                var srcAttr = remoteTag.match(/src="?([^"\s]+)"?\s*/)[1];
+
+                addContentBtns.hide();
+                this.loading();
+                // Show this image on here
+                this.$inputs.hide();
+                this.loadData({
+                    file: {
+                        url: srcAttr
+                    }
+                });
+
+                this.getOptions().disableSubmit(false);
+                this.setData({media: {_url: srcAttr}});
+
+                this.getOptions()
+                    .gogoGadgetoRemoteImage(srcAttr)
+                    .then((data) => {
+                        Object.keys(data.media.renditions).forEach((key) => {
+                            let rendition = data.media.renditions[key];
+
+                            rendition.media = rendition.media.$oid;
+                        });
+
+                        this.getOptions().disableSubmit(false);
+                        this.setData(data);
+                        this.ready();
+                        addContentBtns.show();
+                    })
+                    .catch((err) => {
+                        addContentBtns.show();
+                        this.addMessage(window.i18n.t('blocks:image:upload_error'));
+                        this.ready();
+                    });
+            }
+        },
+        // Drag and drop an image from a local drive
         onDrop: function(transferData) {
-            var that = this;
             var file = transferData.files[0];
             var urlAPI = window.URL;
             var addContentBtns = new AddContentBtns();
 
-            if (typeof urlAPI === 'undefined')
+            if (typeof urlAPI === 'undefined') {
                 urlAPI = window.webkitURL;
+            }
 
-            if (!file)
+            if (!file) {
                 return false;
+            }
 
             if (file.size > config.maxContentLength) {
-                var message = "Image bigger than " +
-                    (config.maxContentLength / 1024 / 1024) +
-                    "MB";
+                let maxContentLengthMB = config.maxContentLength / 1024 / 1024;
+                let message = `Image bigger than ${maxContentLengthMB}MB`;
 
-                that.addMessage(message);
-                that.ready();
+                this.addMessage(message);
+                this.ready();
 
                 return;
             }
@@ -180,17 +191,18 @@ export default function imageBlock(SirTrevor, config) {
                 });
                 this.getOptions().uploader(
                     file,
-                    function(data) {
+                    (data) => {
                         addContentBtns.show();
-                        that.getOptions().disableSubmit(false);
-                        that.setData(data);
-                        that.ready();
+                        this.getOptions().disableSubmit(false);
+                        this.setData(data);
+                        this.ready();
                     },
-                    function(error) {
+                    (error) => {
                         addContentBtns.show();
                         var message = error || window.i18n.t('blocks:image:upload_error');
-                        that.addMessage(message);
-                        that.ready();
+
+                        this.addMessage(message);
+                        this.ready();
                     }
                 );
             }
@@ -208,7 +220,7 @@ export default function imageBlock(SirTrevor, config) {
             if (data.media.hasOwnProperty('renditions')) {
                 var srcset = '';
 
-                _.forEach(data.media.renditions, function(value) {
+                _.forEach(data.media.renditions, (value) => {
                     srcset += ', ' + value.href + ' ' + value.width + 'w';
                 });
 
@@ -230,5 +242,4 @@ export default function imageBlock(SirTrevor, config) {
             return this.retrieveData();
         }
     });
-
 }

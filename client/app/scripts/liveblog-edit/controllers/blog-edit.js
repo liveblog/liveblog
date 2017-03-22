@@ -449,9 +449,9 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
                         "Content-Type": "application/json;charset=utf-8"
                     }
                 })
-                .then(function(response) {
+                .then((response) => {
                     if (response.data._issues) {
-                        return handleError(response);
+                        throw response.data._issues;
                     }
 
                     return {media: {
