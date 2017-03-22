@@ -128,6 +128,9 @@ export default function imageBlock(SirTrevor, config) {
                     this.getOptions()
                         .gogoGadgetoRemoteImage(srcAttr)
                         .then(function(data) {
+                            Object.keys(data.media.renditions).forEach((rendition) => {
+                                data.media.renditions[rendition].media = data.media.renditions[rendition].media.$oid;
+                            });
                             console.log('data', data);
                             //addContentBtns.show();
                             that.getOptions().disableSubmit(false);
