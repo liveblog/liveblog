@@ -48,8 +48,8 @@ class AdvertisementsResource(Resource):
 class AdvertisementsService(BaseService):
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
-        collections_service = get_resource_service('collections')
+        # collections_service = get_resource_service('collections')
 
-        # deletes blog
-        if updates.get('deleted', False):
-            collections_service.delete_advertisement(original)
+        # # deletes blog
+        # if updates.get('deleted', False):
+        #     collections_service.delete_advertisement(original)
