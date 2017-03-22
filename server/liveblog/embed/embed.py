@@ -103,6 +103,22 @@ def delete_embed(blog_id):
     app.media.delete(file_path)
 
 
+class ThemeTemplateLoader(jinja2.BaseLoader):
+    def __init__(self, theme):
+        dirname = os.path.dirname(get_template_file_name(theme))
+        # TODO: add theme template extensions features.
+        self.path = os.path.join(dirname, 'templates')
+
+    def get_source(self, environment, template):
+        path = os.path.join(self.path, template)
+        if not os.path.exists(path):
+            raise jinja2.TemplateNotFound(template)
+        mtime = os.path.getmtime(path)
+        with open(path) as f:
+            source = f.read()
+        return source, path, lambda: mtime == os.path.getmtime(path)
+
+
 class BlogThemeRenderer:
     order_by = ('_updated', '_created')
     default_order_by = '_updated'
@@ -114,7 +130,7 @@ class BlogThemeRenderer:
             blog = get_resource_service('client_blogs').find_one(_id=blog, req=None)
 
         self._blog = blog
-        self._posts = get_resource_service('posts')
+        self._posts = get_resource_service('client_posts')
 
     def _validate_order_by(self, order_by):
         if order_by not in self.order_by:
@@ -126,11 +142,11 @@ class BlogThemeRenderer:
 
     def _posts_lookup(self, sticky, highlight):
         return {'$and': [
-            {'blog_id': {'$eq': self._blog['_id']}},
-            {'sticky': {'$eq': sticky}},
-            {'highlight': {'$eq': highlight}},
+            {'blog': {'$eq': self._blog['_id']}},
+            # {'sticky': {'$eq': sticky}},
+            # {'highlight': {'$eq': highlight}},
             {'post_status': {'$eq': 'open'}},
-            {'deleted': {'$ne': True}}
+            {'deleted': {'$eq': False}}
         ]}
 
     def get_posts(self, sticky=False, highlight=False, order_by=default_order_by, sort=default_sort, page=1, limit=25,
@@ -139,7 +155,7 @@ class BlogThemeRenderer:
         self._validate_sort(sort)
         self._validate_order_by(order_by)
 
-        # Fetch posts.
+        # Fetch total.
         results = self._posts.find(self._posts_lookup(sticky, highlight))
         total = results.count()
 
@@ -149,9 +165,19 @@ class BlogThemeRenderer:
         else:
             sort = pymongo.DESCENDING
 
-        # Pagination and sorting.
+        # Fetch posts, do pagination and sorting.
         skip = limit * (page - 1)
-        posts = list(results.skip(skip).limit(limit).sort(order_by, sort))
+        results = results.skip(skip).limit(limit).sort(order_by, sort)
+        posts = []
+        for doc in results:
+            if 'groups' not in doc:
+                continue
+
+            for group in doc['groups']:
+                if group['id'] == 'main':
+                    for ref in group['refs']:
+                        ref['item'] = get_resource_service('archive').find_one(req=None, _id=ref['residRef'])
+            posts.append(doc)
 
         if wrap:
             # Wrap in python-eve style data structure
@@ -220,7 +246,7 @@ def embed(blog_id, api_host=None, theme=None):
         # Fetch initial blog posts for SEO theme
         renderer = BlogThemeRenderer(blog)
         api_response = renderer.get_posts(wrap=True)
-        embed_template = jinja2.Environment(loader=jinja2.BaseLoader()).from_string(template_content)
+        embed_template = jinja2.Environment(loader=ThemeTemplateLoader(theme)).from_string(template_content)
         template_content = embed_template.render(
             blog=blog,
             theme=theme,
