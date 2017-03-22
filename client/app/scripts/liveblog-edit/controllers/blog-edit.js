@@ -450,20 +450,15 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
                     }
                 })
                 .then(function(response) {
-                    console.log('response', response);
                     if (response.data._issues) {
                         return handleError(response);
                     }
-                    $scope.actionPending = false;
-                    // used in `SirTrevor.Blocks.Image` to fill in the block content.
-                    var media_meta = {
-                        _info: config.server.url,
+
+                    return {media: {
                         _id: response.data._id,
                         _url: response.data.renditions.thumbnail.href,
                         renditions: response.data.renditions
-                    };
-                    // media will be added latter in the `meta` if this item in this callback
-                    return {media: media_meta};
+                    }};
                 });
             }
         },

@@ -107,10 +107,11 @@ export default function imageBlock(SirTrevor, config) {
             this.$inputs.find('.st-block__dropzone')[0].addEventListener('drop', _.bind(function(ev) {
                 // Check for an existing URL
                 if (ev.dataTransfer.getData('text/html')) {
-                    console.log(ev);
+                    let addContentBtns = new AddContentBtns();
                     var remoteTag = ev.dataTransfer.getData('text/html');
                     var srcAttr = remoteTag.match(/src="?([^"\s]+)"?\s*/)[1];
 
+                    addContentBtns.hide();
                     this.loading();
                     // Show this image on here
                     this.$inputs.hide();
@@ -120,22 +121,21 @@ export default function imageBlock(SirTrevor, config) {
                         }
                     });
 
-                    console.log('type', this.type);
                     this.getOptions().disableSubmit(false);
                     this.setData({ media: { _url: srcAttr }});
 
-                    // TODO: send query to the back-end
                     this.getOptions()
                         .gogoGadgetoRemoteImage(srcAttr)
                         .then(function(data) {
-                            Object.keys(data.media.renditions).forEach((rendition) => {
-                                data.media.renditions[rendition].media = data.media.renditions[rendition].media.$oid;
+                            Object.keys(data.media.renditions).forEach((key) => {
+                                let rendition = data.media.renditions[key];
+                                rendition.media = rendition.media.$oid;
                             });
-                            console.log('data', data);
-                            //addContentBtns.show();
+
                             that.getOptions().disableSubmit(false);
                             that.setData(data);
                             that.ready();
+                            addContentBtns.show();
                         });
                 }
             }, this));
