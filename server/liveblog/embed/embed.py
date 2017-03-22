@@ -140,16 +140,19 @@ class BlogThemeRenderer:
         if sort not in self.sort:
             raise ValueError(sort)
 
-    def _posts_lookup(self, sticky, highlight):
-        return {'$and': [
+    def _posts_lookup(self, sticky=None, highlight=None):
+        filters = [
             {'blog': {'$eq': self._blog['_id']}},
-            # {'sticky': {'$eq': sticky}},
-            # {'highlight': {'$eq': highlight}},
             {'post_status': {'$eq': 'open'}},
             {'deleted': {'$eq': False}}
-        ]}
+        ]
+        if sticky:
+            filters.append({'sticky': {'$eq': sticky}})
+        if highlight:
+            filters.append({'highlight': {'$eq': highlight}})
+        return {'$and': filters}
 
-    def get_posts(self, sticky=False, highlight=False, order_by=default_order_by, sort=default_sort, page=1, limit=25,
+    def get_posts(self, sticky=None, highlight=None, order_by=default_order_by, sort=default_sort, page=1, limit=25,
                   wrap=False):
         # Validate parameters.
         self._validate_sort(sort)
