@@ -23,7 +23,7 @@
             </div>
 	    </header>
 
-	    <!-- LIST VIEW -->
+	    <!-- ADVERT LIST VIEW -->
 	    <div class="advert-list-holder">
 	    	<div class="shadow-list-holder" sd-shadow>
 	            <ul class="pills-list">
@@ -58,7 +58,7 @@
 	        <div class="section-title"><h2 translate>Collections</h2></div>
 	        
 	        <div class="dropdown navbtn strict right-important" title="{{ :: 'Create' | translate }}" dropdown>
-                <button class="dropdown__toggle sd-create-btn"></button>
+                <button class="dropdown__toggle sd-create-btn" ng-click="openCollectionDialog();"></button>
             </div>
 	    </header>
 	</div>
@@ -95,4 +95,33 @@
             </div>
         </div>
 </div>
+
+<div sd-modal data-model="collectionModalActive">
+        <div class="modal-header">
+            <button class="close" ng-click="cancelCollectionCreate()"><i class="icon-close-small"></i></button>
+            <h3 translate>Add collection</h3>
+        </div>
+        <div class="modal-body" style="min-height: 300px;">
+            <div class="item-creation">
+                <fieldset>
+                    <div class="field">
+                        <label translate>Collection Name<span class="ft-alert" translate ng-if="!collection.name">required</span></label>
+                        <input type="text" ng-model="collection.name" maxlength="24" required>
+                    </div>
+                    <div class="field">
+                        <label translate>Assign adverts to collection</label>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div>
+                <button type="button" class="btn btn-default pull-left" translate ng-click="cancelCollectionCreate()">Cancel</button>
+                <button type="button" class="btn btn-primary btn-info" translate ng-click="saveCollection()"
+                ng-disabled="!collection.name || dialogCollectionLoading"
+                >Save</button>
+            </div>
+        </div>
+</div>
+
 <div ng-if="advertsLoading" class="loading-indicator" style="margin-top: 170px;"><span translate>Loading adverts...</span></div>
