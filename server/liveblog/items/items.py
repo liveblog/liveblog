@@ -1,5 +1,5 @@
 from bson.objectid import ObjectId
-from eve.utils import ParsedRequest, config
+from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
 from superdesk.utc import utcnow
 from superdesk.resource import Resource
@@ -9,14 +9,15 @@ from apps.archive.archive import ArchiveResource, ArchiveService, ArchiveVersion
 from superdesk.services import BaseService
 from superdesk.filemeta import set_filemeta, get_filemeta
 from werkzeug.datastructures import FileStorage
-from flask import Blueprint, request, make_response, jsonify
+from flask import Blueprint, request, make_response
 from flask_cors import CORS
 from superdesk import get_resource_service
 from liveblog.syndication.utils import fetch_url
 from bson.json_util import dumps
 
-drag_and_drop_blueprint = Blueprint('drag_and_drop',__name__)
+drag_and_drop_blueprint = Blueprint('drag_and_drop', __name__)
 CORS(drag_and_drop_blueprint)
+
 
 class ItemsVersionsResource(ArchiveVersionsResource):
     """
@@ -154,4 +155,4 @@ def drag_and_drop():
     archive_id = archive_service.post([item_data])[0]
     archive = archive_service.find_one(req=None, _id=archive_id)
 
-    return make_response(dumps(archive),201)
+    return make_response(dumps(archive), 201)
