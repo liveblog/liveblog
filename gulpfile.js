@@ -22,23 +22,32 @@ var paths = {
 };
 
 var defaultOptions = {
-  boolean: 'debug',
-  string: ['api_response', 'options'],
+  bool: 'debug',
+  string: ['api_response', 'theme_options'],
   debug: process.env.DEBUG || false,
   api_response: null,
-  options: null
+  theme_options: null
 };
 
 
 // Command-line and default theme options from theme.json.
 var options = minimist(process.argv.slice(2), defaultOptions);
-var themeOptions = JSON.parse(fs.readFileSync('theme.json', 'utf8'));
+var themeSettings = JSON.parse(fs.readFileSync('theme.json', 'utf8'));
+
+
+function getThemeOptions() {
+  var _options = {}
+  for (var option in themeSettings.options) {
+    _options[option.name] = option.default;
+  }
+  return _options;
+}
 
 
 // Function to async reload default theme options.
-function loadThemeOptions() {
+function loadThemeSettings() {
   fs.readFile('theme.json', 'utf8', function (err, data) {
-    themeOptions = JSON.parse(data);
+    themeSettings = JSON.parse(data);
   });
 }
 
@@ -48,7 +57,7 @@ gulp.task('browserify', ['clean-js'], function(cb) {
   var b = browserify({
     entries: './js/liveblog.js',
     fullPaths: true,
-    debug: options.DEBUG
+    debug: options.debug
   });
 
   var rewriteFilenames = function(filename) {
@@ -68,7 +77,7 @@ gulp.task('browserify', ['clean-js'], function(cb) {
     .pipe(buffer())
     .pipe(plugins.rev())
     .pipe(plugins.ngAnnotate())
-    .pipe(plugins.if(!options.DEBUG, plugins.uglify()))
+    .pipe(plugins.if(!options.debug, plugins.uglify()))
     .pipe(gulp.dest('./dist/'))
     .pipe(plugins.rev.manifest('dist/rev-manifest.json', {merge: true}))
     .pipe(gulp.dest(''));
@@ -82,7 +91,7 @@ gulp.task('less', ['clean-css'], function () {
       paths: [path.join(__dirname, 'less', 'includes')]
     }))
 
-    .pipe(plugins.if(!options.DEBUG, plugins.minifyCss({compatibility: 'ie8'})))
+    .pipe(plugins.if(!options.debug, plugins.minifyCss({compatibility: 'ie8'})))
     .pipe(plugins.rev())
     .pipe(gulp.dest('./dist'))
     .pipe(plugins.rev.manifest('dist/rev-manifest.json', {merge: true}))
@@ -101,8 +110,9 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
     .pipe(plugins.nunjucks.compile({
       api_response: testdata.grammy_awards,
       theme_settings: testdata.options.theme_settings,
+      theme_options: testdata.options,
       options: JSON.stringify(testdata.options, null, 4),
-      debug: options.DEBUG
+      debug: options.debug
     }))
 
     .pipe(plugins.rename("index.html"))
@@ -113,10 +123,7 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
 
 // Inject jinja/nunjucks template for production use.
 gulp.task('template-inject', ['less', 'browserify'], function() {
-  var _options = {}
-  for (var option in themeOptions.options) {
-    _options[option.name] = option.default;
-  }
+  var theme_options = getThemeOptions();
 
   var _api_response = {};
   var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
@@ -125,9 +132,10 @@ gulp.task('template-inject', ['less', 'browserify'], function() {
 
   return gulp.src('./templates/template-base.html')
     .pipe(plugins.nunjucks.compile({
-      theme_settings: _options,
-      options: JSON.stringify(_options, null, 4),
-      debug: options.DEBUG
+      theme_options: theme_options,
+      theme_settings: themeSettings,
+      options: JSON.stringify(theme_options, null, 4),
+      debug: options.debug
     }))
 
     // Add nunjucks/jinja2 template for server-side processing.
@@ -156,7 +164,7 @@ gulp.task('theme-replace', ['browserify', 'less'], function() {
     .pipe(gulp.dest(base));
 
   // Reload theme options
-  loadThemeOptions();
+  loadThemeSettings();
 });
 
 
