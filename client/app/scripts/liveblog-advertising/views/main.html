@@ -86,7 +86,7 @@
                         </div>
                         <div class="card-box__content">
                             <ul class="card-box__content-list">
-                                <li ng-repeat="advert in adverts">
+                                <li ng-repeat="advert in adverts" ng-if="collectionHasAdvert(collection, advert)">
                                     <h6 class="pull-left">
                                         {{ advert.name }}
                                     </h6>
@@ -95,6 +95,7 @@
                                         {{ advert.type | translate }}
                                     </span>
                                 </li>
+                                <li ng-if="collection.advertisements.length === 0" translate>No ads in this collection</li>
                             </ul>
                         </div>
                     </div>
@@ -154,9 +155,10 @@
                 </div>
                 <div class="field">
                     <label translate>Assign adverts to collection</label>
+                    <label>{{ ollection.checkAdverts }}</label>
                     <ul>
                         <li ng-repeat="advert in adverts">
-                            <input type="checkbox" ng-model="checkAdverts[advert._id]" class="pull-left">
+                            <input type="checkbox" ng-model="collection.checkAdverts[advert._id]" class="pull-left">
                             <h6 class="pull-left adverts-in-collection">
                                 {{ advert.name }}
                             </h6>
