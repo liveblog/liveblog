@@ -42,7 +42,7 @@ function BlogListController(
     };
     $scope.modalActive = false;
 
-    $scope.mailto = 'mailto:upgrade@liveblog.pro?subject='+
+    $scope.mailto = 'mailto:upgrade@liveblog.pro?subject=' +
         encodeURIComponent(location.hostname) +
         ' ' +
         config.subscriptionLevel;
@@ -67,12 +67,14 @@ function BlogListController(
         var criteria = {source: {
             query: {filtered: {filter: {term: {key: 'blogslist'}}}}
         }};
-        api.blogslist.query(criteria, false).then(function(embed) {
+
+        api.blogslist.query(criteria, false).then((embed) => {
             var url;
+
             if (embed._items.length) {
                 url = embed._items[0].value;
             } else if (config.debug) {
-                url = 'http://localhost:5000/blogslist_embed'
+                url = 'http://localhost:5000/blogslist_embed';
             }
             if (url) {
                 $scope.bloglistEmbed = '<iframe id="liveblog-bloglist" width="100%" ' +
@@ -84,7 +86,7 @@ function BlogListController(
         $scope.embedModal = false;
     };
     $scope.openEmbed = function() {
-        fetchBloglistEmbed()
+        fetchBloglistEmbed();
         $scope.embedModal = true;
     };
 
@@ -100,11 +102,12 @@ function BlogListController(
     $scope.openNewBlog = function() {
         blogSecurityService
             .showUpgradeModal()
-            .then(function(showUpgradeModal) {
-                if (showUpgradeModal)
+            .then((showUpgradeModal) => {
+                if (showUpgradeModal) {
                     $scope.embedUpgrade = true;
-                else
+                } else {
                     $scope.newBlogModalActive = true;
+                }
             });
     };
 
@@ -116,8 +119,10 @@ function BlogListController(
         var members = _.map($scope.blogMembers, function(obj) {
             return {user: obj._id};
         });
+
         //upload image only if we have a valid one chosen
         var promise = $scope.preview.url ? $scope.upload($scope.preview) : $q.when();
+
         return promise.then(function() {
             return api.blogs.save({
                 title: $scope.newBlog.title,
@@ -137,8 +142,8 @@ function BlogListController(
     };
 
     $scope.upload = function(config) {
-        console.log('about to upload');
         var form = {};
+
         if (config.img) {
             form.media = config.img;
         } else if (config.url) {
@@ -152,21 +157,19 @@ function BlogListController(
             url: uploadUrl,
             data: form
         })
-        .then(function(response) {
-            if (response.data._status === 'ERR'){
+        .then((response) => {
+            if (response.data._status === 'ERR') {
                 return;
             }
-            var picture_url = response.data.renditions.viewImage.href;
-            $scope.newBlog.picture_url = picture_url;
+            var pictureUrl = response.data.renditions.viewImage.href;
+
+            $scope.newBlog.picture_url = pictureUrl;
             $scope.newBlog.picture = response.data._id;
-            console.log('upload done', $scope.newBlog);
-        }, function(error) {
-            console.log('err', error);
+        }, (error) => {
             notify.error(
-                (error.statusText !== '') ? error.statusText : gettext('There was a problem with your upload')
+                error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
             );
-        }, function(progress) {
-            console.log('progress', progress);
+        }, (progress) => {
             $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
         }));
     };
