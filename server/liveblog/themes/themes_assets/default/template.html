@@ -6,8 +6,8 @@
   <div class="header-bar">
     <div class="sorting-bar">
       <div class="sorting-bar__orders">
-        <div class="sorting-bar__order sorting-bar__order--active" onClick="timeline.orderBy('editorial')">Neueste</div>
-        <div class="sorting-bar__order" onClick="timeline.orderBy('oldest_first')">&Auml;lteste</div>
+        <div class="sorting-bar__order sorting-bar__order--active" onClick="timeline.orderBy('newest_first')">{{ theme_options.l10n.newestFirst }}</div>
+        <div class="sorting-bar__order" onClick="timeline.orderBy('oldest_first')">{{ theme_options.l10n.oldestFirst }}</div>
       </div>
     </div>
     <div class="header-bar__actions"></div>
@@ -29,7 +29,7 @@
         {% endfor %}
       </section>
       {% if api_response._meta.max_results <= api_response._meta.total %}
-        <button class="lb-button load-more-posts" data-js-loadmore>{{ theme_options.l10n.loadMore }}</button>
+        <button class="lb-button load-more-posts" data-js-loadmore>{{ theme_options.l10n.loadNewPosts }}</button>
       {% endif %}
     {% endif %}
   </div>
