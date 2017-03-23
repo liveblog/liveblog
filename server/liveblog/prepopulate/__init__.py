@@ -12,7 +12,6 @@ import superdesk
 
 from .app_prepopulate import PrepopulateService, PrepopulateResource
 from .app_initialize import AppInitializeWithDataCommand  # NOQA
-from .app_scaffold_data import AppScaffoldDataCommand  # NOQA
 
 
 def init_app(app):
