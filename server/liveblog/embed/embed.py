@@ -123,7 +123,7 @@ class BlogThemeRenderer:
     order_by = ('_updated', '_created')
     default_order_by = '_updated'
     sort = ('asc', 'desc')
-    default_sort = 'asc'
+    default_sort = 'desc'
 
     def __init__(self, blog):
         if isinstance(blog, (str, ObjectId)):
