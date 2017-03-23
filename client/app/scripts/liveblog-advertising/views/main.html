@@ -7,6 +7,7 @@
     </div>
 </div>
 <section class="main-section bloglist advertising">
+    <!-- ADVERTS SECTION -->
 	<div class="ad-section" ng-if="activeState === 'adverts'">
 		<header>
 	        <div class="section-title"><h2 translate>Adverts</h2></div>
@@ -53,6 +54,7 @@
 	    </div>
 	</div>
 
+    <!-- COLLECTION SECTION -->
 	<div class="ad-section" ng-if="activeState === 'collections'">
 		<header>
 	        <div class="section-title"><h2 translate>Collections</h2></div>
@@ -61,67 +63,124 @@
                 <button class="dropdown__toggle sd-create-btn" ng-click="openCollectionDialog();"></button>
             </div>
 	    </header>
+
+        <!-- LIST OF COLLECTIONS -->
+        <div class="advert-list-holder">
+            <div class="shadow-list-holder" sd-shadow>
+                <div class="flex-grid box wrap-items small-1 medium-3 large-4 xlarge-6">
+                    <div class="flex-item card-box" ng-repeat="collection in collections">
+                        <div class="card-box__header">
+                            <div class="dropdown" dropdown>
+                                <button class="dropdown__toggle" dropdown__toggle>
+                                    <i class="icon-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown__menu more-activity-menu pull-right">
+                                    <li><div class="dropdown__menu-label" translate>Actions</div></li>
+                                    <li class="divider"></li>
+                                    <li><button ng-click="openCollectionDialog(collection)" title="{{:: 'Edit Collection' | translate }}"><i class="icon-pencil"></i>{{:: 'Edit'| translate}}</button></li>
+                                
+                                    <li><button ng-click="removeCollection(collection, $index)" title="{{:: 'Remove collection'| translate }}"><i class="icon-trash"></i>{{:: 'Remove'| translate}}</button></li>
+                                </ul>
+                            </div>
+                            <div class="card-box__heading">{{ collection.name }}</div>
+                        </div>
+                        <div class="card-box__content">
+                            <ul class="card-box__content-list">
+                                <li ng-repeat="advert in adverts">
+                                    <h6 class="pull-left">
+                                        {{ advert.name }}
+                                    </h6>
+                                    <span class="state-label" ng-class="{ 'green-state': advert.type === 'Advertisement Local', 'yellow-state': advert.type === 'Advertisement Remote' }"}
+                                    >
+                                        {{ advert.type | translate }}
+                                    </span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 	</div>
 </section>
 
+<!-- MODAL FOR ADDING EDITING ADVERTS -->
 <div sd-modal data-model="advertModalActive">
-        <div class="modal-header">
-            <button class="close" ng-click="cancelAdvertCreate()"><i class="icon-close-small"></i></button>
-            <h3 translate>{{ advertType.name }}</h3>
+    <div class="modal-header">
+        <button class="close" ng-click="cancelAdvertCreate()"><i class="icon-close-small"></i></button>
+        <h3 translate>{{ advertType.name }}</h3>
+    </div>
+    <div class="modal-body" style="min-height: 300px;">
+        <div class="item-creation">
+            <fieldset>
+                <div class="field">
+                    <label translate>Advert Name<span class="ft-alert" translate ng-if="!advert.name">required</span></label>
+                    <input type="text" ng-model="advert.name" maxlength="24" required>
+                </div>
+                <div class="field">
+                    <freetype-render
+                    freetype="advertType"
+                    freetype-data="freetypesData"
+                    validation="validation"
+                    control="freetypeControl"></freetype-render>
+                </div>
+                {{ validation }}
+            </fieldset>
         </div>
-        <div class="modal-body" style="min-height: 300px;">
-            <div class="item-creation">
-                <fieldset>
-                    <div class="field">
-                        <label translate>Advert Name<span class="ft-alert" translate ng-if="!advert.name">required</span></label>
-                        <input type="text" ng-model="advert.name" maxlength="24" required>
-                    </div>
-                    <div class="field">
-                        <freetype-render
-                        freetype="advertType"
-                        freetype-data="freetypesData"
-                        validation="validation"
-                        control="freetypeControl"></freetype-render>
-                    </div>
-                </fieldset>
-            </div>
+    </div>
+    <div class="modal-footer">
+        <div>
+            <button type="button" class="btn btn-default pull-left" translate ng-click="cancelAdvertCreate()">Cancel</button>
+            <button type="button" class="btn btn-primary btn-info" translate ng-click="saveAdvert()"
+            ng-disabled="!advert.name || dialogAdvertLoading"
+            >Save</button>
         </div>
-        <div class="modal-footer">
-            <div>
-                <button type="button" class="btn btn-default pull-left" translate ng-click="cancelAdvertCreate()">Cancel</button>
-                <button type="button" class="btn btn-primary btn-info" translate ng-click="saveAdvert()"
-                ng-disabled="!advert.name || dialogAdvertLoading"
-                >Save</button>
-            </div>
-        </div>
+    </div>
 </div>
 
-<div sd-modal data-model="collectionModalActive">
-        <div class="modal-header">
-            <button class="close" ng-click="cancelCollectionCreate()"><i class="icon-close-small"></i></button>
-            <h3 translate>Add collection</h3>
+<!-- MODAL FOR ADDING EDITIONG COLLECTIONS -->
+<div sd-modal data-model="collectionModalActive" class="advertising">
+    <div class="modal-header">
+        <button class="close" ng-click="cancelCollectionCreate()"><i class="icon-close-small"></i></button>
+        <h3 translate>Add collection</h3>
+    </div>
+    <div class="modal-body" style="min-height: 300px;">
+        <div class="item-creation">
+            <fieldset>
+                <div class="field">
+                    <label translate>Collection Name<span class="ft-alert" translate ng-if="!collection.name">required</span></label>
+                    <input type="text" ng-model="collection.name" maxlength="24" required>
+                </div>
+                <div class="field">
+                    <label translate>Assign adverts to collection</label>
+                    <ul>
+                        <li ng-repeat="advert in adverts">
+                            <input type="checkbox" ng-model="checkAdverts[advert._id]" class="pull-left">
+                            <h6 class="pull-left adverts-in-collection">
+                                {{ advert.name }}
+                            </h6>
+                            <span class="state-label" ng-class="{ 'green-state': advert.type === 'Advertisement Local', 'yellow-state': advert.type === 'Advertisement Remote' }"}
+                            >
+                                {{ advert.type | translate }}
+                            </span>
+                        </li>
+                    </ul>
+                    {{ checkboxModel }}
+                </div>
+            </fieldset>
         </div>
-        <div class="modal-body" style="min-height: 300px;">
-            <div class="item-creation">
-                <fieldset>
-                    <div class="field">
-                        <label translate>Collection Name<span class="ft-alert" translate ng-if="!collection.name">required</span></label>
-                        <input type="text" ng-model="collection.name" maxlength="24" required>
-                    </div>
-                    <div class="field">
-                        <label translate>Assign adverts to collection</label>
-                    </div>
-                </fieldset>
-            </div>
+    </div>
+    <div class="modal-footer">
+        <div>
+            <button type="button" class="btn btn-default pull-left" translate ng-click="cancelCollectionCreate()">Cancel</button>
+            <button type="button" class="btn btn-primary btn-info" translate ng-click="saveCollection()"
+            ng-disabled="!collection.name || dialogCollectionLoading"
+            >Save</button>
         </div>
-        <div class="modal-footer">
-            <div>
-                <button type="button" class="btn btn-default pull-left" translate ng-click="cancelCollectionCreate()">Cancel</button>
-                <button type="button" class="btn btn-primary btn-info" translate ng-click="saveCollection()"
-                ng-disabled="!collection.name || dialogCollectionLoading"
-                >Save</button>
-            </div>
-        </div>
+    </div>
 </div>
 
+<!-- LIST OF LOADING INDICATORS -->
 <div ng-if="advertsLoading" class="loading-indicator" style="margin-top: 170px;"><span translate>Loading adverts...</span></div>
+<div ng-if="collectionsLoading" class="loading-indicator" style="margin-top: 170px;"><span translate>Loading collections...</span></div>
