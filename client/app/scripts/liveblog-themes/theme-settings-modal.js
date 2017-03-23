@@ -1,16 +1,16 @@
-(function() {
-    'use strict';
+import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-modal.html';
 
+(function() {
     angular.module('liveblog.themes')
     .filter('exampleDate', [ 'moment', function(moment) {
         return function(string) {
             return moment().format(string);
         };
     }])
-    .directive('themeSettingsModal', ['api', '$q', 'lodash', 'notify',
-        function(api, $q, lodash, notify) {
+    .directive('themeSettingsModal', ['api', '$q', 'notify',
+        function(api, $q, notify) {
             return {
-                templateUrl: 'scripts/liveblog-themes/views/theme-settings-modal.html',
+                templateUrl: themeSettingsModalTpl,
                 scope: {
                     theme: '=',
                     modalOpened: '='
@@ -22,7 +22,13 @@
                         optionsAreloading: true,
                         settings: angular.copy(vm.theme.settings) || {},
                         options: [],
-                        datetimeFormats: ['MMMM Do, YYYY HH:mm', 'YYYY-MM-DD hh:mm a', 'DD/MM/YYYY hh:mm A', 'HH:mm D.M.YYYY', 'lll'],
+                        datetimeFormats: [
+                            'MMMM Do, YYYY HH:mm',
+                            'YYYY-MM-DD hh:mm a',
+                            'DD/MM/YYYY hh:mm A',
+                            'HH:mm D.M.YYYY',
+                            'lll'
+                        ],
                         submitSettings: function(shouldClose) {
                             if (!angular.equals(vm.theme.settings, vm.settings)) {
                                 api.themes.update(vm.theme, {settings: vm.settings}).then(function(data) {

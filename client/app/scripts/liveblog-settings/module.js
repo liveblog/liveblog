@@ -1,5 +1,6 @@
+import generalTpl from 'scripts/liveblog-settings/views/general.html';
+
 (function() {
-    'use strict';
     LiveblogSettingsController.$inject = ['$scope', 'api', '$location', 'notify', 'gettext', '$q'];
     function LiveblogSettingsController($scope, api, $location, notify, gettext, $q) {
         //prep the settings
@@ -49,7 +50,7 @@
             .activity('/settings/', {
                 label: gettext('Liveblog'),
                 controller: LiveblogSettingsController,
-                templateUrl: 'scripts/liveblog-settings/views/general.html'
+                templateUrl: generalTpl
             });
     }])
     .config(['apiProvider', function(apiProvider) {

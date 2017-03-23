@@ -1,5 +1,7 @@
 import './styles/analytics.scss';
 
+import analiticsListTpl from 'scripts/liveblog-analytics/views/view-list.html';
+
 import liveblogAnalyticsController from './controllers/controller-analytics';
 import lbAnalyticsListCtrl from './directives/directives-analytics';
 
@@ -22,21 +24,21 @@ export default angular
   }])
   .controller('LiveblogAnalyticsController', liveblogAnalyticsController)
 
-  .directive('lbAnalyticsList', ['notify', function(notify) {
+  .directive('lbAnalyticsList', function() {
     return {
       restrict: 'E',
       scope: {
         analytics: '='
       },
-      templateUrl: 'scripts/liveblog-analytics/views/view-list.html',
+      templateUrl: analiticsListTpl,
       controllerAs: 'analyticsList',
       controller: lbAnalyticsListCtrl
     };
-  }])
+  })
 
   .filter('startFrom', function() {
     return function(input, start) {
-      start = parseInt(start); // Parse to int
-      return input.slice(start);
+        start = parseInt(start); // Parse to int
+        return input.slice(start);
     }
   });

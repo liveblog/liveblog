@@ -10,7 +10,7 @@ module.exports = {
                 'images/**/*',
                 'favicon.ico',
                 'styles/css/*.css',
-                'scripts/**/*.{html,css,jpg,jpeg,png,gif,json}',
+                //'scripts/**/*.{html,css,jpg,jpeg,png,gif,json}',
                 'scripts/bower_components/requirejs/require.js'
             ]
         },{

@@ -1,5 +1,6 @@
+import listTpl from 'scripts/liveblog-themes/views/list.html';
+
 (function() {
-    'use strict';
     LiveblogThemesController.$inject = ['api', '$location', 'notify', 'gettext',
     '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', '$window'];
     function LiveblogThemesController(api, $location, notify, gettext,
@@ -51,7 +52,7 @@
                     }
                 }
             }
-            themes.map(function(theme) {
+            themes.forEach(function(theme) {
                 addToHierarchy(theme.name, theme['extends']);
             });
             var max_loops = todo.length * todo.length;
@@ -129,7 +130,7 @@
             themeBlogsModal: false,
             // this is used to when a blog is selected.
             selectedBlog: false,
-            isSolo: () => config.subscriptionLevel == 'solo',
+            isSolo: () => config.subscriptionLevel === 'solo',
             // loading indicatior for the first timeload.
             loading: true,
             getTheme: function(name) {
@@ -167,11 +168,14 @@
             },
             makeDefault: function(theme) {
                 if (vm.globalTheme) {
-                    api.global_preferences.save(vm.globalTheme, {'key': 'theme', 'value': theme.name}).then(function(data) {
-                        notify.pop();
-                        notify.info(gettext('Default theme saved'));
-                        vm.globalTheme = data;
-                    });
+                    api
+                        .global_preferences
+                        .save(vm.globalTheme, {'key': 'theme', 'value': theme.name})
+                        .then(function(data) {
+                            notify.pop();
+                            notify.info(gettext('Default theme saved'));
+                            vm.globalTheme = data;
+                        });
                 } else {
                     api.global_preferences.save({'key': 'theme', 'value': theme.name}).then(function(data) {
                         notify.pop();
@@ -240,10 +244,10 @@
                     return false;
 
                 var themes = vm.themes.filter(function(theme) {
-                    return (theme.name != config.excludedTheme);
+                    return (theme.name !== config.excludedTheme);
                 });
 
-                if (config.subscriptionLevel == 'team')
+                if (config.subscriptionLevel === 'team')
                     return (themes.length >= config.themeCreationRestrictions.team);
                 else
                     return false;
@@ -261,7 +265,7 @@
     }
 
     var liveblogThemeModule = angular.module('liveblog.themes', [])
-    .config(['superdeskProvider', 'config', function(superdesk, config) {
+    .config(['superdeskProvider', function(superdesk) {
         superdesk
             .activity('/themes/', {
                 label: gettext('Theme Manager'),
@@ -270,7 +274,7 @@
                 category: superdesk.MENU_MAIN,
                 adminTools: true,
                 privileges: {'global_preferences': 1},
-                templateUrl: 'scripts/liveblog-themes/views/list.html'
+                templateUrl: listTpl
             });
     }])
     .filter('githubUrlFromGit', function() {

@@ -23,7 +23,7 @@ export default function baseController($scope, api, notify) {
 
         $scope[$scope.endPoint]._items = $scope[$scope.endPoint]._items
             .map(function(item) {
-                if (item._id == newEntry._id) {
+                if (item._id === newEntry._id) {
                     isEditing = true;
                     return newEntry;
                 } else {
