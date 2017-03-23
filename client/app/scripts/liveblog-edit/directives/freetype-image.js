@@ -31,17 +31,7 @@ export default function freetypeImage($compile, modal, api, upload, superdesk) {
 
                         $scope.image.picture_url = firstPicture.renditions.original.href;
                         $scope.image.picture = firstPicture._id;
-                        vm.uploadModal = false;
-                        vm.preview = {};
-                        vm.progress = {width: 0};
                     });
-
-                    vm.uploadModal = true;
-                },
-                closeUploadModal: function() {
-                    vm.uploadModal = false;
-                    vm.preview = {};
-                    vm.progress = {width: 0};
                 },
                 removeImage: function() {
                     modal
