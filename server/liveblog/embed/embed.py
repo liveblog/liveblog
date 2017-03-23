@@ -24,6 +24,7 @@ import json
 import logging
 import pymongo
 from bson import ObjectId
+from bson.json_util import dumps
 
 
 logger = logging.getLogger('superdesk')
@@ -71,6 +72,15 @@ def collect_theme_assets(theme, assets=None, template=None):
                     url = url_for('themes_assets.static', filename=os.path.join(theme_folder, url), _external=False)
             assets[asset_type].append(url)
     return assets, template
+
+
+def get_theme_json_filename(theme_name):
+    return os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
+
+
+def get_theme_json(theme_name):
+    filename = get_theme_json_filename(theme_name)
+    return json.loads(open(filename).read())
 
 
 def get_file_path(blog_id):
@@ -220,10 +230,11 @@ def embed(blog_id, api_host=None, theme=None):
         raise SuperdeskApiError.badRequestError(
             message='You will be able to access the embed after you register the themes')
 
-    # if a theme is provided, overwrite the default theme
+    # if a theme is provided, overwrite the default theme.json package contents
     if theme_name:
-        theme_package = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
-        theme = json.loads(open(theme_package).read())
+        theme = theme_json = get_theme_json(theme_name)
+    else:
+        theme_json = get_theme_json(theme.get('name'))
 
     try:
         assets, template_content = collect_theme_assets(theme)
@@ -254,8 +265,9 @@ def embed(blog_id, api_host=None, theme=None):
             blog=blog,
             theme=theme,
             api_response=api_response,
-            settings=theme_settings,
-            options=theme.get('options')
+            theme_settings=theme_settings,
+            theme_options=theme_json,
+            options=dumps(theme_json)
         )
 
     scope = {
