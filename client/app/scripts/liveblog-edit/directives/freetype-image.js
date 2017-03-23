@@ -16,31 +16,27 @@ export default function freetypeImage($compile, modal, api, upload, superdesk) {
 
                 $scope.$on('$destroy', sentinel);
             }
-            var vm = this;
 
-            angular.extend(vm, {
-                preview: {},
-                progress: {width: 0},
-                openUploadModal: function() {
-                    superdesk.intent('upload', 'media').then((pictures) => {
-                        if (pictures.length === 0) {
-                            return;
-                        }
+            this.openUploadModal = function() {
+                superdesk.intent('upload', 'media').then((pictures) => {
+                    if (pictures.length === 0) {
+                        return;
+                    }
 
-                        let firstPicture = pictures[0];
+                    let firstPicture = pictures[0];
 
-                        $scope.image.picture_url = firstPicture.renditions.original.href;
-                        $scope.image.picture = firstPicture._id;
+                    $scope.image.picture_url = firstPicture.renditions.original.href;
+                    $scope.image.picture = firstPicture._id;
+                });
+            };
+
+            this.removeImage = function() {
+                modal
+                    .confirm(gettext('Are you sure you want to remove the blog image?'))
+                    .then(() => {
+                        $scope.image.picture_url = '';
                     });
-                },
-                removeImage: function() {
-                    modal
-                        .confirm(gettext('Are you sure you want to remove the blog image?'))
-                        .then(() => {
-                            $scope.image.picture_url = '';
-                        });
-                }
-            });
+            };
         }],
         controllerAs: 'ft',
         scope: {
