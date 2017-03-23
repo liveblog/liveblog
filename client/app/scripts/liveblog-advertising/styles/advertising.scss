@@ -1,9 +1,29 @@
-.advertisment {
+.advertising {
 	.button-stack.right-stack {
-		margin: -10px -20px 0 5px!important;
+		margin: 0px!important;
 	}
 	.section-title {
 		float: left;
-		color: green;
+		padding: 7px 20px;
+	}
+	.right-important {
+		float: right!important;
+	}
+	.freetype--error {
+	    color: #8b0000;
+	}
+	.advert-list-holder {
+		margin-top: 60px;
+		margin-left: 16px;
+	}
+	.green-state {
+		border-color: #5e8d32!important;
+    	color: #5e8d32!important;
+    	margin-left: 20px;
+	}
+	.yellow-state {
+		border-color: #d2a800;
+    	color: #d2a800;
+    	margin-left: 20px;
 	}
 }
