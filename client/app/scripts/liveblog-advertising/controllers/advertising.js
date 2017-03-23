@@ -164,10 +164,20 @@ upload, $templateCache, freetypeService, modal) {
         if (collection) {
             // editing collection
             $scope.collection = angular.copy(collection);
+            $scope.collection.checkAdverts = [];
+            //console.log('$scope.collection ', $scope.collection);
+            angular.forEach($scope.adverts, function(advert) {
+                if ($scope.collectionHasAdvert($scope.collection, advert)) {
+                    $scope.collection.checkAdverts[advert._id] = true;
+                } else {
+                    $scope.collection.checkAdverts[advert._id] = true;
+                }
+            });
+            console.log('$scope.collection.checkAdverts[advert._id] ', $scope.collection.checkAdverts);
         } else {
             $scope.collection = {};
             // for checkboxes and advert collections
-            $scope.checkAdverts = {};
+            $scope.collection.checkAdverts = [];
             angular.forEach($scope.adverts, function(advert) {
             	$scope.checkAdverts[advert._id] = false;
             });
@@ -178,11 +188,11 @@ upload, $templateCache, freetypeService, modal) {
     $scope.saveCollection = function() {
     	//create the saveable advertisement array for the collection
     	var advertisements = [];
-    	angular.forEach($scope.checkAdverts, function(checked, ad_id) {
+    	angular.forEach($scope.collection.checkAdverts, function(checked, ad_id) {
     		if (checked) {
     			advertisements.push({'advertisement_id': ad_id});
     		}
-    	})
+    	});
         var newCollection = {
             'name': $scope.collection.name,
             'advertisements': advertisements
@@ -192,9 +202,9 @@ upload, $templateCache, freetypeService, modal) {
         if ($scope.collection._id) {
             // we are editing existing collection
             api('collections').save($scope.collection, newCollection).then(function(data) {
-                handleSaveSuccess();
+                handleCollectionSaveSuccess();
             }, function(data) {
-                handleSaveError();
+                handleCollectionSaveError();
             });
         } else {
             api('collections').save(newCollection).then(function(data) {
@@ -218,5 +228,15 @@ upload, $templateCache, freetypeService, modal) {
     $scope.cancelCollectionCreate = function() {
        	$scope.collection = {};
         $scope.collectionModalActive = false;
+    }
+
+    $scope.collectionHasAdvert = function (collection, advert) {
+        var hasAdvert = false;
+        angular.forEach(collection.advertisements, function(ad) {
+            if (ad.advertisement_id === advert._id) {
+                hasAdvert = true;
+            }
+        })
+        return hasAdvert;
     }
 }
