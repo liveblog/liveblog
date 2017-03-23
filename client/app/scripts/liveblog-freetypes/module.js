@@ -111,7 +111,7 @@ $q, $sce, config, _, upload, blogService, modal) {
                 api.freetypes.remove(freetype).then(function(data) {
                     vm.freetypes.splice($index, 1);
                 }, function(data) {
-                    notify.errorp(gettext('Can\'t remove free type'));
+                    notify.error(gettext('Can\'t remove free type'));
                 });
             });
         },

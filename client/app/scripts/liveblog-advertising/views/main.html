@@ -6,29 +6,93 @@
         </ul>
     </div>
 </div>
-<section class="main-section bloglist">
+<section class="main-section bloglist advertising">
 	<div class="ad-section" ng-if="activeState === 'adverts'">
 		<header>
-	        <div style="section-title">Adverts</div>
-	        
-	        <div class="button-stack right-stack">
-		        <button class="navbtn navbtn-info" ng-click="vm.openFreetypeDialog();">
-		            <i class="svg-icon-add inverse"></i> <span class="title" translate>Create Free Type</span>
-		        </button>
-		    </div>
+	        <div class="section-title"><h2 translate>Adverts</h2></div>
+	        <div class="dropdown navbtn strict right-important" title="{{ :: 'Create' | translate }}" dropdown>
+                <button class="dropdown__toggle sd-create-btn" dropdown__toggle></button>
+                <ul class="dropdown__menu dropdown__menu--scrollable pull-right">
+                	<li>
+                		<div class="dropdown__menu-label" translate>Create new</div>
+                	</li>
+                	<li ng-repeat="ad in adTypes">
+                		<button ng-click="openAdvertDialog(ad);">{{ ad.name | translate }}</button>
+                	</li>
+                </ul>
+            </div>
 	    </header>
+
+	    <!-- LIST VIEW -->
+	    <div class="advert-list-holder">
+	    	<div class="shadow-list-holder" sd-shadow>
+	            <ul class="pills-list">
+	                <li ng-repeat="advert in adverts">
+	                    <h6 class="pull-left">
+	                        {{ advert.name }}
+	                    </h6>
+	                    <span class="state-label" ng-class="{ 'green-state': advert.type === 'Advertisement Local', 'yellow-state': advert.type === 'Advertisement Remote' }"}
+	                    >
+	                    	{{ advert.type | translate }}
+	                    </span>
+	                    <div class="actions">
+	                        <button ng-click="openAdvertDialog(advert);" title="Edit">
+	                            <i class="icon-pencil"></i>
+	                        </button>&nbsp;
+	                        <button ng-click="removeAdvert(advert, $index);" title="Delete">
+	                            <i class="icon-trash"></i>
+	                        </button>    
+	                    </div>
+	             
+	                </li>
+	                <li ng-if="adverts.length === 0">
+	                    {{ 'No Adverts for now' | translate }}
+	                </li>
+	            </ul>    
+	        </div>
+	    </div>
 	</div>
 
 	<div class="ad-section" ng-if="activeState === 'collections'">
 		<header>
-	        <div style="section-title">Collections</div>
+	        <div class="section-title"><h2 translate>Collections</h2></div>
 	        
-	        <div class="button-stack right-stack">
-		        <button class="navbtn navbtn-info" ng-click="vm.openFreetypeDialog();">
-		            <i class="svg-icon-add inverse"></i> <span class="title" translate>Create Free Type</span>
-		        </button>
-		    </div>
+	        <div class="dropdown navbtn strict right-important" title="{{ :: 'Create' | translate }}" dropdown>
+                <button class="dropdown__toggle sd-create-btn"></button>
+            </div>
 	    </header>
 	</div>
-
 </section>
+
+<div sd-modal data-model="advertModalActive">
+        <div class="modal-header">
+            <button class="close" ng-click="cancelAdvertCreate()"><i class="icon-close-small"></i></button>
+            <h3 translate>{{ advertType.name }}</h3>
+        </div>
+        <div class="modal-body" style="min-height: 300px;">
+            <div class="item-creation">
+                <fieldset>
+                    <div class="field">
+                        <label translate>Advert Name<span class="ft-alert" translate ng-if="!advert.name">required</span></label>
+                        <input type="text" ng-model="advert.name" maxlength="24" required>
+                    </div>
+                    <div class="field">
+                        <freetype-render
+                        freetype="advertType"
+                        freetype-data="freetypesData"
+                        validation="validation"
+                        control="freetypeControl"></freetype-render>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <div>
+                <button type="button" class="btn btn-default pull-left" translate ng-click="cancelAdvertCreate()">Cancel</button>
+                <button type="button" class="btn btn-primary btn-info" translate ng-click="saveAdvert()"
+                ng-disabled="!advert.name || dialogAdvertLoading"
+                >Save</button>
+            </div>
+        </div>
+</div>
+<div ng-if="advertsLoading" class="loading-indicator" style="margin-top: 170px;"><span translate>Loading adverts...</span></div>
