@@ -22,7 +22,7 @@ class CollectionsResource(Resource):
             'schema': {
                 'type': 'dict',
                 'schema': {
-                    'advertisement_id': Resource.rel('advertisements'),
+                    'advertisement_id': Resource.rel('advertisements', True),
                 }
             },
             'nullable': True
@@ -39,4 +39,11 @@ class CollectionsResource(Resource):
 
 
 class CollectionsService(BaseService):
-    pass
+    def delete_advertisement(self, advertisement):
+        # find all collections that contains ` advertisement`
+        collections = self.find({'advertisements': {'$elemMatch': {'advertisement_id': advertisement.get('_id')}}})
+        for collection in collections:
+            advertisements = collection.get('advertisements')
+            # remove advertisement from `advertisements`
+            advertisements.remove({'advertisement_id': advertisement.get('_id')})
+            self.system_update(collection['_id'], {'advertisements': advertisements}, collection)
