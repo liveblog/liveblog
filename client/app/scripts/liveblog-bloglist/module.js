@@ -1,9 +1,31 @@
 import mainTemplate from 'scripts/liveblog-bloglist/views/main.html';
 
-BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload',
-    'isArchivedFilterSelected', '$q', 'blogSecurityService', 'notify', 'config', 'superdesk'];
-function BlogListController($scope, $location, api, gettext, upload,
-    isArchivedFilterSelected, $q, blogSecurityService, notify, config, superdesk) {
+BlogListController.$inject = [
+    '$scope',
+    '$location',
+    'api',
+    'gettext',
+    'upload',
+    'isArchivedFilterSelected',
+    '$q',
+    'blogSecurityService',
+    'notify',
+    'config',
+    'urls'
+];
+function BlogListController(
+    $scope,
+    $location,
+    api,
+    gettext,
+    upload,
+    isArchivedFilterSelected,
+    $q,
+    blogSecurityService,
+    notify,
+    config,
+    urls
+) {
     $scope.maxResults = 25;
     $scope.states = [
         {name: 'active', code: 'open', text: gettext('Active blogs')},
@@ -115,6 +137,7 @@ function BlogListController($scope, $location, api, gettext, upload,
     };
 
     $scope.upload = function(config) {
+        console.log('about to upload');
         var form = {};
         if (config.img) {
             form.media = config.img;
@@ -124,27 +147,28 @@ function BlogListController($scope, $location, api, gettext, upload,
             return;
         }
         // return a promise of upload which will call the success/error callback
-        return api.archive.getUrl().then(function(url) {
-            return upload.start({
-                method: 'POST',
-                url: url,
-                data: form
-            })
-            .then(function(response) {
-                if (response.data._status === 'ERR'){
-                    return;
-                }
-                var picture_url = response.data.renditions.viewImage.href;
-                $scope.newBlog.picture_url = picture_url;
-                $scope.newBlog.picture = response.data._id;
-            }, function(error) {
-                notify.error(
-                    (error.statusText !== '') ? error.statusText : gettext('There was a problem with your upload')
-                );
-            }, function(progress) {
-                $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
-            });
-        });
+        return urls.resource('archive').then((uploadUrl) => upload.start({
+            method: 'POST',
+            url: uploadUrl,
+            data: form
+        })
+        .then(function(response) {
+            if (response.data._status === 'ERR'){
+                return;
+            }
+            var picture_url = response.data.renditions.viewImage.href;
+            $scope.newBlog.picture_url = picture_url;
+            $scope.newBlog.picture = response.data._id;
+            console.log('upload done', $scope.newBlog);
+        }, function(error) {
+            console.log('err', error);
+            notify.error(
+                (error.statusText !== '') ? error.statusText : gettext('There was a problem with your upload')
+            );
+        }, function(progress) {
+            console.log('progress', progress);
+            $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
+        }));
     };
 
     $scope.remove = function(blog) {
