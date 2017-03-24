@@ -197,6 +197,10 @@ describe('Producers', function() {
                         .click();
                 })
                 .then(function() {
+                    return element(by.css('button[ng-click="ok()"]'))
+                        .click();
+                })
+                .then(function() {
                     return element.all(by.repeater('producer in producers')).count();
                 })
                 .then(function(count) {
