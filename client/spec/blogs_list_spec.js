@@ -13,12 +13,12 @@ describe('Blogs list', function() {
         title: 'new blog title',
         description: 'new blog description',
         username: 'Edwin the admin'
-    //}, 
-    //newBlogImage = {
-    //    title: 'new blog title',
-    //    description: 'new blog description',
-    //    username: 'Edwin the admin',
-    //    picture_url: './upload/-busstop-jpg-1600-900.jpg'
+    }, 
+    newBlogImage = {
+        title: 'new blog title',
+        description: 'new blog description',
+        username: 'Edwin the admin',
+        picture_url: './upload/-busstop-jpg-1600-900.jpg'
     };
 
     beforeEach(function(done) {
@@ -123,18 +123,17 @@ describe('Blogs list', function() {
             });
         });
 
-        // TODO: It seems that e2e testing for file uploading does not work
-        //it('should add blog with a image', function() {
-        //    var path = require('path');
-        //    blogs.openCreateBlog().waitForModal();
-        //    blogs.title.sendKeys(newBlog.title);
-        //    blogs.description.sendKeys(newBlog.description);
-        //    blogs.file.sendKeys(path.resolve(__dirname, newBlogImage.picture_url));
-        //    blogs.createBlogNext().createBlogCreate().openList()
-        //    .then(function() {
-        //        blogs.expectBlog(newBlogImage);
-        //    });
-        //});
+        it('should add blog with a image', function() {
+            var path = require('path');
+            blogs.openCreateBlog().waitForModal();
+            blogs.title.sendKeys(newBlog.title);
+            blogs.description.sendKeys(newBlog.description);
+            blogs.file.sendKeys(path.resolve(__dirname, newBlogImage.picture_url));
+            blogs.createBlogNext().createBlogCreate().openList()
+            .then(function() {
+                blogs.expectBlog(newBlogImage);
+            });
+        });
 
         it('should add a blog with members', function() {
             blogs.openCreateBlog().waitForModal();
