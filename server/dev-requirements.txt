@@ -1,0 +1,8 @@
+-r requirements.txt
+
+flake8
+nose
+pep8
+pyflakes<=1.1
+httmock
+wooper

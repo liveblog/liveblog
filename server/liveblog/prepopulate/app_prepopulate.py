@@ -19,7 +19,7 @@ from superdesk import get_resource_service
 from superdesk.metadata.item import ITEM_STATE, CONTENT_STATE
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from superdesk.tests import drop_elastic, drop_mongo
+from superdesk.tests import clean_dbs, use_snapshot
 from superdesk.utc import utcnow
 from eve.utils import date_to_str
 from flask import current_app as app
@@ -41,7 +41,7 @@ def set_logged_user(username, password):
     auth_token = get_resource_service('auth').find_one(username=username, req=None)
     if not auth_token:
         user = {'username': username, 'password': password}
-        get_resource_service('auth').post([user])
+        get_resource_service('auth_db').post([user])
         auth_token = get_resource_service('auth').find_one(username=username, req=None)
     flask.g.user = get_resource_service('users').find_one(req=None, username=username)
     flask.g.auth = auth_token
@@ -144,27 +144,29 @@ prepopulate_schema = {
 
 class PrepopulateResource(Resource):
     """Prepopulate application data."""
+
     schema = prepopulate_schema
     resource_methods = ['POST']
     public_methods = ['POST']
 
 
 class PrepopulateService(BaseService):
-    def create(self, docs, **kwargs):
+    def _create(self, docs):
         for doc in docs:
             if doc.get('remove_first'):
-                drop_mongo(superdesk.app)
-                drop_elastic(superdesk.app)
-                app.data.init_elastic(superdesk.app)
+                clean_dbs(superdesk.app, force=True)
 
             user = get_resource_service('users').find_one(username=get_default_user()['username'], req=None)
             if not user:
                 get_resource_service('users').post([get_default_user()])
             prepopulate_data(doc.get('profile') + '.json', get_default_user())
-            if app.config.get('SUPERDESK_TESTING'):
-                for provider in ['paimg', 'aapmm']:
-                    if provider not in allowed_search_providers:
-                        register_search_provider(provider, provider)
+
+    def create(self, docs, **kwargs):
+        use_snapshot(superdesk.app, 'prepopulate')(self._create)(docs)
+        if app.config.get('SUPERDESK_TESTING'):
+            for provider in ['paimg', 'aapmm']:
+                if provider not in allowed_search_providers:
+                    register_search_provider(provider, provider)
         return ['OK']
 
 
