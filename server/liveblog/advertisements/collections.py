@@ -26,6 +26,10 @@ class CollectionsResource(Resource):
                 }
             },
             'nullable': True
+        },
+        'deleted': {
+            'type': 'boolean',
+            'default': False
         }
     }
     datasource = {
