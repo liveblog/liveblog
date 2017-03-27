@@ -30,12 +30,12 @@ upload, $templateCache, freetypeService, modal) {
 
     $scope.changeState = function(state) {
         $scope.activeState = state;
-        switch(state) {
-        	case 'collections':
-        		loadCollections();
-        		break;
-        	default: 
-        		loadAdverts();
+        switch (state) {
+            case 'collections':
+                loadCollections();
+                break;
+            default: 
+                loadAdverts();
         }
     }
     $scope.openAdvertDialog = function(ad) {
@@ -60,13 +60,13 @@ upload, $templateCache, freetypeService, modal) {
     }
 
     function loadAdverts(silent) {
-    	var silent = silent || false;
+        silent = silent || false;
         !silent ? $scope.advertsLoading = true : $scope.advertsLoading = false;
         api('advertisements').query({where: {deleted: false}}).then(function(data) {
             $scope.adverts = data._items;
             if (!silent) {
-	            notify.info('Adverts loaded');
-	        }
+                notify.info('Adverts loaded');
+            }
             $scope.advertsLoading = false;
         }, function(data) {
             $scope.advertsLoading = false;
@@ -124,21 +124,13 @@ upload, $templateCache, freetypeService, modal) {
     loadAdverts();
 
 
-
     //COLLECTIONS
     function loadCollections() {
         $scope.collectionsLoading = true;
-        var criteria = {
-        	where: {
-        		deleted: false
-        	}
-        }
-        var criteria = {};
-        api('collections').query().then(function(data) {
+        api('collections').query({where: {deleted: false}}).then(function(data) {
             $scope.collections = data._items;
-	        notify.info('Collections loaded');
+            notify.info('Collections loaded');
             $scope.collectionsLoading = false;
-            console.log('collections ', $scope.collections);
         }, function(data) {
             $scope.collectionsLoading = false;
             notify.error(gettext('There was an error getting the adverts'));
@@ -153,14 +145,14 @@ upload, $templateCache, freetypeService, modal) {
         loadCollections();
     }
 
-    function handleAdvertSaveError() {
+    function handleCollectionSaveError() {
         notify.error(gettext('Something went wrong, please try again later!'), 5000)
     }
 
     $scope.openCollectionDialog = function(collection) {
-    	// load all available adverts without showing any messages
-    	loadAdverts(true);
-    	var collection = collection || false;
+        // load all available adverts without showing any messages
+        loadAdverts(true);
+        collection = collection || false;
         if (collection) {
             // editing collection
             $scope.collection = angular.copy(collection);
@@ -179,20 +171,21 @@ upload, $templateCache, freetypeService, modal) {
             // for checkboxes and advert collections
             $scope.collection.checkAdverts = [];
             angular.forEach($scope.adverts, function(advert) {
-            	$scope.checkAdverts[advert._id] = false;
+                $scope.checkAdverts[advert._id] = false;
             });
         }
         $scope.collectionModalActive = true;
     }
 
     $scope.saveCollection = function() {
-    	//create the saveable advertisement array for the collection
-    	var advertisements = [];
-    	angular.forEach($scope.collection.checkAdverts, function(checked, ad_id) {
-    		if (checked) {
-    			advertisements.push({'advertisement_id': ad_id});
-    		}
-    	});
+
+        //create the saveable advertisement array for the collection
+        var advertisements = [];
+        angular.forEach($scope.checkAdverts, function(checked, ad_id) {
+            if (checked) {
+                advertisements.push({'advertisement_id': ad_id});
+            }
+        })
         var newCollection = {
             'name': $scope.collection.name,
             'advertisements': advertisements
@@ -226,7 +219,7 @@ upload, $templateCache, freetypeService, modal) {
     }
 
     $scope.cancelCollectionCreate = function() {
-       	$scope.collection = {};
+        $scope.collection = {};
         $scope.collectionModalActive = false;
     }
 
