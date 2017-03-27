@@ -189,10 +189,14 @@ function AdvertisingManagerPage() {
     'use strict';
     var self = this;
     self.advertTitle = element(by.css('[ng-model="advert.name"]'));
+    self.collectionTitle = element(by.css('[ng-model="collection.name"]'));
     self.advertEmbed = element(by.css('[ng-model="embed"]'));
 
     self.getAdverts = function() {
         return element.all(by.repeater('advert in adverts'));
+    };
+    self.getCollections = function() {
+        return element.all(by.repeater('collection in collections'));
     };
     self.openAdvertisingManager = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
@@ -206,8 +210,15 @@ function AdvertisingManagerPage() {
         waitAndClick(by.css('[ng-click="changeState(\'adverts\')"]'));
         return self;
     };
+    self.openCollectionsTab = function() {
+        waitAndClick(by.css('[ng-click="changeState(\'collections\')"]'));
+        return self;
+    };
     self.saveAdvert = function() {
         return element(by.css('[ng-click="saveAdvert()"]')).click();
+    };
+    self.saveCollection = function() {
+        return element(by.css('[ng-click="saveCollection()"]')).click();
     };
     self.openNewAdvertDialog = function() {
         element(by.css('[class="dropdown__toggle sd-create-btn dropdown-toggle"]')).click();
@@ -217,6 +228,9 @@ function AdvertisingManagerPage() {
         waitAndClick(by.buttonText("Advertisement Remote"));
         return self;
     };
+    self.openNewCollectionDialog = function() {
+        element(by.css('[ng-click="openCollectionDialog();"]')).click();
+    }
     self.createAdvertData = function() {
         return {
             title: randomString(5),
@@ -227,11 +241,21 @@ function AdvertisingManagerPage() {
         var freeData = self.createFreetypeData();
         self.advertTitle.sendKeys(freeData.title);
         self.advertEmbed.sendKeys(freeData.embed);
-        return self.saveFreetype().then(function() {return freeData;});
+        return self.saveAdvert().then(function() {return freeData;});
     };
+    self.editCollection = function() {
+        var freeData = self.createFreetypeData();
+        self.collectionTitle.sendKeys(freeData.title);
+        return self.saveCollection().then(function() {return freeData;});
+    }
     self.removeAdvert = function(index) {
         index = index || 0;
         self.getFreetypes().get(index).click().all(by.css('[ng-click="removeAdvert(freetype, $index);"]')).click();
+        okModal();
+    };
+    self.removeAdvert = function(index) {
+        index = index || 0;
+        self.getFreetypes().get(index).click().all(by.css('[ng-click="removeCollection(freetype, $index);"]')).click();
         okModal();
     };
 }
