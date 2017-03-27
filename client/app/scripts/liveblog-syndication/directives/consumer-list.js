@@ -42,8 +42,10 @@ export default function consumerList(api, notify, modal) {
                     })
                     .catch((err) => {
                         if (err) {
+                            let msg = err.data._error.message || 'Fatal error';
+
                             notify.pop();
-                            notify.error(gettext('Fatal error!'));
+                            notify.error(msg);
                         }
                     });
             };
