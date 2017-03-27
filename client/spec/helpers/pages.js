@@ -185,6 +185,57 @@ function FreetypesManagerPage() {
     };
 }
 
+function AdvertisingManagerPage() {
+    'use strict';
+    var self = this;
+    self.advertTitle = element(by.css('[ng-model="advert.name"]'));
+    self.advertEmbed = element(by.css('[ng-model="embed"]'));
+
+    self.getAdverts = function() {
+        return element.all(by.repeater('advert in adverts'));
+    };
+    self.openAdvertisingManager = function() {
+        element(by.css('[ng-click="toggleMenu()"]')).click();
+        browser.wait(function() {
+            return element(by.css('[href="#/advertising/"][title]')).isDisplayed();
+        });
+        waitAndClick(by.css('[href="#/advertising/"][title]'));
+        return self;
+    };
+    self.openAdvertsTab = function() {
+        waitAndClick(by.css('[ng-click="changeState(\'adverts\')"]'));
+        return self;
+    };
+    self.saveAdvert = function() {
+        return element(by.css('[ng-click="saveAdvert()"]')).click();
+    };
+    self.openNewAdvertDialog = function() {
+        element(by.css('[class="dropdown__toggle sd-create-btn dropdown-toggle"]')).click();
+        browser.wait(function() {
+            return element(by.buttonText("Advertisement Remote")).isDisplayed();
+        });
+        waitAndClick(by.buttonText("Advertisement Remote"));
+        return self;
+    };
+    self.createAdvertData = function() {
+        return {
+            title: randomString(5),
+            embed: randomString(10)
+        };
+    };
+    self.editFreetype = function() {
+        var freeData = self.createFreetypeData();
+        self.advertTitle.sendKeys(freeData.title);
+        self.advertEmbed.sendKeys(freeData.embed);
+        return self.saveFreetype().then(function() {return freeData;});
+    };
+    self.removeAdvert = function(index) {
+        index = index || 0;
+        self.getFreetypes().get(index).click().all(by.css('[ng-click="removeAdvert(freetype, $index);"]')).click();
+        okModal();
+    };
+}
+
 function ThemesManagerPage() {
     'use strict';
     var self = this;
@@ -878,3 +929,4 @@ exports.themeManager = new ThemesManagerPage();
 exports.consumersManagement = new ConsumersManagementPage();
 exports.producersManagement = new ProducersManagementPage();
 exports.freetypesManager = new FreetypesManagerPage();
+exports.advertisingManager = new AdvertisingManagerPage();
