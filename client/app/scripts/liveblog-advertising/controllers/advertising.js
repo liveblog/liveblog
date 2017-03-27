@@ -171,7 +171,7 @@ upload, $templateCache, freetypeService, modal) {
             // for checkboxes and advert collections
             $scope.collection.checkAdverts = [];
             angular.forEach($scope.adverts, function(advert) {
-                $scope.checkAdverts[advert._id] = false;
+                $scope.collection.checkAdverts[advert._id] = false;
             });
         }
         $scope.collectionModalActive = true;
