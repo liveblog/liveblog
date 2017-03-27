@@ -197,6 +197,10 @@ describe('Consumers', function() {
                         .click();
                 })
                 .then(function() {
+                    return element(by.css('button[ng-click="ok()"]'))
+                        .click();
+                })
+                .then(function() {
                     return element.all(by.repeater('consumer in consumers')).count();
                 })
                 .then(function(count) {
