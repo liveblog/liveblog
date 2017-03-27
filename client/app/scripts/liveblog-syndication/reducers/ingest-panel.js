@@ -1,15 +1,18 @@
 ingestPanelReducers.$inject = ['moment'];
 
 export default function ingestPanelReducers (moment) {
-    var locallySyndicatedItems = function(syndicationIn, localSyndTokens) {
-        return syndicationIn._items.filter(function(item) {
-            return (localSyndTokens.indexOf(item.blog_token) !== -1);
-        });
+    // Associate a syndication to a producer blog via blog token
+    var locallySyndicatedItems = function(syndicationIn, localSyndTokens, ingestQueue) {
+        return syndicationIn._items
+            .filter(function(item) {
+                return (localSyndTokens.indexOf(item.blog_token) !== -1);
+            });
     };
 
     return function(state, action) {
         switch (action.type) {
             case 'ON_GET_SYND':
+                // Filters out syndicationIns that aren't corresponding to the current blog
                 var localSyndTokens = action.syndicationIn._items
                     .filter(function(syndication) {
                         return (syndication.blog_id === state.consumerBlogId);
@@ -23,7 +26,8 @@ export default function ingestPanelReducers (moment) {
                     localSyndTokens: localSyndTokens,
                     locallySyndicatedItems: locallySyndicatedItems(
                         action.syndicationIn, 
-                        localSyndTokens
+                        localSyndTokens,
+                        state.ingestQueue
                     ),
                     localProducerBlogIds: [], // Reset list after syndication
                     producerBlogs: [] // Same here
@@ -43,7 +47,8 @@ export default function ingestPanelReducers (moment) {
                     syndicationIn: syndicationIn,
                     locallySyndicatedItems: locallySyndicatedItems(
                         syndicationIn,
-                        state.localSyndTokens
+                        state.localSyndTokens,
+                        state.ingestQueue
                     )
                 });
 

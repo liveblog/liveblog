@@ -8,9 +8,19 @@ ingestPanel.$inject = [
     'notify'
 ];
 
-export default function ingestPanel(IngestPanelActions, Store, IngestPanelReducers, $routeParams, notify) {
+export default function ingestPanel(
+    IngestPanelActions,
+    Store,
+    IngestPanelReducers,
+    $routeParams,
+    notify
+) {
     return {
         templateUrl: ingestPanelTpl,
+        scope: {
+            ingestQueue: '=',
+            openPanel: '='
+        },
         link: function(scope) {
             var handleError = function() {
                 notify.pop();
@@ -27,8 +37,12 @@ export default function ingestPanel(IngestPanelActions, Store, IngestPanelReduce
                 producerBlogs: {},
                 modalActive: false,
                 localProducerBlogIds: [],
-                locallySyndicatedItems: []
+                locallySyndicatedItems: [],
+                ingestQueue: angular.copy(scope.ingestQueue) || 0
             });
+
+            // Reinitialize ingestQueue
+            scope.ingestQueue = null;
 
             scope.store.connect((state) => {
                 scope.syndicationIn = state.syndicationIn;
@@ -42,6 +56,14 @@ export default function ingestPanel(IngestPanelActions, Store, IngestPanelReduce
 
                 if (state.producers._items.length > 0) {
                     scope.locallySyndicatedItems.map((blog) => {
+                        blog.unread = 0;
+
+                        state.ingestQueue.forEach((element) => {
+                            if (blog._id === element.syndication_in) {
+                                blog.unread++;
+                            }
+                        });
+
                         state.producers._items.forEach((producer) => {
                             if (producer._id === blog.producer_id) {
                                 blog.producer_name = producer.name;
@@ -64,9 +86,10 @@ export default function ingestPanel(IngestPanelActions, Store, IngestPanelReduce
             };
 
             scope.select = function(synd) {
-                // In case you're wondering, this method is calling
+                // In case you're wondering, this method calls
                 // a parent scope function in liveblog-edit/module
                 scope.openPanel('incoming-syndication', synd._id);
+                // TODO: ingest queue should be set to 0
             };
 
             scope.$on('$destroy', scope.store.destroy);

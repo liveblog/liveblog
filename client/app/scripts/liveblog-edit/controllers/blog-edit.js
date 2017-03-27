@@ -35,6 +35,7 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
             blog.blog_preferences.theme = themes[0];
         });
     }
+
     // start listening for unread posts.
     unreadPostsService.startListening();
     // return the list of items from the editor
@@ -486,8 +487,17 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
     var panel = angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor',
         syndId = angular.isDefined($routeParams.syndId) ? $routeParams.syndId : null;
 
+    $scope.ingestQueue = [];
+
     $scope.openPanel(panel, syndId);
+
+    $scope.$on('posts', (e, data) => {
+        if ($scope.panelState !== 'ingest') {
+            $scope.ingestQueue = $scope.ingestQueue.concat(data.posts);
+        }
+    });
 }
+
 BlogEditController.$inject = [
     'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector', '$http',
     'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'freetypeService', 'modal',
@@ -495,4 +505,3 @@ BlogEditController.$inject = [
 ];
 
 export default BlogEditController;
-//});
