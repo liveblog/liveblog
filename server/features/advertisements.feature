@@ -41,3 +41,21 @@ Feature: Advertisements and collections operations
         {"text": "<p>Hello here!</p>"}
         """
         Then we get OK response
+
+    @auth
+    Scenario: Delete advertisements
+        Given empty "advertisements"
+        When we post to "advertisements"
+        """
+        [
+            {
+                "name": "Advertisements Test #03",
+                "text": "<p>Hello there!</p>"
+            }
+        ]
+        """
+        When we patch latest
+        """
+        {"deleted": true}
+        """
+        Then we get OK response
