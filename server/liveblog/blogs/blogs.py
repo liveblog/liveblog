@@ -11,19 +11,12 @@
 
 import logging
 
-import liveblog.embed
 import superdesk
 from bson.objectid import ObjectId
-from celery.exceptions import SoftTimeLimitExceeded
 from flask import current_app as app
 from flask import render_template
-from liveblog.blogslist.blogslist import publish_bloglist_embed_on_s3
-from liveblog.common import get_user, update_dates_for
-from settings import (S3_CELERY_COUNTDOWN, S3_CELERY_MAX_RETRIES,
-                      SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS)
 from superdesk import get_resource_service
 from superdesk.activity import add_activity
-from superdesk.celery_app import celery
 from superdesk.emails import send_email
 from superdesk.errors import SuperdeskApiError
 from superdesk.metadata.item import metadata_schema
@@ -32,6 +25,12 @@ from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk.users.services import is_admin
 from superdesk.utc import utcnow
+
+from liveblog.blogslist.blogslist import publish_bloglist_embed_on_s3
+from liveblog.common import get_user, update_dates_for
+from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS
+
+from .tasks import delete_blog_embed_on_s3, publish_blog_embed_on_s3
 
 logger = logging.getLogger('superdesk')
 
@@ -134,52 +133,6 @@ def send_email_to_added_members(blog, recipients, origin):
         html_body = render_template("invited_members.html", app_name=app_name, link=url, title=title)
         send_email.delay(subject=subject, sender=admins[0], recipients=recipients_email,
                          text_body=text_body, html_body=html_body)
-
-
-def _publish_blog_embed_on_s3(blog_id, safe=True):
-    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
-    if blog['blog_preferences'].get('theme', False):
-        try:
-            public_url = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
-            get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
-            push_notification('blog', published=1, blog_id=str(blog.get('_id')), public_url=public_url)
-            return public_url
-        except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
-            if not safe:
-                raise e
-
-            public_url = '{}://{}/embed/{}'.format(app.config['URL_PROTOCOL'], app.config['SERVER_NAME'],
-                                                   blog.get('_id'))
-            get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
-            push_notification('blog', published=1, blog_id=str(blog.get('_id')), public_url=public_url)
-            return public_url
-
-
-@celery.task(bind=True, soft_time_limit=1800)
-def publish_blog_embed_on_s3(self, blog_id, safe=True):
-    logger.warning('publish_blog_on_s3 for blog "{}" started.'.format(blog_id))
-    try:
-        _publish_blog_embed_on_s3(blog_id, safe)
-    except (Exception, SoftTimeLimitExceeded) as e:
-        logger.exception('publish_blog_on_s3 for blog "{}" failed.'.format(blog_id))
-        raise self.retry(exc=e, max_retries=S3_CELERY_MAX_RETRIES, countdown=S3_CELERY_COUNTDOWN)
-    finally:
-        logger.warning('publish_blog_on_s3 for blog "{}" finished.'.format(blog_id))
-
-
-@celery.task(soft_time_limit=1800)
-def delete_blog_embed_on_s3(self, blog_id, safe=True):
-    logger.warning('delete_blog_on_s3 for blog "{}" started.'.format(blog_id))
-    try:
-        liveblog.embed.delete_embed(blog_id)
-    except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
-        if not safe:
-            raise e
-    except (Exception, SoftTimeLimitExceeded) as e:
-        logger.exception('delete_blog_on_s3 for blog "{}" failed.'.format(blog_id))
-        raise self.retry(exc=e, max_retries=S3_CELERY_MAX_RETRIES, countdown=S3_CELERY_COUNTDOWN)
-    finally:
-        logger.warning('delete_blog_on_s3 for blog "{}" finished.'.format(blog_id))
 
 
 class BlogService(BaseService):
