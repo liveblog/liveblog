@@ -186,6 +186,8 @@ class PostsService(ArchiveService):
             post = {}
             post['id'] = doc.get('_id')
             post['syndication_in'] = doc.get('syndication_in')
+            synd_in = get_resource_service('syndication_in').find_one(_id=doc.get('syndication_in'), req=None)
+            post['auto_publish'] = synd_in.get('auto_publish')
             posts.append(post)
             app.blog_cache.invalidate(doc.get('blog'))
             # send post to consumer webhook

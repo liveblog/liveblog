@@ -9,7 +9,9 @@ export default function notificationsCount() {
             scope.count = 0;
 
             scope.$on('posts', function(e, data) {
-                if (data.posts[0].syndication_in && ingestPanels.indexOf(scope.panelState) === -1)
+                if (data.posts[0].syndication_in
+                && data.posts[0].auto_publish !== true
+                && ingestPanels.indexOf(scope.panelState) === -1)
                     scope.count++;
             });
 
