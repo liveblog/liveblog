@@ -13,7 +13,7 @@ import _ from 'lodash';
 
 import scorecardsTpl from 'scripts/liveblog-edit/views/scorecards.html';
 import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.html';
-import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html'
+import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html';
 
 import './../../ng-sir-trevor';
 import './../../ng-sir-trevor-blocks';

@@ -123,6 +123,9 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
         // retrieve updates when event is recieved
         .then(function() {
             $scope.$on('posts', function(e, event_params) {
+                if (event_params.posts && event_params.posts[0].hasOwnProperty('syndication_in'))
+                    return false;
+
                 vm.isLoading = true;
                 vm.pagesManager.retrieveUpdate(true).then(function() {
                     // Regenerate the embed otherwise the image doesn't appear

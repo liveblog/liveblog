@@ -5,7 +5,8 @@ ingestPanel.$inject = [
     'Store',
     'IngestPanelReducers',
     '$routeParams',
-    'notify'
+    'notify',
+    '$timeout'
 ];
 
 export default function ingestPanel(
@@ -13,7 +14,8 @@ export default function ingestPanel(
     Store,
     IngestPanelReducers,
     $routeParams,
-    notify
+    notify,
+    $timeout
 ) {
     return {
         templateUrl: ingestPanelTpl,
@@ -43,7 +45,6 @@ export default function ingestPanel(
 
             scope.store.connect((state) => {
                 scope.syndicationIn = state.syndicationIn;
-                scope.locallySyndicatedItems = state.locallySyndicatedItems;
                 scope.modalActive = state.modalActive;
                 scope.consumerBlogId = state.consumerBlogId;
 
@@ -52,23 +53,25 @@ export default function ingestPanel(
                 }
 
                 if (state.producers._items.length > 0) {
-                    scope.locallySyndicatedItems.map((blog) => {
-                        blog.unread = 0;
+                    $timeout(() => {
+                        scope.locallySyndicatedItems = state.locallySyndicatedItems.map((blog) => {
+                            blog.unread = 0;
 
-                        // Set unread (pending notifications) value for each
-                        state.unreadQueue.forEach((element) => {
-                            if (blog._id === element.syndication_in) {
-                                blog.unread++;
-                            }
+                            // Set unread (pending notifications) value for each
+                            state.unreadQueue.forEach((element) => {
+                                if (blog._id === element.syndication_in) {
+                                    blog.unread++;
+                                }
+                            });
+
+                            state.producers._items.forEach((producer) => {
+                                if (producer._id === blog.producer_id) {
+                                    blog.producer_name = producer.name;
+                                }
+                            });
+
+                            return blog;
                         });
-
-                        state.producers._items.forEach((producer) => {
-                            if (producer._id === blog.producer_id) {
-                                blog.producer_name = producer.name;
-                            }
-                        });
-
-                        return blog;
                     });
                 }
             });
@@ -98,7 +101,6 @@ export default function ingestPanel(
                 // In case you're wondering, this method calls
                 // a parent scope function in liveblog-edit/module
                 scope.openPanel('incoming-syndication', synd._id);
-                // TODO: ingest queue should be set to 0
             };
 
             scope.$on('$destroy', scope.store.destroy);
