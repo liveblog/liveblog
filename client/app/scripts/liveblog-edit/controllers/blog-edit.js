@@ -465,8 +465,8 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
         },
         isCurrentPostUnsaved: function() {
             if (angular.isDefined($scope.currentPost)) {
-                return _.any(getItemsFromEditor(), function (item, item_index) {
-                    return _.any(_.keys(item), function (key) {
+                return _.some(getItemsFromEditor(), function (item, item_index) {
+                    return _.some(_.keys(item), function (key) {
                         if (!angular.isDefined($scope.currentPost.items[item_index])) {
                             return true;
                         } else {
