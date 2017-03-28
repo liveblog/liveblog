@@ -9,27 +9,29 @@
 # AUTHORS and LICENSE files distributed with this source code, or
 # at https://www.sourcefabric.org/superdesk/license
 
-from superdesk.notification import push_notification
-from superdesk.utc import utcnow
-from superdesk.services import BaseService
-from liveblog.common import get_user, update_dates_for
-from superdesk.metadata.item import metadata_schema
-from superdesk.celery_app import celery
-from superdesk import get_resource_service
-from superdesk.resource import Resource
-from superdesk.activity import add_activity
-from flask import current_app as app, render_template
-from superdesk.emails import send_email
-import liveblog.embed
-from bson.objectid import ObjectId
-import superdesk
-from superdesk.users.services import is_admin
-from superdesk.errors import SuperdeskApiError
 import logging
-from liveblog.blogslist.blogslist import publish_bloglist_embed_on_s3
-from settings import (SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS)
-from superdesk.utc import utcnow
 
+import liveblog.embed
+import superdesk
+from bson.objectid import ObjectId
+from celery.exceptions import SoftTimeLimitExceeded
+from flask import current_app as app
+from flask import render_template
+from liveblog.blogslist.blogslist import publish_bloglist_embed_on_s3
+from liveblog.common import get_user, update_dates_for
+from settings import (S3_CELERY_COUNTDOWN, S3_CELERY_MAX_RETRIES,
+                      SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS)
+from superdesk import get_resource_service
+from superdesk.activity import add_activity
+from superdesk.celery_app import celery
+from superdesk.emails import send_email
+from superdesk.errors import SuperdeskApiError
+from superdesk.metadata.item import metadata_schema
+from superdesk.notification import push_notification
+from superdesk.resource import Resource
+from superdesk.services import BaseService
+from superdesk.users.services import is_admin
+from superdesk.utc import utcnow
 
 logger = logging.getLogger('superdesk')
 
@@ -134,8 +136,7 @@ def send_email_to_added_members(blog, recipients, origin):
                          text_body=text_body, html_body=html_body)
 
 
-@celery.task(soft_time_limit=1800)
-def publish_blog_embed_on_s3(blog_id, safe=True):
+def _publish_blog_embed_on_s3(blog_id, safe=True):
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if blog['blog_preferences'].get('theme', False):
         try:
@@ -154,13 +155,31 @@ def publish_blog_embed_on_s3(blog_id, safe=True):
             return public_url
 
 
+@celery.task(bind=True, soft_time_limit=1800)
+def publish_blog_embed_on_s3(self, blog_id, safe=True):
+    logger.warning('publish_blog_on_s3 for blog "{}" started.'.format(blog_id))
+    try:
+        _publish_blog_embed_on_s3(blog_id, safe)
+    except (Exception, SoftTimeLimitExceeded) as e:
+        logger.exception('publish_blog_on_s3 for blog "{}" failed.'.format(blog_id))
+        raise self.retry(exc=e, max_retries=S3_CELERY_MAX_RETRIES, countdown=S3_CELERY_COUNTDOWN)
+    finally:
+        logger.warning('publish_blog_on_s3 for blog "{}" finished.'.format(blog_id))
+
+
 @celery.task(soft_time_limit=1800)
-def delete_blog_embed_on_s3(blog_id, safe=True):
-        try:
-            liveblog.embed.delete_embed(blog_id)
-        except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
-            if not safe:
-                raise e
+def delete_blog_embed_on_s3(self, blog_id, safe=True):
+    logger.warning('delete_blog_on_s3 for blog "{}" started.'.format(blog_id))
+    try:
+        liveblog.embed.delete_embed(blog_id)
+    except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
+        if not safe:
+            raise e
+    except (Exception, SoftTimeLimitExceeded) as e:
+        logger.exception('delete_blog_on_s3 for blog "{}" failed.'.format(blog_id))
+        raise self.retry(exc=e, max_retries=S3_CELERY_MAX_RETRIES, countdown=S3_CELERY_COUNTDOWN)
+    finally:
+        logger.warning('delete_blog_on_s3 for blog "{}" finished.'.format(blog_id))
 
 
 class BlogService(BaseService):
@@ -283,7 +302,7 @@ class BlogService(BaseService):
         subscription = SUBSCRIPTION_LEVEL
         if subscription in SUBSCRIPTION_MAX_ACTIVE_BLOGS:
             active = self.find({'blog_status': 'open'})
-            if (active.count() + increment > SUBSCRIPTION_MAX_ACTIVE_BLOGS[subscription]):
+            if active.count() + increment > SUBSCRIPTION_MAX_ACTIVE_BLOGS[subscription]:
                 raise SuperdeskApiError.forbiddenError(message='Cannot add another active blog.')
 
 
