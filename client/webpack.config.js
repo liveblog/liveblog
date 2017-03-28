@@ -225,6 +225,10 @@ function getDefaults(grunt) {
 
         system: {
             dateTimeTZ: 'YYYY-MM-DD[T]HH:mm:ssZ'
-        }
+        },
+
+        // You might think this empty object is useless.
+        // That would be a terrible mistake to make.
+        validatorMediaMetadata: {}
     };
 }
