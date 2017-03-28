@@ -1,5 +1,6 @@
 import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.html';
 import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html';
+import _ from 'lodash';
 
 LiveblogAdvertisingController.$inject = ['$scope', 'api', 'notify', 'gettext',
 'upload','$templateCache', 'freetypeService', 'modal'];
@@ -156,22 +157,22 @@ upload, $templateCache, freetypeService, modal) {
         if (collection) {
             // editing collection
             $scope.collection = angular.copy(collection);
-            $scope.collection.checkAdverts = [];
+            $scope.collection.checkAdverts = {};
             //console.log('$scope.collection ', $scope.collection);
             angular.forEach($scope.adverts, function(advert) {
                 if ($scope.collectionHasAdvert($scope.collection, advert)) {
                     $scope.collection.checkAdverts[advert._id] = true;
                 } else {
-                    $scope.collection.checkAdverts[advert._id] = true;
+                    $scope.collection.checkAdverts[advert._id] = false;
                 }
             });
-            console.log('$scope.collection.checkAdverts[advert._id] ', $scope.collection.checkAdverts);
+            
         } else {
             $scope.collection = {};
             // for checkboxes and advert collections
-            $scope.collection.checkAdverts = [];
+            $scope.collection.checkAdverts = {};
             angular.forEach($scope.adverts, function(advert) {
-                $scope.checkAdverts[advert._id] = false;
+                $scope.collection.checkAdverts[advert._id] = false;
             });
         }
         $scope.collectionModalActive = true;
@@ -181,11 +182,13 @@ upload, $templateCache, freetypeService, modal) {
 
         //create the saveable advertisement array for the collection
         var advertisements = [];
-        angular.forEach($scope.checkAdverts, function(checked, ad_id) {
-            if (checked) {
+
+        angular.forEach($scope.collection.checkAdverts, function(val, ad_id) {
+            if (val) {
                 advertisements.push({'advertisement_id': ad_id});
             }
-        })
+        });
+
         var newCollection = {
             'name': $scope.collection.name,
             'advertisements': advertisements
