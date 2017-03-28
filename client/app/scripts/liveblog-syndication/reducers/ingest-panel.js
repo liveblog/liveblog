@@ -2,7 +2,7 @@ ingestPanelReducers.$inject = ['moment'];
 
 export default function ingestPanelReducers(moment) {
     // Associate a syndication to a producer blog via blog token
-    var locallySyndicatedItems = function(syndicationIn, localSyndTokens, ingestQueue) {
+    var locallySyndicatedItems = function(syndicationIn, localSyndTokens) {
         return syndicationIn._items
             .filter((item) => localSyndTokens.indexOf(item.blog_token) !== -1);
     };
@@ -20,8 +20,7 @@ export default function ingestPanelReducers(moment) {
                 localSyndTokens: localSyndTokens,
                 locallySyndicatedItems: locallySyndicatedItems(
                     action.syndicationIn,
-                    localSyndTokens,
-                    state.ingestQueue
+                    localSyndTokens
                 ),
                 localProducerBlogIds: [], // Reset list after syndication
                 producerBlogs: [] // Same here
@@ -42,8 +41,7 @@ export default function ingestPanelReducers(moment) {
                 syndicationIn: syndicationIn,
                 locallySyndicatedItems: locallySyndicatedItems(
                     syndicationIn,
-                    state.localSyndTokens,
-                    state.ingestQueue
+                    state.localSyndTokens
                 )
             });
 
@@ -99,6 +97,21 @@ export default function ingestPanelReducers(moment) {
         case 'ON_ERROR':
             return angular.extend(state, {
                 error: action.error
+            });
+
+        case 'ON_SET_UNREAD_QUEUE':
+            return angular.extend(state, {
+                unreadQueue: action.unreadQueue
+                //locallySyndicatedItems: state.locallySyndicatedItems.map((blog) => {
+                //    // Set unread (pending notifications) value for each
+                //    action.unreadQueue.forEach((element) => {
+                //        if (blog._id === element.syndication_in) {
+                //            blog.unread++;
+                //        }
+                //    });
+
+                //    return blog;
+                //})
             });
         }
     };

@@ -38,11 +38,8 @@ export default function ingestPanel(
                 modalActive: false,
                 localProducerBlogIds: [],
                 locallySyndicatedItems: [],
-                ingestQueue: angular.copy(scope.ingestQueue) || 0
+                unreadQueue: []
             });
-
-            // Reinitialize ingestQueue
-            scope.ingestQueue = null;
 
             scope.store.connect((state) => {
                 scope.syndicationIn = state.syndicationIn;
@@ -58,7 +55,8 @@ export default function ingestPanel(
                     scope.locallySyndicatedItems.map((blog) => {
                         blog.unread = 0;
 
-                        state.ingestQueue.forEach((element) => {
+                        // Set unread (pending notifications) value for each
+                        state.unreadQueue.forEach((element) => {
                             if (blog._id === element.syndication_in) {
                                 blog.unread++;
                             }
@@ -80,6 +78,17 @@ export default function ingestPanel(
             // Whereas IncomingSyndication.getSyndiction takes the
             // actual syndication id as a parameter.
             IngestPanelActions.getSyndication($routeParams._id);
+
+            // This watches for incoming posts when ingest is not in focus
+            if (scope.ingestQueue.length > 0) {
+                IngestPanelActions.setUnreadQueue(scope.ingestQueue);
+                scope.ingestQueue = [];
+            }
+
+            // This watches for incoming posts when ingest is in focus
+            scope.$on('posts', (e, data) => {
+                IngestPanelActions.setUnreadQueue(data.posts);
+            });
 
             scope.openSyndBlogsModal = function() {
                 IngestPanelActions.toggleModal(true);

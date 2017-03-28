@@ -496,7 +496,7 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
             $scope.ingestQueue = $scope.ingestQueue.concat(data.posts);
         }
     });
-}
+};
 
 BlogEditController.$inject = [
     'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector', '$http',
