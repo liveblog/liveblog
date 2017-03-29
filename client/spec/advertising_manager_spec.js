@@ -62,27 +62,36 @@ describe('Advertising Manager', function() {
                 // we should now have one collection
                 expect(aM.getCollections().count()).toBe(1);
                 //open 1st collection and check contents
-                aM.getCollections().get(0).click().all(by.css('[ng-click="openCollectionDialog(collection)"]')).click();
+                aM.getCollections().get(0).all(by.id('toggle-collection-menu')).click();
+                element(by.css('[ng-click="openCollectionDialog(collection)"]')).click();
+
                 expect(aM.collectionTitle.getAttribute('value')).toEqual(freeData.title);
                 
 
                 // edit collection
                 var newData = aM.createAdvertData();
                 aM.collectionTitle.sendKeys(newData.title);
+
+                // add one advert 
+                aM.getAdverts().get(0).all(by.css('[type="checkbox"]')).click();
         
-                aM.saveAdvert().then(function() {
+                aM.saveCollection().then(function() {
                     //check the new contents to match
-                    aM.getAdverts().get(0).click().all(by.css('[dropdown-toggle]')).click()
-                        .then(function() {
-                            element(by.css('[ng-click="openCollectionDialog(collection)"]')).click();
-                        });
-                    expect(aM.collectionTitle.getAttribute('value')).toEqual(freeData.title + newData.title);
+                    // aM.getAdverts().get(0).click().all(by.css('[dropdown-toggle]')).click()
+                    //     .then(function() {
+                    //         element(by.css('[ng-click="openCollectionDialog(collection)"]')).click();
+                    //     });
+                    // expect to have the title changed
+                    var newTitle = freeData.title + newData.title;
+                    newTitle = newTitle.toUpperCase();
+                    expect(element(by.id('collection-name')).getText()).toEqual(newTitle);
+                    // expect to have one advert added
+                    expect(aM.getAdverts().count()).toBe(1);
                 });
-                // close edit freetype dialog
-                element(by.css('[ng-click="cancelCollectionCreate()"]')).click();
-                // remove first freetype
+                
+                // remove first collection
                 aM.removeCollection(0);
-                // expect no freetypes available
+                // expect no collections available
                 expect(aM.getCollections().count()).toBe(0);
             });
         });
