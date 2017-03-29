@@ -23,67 +23,69 @@ describe('Advertising Manager', function() {
         aM.openNewAdvertDialog();
         aM.editFreetype().then(function(freeData) {
             // we should not have two freetypes entered
-            expect(aM.getAverts().count()).toBe(1);
+            expect(aM.getAdverts().count()).toBe(1);
             //open 1st freetype and check contents
-            aM.getdverts().get(0).click().all(by.css('[ng-click="openAdvertDialog(advert);"]')).click();
+            aM.getAdverts().get(0).click().all(by.css('[ng-click="openAdvertDialog(advert);"]')).click();
             expect(aM.advertTitle.getAttribute('value')).toEqual(freeData.title);
-            expect(aM.advertEmbed.getText()).toEqual(freeData.embed);
+            expect(aM.advertEmbed.getAttribute('value')).toEqual(freeData.embed);
 
             // edit freetype
             var newData = aM.createAdvertData();
-            aM.title.sendKeys(newData.title);
-            aM.embed.sendKeys(newData.embed);
+            aM.advertTitle.sendKeys(newData.title);
+            aM.advertEmbed.sendKeys(newData.embed);
             aM.saveAdvert().then(function() {
                 //check the new contents to match
-                aM.getAdverts().get(0).click().all(by.css('[ng-click="vm.openAdvertDialog(advert);"]')).click();
-                expect(aM.title.getAttribute('value')).toEqual(freeData.title + newData.title);
-                expect(aM.embed.getText()).toEqual(newData.embed + freeData.embed);
+                aM.getAdverts().get(0).click().all(by.css('[ng-click="openAdvertDialog(advert);"]')).click();
+                expect(aM.advertTitle.getAttribute('value')).toEqual(freeData.title + newData.title);
+                expect(aM.advertEmbed.getAttribute('value')).toEqual(freeData.embed + newData.embed);
             });
             // close edit freetype dialog
-            element(by.css('[ng-click="vm.cancelAdvertCreate()"]')).click();
+            element(by.css('[ng-click="cancelAdvertCreate()"]')).click();
             // remove first freetype
-            aM.removeFreetype(0);
+            aM.removeAdvert(0);
             // expect no freetypes available
-            expect(aM.getFreetypes().count()).toBe(0);
+            expect(aM.getAdverts().count()).toBe(0);
 
         });
     });
 
-    it('can open Collections manager tab and do CRUD operations on them', function() {
+    fit('can open Collections manager tab and do CRUD operations on them', function() {
         aM.openAdvertisingManager();
-        // open the collections tab
-        aM.openCollectionsTab();
-        aM.openNewCollectionDialog();
-        aM.editCollection().then(function(freeData) {
-            // we should not have two freetypes entered
-            expect(aM.getCollections().count()).toBe(1);
-            //open 1st freetype and check contents
-            aM.getCollections().get(0).click().all(by.css('[ng-click="openAdvertDialog(advert);"]')).click();
-            expect(aM.advertTitle.getAttribute('value')).toEqual(freeData.title);
-            
 
-            // edit freetype
-            var newData = aM.createAdvertData();
-            aM.title.sendKeys(newData.title);
-    
-            aM.saveAdvert().then(function() {
-                //check the new contents to match
-                aM.getAdverts().get(0).click().all(by.css('[ng-class="dropdown__toggle dropdown-toggle"]')).click()
-                    .then(function() {
-                        element(by.css('[ng-click="openCollectionDialog(collection)"]')).click();
-                    });
-                expect(aM.title.getAttribute('value')).toEqual(freeData.title + newData.title);
+        // create an advert so we can add it to the collection
+        aM.openNewAdvertDialog();
+        aM.editFreetype().then(function(freeData) {
+            // open the collections tab
+            aM.openCollectionsTab();
+            aM.openNewCollectionDialog();
+            aM.editCollection().then(function(freeData) {
+                // we should now have one collection
+                expect(aM.getCollections().count()).toBe(1);
+                //open 1st collection and check contents
+                aM.getCollections().get(0).click().all(by.css('[ng-click="openCollectionDialog(collection)"]')).click();
+                expect(aM.collectionTitle.getAttribute('value')).toEqual(freeData.title);
+                
+
+                // edit collection
+                var newData = aM.createAdvertData();
+                aM.collectionTitle.sendKeys(newData.title);
+        
+                aM.saveAdvert().then(function() {
+                    //check the new contents to match
+                    aM.getAdverts().get(0).click().all(by.css('[dropdown-toggle]')).click()
+                        .then(function() {
+                            element(by.css('[ng-click="openCollectionDialog(collection)"]')).click();
+                        });
+                    expect(aM.collectionTitle.getAttribute('value')).toEqual(freeData.title + newData.title);
+                });
+                // close edit freetype dialog
+                element(by.css('[ng-click="cancelCollectionCreate()"]')).click();
+                // remove first freetype
+                aM.removeCollection(0);
+                // expect no freetypes available
+                expect(aM.getCollections().count()).toBe(0);
             });
-            // close edit freetype dialog
-            element(by.css('[ng-click="cancelCollectionCreate()"]')).click();
-            // remove first freetype
-            aM.removeCollection(0);
-            // expect no freetypes available
-            expect(aM.getCollections().count()).toBe(0);
-
         });
-
-
     })
 
 });
