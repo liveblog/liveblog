@@ -62,7 +62,7 @@ upload, $templateCache, freetypeService, modal) {
     function loadAdverts(silent) {
         silent = silent || false;
         !silent ? $scope.advertsLoading = true : $scope.advertsLoading = false;
-        api('advertisements').query({where: {deleted: false}}).then(function(data) {
+        return api('advertisements').query({where: {deleted: false}}).then(function(data) {
             $scope.adverts = data._items;
             if (!silent) {
                 notify.info('Adverts loaded');
@@ -79,7 +79,7 @@ upload, $templateCache, freetypeService, modal) {
         $scope.freetypeControl.reset();
         $scope.advertModalActive = false;
         $scope.dialogAdvertLoading = false;
-        loadAdverts();
+        return loadAdverts();
     }
 
     function handleAdvertSaveError() {
@@ -108,13 +108,13 @@ upload, $templateCache, freetypeService, modal) {
         if ($scope.advert._id) {
             // we are editing existing ad
             api('advertisements').save($scope.advert, newAd).then(function(data) {
-                handleAdvertSaveSuccess();
+                return handleAdvertSaveSuccess();
             }, function(data) {
                 handleAdvertSaveError();
             });
         } else {
             api('advertisements').save(newAd).then(function(data) {
-                handleAdvertSaveSuccess();
+                return handleAdvertSaveSuccess();
             }, function(data) {
                 handleAdvertSaveError();
             });
@@ -131,7 +131,7 @@ upload, $templateCache, freetypeService, modal) {
             $scope.collections = data._items;
             notify.info('Collections loaded');
             $scope.collectionsLoading = false;
-        }, function(data) {
+        }).catch(function(data) {
             $scope.collectionsLoading = false;
             notify.error(gettext('There was an error getting the adverts'));
         })
@@ -142,7 +142,7 @@ upload, $templateCache, freetypeService, modal) {
         $scope.collection = {};
         $scope.collectionModalActive = false;
         $scope.dialogCollectionLoading = false;
-        loadCollections();
+        return loadCollections();
     }
 
     function handleCollectionSaveError() {
@@ -150,30 +150,31 @@ upload, $templateCache, freetypeService, modal) {
     }
 
     $scope.openCollectionDialog = function(collection) {
-        // load all available adverts without showing any messages
-        loadAdverts(true);
         collection = collection || false;
-        if (collection) {
-            // editing collection
-            $scope.collection = angular.copy(collection);
-            $scope.collection.checkAdverts = {};
-            //console.log('$scope.collection ', $scope.collection);
-            angular.forEach($scope.adverts, function(advert) {
-                if ($scope.collectionHasAdvert($scope.collection, advert)) {
-                    $scope.collection.checkAdverts[advert._id] = true;
-                } else {
+        // load all available adverts without showing any messages
+        loadAdverts(true).then(function() {
+            if (collection) {
+                // editing collection
+                $scope.collection = angular.copy(collection);
+                $scope.collection.checkAdverts = {};
+                //console.log('$scope.collection ', $scope.collection);
+                angular.forEach($scope.adverts, function(advert) {
+                    if ($scope.collectionHasAdvert($scope.collection, advert)) {
+                        $scope.collection.checkAdverts[advert._id] = true;
+                    } else {
+                        $scope.collection.checkAdverts[advert._id] = false;
+                    }
+                });
+            } else {
+                $scope.collection = {};
+                // for checkboxes and advert collections
+                $scope.collection.checkAdverts = {};
+                angular.forEach($scope.adverts, function(advert) {
                     $scope.collection.checkAdverts[advert._id] = false;
-                }
-            });
-        } else {
-            $scope.collection = {};
-            // for checkboxes and advert collections
-            $scope.collection.checkAdverts = {};
-            angular.forEach($scope.adverts, function(advert) {
-                $scope.collection.checkAdverts[advert._id] = false;
-            });
-        }
-        $scope.collectionModalActive = true;
+                });
+            }
+            $scope.collectionModalActive = true;
+        });
     }
 
     $scope.saveCollection = function() {
@@ -191,20 +192,11 @@ upload, $templateCache, freetypeService, modal) {
         }
         $scope.dialogCollectionLoading = true;
 
-        if ($scope.collection._id) {
-            // we are editing existing collection
-            api('collections').save($scope.collection, newCollection).then(function(data) {
-                handleCollectionSaveSuccess();
-            }, function(data) {
-                handleCollectionSaveError();
-            });
-        } else {
-            api('collections').save(newCollection).then(function(data) {
-                handleCollectionSaveSuccess();
-            }, function(data) {
-                handleCollectionSaveError();
-            });
-        }
+        api('collections').save($scope.collection, newCollection).then(function(data) {
+            handleCollectionSaveSuccess();
+        }, function(data) {
+            handleCollectionSaveError();
+        });
     }
 
     $scope.removeCollection = function (collection, $index) {
