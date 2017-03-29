@@ -256,7 +256,9 @@ function AdvertisingManagerPage() {
     };
     self.removeCollection = function(index) {
         index = index || 0;
-        self.getFreetypes().get(index).click().all(by.css('[ng-click="removeCollection(freetype, $index);"]')).click();
+        // self.getCollections().get(index).click().all(by.css('[ng-click="removeCollection(collection, $index)"]')).click();
+        self.getCollections().get(index).all(by.id('toggle-collection-menu')).click();
+        element(by.css('[ng-click="removeCollection(collection, $index)"]')).click();
         okModal();
     };
 }
