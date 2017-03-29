@@ -162,7 +162,7 @@ upload, $templateCache, freetypeService, modal) {
                 if ($scope.collectionHasAdvert($scope.collection, advert)) {
                     $scope.collection.checkAdverts[advert._id] = true;
                 } else {
-                    $scope.collection.checkAdverts[advert._id] = true;
+                    $scope.collection.checkAdverts[advert._id] = false;
                 }
             });
         } else {
@@ -180,7 +180,7 @@ upload, $templateCache, freetypeService, modal) {
 
         //create the saveable advertisement array for the collection
         var advertisements = [];
-        angular.forEach($scope.checkAdverts, function(checked, ad_id) {
+        angular.forEach($scope.collection.checkAdverts, function(checked, ad_id) {
             if (checked) {
                 advertisements.push({'advertisement_id': ad_id});
             }

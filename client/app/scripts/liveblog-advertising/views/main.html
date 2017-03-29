@@ -71,7 +71,7 @@
                     <div class="flex-item card-box" ng-repeat="collection in collections">
                         <div class="card-box__header">
                             <div class="dropdown" dropdown>
-                                <button class="dropdown__toggle" dropdown__toggle>
+                                <button class="dropdown__toggle" dropdown__toggle id="toggle-collection-menu">
                                     <i class="icon-dots-vertical"></i>
                                 </button>
                                 <ul class="dropdown__menu more-activity-menu pull-right">
@@ -82,7 +82,7 @@
                                     <li><button ng-click="removeCollection(collection, $index)" title="{{:: 'Remove collection'| translate }}"><i class="icon-trash"></i>{{:: 'Remove'| translate}}</button></li>
                                 </ul>
                             </div>
-                            <div class="card-box__heading">{{ collection.name }}</div>
+                            <div class="card-box__heading" id="collection-name">{{ collection.name }}</div>
                         </div>
                         <div class="card-box__content">
                             <ul class="card-box__content-list">
@@ -99,6 +99,9 @@
                             </ul>
                         </div>
                     </div>
+                    <div ng-if="collections.length === 0">
+	                    {{ 'No Collections for now' | translate }}
+	                </div>
                 </div>
             </div>
         </div>
@@ -167,7 +170,6 @@
                             </span>
                         </li>
                     </ul>
-                    {{ checkboxModel }}
                 </div>
             </fieldset>
         </div>
