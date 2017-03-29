@@ -156,7 +156,7 @@ upload, $templateCache, freetypeService, modal) {
         if (collection) {
             // editing collection
             $scope.collection = angular.copy(collection);
-            $scope.collection.checkAdverts = [];
+            $scope.collection.checkAdverts = {};
             //console.log('$scope.collection ', $scope.collection);
             angular.forEach($scope.adverts, function(advert) {
                 if ($scope.collectionHasAdvert($scope.collection, advert)) {
@@ -165,11 +165,10 @@ upload, $templateCache, freetypeService, modal) {
                     $scope.collection.checkAdverts[advert._id] = true;
                 }
             });
-            console.log('$scope.collection.checkAdverts[advert._id] ', $scope.collection.checkAdverts);
         } else {
             $scope.collection = {};
             // for checkboxes and advert collections
-            $scope.collection.checkAdverts = [];
+            $scope.collection.checkAdverts = {};
             angular.forEach($scope.adverts, function(advert) {
                 $scope.collection.checkAdverts[advert._id] = false;
             });

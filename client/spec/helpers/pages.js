@@ -221,11 +221,11 @@ function AdvertisingManagerPage() {
         return element(by.css('[ng-click="saveCollection()"]')).click();
     };
     self.openNewAdvertDialog = function() {
-        element(by.css('[class="dropdown__toggle sd-create-btn dropdown-toggle"]')).click();
+        element(by.css('[dropdown__toggle]')).click();
         browser.wait(function() {
             return element(by.buttonText("Advertisement Remote")).isDisplayed();
         });
-        waitAndClick(by.buttonText("Advertisement Remote"));
+        element(by.buttonText("Advertisement Remote")).click();
         return self;
     };
     self.openNewCollectionDialog = function() {
@@ -238,22 +238,23 @@ function AdvertisingManagerPage() {
         };
     };
     self.editFreetype = function() {
-        var freeData = self.createFreetypeData();
+        var freeData = self.createAdvertData();
         self.advertTitle.sendKeys(freeData.title);
         self.advertEmbed.sendKeys(freeData.embed);
         return self.saveAdvert().then(function() {return freeData;});
     };
     self.editCollection = function() {
-        var freeData = self.createFreetypeData();
+        var freeData = self.createAdvertData();
         self.collectionTitle.sendKeys(freeData.title);
         return self.saveCollection().then(function() {return freeData;});
     }
     self.removeAdvert = function(index) {
         index = index || 0;
-        self.getFreetypes().get(index).click().all(by.css('[ng-click="removeAdvert(freetype, $index);"]')).click();
+        self.getAdverts().get(index).click().all(by.css('[ng-click="removeAdvert(advert, $index);"]')).click();
+        waitForModal();
         okModal();
     };
-    self.removeAdvert = function(index) {
+    self.removeCollection = function(index) {
         index = index || 0;
         self.getFreetypes().get(index).click().all(by.css('[ng-click="removeCollection(freetype, $index);"]')).click();
         okModal();
