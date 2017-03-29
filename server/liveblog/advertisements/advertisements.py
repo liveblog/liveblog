@@ -41,8 +41,8 @@ class AdvertisementsResource(Resource):
     }
     RESOURCE_METHODS = ['GET', 'POST']
     ITEM_METHODS = ['GET', 'POST', 'DELETE']
-    privileges = {'GET': 'global_preferences', 'POST': 'global_preferences',
-                  'PATCH': 'global_preferences', 'DELETE': 'global_preferences'}
+    privileges = {'GET': 'advertisements', 'POST': 'advertisements',
+                  'PATCH': 'advertisements', 'DELETE': 'advertisements'}
 
 
 class AdvertisementsService(BaseService):
