@@ -1,5 +1,6 @@
 import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.html';
 import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html';
+import _ from 'lodash';
 
 LiveblogAdvertisingController.$inject = ['$scope', 'api', 'notify', 'gettext',
 'upload','$templateCache', 'freetypeService', 'modal'];
@@ -9,8 +10,10 @@ upload, $templateCache, freetypeService, modal) {
     $scope.activeState = 'adverts';
     $scope.advertType = '';
     $scope.advert = {};
+    $scope.collection = {};
     $scope.advertModalActive = false;
     $scope.dialogAdvertLoading = false;
+    $scope.dialogCollectionLoading = false;
     $scope.advertsLoading = false;
 
 
@@ -28,6 +31,13 @@ upload, $templateCache, freetypeService, modal) {
 
     $scope.changeState = function(state) {
         $scope.activeState = state;
+        switch (state) {
+            case 'collections':
+                loadCollections();
+                break;
+            default: 
+                loadAdverts();
+        }
     }
     $scope.openAdvertDialog = function(ad) {
         if (ad._id) {
@@ -50,11 +60,14 @@ upload, $templateCache, freetypeService, modal) {
         $scope.advertModalActive = false;
     }
 
-    function loadAdverts() {
-        $scope.advertsLoading = true;
-        api('advertisements').query({not: {term: {deleted: true}}}).then(function(data) {
+    function loadAdverts(silent) {
+        silent = silent || false;
+        !silent ? $scope.advertsLoading = true : $scope.advertsLoading = false;
+        api('advertisements').query({where: {deleted: false}}).then(function(data) {
             $scope.adverts = data._items;
-            notify.info('Adverts loaded');
+            if (!silent) {
+                notify.info('Adverts loaded');
+            }
             $scope.advertsLoading = false;
         }, function(data) {
             $scope.advertsLoading = false;
@@ -62,12 +75,16 @@ upload, $templateCache, freetypeService, modal) {
         })
     }
 
-    function handleSaveSuccess() {
+    function handleAdvertSaveSuccess() {
         notify.info(gettext('Advert saved successfully'));
         $scope.freetypeControl.reset();
         $scope.advertModalActive = false;
         $scope.dialogAdvertLoading = false;
         loadAdverts();
+    }
+
+    function handleAdvertSaveError() {
+        notify.error(gettext('Something went wrong, please try again later!'), 5000)
     }
 
     $scope.removeAdvert = function (advert, $index) {
@@ -78,10 +95,6 @@ upload, $templateCache, freetypeService, modal) {
                 notify.error(gettext('Can\'t remove advert'));
             });
         });
-    }
-
-    function handleSaveError() {
-        notify.error(gettext('Something went wrong, please try again later!'), 5000)
     }
 
     $scope.saveAdvert = function() {
@@ -96,18 +109,130 @@ upload, $templateCache, freetypeService, modal) {
         if ($scope.advert._id) {
             // we are editing existing ad
             api('advertisements').save($scope.advert, newAd).then(function(data) {
-                handleSaveSuccess();
+                handleAdvertSaveSuccess();
             }, function(data) {
-                handleSaveError();
+                handleAdvertSaveError();
             });
         } else {
             api('advertisements').save(newAd).then(function(data) {
-                handleSaveSuccess();
+                handleAdvertSaveSuccess();
             }, function(data) {
-                handleSaveError();
+                handleAdvertSaveError();
             });
         }
     }
 
     loadAdverts();
+
+
+    //COLLECTIONS
+    function loadCollections() {
+        $scope.collectionsLoading = true;
+        api('collections').query({where: {deleted: false}}).then(function(data) {
+            $scope.collections = data._items;
+            notify.info('Collections loaded');
+            $scope.collectionsLoading = false;
+        }, function(data) {
+            $scope.collectionsLoading = false;
+            notify.error(gettext('There was an error getting the adverts'));
+        })
+    }
+
+    function handleCollectionSaveSuccess() {
+        notify.info(gettext('Collection saved successfully'));
+        $scope.collection = {};
+        $scope.collectionModalActive = false;
+        $scope.dialogCollectionLoading = false;
+        loadCollections();
+    }
+
+    function handleCollectionSaveError() {
+        notify.error(gettext('Something went wrong, please try again later!'), 5000)
+    }
+
+    $scope.openCollectionDialog = function(collection) {
+        // load all available adverts without showing any messages
+        loadAdverts(true);
+        collection = collection || false;
+        if (collection) {
+            // editing collection
+            $scope.collection = angular.copy(collection);
+            $scope.collection.checkAdverts = {};
+            //console.log('$scope.collection ', $scope.collection);
+            angular.forEach($scope.adverts, function(advert) {
+                if ($scope.collectionHasAdvert($scope.collection, advert)) {
+                    $scope.collection.checkAdverts[advert._id] = true;
+                } else {
+                    $scope.collection.checkAdverts[advert._id] = false;
+                }
+            });
+            
+        } else {
+            $scope.collection = {};
+            // for checkboxes and advert collections
+            $scope.collection.checkAdverts = {};
+            angular.forEach($scope.adverts, function(advert) {
+                $scope.collection.checkAdverts[advert._id] = false;
+            });
+        }
+        $scope.collectionModalActive = true;
+    }
+
+    $scope.saveCollection = function() {
+
+        //create the saveable advertisement array for the collection
+        var advertisements = [];
+
+        angular.forEach($scope.collection.checkAdverts, function(val, ad_id) {
+            if (val) {
+                advertisements.push({'advertisement_id': ad_id});
+            }
+        });
+
+        var newCollection = {
+            'name': $scope.collection.name,
+            'advertisements': advertisements
+        }
+        $scope.dialogCollectionLoading = true;
+
+        if ($scope.collection._id) {
+            // we are editing existing collection
+            api('collections').save($scope.collection, newCollection).then(function(data) {
+                handleCollectionSaveSuccess();
+            }, function(data) {
+                handleCollectionSaveError();
+            });
+        } else {
+            api('collections').save(newCollection).then(function(data) {
+                handleCollectionSaveSuccess();
+            }, function(data) {
+                handleCollectionSaveError();
+            });
+        }
+    }
+
+    $scope.removeCollection = function (collection, $index) {
+        modal.confirm(gettext('Are you sure you want to remove this collection?')).then(function() {
+            api('collections').save(collection, {deleted: true}).then(function(data) {
+                $scope.collections.splice($index, 1);
+            }, function(data) {
+                notify.error(gettext('Can\'t remove collection'));
+            });
+        });
+    }
+
+    $scope.cancelCollectionCreate = function() {
+        $scope.collection = {};
+        $scope.collectionModalActive = false;
+    }
+
+    $scope.collectionHasAdvert = function (collection, advert) {
+        var hasAdvert = false;
+        angular.forEach(collection.advertisements, function(ad) {
+            if (ad.advertisement_id === advert._id) {
+                hasAdvert = true;
+            }
+        })
+        return hasAdvert;
+    }
 }
