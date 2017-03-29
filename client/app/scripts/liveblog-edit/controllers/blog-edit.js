@@ -491,9 +491,14 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
 
     $scope.openPanel(panel, syndId);
 
+    // This function is responsible for updating the ingest panel
+    // unread count when this one isn't currently selected/displayed
     $scope.$on('posts', (e, data) => {
-        if ($scope.panelState !== 'ingest') {
-            $scope.ingestQueue = $scope.ingestQueue.concat(data.posts);
+        if ($scope.panelState !== 'ingest' && data.hasOwnProperty('posts')) {
+            let syndPosts = data.posts
+                .filter((post) => post.hasOwnProperty('syndication_in'));
+
+            $scope.ingestQueue = $scope.ingestQueue.concat(syndPosts);
         }
     });
 };
