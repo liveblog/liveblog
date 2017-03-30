@@ -62,7 +62,7 @@ describe('Advertising Manager', function() {
                 // we should now have one collection
                 expect(aM.getCollections().count()).toBe(1);
                 //open 1st collection and check contents
-<<<<<<< HEAD
+
                 aM.getCollections().get(0).all(by.id('toggle-collection-menu')).click();
                 element(by.css('[ng-click="openCollectionDialog(collection)"]')).click();
 
@@ -78,11 +78,6 @@ describe('Advertising Manager', function() {
         
                 aM.saveCollection().then(function() {
                     //check the new contents to match
-                    // aM.getAdverts().get(0).click().all(by.css('[dropdown-toggle]')).click()
-                    //     .then(function() {
-                    //         element(by.css('[ng-click="openCollectionDialog(collection)"]')).click();
-                    //     });
-                    // expect to have the title changed
                     var newTitle = freeData.title + newData.title;
                     newTitle = newTitle.toUpperCase();
                     expect(element(by.id('collection-name')).getText()).toEqual(newTitle);
@@ -92,30 +87,8 @@ describe('Advertising Manager', function() {
                 
                 // remove first collection
                 aM.removeCollection(0);
-                // expect no collections available
-=======
-                aM.getCollections().get(0).click().all(by.css('[ng-click="openCollectionDialog(collection)"]')).click();
-                expect(aM.collectionTitle.getAttribute('value')).toEqual(freeData.title);
                 
-
-                // edit collection
-                var newData = aM.createAdvertData();
-                aM.collectionTitle.sendKeys(newData.title);
-        
-                aM.saveAdvert().then(function() {
-                    //check the new contents to match
-                    aM.getAdverts().get(0).click().all(by.css('[dropdown-toggle]')).click()
-                        .then(function() {
-                            element(by.css('[ng-click="openCollectionDialog(collection)"]')).click();
-                        });
-                    expect(aM.collectionTitle.getAttribute('value')).toEqual(freeData.title + newData.title);
-                });
-                // close edit freetype dialog
-                element(by.css('[ng-click="cancelCollectionCreate()"]')).click();
-                // remove first freetype
-                aM.removeCollection(0);
-                // expect no freetypes available
->>>>>>> 620a0af6... fixed adverts test
+                // expect no collections available
                 expect(aM.getCollections().count()).toBe(0);
             });
         });
