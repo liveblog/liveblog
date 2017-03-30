@@ -44,7 +44,7 @@ class LiveblogValidator(SuperdeskValidator):
             key_field = httpsurl.get('key_field')
             check_auth = httpsurl.get('check_auth')
             webhook = httpsurl.get('webhook')
-            chech_auth_enabled = app.config.get('SYNDICATION_VALIDATE_AUTH', False)
+            chech_auth_enabled = app.config.get('SYNDICATION_VALIDATE_AUTH', True)
 
             if webhook:
                 url_path = urllib.parse.urlparse(value).path.rstrip('/')
@@ -67,7 +67,8 @@ class LiveblogValidator(SuperdeskValidator):
                     if not webhook:
                         api_url = urllib.parse.urljoin(value, 'syndication/blogs')
                     try:
-                        response = send_api_request(api_url, api_key, json_loads=False, timeout=5)
+                        response = send_api_request(api_url, api_key, json_loads=False,
+                                                    timeout=app.config.get('SYNDICATION_VALIDATE_AUTH_TIMEOUT', 5))
                     except APIConnectionError:
                         return self._error(field, "Unable to connect to the the given url.")
                     if response.status_code != 200:

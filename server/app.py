@@ -11,10 +11,10 @@
 
 
 import jinja2
-from liveblog.embed import embed_blueprint
 from flask_cache import Cache
 from liveblog.common import BlogCache
 import flask_s3
+from liveblog.blogs.embeds import embed_blueprint
 from liveblog.syndication.producer import producers_blueprint
 from liveblog.syndication.syndication import syndication_blueprint
 from liveblog.syndication.blogs import blogs_blueprint as syndication_blogs_blueprint
@@ -37,50 +37,57 @@ def get_app(config=None):
         config = {}
 
     config['APP_ABSPATH'] = os.path.abspath(os.path.dirname(__file__))
-
     for key in dir(settings):
         if key.isupper():
             config.setdefault(key, getattr(settings, key))
 
+    # Add Amazon S3 media storage support.
     media_storage = None
     if config['AMAZON_CONTAINER_NAME']:
         from superdesk.storage.amazon.amazon_media_storage import AmazonMediaStorage
         media_storage = AmazonMediaStorage
 
-    config['DOMAIN'] = {}
-
+    # Create superdesk app instance.
     app = superdesk_app(config, media_storage)
 
+    # Add default domain config.
+    config['DOMAIN'] = {}
+
+    # Add custom jinja2 template loader.
     custom_loader = jinja2.ChoiceLoader([
         jinja2.FileSystemLoader('superdesk/templates'),
         app.jinja_loader
     ])
     app.jinja_loader = custom_loader
 
-    # cache
+    # Caching.
     app.cache = Cache(app, config={'CACHE_TYPE': 'simple'})
     app.blog_cache = BlogCache(cache=app.cache)
-    # s3
+
+    # Amazon S3 support.
     s3 = flask_s3.FlaskS3()
     s3.init_app(app)
-    # embed feature
+
+    # Embed feature.
     app.register_blueprint(embed_blueprint)
     app.register_blueprint(analytics_blueprint)
 
-    # Syndication features:
+    # Syndication feature.
     app.register_blueprint(producers_blueprint)
     app.register_blueprint(syndication_blueprint)
     app.register_blueprint(syndication_blogs_blueprint)
 
-    # Market place
+    # Marketplace.
     app.register_blueprint(marketers_blueprint)
 
     return app
 
 
-if __name__ == '__main__':
-    debug = True
-    host = '0.0.0.0'
+def run_app():
+    debug = bool(os.environ.get('DEBUG', True))
     port = int(os.environ.get('PORT', '5000'))
-    app = get_app()
-    app.run(host=host, port=port, debug=debug, use_reloader=debug)
+    get_app().run(host='0.0.0.0', port=port, debug=debug, use_reloader=debug)
+
+
+if __name__ == '__main__':
+    run_app()

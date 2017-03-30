@@ -214,7 +214,7 @@ def get_producer_post_id(in_syndication, post_id):
 
 def extract_producer_post_data(post, fields=('_id', '_updated', 'lb_highlight', 'sticky', 'post_status')):
     """Extract only useful data from original producer blog post."""
-    return {key: post[key] for key in fields}
+    return {key: post.get(key) for key in fields}
 
 
 def get_post_creator(post):

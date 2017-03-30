@@ -84,7 +84,7 @@ def check_webhook_status(self, consumer_id):
     consumer = consumers._get_consumer(consumer_id)
     if 'webhook_url' in consumer:
         try:
-            response = send_api_request(consumer['webhook_url'], method='GET', json_loads=False)
+            response = send_api_request(consumer['webhook_url'], consumer['api_key'], method='GET', json_loads=False)
         except APIConnectionError as e:
             raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
         else:

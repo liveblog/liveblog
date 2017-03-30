@@ -11,10 +11,12 @@
 
 import logging
 
-import superdesk
 from bson.objectid import ObjectId
 from flask import current_app as app
 from flask import render_template
+from liveblog.blogslist.blogslist import publish_bloglist_embed_on_s3
+from liveblog.common import get_user, update_dates_for
+from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS
 from superdesk import get_resource_service
 from superdesk.activity import add_activity
 from superdesk.emails import send_email
@@ -25,12 +27,6 @@ from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk.users.services import is_admin
 from superdesk.utc import utcnow
-
-from liveblog.blogslist.blogslist import publish_bloglist_embed_on_s3
-from liveblog.common import get_user, update_dates_for
-from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS
-
-from .tasks import delete_blog_embed_on_s3, publish_blog_embed_on_s3
 
 logger = logging.getLogger('superdesk')
 
@@ -84,7 +80,7 @@ blogs_schema = {
     'category': {
         'type': 'string',
         'allowed': ["", "Breaking News", "Entertainment", "Business and Finance", "Sport", "Technology"],
-        'default': ""  # unsetting a variable is a world of pain
+        'default': ""
     },
     'start_date': {
         'type': 'datetime',
@@ -115,15 +111,16 @@ def send_email_to_added_members(blog, recipients, origin):
     prefs_service = get_resource_service('preferences')
     recipients_email = []
     for user in recipients:
-        # if user want to receive email notification, we add him as recipient
+        # If user want to receive email notification, we add him as recipient.
         if prefs_service.email_notification_is_enabled(user_id=user):
             if isinstance(user, ObjectId):
                 user_doc = get_resource_service('users').find_one(req=None, _id=ObjectId(user))
             else:
                 user_doc = get_resource_service('users').find_one(req=None, _id=ObjectId(user['user']))
             recipients_email.append(user_doc['email'])
+
     if recipients_email:
-        # send emails
+        # Send emails.
         url = '{}/#/liveblog/edit/{}'.format(origin, blog['_id'])
         title = blog['title']
         admins = app.config['ADMINS']
@@ -143,7 +140,7 @@ class BlogService(BaseService):
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
-            # set the blog_preferences by merging given preferences with global_prefs
+            # Set the blog_preferences by merging given preferences with global_prefs.
             global_prefs = get_resource_service('global_preferences').get_global_prefs()
             prefs = global_prefs.copy()
             prefs.update(doc.get('blog_preferences', {}))
@@ -160,12 +157,15 @@ class BlogService(BaseService):
                 doc['start_date'] = utcnow()
 
     def on_created(self, docs):
+        from .tasks import publish_blog_embed_on_s3
+
         for blog in docs:
-            # Publish on s3 if possible and save the public_url in the blog
-            publish_blog_embed_on_s3.delay(str(blog['_id']))
-            # notify client with websocket
-            push_notification(self.notification_key, created=1, blog_id=str(blog.get('_id')))
-            # and members with emails
+            blog_id = str(blog['_id'])
+            # Publish on s3 if possible and save the public_url in the blog.
+            publish_blog_embed_on_s3.delay(blog_id)
+            # Notify client with websocket.
+            push_notification(self.notification_key, created=1, blog_id=blog_id)
+            # And with member emails
             members = blog.get('members', {})
             recipients = []
             for user in members:
@@ -173,7 +173,9 @@ class BlogService(BaseService):
                     recipients.append(user)
                 else:
                     recipients.append(user['user'])
+
             notify_members(blog, app.config['CLIENT_URL'], recipients)
+
         # Publish bloglist aswell
         publish_bloglist_embed_on_s3()
 
@@ -209,12 +211,15 @@ class BlogService(BaseService):
             updates['start_date'] = original['_created']
 
     def on_updated(self, updates, original):
-        publish_blog_embed_on_s3.delay(str(original['_id']))
-        # invalidate cache for updated blog
-        app.blog_cache.invalidate(original.get('_id'))
-        # send notifications
+        from .tasks import publish_blog_embed_on_s3
+
+        original_id = str(original['_id'])
+        publish_blog_embed_on_s3.delay(original_id)
+        # Invalidate cache for updated blog.
+        app.blog_cache.invalidate(original_id)
+        # Send notifications,
         push_notification('blogs', updated=1)
-        # notify newly added members
+        # Notify newly added members.
         blog = original.copy()
         blog.update(updates)
         members = updates.get('members', {})
@@ -228,6 +233,8 @@ class BlogService(BaseService):
         notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def on_delete(self, doc):
+        from .tasks import delete_blog_embed_on_s3
+
         # Prevent delete of blog if blog has consumers
         out = get_resource_service('syndication_out').find({'blog_id': doc['_id']})
         if doc['syndication_enabled'] and out.count():
@@ -236,8 +243,10 @@ class BlogService(BaseService):
         delete_blog_embed_on_s3.delay(doc.get('_id'))
 
     def on_deleted(self, doc):
-        # invalidate cache for updated blog
-        blog_id = doc.get('_id')
+        from .tasks import delete_blog_embed_on_s3
+
+        # Invalidate cache for updated blog.
+        blog_id = str(doc['_id'])
         app.blog_cache.invalidate(blog_id)
         delete_blog_embed_on_s3.delay(blog_id)
 
@@ -248,7 +257,7 @@ class BlogService(BaseService):
         syndication_in.delete_action(lookup)
         syndication_out.delete_action(lookup)
 
-        # send notifications
+        # Send notifications.
         push_notification('blogs', deleted=1)
 
     def _check_max_active(self, increment):
@@ -275,22 +284,3 @@ class UserBlogsService(BaseService):
             lookup['members.user'] = ObjectId(lookup['user_id'])
             del lookup['user_id']
         return super().get(req, lookup)
-
-
-class PublishBlogsCommand(superdesk.Command):
-    """
-    Republish blogs on s3 with the right theme
-    """
-
-    def run(self):
-        # retrieves all opened blogs
-        blogs_service = get_resource_service('blogs')
-        blogs = blogs_service.get(req=None, lookup=dict(blog_status='open'))
-        # republish on s3
-        print('\n* Republishing blogs:\n')
-        for blog in blogs:
-            url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
-            print('  - Blog "%s" republished: %s' % (blog['title'], url))
-
-
-superdesk.command('publish_blogs', PublishBlogsCommand())

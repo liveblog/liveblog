@@ -3,7 +3,6 @@ from bson.objectid import ObjectId
 from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas
-from superdesk import get_resource_service
 from apps.archive import ArchiveVersionsResource
 from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
@@ -310,7 +309,7 @@ class BlogPostsService(ArchiveService):
     def get(self, req, lookup):
         imd = req.args.items()
         for key in imd:
-            if key[1][97:104] == 'comment':
+            if key[1][97:104] == 'comment':  # TODO: fix
                 if lookup.get('blog_id'):
                     lookup['client_blog'] = ObjectId(lookup['blog_id'])
                     del lookup['blog_id']
