@@ -698,7 +698,7 @@ function BlogSettingsPage(blog) {
     };
 
     self.upload = function() {
-        element(by.buttonText('Upload')).click();
+        element(by.css('button[ng-click="save()"]')).click();
         return self;
     };
 
