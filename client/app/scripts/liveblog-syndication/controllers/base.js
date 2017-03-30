@@ -1,14 +1,22 @@
 baseController.$inject = ['$scope', 'api', 'notify'];
 
 export default function baseController($scope, api, notify) {
+    $scope.pageLimit = 3;
+
+    let criteria = {
+        max_results: $scope.pageLimit
+    };
+
     if ($scope.endPoint) {
-        api.query($scope.endPoint).then(function(data) {
-            $scope[$scope.endPoint] = data
-        })
-        .catch(function(err) {
-            notify.pop();
-            notify.error(gettext('Fatal error!'));
-        });
+        api
+            .query($scope.endPoint, criteria)
+            .then((data) => {
+                $scope[$scope.endPoint] = data;
+            })
+            .catch((err) => {
+                notify.pop();
+                notify.error(gettext('Fatal error!'));
+            });
     }
 
     $scope.createEntry = function() {
@@ -22,13 +30,13 @@ export default function baseController($scope, api, notify) {
         var isEditing = false;
 
         $scope[$scope.endPoint]._items = $scope[$scope.endPoint]._items
-            .map(function(item) {
+            .map((item) => {
                 if (item._id === newEntry._id) {
                     isEditing = true;
                     return newEntry;
-                } else {
-                    return item;
                 }
+
+                return item;
             });
 
         if (!isEditing) {
@@ -41,4 +49,4 @@ export default function baseController($scope, api, notify) {
     $scope.closePreview = function() {
         $scope.selected = {};
     };
-};
+}
