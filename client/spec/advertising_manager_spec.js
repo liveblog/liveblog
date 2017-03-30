@@ -96,5 +96,4 @@ describe('Advertising Manager', function() {
             });
         });
     })
-
 });
