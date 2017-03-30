@@ -29,7 +29,13 @@ def env(variable, fallback_value=None):
         if env_value == "__EMPTY__":
             return ''
         else:
-            return env_value
+            if fallback_value:
+                type_of = type(fallback_value)
+                if isinstance(type_of, (list, tuple)):
+                    env_value = [value.strip() for value in env_value.split(',')]
+                return type_of(env_value)
+            else:
+                return env_value
 
 
 ABS_PATH = os.path.abspath(os.path.dirname(__file__))
