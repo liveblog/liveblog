@@ -49,7 +49,7 @@ describe('Advertising Manager', function() {
         });
     });
 
-    fit('can open Collections manager tab and do CRUD operations on them', function() {
+    it('can open Collections manager tab and do CRUD operations on them', function() {
         aM.openAdvertisingManager();
 
         // create an advert so we can add it to the collection
