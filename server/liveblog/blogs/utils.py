@@ -1,5 +1,7 @@
+import os
 from flask import current_app as app
 
+from .app_settings import BLOGSLIST_ASSETS_DIR
 from .exceptions import MediaStorageUnsupportedForBlogPublishing
 
 

@@ -115,7 +115,7 @@ def publish_assets(asset_type):
 @celery.task(soft_time_limit=1800)
 def publish_bloglist_embed_on_s3():
     # TODO: add retry
-    from .blogslist import render_bloglist_embed # To prevent circular import. TODO: move to .embeds
+    from .blogslist import render_bloglist_embed  # To prevent circular import. TODO: move to .embeds
     if type(app.media).__name__ is not 'AmazonMediaStorage':
         pass
     else:

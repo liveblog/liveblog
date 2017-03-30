@@ -14,7 +14,6 @@ import superdesk
 from eve.io.mongo import MongoJSONEncoder
 from flask import current_app as app
 from flask import json, render_template
-from superdesk import get_resource_service
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 
@@ -74,5 +73,5 @@ class BlogsListService(BaseService):
 
 @bloglist_blueprint.app_template_filter('tojson')
 def tojson(obj):
-    # TODO: remove duplicate template filters.
+    #  TODO: remove duplicate template filters.
     return json.dumps(obj, cls=MongoJSONEncoder)
