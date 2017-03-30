@@ -14,9 +14,6 @@ import logging
 from bson.objectid import ObjectId
 from flask import current_app as app
 from flask import render_template
-from liveblog.blogs.blogslist import publish_bloglist_embed_on_s3
-from liveblog.common import get_user, update_dates_for
-from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS
 from superdesk import get_resource_service
 from superdesk.activity import add_activity
 from superdesk.emails import send_email
@@ -27,6 +24,10 @@ from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk.users.services import is_admin
 from superdesk.utc import utcnow
+
+from liveblog.blogs.tasks import publish_bloglist_embed_on_s3
+from liveblog.common import get_user, update_dates_for
+from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS
 
 from .tasks import delete_blog_embed_on_s3, publish_blog_embed_on_s3
 
