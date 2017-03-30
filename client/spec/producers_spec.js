@@ -16,6 +16,8 @@ var contact = {
     email: 'gmail@chucknorris.com'
 };
 
+const originalCount = 25;
+
 describe('Producers', function() {
     beforeEach(function(done) {
       browser.ignoreSynchronization = true;
@@ -31,7 +33,7 @@ describe('Producers', function() {
             element.all(by.repeater('producer in producers'))
                 .count()
                 .then(function(count) {
-                    expect(count).toEqual(1);
+                    expect(count).toEqual(originalCount);
                 });
         });
 
@@ -133,7 +135,7 @@ describe('Producers', function() {
                     return element.all(by.repeater('producer in producers')).count();
                 })
                 .then(function(count) {
-                    expect(count).toEqual(2);
+                    expect(count).toEqual(originalCount + 1);
                 });
         });
 
@@ -174,7 +176,7 @@ describe('Producers', function() {
                         return element.all(by.repeater('producer in producers')).count();
                     })
                     .then(function(count) {
-                        return expect(count).toEqual(1);
+                        return expect(count).toEqual(originalCount);
                     });
             };
 
@@ -204,7 +206,7 @@ describe('Producers', function() {
                     return element.all(by.repeater('producer in producers')).count();
                 })
                 .then(function(count) {
-                    expect(count).toEqual(0);
+                    expect(count).toEqual(originalCount - 1);
                 });
 });
     });

@@ -13,6 +13,7 @@ export default function baseController($scope, api, notify, $route) {
 
     $scope.criteria = {
         max_results: $scope.pageLimit,
+        sort: '[("_created", 1)]',
         page: getPageValue($route)
     };
 

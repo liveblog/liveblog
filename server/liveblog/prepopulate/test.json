@@ -1518,6 +1518,534 @@
     },
     "id_name": "-producer one-"
 },
+
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #1",
+        "api_url": "http://www.kubota1.com/api",
+        "consumer_api_key": "1234567890asdfgh1",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #2",
+        "api_url": "http://www.kubota2.com/api",
+        "consumer_api_key": "1234567890asdfgh2",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #3",
+        "api_url": "http://www.kubota3.com/api",
+        "consumer_api_key": "1234567890asdfgh3",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #4",
+        "api_url": "http://www.kubota4.com/api",
+        "consumer_api_key": "1234567890asdfgh4",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #5",
+        "api_url": "http://www.kubota5.com/api",
+        "consumer_api_key": "1234567890asdfgh5",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #6",
+        "api_url": "http://www.kubota6.com/api",
+        "consumer_api_key": "1234567890asdfgh6",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #7",
+        "api_url": "http://www.kubota7.com/api",
+        "consumer_api_key": "1234567890asdfgh7",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #8",
+        "api_url": "http://www.kubota8.com/api",
+        "consumer_api_key": "1234567890asdfgh8",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #9",
+        "api_url": "http://www.kubota9.com/api",
+        "consumer_api_key": "1234567890asdfgh9",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #10",
+        "api_url": "http://www.kubota10.com/api",
+        "consumer_api_key": "1234567890asdfgh10",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #11",
+        "api_url": "http://www.kubota11.com/api",
+        "consumer_api_key": "1234567890asdfgh11",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #12",
+        "api_url": "http://www.kubota12.com/api",
+        "consumer_api_key": "1234567890asdfgh12",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #13",
+        "api_url": "http://www.kubota13.com/api",
+        "consumer_api_key": "1234567890asdfgh13",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #14",
+        "api_url": "http://www.kubota14.com/api",
+        "consumer_api_key": "1234567890asdfgh14",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #15",
+        "api_url": "http://www.kubota15.com/api",
+        "consumer_api_key": "1234567890asdfgh15",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #16",
+        "api_url": "http://www.kubota16.com/api",
+        "consumer_api_key": "1234567890asdfgh16",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #17",
+        "api_url": "http://www.kubota17.com/api",
+        "consumer_api_key": "1234567890asdfgh17",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #18",
+        "api_url": "http://www.kubota18.com/api",
+        "consumer_api_key": "1234567890asdfgh18",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #19",
+        "api_url": "http://www.kubota19.com/api",
+        "consumer_api_key": "1234567890asdfgh19",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #20",
+        "api_url": "http://www.kubota20.com/api",
+        "consumer_api_key": "1234567890asdfgh20",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #21",
+        "api_url": "http://www.kubota21.com/api",
+        "consumer_api_key": "1234567890asdfgh21",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #22",
+        "api_url": "http://www.kubota22.com/api",
+        "consumer_api_key": "1234567890asdfgh22",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #23",
+        "api_url": "http://www.kubota23.com/api",
+        "consumer_api_key": "1234567890asdfgh23",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #24",
+        "api_url": "http://www.kubota24.com/api",
+        "consumer_api_key": "1234567890asdfgh24",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #25",
+        "api_url": "http://www.kubota25.com/api",
+        "consumer_api_key": "1234567890asdfgh25",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #26",
+        "api_url": "http://www.kubota26.com/api",
+        "consumer_api_key": "1234567890asdfgh26",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #27",
+        "api_url": "http://www.kubota27.com/api",
+        "consumer_api_key": "1234567890asdfgh27",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #28",
+        "api_url": "http://www.kubota28.com/api",
+        "consumer_api_key": "1234567890asdfgh28",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #29",
+        "api_url": "http://www.kubota29.com/api",
+        "consumer_api_key": "1234567890asdfgh29",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #30",
+        "api_url": "http://www.kubota30.com/api",
+        "consumer_api_key": "1234567890asdfgh30",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #31",
+        "api_url": "http://www.kubota31.com/api",
+        "consumer_api_key": "1234567890asdfgh31",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #32",
+        "api_url": "http://www.kubota32.com/api",
+        "consumer_api_key": "1234567890asdfgh32",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #33",
+        "api_url": "http://www.kubota33.com/api",
+        "consumer_api_key": "1234567890asdfgh33",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #34",
+        "api_url": "http://www.kubota34.com/api",
+        "consumer_api_key": "1234567890asdfgh34",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+{
+    "resource": "producers",
+    "data": {
+        "name": "Kubota #35",
+        "api_url": "http://www.kubota35.com/api",
+        "consumer_api_key": "1234567890asdfgh35",
+        "contacts": [
+            {
+                "first_name": "John",
+                "last_name": "Doe",
+                "email": "john.doe@gmail.com"
+            }
+        ]
+    }
+},
+
+
 {
     "resource": "syndication_in",
     "data": {
