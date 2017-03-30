@@ -80,7 +80,7 @@ upload, $templateCache, freetypeService, modal) {
         $scope.freetypeControl.reset();
         $scope.advertModalActive = false;
         $scope.dialogAdvertLoading = false;
-        return loadAdverts();
+        return loadAdverts(true);
     }
 
     function handleAdvertSaveError() {
@@ -106,31 +106,24 @@ upload, $templateCache, freetypeService, modal) {
         }
         $scope.dialogAdvertLoading = true;
 
-        if ($scope.advert._id) {
-            // we are editing existing ad
-            api('advertisements').save($scope.advert, newAd).then(function(data) {
-                return handleAdvertSaveSuccess();
-            }, function(data) {
-                handleAdvertSaveError();
-            });
-        } else {
-            api('advertisements').save(newAd).then(function(data) {
-                return handleAdvertSaveSuccess();
-            }, function(data) {
-                handleAdvertSaveError();
-            });
-        }
+        api('advertisements').save($scope.advert, newAd)
+        .then(handleAdvertSaveSuccess, handleAdvertSaveError);
     }
 
     loadAdverts();
 
 
     //COLLECTIONS
-    function loadCollections() {
-        $scope.collectionsLoading = true;
-        api('collections').query({where: {deleted: false}}).then(function(data) {
+    function loadCollections(silent) {
+        silent = silent || false;
+        if (!silent) {
+            $scope.collectionsLoading = true;
+        }
+        return api('collections').query({where: {deleted: false}}).then(function(data) {
             $scope.collections = data._items;
-            notify.info('Collections loaded');
+            if (!silent) {
+                notify.info(gettext('Collections loaded'));
+            }
             $scope.collectionsLoading = false;
         }).catch(function(data) {
             $scope.collectionsLoading = false;
@@ -143,7 +136,7 @@ upload, $templateCache, freetypeService, modal) {
         $scope.collection = {};
         $scope.collectionModalActive = false;
         $scope.dialogCollectionLoading = false;
-        return loadCollections();
+        return loadCollections(true);
     }
 
     function handleCollectionSaveError() {
@@ -193,11 +186,8 @@ upload, $templateCache, freetypeService, modal) {
         }
         $scope.dialogCollectionLoading = true;
 
-        api('collections').save($scope.collection, newCollection).then(function(data) {
-            handleCollectionSaveSuccess();
-        }, function(data) {
-            handleCollectionSaveError();
-        });
+        api('collections').save($scope.collection, newCollection)
+        .then(handleCollectionSaveSuccess, handleCollectionSaveError);
     }
 
     $scope.removeCollection = function (collection, $index) {
