@@ -37,6 +37,17 @@ describe('Consumers', function() {
             consumersManagement.openConsumersManagement();
         });
 
+        it('can switch to page 2', function() {
+            consumersManagement.openConsumersManagement();
+
+            element(by.css('button[ng-click="setPage(page + 1)"]'))
+                .click()
+                .then(() => element.all(by.repeater('consumer in consumers')).count())
+                .then((count) => {
+                    expect(count).toEqual(11);
+                })
+        });
+
         it('can show an error when some required field are empty', function() {
             consumersManagement.openConsumersManagement();
 

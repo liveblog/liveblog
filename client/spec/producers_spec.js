@@ -37,6 +37,18 @@ describe('Producers', function() {
                 });
         });
 
+        it('can switch to page 2', function() {
+            producersManagement.openProducersManagement();
+
+            element(by.css('button[ng-click="setPage(page + 1)"]'))
+                .click()
+                .then(() => element.all(by.repeater('producer in producers')).count())
+                .then((count) => {
+                    expect(count).toEqual(11);
+                })
+        });
+
+
         it('can show an error when some required field are empty', function() {
             producersManagement.openProducersManagement();
 
