@@ -244,7 +244,11 @@ function AdvertisingManagerPage() {
         return self.saveAdvert().then(function() {return freeData;});
     };
     self.editCollection = function() {
+<<<<<<< HEAD
         var freeData = self.createAdvertData();
+=======
+        var freeData = self.createFreetypeData();
+>>>>>>> 74af51c2... Intermediate
         self.collectionTitle.sendKeys(freeData.title);
         return self.saveCollection().then(function() {return freeData;});
     }
@@ -259,6 +263,11 @@ function AdvertisingManagerPage() {
         // self.getCollections().get(index).click().all(by.css('[ng-click="removeCollection(collection, $index)"]')).click();
         self.getCollections().get(index).all(by.id('toggle-collection-menu')).click();
         element(by.css('[ng-click="removeCollection(collection, $index)"]')).click();
+        okModal();
+    };
+    self.removeAdvert = function(index) {
+        index = index || 0;
+        self.getFreetypes().get(index).click().all(by.css('[ng-click="removeCollection(freetype, $index);"]')).click();
         okModal();
     };
 }
