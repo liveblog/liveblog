@@ -87,10 +87,6 @@ upload, $templateCache, freetypeService, modal) {
         notify.error(gettext('Something went wrong, please try again later!'), 5000)
     }
 
-    function handleAdvertSaveError() {
-        notify.error(gettext('Something went wrong, please try again later!'), 5000)
-    }
-
     $scope.removeAdvert = function (advert, $index) {
         modal.confirm(gettext('Are you sure you want to remove this advert?')).then(function() {
             api('advertisements').save(advert, {deleted: true}).then(function(data) {
