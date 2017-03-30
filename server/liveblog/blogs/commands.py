@@ -18,3 +18,10 @@ class PublishBlogsCommand(superdesk.Command):
         for blog in blogs:
             url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
             print('  - Blog "%s" republished: %s' % (blog['title'], url))
+
+
+class PublishBloglistCommand(superdesk.Command):
+    def run(self):
+        blogslist_service = get_resource_service('blogslist')
+        blogslist_service.publish_bloglist_embed_on_s3()
+        print("Bloglist published to s3")

@@ -142,7 +142,6 @@ INSTALLED_APPS = [
     'liveblog.themes',
     'liveblog.global_preferences',
     'liveblog.client_modules',
-    'liveblog.blogslist',
     'liveblog.syndication',
     'liveblog.freetypes',
     'liveblog.marketplace',
