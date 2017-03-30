@@ -27,6 +27,7 @@ from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk.users.services import is_admin
 from superdesk.utc import utcnow
+from .tasks import delete_blog_embed_on_s3, publish_blog_embed_on_s3
 
 logger = logging.getLogger('superdesk')
 
@@ -157,8 +158,6 @@ class BlogService(BaseService):
                 doc['start_date'] = utcnow()
 
     def on_created(self, docs):
-        from .tasks import publish_blog_embed_on_s3
-
         for blog in docs:
             blog_id = str(blog['_id'])
             # Publish on s3 if possible and save the public_url in the blog.
@@ -211,8 +210,6 @@ class BlogService(BaseService):
             updates['start_date'] = original['_created']
 
     def on_updated(self, updates, original):
-        from .tasks import publish_blog_embed_on_s3
-
         original_id = str(original['_id'])
         publish_blog_embed_on_s3.delay(original_id)
         # Invalidate cache for updated blog.
@@ -233,8 +230,6 @@ class BlogService(BaseService):
         notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def on_delete(self, doc):
-        from .tasks import delete_blog_embed_on_s3
-
         # Prevent delete of blog if blog has consumers
         out = get_resource_service('syndication_out').find({'blog_id': doc['_id']})
         if doc['syndication_enabled'] and out.count():
@@ -243,8 +238,6 @@ class BlogService(BaseService):
         delete_blog_embed_on_s3.delay(doc.get('_id'))
 
     def on_deleted(self, doc):
-        from .tasks import delete_blog_embed_on_s3
-
         # Invalidate cache for updated blog.
         blog_id = str(doc['_id'])
         app.blog_cache.invalidate(blog_id)
