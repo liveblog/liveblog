@@ -1,22 +1,37 @@
-baseController.$inject = ['$scope', 'api', 'notify'];
+baseController.$inject = ['$scope', 'api', 'notify', '$route'];
 
-export default function baseController($scope, api, notify) {
-    $scope.pageLimit = 3;
+const getPageValue = ($route) => {
+    if ($route.current.params.hasOwnProperty('page')) {
+        return parseInt($route.current.params.page, 10);
+    }
 
-    let criteria = {
-        max_results: $scope.pageLimit
+    return 1;
+};
+
+export default function baseController($scope, api, notify, $route) {
+    $scope.pageLimit = 25;
+
+    $scope.criteria = {
+        max_results: $scope.pageLimit,
+        page: getPageValue($route)
     };
 
+    $scope.$on('$routeUpdate', () => {
+        $scope.criteria.page = getPageValue($route);
+    });
+
     if ($scope.endPoint) {
-        api
-            .query($scope.endPoint, criteria)
-            .then((data) => {
-                $scope[$scope.endPoint] = data;
-            })
-            .catch((err) => {
-                notify.pop();
-                notify.error(gettext('Fatal error!'));
-            });
+        $scope.$watch('criteria.page', () => {
+            api
+                .query($scope.endPoint, $scope.criteria)
+                .then((data) => {
+                    $scope[$scope.endPoint] = data;
+                })
+                .catch((err) => {
+                    notify.pop();
+                    notify.error(gettext('Fatal error!'));
+                });
+        });
     }
 
     $scope.createEntry = function() {
