@@ -1,5 +1,6 @@
 import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.html';
 import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html';
+import _ from 'lodash';
 
 LiveblogAdvertisingController.$inject = ['$scope', 'api', 'notify', 'gettext',
 'upload','$templateCache', 'freetypeService', 'modal'];
@@ -86,6 +87,10 @@ upload, $templateCache, freetypeService, modal) {
         notify.error(gettext('Something went wrong, please try again later!'), 5000)
     }
 
+    function handleAdvertSaveError() {
+        notify.error(gettext('Something went wrong, please try again later!'), 5000)
+    }
+
     $scope.removeAdvert = function (advert, $index) {
         modal.confirm(gettext('Are you sure you want to remove this advert?')).then(function() {
             api('advertisements').save(advert, {deleted: true}).then(function(data) {
@@ -157,7 +162,6 @@ upload, $templateCache, freetypeService, modal) {
                 // editing collection
                 $scope.collection = angular.copy(collection);
                 $scope.collection.checkAdverts = {};
-                //console.log('$scope.collection ', $scope.collection);
                 angular.forEach($scope.adverts, function(advert) {
                     if ($scope.collectionHasAdvert($scope.collection, advert)) {
                         $scope.collection.checkAdverts[advert._id] = true;
