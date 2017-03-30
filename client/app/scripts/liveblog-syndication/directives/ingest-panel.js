@@ -90,7 +90,10 @@ export default function ingestPanel(
 
             // This watches for incoming posts when ingest is in focus
             scope.$on('posts', (e, data) => {
-                IngestPanelActions.setUnreadQueue(data.posts);
+                let syndPosts = data.posts
+                    .filter((post) => post.hasOwnProperty('syndication_in'));
+
+                IngestPanelActions.setUnreadQueue(syndPosts);
             });
 
             scope.openSyndBlogsModal = function() {

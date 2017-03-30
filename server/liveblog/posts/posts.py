@@ -263,6 +263,7 @@ class PostsService(ArchiveService):
         out_service = get_resource_service('syndication_out')
         # invalidate cache for updated blog
         app.blog_cache.invalidate(original.get('blog'))
+        posts = []
         # send notifications
         if updates.get('deleted', False):
             out_service.send_syndication_post(original, action='deleted')
@@ -276,6 +277,7 @@ class PostsService(ArchiveService):
             doc = original.copy()
             doc.update(updates)
             logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
+            posts.append(doc)
 
             if original['post_status'] in ('submitted', 'draft') and updates.get('post_status') == 'open':
                 # Post has been published as contribution, then published.
@@ -284,7 +286,7 @@ class PostsService(ArchiveService):
             else:
                 out_service.send_syndication_post(doc, action='updated')
 
-            push_notification('posts', updated=True)
+            push_notification('posts', updated=True, posts=posts)
 
     def get_item_update_data(self, item, links, delete=True):
         doc = {LINKED_IN_PACKAGES: links}
