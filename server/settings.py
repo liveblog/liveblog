@@ -32,8 +32,9 @@ def env(variable, fallback_value=None):
             if fallback_value:
                 type_of = type(fallback_value)
                 if isinstance(type_of, (list, tuple)):
-                    env_value = [value.strip() for value in env_value.split(',')]
-                return type_of(env_value)
+                    return [value.strip() for value in env_value.split(',')]
+                else:
+                    return type_of(env_value)
             else:
                 return env_value
 
