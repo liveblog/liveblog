@@ -261,11 +261,6 @@ function AdvertisingManagerPage() {
         element(by.css('[ng-click="removeCollection(collection, $index)"]')).click();
         okModal();
     };
-    self.removeCollection = function(index) {
-        index = index || 0;
-        self.getFreetypes().get(index).click().all(by.css('[ng-click="removeCollection(freetype, $index);"]')).click();
-        okModal();
-    };
 }
 
 function ThemesManagerPage() {
