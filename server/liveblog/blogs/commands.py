@@ -23,5 +23,5 @@ class PublishBlogsCommand(superdesk.Command):
 class PublishBloglistCommand(superdesk.Command):
     def run(self):
         blogslist_service = get_resource_service('blogslist')
-        blogslist_service.publish_bloglist_embed_on_s3()
+        blogslist_service.publish()
         print("Bloglist published to s3")
