@@ -321,6 +321,7 @@ class BlogService(BaseService):
             outputs.remove({'output_id': output.get('_id')})
             self.system_update(blog['_id'], {'outputs': outputs}, blog)
 
+
 class UserBlogsResource(Resource):
     url = 'users/<regex("[a-f0-9]{24}"):user_id>/blogs'
     schema = blogs_schema
