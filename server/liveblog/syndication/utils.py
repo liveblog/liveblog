@@ -73,6 +73,10 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
 
     session = requests.Session()
     session.trust_env = False
+    adapter = requests.adapters.HTTPAdapter(max_retries=0)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+
     logger.info('API {} request to {} with params={} and data={}'.format(method, api_url, args, data))
     headers = {
         'Content-Type': 'application/json'
