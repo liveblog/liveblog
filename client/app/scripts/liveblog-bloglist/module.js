@@ -2,9 +2,9 @@
     'use strict';
 
     BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload',
-        'isArchivedFilterSelected', '$q', 'blogSecurityService', 'notify'];
+        'isArchivedFilterSelected', '$q', 'blogSecurityService', 'notify', '$http'];
     function BlogListController($scope, $location, api, gettext, upload,
-        isArchivedFilterSelected, $q, blogSecurityService, notify) {
+        isArchivedFilterSelected, $q, blogSecurityService, notify, $http) {
         $scope.maxResults = 25;
         $scope.states = [
             {name: 'active', code: 'open', text: gettext('Active blogs')},
@@ -156,7 +156,35 @@
         $scope.openAccessRequest = function(blog) {
             $scope.accessRequestedTo = blog;
             $scope.showBlogAccessModal = true;
-        }
+            $scope.allowAccessRequest = false;
+
+            var theoricalMembers = [];
+
+            blog.members.forEach(function(blog) {
+                if (theoricalMembers.indexOf(blog._id) === -1)
+                  theoricalMembers.push(blog._id);
+            });
+
+            $http({
+                url: config.server.url + '/blogs/' + blog._id + '/request_membership',
+                method: 'GET',
+                headers: {
+                    "Content-Type": "application/json;charset=utf-8"
+                }
+            })
+            .then(function(response) {
+                if (response.data._items.length > 0) {
+                    response.data._items.forEach(function(item) {
+                      if (theoricalMembers.indexOf(item._id) === -1)
+                        theoricalMembers.push(item._id);
+                    });
+                }
+
+                if (theoricalMembers.length < config.assignableUsers[config.subscriptionLevel])
+                    $scope.allowAccessRequest = true;
+            })
+
+        };
 
         $scope.closeAccessRequest = function() {
             $scope.accessRequestedTo = false;
