@@ -1,5 +1,7 @@
 import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.html';
 import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html';
+import advertModalTpl from 'scripts/liveblog-advertising/views/advert-modal.html';
+import collectionModalTpl from 'scripts/liveblog-advertising/views/collection-modal.html';
 import _ from 'lodash';
 
 LiveblogAdvertisingController.$inject = ['$scope', 'api', 'notify', 'gettext',
@@ -15,6 +17,9 @@ upload, $templateCache, freetypeService, modal) {
     $scope.dialogAdvertLoading = false;
     $scope.dialogCollectionLoading = false;
     $scope.advertsLoading = false;
+    // views for the modals
+    $scope.advertModalTpl = advertModalTpl;
+    $scope.collectionModalTpl = collectionModalTpl;
 
 
     $scope.freetypesData = {}; $scope.freetypeControl = {}; $scope.validation = {};
@@ -63,7 +68,7 @@ upload, $templateCache, freetypeService, modal) {
     function loadAdverts(silent) {
         silent = silent || false;
         !silent ? $scope.advertsLoading = true : $scope.advertsLoading = false;
-        api('advertisements').query({where: {deleted: false}}).then(function(data) {
+        return api('advertisements').query({where: {deleted: false}}).then(function(data) {
             $scope.adverts = data._items;
             if (!silent) {
                 notify.info('Adverts loaded');
@@ -80,7 +85,7 @@ upload, $templateCache, freetypeService, modal) {
         $scope.freetypeControl.reset();
         $scope.advertModalActive = false;
         $scope.dialogAdvertLoading = false;
-        loadAdverts();
+        return loadAdverts(true);
     }
 
     function handleAdvertSaveError() {
@@ -106,33 +111,26 @@ upload, $templateCache, freetypeService, modal) {
         }
         $scope.dialogAdvertLoading = true;
 
-        if ($scope.advert._id) {
-            // we are editing existing ad
-            api('advertisements').save($scope.advert, newAd).then(function(data) {
-                handleAdvertSaveSuccess();
-            }, function(data) {
-                handleAdvertSaveError();
-            });
-        } else {
-            api('advertisements').save(newAd).then(function(data) {
-                handleAdvertSaveSuccess();
-            }, function(data) {
-                handleAdvertSaveError();
-            });
-        }
+        api('advertisements').save($scope.advert, newAd)
+        .then(handleAdvertSaveSuccess, handleAdvertSaveError);
     }
 
     loadAdverts();
 
 
     //COLLECTIONS
-    function loadCollections() {
-        $scope.collectionsLoading = true;
-        api('collections').query({where: {deleted: false}}).then(function(data) {
+    function loadCollections(silent) {
+        silent = silent || false;
+        if (!silent) {
+            $scope.collectionsLoading = true;
+        }
+        return api('collections').query({where: {deleted: false}}).then(function(data) {
             $scope.collections = data._items;
-            notify.info('Collections loaded');
+            if (!silent) {
+                notify.info(gettext('Collections loaded'));
+            }
             $scope.collectionsLoading = false;
-        }, function(data) {
+        }).catch(function(data) {
             $scope.collectionsLoading = false;
             notify.error(gettext('There was an error getting the adverts'));
         })
@@ -143,7 +141,7 @@ upload, $templateCache, freetypeService, modal) {
         $scope.collection = {};
         $scope.collectionModalActive = false;
         $scope.dialogCollectionLoading = false;
-        loadCollections();
+        return loadCollections(true);
     }
 
     function handleCollectionSaveError() {
@@ -151,64 +149,49 @@ upload, $templateCache, freetypeService, modal) {
     }
 
     $scope.openCollectionDialog = function(collection) {
-        // load all available adverts without showing any messages
-        loadAdverts(true);
         collection = collection || false;
-        if (collection) {
-            // editing collection
-            $scope.collection = angular.copy(collection);
-            $scope.collection.checkAdverts = {};
-            //console.log('$scope.collection ', $scope.collection);
-            angular.forEach($scope.adverts, function(advert) {
-                if ($scope.collectionHasAdvert($scope.collection, advert)) {
-                    $scope.collection.checkAdverts[advert._id] = true;
-                } else {
+        // load all available adverts without showing any messages
+        loadAdverts(true).then(function() {
+            if (collection) {
+                // editing collection
+                $scope.collection = angular.copy(collection);
+                $scope.collection.checkAdverts = {};
+                //console.log('$scope.collection ', $scope.collection);
+                angular.forEach($scope.adverts, function(advert) {
+                    if ($scope.collectionHasAdvert($scope.collection, advert)) {
+                        $scope.collection.checkAdverts[advert._id] = true;
+                    } else {
+                        $scope.collection.checkAdverts[advert._id] = false;
+                    }
+                });
+            } else {
+                $scope.collection = {};
+                // for checkboxes and advert collections
+                $scope.collection.checkAdverts = {};
+                angular.forEach($scope.adverts, function(advert) {
                     $scope.collection.checkAdverts[advert._id] = false;
-                }
-            });
-            
-        } else {
-            $scope.collection = {};
-            // for checkboxes and advert collections
-            $scope.collection.checkAdverts = {};
-            angular.forEach($scope.adverts, function(advert) {
-                $scope.collection.checkAdverts[advert._id] = false;
-            });
-        }
-        $scope.collectionModalActive = true;
+                });
+            }
+            $scope.collectionModalActive = true;
+        });
     }
-
     $scope.saveCollection = function() {
 
         //create the saveable advertisement array for the collection
         var advertisements = [];
-
-        angular.forEach($scope.collection.checkAdverts, function(val, ad_id) {
-            if (val) {
+        angular.forEach($scope.collection.checkAdverts, function(checked, ad_id) {
+            if (checked) {
                 advertisements.push({'advertisement_id': ad_id});
             }
-        });
-
+        })
         var newCollection = {
             'name': $scope.collection.name,
             'advertisements': advertisements
         }
         $scope.dialogCollectionLoading = true;
 
-        if ($scope.collection._id) {
-            // we are editing existing collection
-            api('collections').save($scope.collection, newCollection).then(function(data) {
-                handleCollectionSaveSuccess();
-            }, function(data) {
-                handleCollectionSaveError();
-            });
-        } else {
-            api('collections').save(newCollection).then(function(data) {
-                handleCollectionSaveSuccess();
-            }, function(data) {
-                handleCollectionSaveError();
-            });
-        }
+        api('collections').save($scope.collection, newCollection)
+        .then(handleCollectionSaveSuccess, handleCollectionSaveError);
     }
 
     $scope.removeCollection = function (collection, $index) {
