@@ -9,9 +9,7 @@
 	.right-important {
 		float: right!important;
 	}
-	.freetype--error {
-	    color: #8b0000;
-	}
+
 	.advert-list-holder {
 		margin-top: 60px;
 		margin-left: 16px;
@@ -33,4 +31,8 @@
 	.card-box__content {
 		min-height: 120px;
 	}
+}
+.freetype--error {
+    color: #b94a48;
+	opacity: 0.6;
 }
