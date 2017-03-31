@@ -156,6 +156,14 @@
         $scope.openAccessRequest = function(blog) {
             $scope.accessRequestedTo = blog;
             $scope.showBlogAccessModal = true;
+
+            if (config.subscriptionLevel && !config.subscriptionLevel == '')
+                $scope.checkAccessRequestLimit();
+            else
+                $scope.allowAccessRequest = true;
+        };
+
+        $scope.checkAccessRequestLimit = function() {
             $scope.allowAccessRequest = false;
 
             var theoricalMembers = [];
