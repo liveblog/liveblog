@@ -7,7 +7,7 @@
         <div class="item-creation">
             <fieldset>
                 <div class="field">
-                    <label translate>Collection Name<span class="ft-alert" translate ng-if="!collection.name">required</span></label>
+                    <label translate>Collection Name<span class="ft-alert" ng-if="notValidName(collection, collections)">{{ notValidName(collection, collections) }}</span></label>
                     <input type="text" ng-model="collection.name" maxlength="24" required>
                 </div>
                 <div class="field">
@@ -24,6 +24,7 @@
                             </span>
                         </li>
                     </ul>
+                    {{ checkboxModel }}
                 </div>
             </fieldset>
         </div>
@@ -32,7 +33,7 @@
         <div>
             <button type="button" class="btn btn-default pull-left" translate ng-click="cancelCollectionCreate()">Cancel</button>
             <button type="button" class="btn btn-primary btn-info" translate ng-click="saveCollection()"
-            ng-disabled="!collection.name || dialogCollectionLoading"
+            ng-disabled="notValidName(collection, collections) || dialogCollectionLoading"
             >Save</button>
         </div>
     </div>
