@@ -22,21 +22,37 @@ except ImportError:
 
 
 def env(variable, fallback_value=None):
+    # Get env value from env
     env_value = os.environ.get(variable, '')
-    if len(env_value) == 0:
+    env_value = env_value.strip()
+    if not env_value:
+        # No env value, return fallback_value.
         return fallback_value
-    else:
-        if env_value == "__EMPTY__":
-            return ''
+
+    if env_value == "__EMPTY__":
+        # Return None for __EMPTY__.
+        return ''
+
+    if not fallback_value:
+        # Return env value if fallback is not available
+        return env_value
+
+    # Get type of fallback value.
+    type_of = type(fallback_value)
+    if isinstance(fallback_value, (list, tuple)):
+        # Cast comma-separated env value to list.
+        return [value.strip() for value in env_value.split(',')]
+    elif isinstance(fallback_value, bool):
+        # Cast string env value to bool.
+        if env_value in ('1', 'true', 'True'):
+            return True
+        elif env_value in ('0', 'false', 'False'):
+            return False
         else:
-            if fallback_value:
-                type_of = type(fallback_value)
-                if isinstance(type_of, (list, tuple)):
-                    return [value.strip() for value in env_value.split(',')]
-                else:
-                    return type_of(env_value)
-            else:
-                return env_value
+            return fallback_value
+    else:
+        # Cast env value to fallback type.
+        return type_of(env_value)
 
 
 ABS_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -278,7 +294,7 @@ S3_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
 S3_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)
 
 # Syndication Global Settings
-SYNDICATION_VALIDATE_AUTH = env('SYNDICATION_VALIDATE_AUTH', True)
+SYNDICATION_VALIDATE_AUTH = env('SYNDICATION_VALIDATE_AUTH', False)
 SYNDICATION_VALIDATE_AUTH_TIMEOUT = env('SYNDICATION_VALIDATE_AUTH_TIMEOUT', 5)
 SYNDICATION_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
 SYNDICATION_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)

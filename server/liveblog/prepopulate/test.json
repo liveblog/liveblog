@@ -965,8 +965,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere",
-        "webhook_url": "http://www.deere.com/api/syndication/webhook",
+        "name": "Consumer #01",
+        "webhook_url": "http://localhost:5000/api/syndication/webhook",
         "api_key": "123456789qwerty",
         "contacts": [{
             "first_name": "John",
@@ -978,9 +978,9 @@
 {
     "resource": "producers",
     "data": {
-        "name": "John Deere",
-        "api_url": "http://www.deere.com/api",
-        "consumer_api_key": "1234567890asdfgh",
+        "name": "Producer #01",
+        "api_url": "http://localhost:5000/api",
+        "consumer_api_key": "123456789qwerty",
         "contacts": [{
             "first_name": "John",
             "last_name": "Doe",

@@ -52,7 +52,6 @@ def get_app(config=None):
 
     # Create superdesk app instance.
     app = superdesk_app(config, media_storage)
-
     # Add default domain config.
     config['DOMAIN'] = {}
 
