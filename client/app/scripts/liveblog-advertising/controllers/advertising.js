@@ -233,4 +233,14 @@ upload, $templateCache, freetypeService, modal) {
         }
         return invalid;
     }
+
+    $scope.freetypeValid = function() {
+        var valid = true;
+        angular.forEach($scope.validation, function(validStatus) {
+            if (!validStatus) {
+                valid = false;
+            }
+        });
+        return valid;
+    }
 }
