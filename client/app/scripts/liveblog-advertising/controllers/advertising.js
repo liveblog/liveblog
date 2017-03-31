@@ -219,4 +219,19 @@ upload, $templateCache, freetypeService, modal) {
         })
         return hasAdvert;
     }
+
+    $scope.notValidName = function (name, existingItems) {
+        var invalid = false;
+        if (!name) {
+            invalid = gettext('required');
+        }
+        if (!invalid) {
+            angular.forEach(existingItems, function(existingItem) {
+                if (name === existingItem.name) {
+                    invalid = gettext('must be unique');
+                }
+            });
+        }
+        return invalid;
+    }
 }
