@@ -220,14 +220,15 @@ upload, $templateCache, freetypeService, modal) {
         return hasAdvert;
     }
 
-    $scope.notValidName = function (name, existingItems) {
+    $scope.notValidName = function (item, existingItems) {
         var invalid = false;
-        if (!name) {
+        if (!item || !item.name) {
             invalid = gettext('required');
         }
         if (!invalid) {
             angular.forEach(existingItems, function(existingItem) {
-                if (name === existingItem.name) {
+                // make sure name is unique but don't compare with itself
+                if (item.name === existingItem.name && (!item._id || item._id !== existingItem._id)) {
                     invalid = gettext('must be unique');
                 }
             });

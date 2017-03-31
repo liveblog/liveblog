@@ -7,7 +7,7 @@
         <div class="item-creation">
             <fieldset>
                 <div class="field">
-                    <label translate>Advert Name<span class="ft-alert" ng-if="notValidName(advert.name, adverts)">{{ notValidName(advert.name, adverts) }}</span></label>
+                    <label translate>Advert Name<span class="ft-alert" ng-if="notValidName(advert, adverts)">{{ notValidName(advert, adverts) }}</span></label>
                     <input type="text" ng-model="advert.name" maxlength="24" required>
                 </div>
                 <div class="field">
@@ -24,7 +24,7 @@
         <div>
             <button type="button" class="btn btn-default pull-left" translate ng-click="cancelAdvertCreate()">Cancel</button>
             <button type="button" class="btn btn-primary btn-info" translate ng-click="saveAdvert()"
-            ng-disabled="notValidName(advert.name, adverts) || dialogAdvertLoading || !freetypeValid()"
+            ng-disabled="notValidName(advert, adverts) || dialogAdvertLoading || !freetypeValid()"
             >Save</button>
         </div>
     </div>
