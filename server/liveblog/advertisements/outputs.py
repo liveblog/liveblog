@@ -12,22 +12,17 @@ from superdesk.services import BaseService
 from superdesk import get_resource_service
 
 
-class AdvertisementsResource(Resource):
+class OutputsResource(Resource):
     schema = {
         'name': {
             'type': 'string',
             'unique': True
         },
-        'type': {
-            'type': 'string',
-            'allowed': ['Advertisement Local', 'Advertisement Remote', 'Advertisement Adsense'],
-            'default': 'Advertisement Local'
+        'collection': Resource.rel('collections', True),
+        'background-color': {
+            'type': 'string'
         },
-        'meta': {
-            'type': 'dict',
-            'nullable': True
-        },
-        'text': {
+        'background-image': {
             'type': 'string'
         },
         'deleted': {
@@ -36,20 +31,20 @@ class AdvertisementsResource(Resource):
         }
     }
     datasource = {
-        'source': 'advertisements',
+        'source': 'outputs',
         'default_sort': [('name', 1)]
     }
     RESOURCE_METHODS = ['GET', 'POST']
     ITEM_METHODS = ['GET', 'POST', 'DELETE']
-    privileges = {'GET': 'advertisements', 'POST': 'advertisements',
-                  'PATCH': 'advertisements', 'DELETE': 'advertisements'}
+    privileges = {'GET': 'outputs', 'POST': 'outputs',
+                  'PATCH': 'outputs', 'DELETE': 'outputs'}
 
 
-class AdvertisementsService(BaseService):
+class OutputsService(BaseService):
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
-        collections_service = get_resource_service('collections')
+        blogs_service = get_resource_service('blogs')
 
         # deletes blog
         if updates.get('deleted', False):
-            collections_service.delete_advertisement(original)
+            blogs_service.delete_output(original)
