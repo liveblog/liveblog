@@ -158,12 +158,13 @@
             $scope.showBlogAccessModal = true;
 
             if (config.subscriptionLevel && !config.subscriptionLevel == '')
-                $scope.checkAccessRequestLimit();
+                $scope.checkAccessRequestLimit(blog);
             else
                 $scope.allowAccessRequest = true;
         };
 
-        $scope.checkAccessRequestLimit = function() {
+        $scope.checkAccessRequestLimit = function(blog) {
+            console.log('check access request limit');
             $scope.allowAccessRequest = false;
 
             var theoricalMembers = [];
