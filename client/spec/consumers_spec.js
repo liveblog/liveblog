@@ -5,8 +5,8 @@ var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login
     assertToastMsg = require('./helpers/assert-toast-msg');
 
 var consumer = {
-    name: 'Consumer #01',
-    webhookUrl: 'http://localhost:5000/api/syndication/webhook'
+    name: 'Test Consumer',
+    webhookUrl: 'http://consumer.local/api/syndication/webhook'
 };
 
 var contact = {
@@ -138,7 +138,7 @@ describe('Consumers', function() {
             consumersManagement.openConsumersManagement();
 
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
-            expect(firstRowName.getText()).toEqual('Consumer #01');
+            expect(firstRowName.getText()).toEqual('Test Consumer');
 
             var updateConsumer = function(consumerName, contactEmail) {
                 return firstRowName
@@ -187,7 +187,7 @@ describe('Consumers', function() {
         it('can delete a consumer', function() {
            consumersManagement.openConsumersManagement();
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
-            expect(firstRowName.getText()).toEqual('Consumer #01');
+            expect(firstRowName.getText()).toEqual('Test Consumer');
 
             var elemToHover = element(by.css('ul.table-body div.row-wrapper'));
 
