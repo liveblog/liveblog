@@ -267,7 +267,12 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default" translate ng-click="closeAccessRequest()">Cancel</button>
-            <button type="submit" class="btn btn-primary btn-info pull-left" translate ng-click="requestAccess(accessRequestedTo)">Request Access</button>
+            <button
+              type="submit"
+              class="btn btn-primary btn-info pull-left"
+              translate
+              ng-disabled="!allowAccessRequest"
+              ng-click="requestAccess(accessRequestedTo)">Request Access</button>
         </div>
     </div>
 
