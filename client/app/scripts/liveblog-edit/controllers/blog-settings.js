@@ -10,14 +10,46 @@
 
 import angular from 'angular';
 import _ from 'lodash';
-import moment from 'moment-timezone';
 
 import './../../ng-sir-trevor';
 import './../../ng-sir-trevor-blocks';
 import './../unread.posts.service';
 
-var BlogSettingsController = function($scope, blog, api, blogService, $location, notify,
-    gettext, modal, $q, upload, datetimeHelper, config, blogSecurityService, moment) {
+BlogSettingsController.$inject = [
+    '$scope',
+    'blog',
+    'api',
+    'blogService',
+    '$location',
+    'notify',
+    'gettext',
+    'modal',
+    '$q',
+    'upload',
+    'datetimeHelper',
+    'config',
+    'blogSecurityService',
+    'moment',
+    'superdesk'
+];
+
+function BlogSettingsController(
+    $scope,
+    blog,
+    api,
+    blogService,
+    $location,
+    notify,
+    gettext,
+    modal,
+    $q,
+    upload,
+    datetimeHelper,
+    config,
+    blogSecurityService,
+    moment,
+    superdesk
+) {
 
     // set view's model
     var vm = this;
@@ -66,12 +98,23 @@ var BlogSettingsController = function($scope, blog, api, blogService, $location,
             return true;
         },
         openUploadModal: function() {
-            vm.uploadModal = true;
-        },
-        closeUploadModal: function() {
-            vm.uploadModal = false;
-            vm.preview = {};
-            vm.progress = {width: 0};
+            superdesk.intent('upload', 'media').then((pictures) => {
+                if (pictures.length === 0) {
+                    return;
+                }
+
+                let firstPicture = pictures[0];
+
+                //$scope.image.picture_url = firstPicture.renditions.original.href;
+                //$scope.image.picture = firstPicture._id;
+
+                vm.newBlog.picture_url = firstPicture.renditions.viewImage.href;
+                vm.newBlog.picture = firstPicture._id;
+                vm.uploadModal = false;
+                vm.preview = {};
+                vm.progress = {width: 0};
+                vm.forms.dirty = true;
+            });
         },
         changeTab: function(tab) {
             if (vm.tab) {
@@ -94,38 +137,6 @@ var BlogSettingsController = function($scope, blog, api, blogService, $location,
                 deregisterPreventer();
                 vm.newBlog.picture_url = null;
                 vm.forms.dirty = true;
-            });
-        },
-        upload: function(config) {
-            var form = {};
-            if (config.img) {
-                form.media = config.img;
-            } else if (config.url) {
-                form.URL = config.url;
-            } else {
-                return;
-            }
-            // return a promise of upload which will call the success/error callback
-            return api.archive.getUrl().then(function(url) {
-                return upload.start({
-                    method: 'POST',
-                    url: url,
-                    data: form
-                })
-                .then(function(response) {
-                    if (response.data._status === 'ERR'){
-                        return;
-                    }
-                    var picture_url = response.data.renditions.viewImage.href;
-                    vm.newBlog.picture_url = picture_url;
-                    vm.newBlog.picture = response.data._id;
-                    vm.uploadModal = false;
-                    vm.preview = {};
-                    vm.progress = {width: 0};
-                    vm.forms.dirty = true;
-                }, null, function(progress) {
-                    vm.progress.width = Math.round(progress.loaded / progress.total * 100.0);
-                });
             });
         },
         saveAndClose: function() {
@@ -392,21 +403,5 @@ var BlogSettingsController = function($scope, blog, api, blogService, $location,
     });
 
 }
-BlogSettingsController.$inject = [
-    '$scope',
-    'blog',
-    'api',
-    'blogService',
-    '$location',
-    'notify',
-    'gettext',
-    'modal',
-    '$q',
-    'upload',
-    'datetimeHelper',
-    'config',
-    'blogSecurityService',
-    'moment'
-];
 
 export default BlogSettingsController;

@@ -23,6 +23,9 @@
                     <div ng-if="blog.auto_publish" class="state-label state-published state-label--no-float">ON</div>
                 </dd>
             </dl>
+            <span
+                class="label label-info circle small notification-counter"
+                ng-if="blog.unread > 0">{{blog.unread}}</span>
             <div lb-ingest-panel-dropdown blog="blog" consumer-blog-id="consumerBlogId"></div>
         </li>
     </ul>

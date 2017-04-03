@@ -197,6 +197,13 @@ ul.dropdown__menu.more-activity-menu {
     }
 }
 
+div.panel--contribution span.notification-counter {
+    top: -9px;
+    left: -7px;
+    right: auto;
+    background-color: $sd-blue;
+}
+
 div.subnav.pan-right div.button-stack.right-stack.new-producer,
 div.subnav.pan-right div.button-stack.right-stack.new-consumer {
     margin: 0;

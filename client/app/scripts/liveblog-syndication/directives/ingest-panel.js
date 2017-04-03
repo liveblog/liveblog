@@ -5,12 +5,24 @@ ingestPanel.$inject = [
     'Store',
     'IngestPanelReducers',
     '$routeParams',
-    'notify'
+    'notify',
+    '$timeout'
 ];
 
-export default function ingestPanel(IngestPanelActions, Store, IngestPanelReducers, $routeParams, notify) {
+export default function ingestPanel(
+    IngestPanelActions,
+    Store,
+    IngestPanelReducers,
+    $routeParams,
+    notify,
+    $timeout
+) {
     return {
         templateUrl: ingestPanelTpl,
+        scope: {
+            ingestQueue: '=',
+            openPanel: '='
+        },
         link: function(scope) {
             var handleError = function() {
                 notify.pop();
@@ -27,12 +39,12 @@ export default function ingestPanel(IngestPanelActions, Store, IngestPanelReduce
                 producerBlogs: {},
                 modalActive: false,
                 localProducerBlogIds: [],
-                locallySyndicatedItems: []
+                locallySyndicatedItems: [],
+                unreadQueue: []
             });
 
             scope.store.connect((state) => {
                 scope.syndicationIn = state.syndicationIn;
-                scope.locallySyndicatedItems = state.locallySyndicatedItems;
                 scope.modalActive = state.modalActive;
                 scope.consumerBlogId = state.consumerBlogId;
 
@@ -41,14 +53,25 @@ export default function ingestPanel(IngestPanelActions, Store, IngestPanelReduce
                 }
 
                 if (state.producers._items.length > 0) {
-                    scope.locallySyndicatedItems.map((blog) => {
-                        state.producers._items.forEach((producer) => {
-                            if (producer._id === blog.producer_id) {
-                                blog.producer_name = producer.name;
-                            }
-                        });
+                    $timeout(() => {
+                        scope.locallySyndicatedItems = state.locallySyndicatedItems.map((blog) => {
+                            blog.unread = 0;
 
-                        return blog;
+                            // Set unread (pending notifications) value for each
+                            state.unreadQueue.forEach((element) => {
+                                if (blog._id === element.syndication_in) {
+                                    blog.unread++;
+                                }
+                            });
+
+                            state.producers._items.forEach((producer) => {
+                                if (producer._id === blog.producer_id) {
+                                    blog.producer_name = producer.name;
+                                }
+                            });
+
+                            return blog;
+                        });
                     });
                 }
             });
@@ -59,12 +82,26 @@ export default function ingestPanel(IngestPanelActions, Store, IngestPanelReduce
             // actual syndication id as a parameter.
             IngestPanelActions.getSyndication($routeParams._id);
 
+            // This watches for incoming posts when ingest is not in focus
+            if (scope.ingestQueue.length > 0) {
+                IngestPanelActions.setUnreadQueue(scope.ingestQueue);
+                scope.ingestQueue = [];
+            }
+
+            // This watches for incoming posts when ingest is in focus
+            scope.$on('posts', (e, data) => {
+                let syndPosts = data.posts
+                    .filter((post) => post.hasOwnProperty('syndication_in'));
+
+                IngestPanelActions.setUnreadQueue(syndPosts);
+            });
+
             scope.openSyndBlogsModal = function() {
                 IngestPanelActions.toggleModal(true);
             };
 
             scope.select = function(synd) {
-                // In case you're wondering, this method is calling
+                // In case you're wondering, this method calls
                 // a parent scope function in liveblog-edit/module
                 scope.openPanel('incoming-syndication', synd._id);
             };

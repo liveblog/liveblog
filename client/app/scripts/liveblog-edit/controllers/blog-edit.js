@@ -13,7 +13,7 @@ import _ from 'lodash';
 
 import scorecardsTpl from 'scripts/liveblog-edit/views/scorecards.html';
 import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.html';
-import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html'
+import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html';
 
 import './../../ng-sir-trevor';
 import './../../ng-sir-trevor-blocks';
@@ -35,6 +35,7 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
             blog.blog_preferences.theme = themes[0];
         });
     }
+
     // start listening for unread posts.
     unreadPostsService.startListening();
     // return the list of items from the editor
@@ -465,8 +466,8 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
         },
         isCurrentPostUnsaved: function() {
             if (angular.isDefined($scope.currentPost)) {
-                return _.any(getItemsFromEditor(), function (item, item_index) {
-                    return _.any(_.keys(item), function (key) {
+                return _.some(getItemsFromEditor(), function (item, item_index) {
+                    return _.some(_.keys(item), function (key) {
                         if (!angular.isDefined($scope.currentPost.items[item_index])) {
                             return true;
                         } else {
@@ -486,8 +487,22 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
     var panel = angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor',
         syndId = angular.isDefined($routeParams.syndId) ? $routeParams.syndId : null;
 
+    $scope.ingestQueue = [];
+
     $scope.openPanel(panel, syndId);
-}
+
+    // This function is responsible for updating the ingest panel
+    // unread count when this one isn't currently selected/displayed
+    $scope.$on('posts', (e, data) => {
+        if ($scope.panelState !== 'ingest' && data.hasOwnProperty('posts')) {
+            let syndPosts = data.posts
+                .filter((post) => post.hasOwnProperty('syndication_in'));
+
+            $scope.ingestQueue = $scope.ingestQueue.concat(syndPosts);
+        }
+    });
+};
+
 BlogEditController.$inject = [
     'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector', '$http',
     'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'freetypeService', 'modal',
@@ -495,4 +510,3 @@ BlogEditController.$inject = [
 ];
 
 export default BlogEditController;
-//});
