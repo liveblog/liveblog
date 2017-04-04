@@ -5,8 +5,8 @@ var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login
     assertToastMsg = require('./helpers/assert-toast-msg');
 
 var consumer = {
-    name: 'Massey Fergusson',
-    webhookUrl: 'https://www.masseyferguson.de/api/syndication/webhook'
+    name: 'Test Consumer',
+    webhookUrl: 'http://consumer-test.local/api/syndication/webhook'
 };
 
 var contact = {
@@ -151,7 +151,7 @@ describe('Consumers', function() {
             consumersManagement.openConsumersManagement();
 
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
-            expect(firstRowName.getText()).toEqual('John Deere');
+            expect(firstRowName.getText()).toEqual('Test Consumer');
 
             var updateConsumer = function(consumerName, contactEmail) {
                 return firstRowName
@@ -200,7 +200,7 @@ describe('Consumers', function() {
         it('can delete a consumer', function() {
            consumersManagement.openConsumersManagement();
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
-            expect(firstRowName.getText()).toEqual('John Deere');
+            expect(firstRowName.getText()).toEqual('Test Consumer');
 
             var elemToHover = element(by.css('ul.table-body div.row-wrapper'));
 
@@ -227,7 +227,7 @@ describe('Consumers', function() {
             consumersManagement.openConsumersManagement();
 
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
-            expect(firstRowName.getText()).toEqual('John Deere');
+            expect(firstRowName.getText()).toEqual('Test Consumer');
 
             firstRowName
                 .click()

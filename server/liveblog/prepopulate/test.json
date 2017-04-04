@@ -965,8 +965,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere",
-        "webhook_url": "http://www.deere.com/api/syndication/webhook",
+        "name": "Consumer",
+        "webhook_url": "http://consumer.local/api/syndication/webhook",
         "api_key": "123456789qwerty",
         "contacts": [{
             "first_name": "John",
@@ -980,8 +980,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #1",
-        "webhook_url": "http://www.deere1.com/api/syndication/webhook",
+        "name": "Consumer #1",
+        "webhook_url": "http://consumer1.local/api/syndication/webhook",
         "api_key": "123456789qwerty1",
         "contacts": [
             {
@@ -995,8 +995,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #2",
-        "webhook_url": "http://www.deere2.com/api/syndication/webhook",
+        "name": "Consumer #2",
+        "webhook_url": "http://consumer2.local/api/syndication/webhook",
         "api_key": "123456789qwerty2",
         "contacts": [
             {
@@ -1010,8 +1010,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #3",
-        "webhook_url": "http://www.deere3.com/api/syndication/webhook",
+        "name": "Consumer #3",
+        "webhook_url": "http://consumer3.local/api/syndication/webhook",
         "api_key": "123456789qwerty3",
         "contacts": [
             {
@@ -1025,8 +1025,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #4",
-        "webhook_url": "http://www.deere4.com/api/syndication/webhook",
+        "name": "Consumer #4",
+        "webhook_url": "http://consumer4.local/api/syndication/webhook",
         "api_key": "123456789qwerty4",
         "contacts": [
             {
@@ -1040,8 +1040,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #5",
-        "webhook_url": "http://www.deere5.com/api/syndication/webhook",
+        "name": "Consumer #5",
+        "webhook_url": "http://consumer5.local/api/syndication/webhook",
         "api_key": "123456789qwerty5",
         "contacts": [
             {
@@ -1055,8 +1055,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #6",
-        "webhook_url": "http://www.deere6.com/api/syndication/webhook",
+        "name": "Consumer #6",
+        "webhook_url": "http://consumer6.local/api/syndication/webhook",
         "api_key": "123456789qwerty6",
         "contacts": [
             {
@@ -1070,8 +1070,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #7",
-        "webhook_url": "http://www.deere7.com/api/syndication/webhook",
+        "name": "Consumer #7",
+        "webhook_url": "http://consumer7.local/api/syndication/webhook",
         "api_key": "123456789qwerty7",
         "contacts": [
             {
@@ -1085,8 +1085,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #8",
-        "webhook_url": "http://www.deere8.com/api/syndication/webhook",
+        "name": "Consumer #8",
+        "webhook_url": "http://consumer8.local/api/syndication/webhook",
         "api_key": "123456789qwerty8",
         "contacts": [
             {
@@ -1100,8 +1100,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #9",
-        "webhook_url": "http://www.deere9.com/api/syndication/webhook",
+        "name": "Consumer #9",
+        "webhook_url": "http://consumer9.local/api/syndication/webhook",
         "api_key": "123456789qwerty9",
         "contacts": [
             {
@@ -1115,8 +1115,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #10",
-        "webhook_url": "http://www.deere10.com/api/syndication/webhook",
+        "name": "Consumer #10",
+        "webhook_url": "http://consumer10.local/api/syndication/webhook",
         "api_key": "123456789qwerty10",
         "contacts": [
             {
@@ -1130,8 +1130,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #11",
-        "webhook_url": "http://www.deere11.com/api/syndication/webhook",
+        "name": "Consumer #11",
+        "webhook_url": "http://consumer11.local/api/syndication/webhook",
         "api_key": "123456789qwerty11",
         "contacts": [
             {
@@ -1145,8 +1145,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #12",
-        "webhook_url": "http://www.deere12.com/api/syndication/webhook",
+        "name": "Consumer #12",
+        "webhook_url": "http://consumer12.local/api/syndication/webhook",
         "api_key": "123456789qwerty12",
         "contacts": [
             {
@@ -1160,8 +1160,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #13",
-        "webhook_url": "http://www.deere13.com/api/syndication/webhook",
+        "name": "Consumer #13",
+        "webhook_url": "http://consumer13.local/api/syndication/webhook",
         "api_key": "123456789qwerty13",
         "contacts": [
             {
@@ -1175,8 +1175,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #14",
-        "webhook_url": "http://www.deere14.com/api/syndication/webhook",
+        "name": "Consumer #14",
+        "webhook_url": "http://consumer14.local/api/syndication/webhook",
         "api_key": "123456789qwerty14",
         "contacts": [
             {
@@ -1190,8 +1190,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #15",
-        "webhook_url": "http://www.deere15.com/api/syndication/webhook",
+        "name": "Consumer #15",
+        "webhook_url": "http://consumer15.local/api/syndication/webhook",
         "api_key": "123456789qwerty15",
         "contacts": [
             {
@@ -1205,8 +1205,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #16",
-        "webhook_url": "http://www.deere16.com/api/syndication/webhook",
+        "name": "Consumer #16",
+        "webhook_url": "http://consumer16.local/api/syndication/webhook",
         "api_key": "123456789qwerty16",
         "contacts": [
             {
@@ -1220,8 +1220,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #17",
-        "webhook_url": "http://www.deere17.com/api/syndication/webhook",
+        "name": "Consumer #17",
+        "webhook_url": "http://consumer17.local/api/syndication/webhook",
         "api_key": "123456789qwerty17",
         "contacts": [
             {
@@ -1235,8 +1235,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #18",
-        "webhook_url": "http://www.deere18.com/api/syndication/webhook",
+        "name": "Consumer #18",
+        "webhook_url": "http://consumer18.local/api/syndication/webhook",
         "api_key": "123456789qwerty18",
         "contacts": [
             {
@@ -1250,8 +1250,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #19",
-        "webhook_url": "http://www.deere19.com/api/syndication/webhook",
+        "name": "Consumer #19",
+        "webhook_url": "http://consumer19.local/api/syndication/webhook",
         "api_key": "123456789qwerty19",
         "contacts": [
             {
@@ -1265,8 +1265,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #20",
-        "webhook_url": "http://www.deere20.com/api/syndication/webhook",
+        "name": "Consumer #20",
+        "webhook_url": "http://consumer20.local/api/syndication/webhook",
         "api_key": "123456789qwerty20",
         "contacts": [
             {
@@ -1280,8 +1280,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #21",
-        "webhook_url": "http://www.deere21.com/api/syndication/webhook",
+        "name": "Consumer #21",
+        "webhook_url": "http://consumer21.local/api/syndication/webhook",
         "api_key": "123456789qwerty21",
         "contacts": [
             {
@@ -1295,8 +1295,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #22",
-        "webhook_url": "http://www.deere22.com/api/syndication/webhook",
+        "name": "Consumer #22",
+        "webhook_url": "http://consumer22.local/api/syndication/webhook",
         "api_key": "123456789qwerty22",
         "contacts": [
             {
@@ -1310,8 +1310,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #23",
-        "webhook_url": "http://www.deere23.com/api/syndication/webhook",
+        "name": "Consumer #23",
+        "webhook_url": "http://consumer23.local/api/syndication/webhook",
         "api_key": "123456789qwerty23",
         "contacts": [
             {
@@ -1325,8 +1325,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #24",
-        "webhook_url": "http://www.deere24.com/api/syndication/webhook",
+        "name": "Consumer #24",
+        "webhook_url": "http://consumer24.local/api/syndication/webhook",
         "api_key": "123456789qwerty24",
         "contacts": [
             {
@@ -1340,8 +1340,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #25",
-        "webhook_url": "http://www.deere25.com/api/syndication/webhook",
+        "name": "Consumer #25",
+        "webhook_url": "http://consumer25.local/api/syndication/webhook",
         "api_key": "123456789qwerty25",
         "contacts": [
             {
@@ -1355,8 +1355,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #26",
-        "webhook_url": "http://www.deere26.com/api/syndication/webhook",
+        "name": "Consumer #26",
+        "webhook_url": "http://consumer26.local/api/syndication/webhook",
         "api_key": "123456789qwerty26",
         "contacts": [
             {
@@ -1370,8 +1370,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #27",
-        "webhook_url": "http://www.deere27.com/api/syndication/webhook",
+        "name": "Consumer #27",
+        "webhook_url": "http://consumer27.local/api/syndication/webhook",
         "api_key": "123456789qwerty27",
         "contacts": [
             {
@@ -1385,8 +1385,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #28",
-        "webhook_url": "http://www.deere28.com/api/syndication/webhook",
+        "name": "Consumer #28",
+        "webhook_url": "http://consumer28.local/api/syndication/webhook",
         "api_key": "123456789qwerty28",
         "contacts": [
             {
@@ -1400,8 +1400,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #29",
-        "webhook_url": "http://www.deere29.com/api/syndication/webhook",
+        "name": "Consumer #29",
+        "webhook_url": "http://consumer29.local/api/syndication/webhook",
         "api_key": "123456789qwerty29",
         "contacts": [
             {
@@ -1415,8 +1415,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #30",
-        "webhook_url": "http://www.deere30.com/api/syndication/webhook",
+        "name": "Consumer #30",
+        "webhook_url": "http://consumer30.local/api/syndication/webhook",
         "api_key": "123456789qwerty30",
         "contacts": [
             {
@@ -1430,8 +1430,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #31",
-        "webhook_url": "http://www.deere31.com/api/syndication/webhook",
+        "name": "Consumer #31",
+        "webhook_url": "http://consumer31.local/api/syndication/webhook",
         "api_key": "123456789qwerty31",
         "contacts": [
             {
@@ -1445,8 +1445,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #32",
-        "webhook_url": "http://www.deere32.com/api/syndication/webhook",
+        "name": "Consumer #32",
+        "webhook_url": "http://consumer32.local/api/syndication/webhook",
         "api_key": "123456789qwerty32",
         "contacts": [
             {
@@ -1460,8 +1460,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #33",
-        "webhook_url": "http://www.deere33.com/api/syndication/webhook",
+        "name": "Consumer #33",
+        "webhook_url": "http://consumer33.local/api/syndication/webhook",
         "api_key": "123456789qwerty33",
         "contacts": [
             {
@@ -1475,8 +1475,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #34",
-        "webhook_url": "http://www.deere34.com/api/syndication/webhook",
+        "name": "Consumer #34",
+        "webhook_url": "http://consumer34.local/api/syndication/webhook",
         "api_key": "123456789qwerty34",
         "contacts": [
             {
@@ -1490,8 +1490,8 @@
 {
     "resource": "consumers",
     "data": {
-        "name": "John Deere #35",
-        "webhook_url": "http://www.deere35.com/api/syndication/webhook",
+        "name": "Consumer #35",
+        "webhook_url": "http://consumer35.local/api/syndication/webhook",
         "api_key": "123456789qwerty35",
         "contacts": [
             {
@@ -1507,8 +1507,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "John Deere",
-        "api_url": "http://www.deere.com/api",
+        "name": "Consumer",
+        "api_url": "http://producer.local/api",
         "consumer_api_key": "1234567890asdfgh",
         "contacts": [{
             "first_name": "John",
@@ -1522,8 +1522,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #1",
-        "api_url": "http://www.kubota1.com/api",
+        "name": "Producer #1",
+        "api_url": "http://producer1.local/api",
         "consumer_api_key": "1234567890asdfgh1",
         "contacts": [
             {
@@ -1537,8 +1537,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #2",
-        "api_url": "http://www.kubota2.com/api",
+        "name": "Producer #2",
+        "api_url": "http://producer2.local/api",
         "consumer_api_key": "1234567890asdfgh2",
         "contacts": [
             {
@@ -1552,8 +1552,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #3",
-        "api_url": "http://www.kubota3.com/api",
+        "name": "Producer #3",
+        "api_url": "http://producer3.local/api",
         "consumer_api_key": "1234567890asdfgh3",
         "contacts": [
             {
@@ -1567,8 +1567,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #4",
-        "api_url": "http://www.kubota4.com/api",
+        "name": "Producer #4",
+        "api_url": "http://producer4.local/api",
         "consumer_api_key": "1234567890asdfgh4",
         "contacts": [
             {
@@ -1582,8 +1582,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #5",
-        "api_url": "http://www.kubota5.com/api",
+        "name": "Producer #5",
+        "api_url": "http://producer5.local/api",
         "consumer_api_key": "1234567890asdfgh5",
         "contacts": [
             {
@@ -1597,8 +1597,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #6",
-        "api_url": "http://www.kubota6.com/api",
+        "name": "Producer #6",
+        "api_url": "http://producer6.local/api",
         "consumer_api_key": "1234567890asdfgh6",
         "contacts": [
             {
@@ -1612,8 +1612,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #7",
-        "api_url": "http://www.kubota7.com/api",
+        "name": "Producer #7",
+        "api_url": "http://producer7.local/api",
         "consumer_api_key": "1234567890asdfgh7",
         "contacts": [
             {
@@ -1627,8 +1627,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #8",
-        "api_url": "http://www.kubota8.com/api",
+        "name": "Producer #8",
+        "api_url": "http://producer8.com/api",
         "consumer_api_key": "1234567890asdfgh8",
         "contacts": [
             {
@@ -1642,8 +1642,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #9",
-        "api_url": "http://www.kubota9.com/api",
+        "name": "Producer #9",
+        "api_url": "http://producer9.local/api",
         "consumer_api_key": "1234567890asdfgh9",
         "contacts": [
             {
@@ -1657,8 +1657,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #10",
-        "api_url": "http://www.kubota10.com/api",
+        "name": "Producer #10",
+        "api_url": "http://producer10.local/api",
         "consumer_api_key": "1234567890asdfgh10",
         "contacts": [
             {
@@ -1672,8 +1672,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #11",
-        "api_url": "http://www.kubota11.com/api",
+        "name": "Producer #11",
+        "api_url": "http://producer11.com/api",
         "consumer_api_key": "1234567890asdfgh11",
         "contacts": [
             {
@@ -1687,8 +1687,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #12",
-        "api_url": "http://www.kubota12.com/api",
+        "name": "Producer #12",
+        "api_url": "http://producer12.com/api",
         "consumer_api_key": "1234567890asdfgh12",
         "contacts": [
             {
@@ -1702,8 +1702,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #13",
-        "api_url": "http://www.kubota13.com/api",
+        "name": "Producer #13",
+        "api_url": "http://producer13.com/api",
         "consumer_api_key": "1234567890asdfgh13",
         "contacts": [
             {
@@ -1717,8 +1717,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #14",
-        "api_url": "http://www.kubota14.com/api",
+        "name": "Producer #14",
+        "api_url": "http://producer14.com/api",
         "consumer_api_key": "1234567890asdfgh14",
         "contacts": [
             {
@@ -1732,8 +1732,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #15",
-        "api_url": "http://www.kubota15.com/api",
+        "name": "Producer #15",
+        "api_url": "http://producer15.com/api",
         "consumer_api_key": "1234567890asdfgh15",
         "contacts": [
             {
@@ -1747,8 +1747,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #16",
-        "api_url": "http://www.kubota16.com/api",
+        "name": "Producer #16",
+        "api_url": "http://producer16.com/api",
         "consumer_api_key": "1234567890asdfgh16",
         "contacts": [
             {
@@ -1762,8 +1762,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #17",
-        "api_url": "http://www.kubota17.com/api",
+        "name": "Producer #17",
+        "api_url": "http://producer17.com/api",
         "consumer_api_key": "1234567890asdfgh17",
         "contacts": [
             {
@@ -1777,8 +1777,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #18",
-        "api_url": "http://www.kubota18.com/api",
+        "name": "Producer #18",
+        "api_url": "http://producer18.com/api",
         "consumer_api_key": "1234567890asdfgh18",
         "contacts": [
             {
@@ -1792,8 +1792,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #19",
-        "api_url": "http://www.kubota19.com/api",
+        "name": "Producer #19",
+        "api_url": "http://producer19.com/api",
         "consumer_api_key": "1234567890asdfgh19",
         "contacts": [
             {
@@ -1807,8 +1807,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #20",
-        "api_url": "http://www.kubota20.com/api",
+        "name": "Producer #20",
+        "api_url": "http://producer20.com/api",
         "consumer_api_key": "1234567890asdfgh20",
         "contacts": [
             {
@@ -1822,8 +1822,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #21",
-        "api_url": "http://www.kubota21.com/api",
+        "name": "Producer #21",
+        "api_url": "http://producer21.com/api",
         "consumer_api_key": "1234567890asdfgh21",
         "contacts": [
             {
@@ -1837,8 +1837,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #22",
-        "api_url": "http://www.kubota22.com/api",
+        "name": "Producer #22",
+        "api_url": "http://producer22.com/api",
         "consumer_api_key": "1234567890asdfgh22",
         "contacts": [
             {
@@ -1852,8 +1852,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #23",
-        "api_url": "http://www.kubota23.com/api",
+        "name": "Producer #23",
+        "api_url": "http://producer23.com/api",
         "consumer_api_key": "1234567890asdfgh23",
         "contacts": [
             {
@@ -1867,8 +1867,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #24",
-        "api_url": "http://www.kubota24.com/api",
+        "name": "Producer #24",
+        "api_url": "http://producer24.com/api",
         "consumer_api_key": "1234567890asdfgh24",
         "contacts": [
             {
@@ -1882,8 +1882,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #25",
-        "api_url": "http://www.kubota25.com/api",
+        "name": "Producer #25",
+        "api_url": "http://producer25.com/api",
         "consumer_api_key": "1234567890asdfgh25",
         "contacts": [
             {
@@ -1897,8 +1897,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #26",
-        "api_url": "http://www.kubota26.com/api",
+        "name": "Producer #26",
+        "api_url": "http://producer26.com/api",
         "consumer_api_key": "1234567890asdfgh26",
         "contacts": [
             {
@@ -1912,8 +1912,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #27",
-        "api_url": "http://www.kubota27.com/api",
+        "name": "Producer #27",
+        "api_url": "http://producer27.com/api",
         "consumer_api_key": "1234567890asdfgh27",
         "contacts": [
             {
@@ -1927,8 +1927,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #28",
-        "api_url": "http://www.kubota28.com/api",
+        "name": "Producer #28",
+        "api_url": "http://producer28.com/api",
         "consumer_api_key": "1234567890asdfgh28",
         "contacts": [
             {
@@ -1942,8 +1942,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #29",
-        "api_url": "http://www.kubota29.com/api",
+        "name": "Producer #29",
+        "api_url": "http://producer29.com/api",
         "consumer_api_key": "1234567890asdfgh29",
         "contacts": [
             {
@@ -1957,8 +1957,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #30",
-        "api_url": "http://www.kubota30.com/api",
+        "name": "Producer #30",
+        "api_url": "http://producer30.com/api",
         "consumer_api_key": "1234567890asdfgh30",
         "contacts": [
             {
@@ -1972,8 +1972,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #31",
-        "api_url": "http://www.kubota31.com/api",
+        "name": "Producer #31",
+        "api_url": "http://producer31.com/api",
         "consumer_api_key": "1234567890asdfgh31",
         "contacts": [
             {
@@ -1987,8 +1987,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #32",
-        "api_url": "http://www.kubota32.com/api",
+        "name": "Producer #32",
+        "api_url": "http://producer32.com/api",
         "consumer_api_key": "1234567890asdfgh32",
         "contacts": [
             {
@@ -2002,8 +2002,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #33",
-        "api_url": "http://www.kubota33.com/api",
+        "name": "Producer #33",
+        "api_url": "http://producer33.com/api",
         "consumer_api_key": "1234567890asdfgh33",
         "contacts": [
             {
@@ -2017,8 +2017,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #34",
-        "api_url": "http://www.kubota34.com/api",
+        "name": "Producer #34",
+        "api_url": "http://producer34.com/api",
         "consumer_api_key": "1234567890asdfgh34",
         "contacts": [
             {
@@ -2032,8 +2032,8 @@
 {
     "resource": "producers",
     "data": {
-        "name": "Kubota #35",
-        "api_url": "http://www.kubota35.com/api",
+        "name": "Producer #35",
+        "api_url": "http://producer35.com/api",
         "consumer_api_key": "1234567890asdfgh35",
         "contacts": [
             {

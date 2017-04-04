@@ -16,6 +16,9 @@ def setup_before_scenario(context, scenario, config, app_factory):
     # TODO: Temp fix for DATE_FORMAT. This will be removed when superdesk will allow to specify custom test settings.
     config['DATE_FORMAT'] = DATE_FORMAT
 
+    # Syndication is disabled as auth validation cannot work with behave tests.
+    config['SYNDICATION_VALIDATE_AUTH'] = False
+
     tests.setup(context, config, app_factory, bool(config))
 
     context.headers = [

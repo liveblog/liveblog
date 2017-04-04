@@ -5,8 +5,8 @@ var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login
     assertToastMsg = require('./helpers/assert-toast-msg');
 
 var producer = {
-    name: 'Massey Fergusson',
-    apiUrl: 'https://www.masseyferguson.de/api',
+    name: 'Test Producer',
+    apiUrl: 'http://producer-test.local/api/',
     consumerApiKey: '1234567890qwerty'
 };
 
@@ -155,7 +155,7 @@ describe('Producers', function() {
             producersManagement.openProducersManagement();
 
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
-            expect(firstRowName.getText()).toEqual('John Deere');
+            expect(firstRowName.getText()).toEqual('Test Producer');
 
             var updateProducer = function(producerName, contactEmail) {
                 return firstRowName
@@ -201,7 +201,7 @@ describe('Producers', function() {
             producersManagement.openProducersManagement();
 
             var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
-            expect(firstRowName.getText()).toEqual('John Deere');
+            expect(firstRowName.getText()).toEqual('Test Producer');
 
             var elemToHover = element(by.css('ul.table-body div.row-wrapper'));
 

@@ -5,6 +5,9 @@ __pycache__/
 *.py[cod]
 *.sublime-*
 .vagrant
+*.rej
+*.orig
+*.patch
 
 # C extensions
 *.so
