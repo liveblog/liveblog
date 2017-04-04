@@ -160,25 +160,21 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                     if (post.deleted) {
                         // post deleted
                         removePost(post);
-                    } else {
                         // post updated
-                        if (post.post_status !== self.status
-                        || (self.status === 'open' && post.sticky !== sticky)
-                        || (self.highlight && !post.lb_highlight)) {
-                           removePost(post);
-                        } else {
-                            // update
-                            self.pages[existing_post_indexes[0]].posts[existing_post_indexes[1]] = post;
-                            createPagesWithPosts(self.allPosts(), true);
-                       }
+                    } if (post.post_status !== self.status
+                    || (self.status === 'open' && post.sticky !== sticky)
+                    || (self.highlight && !post.lb_highlight)) {
+                       removePost(post);
+                    } else {
+                          // update
+                        self.pages[existing_post_indexes[0]].posts[existing_post_indexes[1]] = post;
+                        createPagesWithPosts(self.allPosts(), true);
                     }
-                } else {
                     // post doesn't exist in the list
-                    if (!post.deleted
-                    && post.post_status === self.status
-                    && (self.status !== 'open' || post.sticky === sticky)) {
-                        addPost(post);
-                    }
+                } else if (!post.deleted
+                && post.post_status === self.status
+                && (self.status !== 'open' || post.sticky === sticky)) {
+                    addPost(post);
                 }
             });
             // update date

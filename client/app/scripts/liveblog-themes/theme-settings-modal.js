@@ -41,10 +41,8 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                                 }, function(error) {
                                     notify.error(error.data._error.message);
                                 });
-                            } else {
-                                if (shouldClose) {
-                                    vm.closeModal();
-                                }
+                            } else if (shouldClose) {
+                                vm.closeModal();
                             }
                         },
                         closeModal: function() {

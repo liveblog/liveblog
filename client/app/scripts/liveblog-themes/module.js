@@ -41,15 +41,11 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
                             todo.splice(index, 1);
                         }
                         parent_node[name] = {};
-                    } else {
-                        if (index === -1) {
-                            todo.push([name, extend]);
-                        }
+                    } else if (index === -1) {
+                        todo.push([name, extend]);
                     }
-                } else {
-                    if (!angular.isDefined(themes_hierachy[name])) {
-                        themes_hierachy[name] = {};
-                    }
+                } else if (!angular.isDefined(themes_hierachy[name])) {
+                    themes_hierachy[name] = {};
                 }
             }
             themes.forEach(function(theme) {
