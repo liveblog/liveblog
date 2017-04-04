@@ -73,7 +73,7 @@ module.exports = function makeConfig(grunt) {
             ],
             modulesDirectories: [ 'node_modules' ],
             alias: {
-                'moment-timezone': 'moment-timezone/builds/moment-timezone-with-data-2010-2020',
+                //'moment-timezone': 'moment-timezone/builds/moment-timezone-with-data-2010-2020',
                 'rangy-saverestore': 'rangy/lib/rangy-selectionsaverestore',
                 'angular-embedly': 'angular-embedly/em-minified/angular-embedly.min',
                 'jquery-gridster': 'gridster/dist/jquery.gridster.min',
@@ -116,6 +116,10 @@ module.exports = function makeConfig(grunt) {
                 {
                     test: /\.(png|gif|jpeg|jpg|woff|woff2|eot|ttf|svg)(\?.*$|$)/,
                     loader: 'file-loader'
+                },
+                {
+                    test: /\.json$/,
+                    loader: 'json-loader'
                 }
             ]
         }
