@@ -81,13 +81,17 @@ def check_webhook_status(self, consumer_id):
     consumers = get_resource_service('consumers')
     consumer = consumers._get_consumer(consumer_id) or {}
     if 'webhook_url' in consumer:
-        response = send_api_request(consumer['webhook_url'], consumer['api_key'], method='GET', json_loads=False)
-        cursor = consumers._cursor()
-        if response.status_code == 401:
-            webhook_enabled = True
-        else:
+        try:
+            response = send_api_request(consumer['webhook_url'], consumer['api_key'], method='GET', json_loads=False)
+        except:
             webhook_enabled = False
+        else:
+            if response.status_code == 401:
+                webhook_enabled = True
+            else:
+                webhook_enabled = False
 
+        cursor = consumers._cursor()
         cursor.find_one_and_update({'_id': consumer['_id']}, {'$set': {'webhook_enabled': webhook_enabled}})
         push_notification(consumers.notification_key, consumer={
             '_id': consumer['_id'],
