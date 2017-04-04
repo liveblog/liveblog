@@ -660,9 +660,9 @@ angular
         SirTrevor.Blocks.Text.prototype.toHTML = function(html) {
             if (this.$el) {
                 return this.getTextBlock().html();
-            } else {
-                return html;
             }
+
+            return html;
         };
         SirTrevor.Blocks.Text.prototype.onContentPasted = _.debounce(function(event) {
             // Content pasted. Delegate to the drop parse method
@@ -703,9 +703,9 @@ angular
             toHTML: function(html) {
                 if (this.$el) {
                     return this.getTextBlock().html();
-                } else {
-                    return html;
                 }
+
+                return html;
             },
             toMeta: function() {
                 var data = this.getData();

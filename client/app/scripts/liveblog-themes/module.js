@@ -249,8 +249,8 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
 
                 if (config.subscriptionLevel === 'team')
                     return (themes.length >= config.themeCreationRestrictions.team);
-                else
-                    return false;
+
+                return false;
             },
             upgradeModal: false,
             showUpgradeModal: function() {

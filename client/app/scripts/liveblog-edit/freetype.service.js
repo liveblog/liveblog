@@ -45,9 +45,9 @@ import './module';
         }
         if (name.substr(0, 1) === '$') {
             return '"' + name.substr(1).replace('[]', '[0]') + '" ' + attr;
-        } else {
-            return '"' + SCOPE_FREETYPEDATA + '.' + name.replace('[]', '[0]') + '" ' + attr;
         }
+
+        return '"' + SCOPE_FREETYPEDATA + '.' + name.replace('[]', '[0]') + '" ' + attr;
     }
     /**
     * Sets and gets the obj from path.
@@ -126,10 +126,10 @@ import './module';
     function injectClass(attr, cls) {
         if (attr.indexOf('class') > -1) {
             return attr.replace(/class\w*=\w*("|')?([^\"\']+)("|')/, 'class="' + cls + ' $2"');
-        } else {
-            attr += 'class="' + cls + '" ';
-            return attr;
         }
+
+        attr += 'class="' + cls + '" ';
+        return attr;
     }
     /**
      * check if an angular object has all empty values.
@@ -168,9 +168,9 @@ import './module';
                         if (parts.length === 2 && parts[1] !== '') {
                             vector = parts[0].substr(0, parts[0].length - 1);
                             return '$$' + iteratorName + '.' + parts[1].substr(2);
-                        } else {
-                            return all;
                         }
+
+                        return all;
                     });
                     collection = SCOPE_FREETYPEDATA + '.' + vector;
                     return '<li ng-repeat="' + iteratorName + ' in ' + collection + '">' +
@@ -290,9 +290,9 @@ import './module';
                         if (parts.length === 2 && parts[1] !== '') {
                             vectorPath = parts[0].substr(0, parts[0].length - 1);
                             return all;
-                        } else {
-                            return all;
                         }
+
+                        return all;
                     });
                     if (vectorPath) {
                         vector = path2obj(data, vectorPath);
@@ -312,9 +312,9 @@ import './module';
                         }
                         if (!emptyValues(vector[0])) {
                             return all.replace('[]', '[0]') + templ;
-                        } else {
-                            return '';
                         }
+
+                        return '';
                     }
                     return all.replace('[]', '[0]');
                 });
@@ -362,23 +362,23 @@ import './module';
                                                 + '>'
                                                 + _.escape(paths[name])
                                                 + '</span>';
-                                } else {
-                                   return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
                                 }
+
+                                return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
 
                             case 'image':
                                 if (paths[name]) {
                                     return '<img src="' + paths[name] + '"/>'
-                                } else {
-                                   return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
                                 }
+
+                                return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
 
                             case 'embed':
                                 if (paths[name]) {
                                     return paths[name]
-                                } else {
-                                   return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
                                 }
+
+                                return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
 
                             case 'wrap-link':
                                 if (paths[name]) {
@@ -389,6 +389,7 @@ import './module';
                                                     + ' target="_blank">';
                                     wrapAfter = '</a>'
                                 }
+
                                 return '';
                         }
                     }
@@ -414,9 +415,9 @@ import './module';
                                                         + injectClass(attr, 'freetype--element')
                                                         + '>' + paths[name]
                                                         + '</span>';
-                                        } else {
-                                           return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
                                         }
+
+                                        return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
                                     case 'hide-render': {
                                         return '';
                                     }

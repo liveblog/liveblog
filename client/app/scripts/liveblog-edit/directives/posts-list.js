@@ -98,9 +98,9 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
             isStickyPostsEmpty: function() {
                 if ($scope.lbStickyInstance) {
                     return $scope.lbStickyInstance.isPostsEmpty();
-                } else {
-                    return true;
                 }
+
+                return true;
             },
             isSinglePost: function() {
                 return vm.pagesManager.count() === 1;
