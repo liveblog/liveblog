@@ -135,7 +135,6 @@ INSTALLED_APPS = [
     'liveblog.themes',
     'liveblog.global_preferences',
     'liveblog.client_modules',
-    'liveblog.blogslist',
     'liveblog.syndication',
     'liveblog.freetypes',
     'liveblog.marketplace',
@@ -271,6 +270,10 @@ ORGANIZATION_NAME_ABBREVIATION = "SF"
 SYNDICATION_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
 SYNDICATION_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)
 SYNDICATION_EXCLUDED_ITEMS = env('SYNDICATION_EXCLUDED_ITEMS', ('Advertisement Local', 'Advertisement Remote'))
+
+# S3 Blog Publishing Settings
+S3_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
+S3_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)
 
 # Marketplace Settings
 MARKETPLACE_APP_URL = env('MARKETPLACE_APP_URL', 'https://lb-market.lab.sourcefabric.org/api')
