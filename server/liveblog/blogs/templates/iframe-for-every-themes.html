@@ -1,0 +1,34 @@
+<!doctype html>
+<html ng-app="liveblog-embed" style="height:100%">
+    <head>
+        <title>{{ blog.title }}</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    </head>
+
+    <body style="height:100%">
+        <style type="text/css">
+        body {
+            background-color: black;
+        }
+        .theme {
+            width: 30%;
+            height: 100%;
+            display: inline-block;
+            margin-left:10px;
+        }
+        .theme a {
+            color: white;
+        }
+        </style>
+    {% for theme in themes %}
+        <div class="theme">
+            <h2></h2>
+            <a href="{{ url_for('.embed', blog_id=blog._id)}}?theme={{ theme.name}}" target="_blank">{{theme.name}} {{theme.version}}</a>
+            <iframe width="100%" height="100%" src="{{ url_for('.embed', blog_id=blog._id)}}?theme={{ theme.name }}" frameborder="0" allowfullscreen></iframe>
+        </div>
+    {% endfor %}
+
+    </body>
+</html>

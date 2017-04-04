@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Blogs list</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        {% for style in assets.styles %}
+            <link rel="stylesheet" href="{{ style }}">
+        {% endfor %}
+    </head>
+
+    <body>
+        <div ng-app="bloglist">
+            <div ng-view></div>
+        </div>
+        <script type="text/javascript">
+            window.LB = {
+                api_host: '{{ api_host }}',
+                assets_root: '{{ assets_root }}',
+                debug: {{ debug | tojson | safe }}
+            };
+        </script>
+        {% for script in assets.scripts %}
+            <script type="text/javascript" src="{{ script }}"></script>
+        {% endfor %}
+
+    </body>
+</html>
