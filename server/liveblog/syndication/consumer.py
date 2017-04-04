@@ -110,7 +110,7 @@ class ConsumerService(BaseService):
         super().on_created(docs)
 
         for doc in docs:
-            check_webhook_status.delay(str(doc['_id']))
+            check_webhook_status.delay(doc['_id'])
 
     def on_update(self, updates, original):
         if 'webhook_url' in updates:
@@ -119,7 +119,7 @@ class ConsumerService(BaseService):
             updates['api_key'] = generate_api_key()
 
         super().on_update(updates, original)
-        check_webhook_status.delay(str(original['_id']))
+        check_webhook_status.delay(original['_id'])
 
 
 class ConsumerResource(Resource):

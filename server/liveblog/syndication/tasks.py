@@ -84,11 +84,15 @@ def check_webhook_status(self, consumer_id):
         try:
             response = send_api_request(consumer['webhook_url'], consumer['api_key'], method='GET', json_loads=False)
         except:
+            logger.warning('Unable to connect to webhook_url "{}"'.format(consumer['webhook_url']))
             webhook_enabled = False
         else:
             if response.status_code == 401:
+                logger.info('Connected to webhook_url "{}".'.format(consumer['webhook_url']))
                 webhook_enabled = True
             else:
+                logger.warning('Unable to connect to webhook_url "{}", status: {}'.format(consumer['webhook_url'],
+                                                                                          response.status_code))
                 webhook_enabled = False
 
         cursor = consumers._cursor()
