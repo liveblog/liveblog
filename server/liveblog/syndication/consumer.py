@@ -111,7 +111,6 @@ class ConsumerService(BaseService):
         for doc in docs:
             check_webhook_status.delay(str(doc['_id']))
 
-
     def on_update(self, updates, original):
         if 'webhook_url' in updates:
             updates['webhook_url'] = trailing_slash(updates['webhook_url'])
