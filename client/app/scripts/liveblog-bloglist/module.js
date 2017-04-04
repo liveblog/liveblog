@@ -169,9 +169,9 @@
 
             var theoricalMembers = [];
 
-            blog.members.forEach(function(blog) {
-                if (theoricalMembers.indexOf(blog._id) === -1)
-                  theoricalMembers.push(blog._id);
+            blog.members.forEach(function(member) {
+                if (theoricalMembers.indexOf(member.user) === -1)
+                  theoricalMembers.push(member.user);
             });
 
             $http({
