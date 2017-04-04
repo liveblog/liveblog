@@ -357,11 +357,23 @@ import './module';
                         switch (type) {
                             case 'text':
                                 if (paths[name]) {
-                                    return '<span '
-                                                + injectClass(attr, 'freetype--element')
+                                    function clearAttr(attr) {
+                                        var ret = '';
+                                        var arr = attr.split(' ');
+                                        angular.forEach(arr, function(ar) {
+                                            if (ar.indexOf('class') > -1 ) {
+                                                ret += ar + ' ';
+                                            }
+                                        })
+                                        return ret;
+                                    }
+                                    attr = clearAttr(attr);
+                                    var ret = '<span '
+                                                 + injectClass(attr, 'freetype--element')
                                                 + '>'
                                                 + _.escape(paths[name])
                                                 + '</span>';
+                                    return ret;
                                 } else {
                                    return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
                                 }
@@ -394,6 +406,7 @@ import './module';
                     }
                     return all;
                 });
+
                 template = (function recursiveContent(template) {
                     template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>(.*?)<\/\1>?/gi,
                         function(all, tag, attr, content) {
@@ -402,6 +415,7 @@ import './module';
                             }
                             var name, type;
                             attr = attr.replace(/hide-render/gi, function(match, tag, quote, rname) {
+                                console.log('hr ');
                                 type = 'hide-render';
                                 // remove the dollar variable from the attributes.
                                 return '';
@@ -418,6 +432,7 @@ import './module';
                                            return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
                                         }
                                     case 'hide-render': {
+                                        console.log('c HR');
                                         return '';
                                     }
                                 }
@@ -426,6 +441,7 @@ import './module';
                         });
                     return template;
                 })(template);
+                console.log('template ', template);
                 return wrapBefore + template + wrapAfter;
             }
         };
