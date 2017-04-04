@@ -14,20 +14,10 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/liveblog-624bc5ab6e.css"],
-    "devScripts": ["dist/liveblog-777b537739.js"],
+    "devScripts": ["dist/liveblog-26cfa85337.js"],
     "styles": ["dist/liveblog-624bc5ab6e.css"],
-    "scripts": ["dist/liveblog-777b537739.js"],
+    "scripts": ["dist/liveblog-26cfa85337.js"],
     "options": [
-        {
-            "name": "language",
-            "label": "Theme language",
-            "type": "select",
-            "options": [
-                {"value": "en", "label": "English"},
-                {"value": "de", "label": "German"}
-            ],
-            "default": "en"
-        },
         {
             "name": "postsPerPage",
             "label": "Number of posts per page",
@@ -109,17 +99,6 @@
                 {"value": "sign_off", "label": "Sign off"}
             ],
             "help": "How to show the author name"
-        },
-        {
-            "name": "permalinkDelimiter",
-            "label": "Permalink delimiter",
-            "type": "select",
-            "options": [
-                {"value": "?", "label": "Query delimiter (?)"},
-                {"value": "#", "label": " Fragment identifier delimiter (#)"}
-            ],
-            "default": "?",
-            "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
         },
         {
             "name": "hasHighlights",

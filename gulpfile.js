@@ -1,5 +1,6 @@
 'use strict';
 
+var DEBUG = process.env.DEBUG;
 
 var gulp = require('gulp')
   , browserify = require('browserify')
@@ -11,7 +12,15 @@ var gulp = require('gulp')
   , path = require('path')
   , del = require('del')
   , minimist = require('minimist')
-  , fs = require('fs');
+  , fs = require('fs')
+  , nunjucks_extensions = require('./js/nunjucks_extensions');
+
+
+
+var nunjucksOptions = {
+    env: nunjucks_extensions.nunjucksEnv
+}
+
 
 var paths = {
   less: 'less/*.less',
@@ -21,23 +30,14 @@ var paths = {
   templates: 'templates/*.html'
 };
 
-var defaultOptions = {
-  bool: 'debug',
-  string: ['api_response', 'theme_options'],
-  debug: process.env.DEBUG || false,
-  api_response: null,
-  theme_options: null
-};
-
 
 // Command-line and default theme options from theme.json.
-var options = minimist(process.argv.slice(2), defaultOptions);
-var themeSettings = JSON.parse(fs.readFileSync('theme.json', 'utf8'));
+var themeSettings = require('./theme.json');
 
 
-function getThemeOptions() {
+function getThemeOptions(options) {
   var _options = {}
-  for (var option in themeSettings.options) {
+  for (var option in options) {
     _options[option.name] = option.default;
   }
   return _options;
@@ -45,7 +45,7 @@ function getThemeOptions() {
 
 
 // Function to async reload default theme options.
-function loadThemeSettings() {
+function loadThemeJSON() {
   fs.readFile('theme.json', 'utf8', function (err, data) {
     themeSettings = JSON.parse(data);
   });
@@ -57,7 +57,7 @@ gulp.task('browserify', ['clean-js'], function(cb) {
   var b = browserify({
     entries: './js/liveblog.js',
     fullPaths: true,
-    debug: options.debug
+    debug: DEBUG
   });
 
   var rewriteFilenames = function(filename) {
@@ -77,7 +77,7 @@ gulp.task('browserify', ['clean-js'], function(cb) {
     .pipe(buffer())
     .pipe(plugins.rev())
     .pipe(plugins.ngAnnotate())
-    .pipe(plugins.if(!options.debug, plugins.uglify()))
+    .pipe(plugins.if(!DEBUG, plugins.uglify()))
     .pipe(gulp.dest('./dist/'))
     .pipe(plugins.rev.manifest('dist/rev-manifest.json', {merge: true}))
     .pipe(gulp.dest(''));
@@ -91,7 +91,7 @@ gulp.task('less', ['clean-css'], function () {
       paths: [path.join(__dirname, 'less', 'includes')]
     }))
 
-    .pipe(plugins.if(!options.debug, plugins.minifyCss({compatibility: 'ie8'})))
+    .pipe(plugins.if(!DEBUG, plugins.minifyCss({compatibility: 'ie8'})))
     .pipe(plugins.rev())
     .pipe(gulp.dest('./dist'))
     .pipe(plugins.rev.manifest('dist/rev-manifest.json', {merge: true}))
@@ -105,15 +105,16 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
     read: false // We're only after the file paths
   });
 
-  return gulp.src('./templates/template-index.html')
+  return gulp.src('./templates/index.html')
     .pipe(plugins.inject(sources))
     .pipe(plugins.nunjucks.compile({
-      api_response: testdata.grammy_awards,
+      api_response: testdata.api_response,
       theme_settings: testdata.options.theme_settings,
       theme_options: testdata.options,
       options: JSON.stringify(testdata.options, null, 4),
-      debug: options.debug
-    }))
+      include_js_options: true,
+      debug: DEBUG
+    }, nunjucksOptions))
 
     .pipe(plugins.rename("index.html"))
     .pipe(gulp.dest('.'))
@@ -123,23 +124,24 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
 
 // Inject jinja/nunjucks template for production use.
 gulp.task('template-inject', ['less', 'browserify'], function() {
-  var theme_options = getThemeOptions();
+  var theme_options = getThemeOptions(themeSettings.options);
 
   var _api_response = {};
   var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
     read: false // We're only after the file paths
   });
 
-  return gulp.src('./templates/template-base.html')
+  return gulp.src('./templates/index.html')
     .pipe(plugins.nunjucks.compile({
       theme_options: theme_options,
       theme_settings: themeSettings,
       options: JSON.stringify(theme_options, null, 4),
-      debug: options.debug
-    }))
+      include_js_options: false,
+      debug: DEBUG
+    }, nunjucksOptions))
 
     // Add nunjucks/jinja2 template for server-side processing.
-    .pipe(plugins.inject(gulp.src(['./templates/template-timeline.html']), {
+    .pipe(plugins.inject(gulp.src(['./templates/content.html']), {
       starttag: '<!-- inject:template-timeline -->',
       transform: function(filepath, file) {
         return file.contents.toString();
@@ -164,7 +166,7 @@ gulp.task('theme-replace', ['browserify', 'less'], function() {
     .pipe(gulp.dest(base));
 
   // Reload theme options
-  loadThemeSettings();
+  loadThemeJSON();
 });
 
 
