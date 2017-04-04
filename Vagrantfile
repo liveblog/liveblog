@@ -2,7 +2,7 @@
 # vi: set ft=ruby :
 
 Vagrant.configure(2) do |config|
-    #host = RbConfig::CONFIG['host_os']
+    host = RbConfig::CONFIG['host_os']
 
     # If you are experience issues with LXC, you might need to comment out
     # the virtualbox section
