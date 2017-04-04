@@ -32,7 +32,7 @@ var paths = {
 
 
 // Command-line and default theme options from theme.json.
-var themeSettings = JSON.parse(fs.readFileSync('theme.json', 'utf8'));
+var themeSettings = require('./theme.json');
 
 
 function getThemeOptions(options) {
