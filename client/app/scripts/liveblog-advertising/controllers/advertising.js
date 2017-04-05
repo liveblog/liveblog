@@ -1,5 +1,7 @@
 import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.html';
 import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html';
+import advertModalTpl from 'scripts/liveblog-advertising/views/advert-modal.html';
+import collectionModalTpl from 'scripts/liveblog-advertising/views/collection-modal.html';
 import _ from 'lodash';
 
 LiveblogAdvertisingController.$inject = ['$scope', 'api', 'notify', 'gettext',
@@ -15,6 +17,9 @@ upload, $templateCache, freetypeService, modal) {
     $scope.dialogAdvertLoading = false;
     $scope.dialogCollectionLoading = false;
     $scope.advertsLoading = false;
+    // views for the modals
+    $scope.advertModalTpl = advertModalTpl;
+    $scope.collectionModalTpl = collectionModalTpl;
 
 
     $scope.freetypesData = {}; $scope.freetypeControl = {}; $scope.validation = {};
