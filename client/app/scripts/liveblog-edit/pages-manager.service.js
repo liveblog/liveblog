@@ -119,24 +119,25 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                 if (meta.total <= meta.max_results * meta.page || !angular.isDefined(date)) {
                     return updates;
                 // Otherwise we ask page after page and concatenate them in the response
-                } else {
-                    var promises = [];
-                    for (var i = meta.page + 1; i <= Math.floor(meta.total / meta.max_results) + 1; i++) {
-                        page = i;
-                        promises.push(postsService.getPosts(
-                            self.blogId, 
-                            {updatedAfter: date, excludeDeleted: false},
-                            undefined,
-                            page
-                        ));
-                    }
-                    return $q.all(promises).then(function(updates_pages) {
-                        return angular.extend({}, updates_pages[0], {
-                            _items: [].concat.apply([], updates_pages.map(function(update) {return update._items;})),
-                            _meta: angular.extend(meta, {max_results: meta.max_results * updates_pages.length})
-                        });
-                    });
                 }
+
+                var promises = [];
+
+                for (var i = meta.page + 1; i <= Math.floor(meta.total / meta.max_results) + 1; i++) {
+                    page = i;
+                    promises.push(postsService.getPosts(
+                        self.blogId, 
+                        {updatedAfter: date, excludeDeleted: false},
+                        undefined,
+                        page
+                    ));
+                }
+                return $q.all(promises).then(function(updates_pages) {
+                    return angular.extend({}, updates_pages[0], {
+                        _items: [].concat.apply([], updates_pages.map(function(update) {return update._items;})),
+                        _meta: angular.extend(meta, {max_results: meta.max_results * updates_pages.length})
+                    });
+                });
             })
             // Apply the update if needed
             .then(function(updates) {

@@ -501,15 +501,16 @@ app.directive('sdPlainImage', ['gettext', 'notify', 'config', function(gettext, 
             function getSelectedIndex() {
                 if (scope.selected) {
                     var selectedIndex = -1;
+
                     _.each(scope.users._items, function(item, index) {
                         if (item === scope.selected) {
                             selectedIndex = index;
                         }
                     });
                     return selectedIndex;
-                } else {
-                    return -1;
                 }
+
+                return -1;
             }
 
             function previous() {
