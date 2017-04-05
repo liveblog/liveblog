@@ -85,8 +85,8 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                             }).concat(options);
                         }
                         // retrieve parent options
-                        if (theme['extends']) {
-                            return api.themes.getById(theme['extends']).then(function(parentTheme) {
+                        if (theme.extends) {
+                            return api.themes.getById(theme.extends).then(function(parentTheme) {
                                 return collectOptions(parentTheme, options);
                             });
                         } else {
@@ -99,7 +99,7 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                         // set default settings value from options default values
                         options.forEach(function(option) {
                             if (!angular.isDefined(vm.settings[option.name])) {
-                                vm.settings[option.name] = option['default'];
+                                vm.settings[option.name] = option.default;
                             }
                         });
                         angular.extend(vm, {

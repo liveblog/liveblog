@@ -49,7 +49,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
                 }
             }
             themes.forEach(function(theme) {
-                addToHierarchy(theme.name, theme['extends']);
+                addToHierarchy(theme.name, theme.extends);
             });
             var max_loops = todo.length * todo.length;
             while (todo.length > 0 && max_loops > 0) {
@@ -141,7 +141,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
             },
             hasChildren: function(theme) {
                 return vm.themes.some(function(t) {
-                    return t['extends'] === theme.name;
+                    return t.extends === theme.name;
                 });
             },
             openThemeBlogsModal: function(theme) {

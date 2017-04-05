@@ -72,7 +72,7 @@
         "complexity": [1, 15],
         "curly": 1,
         "dot-location": [2, "property"],
-        "dot-notation": 1,
+        "dot-notation": 2,
         "eqeqeq": 2,
         "no-alert": 1,
         "no-caller": 2,

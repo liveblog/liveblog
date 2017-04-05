@@ -297,7 +297,7 @@ function BlogSettingsController(
             return theme.name === 'angular'
         });
         vm.availableThemes = data._items.filter(function(theme) {
-            return !theme['abstract'];
+            return !theme.abstract;
         });
         vm.selectedTheme = _.find(vm.availableThemes, function(theme) {
             return theme.name === vm.blogPreferences.theme;
