@@ -149,7 +149,8 @@
                 });
             }
         }
-    }]).config(['apiProvider', function(apiProvider) {
+    }])
+    .config(['apiProvider', function(apiProvider) {
         apiProvider.api('global_preferences', {
             type: 'http',
             backend: {rel: 'global_preferences'}

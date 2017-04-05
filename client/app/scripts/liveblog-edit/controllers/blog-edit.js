@@ -243,7 +243,9 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
             });
         },
         onEditorChanges: function() {
-            var input = $(this).text().trim();
+            var input = $(this)
+                .text()
+                .trim();
 
             $scope.$apply(function() {
                 $scope.actionDisabled = _.isEmpty(input);
