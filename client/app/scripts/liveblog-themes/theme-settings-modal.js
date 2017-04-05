@@ -125,7 +125,8 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
             //bindToController: true,
             //controller: ThemeSettingsModalController
         };
-    }]).filter('linkup', ['$sce', function($sce) {
+    }])
+    .filter('linkup', ['$sce', function($sce) {
         return function(value) {
             if (!value) {
                 return value;
