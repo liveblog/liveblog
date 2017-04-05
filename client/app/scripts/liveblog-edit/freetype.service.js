@@ -81,19 +81,17 @@ import './module';
                         variable[vector[1]][vector[2]] = part
                         variable = part;
                     }
-                } else {
-                    // if the object is already set, just use that.
-                    if (angular.isDefined(variable[parts[i]])) {
-                        variable = variable[parts[i]];
-                        if (i === parts.length - 1) {
-                            return variable;
-                        }
-                    } else if (i === parts.length - 1){
-                        variable[parts[i]] = value || '';
-                    } else {
-                        variable[parts[i]] = {};
-                        variable = variable[parts[i]];
+                // if the object is already set, just use that.
+                } else if (angular.isDefined(variable[parts[i]])) {
+                    variable = variable[parts[i]];
+                    if (i === parts.length - 1) {
+                        return variable;
                     }
+                } else if (i === parts.length - 1){
+                    variable[parts[i]] = value || '';
+                } else {
+                    variable[parts[i]] = {};
+                    variable = variable[parts[i]];
                 }
             }
         }
