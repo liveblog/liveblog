@@ -36,15 +36,11 @@
                             todo.splice(index, 1);
                         }
                         parent_node[name] = {};
-                    } else {
-                        if (index === -1) {
-                            todo.push([name, extend]);
-                        }
+                    } else if (index === -1) {
+                        todo.push([name, extend]);
                     }
-                } else {
-                    if (!angular.isDefined(themes_hierachy[name])) {
-                        themes_hierachy[name] = {};
-                    }
+                } else if (!angular.isDefined(themes_hierachy[name])) {
+                    themes_hierachy[name] = {};
                 }
             }
             themes.forEach(function(theme) {
@@ -98,15 +94,15 @@
                 return api.themes.getById(currenTheme['extends']).then(function(parentTheme) {
                     return collectOptions(currenTheme, options, parentTheme);
                 });
-            } else {
-                // return the options when there is no more parent theme
-                // set default settings value from options default values
-                options.forEach(function(option) {
-                    if (!angular.isDefined(theme.settings[option.name])) {
-                        theme.settings[option.name] = option['default'];
-                    }
-                });
             }
+
+            // return the options when there is no more parent theme
+            // set default settings value from options default values
+            options.forEach(function(option) {
+                if (!angular.isDefined(theme.settings[option.name])) {
+                    theme.settings[option.name] = option['default'];
+                }
+            });
         }
         return {
             getHierachy: function (themes) {
@@ -153,7 +149,8 @@
                 });
             }
         }
-    }]).config(['apiProvider', function(apiProvider) {
+    }])
+    .config(['apiProvider', function(apiProvider) {
         apiProvider.api('global_preferences', {
             type: 'http',
             backend: {rel: 'global_preferences'}

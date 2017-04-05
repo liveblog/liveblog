@@ -206,20 +206,22 @@ function BlogListController(
 
         if (showRequestDialog) {
             notify.info(gettext('Sending request'));
-            api('request_membership').save({blog: blog._id}).then(
-                function(data) {
-                    notify.pop();
-                    notify.info(gettext('Request sent'));
-                },
-                function(data) {
-                    notify.pop();
-                    var message = gettext('Something went wrong, plase try again later!');
-                    if (data.data._message === 'A request has already been sent') {
-                        message = gettext('A request has already been sent');
+            api('request_membership')
+                .save({blog: blog._id})
+                .then(
+                    function(data) {
+                        notify.pop();
+                        notify.info(gettext('Request sent'));
+                    },
+                    function(data) {
+                        notify.pop();
+                        var message = gettext('Something went wrong, plase try again later!');
+                        if (data.data._message === 'A request has already been sent') {
+                            message = gettext('A request has already been sent');
+                        }
+                        notify.error(message, 5000);
                     }
-                    notify.error(message, 5000);
-                }
-            );
+                );
             $scope.closeAccessRequest();
         } else {
             notify.pop();
@@ -356,12 +358,14 @@ app.config(['apiProvider', function(apiProvider) {
             category: superdesk.MENU_MAIN,
             adminTools: false,
             resolve: {isArchivedFilterSelected: function() {return false;}}
-        }).activity('/liveblog/active', {
+        })
+        .activity('/liveblog/active', {
             label: gettext('Blog List'),
             controller: BlogListController,
             templateUrl: mainTemplate,
             resolve: {isArchivedFilterSelected: function() {return false;}}
-        }).activity('/liveblog/archived', {
+        })
+        .activity('/liveblog/archived', {
             label: gettext('Blog List'),
             controller: BlogListController,
             templateUrl: mainTemplate,
@@ -501,15 +505,16 @@ app.directive('sdPlainImage', ['gettext', 'notify', 'config', function(gettext, 
             function getSelectedIndex() {
                 if (scope.selected) {
                     var selectedIndex = -1;
+
                     _.each(scope.users._items, function(item, index) {
                         if (item === scope.selected) {
                             selectedIndex = index;
                         }
                     });
                     return selectedIndex;
-                } else {
-                    return -1;
                 }
+
+                return -1;
             }
 
             function previous() {

@@ -52,7 +52,16 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                 }, 200);
             },
             getOrder: function(position) {
-                return angular.element($element.find('.posts').find('li .lb-post').get(position)).scope().post.order;
+                return angular
+                    .element(
+                        $element
+                            .find('.posts')
+                            .find('li .lb-post')
+                            .get(position)
+                    )
+                    .scope()
+                    .post
+                    .order;
             },
             reorder: function(index, location) {
                 if (vm.allowReordering) {
@@ -98,9 +107,9 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
             isStickyPostsEmpty: function() {
                 if ($scope.lbStickyInstance) {
                     return $scope.lbStickyInstance.isPostsEmpty();
-                } else {
-                    return true;
                 }
+
+                return true;
             },
             isSinglePost: function() {
                 return vm.pagesManager.count() === 1;
