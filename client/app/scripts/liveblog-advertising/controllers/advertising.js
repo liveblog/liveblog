@@ -1,5 +1,6 @@
 import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.html';
 import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html';
+import _ from 'lodash';
 
 LiveblogAdvertisingController.$inject = ['$scope', 'api', 'notify', 'gettext',
 'upload','$templateCache', 'freetypeService', 'modal'];
@@ -176,7 +177,6 @@ upload, $templateCache, freetypeService, modal) {
             $scope.collectionModalActive = true;
         });
     }
-
     $scope.saveCollection = function() {
 
         //create the saveable advertisement array for the collection
