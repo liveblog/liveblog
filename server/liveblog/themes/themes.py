@@ -10,7 +10,6 @@
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
-import os
 import glob
 import json
 from io import BytesIO
@@ -27,9 +26,9 @@ import magic
 import logging
 from flask import make_response
 from settings import (SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
+from liveblog.blogs.app_settings import THEMES_ASSETS_DIR
 
 logger = logging.getLogger('superdesk')
-ASSETS_DIR = 'themes_assets'
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
 CONTENT_TYPES = {
     '.css': 'text/css',
@@ -40,7 +39,7 @@ CONTENT_TYPES = {
 }
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
 download_theme_blueprint = superdesk.Blueprint('download_theme', __name__)
-themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=ASSETS_DIR)
+themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=THEMES_ASSETS_DIR)
 
 
 class ThemesResource(Resource):
@@ -109,6 +108,10 @@ class ThemesResource(Resource):
         },
         'public_url': {
             'type': 'string'
+        },
+        'seoTheme': {
+            'type': 'boolean',
+            'default': False
         }
     }
     datasource = {
@@ -392,7 +395,8 @@ def upload_a_theme():
             # 1. remove the root folder
             local_filepath = name.replace(root_folder, '', 1)
             # 2. prepend in a root folder called as the theme's name
-            local_filepath = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR, description_file.get('name'), local_filepath)
+            local_filepath = os.path.join(CURRENT_DIRECTORY, THEMES_ASSETS_DIR, description_file.get('name'),
+                                          local_filepath)
             # 1. create folder if doesn't exist
             os.makedirs(os.path.dirname(local_filepath), exist_ok=True)
             # 2. write the file
@@ -410,7 +414,6 @@ def upload_a_theme():
 
 
 class ThemesCommand(superdesk.Command):
-
     def run(self):
         theme_service = get_resource_service('themes')
         created, updated = theme_service.update_registered_theme_with_local_files(force=True)

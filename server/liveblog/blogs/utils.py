@@ -1,7 +1,9 @@
 import os
+import json
 from flask import current_app as app
 
 from .app_settings import BLOGSLIST_ASSETS_DIR
+from .app_settings import THEMES_DIRECTORY, THEMES_ASSETS_DIR
 from .exceptions import MediaStorageUnsupportedForBlogPublishing
 
 
@@ -20,3 +22,16 @@ def get_bloglist_path():
 
 def is_relative_to_current_folder(url):
     return not (url.startswith('/') or url.startswith('http://') or url.startswith('https://'))
+
+
+def get_template_file_name(theme):
+    return os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme['name'], 'template.html')
+
+
+def get_theme_json_filename(theme_name):
+    return os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
+
+
+def get_theme_json(theme_name):
+    filename = get_theme_json_filename(theme_name)
+    return json.loads(open(filename).read())
