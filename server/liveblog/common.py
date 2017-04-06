@@ -56,7 +56,7 @@ class BlogCache(object):
 class BlogCacheTestCase(unittest.TestCase):
 
     def test_cache(self):
-        from flask.ext.cache import Cache
+        from flask_cache import Cache
         import app as app_module
         with app_module.get_app().app_context():
             from flask import current_app as app

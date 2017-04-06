@@ -1,5 +1,5 @@
 <div class="subnav pan-right">
-    <div class="button-stack right-stack">
+    <div class="button-stack right-stack new-consumer">
         <button class="navbtn sd-create-btn" ng-click="createEntry()"></button>
     </div>
 </div>
@@ -10,7 +10,7 @@
         <div class="list-pane">
             <header>
                 <div class="separator-handler"></div>
-                <div sd-pagination data-items="consumers"></div>
+                <div sd-pagination data-items="consumers" data-limit="pageLimit"></div>
             </header>
             <div class="content">
                 <div sd-shadow>

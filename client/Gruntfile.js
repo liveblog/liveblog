@@ -44,6 +44,7 @@ module.exports = function (grunt) {
     grunt.registerTask('server', [
         'clean',
         'copy:assets',
+        'copy:locales',
         'copy:index',
         'copy:sirTrevor',
         'webpack-dev-server:start'
@@ -63,6 +64,7 @@ module.exports = function (grunt) {
     grunt.registerTask('build', [
         'clean',
         'copy:assets',
+        'copy:locales',
         'copy:index',
         'copy:sirTrevor',
         'webpack:build'

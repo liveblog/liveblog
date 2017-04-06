@@ -12,7 +12,7 @@
 
 import jinja2
 from liveblog.embed import embed_blueprint
-from flask.ext.cache import Cache
+from flask_cache import Cache
 from liveblog.common import BlogCache
 import flask_s3
 from liveblog.syndication.producer import producers_blueprint
@@ -49,7 +49,7 @@ def get_app(config=None):
 
     config['DOMAIN'] = {}
 
-    app = superdesk_app(config, media_storage)
+    app = superdesk_app(config, media_storage, init_elastic=True)
 
     custom_loader = jinja2.ChoiceLoader([
         jinja2.FileSystemLoader('superdesk/templates'),

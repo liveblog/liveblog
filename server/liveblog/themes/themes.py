@@ -17,7 +17,7 @@ from io import BytesIO
 import superdesk
 from bson.objectid import ObjectId
 from superdesk.errors import SuperdeskApiError
-from flask.ext.cors import cross_origin
+from flask_cors import cross_origin
 from eve.io.mongo import MongoJSONEncoder
 from flask import request, current_app as app
 from superdesk.errors import SuperdeskError
