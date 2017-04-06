@@ -149,7 +149,7 @@ import './module';
     .factory('freetypeService', function () {
         return {
             /**
-            * transformation method from dorla sign template to angular template
+            * transformation method from dollar sign template to angular template
             * also requires `scope` object so that the proper object with the data is set.
             *     this is special case for vector array.
             */
@@ -277,6 +277,7 @@ import './module';
                 return template;
 
             },
+            // create the html template that will be shown in the timeline and the live feed
             htmlContent: function(template, data) {
                 var paths = {},
                     path,
