@@ -17,11 +17,11 @@ import superdesk
 from eve.io.mongo import MongoJSONEncoder
 from flask import current_app as app
 from flask import json, render_template, request, url_for
-from liveblog.themes import ASSETS_DIR as THEMES_ASSETS_DIR
 from liveblog.themes import UnknownTheme
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 
+from .app_settings import THEMES_ASSETS_DIR
 from .utils import is_relative_to_current_folder
 
 logger = logging.getLogger('superdesk')
