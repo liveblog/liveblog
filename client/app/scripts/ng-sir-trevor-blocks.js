@@ -139,7 +139,10 @@ angular
                 handlePlaceholder(this.$editor.filter('[contenteditable]'), that.embedPlaceholder);
                 // when the link field changes
                 var callServiceAndLoadData = function() {
-                    var input = $(this).text().trim();
+                    var input = $(this)
+                        .text()
+                        .trim();
+
                     // exit if the input field is empty
                     if (_.isEmpty(input)) {
                         that.getOptions().disableSubmit(true);
@@ -227,12 +230,14 @@ angular
                     html
                         .find('.link-preview')
                         .attr('href', data.original_url)
-                        .html(data.original_url).removeClass('hidden');
+                        .html(data.original_url)
+                        .removeClass('hidden');
                 }
                 // set the embed code
                 if (_.has(data, 'html')) {
                     html.find('.embed-preview')
-                        .html(data.html).removeClass('hidden');
+                        .html(data.html)
+                        .removeClass('hidden');
                 }
                 // set the cover illustration
                 if (!_.has(data, 'html') && !_.isEmpty(data.thumbnail_url)) {
@@ -317,7 +322,10 @@ angular
                 if ($cover_handler.length > 0 && !$cover_handler.hasClass('hidden')) {
                     var $cover_preview = $cover_handler.find('.cover-preview');
                     var $remove_link = $('<a href="#">').text('hide the illustration');
-                    var $show_link = $('<a href="#">').text('show the illustration').addClass('hidden');
+                    var $show_link = $('<a href="#">')
+                        .text('show the illustration')
+                        .addClass('hidden');
+
                     $remove_link.on('click', function removeCoverAndDisillustrationplayShowLink(e) {
                         that.saved_cover_url = that.data.thumbnail_url;
                         $cover_preview.addClass('hidden');
@@ -654,7 +662,10 @@ angular
                 });
                 // when the link field changes
                 this.$editor.on('change', _.debounce(function () {
-                    var input = $(this).text().trim();
+                    var input = $(this)
+                        .text()
+                        .trim();
+
                     if (_.isEmpty(input)) {
                         if (that.getOptions())
                             that.getOptions().disableSubmit(true);
@@ -669,9 +680,9 @@ angular
         SirTrevor.Blocks.Text.prototype.toHTML = function(html) {
             if (this.$el) {
                 return this.getTextBlock().html();
-            } else {
-                return html;
             }
+
+            return html;
         };
         SirTrevor.Blocks.Text.prototype.onContentPasted = _.debounce(function(event) {
             // Content pasted. Delegate to the drop parse method
@@ -712,9 +723,9 @@ angular
             toHTML: function(html) {
                 if (this.$el) {
                     return this.getTextBlock().html();
-                } else {
-                    return html;
                 }
+
+                return html;
             },
             toMeta: function() {
                 var data = this.getData();

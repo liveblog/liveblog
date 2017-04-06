@@ -89,10 +89,10 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                             return api.themes.getById(theme.extends).then(function(parentTheme) {
                                 return collectOptions(parentTheme, options);
                             });
-                        } else {
-                            // return the options when there is no more parent theme
-                            return $q.when(options);
                         }
+
+                        // return the options when there is no more parent theme
+                        return $q.when(options);
                     }
                     // collect the options for the theme and its parents
                     collectOptions(vm.theme).then(function(options) {
@@ -125,7 +125,8 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
             //bindToController: true,
             //controller: ThemeSettingsModalController
         };
-    }]).filter('linkup', ['$sce', function($sce) {
+    }])
+    .filter('linkup', ['$sce', function($sce) {
         return function(value) {
             if (!value) {
                 return value;

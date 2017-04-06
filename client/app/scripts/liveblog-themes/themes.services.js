@@ -94,15 +94,15 @@
                 return api.themes.getById(currenTheme.extends).then(function(parentTheme) {
                     return collectOptions(currenTheme, options, parentTheme);
                 });
-            } else {
-                // return the options when there is no more parent theme
-                // set default settings value from options default values
-                options.forEach(function(option) {
-                    if (!angular.isDefined(theme.settings[option.name])) {
-                        theme.settings[option.name] = option.default;
-                    }
-                });
             }
+
+            // return the options when there is no more parent theme
+            // set default settings value from options default values
+            options.forEach(function(option) {
+                if (!angular.isDefined(theme.settings[option.name])) {
+                    theme.settings[option.name] = option.default;
+                }
+            });
         }
         return {
             getHierachy: function (themes) {
@@ -149,7 +149,8 @@
                 });
             }
         }
-    }]).config(['apiProvider', function(apiProvider) {
+    }])
+    .config(['apiProvider', function(apiProvider) {
         apiProvider.api('global_preferences', {
             type: 'http',
             backend: {rel: 'global_preferences'}
