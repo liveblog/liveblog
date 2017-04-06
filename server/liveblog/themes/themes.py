@@ -158,7 +158,7 @@ class ThemesService(BaseService):
         return settings
 
     def get_local_themes_packages(self):
-        theme_folder = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR)
+        theme_folder = os.path.join(CURRENT_DIRECTORY, THEMES_ASSETS_DIR)
         for file in glob.glob(theme_folder + '/**/theme.json'):
             files = []
             for root, dirnames, filenames in os.walk(os.path.dirname(file)):
@@ -342,9 +342,9 @@ def download_a_theme(theme_name):
         error_message = 'Themes: "{}" this theme is not registered.'.format(theme_name)
         logger.info(error_message)
         raise UnknownTheme(error_message)
-    theme_filepath = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR, theme_name)
+    theme_filepath = os.path.join(CURRENT_DIRECTORY, THEMES_ASSETS_DIR, theme_name)
     theme_zip = BytesIO()
-    themes_folder = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR)
+    themes_folder = os.path.join(CURRENT_DIRECTORY, THEMES_ASSETS_DIR)
     # keep the same nameing convention as we have in github.
     zip_folder = 'lb-theme-{}-{}'.format(theme_name, theme.get('version', 'master'))
     with zipfile.ZipFile(theme_zip, 'w') as tz:
