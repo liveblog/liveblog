@@ -11,9 +11,7 @@
 
 
 import os
-
 import jinja2
-
 import flask_s3
 import settings
 from flask_cache import Cache
@@ -27,6 +25,12 @@ from liveblog.syndication.blogs import \
     blogs_blueprint as syndication_blogs_blueprint
 from liveblog.syndication.producer import producers_blueprint
 from liveblog.syndication.syndication import syndication_blueprint
+from liveblog.syndication.blogs import blogs_blueprint as syndication_blogs_blueprint
+from liveblog.marketplace.marketer import marketers_blueprint
+
+from liveblog.analytics.analytics import analytics_blueprint
+
+
 from superdesk.factory import get_app as superdesk_app
 
 
@@ -40,21 +44,20 @@ def get_app(config=None):
         config = {}
 
     config['APP_ABSPATH'] = os.path.abspath(os.path.dirname(__file__))
+
     for key in dir(settings):
         if key.isupper():
             config.setdefault(key, getattr(settings, key))
 
-    # Add Amazon S3 media storage support.
     media_storage = None
     if config['AMAZON_CONTAINER_NAME']:
         from superdesk.storage.amazon.amazon_media_storage import AmazonMediaStorage
         media_storage = AmazonMediaStorage
 
-    # Create superdesk app instance.
-    app = superdesk_app(config, media_storage)
-
-    # Add default domain config.
     config['DOMAIN'] = {}
+
+    # Create superdesk app instance.
+    app = superdesk_app(config, media_storage, init_elastic=True)
 
     # Add custom jinja2 template loader.
     custom_loader = jinja2.ChoiceLoader([
@@ -92,11 +95,9 @@ def get_app(config=None):
     return app
 
 
-def run_app():
-    debug = bool(os.environ.get('DEBUG', True))
-    port = int(os.environ.get('PORT', '5000'))
-    get_app().run(host='0.0.0.0', port=port, debug=debug, use_reloader=debug)
-
-
 if __name__ == '__main__':
-    run_app()
+    debug = True
+    host = '0.0.0.0'
+    port = int(os.environ.get('PORT', '5000'))
+    app = get_app()
+    app.run(host=host, port=port, debug=debug, use_reloader=debug)
