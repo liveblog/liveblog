@@ -49,7 +49,7 @@ def get_app(config=None):
 
     config['DOMAIN'] = {}
 
-    app = superdesk_app(config, media_storage)
+    app = superdesk_app(config, media_storage, init_elastic=True)
 
     custom_loader = jinja2.ChoiceLoader([
         jinja2.FileSystemLoader('superdesk/templates'),
