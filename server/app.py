@@ -11,9 +11,7 @@
 
 
 import os
-
 import jinja2
-
 import flask_s3
 import settings
 from flask_cache import Cache
@@ -27,6 +25,12 @@ from liveblog.syndication.blogs import \
     blogs_blueprint as syndication_blogs_blueprint
 from liveblog.syndication.producer import producers_blueprint
 from liveblog.syndication.syndication import syndication_blueprint
+from liveblog.syndication.blogs import blogs_blueprint as syndication_blogs_blueprint
+from liveblog.marketplace.marketer import marketers_blueprint
+
+from liveblog.analytics.analytics import analytics_blueprint
+
+
 from superdesk.factory import get_app as superdesk_app
 
 
@@ -40,23 +44,21 @@ def get_app(config=None):
         config = {}
 
     config['APP_ABSPATH'] = os.path.abspath(os.path.dirname(__file__))
+
     for key in dir(settings):
         if key.isupper():
             config.setdefault(key, getattr(settings, key))
 
-    # Add Amazon S3 media storage support.
     media_storage = None
     if config['AMAZON_CONTAINER_NAME']:
         from superdesk.storage.amazon.amazon_media_storage import AmazonMediaStorage
         media_storage = AmazonMediaStorage
 
-    # Create superdesk app instance.
-    app = superdesk_app(config, media_storage)
-
-    # Add default domain config.
     config['DOMAIN'] = {}
 
-    # Add custom jinja2 template loader.
+    # Create superdesk app instance.
+    app = superdesk_app(config, media_storage, init_elastic=True)
+
     custom_loader = jinja2.ChoiceLoader([
         jinja2.FileSystemLoader('superdesk/templates'),
         app.jinja_loader
