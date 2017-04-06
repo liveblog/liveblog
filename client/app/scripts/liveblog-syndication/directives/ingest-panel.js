@@ -36,7 +36,7 @@ export default function ingestPanel(
                 consumerBlogId: $routeParams._id,
                 syndicationIn: {},
                 producers: {_items: []},
-                producerBlogs: {},
+                producerBlogs: {_items: []},
                 modalActive: false,
                 localProducerBlogIds: [],
                 locallySyndicatedItems: [],
