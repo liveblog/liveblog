@@ -149,11 +149,14 @@ class BlogService(BaseService):
             prefs.update(doc.get('blog_preferences', {}))
             doc['blog_preferences'] = prefs
             # find the theme that is assigned to the blog
-            my_theme = get_resource_service('themes').find_one(req=None, name=doc['blog_preferences']['theme'])
-            # retrieve the default settings of the theme
-            default_theme_settings = get_resource_service('themes').get_default_settings(my_theme)
-            # save the theme settings on the blog level
-            doc['theme_settings'] = default_theme_settings
+            theme_name = doc['blog_preferences'].get('theme')
+            if theme_name:
+                # TODO: check this settings update.
+                my_theme = get_resource_service('themes').find_one(req=None, name=theme_name)
+                # retrieve the default settings of the theme
+                default_theme_settings = get_resource_service('themes').get_default_settings(my_theme)
+                # save the theme settings on the blog level
+                doc['theme_settings'] = default_theme_settings
 
             # If "start_date" is set to None, change the value to utcnow().
             if doc['start_date'] is None:
