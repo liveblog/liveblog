@@ -195,3 +195,13 @@ Once the provisioning done whil still in the virtual machine:
 ```
 /opt/liveblog/scripts/vagrant-start-dev.sh
 ```
+
+### Miscellaneous
+
+**Run liveblog front end in production mode**
+
+```javascript
+cd client
+grunt build --force
+grunt connect:build
+```
