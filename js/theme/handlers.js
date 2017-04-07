@@ -24,8 +24,9 @@ var buttons = {
 
   attach: function() {
     for (var handler in buttons.handlers) {
-      helpers.getElems(handler)[0].addEventListener('click',
-        buttons.handlers[handler], false);
+      var el = helpers.getElems(handler)[0];
+      if (el)
+        el.addEventListener('click', buttons.handlers[handler], false);
     }
   }
 };

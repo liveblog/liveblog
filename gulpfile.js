@@ -131,18 +131,18 @@ gulp.task('template-inject', ['less', 'browserify'], function() {
     read: false // We're only after the file paths
   });
 
-  return gulp.src('./templates/index.html')
+  return gulp.src('./templates/template.html')
     .pipe(plugins.nunjucks.compile({
       theme_options: theme_options,
       theme_settings: themeSettings,
       options: JSON.stringify(theme_options, null, 4),
       include_js_options: false,
       debug: DEBUG
-    }, nunjucksOptions))
+    }))
 
     // Add nunjucks/jinja2 template for server-side processing.
     .pipe(plugins.inject(gulp.src(['./templates/content.html']), {
-      starttag: '<!-- inject:template-timeline -->',
+      starttag: '<!-- inject:template-content -->',
       transform: function(filepath, file) {
         return file.contents.toString();
       }
