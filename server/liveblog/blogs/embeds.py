@@ -26,7 +26,7 @@ from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 
 from .app_settings import THEMES_ASSETS_DIR
-from .utils import is_relative_to_current_folder, get_theme_json, get_template_file_name, get_theme_json_filename
+from .utils import is_relative_to_current_folder, get_theme_json, get_template_file_name
 
 logger = logging.getLogger('superdesk')
 embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
@@ -82,7 +82,10 @@ class ThemeTemplateLoader(jinja2.BaseLoader):
         return source, path, lambda: mtime == os.path.getmtime(path)
 
 
-class BlogThemeRenderer:
+class Blog:
+    """
+    Utility class to fetch blog posts and related data from MongoDB collections.
+    """
     order_by = ('_updated', '_created')
     default_order_by = '_updated'
     sort = ('asc', 'desc')
@@ -107,7 +110,7 @@ class BlogThemeRenderer:
         filters = [
             {'blog': {'$eq': self._blog['_id']}},
             {'post_status': {'$eq': 'open'}},
-            #{'deleted': {'$ne': True}}
+            {'deleted': {'$ne': True}}
         ]
         if sticky:
             filters.append({'sticky': {'$eq': sticky}})
@@ -115,8 +118,8 @@ class BlogThemeRenderer:
             filters.append({'lb_highlight': {'$eq': highlight}})
         return {'$and': filters}
 
-    def get_posts(self, sticky=None, highlight=None, order_by=default_order_by, sort=default_sort, page=1, limit=25,
-                  wrap=False):
+    def posts(self, sticky=None, highlight=None, order_by=default_order_by, sort=default_sort, page=1, limit=25,
+              wrap=False):
         # Validate parameters.
         self._validate_sort(sort)
         self._validate_order_by(order_by)
@@ -187,7 +190,8 @@ def embed(blog_id, api_host=None, theme=None):
     if theme_name:
         theme = theme_json = get_theme_json(theme_name)
     else:
-        theme_json = get_theme_json(theme.get('name'))
+        theme_name = theme['name']
+        theme_json = get_theme_json(theme_name)
 
     try:
         assets, template_content = collect_theme_assets(theme)
@@ -209,12 +213,10 @@ def embed(blog_id, api_host=None, theme=None):
     theme_service = get_resource_service('themes')
     theme_settings = theme_service.get_default_settings(theme)
 
-    logger.warning(template_content)
-
     if theme.get('seoTheme', False):
         # Fetch initial blog posts for SEO theme
-        renderer = BlogThemeRenderer(blog)
-        api_response = renderer.get_posts(wrap=True)
+        blog_instance = Blog(blog)
+        api_response = blog_instance.posts(wrap=True)
         embed_template = jinja2.Environment(loader=ThemeTemplateLoader(theme)).from_string(template_content)
         template_content = embed_template.render(
             blog=blog,
