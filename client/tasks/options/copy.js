@@ -9,9 +9,7 @@ module.exports = {
                 'fonts/**/*',
                 'images/**/*',
                 'favicon.ico',
-                'styles/css/*.css',
-                //'scripts/**/*.{html,css,jpg,jpeg,png,gif,json}',
-                'scripts/bower_components/requirejs/require.js'
+                'styles/css/*.css'
             ]
         },{
             expand: true,
@@ -91,8 +89,7 @@ module.exports = {
             cwd: '<%= appDir %>',
             dest: '<%= distDir %>',
             src: [
-                'scripts/config.js',
-                'scripts/bower_components/**/*.js'
+                'scripts/config.js'
             ]
         }]
     },
@@ -106,30 +103,27 @@ module.exports = {
                 'fonts/sd_icons.woff',
                 'fonts/sd_icons.eot',
                 'fonts/sd_icons.svg',
-                'fonts/sd_icons.ttf',
-                'scripts/bower_components/**/*.ttf',
-                'scripts/bower_components/**/*.woff',
-                'scripts/bower_components/**/*.woff2'
+                'fonts/sd_icons.ttf'
             ]
         }]
-    },
-    bower: {
-        files: [{
-            expand: true,
-            dot: true,
-            cwd: '<%= distDir %>',
-            dest: '<%= bowerDir %>',
-            src: [
-                'images/**',
-                'styles/css/bootstrap.css',
-                'styles/css/app.css',
-                'scripts/vendor.js',
-                'scripts/superdesk-core.js',
-                'scripts/superdesk.js',
-                'scripts/vendor-docs.js',
-                'scripts/superdesk-docs-core.js',
-                'scripts/superdesk-docs-main.js'
-            ]
-        }]
+    //},
+    //bower: {
+    //    files: [{
+    //        expand: true,
+    //        dot: true,
+    //        cwd: '<%= distDir %>',
+    //        dest: '<%= bowerDir %>',
+    //        src: [
+    //            'images/**',
+    //            'styles/css/bootstrap.css',
+    //            'styles/css/app.css',
+    //            'scripts/vendor.js',
+    //            'scripts/superdesk-core.js',
+    //            'scripts/superdesk.js',
+    //            'scripts/vendor-docs.js',
+    //            'scripts/superdesk-docs-core.js',
+    //            'scripts/superdesk-docs-main.js'
+    //        ]
+    //    }]
     }
 };

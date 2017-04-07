@@ -1,6 +1,4 @@
 module.exports = function (grunt) {
-    'use strict';
-
     // util for grunt.template
     grunt.toJSON = function(input) {
         return JSON.stringify(input);
@@ -11,7 +9,6 @@ module.exports = function (grunt) {
         appDir: 'app',
         tmpDir: '.tmp',
         distDir: 'dist',
-        bowerDir: 'bower',
         poDir: 'po',
         livereloadPort: 35729
     };
