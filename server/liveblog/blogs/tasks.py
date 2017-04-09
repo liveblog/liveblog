@@ -157,6 +157,6 @@ def publish_bloglist_embed_on_s3():
         else:
             blogslist_service.create([{'key': 'bloglist', 'value': public_url}])
 
-        publish_assets('template')
+        # publish_assets('template')
         publish_assets('scripts')
         publish_assets('styles')
