@@ -19,6 +19,7 @@ def update_dates_for(doc):
 
 
 def check_comment_length(text):
+    # TODO: move to validators.
     if not 1 <= len(text) <= 300:
         raise SuperdeskApiError(payload='Allowed length: between 1 and 300. You exceeded the allowed length')
 
@@ -56,7 +57,7 @@ class BlogCache(object):
 class BlogCacheTestCase(unittest.TestCase):
 
     def test_cache(self):
-        from flask.ext.cache import Cache
+        from flask_cache import Cache
         import app as app_module
         with app_module.get_app().app_context():
             from flask import current_app as app

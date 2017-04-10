@@ -45,6 +45,7 @@
     "grunt-usemin": "3.1.1",
     "grunt-webpack": "^1.0.14",
     "jasmine-reporters": "2.0.6",
+    "json-loader": "^0.5.4",
     "karma": "0.13.9",
     "karma-chrome-launcher": "0.2.0",
     "karma-coverage": "0.5.0",
@@ -102,10 +103,10 @@
     "moment": "2.10.6",
     "moment-timezone": "^0.5.5",
     "ng-file-upload": "^12.2.11",
-    "ng-sir-trevor": "git+https://github.com/superdesk/ng-sir-trevor",
+    "ng-sir-trevor": "superdesk/ng-sir-trevor",
     "rangy": "^1.3.0",
     "raven-js": "^3.9.1",
-    "sir-trevor": "git+https://github.com/m0g/sir-trevor-js#liveblog",
-    "superdesk-core": "git+https://github.com/m0g/superdesk-client-core#moment-fix"
+    "sir-trevor": "m0g/sir-trevor-js#liveblog",
+    "superdesk-core": "liveblog/superdesk-client-core"
   }
 }
