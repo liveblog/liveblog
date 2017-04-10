@@ -46,6 +46,7 @@ module.exports = function (grunt) {
         'copy:assets',
         'copy:locales',
         'copy:index',
+        'copy:config',
         'copy:sirTrevor',
         'webpack-dev-server:start'
     ]);

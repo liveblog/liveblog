@@ -84,15 +84,14 @@ module.exports = {
             ]
         }]
     },
-    js: {
+    config: {
         files: [{
             expand: true,
             dot: true,
             cwd: '<%= appDir %>',
             dest: '<%= distDir %>',
             src: [
-                'scripts/config.js',
-                'scripts/bower_components/**/*.js'
+                'config.js',
             ]
         }]
     },
