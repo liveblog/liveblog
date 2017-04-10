@@ -31,8 +31,17 @@
 	.card-box__content {
 		min-height: 120px;
 	}
+	.ads-media {
+        img {
+            max-width: 100%;
+            margin-bottom: 8px;
+        }
+    }
 }
 .freetype--error {
     color: #b94a48;
 	opacity: 0.6;
+}
+.ads-media-buttons {
+	margin-top: 10px;
 }
