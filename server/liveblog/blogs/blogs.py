@@ -138,6 +138,13 @@ def send_email_to_added_members(blog, recipients, origin):
 class BlogService(BaseService):
     notification_key = 'blog'
 
+    def _update_theme_settings(self, doc, theme_name):
+        my_theme = get_resource_service('themes').find_one(req=None, name=theme_name)
+        # retrieve the default settings of the theme
+        default_theme_settings = get_resource_service('themes').get_default_settings(my_theme)
+        # save the theme settings on the blog level
+        doc['theme_settings'] = default_theme_settings
+
     def on_create(self, docs):
         self._check_max_active(len(docs))
         for doc in docs:
@@ -149,11 +156,9 @@ class BlogService(BaseService):
             prefs.update(doc.get('blog_preferences', {}))
             doc['blog_preferences'] = prefs
             # find the theme that is assigned to the blog
-            my_theme = get_resource_service('themes').find_one(req=None, name=doc['blog_preferences']['theme'])
-            # retrieve the default settings of the theme
-            default_theme_settings = get_resource_service('themes').get_default_settings(my_theme)
-            # save the theme settings on the blog level
-            doc['theme_settings'] = default_theme_settings
+            theme_name = doc['blog_preferences'].get('theme')
+            if theme_name:
+                self._update_theme_settings(doc, theme_name)
 
             # If "start_date" is set to None, change the value to utcnow().
             if doc['start_date'] is None:
@@ -178,7 +183,8 @@ class BlogService(BaseService):
             notify_members(blog, app.config['CLIENT_URL'], recipients)
 
         # Publish bloglist aswell
-        publish_bloglist_embed_on_s3()
+        if app.config.get('S3_PUBLISH_BLOGSLIST', True):
+            publish_bloglist_embed_on_s3()
 
     def find_one(self, req, checkUser=True, **lookup):
         doc = super().find_one(req, **lookup)
@@ -210,6 +216,11 @@ class BlogService(BaseService):
         # If missing, set "start_date" to original post "_created" value.
         if not updates.get('start_date') and original['start_date'] is None:
             updates['start_date'] = original['_created']
+
+        if 'blog_preferences' in updates:
+            theme_name = updates['blog_preferences'].get('theme')
+            if theme_name:
+                self._update_theme_settings(updates, theme_name)
 
     def on_updated(self, updates, original):
         original_id = str(original['_id'])

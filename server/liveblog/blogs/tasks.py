@@ -89,7 +89,7 @@ def delete_blog_embed_on_s3(self, blog_id, safe=True):
 
 
 @celery.task(soft_time_limit=1800)
-def publish_assets(asset_type):
+def publish_bloglist_assets(asset_type):
     # TODO: add retry
     assets = BLOGLIST_ASSETS.copy()
     # version_path = os.path.join(BLOGSLIST_DIRECTORY, BLOGSLIST_ASSETS_DIR, assets['version'])
@@ -114,7 +114,7 @@ def publish_assets(asset_type):
 
 @celery.task(soft_time_limit=1800)
 def publish_bloglist_embed_on_s3():
-    # TODO: add retry
+    # TODO: add retry, cleanup code.
     from .blogslist import render_bloglist_embed  # To prevent circular import. TODO: move to .embeds
     if type(app.media).__name__ is not 'AmazonMediaStorage':
         pass
@@ -156,6 +156,6 @@ def publish_bloglist_embed_on_s3():
         else:
             blogslist_service.create([{'key': 'bloglist', 'value': public_url}])
 
-        # publish_assets('template')
-        publish_assets('scripts')
-        publish_assets('styles')
+        # publish_bloglist_assets('template')
+        publish_bloglist_assets('scripts')
+        publish_bloglist_assets('styles')
