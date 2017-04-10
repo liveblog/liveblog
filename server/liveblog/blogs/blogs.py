@@ -24,6 +24,7 @@ from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk.users.services import is_admin
 from superdesk.utc import utcnow
+from liveblog.syndication.exceptions import ProducerAPIError
 
 from liveblog.blogs.tasks import publish_bloglist_embed_on_s3
 from liveblog.common import get_user, update_dates_for
@@ -207,6 +208,10 @@ class BlogService(BaseService):
         if syndication_enabled is False and out.count():
             raise SuperdeskApiError.forbiddenError(message='Cannot disable syndication: blog has active consumers.')
 
+        # If archiving a blog, remove any syndication in records
+        if blog_status == 'closed':
+            self._on_deactivate(original['_id'])
+
         # If missing, set "start_date" to original post "_created" value.
         if not updates.get('start_date') and original['start_date'] is None:
             updates['start_date'] = original['_created']
@@ -246,12 +251,13 @@ class BlogService(BaseService):
         delete_blog_embed_on_s3.delay(blog_id)
 
         # Remove syndication on blog post delete.
-        syndication_in = get_resource_service('syndication_in')
         syndication_out = get_resource_service('syndication_out')
         lookup = {'blog_id': blog_id}
-        syndication_in.delete_action(lookup)
         syndication_out.delete_action(lookup)
 
+        self._on_deactivate(blog_id)
+
+        # send notifications
         # Send notifications.
         push_notification('blogs', deleted=1)
 
@@ -261,6 +267,26 @@ class BlogService(BaseService):
             active = self.find({'blog_status': 'open'})
             if active.count() + increment > SUBSCRIPTION_MAX_ACTIVE_BLOGS[subscription]:
                 raise SuperdeskApiError.forbiddenError(message='Cannot add another active blog.')
+
+    def _on_deactivate(self, blog_id):
+        # Stop syndication when archiving or deleting a blog
+        syndication_in_service = get_resource_service('syndication_in')
+        syndication_ins = syndication_in_service.find(lookup={'blog_id': blog_id})
+        producers = get_resource_service('producers')
+        for syndication_in in syndication_ins:
+            producer_id = syndication_in['producer_id']
+            producer_blog_id = syndication_in['producer_blog_id']
+            try:
+                response = producers.unsyndicate(producer_id, producer_blog_id, syndication_in['blog_id'])
+            except ProducerAPIError as e:
+                logger.warning('Producer with id {} responded with error when trying to cancel syndication of their blog with id {}'.format(producer_id, producer_blog_id))
+
+            if response.status_code != 204:
+                logger.warning('Producer with id {} responded with code {} when trying to cancel syndication of their blog with id {}'.format(
+                        producer_id, response.status_code, producer_blog_id))
+            else:
+                syndication_in_service.delete_action(lookup={'_id': syndication_in['_id']})
+
 
 
 class UserBlogsResource(Resource):
