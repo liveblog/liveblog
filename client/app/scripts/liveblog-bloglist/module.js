@@ -3,6 +3,7 @@ import mainTemplate from 'scripts/liveblog-bloglist/views/main.html';
 BlogListController.$inject = [
     '$scope',
     '$location',
+    '$http',
     'api',
     'gettext',
     'upload',
@@ -16,6 +17,7 @@ BlogListController.$inject = [
 function BlogListController(
     $scope,
     $location,
+    $http,
     api,
     gettext,
     upload,
