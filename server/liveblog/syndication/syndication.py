@@ -265,7 +265,12 @@ def syndication_webhook():
         if request.method == 'POST':
             # Create post
             if post:
-                return api_error('Post already exist', 409)
+                # Post may have been previously deleted
+                if post.get('deleted'):
+                    posts_service.update(post_id, new_post, post)
+                    return api_response({'post_id': post_id}, 200)
+                else:
+                    return api_error('Post already exist', 409)
 
             new_post_id = posts_service.post([new_post])[0]
             return api_response({'post_id': str(new_post_id)}, 201)
