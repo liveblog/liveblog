@@ -36,7 +36,7 @@ export default function ingestPanel(
                 consumerBlogId: $routeParams._id,
                 syndicationIn: {},
                 producers: {_items: []},
-                producerBlogs: {},
+                producerBlogs: {_items: []},
                 modalActive: false,
                 localProducerBlogIds: [],
                 locallySyndicatedItems: [],
@@ -90,7 +90,10 @@ export default function ingestPanel(
 
             // This watches for incoming posts when ingest is in focus
             scope.$on('posts', (e, data) => {
-                IngestPanelActions.setUnreadQueue(data.posts);
+                let syndPosts = data.posts
+                    .filter((post) => post.hasOwnProperty('syndication_in'));
+
+                IngestPanelActions.setUnreadQueue(syndPosts);
             });
 
             scope.openSyndBlogsModal = function() {

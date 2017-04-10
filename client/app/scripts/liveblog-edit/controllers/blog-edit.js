@@ -19,10 +19,57 @@ import './../../ng-sir-trevor';
 import './../../ng-sir-trevor-blocks';
 import './../unread.posts.service';
 
-var BlogEditController = function (api, $q, $scope, blog, notify, gettext, session, $injector, $http,
-    upload, config, embedService, postsService, unreadPostsService, freetypeService, modal,
-    blogService, $route, $routeParams, blogSecurityService, themesService, $templateCache, $timeout) {
+BlogEditController.$inject = [
+    'api',
+    '$q',
+    '$scope',
+    'blog',
+    'notify',
+    'gettext',
+    'session',
+    '$injector',
+    '$http',
+    'upload',
+    'config',
+    'embedService',
+    'postsService',
+    'unreadPostsService',
+    'freetypeService',
+    'modal',
+    'blogService',
+    '$route',
+    '$routeParams',
+    'blogSecurityService',
+    'themesService',
+    '$templateCache',
+    '$timeout'
+];
 
+export default function BlogEditController(
+    api,
+    $q,
+    $scope,
+    blog,
+    notify,
+    gettext,
+    session,
+    $injector,
+    $http,
+    upload,
+    config,
+    embedService,
+    postsService,
+    unreadPostsService,
+    freetypeService,
+    modal,
+    blogService,
+    $route,
+    $routeParams,
+    blogSecurityService,
+    themesService,
+    $templateCache,
+    $timeout
+) {
     var vm = this;
     // @TODO: remove this when theme at blog level.
     // check the theme setting for comments.
@@ -31,7 +78,7 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
     $scope.freetypesData = {}; $scope.freetypeControl = {}; $scope.validation = {};
 
     if (blog.blog_preferences.theme) {
-        themesService.get(blog.blog_preferences.theme).then(function(themes) {
+        themesService.get(blog.blog_preferences.theme).then((themes) => {
             blog.blog_preferences.theme = themes[0];
         });
     }
@@ -41,7 +88,7 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
     // return the list of items from the editor
     function getItemsFromEditor() {
         if (!isPostFreetype()) {
-            //go with the 'classic' editor items
+            // go with the 'classic' editor items
             return _.map(vm.editor.get(), function(block) {
                 return {
                     group_type: 'default',
@@ -50,43 +97,44 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
                     item_type: block.type
                 };
             });
-        } else {
-            //this is a freetype post
-            return [
-                {
-                    group_type: 'freetype',
-                    item_type: $scope.selectedPostType.name,
-                    text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
-                    meta: {data: $scope.freetypesData}
-                }
-            ]
         }
+
+        // this is a freetype post
+        return [
+            {
+                group_type: 'freetype',
+                item_type: $scope.selectedPostType.name,
+                text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
+                meta: {data: $scope.freetypesData}
+            }
+        ];
     }
 
     // determine is current post is classic or freetype
     function isPostFreetype() {
         return $scope.selectedPostType !== 'Default';
-    };
+    }
 
-    //determine if post is 'scorecard'
+    // determine if post is 'scorecard'
     function isPostScorecard() {
         return isPostFreetype() && $scope.selectedPostType.name === 'Scorecard';
     }
 
-    //save the 'keep scoarers' if needed
+    // save the 'keep scoarers' if needed
     function saveScorers() {
-            if ($scope.currentBlog.blog_preferences) {
-                var bp = angular.copy($scope.currentBlog.blog_preferences);
-                bp.last_scorecard = $scope.freetypesData;
-                return blogService.update($scope.currentBlog, {'blog_preferences': bp});
-            } else {
-                return blogService.get($scope.blog._id).then(function(currentBlog) {
-                    $scope.currentBlog = currentBlog;
-                    var bp = angular.copy($scope.currentBlog.blog_preferences);
-                    bp.last_scorecard = $scope.freetypesData;
-                    return blogService.update($scope.currentBlog, {'blog_preferences': bp});
-                })
-            }
+          if ($scope.currentBlog.blog_preferences) {
+              var bp = angular.copy($scope.currentBlog.blog_preferences);
+
+              bp.last_scorecard = $scope.freetypesData;
+              return blogService.update($scope.currentBlog, { 'blog_preferences': bp });
+          }
+
+          return blogService.get($scope.blog._id).then(function(currentBlog) {
+              $scope.currentBlog = currentBlog;
+              var bp = angular.copy($scope.currentBlog.blog_preferences);
+              bp.last_scorecard = $scope.freetypesData;
+              return blogService.update($scope.currentBlog, {'blog_preferences': bp});
+          })
     }
 
     // determine if the loaded item is freetype
@@ -94,9 +142,9 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
         var regularItemTypes = ['text', 'image', 'embed', 'quote', 'comment'];
         if (regularItemTypes.indexOf(itemType) !== -1) {
             return false;
-        } else {
-            return true;
         }
+
+        return true;
     }
 
     function setDefautPostType() {
@@ -107,10 +155,11 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
     function isEditorClean() {
         if (isPostFreetype()) {
             return $scope.freetypeControl.isClean();
-        } else {
-            var are_all_blocks_empty = _.every(vm.editor.blocks, function(block) {return block.isEmpty();});
-            return are_all_blocks_empty || !$scope.isCurrentPostUnsaved();
         }
+
+        var are_all_blocks_empty = _.every(vm.editor.blocks, function(block) {return block.isEmpty();});
+
+        return are_all_blocks_empty || !$scope.isCurrentPostUnsaved();
     }
 
     // ask in a modalbox if the user is sure to want to overwrite editor.
@@ -243,7 +292,9 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
             });
         },
         onEditorChanges: function() {
-            var input = $(this).text().trim();
+            var input = $(this)
+                .text()
+                .trim();
 
             $scope.$apply(function() {
                 $scope.actionDisabled = _.isEmpty(input);
@@ -255,13 +306,12 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
                     return $scope.freetypeControl.isValid()
                             && ($scope.currentPost.post_status === 'draft'
                             || $scope.currentPost.post_status === 'submitted');
-                } else {
-                    return $scope.freetypeControl.isValid()
-                            || $scope.freetypeControl.isClean();
                 }
-            } else {
-                return $scope.actionDisabled || $scope.actionPending;
+
+                return $scope.freetypeControl.isValid() || $scope.freetypeControl.isClean();
             }
+
+            return $scope.actionDisabled || $scope.actionPending;
         },
         askAndResetEditor: function() {
             doOrAskBeforeIfEditorIsNotEmpty().then(cleanEditor);
@@ -275,14 +325,15 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
         showSaveAsDraft: function() {
             if (angular.isDefined($scope.currentPost)) {
                 return $scope.currentPost.original_creator === session.identity._id;
-            } else {
-                return true;
             }
+
+            return true;
         },
         openPostInEditor: function (post) {
             function fillEditor(post) {
                 cleanEditor(false);
                 var delay = 0;
+
                 $scope.currentPost = angular.copy(post);
                 $scope.sticky = $scope.currentPost.sticky;
                 $scope.highlight = $scope.currentPost.lb_highlight;
@@ -470,14 +521,14 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
                     return _.some(_.keys(item), function (key) {
                         if (!angular.isDefined($scope.currentPost.items[item_index])) {
                             return true;
-                        } else {
-                            return !_.isEqual(item[key], $scope.currentPost.items[item_index].item[key]);
                         }
+
+                        return !_.isEqual(item[key], $scope.currentPost.items[item_index].item[key]);
                     });
                 });
-            } else {
-                return true;
             }
+
+            return true;
         },
         togglePreview: function() {
             $scope.preview = !$scope.preview;
@@ -491,17 +542,14 @@ var BlogEditController = function (api, $q, $scope, blog, notify, gettext, sessi
 
     $scope.openPanel(panel, syndId);
 
+    // This function is responsible for updating the ingest panel
+    // unread count when this one isn't currently selected/displayed
     $scope.$on('posts', (e, data) => {
-        if ($scope.panelState !== 'ingest') {
-            $scope.ingestQueue = $scope.ingestQueue.concat(data.posts);
+        if ($scope.panelState !== 'ingest' && data.hasOwnProperty('posts')) {
+            let syndPosts = data.posts
+                .filter((post) => post.hasOwnProperty('syndication_in'));
+
+            $scope.ingestQueue = $scope.ingestQueue.concat(syndPosts);
         }
     });
 };
-
-BlogEditController.$inject = [
-    'api', '$q', '$scope', 'blog', 'notify', 'gettext', 'session', '$injector', '$http',
-    'upload', 'config', 'embedService', 'postsService', 'unreadPostsService', 'freetypeService', 'modal',
-    'blogService', '$route', '$routeParams', 'blogSecurityService', 'themesService', '$templateCache', '$timeout'
-];
-
-export default BlogEditController;

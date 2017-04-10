@@ -52,7 +52,16 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                 }, 200);
             },
             getOrder: function(position) {
-                return angular.element($element.find('.posts').find('li .lb-post').get(position)).scope().post.order;
+                return angular
+                    .element(
+                        $element
+                            .find('.posts')
+                            .find('li .lb-post')
+                            .get(position)
+                    )
+                    .scope()
+                    .post
+                    .order;
             },
             reorder: function(index, location) {
                 if (vm.allowReordering) {
@@ -98,9 +107,9 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
             isStickyPostsEmpty: function() {
                 if ($scope.lbStickyInstance) {
                     return $scope.lbStickyInstance.isPostsEmpty();
-                } else {
-                    return true;
                 }
+
+                return true;
             },
             isSinglePost: function() {
                 return vm.pagesManager.count() === 1;
@@ -122,7 +131,10 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
         vm.fetchNewPage()
         // retrieve updates when event is recieved
         .then(function() {
-            $scope.$on('posts', function(e, event_params) {
+            // This function is responsible for updating the timeline, 
+            // the contribution, the draft and the comment panel on incoming
+            // new post as well unpublished posts
+            const onNotification = (e, event_params) => {
                 if (!$element.hasClass('timeline-posts-list')
                 && event_params.posts
                 && event_params.posts[0].hasOwnProperty('syndication_in')) {
@@ -141,7 +153,11 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                     }
                     vm.isLoading = false;
                 });
-            });
+
+            };
+
+            $scope.$on('posts', onNotification);
+            $scope.$on('content:update', onNotification);
         });
     }
     return {
