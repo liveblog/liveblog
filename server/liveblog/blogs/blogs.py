@@ -234,7 +234,7 @@ class BlogService(BaseService):
     def on_delete(self, doc):
         # Prevent delete of blog if blog has consumers
         out = get_resource_service('syndication_out').find({'blog_id': doc['_id']})
-        if doc['syndication_enabled'] and out.count():
+        if doc.get('syndication_enabled', False) and out.count():
             raise SuperdeskApiError.forbiddenError(message='Cannot delete syndication: blog has active consumers.')
 
         delete_blog_embed_on_s3.delay(doc.get('_id'))

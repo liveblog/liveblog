@@ -182,14 +182,59 @@ function BlogListController(
         $location.path('/liveblog/edit/' + blog._id);
     };
 
+    //$scope.openAccessRequest = function(blog) {
+    //    $scope.accessRequestedTo = blog;
+    //    $scope.showBlogAccessModal = true;
+    //}
+
     $scope.openAccessRequest = function(blog) {
         $scope.accessRequestedTo = blog;
         $scope.showBlogAccessModal = true;
-    }
+
+        if (config.subscriptionLevel
+        && ['solo', 'team'].indexOf(config.subscriptionLevel) !== -1) {
+            $scope.checkAccessRequestLimit(blog);
+        } else {
+            $scope.allowAccessRequest = true;
+        }
+    };
 
     $scope.closeAccessRequest = function() {
         $scope.accessRequestedTo = false;
         $scope.showBlogAccessModal = false;
+    };
+
+    $scope.checkAccessRequestLimit = function(blog) {
+        $scope.allowAccessRequest = false;
+
+        var theoricalMembers = [];
+
+        if (blog.members) {
+            blog.members.forEach(function(member) {
+                if (theoricalMembers.indexOf(member.user) === -1)
+                  theoricalMembers.push(member.user);
+            });
+        }
+
+        $http({
+            url: config.server.url + '/blogs/' + blog._id + '/request_membership',
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json;charset=utf-8"
+            }
+        })
+        .then(function(response) {
+            if (response.data._items.length > 0) {
+                response.data._items.forEach(function(item) {
+                  if (theoricalMembers.indexOf(item._id) === -1)
+                    theoricalMembers.push(item._id);
+                });
+            }
+
+            if (theoricalMembers.length < config.assignableUsers[config.subscriptionLevel])
+                $scope.allowAccessRequest = true;
+        })
+
     };
 
     $scope.requestAccess = function(blog) {
