@@ -73,6 +73,15 @@ class SyndicationOutService(BaseService):
         except IndexError:
             return
 
+    def consumer_is_syndicating(self, consumer_id):
+        try:
+            result = self.find({'$and': [
+                {'consumer_id': {'$eq': consumer_id}}
+            ]})
+            return result.count() > 0
+        except IndexError:
+            return
+
     def get_blog_syndication(self, blog_id):
         blog = self._get_blog(blog_id)
         if not blog.get('syndication_enabled'):
