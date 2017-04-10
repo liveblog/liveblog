@@ -117,29 +117,27 @@ export default function BlogListController(
     $scope.createBlog = function() {
         $scope.creationInProcess = true;
 
-        var members = _.map($scope.blogMembers, function(obj) {
-            return {user: obj._id};
-        });
+        var members = _.map($scope.blogMembers, (obj) => ({user: obj._id}));
 
-        //upload image only if we have a valid one chosen
+        // Upload image only if we have a valid one chosen
         var promise = $scope.preview.url ? $scope.upload($scope.preview) : $q.when();
 
-        return promise.then(function() {
-            return api.blogs.save({
+        return promise.then(() => api.blogs
+            .save({
                 title: $scope.newBlog.title,
                 description: $scope.newBlog.description,
                 picture_url: $scope.newBlog.picture_url,
                 picture: $scope.newBlog.picture,
                 members: members
-            }).then(function(blog) {
+            })
+            .then((blog) => {
                 $scope.creationInProcess = false;
                 $scope.edit(blog);
-            }, function(error) {
+            }, (error) => {
                 $scope.creationInProcess = false;
-                //error handler
+                // Error handler
                 $scope.newBlogError = gettext('Something went wrong. Please try again later');
-            });
-        });
+            }));
     };
 
     $scope.upload = function(config) {
@@ -149,30 +147,31 @@ export default function BlogListController(
             form.media = config.img;
         } else if (config.url) {
             form.URL = config.url;
-        } else {
-            return;
         }
-        // return a promise of upload which will call the success/error callback
-        return urls.resource('archive').then((uploadUrl) => upload.start({
-            method: 'POST',
-            url: uploadUrl,
-            data: form
-        })
-        .then((response) => {
-            if (response.data._status === 'ERR') {
-                return;
-            }
-            var pictureUrl = response.data.renditions.viewImage.href;
 
-            $scope.newBlog.picture_url = pictureUrl;
-            $scope.newBlog.picture = response.data._id;
-        }, (error) => {
-            notify.error(
-                error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
-            );
-        }, (progress) => {
-            $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
-        }));
+        if (form.hasOwnProperty('media') || form.hasOwnProperty('url')) {
+            // return a promise of upload which will call the success/error callback
+            return urls.resource('archive').then((uploadUrl) => upload.start({
+                method: 'POST',
+                url: uploadUrl,
+                data: form
+            })
+            .then((response) => {
+                if (response.data._status === 'ERR') {
+                    return;
+                }
+                var pictureUrl = response.data.renditions.viewImage.href;
+
+                $scope.newBlog.picture_url = pictureUrl;
+                $scope.newBlog.picture = response.data._id;
+            }, (error) => {
+                notify.error(
+                    error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
+                );
+            }, (progress) => {
+                $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
+            }));
+        }
     };
 
     $scope.remove = function(blog) {
@@ -182,11 +181,6 @@ export default function BlogListController(
     $scope.edit = function(blog) {
         $location.path('/liveblog/edit/' + blog._id);
     };
-
-    //$scope.openAccessRequest = function(blog) {
-    //    $scope.accessRequestedTo = blog;
-    //    $scope.showBlogAccessModal = true;
-    //}
 
     $scope.openAccessRequest = function(blog) {
         $scope.accessRequestedTo = blog;
@@ -211,9 +205,10 @@ export default function BlogListController(
         var theoricalMembers = [];
 
         if (blog.members) {
-            blog.members.forEach(function(member) {
-                if (theoricalMembers.indexOf(member.user) === -1)
-                  theoricalMembers.push(member.user);
+            blog.members.forEach((member) => {
+                if (theoricalMembers.indexOf(member.user) === -1) {
+                    theoricalMembers.push(member.user);
+                }
             });
         }
 
@@ -221,29 +216,30 @@ export default function BlogListController(
             url: config.server.url + '/blogs/' + blog._id + '/request_membership',
             method: 'GET',
             headers: {
-                "Content-Type": "application/json;charset=utf-8"
+                'Content-Type': 'application/json;charset=utf-8'
             }
         })
-        .then(function(response) {
+        .then((response) => {
             if (response.data._items.length > 0) {
-                response.data._items.forEach(function(item) {
-                  if (theoricalMembers.indexOf(item._id) === -1)
-                    theoricalMembers.push(item._id);
+                response.data._items.forEach((item) => {
+                    if (theoricalMembers.indexOf(item._id) === -1) {
+                        theoricalMembers.push(item._id);
+                    }
                 });
             }
 
-            if (theoricalMembers.length < config.assignableUsers[config.subscriptionLevel])
+            if (theoricalMembers.length < config.assignableUsers[config.subscriptionLevel]) {
                 $scope.allowAccessRequest = true;
-        })
-
+            }
+        });
     };
 
     $scope.requestAccess = function(blog) {
-
         var showRequestDialog = true;
-        //check to see if the current user hasn't been accepted during this session (before refreshing)
+
+        // Check to see if the current user hasn't been accepted during this session (before refreshing)
         if (blog.members) {
-            _.each(blog.members, function(member) {
+            _.each(blog.members, (member) => {
                 if (member.user === $scope.$root.currentUser._id) {
                     showRequestDialog = false;
                 }
@@ -255,13 +251,14 @@ export default function BlogListController(
             api('request_membership')
                 .save({blog: blog._id})
                 .then(
-                    function(data) {
+                    (data) => {
                         notify.pop();
                         notify.info(gettext('Request sent'));
                     },
-                    function(data) {
+                    (data) => {
                         notify.pop();
                         var message = gettext('Something went wrong, plase try again later!');
+
                         if (data.data._message === 'A request has already been sent') {
                             message = gettext('A request has already been sent');
                         }
@@ -280,16 +277,16 @@ export default function BlogListController(
     };
 
     $scope.handleKeyDown = function(event, action) {
-        //prevent form submission and editor 'artifact'
+        // prevent form submission and editor 'artifact'
         if (event.keyCode === 13) {
             event.preventDefault();
             switch (action) {
-                case 'goToTeamTab':
-                    //we need at least a valid title from the first tab
-                    if ($scope.newBlog.title) {
-                        $scope.switchTab('Team');
-                    }
-                    break;
+            case 'goToTeamTab':
+                // We need at least a valid title from the first tab
+                if ($scope.newBlog.title) {
+                    $scope.switchTab('Team');
+                }
+                break;
             }
         }
     };
@@ -303,19 +300,20 @@ export default function BlogListController(
     };
 
     $scope.hasReachedMembersLimit = function() {
-        if (!config.assignableUsers.hasOwnProperty(config.subscriptionLevel))
-        return false;
+        if (!config.assignableUsers.hasOwnProperty(config.subscriptionLevel)) {
+            return false;
+        }
 
         return $scope.blogMembers.length >= config.assignableUsers[config.subscriptionLevel];
     };
 
-    //set grid or list view
+    // Set grid or list view
     $scope.setBlogsView = function(blogsView) {
         if (typeof blogsView !== 'undefined') {
             $scope.blogsView = blogsView;
             localStorage.setItem('blogsView', blogsView);
-        } else if (typeof (localStorage.getItem('blogsView')) === 'undefined'
-            || (localStorage.getItem('blogsView')) === null) {
+        } else if (typeof localStorage.getItem('blogsView') === 'undefined'
+            || localStorage.getItem('blogsView') === null) {
             $scope.blogsView = 'grid';
         } else {
             $scope.blogsView = localStorage.getItem('blogsView');
@@ -327,12 +325,13 @@ export default function BlogListController(
         var params = $location.search(),
             criteria = {
                 max_results: $scope.maxResults,
-                embedded: {'original_creator': 1},
+                embedded: {original_creator: 1},
                 sort: '[("versioncreated", -1)]',
                 source: {
                     query: {filtered: {filter: {term: {blog_status: $scope.activeState.code}}}}
                 }
             };
+
         if (params.q) {
             criteria.source.query.filtered.query = {
                 query_string: {
@@ -349,22 +348,24 @@ export default function BlogListController(
 
     function fetchBlogs() {
         $scope.blogsLoading = true;
-        api.blogs.query(getCriteria(), false).then(function(blogs) {
+        api.blogs.query(getCriteria(), false).then((blogs) => {
             $scope.blogs = blogs;
-            blogs._items.forEach(function(blog) {
+            blogs._items.forEach((blog) => {
                 var criteria = {
                     source: {
                         query: {
                             filtered: {filter: {and: [
-                                {term: {'post_status': 'open'}}, {term: {'blog': blog._id}}
+                                {term: {post_status: 'open'}}, {term: {blog: blog._id}}
                             ]}}
-                        }, sort: [{'published_date': 'asc'}]}
+                        }, sort: [{published_date: 'asc'}]}
                 };
-                api.posts.query(criteria).then(function(data) {
-                blog.posts_count = data._meta.total;
-                var posts = data._items;
-                posts.forEach(function(post) {
-                    blog.last_posted = post.published_date;
+
+                api.posts.query(criteria).then((data) => {
+                    blog.posts_count = data._meta.total;
+                    var posts = data._items;
+
+                    posts.forEach((post) => {
+                        blog.last_posted = post.published_date;
                     });
                 });
             });
