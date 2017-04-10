@@ -139,11 +139,12 @@ class BlogService(BaseService):
     notification_key = 'blog'
 
     def _update_theme_settings(self, doc, theme_name):
-        my_theme = get_resource_service('themes').find_one(req=None, name=theme_name)
-        # retrieve the default settings of the theme
-        default_theme_settings = get_resource_service('themes').get_default_settings(my_theme)
-        # save the theme settings on the blog level
-        doc['theme_settings'] = default_theme_settings
+        theme = get_resource_service('themes').find_one(req=None, name=theme_name)
+        if theme:
+            # retrieve the default settings of the theme
+            default_theme_settings = get_resource_service('themes').get_default_settings(theme)
+            # save the theme settings on the blog level
+            doc['theme_settings'] = default_theme_settings
 
     def on_create(self, docs):
         self._check_max_active(len(docs))
