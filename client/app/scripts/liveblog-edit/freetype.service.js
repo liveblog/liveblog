@@ -45,9 +45,9 @@ import './module';
         }
         if (name.substr(0, 1) === '$') {
             return '"' + name.substr(1).replace('[]', '[0]') + '" ' + attr;
-        } else {
-            return '"' + SCOPE_FREETYPEDATA + '.' + name.replace('[]', '[0]') + '" ' + attr;
         }
+
+        return '"' + SCOPE_FREETYPEDATA + '.' + name.replace('[]', '[0]') + '" ' + attr;
     }
     /**
     * Sets and gets the obj from path.
@@ -81,19 +81,17 @@ import './module';
                         variable[vector[1]][vector[2]] = part
                         variable = part;
                     }
-                } else {
-                    // if the object is already set, just use that.
-                    if (angular.isDefined(variable[parts[i]])) {
-                        variable = variable[parts[i]];
-                        if (i === parts.length - 1) {
-                            return variable;
-                        }
-                    } else if (i === parts.length - 1){
-                        variable[parts[i]] = value || '';
-                    } else {
-                        variable[parts[i]] = {};
-                        variable = variable[parts[i]];
+                // if the object is already set, just use that.
+                } else if (angular.isDefined(variable[parts[i]])) {
+                    variable = variable[parts[i]];
+                    if (i === parts.length - 1) {
+                        return variable;
                     }
+                } else if (i === parts.length - 1){
+                    variable[parts[i]] = value || '';
+                } else {
+                    variable[parts[i]] = {};
+                    variable = variable[parts[i]];
                 }
             }
         }
@@ -126,10 +124,10 @@ import './module';
     function injectClass(attr, cls) {
         if (attr.indexOf('class') > -1) {
             return attr.replace(/class\w*=\w*("|')?([^\"\']+)("|')/, 'class="' + cls + ' $2"');
-        } else {
-            attr += 'class="' + cls + '" ';
-            return attr;
         }
+
+        attr += 'class="' + cls + '" ';
+        return attr;
     }
     /**
      * check if an angular object has all empty values.
@@ -149,7 +147,7 @@ import './module';
     .factory('freetypeService', function () {
         return {
             /**
-            * transformation method from dorla sign template to angular template
+            * transformation method from dollar sign template to angular template
             * also requires `scope` object so that the proper object with the data is set.
             *     this is special case for vector array.
             */
@@ -168,9 +166,9 @@ import './module';
                         if (parts.length === 2 && parts[1] !== '') {
                             vector = parts[0].substr(0, parts[0].length - 1);
                             return '$$' + iteratorName + '.' + parts[1].substr(2);
-                        } else {
-                            return all;
                         }
+
+                        return all;
                     });
                     collection = SCOPE_FREETYPEDATA + '.' + vector;
                     return '<li ng-repeat="' + iteratorName + ' in ' + collection + '">' +
@@ -277,22 +275,23 @@ import './module';
                 return template;
 
             },
+            // create the html template that will be shown in the timeline and the live feed
             htmlContent: function(template, data) {
                 var paths = {},
                     path,
                     wrapBefore = '',
                     wrapAfter = '';
                 obj2path(paths, data);
-                template = template.replace(/\<li([^>]*)\>(.*?)\<\/li\>/g, function(all, attr, repeater) {
+                template = template.replace(/<li([^>]*)>((.|\n)*?)<\/li>/g, function(all, attr, repeater) {
                     var vector, vectorPath, parts, templ = '', emptyIndex = [], i;
                     repeater = repeater.replace(REGEX_VARIABLE, function(all, path) {
                         parts = path.split(/[\d*]/);
                         if (parts.length === 2 && parts[1] !== '') {
                             vectorPath = parts[0].substr(0, parts[0].length - 1);
                             return all;
-                        } else {
-                            return all;
                         }
+
+                        return all;
                     });
                     if (vectorPath) {
                         vector = path2obj(data, vectorPath);
@@ -312,14 +311,18 @@ import './module';
                         }
                         if (!emptyValues(vector[0])) {
                             return all.replace('[]', '[0]') + templ;
-                        } else {
-                            return '';
                         }
+
+                        return '';
                     }
                     return all.replace('[]', '[0]');
                 });
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name, type;
+                    attr = _.trim(attr);
+                    if (attr.substr(-1, 1) === '/') {
+                        attr = attr.substr(0, attr.length - 1);
+                    }
                     // transform `name` and `text` variables.
                     attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
                         function(match, tag, quote, rname) {
@@ -362,23 +365,23 @@ import './module';
                                                 + '>'
                                                 + _.escape(paths[name])
                                                 + '</span>';
-                                } else {
-                                   return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
                                 }
+
+                                return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
 
                             case 'image':
                                 if (paths[name]) {
                                     return '<img src="' + paths[name] + '"/>'
-                                } else {
-                                   return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
                                 }
+
+                                return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
 
                             case 'embed':
                                 if (paths[name]) {
                                     return paths[name]
-                                } else {
-                                   return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
                                 }
+
+                                return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
 
                             case 'wrap-link':
                                 if (paths[name]) {
@@ -389,43 +392,34 @@ import './module';
                                                     + ' target="_blank">';
                                     wrapAfter = '</a>'
                                 }
+
                                 return '';
                         }
                     }
                     return all;
                 });
+
+                // remove elements with the hide-render attribute
                 template = (function recursiveContent(template) {
-                    template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>(.*?)<\/\1>?/gi,
+                    template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>((.|\n)*?)<\/\1>?/gi,
                         function(all, tag, attr, content) {
-                            if (content) {
-                                content = recursiveContent(content);
-                            }
-                            var name, type;
-                            attr = attr.replace(/hide-render/gi, function(match, tag, quote, rname) {
+                            var type;
+                            attr = attr.replace(/hide-render/gi, function() {
                                 type = 'hide-render';
-                                // remove the dollar variable from the attributes.
+                                // remove hide-render from attributes
                                 return '';
                             });
-                            if (name || type) {
-                                switch (type) {
-                                    case 'text':
-                                        if (paths[name]) {
-                                            return '<span '
-                                                        + injectClass(attr, 'freetype--element')
-                                                        + '>' + paths[name]
-                                                        + '</span>';
-                                        } else {
-                                           return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
-                                        }
-                                    case 'hide-render': {
-                                        return '';
-                                    }
-                                }
+                            
+                            if (type === 'hide-render') {
+                                return '';
+                            } else if (content) {
+                                content = recursiveContent(content);
                             }
                             return '<' + tag + attr + '>' + content + '</' + tag + '>';
                         });
                     return template;
                 })(template);
+                
                 return wrapBefore + template + wrapAfter;
             }
         };

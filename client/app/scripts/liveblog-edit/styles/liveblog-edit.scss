@@ -505,6 +505,9 @@
                                     }
                                 }
                                 .st-placeholder {
+                                    &:empty:before {
+                                        content: none;
+                                    }
                                     &:empty:after {
                                         content: attr(placeholder);
                                         color: gray;
@@ -523,6 +526,9 @@
                                     @include transition(opacity .25s ease);
                                     &:focus {
                                         opacity: 1;
+                                    }
+                                    &:empty:before {
+                                        content: none;
                                     }
                                     &:empty:after {
                                         content: attr(placeholder);

@@ -127,6 +127,12 @@ export default function ingestPanelActions(Dispatcher, api, $http, config, momen
                 type: 'ON_ERROR',
                 error: null
             });
+        },
+        setUnreadQueue: function(unreadQueue) {
+            Dispatcher.dispatch({
+                type: 'ON_SET_UNREAD_QUEUE',
+                unreadQueue: unreadQueue
+            });
         }
     };
 }

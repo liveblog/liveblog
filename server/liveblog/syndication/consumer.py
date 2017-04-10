@@ -109,10 +109,10 @@ class ConsumerService(BaseService):
         super().on_create(docs)
 
     def on_created(self, docs):
+        super().on_created(docs)
+
         for doc in docs:
             check_webhook_status.delay(doc['_id'])
-
-        super().on_created(docs)
 
     def on_update(self, updates, original):
         if 'webhook_url' in updates:
@@ -120,8 +120,8 @@ class ConsumerService(BaseService):
         if 'api_key' in updates and updates['api_key'] != original['api_key']:
             updates['api_key'] = generate_api_key()
 
-        check_webhook_status.delay(original['_id'])
         super().on_update(updates, original)
+        check_webhook_status.delay(original['_id'])
 
     def on_delete(self, doc):
         out_service = get_resource_service('syndication_out')
