@@ -13,6 +13,13 @@
   <body>
 
     <div sd-superdesk-view></div>
+    <div class="dropdown help-link liveblog-help" dropdown style="visibility: hidden">
+        <div class="dropdown__toggle" dropdown__toggle style="cursor:pointer">Help <b class="caret"></b></div>
+        <ul class="dropdown__menu" style="min-width: 90px;">
+            <li><a href="https://github.com/liveblog/liveblog" target="_blank">Github</a></li>
+            <li translate ng-click="aboutModal = aboutModal? false: true"><button translate>About</button></li>
+        </ul>
+    </div>
     <div sd-modal data-model="aboutModal" style="visibility: hidden" class="about-modal">
         <div class="modal-header">
             <button class="close" data-dismiss="modal"><i class="icon-close-small"></i></button>

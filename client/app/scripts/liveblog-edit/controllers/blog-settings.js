@@ -300,6 +300,7 @@ function BlogSettingsController(
         .then(function(data) {
             vm.availableLanguages = data._items;
         });
+
     // load available themes
     var qTheme = api('themes')
         .query()
@@ -309,7 +310,7 @@ function BlogSettingsController(
                 return theme.name === 'angular'
             });
             vm.availableThemes = data._items.filter(function(theme) {
-                return !theme['abstract'];
+                return !theme.abstract;
             });
             vm.selectedTheme = _.find(vm.availableThemes, function(theme) {
                 return theme.name === vm.blogPreferences.theme;
