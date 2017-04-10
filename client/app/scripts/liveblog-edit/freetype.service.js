@@ -147,7 +147,7 @@ import './module';
     .factory('freetypeService', function () {
         return {
             /**
-            * transformation method from dorla sign template to angular template
+            * transformation method from dollar sign template to angular template
             * also requires `scope` object so that the proper object with the data is set.
             *     this is special case for vector array.
             */
@@ -275,13 +275,14 @@ import './module';
                 return template;
 
             },
+            // create the html template that will be shown in the timeline and the live feed
             htmlContent: function(template, data) {
                 var paths = {},
                     path,
                     wrapBefore = '',
                     wrapAfter = '';
                 obj2path(paths, data);
-                template = template.replace(/\<li([^>]*)\>(.*?)\<\/li\>/g, function(all, attr, repeater) {
+                template = template.replace(/<li([^>]*)>((.|\n)*?)<\/li>/g, function(all, attr, repeater) {
                     var vector, vectorPath, parts, templ = '', emptyIndex = [], i;
                     repeater = repeater.replace(REGEX_VARIABLE, function(all, path) {
                         parts = path.split(/[\d*]/);
@@ -318,6 +319,10 @@ import './module';
                 });
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name, type;
+                    attr = _.trim(attr);
+                    if (attr.substr(-1, 1) === '/') {
+                        attr = attr.substr(0, attr.length - 1);
+                    }
                     // transform `name` and `text` variables.
                     attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
                         function(match, tag, quote, rname) {
@@ -393,38 +398,28 @@ import './module';
                     }
                     return all;
                 });
+
+                // remove elements with the hide-render attribute
                 template = (function recursiveContent(template) {
-                    template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>(.*?)<\/\1>?/gi,
+                    template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>((.|\n)*?)<\/\1>?/gi,
                         function(all, tag, attr, content) {
-                            if (content) {
-                                content = recursiveContent(content);
-                            }
-                            var name, type;
-                            attr = attr.replace(/hide-render/gi, function(match, tag, quote, rname) {
+                            var type;
+                            attr = attr.replace(/hide-render/gi, function() {
                                 type = 'hide-render';
-                                // remove the dollar variable from the attributes.
+                                // remove hide-render from attributes
                                 return '';
                             });
-                            if (name || type) {
-                                switch (type) {
-                                    case 'text':
-                                        if (paths[name]) {
-                                            return '<span '
-                                                        + injectClass(attr, 'freetype--element')
-                                                        + '>' + paths[name]
-                                                        + '</span>';
-                                        }
-
-                                        return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
-                                    case 'hide-render': {
-                                        return '';
-                                    }
-                                }
+                            
+                            if (type === 'hide-render') {
+                                return '';
+                            } else if (content) {
+                                content = recursiveContent(content);
                             }
                             return '<' + tag + attr + '>' + content + '</' + tag + '>';
                         });
                     return template;
                 })(template);
+                
                 return wrapBefore + template + wrapAfter;
             }
         };

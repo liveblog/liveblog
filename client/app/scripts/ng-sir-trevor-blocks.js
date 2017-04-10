@@ -472,9 +472,20 @@ angular
             descriptionPlaceholder: window.gettext('Add a description'),
             authorPlaceholder: window.gettext('Add author / photographer'),
             loadData: function(data) {
-                var file_url = (typeof(data.file) !== 'undefined') ? data.file.url : data.media._url, that = this;
+                var that = this;
+
+                let fileUrl = '';
+
+                if (typeof(data.file) !== 'undefined') {
+                    fileUrl = data.file.url;
+                } else if (data.media._url) {
+                    fileUrl = data.media._url;
+                } else if (data.media.renditions.thumbnail.href) {
+                    fileUrl = data.media.renditions.thumbnail.href;
+                }
+
                 this.$editor.html($('<img>', {
-                    src: file_url
+                    src: fileUrl
                 })).show();
                 this.$editor.append($('<div>', {
                     name: 'caption',
