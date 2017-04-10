@@ -278,7 +278,7 @@ class PostsService(ArchiveService):
             logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
             posts.append(doc)
 
-            if original['post_status'] in ('submitted', 'draft') and updates.get('post_status') == 'open':
+            if original['post_status'] in ('submitted', 'draft', 'comment') and updates.get('post_status') == 'open':
                 # Post has been published as contribution, then published.
                 # Syndication will be sent with 'created' action.
                 out_service.send_syndication_post(doc, action='created')
