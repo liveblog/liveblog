@@ -75,7 +75,7 @@ class SyndicationOutService(BaseService):
 
     def get_blog_syndication(self, blog_id):
         blog = self._get_blog(blog_id)
-        if not blog['syndication_enabled']:
+        if not blog.get('syndication_enabled'):
             logger.info('Syndication not enabled for blog "{}"'.format(blog['_id']))
             return []
         else:
