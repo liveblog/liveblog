@@ -76,9 +76,11 @@
                 method:'GET',
                 transformResponse: function(user) {
                     user = angular.fromJson(user);
-                    var thumbnail = thumbnailRendition(user.avatar_renditions);
-                    user.picture_url =thumbnail? thumbnail : user.picture_url;
-                    user.picture_srcset = srcSet(user.avatar_renditions);
+                    if(user.picture_url !== null) {
+                        var thumbnail = thumbnailRendition(user.avatar_renditions);
+                        user.picture_url =thumbnail? thumbnail : user.picture_url;
+                        user.picture_srcset = srcSet(user.avatar_renditions);
+                    }
                     return user;
                 },
                 cache: CacheFactory.get('usersCache')}
