@@ -184,8 +184,7 @@ class BlogService(BaseService):
             notify_members(blog, app.config['CLIENT_URL'], recipients)
 
         # Publish bloglist aswell
-        if app.config.get('S3_PUBLISH_BLOGSLIST', True):
-            publish_bloglist_embed_on_s3()
+        publish_bloglist_embed_on_s3()
 
     def find_one(self, req, checkUser=True, **lookup):
         doc = super().find_one(req, **lookup)
