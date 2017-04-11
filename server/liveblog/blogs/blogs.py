@@ -312,15 +312,6 @@ class BlogService(BaseService):
             else:
                 syndication_in_service.delete_action(lookup={'_id': syndication_in['_id']})
 
-    def delete_output(self, output):
-        # find all blogs that contains `output`
-        blogs = self.find({'outputs': {'$elemMatch': {'outputs_id': output.get('_id')}}})
-        for blog in blogs:
-            outputs = blog.get('outputs')
-            # remove `output` from `outputs`
-            outputs.remove({'output_id': output.get('_id')})
-            self.system_update(blog['_id'], {'outputs': outputs}, blog)
-
 
 class UserBlogsResource(Resource):
     url = 'users/<regex("[a-f0-9]{24}"):user_id>/blogs'
