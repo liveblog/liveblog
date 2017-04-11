@@ -1,5 +1,3 @@
-'use strict';
-
 var path = require('path');
 var webpack = require('webpack');
 var lodash = require('lodash');
@@ -28,7 +26,7 @@ module.exports = function makeConfig(grunt) {
         }
         // include only 'superdesk-core' and valid modules inside node_modules
         let validModules = ['superdesk-core'].concat(sdConfig.apps);
-        return !validModules.some(app => p.indexOf(app) > -1);
+        return !validModules.some((app) => p.indexOf(app) > -1);
     };
 
     return {
@@ -104,10 +102,6 @@ module.exports = function makeConfig(grunt) {
                 {
                     test: /\.css/,
                     loader: 'style!css'
-                },
-                {
-                    test: /\.less$/,
-                    loader: 'style!css!less'
                 },
                 {
                     test: /\.scss$/,
