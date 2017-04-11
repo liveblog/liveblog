@@ -278,12 +278,16 @@ class PostsService(ArchiveService):
             logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
             posts.append(doc)
 
-            if original['post_status'] in ('submitted', 'draft', 'comment') and updates.get('post_status') == 'open':
-                # Post has been published as contribution, then published.
-                # Syndication will be sent with 'created' action.
-                out_service.send_syndication_post(doc, action='created')
-            else:
-                out_service.send_syndication_post(doc, action='updated')
+            if updates.get('post_status') == 'open':
+                if original['post_status'] in ('submitted', 'draft', 'comment'):
+                    # Post has been published as contribution, then published.
+                    # Syndication will be sent with 'created' action.
+                    out_service.send_syndication_post(doc, action='created')
+                else:
+                    out_service.send_syndication_post(doc, action='updated')
+            # as far as the consumer is concerned, if a post is unpublished, it is effectively deleted
+            elif original['post_status'] == 'open':
+                out_service.send_syndication_post(doc, action='deleted')
 
             push_notification('posts', updated=True, posts=posts)
 

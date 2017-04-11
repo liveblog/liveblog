@@ -15,7 +15,8 @@ logger = logging.getLogger('superdesk')
 
 consumers_schema = {
     'name': {
-        'type': 'string'
+        'type': 'string',
+        'unique': True
     },
     'contacts': {
         'type': 'list',
