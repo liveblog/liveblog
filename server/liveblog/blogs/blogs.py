@@ -296,14 +296,6 @@ class BlogService(BaseService):
             if (active.count() + increment > SUBSCRIPTION_MAX_ACTIVE_BLOGS[subscription]):
                 raise SuperdeskApiError.forbiddenError(message='Cannot add another active blog.')
 
-    def delete_output(self, output):
-        # find all blogs that contains `output`
-        blogs = self.find({'outputs': {'$elemMatch': {'outputs_id': output.get('_id')}}})
-        for blog in blogs:
-            outputs = blog.get('outputs')
-            # remove `output` from `outputs`
-            outputs.remove({'output_id': output.get('_id')})
-            self.system_update(blog['_id'], {'outputs': outputs}, blog)
 
 
 class UserBlogsResource(Resource):

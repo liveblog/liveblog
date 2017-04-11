@@ -19,11 +19,18 @@ class OutputsResource(Resource):
             'unique': True
         },
         'collection': Resource.rel('collections', True),
-        'background-color': {
-            'type': 'string'
-        },
-        'background-image': {
-            'type': 'string'
+        'blog': Resource.rel('blogs'),
+        'theme': Resource.rel('themes'),
+        'style': {
+            'type': 'dict',
+            'schema': {
+                'background-color': {
+                    'type': 'string'
+                },
+                'background-image': {
+                    'type': 'string'
+                }
+            }
         },
         'deleted': {
             'type': 'boolean',
@@ -43,8 +50,7 @@ class OutputsResource(Resource):
 class OutputsService(BaseService):
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
-        blogs_service = get_resource_service('blogs')
 
-        # deletes blog
+        # @TODO: deletes s3 blog
         if updates.get('deleted', False):
-            blogs_service.delete_output(original)
+            pass;
