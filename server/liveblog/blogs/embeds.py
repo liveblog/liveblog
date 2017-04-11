@@ -18,17 +18,15 @@ import superdesk
 from eve.io.mongo import MongoJSONEncoder
 from flask import current_app as app
 from flask import json, render_template, request, url_for
-from liveblog.themes import ASSETS_DIR as THEMES_ASSETS_DIR
 from liveblog.themes import UnknownTheme
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 
-from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
+from .app_settings import THEMES_ASSETS_DIR, THEMES_DIRECTORY, BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
 
 logger = logging.getLogger('superdesk')
 embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
-THEMES_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'themes'))
 
 
 def collect_theme_assets(theme, assets=None, template=None):
@@ -62,6 +60,27 @@ def collect_theme_assets(theme, assets=None, template=None):
             assets[asset_type].append(url)
 
     return assets, template
+
+
+def render_bloglist_embed(api_host=None, assets_root=None):
+    compiled_api_host = "{}://{}/".format(app.config['URL_PROTOCOL'], app.config['SERVER_NAME'])
+    api_host = api_host or compiled_api_host
+    assets_root = assets_root or BLOGSLIST_ASSETS_DIR + '/'
+    assets = copy.deepcopy(BLOGLIST_ASSETS)
+
+    # Compute path relative to the assets_root for `styles` and `scripts`.
+    for index, script in enumerate(assets.get('scripts')):
+        assets['scripts'][index] = os.path.join(assets_root, script)
+    for index, style in enumerate(assets.get('styles')):
+        assets['styles'][index] = os.path.join(assets_root, style)
+
+    scope = {
+        'debug': app.config.get('LIVEBLOG_DEBUG'),
+        'api_host': api_host,
+        'assets': assets,
+        'assets_root': assets_root
+    }
+    return render_template('blog-list-embed.html', **scope)
 
 
 @embed_blueprint.route('/embed/<blog_id>')
