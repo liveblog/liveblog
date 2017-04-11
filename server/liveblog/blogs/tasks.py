@@ -1,3 +1,4 @@
+import copy
 import io
 import logging
 import os
@@ -13,7 +14,7 @@ from superdesk.notification import push_notification
 
 from .app_settings import (BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR,
                            BLOGSLIST_DIRECTORY, CONTENT_TYPES)
-from .embeds import embed
+from .embeds import embed, render_bloglist_embed
 from .exceptions import MediaStorageUnsupportedForBlogPublishing
 from .utils import check_media_storage, get_blog_path, get_bloglist_path
 
@@ -89,9 +90,9 @@ def delete_blog_embed_on_s3(self, blog_id, safe=True):
 
 
 @celery.task(soft_time_limit=1800)
-def publish_assets(asset_type):
+def publish_bloglist_assets(asset_type):
     # TODO: add retry
-    assets = BLOGLIST_ASSETS.copy()
+    assets = copy.deepcopy(BLOGLIST_ASSETS)
     # version_path = os.path.join(BLOGSLIST_DIRECTORY, BLOGSLIST_ASSETS_DIR, assets['version'])
     # # loads version json from file
     # version = json.loads(open(version_path, 'rb').read()).get('version', '0.0.0')
@@ -114,12 +115,15 @@ def publish_assets(asset_type):
 
 @celery.task(soft_time_limit=1800)
 def publish_bloglist_embed_on_s3():
-    # TODO: add retry
-    from .blogslist import render_bloglist_embed  # To prevent circular import. TODO: move to .embeds
+    # TODO: add retry, cleanup code.
+    if not app.config['S3_PUBLISH_BLOGSLIST']:
+        logger.warning('Blog list embed publishing is disabled.')
+        return
+
     if type(app.media).__name__ is not 'AmazonMediaStorage':
         pass
     else:
-        assets = BLOGLIST_ASSETS.copy()
+        assets = copy.deepcopy(BLOGLIST_ASSETS)
 
         # Publish version file to get the asset_root.
         version_file = os.path.join(BLOGSLIST_ASSETS_DIR, assets.get('version'))
@@ -156,6 +160,5 @@ def publish_bloglist_embed_on_s3():
         else:
             blogslist_service.create([{'key': 'bloglist', 'value': public_url}])
 
-        # publish_assets('template')
-        publish_assets('scripts')
-        publish_assets('styles')
+        publish_bloglist_assets('scripts')
+        publish_bloglist_assets('styles')
