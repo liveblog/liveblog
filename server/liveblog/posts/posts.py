@@ -3,7 +3,6 @@ from bson.objectid import ObjectId
 from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas
-from superdesk import get_resource_service
 from apps.archive import ArchiveVersionsResource
 from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
@@ -279,12 +278,16 @@ class PostsService(ArchiveService):
             logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
             posts.append(doc)
 
-            if original['post_status'] in ('submitted', 'draft') and updates.get('post_status') == 'open':
-                # Post has been published as contribution, then published.
-                # Syndication will be sent with 'created' action.
-                out_service.send_syndication_post(doc, action='created')
-            else:
-                out_service.send_syndication_post(doc, action='updated')
+            if updates.get('post_status') == 'open':
+                if original['post_status'] in ('submitted', 'draft'):
+                    # Post has been published as contribution, then published.
+                    # Syndication will be sent with 'created' action.
+                    out_service.send_syndication_post(doc, action='created')
+                else:
+                    out_service.send_syndication_post(doc, action='updated')
+            # as far as the consumer is concerned, if a post is unpublished, it is effectively deleted
+            elif original['post_status'] == 'open':
+                out_service.send_syndication_post(doc, action='deleted')
 
             push_notification('posts', updated=True, posts=posts)
 
@@ -321,7 +324,7 @@ class BlogPostsService(ArchiveService):
     def get(self, req, lookup):
         imd = req.args.items()
         for key in imd:
-            if key[1][97:104] == 'comment':
+            if key[1][97:104] == 'comment':  # TODO: fix
                 if lookup.get('blog_id'):
                     lookup['client_blog'] = ObjectId(lookup['blog_id'])
                     del lookup['blog_id']
