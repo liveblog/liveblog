@@ -9,24 +9,22 @@
 # AUTHORS and LICENSE files distributed with this source code, or
 # at https://www.sourcefabric.org/superdesk/license
 
-import jinja2
+import copy
 import json
 import logging
 import os
-import pymongo
-import superdesk
 
-from bson import ObjectId
-from bson.json_util import dumps as bson_dumps
+import superdesk
 from eve.io.mongo import MongoJSONEncoder
 from flask import current_app as app
 from flask import json, render_template, request, url_for
+from liveblog.themes import ASSETS_DIR as THEMES_ASSETS_DIR
 from liveblog.themes import UnknownTheme
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 
-from .app_settings import THEMES_ASSETS_DIR
-from .utils import is_relative_to_current_folder, get_theme_json, get_template_file_name
+from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
+from .utils import is_relative_to_current_folder
 
 logger = logging.getLogger('superdesk')
 embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
@@ -66,103 +64,6 @@ def collect_theme_assets(theme, assets=None, template=None):
     return assets, template
 
 
-class ThemeTemplateLoader(jinja2.BaseLoader):
-    def __init__(self, theme):
-        dirname = os.path.dirname(get_template_file_name(theme))
-        # TODO: add theme template extensions features.
-        self.path = os.path.join(dirname, 'templates')
-
-    def get_source(self, environment, template):
-        path = os.path.join(self.path, template)
-        if not os.path.exists(path):
-            raise jinja2.TemplateNotFound(template)
-        mtime = os.path.getmtime(path)
-        with open(path) as f:
-            source = f.read()
-        return source, path, lambda: mtime == os.path.getmtime(path)
-
-
-class Blog:
-    """
-    Utility class to fetch blog posts and related data from MongoDB collections.
-    """
-    order_by = ('_updated', '_created')
-    default_order_by = '_updated'
-    sort = ('asc', 'desc')
-    default_sort = 'desc'
-
-    def __init__(self, blog):
-        if isinstance(blog, (str, ObjectId)):
-            blog = get_resource_service('client_blogs').find_one(_id=blog, req=None)
-
-        self._blog = blog
-        self._posts = get_resource_service('client_posts')
-
-    def _validate_order_by(self, order_by):
-        if order_by not in self.order_by:
-            raise ValueError(order_by)
-
-    def _validate_sort(self, sort):
-        if sort not in self.sort:
-            raise ValueError(sort)
-
-    def _posts_lookup(self, sticky=None, highlight=None):
-        filters = [
-            {'blog': {'$eq': self._blog['_id']}},
-            {'post_status': {'$eq': 'open'}},
-            {'deleted': {'$ne': True}}
-        ]
-        if sticky:
-            filters.append({'sticky': {'$eq': sticky}})
-        if highlight:
-            filters.append({'lb_highlight': {'$eq': highlight}})
-        return {'$and': filters}
-
-    def posts(self, sticky=None, highlight=None, order_by=default_order_by, sort=default_sort, page=1, limit=25,
-              wrap=False):
-        # Validate parameters.
-        self._validate_sort(sort)
-        self._validate_order_by(order_by)
-
-        # Fetch total.
-        results = self._posts.find(self._posts_lookup(sticky, highlight))
-        total = results.count()
-
-        # Get sorting direction.
-        if sort == 'asc':
-            sort = pymongo.ASCENDING
-        else:
-            sort = pymongo.DESCENDING
-
-        # Fetch posts, do pagination and sorting.
-        skip = limit * (page - 1)
-        results = results.skip(skip).limit(limit).sort(order_by, sort)
-        posts = []
-        for doc in results:
-            if 'groups' not in doc:
-                continue
-
-            for group in doc['groups']:
-                if group['id'] == 'main':
-                    for ref in group['refs']:
-                        ref['item'] = get_resource_service('archive').find_one(req=None, _id=ref['residRef'])
-            posts.append(doc)
-
-        if wrap:
-            # Wrap in python-eve style data structure
-            return {
-                '_items': posts,
-                '_meta': {
-                    'page': page,
-                    'total': total,
-                    'max_results': limit
-                }
-            }
-        else:
-            # Return posts.
-            return posts
-
-
 @embed_blueprint.route('/embed/<blog_id>')
 def embed(blog_id, api_host=None, theme=None):
     api_host = api_host or request.url_root
@@ -186,19 +87,17 @@ def embed(blog_id, api_host=None, theme=None):
         raise SuperdeskApiError.badRequestError(
             message='You will be able to access the embed after you register the themes')
 
-    # If a theme is provided, overwrite the default theme.json package contents
+    # If a theme is provided, overwrite the default theme.
     if theme_name:
-        theme = theme_json = get_theme_json(theme_name)
-    else:
-        theme_name = theme['name']
-        theme_json = theme
+        theme_package = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
+        theme = json.loads(open(theme_package).read())
 
     try:
-        assets, template_content = collect_theme_assets(theme)
+        assets, template_file = collect_theme_assets(theme)
     except UnknownTheme as e:
         return str(e), 500
 
-    if not template_content:
+    if not template_file:
         logger.error('Template file not found for theme "%s". Theme: %s' % (theme.get('name'), theme))
         return 'Template file not found', 500
 
@@ -206,7 +105,6 @@ def embed(blog_id, api_host=None, theme=None):
     if theme.get('public_url', False):
         assets_root = theme.get('public_url')
     else:
-        # TODO: fix
         assets_root = [THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme')]
         assets_root = '/{}/'.format('/'.join(assets_root))
 
