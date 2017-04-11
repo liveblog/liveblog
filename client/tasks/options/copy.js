@@ -11,7 +11,8 @@ module.exports = {
                 'favicon.ico',
                 'styles/css/*.css'
             ]
-        },{
+        },
+        {
             expand: true,
             dot: true,
             cwd: 'node_modules/superdesk-core/',
@@ -39,7 +40,7 @@ module.exports = {
             dot: true,
             cwd: '<%= appDir %>',
             dest: '<%= distDir %>',
-            src: [ 'index.html' ]
+            src: ['index.html']
         }]
     },
     sirTrevor: {
@@ -48,7 +49,7 @@ module.exports = {
             dot: true,
             cwd: 'node_modules/sir-trevor/',
             dest: '<%= distDir %>',
-            src: [ 'sir-trevor.js', 'sir-trevor.css' ]
+            src: ['sir-trevor.js', 'sir-trevor.css']
         }]
     },
     tmp: {
@@ -82,14 +83,14 @@ module.exports = {
             ]
         }]
     },
-    js: {
+    config: {
         files: [{
             expand: true,
             dot: true,
             cwd: '<%= appDir %>',
             dest: '<%= distDir %>',
             src: [
-                'scripts/config.js'
+                'config.js'
             ]
         }]
     },
