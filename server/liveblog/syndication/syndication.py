@@ -245,12 +245,12 @@ def syndication_webhook():
     in_service = get_resource_service('syndication_in')
     blog_token = request.headers['Authorization']
     in_syndication = in_service.find_one(blog_token=blog_token, req=None)
-    if in_syndication == None:
+    if in_syndication is None:
         return api_error('Blog is not being syndication', 406)
 
     blog_service = get_resource_service('blogs')
-    blog = blog_service.find_one(req=None,_id=in_syndication['blog_id'])
-    if blog == None:
+    blog = blog_service.find_one(req=None, _id=in_syndication['blog_id'])
+    if blog is None:
         return api_error('Blog not found', 404)
 
     if blog['blog_status'] != 'open':

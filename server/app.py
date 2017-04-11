@@ -15,14 +15,9 @@ import jinja2
 import flask_s3
 import settings
 from flask_cache import Cache
-from liveblog.analytics.analytics import analytics_blueprint
-from liveblog.blogs.blogslist import (bloglist_assets_blueprint,
-                                      bloglist_blueprint)
+from liveblog.blogs import bloglist_assets_blueprint, bloglist_blueprint
 from liveblog.blogs.embeds import embed_blueprint
 from liveblog.common import BlogCache
-from liveblog.marketplace.marketer import marketers_blueprint
-from liveblog.syndication.blogs import \
-    blogs_blueprint as syndication_blogs_blueprint
 from liveblog.syndication.producer import producers_blueprint
 from liveblog.syndication.syndication import syndication_blueprint
 from liveblog.syndication.blogs import blogs_blueprint as syndication_blogs_blueprint
