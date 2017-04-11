@@ -224,7 +224,7 @@ class BlogService(BaseService):
     def _on_deactivate(self, blog_id):
         # Stop syndication when archiving or deleting a blog
         syndication_in_service = get_resource_service('syndication_in')
-        syndication_ins = syndication_in_service.find(lookup={'blog_id': blog_id})
+        syndication_ins = syndication_in_service.find({'blog_id': blog_id})
         producers = get_resource_service('producers')
         for syndication_in in syndication_ins:
             producer_id = syndication_in['producer_id']
