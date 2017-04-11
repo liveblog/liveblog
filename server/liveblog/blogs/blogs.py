@@ -18,78 +18,21 @@ from superdesk import get_resource_service
 from superdesk.activity import add_activity
 from superdesk.emails import send_email
 from superdesk.errors import SuperdeskApiError
-from superdesk.metadata.item import metadata_schema
 from superdesk.notification import push_notification
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk.users.services import is_admin
 from superdesk.utc import utcnow
+from liveblog.syndication.exceptions import ProducerAPIError
 
 from liveblog.blogs.tasks import publish_bloglist_embed_on_s3
 from liveblog.common import get_user, update_dates_for
 from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS
 
+from .schema import blogs_schema
 from .tasks import delete_blog_embed_on_s3, publish_blog_embed_on_s3
 
 logger = logging.getLogger('superdesk')
-
-blogs_schema = {
-    'title': metadata_schema['headline'],
-    'description': metadata_schema['description_text'],
-    'picture_url': {
-        'type': 'string',
-        'nullable': True
-    },
-    'picture': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
-    'original_creator': metadata_schema['original_creator'],
-    'version_creator': metadata_schema['version_creator'],
-    'versioncreated': metadata_schema['versioncreated'],
-    'posts_order_sequence': {
-        'type': 'float',
-        'default': 0.00
-    },
-    'blog_status': {
-        'type': 'string',
-        'allowed': ['open', 'closed'],
-        'default': 'open'
-    },
-    'members': {
-        'type': 'list',
-        'schema': {
-            'type': 'dict',
-            'schema': {
-                'user': Resource.rel('users', True)
-            }
-        },
-        'maxmembers': True
-    },
-    'blog_preferences': {
-        'type': 'dict'
-    },
-    'theme_settings': {
-        'type': 'dict'
-    },
-    'public_url': {
-        'type': 'string'
-    },
-    'syndication_enabled': {
-        'type': 'boolean',
-        'default': False
-    },
-    'market_enabled': {
-        'type': 'boolean',
-        'default': False
-    },
-    'category': {
-        'type': 'string',
-        'allowed': ["", "Breaking News", "Entertainment", "Business and Finance", "Sport", "Technology"],
-        'default': ""
-    },
-    'start_date': {
-        'type': 'datetime',
-        'default': None
-    }
-}
 
 
 class BlogsResource(Resource):
@@ -213,6 +156,10 @@ class BlogService(BaseService):
         if syndication_enabled is False and out.count():
             raise SuperdeskApiError.forbiddenError(message='Cannot disable syndication: blog has active consumers.')
 
+        # If archiving a blog, remove any syndication in records
+        if blog_status == 'closed':
+            self._on_deactivate(original['_id'])
+
         # If missing, set "start_date" to original post "_created" value.
         if not updates.get('start_date') and original['start_date'] is None:
             updates['start_date'] = original['_created']
@@ -257,12 +204,13 @@ class BlogService(BaseService):
         delete_blog_embed_on_s3.delay(blog_id)
 
         # Remove syndication on blog post delete.
-        syndication_in = get_resource_service('syndication_in')
         syndication_out = get_resource_service('syndication_out')
         lookup = {'blog_id': blog_id}
-        syndication_in.delete_action(lookup)
         syndication_out.delete_action(lookup)
 
+        self._on_deactivate(blog_id)
+
+        # send notifications
         # Send notifications.
         push_notification('blogs', deleted=1)
 
@@ -272,6 +220,30 @@ class BlogService(BaseService):
             active = self.find({'blog_status': 'open'})
             if active.count() + increment > SUBSCRIPTION_MAX_ACTIVE_BLOGS[subscription]:
                 raise SuperdeskApiError.forbiddenError(message='Cannot add another active blog.')
+
+    def _on_deactivate(self, blog_id):
+        # Stop syndication when archiving or deleting a blog
+        syndication_in_service = get_resource_service('syndication_in')
+        syndication_ins = syndication_in_service.find({'blog_id': blog_id})
+        producers = get_resource_service('producers')
+        for syndication_in in syndication_ins:
+            producer_id = syndication_in['producer_id']
+            producer_blog_id = syndication_in['producer_blog_id']
+            try:
+                response = producers.unsyndicate(producer_id, producer_blog_id, syndication_in['blog_id'])
+            except ProducerAPIError:
+                logger.warning(
+                    'Producer "{}" responded with error when deleting syndication blog "{}"'.format(
+                        producer_id, producer_blog_id
+                    )
+                )
+
+            if response.status_code != 204:
+                logger.warning('Producer "{}" responded with code "{}" when deleting blog "{}"'.format(
+                    producer_id, response.status_code, producer_blog_id
+                ))
+            else:
+                syndication_in_service.delete_action(lookup={'_id': syndication_in['_id']})
 
 
 class UserBlogsResource(Resource):
