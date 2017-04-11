@@ -380,4 +380,6 @@ export default function BlogListController(
     $scope.$watch('maxResults', fetchBlogs);
     // fetch when criteria are updated from url (searchbar-directive)
     $scope.$on('$routeUpdate', fetchBlogs);
+    // Reload bloglist on membership's approval
+    $scope.$on('blogs', fetchBlogs);
 }
