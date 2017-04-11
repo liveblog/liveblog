@@ -6,8 +6,8 @@
             method="post"
             enctype="multipart/form-data"
             ng-if="!vm.hasReachedThemesLimit() && !vm.isSolo()">
-            <label class="navbtn navbtn-info" for="uploadAThemeFile">
-                <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
+            <label class="navbtn navbtn-info" for="uploadAThemeFile" title="{{ 'New Theme' | translate }}">
+                <i class="svg-icon-add inverse"></i>
             </label>
             <input
                 type="file" 
@@ -19,8 +19,8 @@
         <button
             ng-if="vm.hasReachedThemesLimit()"
             class="navbtn navbtn-info"
-            ng-click="vm.showUpgradeModal()">
-            <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
+            ng-click="vm.showUpgradeModal()" title="{{ 'New Theme' | translate }}">
+            <i class="svg-icon-add inverse"></i>
         </button>
     </div>
 </div>

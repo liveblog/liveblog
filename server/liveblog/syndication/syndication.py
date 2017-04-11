@@ -73,6 +73,15 @@ class SyndicationOutService(BaseService):
         except IndexError:
             return
 
+    def consumer_is_syndicating(self, consumer_id):
+        try:
+            result = self.find({'$and': [
+                {'consumer_id': {'$eq': consumer_id}}
+            ]})
+            return result.count() > 0
+        except IndexError:
+            return
+
     def get_blog_syndication(self, blog_id):
         blog = self._get_blog(blog_id)
         if not blog.get('syndication_enabled'):
@@ -265,7 +274,12 @@ def syndication_webhook():
         if request.method == 'POST':
             # Create post
             if post:
-                return api_error('Post already exist', 409)
+                # Post may have been previously deleted
+                if post.get('deleted'):
+                    posts_service.update(post_id, new_post, post)
+                    return api_response({'post_id': post_id}, 200)
+                else:
+                    return api_error('Post already exist', 409)
 
             new_post_id = posts_service.post([new_post])[0]
             return api_response({'post_id': str(new_post_id)}, 201)
