@@ -20,7 +20,6 @@ Eve==0.6.4
 Eve-Elastic==0.3.8
 Events==0.2.2
 feedparser==5.2.1
-flake8==3.3.0
 Flask==0.10.1
 Flask-Cache==0.13.1
 Flask-Cors==2.1.0
@@ -33,7 +32,6 @@ hachoir3-superdesk==3.0a1.post2
 HermesCache==0.6.1
 honcho==0.7.1
 html5lib==0.999999999
-httmock==1.2.6
 itsdangerous==0.24
 Jinja2==2.9.5
 jmespath==0.9.1
@@ -42,17 +40,14 @@ lxml==3.7.2
 MarkupSafe==0.23
 mccabe==0.6.1
 mongolock==1.3.4
-nose==1.3.7
 olefile==0.44
 packaging==16.8
 parse==1.6.6
 parse-type==0.3.4
-pep8==1.7.0
 Pillow==4.0.0
 pyasn1==0.2.2
 pycodestyle==2.3.1
 pycparser==2.17
-pyflakes==1.1.0
 pymongo==3.4.0
 pyparsing==2.1.10
 python-dateutil==2.6.0
@@ -73,7 +68,6 @@ vine==1.1.3
 webencodings==0.5
 websockets==3.2
 Werkzeug==0.11.15
-wooper==0.4.2
 
 # Superdesk
 -e git://github.com/superdesk/superdesk-core.git@750a78b#egg=Superdesk-Core-1.6
