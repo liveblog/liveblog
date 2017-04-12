@@ -15,7 +15,10 @@ from superdesk import get_resource_service
 from liveblog.syndication.utils import fetch_url
 from liveblog.syndication.exceptions import DownloadError
 from bson.json_util import dumps
-from urllib3.fields import guess_content_type
+from requests.exceptions import RequestException
+
+import requests
+import tempfile
 
 drag_and_drop_blueprint = Blueprint('drag_and_drop', __name__)
 CORS(drag_and_drop_blueprint)
@@ -148,22 +151,24 @@ class BlogItemsService(ArchiveService):
 def drag_and_drop():
     data = request.get_json()
     url = data['image_url']
-    accepted_mimetypes = {
-        'image/jpge',
-        'image/png'
-    }
-    mimetype = guess_content_type(url)
-    if mimetype not in accepted_mimetypes:
-        return make_response('invalid file type',406)
 
     try:
-        stream = fetch_url(url)
-    except (DownloadError):
-        return make_response('unable to download file',404)
+        response = requests.get(url, timeout=5)
+    except (ConnectionError, RequestException):
+        return make_response('Unable to get url: "{}"'.format(url),406)
+    fd = tempfile.NamedTemporaryFile()
+    for chunk in response.iter_content(chunk_size=1024):
+        if chunk:
+            fd.write(chunk)
+    fd.seek(0)
+
+    content_type = response.headers.get('content-type')
+    if 'image' not in content_type:
+        return make_response('Invalid content_type {}'.format(content_type),406)
 
     item_data = dict()
     item_data['type'] = 'picture'
-    item_data['media'] = FileStorage(stream=stream, content_type=mimetype)
+    item_data['media'] = FileStorage(stream=fd,content_type=content_type)
     archive_service = get_resource_service('archive')
     archive_id = archive_service.post([item_data])[0]
     archive = archive_service.find_one(req=None, _id=archive_id)
