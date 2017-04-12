@@ -11,6 +11,8 @@
 import angular from 'angular';
 import _ from 'lodash';
 
+import outputModalTpl from 'scripts/liveblog-edit/views/output-modal.html';
+
 import './../../ng-sir-trevor';
 import './../../ng-sir-trevor-blocks';
 import './../unread.posts.service';
@@ -30,7 +32,8 @@ BlogSettingsController.$inject = [
     'config',
     'blogSecurityService',
     'moment',
-    'superdesk'
+    'superdesk',
+    'urls'
 ];
 
 function BlogSettingsController(
@@ -48,7 +51,8 @@ function BlogSettingsController(
     config,
     blogSecurityService,
     moment,
-    superdesk
+    superdesk,
+    urls
 ) {
 
     // set view's model
@@ -89,6 +93,131 @@ function BlogSettingsController(
         tab: false,
         // by default themes are not accepting embed multi height and code.
         embedMultiHight: false,
+        outputs: [],
+        collections: [],
+        outputsLoading: false,
+        outputModalActive: false,
+        outputModalTpl: outputModalTpl,
+        output: {
+            preview: {},
+            progress: {}
+        },
+        loadCollections: function() {
+            return api('collections').query({where: {deleted: false}}).then(function(data) {
+                vm.collections = data._items;
+            }).catch(function(data) {
+                notify.error(gettext('There was an error getting the adverts'));
+            })
+        },
+        loadOutputs: function(silent) {
+            silent = silent || false;
+            if (!silent) {
+                vm.outputsLoading = true;
+            }
+            api('outputs').query({where: {deleted: false}}).then(function(data) {
+                vm.outputs = data._items;
+                console.log('outputs ', vm.outputs);
+                if (!silent) {
+                    notify.info('Output channels loaded');
+                }
+                vm.outputsLoading = false;
+            }, function(data) {
+                notify.error(gettext('There was an error getting the output channels'));
+                vm.outputsLoading = false;
+            })
+        },
+        openOutputDialog: function(output) {
+            output = output || false;
+            vm.loadCollections().then(function() {
+                if (output) {
+                    vm.output = angular.copy(output);
+                    console.log('laoding ', vm.output);
+                    
+                    vm.output.preview.url = vm.output.style['background-image'];
+                        
+                } else {
+                    vm.output = {
+                        style: {},
+                        preview: {}
+                    };
+                }
+                vm.output.progress = {};
+                vm.output.saved = false;
+            });        
+            vm.outputModalActive = true;
+        },
+        cancelOutputCreate: function() {
+            vm.outputModalActive = false;
+        },
+        handleSuccessSave: function() {
+            notify.info(gettext('Advert saved successfully'));
+            vm.output = {};
+            vm.outputModalActive = false;
+            return vm.loadOutputs(true);
+        },
+        handleErrorSave: function() {
+            notify.error(gettext('Something went wrong, please try again later!'), 5000)
+        },
+        saveOutput: function() {
+            var newOutput = {
+                name : vm.output.name,
+                blog: blog._id,
+                collection: vm.output.collection,
+                style: vm.output.style
+            };
+            api('outputs').save(vm.output, newOutput).then(vm.handleSuccessSave, vm.handleErrorSave);
+        },
+        removeOutput: function (output, $index) {
+            modal.confirm(gettext('Are you sure you want to remove this output chanell?')).then(function() {
+                api('outputs').save(output, {deleted: true}).then(function(data) {
+                    vm.outputs.splice($index, 1);
+                }, function(data) {
+                    notify.error(gettext('Can\'t remove output'));
+                });
+            });
+        },
+        saveOutputImage: function() {
+            var form = {};
+            var config = vm.output.preview;
+            if (config.img) {
+                form.media = config.img;
+            } else if (config.url) {
+                form.URL = config.url;
+            } else {
+                return;
+            }
+            
+            // return a promise of upload which will call the success/error callback
+            return urls.resource('archive').then((uploadUrl) => upload.start({
+                method: 'POST',
+                url: uploadUrl,
+                data: form
+            })
+            .then((response) => {
+                if (response.data._status === 'ERR') {
+                    return;
+                }
+                var pictureUrl = response.data.renditions.viewImage.href;
+
+                vm.output.style['background-image'] = pictureUrl;                
+                vm.output.saved = true;
+            }, (error) => {
+                notify.error(
+                    error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
+                );
+            }, (progress) => {
+                // vm.output.progress.width = Math.round(progress.loaded / progress.total * 100.0);
+            }));
+        },
+        removeOutputImage: function() {
+            modal.confirm(gettext('Are you sure you want to remove the image?'))
+            .then(() => {
+                vm.output.preview = {};
+                vm.output.progress = {width: 0};
+                vm.output.saved = false;
+                vm.output.style['background-image'] = '';
+            });
+        },
         userNotInMembers: function(user) {
             for (var i = 0; i < vm.members.length; i ++) {
                 if (user._id === vm.members[i]._id) {
@@ -105,9 +234,6 @@ function BlogSettingsController(
 
                 let firstPicture = pictures[0];
 
-                //$scope.image.picture_url = firstPicture.renditions.original.href;
-                //$scope.image.picture = firstPicture._id;
-
                 vm.newBlog.picture_url = firstPicture.renditions.viewImage.href;
                 vm.newBlog.picture = firstPicture._id;
                 vm.uploadModal = false;
@@ -117,7 +243,8 @@ function BlogSettingsController(
             });
         },
         changeTab: function(tab) {
-            if (vm.tab) {
+            // outputs does not dirty the blog settings
+            if (vm.tab && vm.tab !== 'outputs') {
                 vm.forms.dirty = vm.forms.dirty || vm.forms[vm.tab].$dirty;
             }
             vm.tab = tab;
@@ -368,6 +495,7 @@ function BlogSettingsController(
     //get team members details
     vm.members = [];
     vm.getUsers(vm.members, blog.members);
+    vm.loadOutputs();
 
     //check if form is dirty before leaving the page
     var deregisterPreventer = $scope.$on('$locationChangeStart', routeChange);
@@ -410,7 +538,8 @@ function BlogSettingsController(
         vm.start_time = datetime.time;
     }
 
-    vm.changeTab('general');
+    // vm.changeTab('general');
+    vm.changeTab('outputs');
     vm.blog_switch = vm.newBlog.blog_status === 'open';
     vm.syndication_enabled = vm.newBlog.syndication_enabled;
     vm.market_enabled = vm.newBlog.market_enabled;
