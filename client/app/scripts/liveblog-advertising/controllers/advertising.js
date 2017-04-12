@@ -175,6 +175,7 @@ upload, $templateCache, freetypeService, modal) {
             $scope.collectionModalActive = true;
         });
     }
+
     $scope.saveCollection = function() {
 
         //create the saveable advertisement array for the collection
