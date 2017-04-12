@@ -248,7 +248,7 @@ def syndication_webhook():
     if in_syndication is None:
         return api_error('Blog is not being syndication', 406)
 
-    blog_service = get_resource_service('blogs')
+    blog_service = get_resource_service('client_blogs')
     blog = blog_service.find_one(req=None, _id=in_syndication['blog_id'])
     if blog is None:
         return api_error('Blog not found', 404)

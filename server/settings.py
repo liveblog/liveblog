@@ -315,3 +315,6 @@ NO_TAKES = True
 
 # Blog embeds S3 publishing options.
 S3_PUBLISH_BLOGSLIST = env('S3_PUBLISH_BLOGSLIST', True)
+
+# Superdesk-core related settings.
+CONTENTAPI_URL = None
