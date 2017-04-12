@@ -41,19 +41,15 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
                             todo.splice(index, 1);
                         }
                         parent_node[name] = {};
-                    } else {
-                        if (index === -1) {
-                            todo.push([name, extend]);
-                        }
+                    } else if (index === -1) {
+                        todo.push([name, extend]);
                     }
-                } else {
-                    if (!angular.isDefined(themes_hierachy[name])) {
-                        themes_hierachy[name] = {};
-                    }
+                } else if (!angular.isDefined(themes_hierachy[name])) {
+                    themes_hierachy[name] = {};
                 }
             }
             themes.forEach(function(theme) {
-                addToHierarchy(theme.name, theme['extends']);
+                addToHierarchy(theme.name, theme.extends);
             });
             var max_loops = todo.length * todo.length;
             while (todo.length > 0 && max_loops > 0) {
@@ -72,11 +68,14 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
             // Name <Email> (Url)
             if (angular.isString(theme.author)) {
                 authorArray = authorRX.exec(theme.author);
-                theme.author = {
-                    'name': authorArray[1],
-                    'email': authorArray[2],
-                    'url': authorArray[3]
-                };
+
+                if (authorArray) {
+                    theme.author = {
+                        'name': authorArray[1],
+                        'email': authorArray[2],
+                        'url': authorArray[3]
+                    };
+                }
             }
         }
         function loadThemes() {
@@ -145,7 +144,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
             },
             hasChildren: function(theme) {
                 return vm.themes.some(function(t) {
-                    return t['extends'] === theme.name;
+                    return t.extends === theme.name;
                 });
             },
             openThemeBlogsModal: function(theme) {
@@ -249,8 +248,8 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
 
                 if (config.subscriptionLevel === 'team')
                     return (themes.length >= config.themeCreationRestrictions.team);
-                else
-                    return false;
+
+                return false;
             },
             upgradeModal: false,
             showUpgradeModal: function() {

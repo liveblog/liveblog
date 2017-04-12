@@ -1,8 +1,8 @@
 import consumerListItemTpl from 'scripts/liveblog-syndication/views/consumer-list-item.html';
 
-consumerList.$inject = ['api', 'notify'];
+consumerList.$inject = ['api', 'notify', 'modal'];
 
-export default function consumerList(api, notify) {
+export default function consumerList(api, notify, modal) {
     return {
         templateUrl: consumerListItemTpl,
         scope: {
@@ -16,37 +16,39 @@ export default function consumerList(api, notify) {
                 scope.selected = consumer;
             };
 
+            // It's called disable, but really, it deletes the consumer
             scope.disable = function(e, consumerToRemove) {
                 e.stopPropagation();
 
-                api.consumers.remove(consumerToRemove).then(function(result) {
-                    angular.forEach(scope.consumers, function(consumer, i) {
-                        if (consumer._id === consumerToRemove._id)
-                            scope.consumers.splice(i, 1);
+                modal.confirm(gettext('Are you sure you want to remove this consumer?'))
+                    .then(() => api.consumers.remove(consumerToRemove))
+                    .then((result) => {
+                        angular.forEach(scope.consumers, (consumer, i) => {
+                            if (consumer._id === consumerToRemove._id) {
+                                scope.consumers.splice(i, 1);
+                            }
+                        });
                     });
-                });
-            }
+            };
 
             scope.updateApiKey = function(e, consumer) {
                 e.stopPropagation();
 
-                if (!confirm('Are you sure you want to refresh the api key?')) {
-                    return;
-                }
+                modal.confirm(gettext('Are you sure you want to refresh the api key?'))
+                    .then(() => api.save('consumers', consumer, {api_key: ''}))
+                    .then((result) => {
+                        notify.pop();
+                        notify.success(gettext('api key updated.'));
+                    })
+                    .catch((err) => {
+                        if (err) {
+                            let msg = err.data._error.message || 'Fatal error';
 
-                var data = {};
-                data.api_key = '';
-
-                var apiQuery = api.save('consumers', consumer, data);
-                apiQuery.then(function(result) {
-                    notify.pop();
-                    notify.success(gettext('api key updated.'));
-                })
-                .catch(function(err) {
-                    notify.pop();
-                    notify.error(gettext('Fatal error!'));
-                });
-            }
+                            notify.pop();
+                            notify.error(msg);
+                        }
+                    });
+            };
         }
     };
-};
+}

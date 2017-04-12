@@ -3,7 +3,7 @@
 [Fork](https://github.com/liveblog/liveblog) •
 [License](https://github.com/liveblog/liveblog/blob/master/LICENSE) •
 [Documentation](http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/) •
-*Version 3.1.0*
+*Version 3.1.3*
 
 [![Build Status](https://travis-ci.org/liveblog/liveblog.svg?branch=master)](https://travis-ci.org/liveblog/liveblog)
 
@@ -51,7 +51,7 @@ python3 python3-dev python3-pip python3-lxml \
 build-essential libffi-dev git \
 libtiff5-dev libjpeg8-dev zlib1g-dev \
 libfreetype6-dev liblcms2-dev libwebp-dev \
-curl libfontconfig virtualenv
+curl libfontconfig virtualenv libssl-dev
 ```
 
 Install the required npm tools:
@@ -68,6 +68,7 @@ Now we can create the python virtual environment and install the server dependen
 cd server
 virtualenv -p python3 env
 source env/bin/activate
+pip install --upgrade setuptools
 pip install -r requirements.txt
 ```
 
@@ -193,4 +194,14 @@ Once the provisioning done whil still in the virtual machine:
 
 ```
 /opt/liveblog/scripts/vagrant-start-dev.sh
+```
+
+### Miscellaneous
+
+**Run liveblog front end in production mode**
+
+```javascript
+cd client
+grunt build --force
+grunt connect:build
 ```

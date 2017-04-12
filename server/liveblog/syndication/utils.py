@@ -1,21 +1,15 @@
-import hmac
 import json
-import uuid
 import hmac
 import logging
-import requests
 import tempfile
 import urllib.parse
 import uuid
-from hashlib import sha1
 from flask import make_response, abort
 import requests
 from bson import ObjectId
 from hashlib import sha1
-from flask import make_response
 from eve.io.mongo import MongoJSONEncoder
-from .exceptions import APIConnectionError, DownloadError
-from requests.exceptions import RequestException
+from requests.exceptions import RequestException, ConnectionError, ConnectTimeout
 from requests.packages.urllib3.exceptions import MaxRetryError
 from superdesk import get_resource_service
 from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
@@ -79,6 +73,10 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
 
     session = requests.Session()
     session.trust_env = False
+    adapter = requests.adapters.HTTPAdapter(max_retries=0)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+
     logger.info('API {} request to {} with params={} and data={}'.format(method, api_url, args, data))
     headers = {
         'Content-Type': 'application/json'
@@ -88,7 +86,7 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
 
     try:
         response = requests.request(method, api_url, headers=headers, params=args, data=data, timeout=timeout)
-    except (ConnectionError, RequestException, MaxRetryError):
+    except (ConnectionError, ConnectTimeout, RequestException, MaxRetryError):
         raise APIConnectionError('Unable to connect to api_url "{}".'.format(api_url))
 
     logger.warning('API {} request to {} - response: {} {}'.format(
@@ -214,7 +212,7 @@ def get_producer_post_id(in_syndication, post_id):
 
 def extract_producer_post_data(post, fields=('_id', '_updated', 'lb_highlight', 'sticky', 'post_status')):
     """Extract only useful data from original producer blog post."""
-    return {key: post[key] for key in fields}
+    return {key: post.get(key) for key in fields}
 
 
 def get_post_creator(post):
@@ -281,7 +279,8 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
         'syndication_in': in_syndication['_id'],
         'particular_type': 'post',
         'post_status': post_status,
-        'producer_post_id': producer_post_id
+        'producer_post_id': producer_post_id,
+        'deleted': False
     }
     return new_post
 

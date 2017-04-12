@@ -3,7 +3,7 @@ import 'lb-bootstrap.scss';
 import 'jquery-ui/jquery-ui';
 import 'jquery-jcrop';
 import 'jquery-gridster';
-//import 'moment-timezone';
+// import 'moment-timezone';
 import 'bootstrap';
 import 'angular';
 import 'angular-moment';
@@ -66,8 +66,8 @@ import 'superdesk-core/scripts/core/loading';
 import 'superdesk-core/scripts/apps/workspace';
 import 'superdesk-core/scripts/apps/dashboard';
 import 'superdesk-core/scripts/apps/users';
-//import 'superdesk-core/scripts/apps/groups';
-//import 'superdesk-core/scripts/apps/products';
+// import 'superdesk-core/scripts/apps/groups';
+// import 'superdesk-core/scripts/apps/products';
 import 'superdesk-core/scripts/apps/publish';
 import 'superdesk-core/scripts/apps/templates';
 import 'superdesk-core/scripts/apps/profiling';
@@ -75,7 +75,7 @@ import 'superdesk-core/scripts/apps/desks';
 import 'superdesk-core/scripts/apps/authoring';
 import 'superdesk-core/scripts/apps/search';
 import 'superdesk-core/scripts/apps/legal-archive';
-//import 'superdesk-core/scripts/apps/stream';
+// import 'superdesk-core/scripts/apps/stream';
 import 'superdesk-core/scripts/apps/packaging';
 import 'superdesk-core/scripts/apps/highlights';
 import 'superdesk-core/scripts/apps/translations';
@@ -86,7 +86,7 @@ import 'superdesk-core/scripts/apps/archive';
 import 'superdesk-core/scripts/apps/monitoring';
 import 'superdesk-core/scripts/apps/settings';
 import 'superdesk-core/scripts/apps/ingest';
-//import 'superdesk-core/scripts/apps/search-providers';
+import 'superdesk-core/scripts/apps/search-providers';
 
 import 'liveblog-bloglist';
 import 'liveblog-edit';
@@ -100,7 +100,10 @@ import 'liveblog-analytics';
 import 'liveblog-security.service';
 
 const config = __SUPERDESK_CONFIG__;
-//import config from './../../config';
+
+if (typeof window.superdeskConfig !== 'undefined') {
+    angular.extend(config, window.superdeskConfig);
+}
 
 // Commented angular modules are not required to run liveblog
 // But they are shown here to give a perspective of
@@ -129,17 +132,7 @@ let sdCore = angular.module('superdesk.core', [
     'superdesk.core.workflow',
     'superdesk.core.loading',
     'superdesk.core.editor3',
-
-    // services/
-    'superdesk.core.services.beta',
-    'superdesk.core.services.data',
-    'superdesk.core.services.modal',
-    'superdesk.core.services.dragdrop',
-    'superdesk.core.services.server',
-    'superdesk.core.services.entity',
-    'superdesk.core.services.permissions',
-    'superdesk.core.services.storage',
-    'superdesk.core.services.pageTitle',
+    'superdesk.core.services',
 
     'superdesk.core.directives'
 ]);
@@ -154,8 +147,8 @@ angular.module('superdesk.apps', [
     'superdesk.apps.archive',
     'superdesk.apps.ingest',
     'superdesk.apps.desks',
-    //'superdesk.apps.groups',
-    //'superdesk.apps.products',
+    // 'superdesk.apps.groups',
+    // 'superdesk.apps.products',
     'superdesk.apps.authoring',
     'superdesk.apps.packaging',
     'superdesk.apps.spellcheck',
@@ -165,8 +158,8 @@ angular.module('superdesk.apps', [
     'superdesk.apps.content_filters', // Can't remove
     'superdesk.apps.dictionaries',
     'superdesk.apps.vocabularies',
-    //'superdesk.apps.searchProviders',
-    //'superdesk.apps.stream',
+    // 'superdesk.apps.searchProviders',
+    // 'superdesk.apps.stream',
     'superdesk.apps.publish', // Can't remove
     'superdesk.apps.templates',
     'superdesk.apps.monitoring',
@@ -186,11 +179,13 @@ let liveblogModules = [
     'ngMessages'
 ];
 
-if (config.syndication)
+if (config.syndication) {
     liveblogModules.push('liveblog.syndication');
+}
 
-if (config.marketplace)
+if (config.marketplace) {
     liveblogModules.push('liveblog.marketplace');
+}
 
 let liveblog = angular.module('liveblog', liveblogModules);
 
@@ -209,20 +204,21 @@ liveblog.config(['$routeProvider', '$locationProvider', ($routeProvider, $locati
 liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session',
     function($rootScope, $timeout, notify, gettext, session) {
         var alertTimeout;
-        $rootScope.$on('disconnected', function(event) {
+
+        $rootScope.$on('disconnected', (event) => {
             $timeout.cancel(alertTimeout);
             if (session && session.sessionId) {
-                alertTimeout = $timeout(function() {
+                alertTimeout = $timeout(() => {
                     notify.pop();
                     notify.error(gettext('Disconnected from Notification Server, attempting to reconnect ...'), 20000);
                 }, 100);
             }
         });
-        $rootScope.$on('connected', function(event) {
-            //only show the 'connected' message if there was a disconnect event
+        $rootScope.$on('connected', (event) => {
+            // only show the 'connected' message if there was a disconnect event
             if (alertTimeout) {
                 $timeout.cancel(alertTimeout);
-                alertTimeout = $timeout(function() {
+                alertTimeout = $timeout(() => {
                     notify.pop();
                     notify.success(gettext('Connected to Notification Server!'));
                 }, 100);

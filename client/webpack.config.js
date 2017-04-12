@@ -1,5 +1,3 @@
-'use strict';
-
 var path = require('path');
 var webpack = require('webpack');
 var lodash = require('lodash');
@@ -17,18 +15,19 @@ module.exports = function makeConfig(grunt) {
 
     var sdConfig = lodash.defaultsDeep(require(appConfigPath)(grunt), getDefaults(grunt));
 
+
     // shouldExclude returns true if the path p should be excluded from loaders
     // such as 'babel' or 'eslint'. This is to avoid including node_modules into
     // these loaders, but not node modules that are superdesk apps.
-    //const shouldExclude = function(p) {
-    //    // don't exclude anything outside node_modules
-    //    if (p.indexOf('node_modules') === -1) {
-    //        return false;
-    //    }
-    //    // include only 'superdesk-core' and valid modules inside node_modules
-    //    let validModules = ['superdesk-core'].concat(sdConfig.apps);
-    //    return !validModules.some(app => p.indexOf(app) > -1);
-    //};
+    const shouldExclude = function(p) {
+        // don't exclude anything outside node_modules
+        if (p.indexOf('node_modules') === -1) {
+            return false;
+        }
+        // include only 'superdesk-core' and valid modules inside node_modules
+        let validModules = ['superdesk-core'].concat(sdConfig.apps);
+        return !validModules.some((app) => p.indexOf(app) > -1);
+    };
 
     return {
         cache: true,
@@ -72,7 +71,7 @@ module.exports = function makeConfig(grunt) {
             ],
             modulesDirectories: [ 'node_modules' ],
             alias: {
-                'moment-timezone': 'moment-timezone/builds/moment-timezone-with-data-2010-2020',
+                //'moment-timezone': 'moment-timezone/builds/moment-timezone-with-data-2010-2020',
                 'rangy-saverestore': 'rangy/lib/rangy-selectionsaverestore',
                 'angular-embedly': 'angular-embedly/em-minified/angular-embedly.min',
                 'jquery-gridster': 'gridster/dist/jquery.gridster.min',
@@ -88,37 +87,14 @@ module.exports = function makeConfig(grunt) {
             loaders: [
                 {
                     test: /\.jsx?$/,
-                    //exclude: shouldExclude,
-                    exclude: function(p) {
-                        //console.log('p', p, p.indexOf('node_modules') > -1 && p.indexOf('superdesk-core') < 0);
-                        // exclude parsing node modules, but allow the 'superdesk-core'
-                        // node module, because it will be used when building in the
-                        // main 'superdesk' repository.
-                        //return p.indexOf('node_modules/superdesk-core/node_modules') > -1;
-                        //return p.indexOf('node_modules') > -1 && p.indexOf('superdesk-core') < 0;
-                        return false;
-                    },
+                    exclude: shouldExclude,
                     loader: 'babel',
                     query: {
                         cacheDirectory: true,
-                        presets: ['es2015', 'react']
+                        presets: ['es2015', 'react'],
+                        plugins: ['transform-object-rest-spread']
                     }
                 },
-                //{
-                //    test: /\.js$/,
-                //    exclude: function(p) {
-                //        'use strict';
-                //        // exclude parsing node modules, but allow the 'superdesk-core'
-                //        // node module, because it will be used when building in the
-                //        // main 'superdesk' repository.
-                //        return p.indexOf('node_modules') > -1 && p.indexOf('superdesk-core') < 0;
-                //    },
-                //    loader: 'babel',
-                //    query: {
-                //        cacheDirectory: true,
-                //        presets: ['es2015']
-                //    }
-                //},
                 {
                     test: /\.html$/,
                     loader: 'ngtemplate!html'
@@ -128,16 +104,16 @@ module.exports = function makeConfig(grunt) {
                     loader: 'style!css'
                 },
                 {
-                    test: /\.less$/,
-                    loader: 'style!css!less'
-                },
-                {
                     test: /\.scss$/,
                     loader: 'style!css!sass'
                 },
                 {
                     test: /\.(png|gif|jpeg|jpg|woff|woff2|eot|ttf|svg)(\?.*$|$)/,
                     loader: 'file-loader'
+                },
+                {
+                    test: /\.json$/,
+                    loader: 'json-loader'
                 }
             ]
         }
@@ -227,15 +203,6 @@ function getDefaults(grunt) {
             solo: 1,
             team: 3
         },
-        analytics: {
-            piwik: {
-                url: process.env.PIWIK_URL || '',
-                id: process.env.PIWIK_SITE_ID || ''
-            },
-            ga: {
-                id: process.env.TRACKING_ID || ''
-            }
-        },
 
         maxContentLength: process.env.MAX_CONTENT_LENGTH || 8 * 1024 * 1024,
 
@@ -252,7 +219,14 @@ function getDefaults(grunt) {
         view: {
             dateformat: process.env.VIEW_DATE_FORMAT || 'DD/MM/YYYY',
             timeformat: process.env.VIEW_TIME_FORMAT || 'HH:mm'
-        }
- 
+        },
+
+        system: {
+            dateTimeTZ: 'YYYY-MM-DD[T]HH:mm:ssZ'
+        },
+
+        // You might think this empty object is useless.
+        // That would be a terrible mistake to make.
+        validatorMediaMetadata: {}
     };
 }

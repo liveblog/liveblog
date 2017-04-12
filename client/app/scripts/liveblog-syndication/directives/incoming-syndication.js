@@ -1,15 +1,20 @@
 import incomingSyndicationTpl from 'scripts/liveblog-syndication/views/incoming-syndication.html';
 
 incomingSyndication.$inject = [
-  '$routeParams',
-  'IncomingSyndicationActions',
-  'IncomingSyndicationReducers',
-  'Store',
-  'modal'
+    '$routeParams',
+    'IncomingSyndicationActions',
+    'IncomingSyndicationReducers',
+    'Store',
+    'modal'
 ];
 
-export default function incomingSyndication($routeParams, IncomingSyndicationActions,
-    IncomingSyndicationReducers, Store, modal) {
+export default function incomingSyndication(
+    $routeParams,
+    IncomingSyndicationActions,
+    IncomingSyndicationReducers,
+    Store,
+    modal
+) {
     return {
         templateUrl: incomingSyndicationTpl,
         scope: {
@@ -25,7 +30,7 @@ export default function incomingSyndication($routeParams, IncomingSyndicationAct
                 syndication: {}
             });
 
-            scope.store.connect(function(state) {
+            scope.store.connect((state) => {
                 scope.posts = state.posts;
                 scope.syndication = state.syndication;
             });
@@ -41,7 +46,7 @@ export default function incomingSyndication($routeParams, IncomingSyndicationAct
 
             scope.askRemove = function(post) {
                 modal.confirm(gettext('Are you sure you want to delete the post?'))
-                    .then(function() {
+                    .then(() => {
                         IncomingSyndicationActions
                             .destroy(post);
                     });
@@ -55,13 +60,14 @@ export default function incomingSyndication($routeParams, IncomingSyndicationAct
 
             // On incoming post, we reload all the posts.
             // Not very fast, but easy to setup
-            scope.$on('posts', function(e, data) {
-                if (data.posts[0].syndication_in)
+            scope.$on('posts', (e, data) => {
+                if (data.posts[0].syndication_in) {
                     IncomingSyndicationActions
                         .getPosts(scope.blogId, scope.syndId);
+                }
             });
 
             scope.$on('$destroy', scope.store.destroy);
         }
     };
-};
+}

@@ -115,7 +115,11 @@
                     </div>
                 </div>
                 <!-- ingest -->
-                <div lb-ingest-panel ng-if="panelState === 'ingest'"></div>
+                <div
+                    lb-ingest-panel
+                    ingest-queue="ingestQueue"
+                    open-panel="openPanel"
+                    ng-if="panelState === 'ingest'"></div>
                 <!-- incoming syndication -->
                 <div
                     lb-incoming-syndication 

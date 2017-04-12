@@ -3,6 +3,8 @@ import logging
 from bson import ObjectId
 from superdesk.resource import Resource
 from superdesk.services import BaseService
+from superdesk.errors import SuperdeskApiError
+from superdesk import get_resource_service
 from flask import current_app as app
 
 from .exceptions import APIConnectionError, ConsumerAPIError
@@ -15,7 +17,8 @@ logger = logging.getLogger('superdesk')
 
 consumers_schema = {
     'name': {
-        'type': 'string'
+        'type': 'string',
+        'unique': True
     },
     'contacts': {
         'type': 'list',
@@ -107,10 +110,10 @@ class ConsumerService(BaseService):
         super().on_create(docs)
 
     def on_created(self, docs):
+        super().on_created(docs)
+
         for doc in docs:
             check_webhook_status.delay(doc['_id'])
-
-        super().on_created(docs)
 
     def on_update(self, updates, original):
         if 'webhook_url' in updates:
@@ -118,8 +121,16 @@ class ConsumerService(BaseService):
         if 'api_key' in updates and updates['api_key'] != original['api_key']:
             updates['api_key'] = generate_api_key()
 
-        check_webhook_status.delay(original['_id'])
         super().on_update(updates, original)
+        check_webhook_status.delay(original['_id'])
+
+    def on_delete(self, doc):
+        out_service = get_resource_service('syndication_out')
+        if (out_service.consumer_is_syndicating(doc['_id'])):
+            raise SuperdeskApiError.forbiddenError(
+                message='Not allowed to delete a consumer who is currently syndicating a blog'
+            )
+        super().on_delete(doc)
 
 
 class ConsumerResource(Resource):

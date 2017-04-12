@@ -306,7 +306,10 @@ angular
                 if ($cover_handler.length > 0 && !$cover_handler.hasClass('hidden')) {
                     var $cover_preview = $cover_handler.find('.cover-preview');
                     var $remove_link = $('<a href="#">').text('hide the illustration');
-                    var $show_link = $('<a href="#">').text('show the illustration').addClass('hidden');
+                    var $show_link = $('<a href="#">')
+                        .text('show the illustration')
+                        .addClass('hidden');
+
                     $remove_link.on('click', function removeCoverAndDisillustrationplayShowLink(e) {
                         that.saved_cover_url = that.data.thumbnail_url;
                         $cover_preview.addClass('hidden');
@@ -344,7 +347,9 @@ angular
         });
         SirTrevor.Blocks.Quote = SirTrevor.Block.extend({
             type: 'quote',
-            title: function() { return window.i18n.t('blocks:quote:title'); },
+            title: function() {
+                return window.i18n.t('blocks:quote:title');
+            },
             icon_name: 'quote',
             quotePlaceholder: window.gettext('quote'),
             creditPlaceholder: window.i18n.t('blocks:quote:credit_field'),
@@ -355,34 +360,39 @@ angular
                     '<div contenteditable="true" name="cite" placeholder="' + this.creditPlaceholder + '"',
                     ' class="js-cite-input st-quote-block"></div>'
                 ].join('\n'));
+
                 return template(this);
             },
             onBlockRender: function() {
-                var that = this;
-                this.$('.quote-input .js-cite-input')
+                const onEditorChange = () => {
+                    var data = this.retrieveData(),
+                        input = data.quote + data.credit;
+
+                    if (_.isEmpty(input)) {
+                        this.getOptions().disableSubmit(true);
+                        return false;
+                    }
+                    this.getOptions().disableSubmit(false);
+                };
+
+                this.$('.quote-input .js-cite-input');
                 this.$editor.filter('[contenteditable]').on('focus', function(ev) {
                     var $this = $(this);
+
                     $this.data('before', $this.html());
                 });
                 this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
                     var $this = $(this);
+
                     if ($this.data('before') !== $this.html()) {
                         $this.data('before', $this.html());
-                        $this.trigger('change');
+                        onEditorChange();
                     }
                 });
-                handlePlaceholder(this.$editor.filter('.quote-input'), that.quotePlaceholder);
-                handlePlaceholder(this.$('[name=cite]'), that.creditPlaceholder, {tabbedOrder: true});
+                handlePlaceholder(this.$editor.filter('.quote-input'), this.quotePlaceholder);
+                handlePlaceholder(this.$('[name=cite]'), this.creditPlaceholder, {tabbedOrder: true});
                 // when the link field changes
-                this.$editor.on('change', _.debounce(function () {
-                    var data = that.retrieveData(),
-                        input = (data.quote + data.credit);
-                    if (_.isEmpty(input)) {
-                        that.getOptions().disableSubmit(true);
-                        return false;
-                    }
-                    that.getOptions().disableSubmit(false);
-                }, 200));
+                this.$editor.on('change', _.debounce(onEditorChange, 200));
             },
             focus: function() {
                 this.$('.quote-input').focus();
@@ -405,6 +415,7 @@ angular
             },
             toHTML: function(html) {
                 var data = this.retrieveData();
+
                 return [
                     '<blockquote><p>',
                     data.quote,
@@ -431,6 +442,7 @@ angular
                 '</div>'
             ].join('\n')
         };
+
         SirTrevor.DEFAULTS.Block.upload_options = upload_options;
         SirTrevor.Locales.en.general.upload = 'Select from folder';
 
@@ -471,7 +483,10 @@ angular
                 });
                 // when the link field changes
                 this.$editor.on('change', _.debounce(function () {
-                    var input = $(this).text().trim();
+                    var input = $(this)
+                        .text()
+                        .trim();
+
                     if (_.isEmpty(input)) {
                         if (that.getOptions())
                             that.getOptions().disableSubmit(true);
@@ -486,9 +501,9 @@ angular
         SirTrevor.Blocks.Text.prototype.toHTML = function(html) {
             if (this.$el) {
                 return this.getTextBlock().html();
-            } else {
-                return html;
             }
+
+            return html;
         };
         SirTrevor.Blocks.Text.prototype.onContentPasted = _.debounce(function(event) {
             // Content pasted. Delegate to the drop parse method
@@ -529,9 +544,9 @@ angular
             toHTML: function(html) {
                 if (this.$el) {
                     return this.getTextBlock().html();
-                } else {
-                    return html;
                 }
+
+                return html;
             },
             toMeta: function() {
                 var data = this.getData();

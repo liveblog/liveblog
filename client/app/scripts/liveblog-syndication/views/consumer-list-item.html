@@ -12,7 +12,17 @@
 
     <div class="row-wrapper four-col">
         <div class="name">{{ consumer.name }}</div>
-        <div class="email">{{ consumer.webhook_url }}</div>
+        <div class="email">
+            <i
+                class="icon-close-small webhook-status off"
+                title="Webhook URL unreachable"
+                ng-hide="consumer.webhook_enabled"></i>
+            <i
+                class="icon-ok webhook-status on"
+                title="Webhook URL up & running"
+                ng-show="consumer.webhook_enabled"></i>
+            <span>{{ consumer.webhook_url }}</span>
+        </div>
         <div class="name api-key">
             <span id="api-key">{{ consumer.api_key }}</span>
             <span>
@@ -28,7 +38,7 @@
         <div lb-first-contact prosumer="consumer" class="name"></div>
     </div>
 
-    <div class="action">
+    <div class="action" ng-show="!selected">
         <ul class="item-functions">
             <li class="item-field">
                 <a 

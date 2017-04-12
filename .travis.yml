@@ -7,10 +7,10 @@ dist: trusty
 env:
     global:
         - CXX=g++-4.8
-        - secure: ajoP9pA/FYH+1sFwGKHlQ8PoGqRIjdmqEnwo44AA5j6c1NMsgiToA420lPm8Lp0cko5YK3ppBlGlvbRWu5JXVxl0vMtZTLf3FM2w99viddrRCkh4sMef2DzkXXYOW4Tnew/8pmaOtTn3UtNG/feJHkBzHLEDUuN0TA07Y6UaWHc=
         # do not load /etc/boto.cfg with Python 3 incompatible plugin
         # https://github.com/travis-ci/travis-ci/issues/5246#issuecomment-166460882
         - BOTO_CONFIG=/doesnotexist
+        - SYNDICATION_VALIDATE_AUTH=0
 
 services:
     - mongodb
@@ -58,7 +58,7 @@ before_install:
 install:
     - cd $TRAVIS_BUILD_DIR/server
     - pip install --upgrade setuptools
-    - pip install -r requirements.txt
+    - pip install -r dev-requirements.txt
     - cd $TRAVIS_BUILD_DIR/client && npm install && cd .. ;
 
 before_script:

@@ -9,19 +9,19 @@
 # at https://www.sourcefabric.org/superdesk/license
 
 
-from superdesk.resource import Resource
-from liveblog.common import get_user
 import logging
-from superdesk.activity import add_activity
+
+from bson.objectid import ObjectId
+from flask import current_app as app
+from flask import g, render_template
+from liveblog.common import get_user
 from superdesk import get_resource_service
-from flask import current_app as app, render_template
-from bson.objectid import ObjectId
-from superdesk.notification import push_notification
-from superdesk.services import BaseService
+from superdesk.activity import add_activity
 from superdesk.emails import send_email
-from flask import g
 from superdesk.errors import SuperdeskApiError
-from bson.objectid import ObjectId
+from superdesk.notification import push_notification
+from superdesk.resource import Resource
+from superdesk.services import BaseService
 
 logger = logging.getLogger('superdesk')
 
@@ -43,9 +43,14 @@ def notify_the_owner(doc, origin):
 def send_email_to_owner(doc, owner, origin):
     blog = get_resource_service('blogs').find_one(req=None, _id=doc.get('blog'))
     prefs_service = get_resource_service('preferences')
-    if prefs_service.email_notification_is_enabled(user_id=doc['original_creator']):
-        user_doc = get_resource_service('users').find_one(req=None, _id=doc['original_creator'])
-        recipients = user_doc['email']
+
+    recipients = None
+    original_creator = doc['original_creator']
+    if prefs_service.email_notification_is_enabled(user_id=original_creator):
+        user_doc = get_resource_service('users').find_one(req=None, _id=original_creator)
+        if user_doc:
+            recipients = [user_doc['email']]
+
     if recipients:
         username = g.user.get('display_name') or g.user.get('username')
         url = '{}/#/liveblog/settings/{}'.format(origin, doc['_id'])

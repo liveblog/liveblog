@@ -121,11 +121,15 @@ export default function postsService(api, $q, userList) {
         return obj;
     }
     function _completePost(post) {
+        let multipleItems = false;
+
+        if (post.groups[1].refs.length > 1) {
+            multipleItems = post.groups[1].refs.length - 1;
+        }
+
         return $q(function(resolve, reject) {
             angular.extend(post, {
-                // add a `multiple_items` field. Can be false or a positive integer.
-                // FIXME: left like that to support other feature, but this need to be in camelcase
-                multiple_items: post.groups[1].refs.length > 1 ? post.groups[1].refs.length : false,
+                multipleItems: multipleItems,
                 // add a `mainItem` field containing the first item
                 mainItem: post.groups[1].refs[0],
                 items: post.groups[1].refs

@@ -57,18 +57,22 @@ export default function lbFilterByMember(api) {
                         // preset the preselection to the current selection
                         vm.preselectedUsers = angular.copy(vm.selectedUsers);
                         // retrieve blog information to know the owner and the members
-                        api('blogs').getById($scope.blogId).then(function(blog) {
-                            // add the owner
-                            var ids = [blog.original_creator];
-                            // add the members
-                            if (blog.members) {
-                                ids.push.apply(ids, blog.members.map(function(member) {return member.user;}));
-                            }
-                            // retrieve information about these users and list them in the view
-                            api('users').query({where: {_id: {$in: ids}}}).then(function(data) {
-                                vm.members = data._items;
+                        api('blogs')
+                            .getById($scope.blogId)
+                            .then(function(blog) {
+                                // add the owner
+                                var ids = [blog.original_creator];
+                                // add the members
+                                if (blog.members) {
+                                    ids.push.apply(ids, blog.members.map(function(member) {return member.user;}));
+                                }
+                                // retrieve information about these users and list them in the view
+                                api('users')
+                                    .query({where: {_id: {$in: ids}}})
+                                    .then(function(data) {
+                                        vm.members = data._items;
+                                    });
                             });
-                        });
                     }
                 }
             });

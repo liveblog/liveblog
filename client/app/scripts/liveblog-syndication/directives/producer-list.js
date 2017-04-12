@@ -1,8 +1,8 @@
 import producerListItemTpl from 'scripts/liveblog-syndication/views/producer-list-item.html';
 
-producerList.$inject = ['api'];
+producerList.$inject = ['api', 'modal'];
 
-export default function producerList(api) {
+export default function producerList(api, modal) {
     return {
         templateUrl: producerListItemTpl,
         scope: {
@@ -19,13 +19,16 @@ export default function producerList(api) {
             scope.disable = function(e, producerToRemove) {
                 e.stopPropagation();
 
-                api.producers.remove(producerToRemove).then(function(result) {
-                    angular.forEach(scope.producers, function(producer, i) {
-                        if (producer._id === producerToRemove._id)
-                            scope.producers.splice(i, 1);
+                modal.confirm(gettext('Are you sure you want to remove this consumer?'))
+                    .then(() => api.producers.remove(producerToRemove))
+                    .then((result) => {
+                        angular.forEach(scope.producers, (producer, i) => {
+                            if (producer._id === producerToRemove._id) {
+                                scope.producers.splice(i, 1);
+                            }
+                        });
                     });
-                });
-            }
+            };
         }
     };
-};
+}

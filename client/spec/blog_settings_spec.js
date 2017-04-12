@@ -27,25 +27,24 @@ describe('Blog settings', function() {
                 });
     });
 
-    // TODO: It seems that e2e testing for file uploading does not work
-    //it('should change the image for blog', function() {
-    //    var path = require('path'),
-    //        blog = blogs.cloneBlog(0);
-    //    blog.picture_url = './upload/-o-jpg-1600-900.jpg';
-    //    blogs.openBlog(0).openSettings().then(function(settingsPage) {
-    //        return settingsPage.openUploadModal();
-    //    })
-    //    .then(function() {
-    //        blogs.blog.settings.file.sendKeys(path.resolve(__dirname, blog.picture_url));
-    //        blogs.blog.settings
-    //                    .upload()
-    //                    .done()
-    //                .openList().then(function() {
-    //                    blogs.expectBlog(blog);
-    //                });
-    //    });
+    it('should change the image for blog', function() {
+        var path = require('path'),
+            blog = blogs.cloneBlog(0);
+        blog.picture_url = './upload/-o-jpg-1600-900.jpg';
+        blogs.openBlog(0).openSettings().then(function(settingsPage) {
+            return settingsPage.openUploadModal();
+        })
+        .then(function() {
+            blogs.blog.settings.file.sendKeys(path.resolve(__dirname, blog.picture_url));
+            blogs.blog.settings
+                        .upload()
+                        .done()
+                    .openList().then(function() {
+                        blogs.expectBlog(blog);
+                    });
+        });
 
-    //});
+    });
 
     it('should remove the image from blog', function() {
         var blog = blogs.cloneBlog(0);

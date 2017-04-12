@@ -10,14 +10,46 @@
 
 import angular from 'angular';
 import _ from 'lodash';
-import moment from 'moment-timezone';
 
 import './../../ng-sir-trevor';
 import './../../sir-trevor-blocks';
 import './../unread.posts.service';
 
-var BlogSettingsController = function($scope, blog, api, blogService, $location, notify,
-    gettext, modal, $q, upload, datetimeHelper, config, blogSecurityService, moment) {
+BlogSettingsController.$inject = [
+    '$scope',
+    'blog',
+    'api',
+    'blogService',
+    '$location',
+    'notify',
+    'gettext',
+    'modal',
+    '$q',
+    'upload',
+    'datetimeHelper',
+    'config',
+    'blogSecurityService',
+    'moment',
+    'superdesk'
+];
+
+function BlogSettingsController(
+    $scope,
+    blog,
+    api,
+    blogService,
+    $location,
+    notify,
+    gettext,
+    modal,
+    $q,
+    upload,
+    datetimeHelper,
+    config,
+    blogSecurityService,
+    moment,
+    superdesk
+) {
 
     // set view's model
     var vm = this;
@@ -66,12 +98,23 @@ var BlogSettingsController = function($scope, blog, api, blogService, $location,
             return true;
         },
         openUploadModal: function() {
-            vm.uploadModal = true;
-        },
-        closeUploadModal: function() {
-            vm.uploadModal = false;
-            vm.preview = {};
-            vm.progress = {width: 0};
+            superdesk.intent('upload', 'media').then((pictures) => {
+                if (pictures.length === 0) {
+                    return;
+                }
+
+                let firstPicture = pictures[0];
+
+                //$scope.image.picture_url = firstPicture.renditions.original.href;
+                //$scope.image.picture = firstPicture._id;
+
+                vm.newBlog.picture_url = firstPicture.renditions.viewImage.href;
+                vm.newBlog.picture = firstPicture._id;
+                vm.uploadModal = false;
+                vm.preview = {};
+                vm.progress = {width: 0};
+                vm.forms.dirty = true;
+            });
         },
         changeTab: function(tab) {
             if (vm.tab) {
@@ -94,38 +137,6 @@ var BlogSettingsController = function($scope, blog, api, blogService, $location,
                 deregisterPreventer();
                 vm.newBlog.picture_url = null;
                 vm.forms.dirty = true;
-            });
-        },
-        upload: function(config) {
-            var form = {};
-            if (config.img) {
-                form.media = config.img;
-            } else if (config.url) {
-                form.URL = config.url;
-            } else {
-                return;
-            }
-            // return a promise of upload which will call the success/error callback
-            return api.archive.getUrl().then(function(url) {
-                return upload.start({
-                    method: 'POST',
-                    url: url,
-                    data: form
-                })
-                .then(function(response) {
-                    if (response.data._status === 'ERR'){
-                        return;
-                    }
-                    var picture_url = response.data.renditions.viewImage.href;
-                    vm.newBlog.picture_url = picture_url;
-                    vm.newBlog.picture = response.data._id;
-                    vm.uploadModal = false;
-                    vm.preview = {};
-                    vm.progress = {width: 0};
-                    vm.forms.dirty = true;
-                }, null, function(progress) {
-                    vm.progress.width = Math.round(progress.loaded / progress.total * 100.0);
-                });
             });
         },
         saveAndClose: function() {
@@ -209,13 +220,17 @@ var BlogSettingsController = function($scope, blog, api, blogService, $location,
                 //remove accepted users from the queue
                 if (vm.acceptedMembers.length) {
                     _.each(vm.acceptedMembers, function(member) {
-                        api('request_membership').getById(member.request_id).then(function(item) {
-                            api('request_membership').remove(item).then(null, function() {
-                                notify.pop();
-                                notify.error(gettext('Something went wrong'));
-                                deferred.reject();
+                        api('request_membership')
+                            .getById(member.request_id)
+                            .then(function(item) {
+                                api('request_membership')
+                                    .remove(item)
+                                    .then(null, function() {
+                                        notify.pop();
+                                        notify.error(gettext('Something went wrong'));
+                                        deferred.reject();
+                                    });
                             });
-                        });
                     });
                 }
                 notify.pop();
@@ -247,20 +262,24 @@ var BlogSettingsController = function($scope, blog, api, blogService, $location,
             $location.path('/liveblog/edit/' + vm.blog._id);
         },
         buildOwner: function(userID) {
-            api('users').getById(userID).then(function(data) {
-                //temp_selected_owner is used handle the selection of users in the change owner autocomplete box
-                //without automatically changing the owner that is displayed
-                vm.temp_selected_owner = vm.original_creator = data;
-            });
+            api('users')
+                .getById(userID)
+                .then(function(data) {
+                    //temp_selected_owner is used handle the selection of users in the change owner autocomplete box
+                    //without automatically changing the owner that is displayed
+                    vm.temp_selected_owner = vm.original_creator = data;
+                });
         },
         getUsers: function(details, ids) {
             _.each(ids, function(user) {
-                api('users').getById(user.user).then(function(data) {
-                    if (user.request_id) {
-                        data.request_id = user.request_id;
-                    }
-                    details.push(data);
-                });
+                api('users')
+                    .getById(user.user)
+                    .then(function(data) {
+                        if (user.request_id) {
+                            data.request_id = user.request_id;
+                        }
+                        details.push(data);
+                    });
             });
         },
         splitDateTime: function(datetime) {
@@ -276,22 +295,27 @@ var BlogSettingsController = function($scope, blog, api, blogService, $location,
         vm.publicUrl = url;
     });
     // load available languages
-    api('languages').query().then(function(data) {
-        vm.availableLanguages = data._items;
-    });
+    api('languages')
+        .query()
+        .then(function(data) {
+            vm.availableLanguages = data._items;
+        });
+
     // load available themes
-    var qTheme = api('themes').query().then(function(data) {
-        // filter theme with label (without label are `generic` from inheritance)
-        vm.angularTheme = data._items.find(function(theme) {
-            return theme.name === 'angular'
+    var qTheme = api('themes')
+        .query()
+        .then(function(data) {
+            // filter theme with label (without label are `generic` from inheritance)
+            vm.angularTheme = data._items.find(function(theme) {
+                return theme.name === 'angular'
+            });
+            vm.availableThemes = data._items.filter(function(theme) {
+                return !theme.abstract;
+            });
+            vm.selectedTheme = _.find(vm.availableThemes, function(theme) {
+                return theme.name === vm.blogPreferences.theme;
+            });
         });
-        vm.availableThemes = data._items.filter(function(theme) {
-            return !theme['abstract'];
-        });
-        vm.selectedTheme = _.find(vm.availableThemes, function(theme) {
-            return theme.name === vm.blogPreferences.theme;
-        });
-    });
 
     // after publicUrl and theme is on `vm` object we can compute embeds code.
     $q.all([qPublicUrl, qTheme]).then(function() {
@@ -319,21 +343,27 @@ var BlogSettingsController = function($scope, blog, api, blogService, $location,
         };
     });
 
-    api('users').getById(blog.original_creator).then(function(data) {
-        vm.original_creator = data;
-    });
-    api('users').query().then(function(data) {
-        vm.avUsers = data._items;
-    });
+    api('users')
+        .getById(blog.original_creator)
+        .then(function(data) {
+            vm.original_creator = data;
+        });
+    api('users')
+        .query()
+        .then(function(data) {
+            vm.avUsers = data._items;
+        });
     vm.buildOwner(blog.original_creator);
 
     //get details for the users that have requested blog membership
     vm.memberRequests = [];
-    api('blogs/<regex("[a-f0-9]{24}"):blog_id>/request_membership', {_id: vm.blog._id}).query().then(function(data) {
-        vm.getUsers(vm.memberRequests, _.map(data._items, function(request) {
-            return {user: request.original_creator, request_id: request._id};
-        }));
-    });
+    api('blogs/<regex("[a-f0-9]{24}"):blog_id>/request_membership', {_id: vm.blog._id})
+        .query()
+        .then(function(data) {
+            vm.getUsers(vm.memberRequests, _.map(data._items, function(request) {
+                return {user: request.original_creator, request_id: request._id};
+            }));
+        });
 
     //get team members details
     vm.members = [];
@@ -392,21 +422,5 @@ var BlogSettingsController = function($scope, blog, api, blogService, $location,
     });
 
 }
-BlogSettingsController.$inject = [
-    '$scope',
-    'blog',
-    'api',
-    'blogService',
-    '$location',
-    'notify',
-    'gettext',
-    'modal',
-    '$q',
-    'upload',
-    'datetimeHelper',
-    'config',
-    'blogSecurityService',
-    'moment'
-];
 
 export default BlogSettingsController;

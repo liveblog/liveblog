@@ -73,9 +73,18 @@ class SyndicationOutService(BaseService):
         except IndexError:
             return
 
+    def consumer_is_syndicating(self, consumer_id):
+        try:
+            result = self.find({'$and': [
+                {'consumer_id': {'$eq': consumer_id}}
+            ]})
+            return result.count() > 0
+        except IndexError:
+            return
+
     def get_blog_syndication(self, blog_id):
         blog = self._get_blog(blog_id)
-        if not blog['syndication_enabled']:
+        if not blog.get('syndication_enabled'):
             logger.info('Syndication not enabled for blog "{}"'.format(blog['_id']))
             return []
         else:
@@ -231,7 +240,7 @@ class SyndicationIn(Resource):
     schema = syndication_in_schema
 
 
-@syndication_blueprint.route('/api/syndication/webhook', methods=['POST', 'PUT', 'DELETE'])
+@syndication_blueprint.route('/api/syndication/webhook', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def syndication_webhook():
     in_service = get_resource_service('syndication_in')
     blog_token = request.headers['Authorization']
@@ -258,12 +267,19 @@ def syndication_webhook():
         return api_error('Post "{}" cannot be updated: already updated by "{}"'.format(
                          post_id, publisher), 409)
 
-    if request.method in ('POST', 'PUT'):
+    if request.method == 'GET':
+        return api_response({}, 200)
+    elif request.method in ('POST', 'PUT'):
         new_post = create_syndicated_blog_post(producer_post, items, in_syndication)
         if request.method == 'POST':
             # Create post
             if post:
-                return api_error('Post already exist', 409)
+                # Post may have been previously deleted
+                if post.get('deleted'):
+                    posts_service.update(post_id, new_post, post)
+                    return api_response({'post_id': post_id}, 200)
+                else:
+                    return api_error('Post already exist', 409)
 
             new_post_id = posts_service.post([new_post])[0]
             return api_response({'post_id': str(new_post_id)}, 201)

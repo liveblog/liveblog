@@ -21,7 +21,7 @@
             <h3 class="page-nav-title">Settings</h3>
             <button ng-click="settings.saveAndClose()" class="btn btn-info pull-right" type="button" translate ng-disabled="!(settings.forms.dirty || settings.forms[settings.tab].$dirty)">Done</button>
             <button ng-click="settings.save()"  class="btn btn-info pull-right" type="button" translate ng-disabled="!(settings.forms.dirty || settings.forms[settings.tab].$dirty)">Save</button>
-            <button ng-click="settings.close()" class="btn btn-default pull-right" type="button" translate>Cancel</button>
+            <button ng-click="settings.close()" class="btn btn-default pull-right last-right" type="button" translate>Cancel</button>
         </div>
         <div class="tabbable outer">
             <ul class="nav-tabs nav-stacked">
@@ -313,12 +313,12 @@
                                     <div class="team_settings edit-contributors">
                                         <div ng-if="settings.hasReachedMembersLimit()">
                                           <h3>Sorry.</h3>
-                                          <p>You have reached the maximum number of users who are assigned as team members to your active blogs. You can either: </p>
+                                          <p>You have reached the maximum number of team members for this blog. You can either:</p>
                                           <ul>
                                               <li>1. Unassign a team member from one of your active blogs or</li>
                                               <li>2. Subscribe to a bigger plan.</li>
                                           </ul>
-                                          <p>To unassign a team member from one of your active blogs, go to “Blog settings”, choose “Team” and open the “Team members” section. Unassign a team member by clicking on the X.</p>
+                                          <p>To unassign a team member from this blog, simply move your mouse above the below users and click on the X.</p>
                                           <p>Want to upgrade to a plan more suitable to your needs? Email us at <a href="{{settings.mailto}}">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
                                         </div>
                                         <div 
@@ -351,46 +351,4 @@
             </div>
         </div>
     </div>
-</div>
-
-<div sd-modal="" data-model="settings.uploadModal">
-    <form ng-submit="settings.upload(settings.preview)" name="uploadImageForm">
-        <div class="modal-header">
-            <button class="close" ng-click="settings.closeUploadModal()"><i class="icon-close-small"></i></button>
-            <h3 translate>Upload Blog Image</h3>
-        </div>
-        <div class="modal-body">
-            <div class="upload-form">
-                <section
-                    class="main"
-                    sd-image-preview="settings.preview.url"
-                    data-file="settings.preview.img"
-                    data-progress-width="settings.progress.width">
-                    <div class="upload-progress" ng-show="progress.width">
-                        <div class="bar" style="width: {{ progress.width }}%;"></div>
-                    </div>
-                    <div class="computer" ng-if="!settings.preview.url" ng-hide="settings.progress.width">
-                        <div class="dropzone" ng-file-drop="settings.preview.img = $files[0]">
-                            <div class="text" translate>Drop it here</div>
-                            <div class="input-holder">
-                                <input type="file" accept="image/*;capture=camera" ng-file-select="settings.preview.img = $files[0]">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="preview" ng-if="settings.preview.url">
-                        <div class="original">
-                            <div sd-plain-image
-                                data-src="settings.preview.url"
-                                data-progress-width="settings.progress.width"
-                                data-file="settings.preview.img"
-                            ></div>
-                        </div>
-                    </div>
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button type="submit" class="btn btn-primary btn-info" translate ng-disabled="!settings.preview.url">Upload</button>
-        </div>
-    </form>
 </div>

@@ -1,9 +1,33 @@
 import mainTemplate from 'scripts/liveblog-bloglist/views/main.html';
 
-BlogListController.$inject = ['$scope', '$location', 'api', 'gettext', 'upload',
-    'isArchivedFilterSelected', '$q', 'blogSecurityService', 'notify', 'config'];
-function BlogListController($scope, $location, api, gettext, upload,
-    isArchivedFilterSelected, $q, blogSecurityService, notify, config) {
+BlogListController.$inject = [
+    '$scope',
+    '$location',
+    '$http',
+    'api',
+    'gettext',
+    'upload',
+    'isArchivedFilterSelected',
+    '$q',
+    'blogSecurityService',
+    'notify',
+    'config',
+    'urls'
+];
+function BlogListController(
+    $scope,
+    $location,
+    $http,
+    api,
+    gettext,
+    upload,
+    isArchivedFilterSelected,
+    $q,
+    blogSecurityService,
+    notify,
+    config,
+    urls
+) {
     $scope.maxResults = 25;
     $scope.states = [
         {name: 'active', code: 'open', text: gettext('Active blogs')},
@@ -20,7 +44,7 @@ function BlogListController($scope, $location, api, gettext, upload,
     };
     $scope.modalActive = false;
 
-    $scope.mailto = 'mailto:upgrade@liveblog.pro?subject='+
+    $scope.mailto = 'mailto:upgrade@liveblog.pro?subject=' +
         encodeURIComponent(location.hostname) +
         ' ' +
         config.subscriptionLevel;
@@ -45,12 +69,14 @@ function BlogListController($scope, $location, api, gettext, upload,
         var criteria = {source: {
             query: {filtered: {filter: {term: {key: 'blogslist'}}}}
         }};
-        api.blogslist.query(criteria, false).then(function(embed) {
+
+        api.blogslist.query(criteria, false).then((embed) => {
             var url;
+
             if (embed._items.length) {
                 url = embed._items[0].value;
             } else if (config.debug) {
-                url = 'http://localhost:5000/blogslist_embed'
+                url = 'http://localhost:5000/blogslist_embed';
             }
             if (url) {
                 $scope.bloglistEmbed = '<iframe id="liveblog-bloglist" width="100%" ' +
@@ -62,7 +88,7 @@ function BlogListController($scope, $location, api, gettext, upload,
         $scope.embedModal = false;
     };
     $scope.openEmbed = function() {
-        fetchBloglistEmbed()
+        fetchBloglistEmbed();
         $scope.embedModal = true;
     };
 
@@ -78,11 +104,12 @@ function BlogListController($scope, $location, api, gettext, upload,
     $scope.openNewBlog = function() {
         blogSecurityService
             .showUpgradeModal()
-            .then(function(showUpgradeModal) {
-                if (showUpgradeModal)
+            .then((showUpgradeModal) => {
+                if (showUpgradeModal) {
                     $scope.embedUpgrade = true;
-                else
+                } else {
                     $scope.newBlogModalActive = true;
+                }
             });
     };
 
@@ -94,8 +121,10 @@ function BlogListController($scope, $location, api, gettext, upload,
         var members = _.map($scope.blogMembers, function(obj) {
             return {user: obj._id};
         });
+
         //upload image only if we have a valid one chosen
         var promise = $scope.preview.url ? $scope.upload($scope.preview) : $q.when();
+
         return promise.then(function() {
             return api.blogs.save({
                 title: $scope.newBlog.title,
@@ -116,6 +145,7 @@ function BlogListController($scope, $location, api, gettext, upload,
 
     $scope.upload = function(config) {
         var form = {};
+
         if (config.img) {
             form.media = config.img;
         } else if (config.url) {
@@ -124,27 +154,26 @@ function BlogListController($scope, $location, api, gettext, upload,
             return;
         }
         // return a promise of upload which will call the success/error callback
-        return api.archive.getUrl().then(function(url) {
-            return upload.start({
-                method: 'POST',
-                url: url,
-                data: form
-            })
-            .then(function(response) {
-                if (response.data._status === 'ERR'){
-                    return;
-                }
-                var picture_url = response.data.renditions.viewImage.href;
-                $scope.newBlog.picture_url = picture_url;
-                $scope.newBlog.picture = response.data._id;
-            }, function(error) {
-                notify.error(
-                    (error.statusText !== '') ? error.statusText : gettext('There was a problem with your upload')
-                );
-            }, function(progress) {
-                $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
-            });
-        });
+        return urls.resource('archive').then((uploadUrl) => upload.start({
+            method: 'POST',
+            url: uploadUrl,
+            data: form
+        })
+        .then((response) => {
+            if (response.data._status === 'ERR') {
+                return;
+            }
+            var pictureUrl = response.data.renditions.viewImage.href;
+
+            $scope.newBlog.picture_url = pictureUrl;
+            $scope.newBlog.picture = response.data._id;
+        }, (error) => {
+            notify.error(
+                error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
+            );
+        }, (progress) => {
+            $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
+        }));
     };
 
     $scope.remove = function(blog) {
@@ -155,14 +184,59 @@ function BlogListController($scope, $location, api, gettext, upload,
         $location.path('/liveblog/edit/' + blog._id);
     };
 
+    //$scope.openAccessRequest = function(blog) {
+    //    $scope.accessRequestedTo = blog;
+    //    $scope.showBlogAccessModal = true;
+    //}
+
     $scope.openAccessRequest = function(blog) {
         $scope.accessRequestedTo = blog;
         $scope.showBlogAccessModal = true;
-    }
+
+        if (config.subscriptionLevel
+        && ['solo', 'team'].indexOf(config.subscriptionLevel) !== -1) {
+            $scope.checkAccessRequestLimit(blog);
+        } else {
+            $scope.allowAccessRequest = true;
+        }
+    };
 
     $scope.closeAccessRequest = function() {
         $scope.accessRequestedTo = false;
         $scope.showBlogAccessModal = false;
+    };
+
+    $scope.checkAccessRequestLimit = function(blog) {
+        $scope.allowAccessRequest = false;
+
+        var theoricalMembers = [];
+
+        if (blog.members) {
+            blog.members.forEach(function(member) {
+                if (theoricalMembers.indexOf(member.user) === -1)
+                  theoricalMembers.push(member.user);
+            });
+        }
+
+        $http({
+            url: config.server.url + '/blogs/' + blog._id + '/request_membership',
+            method: 'GET',
+            headers: {
+                "Content-Type": "application/json;charset=utf-8"
+            }
+        })
+        .then(function(response) {
+            if (response.data._items.length > 0) {
+                response.data._items.forEach(function(item) {
+                  if (theoricalMembers.indexOf(item._id) === -1)
+                    theoricalMembers.push(item._id);
+                });
+            }
+
+            if (theoricalMembers.length < config.assignableUsers[config.subscriptionLevel])
+                $scope.allowAccessRequest = true;
+        })
+
     };
 
     $scope.requestAccess = function(blog) {
@@ -179,20 +253,22 @@ function BlogListController($scope, $location, api, gettext, upload,
 
         if (showRequestDialog) {
             notify.info(gettext('Sending request'));
-            api('request_membership').save({blog: blog._id}).then(
-                function(data) {
-                    notify.pop();
-                    notify.info(gettext('Request sent'));
-                },
-                function(data) {
-                    notify.pop();
-                    var message = gettext('Something went wrong, plase try again later!');
-                    if (data.data._message === 'A request has already been sent') {
-                        message = gettext('A request has already been sent');
+            api('request_membership')
+                .save({blog: blog._id})
+                .then(
+                    function(data) {
+                        notify.pop();
+                        notify.info(gettext('Request sent'));
+                    },
+                    function(data) {
+                        notify.pop();
+                        var message = gettext('Something went wrong, plase try again later!');
+                        if (data.data._message === 'A request has already been sent') {
+                            message = gettext('A request has already been sent');
+                        }
+                        notify.error(message, 5000);
                     }
-                    notify.error(message, 5000);
-                }
-            );
+                );
             $scope.closeAccessRequest();
         } else {
             notify.pop();
@@ -329,12 +405,14 @@ app.config(['apiProvider', function(apiProvider) {
             category: superdesk.MENU_MAIN,
             adminTools: false,
             resolve: {isArchivedFilterSelected: function() {return false;}}
-        }).activity('/liveblog/active', {
+        })
+        .activity('/liveblog/active', {
             label: gettext('Blog List'),
             controller: BlogListController,
             templateUrl: mainTemplate,
             resolve: {isArchivedFilterSelected: function() {return false;}}
-        }).activity('/liveblog/archived', {
+        })
+        .activity('/liveblog/archived', {
             label: gettext('Blog List'),
             controller: BlogListController,
             templateUrl: mainTemplate,
@@ -474,15 +552,16 @@ app.directive('sdPlainImage', ['gettext', 'notify', 'config', function(gettext, 
             function getSelectedIndex() {
                 if (scope.selected) {
                     var selectedIndex = -1;
+
                     _.each(scope.users._items, function(item, index) {
                         if (item === scope.selected) {
                             selectedIndex = index;
                         }
                     });
                     return selectedIndex;
-                } else {
-                    return -1;
                 }
+
+                return -1;
             }
 
             function previous() {

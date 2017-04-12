@@ -1,7 +1,3 @@
-//@import 'mixins.less';
-//@import 'variables.less';
-//@import 'superdesk-overrides.less';
-
 .main-section {
 	z-index: auto;
 }
@@ -298,12 +294,24 @@ div.subnav div.button-stack.left-stack a.homebtn {
 div.settings-page button {
     margin-top: 10px;
 }
-div.settings-page button:last-child {
+div.settings-page button.last-right {
     margin-right: 20px;
+}
+div.settings-page div.datepicker-input button, div.settings-page div.timepicker-input button {
+    height: 22px!important;
+    margin-top: 0px!important;
 }
 button.btn-info {
     background-color: #5ea9c8;
 }
 #main-menu .footer .icon-superdesk {
     background-size: 156px 48px;
+}
+
+.liveblog-help {
+    visibility: visible!important;
+}
+
+i.icon-star.orange {
+    color: #f89406;
 }

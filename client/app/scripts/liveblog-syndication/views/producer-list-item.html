@@ -17,17 +17,17 @@
         <div lb-first-contact prosumer="producer"></div>
     </div>
 
-    <div class="action">
+    <div class="action" ng-show="!selected">
         <ul class="item-functions">
             <li class="item-field">
                 <a 
-                    title="Disable producer" 
+                    title="Delete producer"
                     ng-href="" 
                     ng-click="disable($event, producer)"
                     ng-if=":: !activity.dropdown" 
                     class="ng-scope delete-producer">
                     <i class="icon-trash true"></i>
-                    <span class="ng-binding">Disable producer</span>
+                    <span class="ng-binding">Delete producer</span>
                 </a>
             </li>
         </ul>

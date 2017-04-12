@@ -56,7 +56,8 @@ var app = angular.module('liveblog.edit', [
         controllerAs: 'blogEdit',
         templateUrl: mainTpl,
         resolve: {blog: BlogResolver}
-    }).activity('/liveblog/settings/:_id', {
+    })
+    .activity('/liveblog/settings/:_id', {
         label: gettext('Blog Settings'),
         auth: true,
         controller: BlogSettingsController,
@@ -68,7 +69,8 @@ var app = angular.module('liveblog.edit', [
                 return blogSecurityService.goToSettings();
             }]
         }
-    }).activity('/liveblog/analytics/:_id', {
+    })
+    .activity('/liveblog/analytics/:_id', {
         label: gettext('Blog Analytics'),
         auth: true,
         controller: 'LiveblogAnalyticsController',
@@ -81,7 +83,8 @@ var app = angular.module('liveblog.edit', [
             }]
         }
     });
-}]).config(['apiProvider', function(apiProvider) {
+}])
+.config(['apiProvider', function(apiProvider) {
     apiProvider.api('posts', {
         type: 'http',
         backend: {rel: 'posts'}
@@ -103,7 +106,8 @@ var app = angular.module('liveblog.edit', [
         type: 'http',
         backend: {rel: 'themes'}
     });
-}]).config(['SirTrevorOptionsProvider', 'SirTrevorProvider', function(SirTrevorOptions, SirTrevor) {
+}])
+.config(['SirTrevorOptionsProvider', 'SirTrevorProvider', function(SirTrevorOptions, SirTrevor) {
     // here comes all the sir trevor customization (except custom blocks which are in the SirTrevorBlocks module)
     SirTrevor = SirTrevor.$get();
     // change the remove trash icon by a cross
