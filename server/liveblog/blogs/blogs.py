@@ -297,7 +297,6 @@ class BlogService(BaseService):
                 raise SuperdeskApiError.forbiddenError(message='Cannot add another active blog.')
 
 
-
 class UserBlogsResource(Resource):
     url = 'users/<regex("[a-f0-9]{24}"):user_id>/blogs'
     schema = blogs_schema
