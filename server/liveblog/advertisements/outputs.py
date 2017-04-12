@@ -9,7 +9,6 @@
 # at https://www.sourcefabric.org/superdesk/license
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from superdesk import get_resource_service
 
 
 class OutputsResource(Resource):
@@ -53,4 +52,4 @@ class OutputsService(BaseService):
 
         # @TODO: deletes s3 blog
         if updates.get('deleted', False):
-            pass;
+            pass

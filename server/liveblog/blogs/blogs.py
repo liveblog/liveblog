@@ -312,7 +312,6 @@ class BlogService(BaseService):
             else:
                 syndication_in_service.delete_action(lookup={'_id': syndication_in['_id']})
 
-
 class UserBlogsResource(Resource):
     url = 'users/<regex("[a-f0-9]{24}"):user_id>/blogs'
     schema = blogs_schema
