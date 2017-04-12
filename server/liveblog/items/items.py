@@ -13,7 +13,9 @@ from flask import Blueprint, request, make_response
 from flask_cors import CORS
 from superdesk import get_resource_service
 from liveblog.syndication.utils import fetch_url
+from liveblog.syndication.exceptions import DownloadError
 from bson.json_util import dumps
+from urllib3.fields import guess_content_type
 
 drag_and_drop_blueprint = Blueprint('drag_and_drop', __name__)
 CORS(drag_and_drop_blueprint)
@@ -146,11 +148,22 @@ class BlogItemsService(ArchiveService):
 def drag_and_drop():
     data = request.get_json()
     url = data['image_url']
-    mimetype = data['mimetype']
+    accepted_mimetypes = {
+        'image/jpge',
+        'image/png'
+    }
+    mimetype = guess_content_type(url)
+    if mimetype not in accepted_mimetypes:
+        return make_response('invalid file type',406)
+
+    try:
+        stream = fetch_url(url)
+    except (DownloadError):
+        return make_response('unable to download file',404)
 
     item_data = dict()
     item_data['type'] = 'picture'
-    item_data['media'] = FileStorage(stream=fetch_url(url), content_type=mimetype)
+    item_data['media'] = FileStorage(stream=stream, content_type=mimetype)
     archive_service = get_resource_service('archive')
     archive_id = archive_service.post([item_data])[0]
     archive = archive_service.find_one(req=None, _id=archive_id)
