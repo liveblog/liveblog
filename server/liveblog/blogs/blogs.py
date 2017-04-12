@@ -33,6 +33,73 @@ from .schema import blogs_schema
 from .tasks import delete_blog_embed_on_s3, publish_blog_embed_on_s3
 
 logger = logging.getLogger('superdesk')
+blogs_schema = {
+    'title': metadata_schema['headline'],
+    'description': metadata_schema['description_text'],
+    'picture_url': {
+        'type': 'string',
+        'nullable': True
+    },
+    'picture': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
+    'original_creator': metadata_schema['original_creator'],
+    'version_creator': metadata_schema['version_creator'],
+    'versioncreated': metadata_schema['versioncreated'],
+    'posts_order_sequence': {
+        'type': 'float',
+        'default': 0.00
+    },
+    'blog_status': {
+        'type': 'string',
+        'allowed': ['open', 'closed'],
+        'default': 'open'
+    },
+    'members': {
+        'type': 'list',
+        'schema': {
+            'type': 'dict',
+            'schema': {
+                'user': Resource.rel('users', True)
+            }
+        },
+        'maxmembers': True
+    },
+    'blog_preferences': {
+        'type': 'dict'
+    },
+    'theme_settings': {
+        'type': 'dict'
+    },
+    'public_url': {
+        'type': 'string'
+    },
+    'syndication_enabled': {
+        'type': 'boolean',
+        'default': False
+    },
+    'market_enabled': {
+        'type': 'boolean',
+        'default': False
+    },
+    'category': {
+        'type': 'string',
+        'allowed': ["", "Breaking News", "Entertainment", "Business and Finance", "Sport", "Technology"],
+        'default': ""  # unsetting a variable is a world of pain
+    },
+    'start_date': {
+        'type': 'datetime',
+        'default': None
+    },
+    'outputs': {
+        'type': 'list',
+        'schema': {
+            'type': 'dict',
+            'schema': {
+                'output_id': Resource.rel('outputs', True),
+            }
+        },
+        'nullable': True
+    },
+}
 
 
 class BlogsResource(Resource):
@@ -244,7 +311,6 @@ class BlogService(BaseService):
                 ))
             else:
                 syndication_in_service.delete_action(lookup={'_id': syndication_in['_id']})
-
 
 class UserBlogsResource(Resource):
     url = 'users/<regex("[a-f0-9]{24}"):user_id>/blogs'
