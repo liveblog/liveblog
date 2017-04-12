@@ -88,7 +88,17 @@ blogs_schema = {
     'start_date': {
         'type': 'datetime',
         'default': None
-    }
+    },
+    'outputs': {
+        'type': 'list',
+        'schema': {
+            'type': 'dict',
+            'schema': {
+                'output_id': Resource.rel('outputs', True),
+            }
+        },
+        'nullable': True
+    },
 }
 
 
