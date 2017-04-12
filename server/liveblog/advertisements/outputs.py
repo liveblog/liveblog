@@ -24,10 +24,12 @@ class OutputsResource(Resource):
             'type': 'dict',
             'schema': {
                 'background-color': {
-                    'type': 'string'
+                    'type': 'string',
+                    'nullable': True
                 },
                 'background-image': {
-                    'type': 'string'
+                    'type': 'string',
+                    'nullable': True
                 }
             }
         },
