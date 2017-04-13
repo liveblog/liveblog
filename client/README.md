@@ -5,9 +5,8 @@ Liveblog Client is a javascript client for Liveblog REST API server.
 
 Client requires `nodejs` installed and a few steps:
 ```
-npm install -g bower grunt-cli
+npm install -g grunt-cli
 npm install # install other node dependencies
-bower install # install bower components
 ```
 After you can start local dev server on port `9000`:
 ```

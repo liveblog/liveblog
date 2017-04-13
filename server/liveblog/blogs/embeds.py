@@ -9,6 +9,7 @@
 # AUTHORS and LICENSE files distributed with this source code, or
 # at https://www.sourcefabric.org/superdesk/license
 
+import copy
 import json
 import logging
 import os
@@ -22,6 +23,7 @@ from liveblog.themes import UnknownTheme
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 
+from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
 
 logger = logging.getLogger('superdesk')
@@ -60,6 +62,27 @@ def collect_theme_assets(theme, assets=None, template=None):
             assets[asset_type].append(url)
 
     return assets, template
+
+
+def render_bloglist_embed(api_host=None, assets_root=None):
+    compiled_api_host = "{}://{}/".format(app.config['URL_PROTOCOL'], app.config['SERVER_NAME'])
+    api_host = api_host or compiled_api_host
+    assets_root = assets_root or BLOGSLIST_ASSETS_DIR + '/'
+    assets = copy.deepcopy(BLOGLIST_ASSETS)
+
+    # Compute path relative to the assets_root for `styles` and `scripts`.
+    for index, script in enumerate(assets.get('scripts')):
+        assets['scripts'][index] = os.path.join(assets_root, script)
+    for index, style in enumerate(assets.get('styles')):
+        assets['styles'][index] = os.path.join(assets_root, style)
+
+    scope = {
+        'debug': app.config.get('LIVEBLOG_DEBUG'),
+        'api_host': api_host,
+        'assets': assets,
+        'assets_root': assets_root
+    }
+    return render_template('blog-list-embed.html', **scope)
 
 
 @embed_blueprint.route('/embed/<blog_id>')

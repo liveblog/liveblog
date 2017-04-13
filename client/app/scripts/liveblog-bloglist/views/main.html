@@ -10,8 +10,8 @@
     </div>
 
     <div class="button-stack right-stack" ng-if="isUserAllowedToCreateABlog();">
-        <button class="navbtn navbtn-info" ng-click="openNewBlog();">
-            <i class="svg-icon-add inverse"></i> <span class="title" translate>Create Blog</span>
+        <button class="navbtn navbtn-info" ng-click="openNewBlog();" title="{{ 'Create Blog' | translate }}">
+            <i class="svg-icon-add inverse"></i>
         </button>
     </div>
 </div>
@@ -215,12 +215,12 @@
                         <div>
                             <div ng-if="hasReachedMembersLimit()">
                               <h3>Sorry.</h3>
-                              <p>You have reached the maximum number of users who are assigned as team members to your active blogs. You can either: </p>
+                              <p>You have reached the maximum number of team members for this blog. You can either:</p>
                               <ul>
                                   <li>1. Unassign a team member from one of your active blogs or</li>
                                   <li>2. Subscribe to a bigger plan.</li>
                               </ul>
-                              <p>To unassign a team member from one of your active blogs, go to “Blog settings”, choose “Team” and open the “Team members” section. Unassign a team member by clicking on the X.</p>
+                              <p>To unassign a team member from this blog, simply move your mouse above the below users and click on the X.</p>
                               <p>Want to upgrade to a plan more suitable to your needs? Email us at <a href="{{settings.mailto}}">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
                             </div>
  
@@ -286,7 +286,12 @@
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-default" translate ng-click="closeAccessRequest()">Cancel</button>
-            <button type="submit" class="btn btn-primary btn-info pull-left" translate ng-click="requestAccess(accessRequestedTo)">Request Access</button>
+            <button
+              type="submit"
+              class="btn btn-primary btn-info pull-left"
+              translate
+              ng-disabled="!allowAccessRequest"
+              ng-click="requestAccess(accessRequestedTo)">Request Access</button>
         </div>
     </div>
 

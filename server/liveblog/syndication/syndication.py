@@ -73,9 +73,18 @@ class SyndicationOutService(BaseService):
         except IndexError:
             return
 
+    def consumer_is_syndicating(self, consumer_id):
+        try:
+            result = self.find({'$and': [
+                {'consumer_id': {'$eq': consumer_id}}
+            ]})
+            return result.count() > 0
+        except IndexError:
+            return
+
     def get_blog_syndication(self, blog_id):
         blog = self._get_blog(blog_id)
-        if not blog['syndication_enabled']:
+        if not blog.get('syndication_enabled'):
             logger.info('Syndication not enabled for blog "{}"'.format(blog['_id']))
             return []
         else:
@@ -236,6 +245,16 @@ def syndication_webhook():
     in_service = get_resource_service('syndication_in')
     blog_token = request.headers['Authorization']
     in_syndication = in_service.find_one(blog_token=blog_token, req=None)
+    if in_syndication is None:
+        return api_error('Blog is not being syndication', 406)
+
+    blog_service = get_resource_service('client_blogs')
+    blog = blog_service.find_one(req=None, _id=in_syndication['blog_id'])
+    if blog is None:
+        return api_error('Blog not found', 404)
+
+    if blog['blog_status'] != 'open':
+        return api_error('Updates should not be sent for a blog which is not open', 409)
 
     data = request.get_json()
     try:

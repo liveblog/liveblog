@@ -68,11 +68,14 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
             // Name <Email> (Url)
             if (angular.isString(theme.author)) {
                 authorArray = authorRX.exec(theme.author);
-                theme.author = {
-                    'name': authorArray[1],
-                    'email': authorArray[2],
-                    'url': authorArray[3]
-                };
+
+                if (authorArray) {
+                    theme.author = {
+                        'name': authorArray[1],
+                        'email': authorArray[2],
+                        'url': authorArray[3]
+                    };
+                }
             }
         }
         function loadThemes() {

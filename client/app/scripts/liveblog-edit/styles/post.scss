@@ -106,7 +106,8 @@
         &-multiple-items {
             position: relative;
             top: -7px;
-            width: 70px;
+            //width: 70px;
+            width: 128px;
             height: 13px;
             right: 40px;
             float: right;
@@ -120,12 +121,14 @@
             background-color: #a6a6a6;
             margin-left:-40px;
             margin-right:4px;
+            position: relative;
         }
         &-multiple-items-roundel-text {
             position: absolute;
             top: -2px;
             left: 0;
-            width: 26px;
+            //width: 26px;
+            width: 20px;
             text-align: center;
             color: #f6f6f6;
             font-size: 11px;

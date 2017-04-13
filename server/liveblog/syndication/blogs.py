@@ -5,7 +5,7 @@ from bson import ObjectId
 from eve.utils import str_to_date
 from flask import Blueprint, abort, request
 from flask_cors import CORS
-from liveblog.blogs.blogs import blogs_schema
+from liveblog.blogs.schema import blogs_schema
 from liveblog.posts.posts import PostsResource
 from superdesk import get_resource_service
 from superdesk.services import BaseService
@@ -70,7 +70,7 @@ def _create_blogs_syndicate(blog_id, consumer_blog_id, auto_retrieve, start_date
     blog = blogs_service.find_one(req=None, checkUser=False, _id=blog_id)
     if blog is None:
         return api_error('No blog available for syndication with given id "{}".'.format(blog_id), 409)
-    if not blog['syndication_enabled']:
+    if not blog.get('syndication_enabled', False):
         return api_error('blog is not enabled for syndication', 409)
 
     consumer = _get_consumer_from_auth()

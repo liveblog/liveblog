@@ -1,6 +1,4 @@
 module.exports = function (grunt) {
-    'use strict';
-
     // util for grunt.template
     grunt.toJSON = function(input) {
         return JSON.stringify(input);
@@ -11,7 +9,6 @@ module.exports = function (grunt) {
         appDir: 'app',
         tmpDir: '.tmp',
         distDir: 'dist',
-        bowerDir: 'bower',
         poDir: 'po',
         livereloadPort: 35729
     };
@@ -24,21 +21,16 @@ module.exports = function (grunt) {
         configPath: require('path').join(process.cwd(), 'tasks', 'options')
     });
 
-    grunt.registerTask('style', ['less:dev', 'cssmin']);
-
     grunt.registerTask('test', ['karma:unit']);
     grunt.registerTask('ci', ['eslint']);
     grunt.registerTask('bamboo', ['karma:bamboo']);
 
     grunt.registerTask('docs', [
         'clean',
-        'less:docs',
-        'cssmin',
         'template:docs',
         'connect:test',
         'open:docs',
-        'ngtemplates:docs',
-        'watch'
+        'ngtemplates:docs'
     ]);
 
     grunt.registerTask('server', [
@@ -46,6 +38,7 @@ module.exports = function (grunt) {
         'copy:assets',
         'copy:locales',
         'copy:index',
+        'copy:config',
         'copy:sirTrevor',
         'webpack-dev-server:start'
     ]);
@@ -54,12 +47,11 @@ module.exports = function (grunt) {
 
     grunt.registerTask('server:e2e', [
         'clean',
-        'style',
         'template:mock',
         'ngtemplates:core',
         'connect:mock' // nothing will be run after that
     ]);
-    grunt.registerTask('server:travis', ['clean', 'style', 'template:travis', 'connect:travis']);
+    grunt.registerTask('server:travis', ['clean', 'template:travis', 'connect:travis']);
 
     grunt.registerTask('build', [
         'clean',

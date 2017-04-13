@@ -101,6 +101,10 @@ import 'liveblog-security.service';
 
 const config = __SUPERDESK_CONFIG__;
 
+if (typeof window.superdeskConfig !== 'undefined') {
+    angular.extend(config, window.superdeskConfig);
+}
+
 // Commented angular modules are not required to run liveblog
 // But they are shown here to give a perspective of
 // what is required to run liveblog
