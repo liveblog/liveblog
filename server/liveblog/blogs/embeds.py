@@ -10,25 +10,127 @@
 # at https://www.sourcefabric.org/superdesk/license
 
 import copy
+import jinja2
 import json
 import logging
 import os
+import pymongo
 
 import superdesk
+from bson import ObjectId
+from bson.json_util import dumps as bson_dumps
 from eve.io.mongo import MongoJSONEncoder
 from flask import current_app as app
 from flask import json, render_template, request, url_for
-from liveblog.themes import ASSETS_DIR as THEMES_ASSETS_DIR
 from liveblog.themes import UnknownTheme
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 
-from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
-from .utils import is_relative_to_current_folder
+from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR, THEMES_ASSETS_DIR
+from .utils import is_relative_to_current_folder, get_template_file_name, get_theme_json
 
 logger = logging.getLogger('superdesk')
 embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
 THEMES_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'themes'))
+
+
+class ThemeTemplateLoader(jinja2.BaseLoader):
+    """
+    Theme template loader for SEO themes.
+    """
+    def __init__(self, theme):
+        dirname = os.path.dirname(get_template_file_name(theme))
+        self.path = os.path.join(dirname, 'templates')
+
+    def get_source(self, environment, template):
+        path = os.path.join(self.path, template)
+        if not os.path.exists(path):
+            raise jinja2.TemplateNotFound(template)
+        mtime = os.path.getmtime(path)
+        with open(path) as f:
+            source = f.read()
+        return source, path, lambda: mtime == os.path.getmtime(path)
+
+
+class Blog:
+    """
+    Utility class to fetch blog data directly from mongo collections.
+    """
+    order_by = ('_updated', '_created')
+    default_order_by = '_updated'
+    sort = ('asc', 'desc')
+    default_sort = 'desc'
+
+    def __init__(self, blog):
+        if isinstance(blog, (str, ObjectId)):
+            blog = get_resource_service('client_blogs').find_one(_id=blog, req=None)
+
+        self._blog = blog
+        self._posts = get_resource_service('client_posts')
+
+    def _validate_order_by(self, order_by):
+        if order_by not in self.order_by:
+            raise ValueError(order_by)
+
+    def _validate_sort(self, sort):
+        if sort not in self.sort:
+            raise ValueError(sort)
+
+    def _posts_lookup(self, sticky=None, highlight=None):
+        filters = [
+            {'blog': {'$eq': self._blog['_id']}},
+            {'post_status': {'$eq': 'open'}},
+            {'deleted': {'$eq': False}}
+        ]
+        if sticky:
+            filters.append({'sticky': {'$eq': sticky}})
+        if highlight:
+            filters.append({'highlight': {'$eq': highlight}})
+        return {'$and': filters}
+
+    def posts(self, sticky=None, highlight=None, order_by=default_order_by, sort=default_sort, page=1, limit=25,
+              wrap=False):
+        # Validate parameters.
+        self._validate_sort(sort)
+        self._validate_order_by(order_by)
+
+        # Fetch total.
+        results = self._posts.find(self._posts_lookup(sticky, highlight))
+        total = results.count()
+
+        # Get sorting direction.
+        if sort == 'asc':
+            sort = pymongo.ASCENDING
+        else:
+            sort = pymongo.DESCENDING
+
+        # Fetch posts, do pagination and sorting.
+        skip = limit * (page - 1)
+        results = results.skip(skip).limit(limit).sort(order_by, sort)
+        posts = []
+        for doc in results:
+            if 'groups' not in doc:
+                continue
+
+            for group in doc['groups']:
+                if group['id'] == 'main':
+                    for ref in group['refs']:
+                        ref['item'] = get_resource_service('archive').find_one(req=None, _id=ref['residRef'])
+            posts.append(doc)
+
+        if wrap:
+            # Wrap in python-eve style data structure
+            return {
+                '_items': posts,
+                '_meta': {
+                    'page': page,
+                    'total': total,
+                    'max_results': limit
+                }
+            }
+        else:
+            # Return posts.
+            return posts
 
 
 def collect_theme_assets(theme, assets=None, template=None):
@@ -110,16 +212,19 @@ def embed(blog_id, api_host=None, theme=None):
 
     # If a theme is provided, overwrite the default theme.
     if theme_name:
-        theme_package = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
-        theme = json.loads(open(theme_package).read())
+        theme = theme_json = get_theme_json(theme_name)
+    else:
+        theme_name = theme['name']
+        theme_json = theme
+
 
     try:
-        assets, template_file = collect_theme_assets(theme)
+        assets, template_content = collect_theme_assets(theme)
     except UnknownTheme as e:
         return str(e), 500
 
-    if not template_file:
-        logger.error('Template file not found for theme "%s". Theme: %s' % (theme.get('name'), theme))
+    if not template_content:
+        logger.error('Template file not found for theme "%s". Theme: %s' % (theme_name, theme))
         return 'Template file not found', 500
 
     # Compute the assets root.
@@ -129,12 +234,30 @@ def embed(blog_id, api_host=None, theme=None):
         assets_root = [THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme')]
         assets_root = '/%s/' % ('/'.join(assets_root))
 
+    theme_service = get_resource_service('themes')
+    theme_settings = theme_service.get_default_settings(theme)
+
+    if theme.get('seoTheme', False):
+        # Fetch initial blog posts for SEO theme
+        blog_instance = Blog(blog)
+        api_response = blog_instance.posts(wrap=True)
+        embed_template = jinja2.Environment(loader=ThemeTemplateLoader(theme)).from_string(template_content)
+        template_content = embed_template.render(
+            blog=blog,
+            theme=theme,
+            settings=theme_settings,
+            api_response=api_response,
+            theme_settings=theme_settings,
+            theme_options=theme_json,
+            options=bson_dumps(theme_json)
+        )
+
     scope = {
         'blog': blog,
-        'settings': get_resource_service('themes').get_default_settings(theme),
+        'settings': theme_settings,
         'assets': assets,
         'api_host': api_host,
-        'template': template_file,
+        'template': template_content,
         'debug': app.config.get('LIVEBLOG_DEBUG'),
         'assets_root': assets_root
     }

@@ -10,7 +10,6 @@
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
-import os
 import glob
 import json
 from io import BytesIO
@@ -27,6 +26,7 @@ import magic
 import logging
 from flask import make_response
 from settings import (SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
+from liveblog.blogs.app_settings import THEMES_ASSETS_DIR as ASSETS_DIR
 
 logger = logging.getLogger('superdesk')
 ASSETS_DIR = 'themes_assets'
@@ -109,6 +109,10 @@ class ThemesResource(Resource):
         },
         'public_url': {
             'type': 'string'
+        },
+        'seoTheme': {
+            'type': 'boolean',
+            'default': False
         }
     }
     datasource = {
