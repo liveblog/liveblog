@@ -34,6 +34,7 @@ from .tasks import delete_blog_embed_on_s3, publish_blog_embed_on_s3
 
 logger = logging.getLogger('superdesk')
 
+
 class BlogsResource(Resource):
     datasource = {
         'source': 'blogs',
@@ -243,6 +244,7 @@ class BlogService(BaseService):
                 ))
             else:
                 syndication_in_service.delete_action(lookup={'_id': syndication_in['_id']})
+
 
 class UserBlogsResource(Resource):
     url = 'users/<regex("[a-f0-9]{24}"):user_id>/blogs'
