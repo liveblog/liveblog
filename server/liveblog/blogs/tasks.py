@@ -21,11 +21,11 @@ from .utils import check_media_storage, get_blog_path, get_bloglist_path
 logger = logging.getLogger('superdesk')
 
 
-def publish_embed(blog_id, api_host=None, theme=None):
+def publish_embed(blog_id, theme=None, output_id=None, api_host=None ):
     # Get html using embed() blueprint.
-    html = embed(blog_id, api_host, theme)
+    html = embed(blog_id, theme, output_id, api_host)
     check_media_storage()
-    file_path = get_blog_path(blog_id)
+    file_path = get_blog_path(blog_id, theme, output_id)
     # Remove existing file.
     app.media.delete(app.media.media_id(file_path, version=False))
     logger.warning('Embed file "{}" for blog "{}" removed from s3'.format(file_path, blog_id))
@@ -36,43 +36,71 @@ def publish_embed(blog_id, api_host=None, theme=None):
     return superdesk.upload.url_for_media(file_id)
 
 
-def delete_embed(blog_id):
+def delete_embed(blog_id, theme=None, output_id=None):
     check_media_storage()
-    file_path = get_blog_path(blog_id)
+    file_path = get_blog_path(blog_id, theme, output_id)
     # Remove existing file.
-    app.media.delete(file_path)
+    app.media.delete(app.media.media_id(file_path, version=False))
 
 
-def _publish_blog_embed_on_s3(blog_id, safe=True):
+def _publish_blog_embed_on_s3(blog_id, theme=None, output_id=None, safe=True):
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if blog['blog_preferences'].get('theme', False):
         try:
-            public_url = publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
-            get_resource_service('blogs').system_update(blog_id, {'public_url': public_url}, blog)
+            public_url = publish_embed(blog_id,
+                                       theme,
+                                       output_id,
+                                       api_host='//{}/'.format(app.config['SERVER_NAME']))
+            public_urls = blog.get('public_urls', {})
+            if output_id:
+                public_urls['output'][output_id] = public_url
+            elif theme:
+                public_urls['theme'][theme] = public_url
+            get_resource_service('blogs').system_update(blog_id, {'public_urls': public_urls}, blog)
             push_notification('blog', published=1, blog_id=blog_id, public_url=public_url)
             return public_url
         except MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:
                 raise e
-
             logger.warning('Media storage not supported for blog "{}"'.format(blog_id))
-            public_url = '{}://{}/embed/{}'.format(app.config['URL_PROTOCOL'], app.config['SERVER_NAME'], blog_id)
+            public_url = '{}://{}/embed/{}{}{}'.format(app.config['URL_PROTOCOL'],
+                                                       app.config['SERVER_NAME'],
+                                                       blog_id,
+                                                       '{}/'.format(theme) if theme else '',
+                                                       '{}/'.format(output_id) if output_id else '')
+            if output_id:
+                public_urls['output'][output_id] = public_url
+            elif theme:
+                public_urls['theme'][theme] = public_url
             get_resource_service('blogs').system_update(blog_id, {'public_url': public_url}, blog)
             push_notification('blog', published=1, blog_id=blog_id, public_url=public_url)
             return public_url
 
 
 @celery.task(bind=True, soft_time_limit=1800)
-def publish_blog_embed_on_s3(self, blog_id, safe=True):
-    logger.warning('publish_blog_on_s3 for blog "{}" started.'.format(blog_id))
+def publish_blog_embed_on_s3(self, blog_id, theme=None, output_id=None, safe=True):
+    logger.warning('publish_blog_embed_on_s3 for blog "{}" started.'.format(blog_id))
     try:
-        _publish_blog_embed_on_s3(blog_id, safe)
+        _publish_blog_embed_on_s3(blog_id, theme, output_id, safe)
     except (Exception, SoftTimeLimitExceeded) as e:
         logger.exception('publish_blog_on_s3 for blog "{}" failed.'.format(blog_id))
         raise self.retry(exc=e, max_retries=S3_CELERY_MAX_RETRIES, countdown=S3_CELERY_COUNTDOWN)
     finally:
         logger.warning('publish_blog_on_s3 for blog "{}" finished.'.format(blog_id))
 
+
+def publish_blog_embeds_on_s3(self, blog_id, safe=True):
+    logger.warning('publish_blog_embeds_on_s3 for blog "{}" started.'.format(blog_id))
+    # get the blog so we can get the current theme from `blog_preferences`.
+    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    blog_pref = blog.get('blog_preferences');
+    outputs_service = get_resource_service('outputs')
+    for output in outputs_service.get(req=None, lookup=dict(blog=blog_id)):
+        # if there isn't set a theme on the `output` then use the blog theme.
+        theme = blog_pref.get('theme')
+        if output.get('theme'):
+            theme = output.get('theme')
+        publish_blog_embed_on_s3.delay(self, blog_id, theme, output.get('_id'), safe=safe)
 
 @celery.task(bind=True, soft_time_limit=1800)
 def delete_blog_embed_on_s3(self, blog_id, safe=True):

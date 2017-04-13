@@ -38,8 +38,8 @@ blogs_schema = {
     'theme_settings': {
         'type': 'dict'
     },
-    'public_url': {
-        'type': 'string'
+    'public_urls': {
+        'type': 'dict'
     },
     'syndication_enabled': {
         'type': 'boolean',

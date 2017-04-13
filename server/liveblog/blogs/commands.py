@@ -8,7 +8,7 @@ class PublishBlogsCommand(superdesk.Command):
     """
 
     def run(self):
-        from .tasks import publish_blog_embed_on_s3
+        from .tasks import publish_blog_embeds_on_s3
 
         # Retrieves all opened blogs.
         blogs_service = get_resource_service('blogs')
@@ -16,7 +16,7 @@ class PublishBlogsCommand(superdesk.Command):
         # Republish on s3.
         print('\n* Republishing blogs:\n')
         for blog in blogs:
-            url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
+            url = publish_blog_embeds_on_s3(blog_id=str(blog['_id']), safe=False)
             print('  - Blog "%s" republished: %s' % (blog['title'], url))
 
 
