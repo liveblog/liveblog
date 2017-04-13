@@ -28,6 +28,12 @@ export default function consumerList(api, notify, modal) {
                                 scope.consumers.splice(i, 1);
                             }
                         });
+                    })
+                    .catch((err) => {
+                        if (err.data && err.data._message) {
+                            notify.pop();
+                            notify.error(err.data._message);
+                        }
                     });
             };
 
