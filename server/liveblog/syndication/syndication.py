@@ -277,11 +277,11 @@ def syndication_webhook():
             if not post:
                 return api_error('Post does not exist', 404)
 
-            posts_service.update(post_id, new_post, post)
+            posts_service.patch(post_id, new_post)
             return api_response({'post_id': post_id}, 200)
     else:
         # Delete post
-        posts_service.update(post_id, {'deleted': True}, post)
+        posts_service.patch(post_id, {'deleted': True})
         return api_response({'post_id': post_id}, 200)
 
 
