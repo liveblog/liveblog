@@ -26,7 +26,10 @@ export default function ingestPanel(
         link: function(scope) {
             var handleError = function() {
                 notify.pop();
-                notify.error(gettext('An error has been occurred. Please try again later!'));
+                notify.error(gettext(`
+                    An error has occurred.
+                    Please verify your API key.
+                `));
 
                 IngestPanelActions.flushErrors();
             };
