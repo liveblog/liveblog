@@ -1,0 +1,129 @@
+{
+    "label": "Liveblog 3 Default SEO Theme",
+    "name": "default",
+    "version": "0.1.42",
+    "seoTheme": true,
+    "author": "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>",
+    "authors": [
+        "Paul Solbach <psolbach@dpa-newslab.com>",
+        "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>"
+    ],
+    "repository": {
+        "type" : "git",
+        "url" : "git@github.com:liveblog/liveblog-default-theme"
+    },
+    "license": "AGPL-3.0",
+    "devStyles": ["dist/liveblog-0f4b11e354.css"],
+    "devScripts": ["dist/liveblog-ffc2f158eb.js"],
+    "styles": ["dist/liveblog-0f4b11e354.css"],
+    "scripts": ["dist/liveblog-ffc2f158eb.js"],
+    "options": [
+        {
+            "name": "postsPerPage",
+            "label": "Number of posts per page",
+            "type": "number",
+            "default": 10,
+            "help": "Set the number of posts you want to see at the initialization"
+        },
+        {
+            "name": "postOrder",
+            "label": "Default posts order of the timeline",
+            "type": "select",
+            "options": [
+                {"value": "editorial", "label": "Editorial"},
+                {"value": "newest_first", "label": "Newest first"},
+                {"value": "oldest_first", "label": "Oldest first"}
+            ],
+            "default": "editorial"
+        },
+        {
+            "name": "autoApplyUpdates",
+            "label": "All updates including creates are auto-applied periodically.",
+            "type": "checkbox",
+            "default": true,
+            "help": "Turn off to prompt user to load updates"
+        },
+        {
+            "name": "autoApplyEdits",
+            "label": "Edits, deletes are applied without prompt",
+            "type": "checkbox",
+            "default": false,
+            "help": "Otherwise they will pop up as new posts."
+        },
+        {
+            "name": "showImage",
+            "label": "Show the blog image",
+            "type": "checkbox",
+            "default": false
+        },
+        {
+            "name": "showTitle",
+            "label": "Show the blog title",
+            "type": "checkbox",
+            "default": false
+        },
+        {
+            "name": "showDescription",
+            "label": "Show the blog description",
+            "type": "checkbox",
+            "default": false
+        },
+        {
+            "name": "showAuthor",
+            "label": "Show author",
+            "type": "checkbox",
+            "default": true,
+            "help": "Show the author information on posts"
+        },
+        {
+            "name": "showAuthorAvatar",
+            "label": "Show author avatar",
+            "type": "checkbox",
+            "default": true,
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "help": "Show the author avatar on posts"
+        },
+        {
+            "name": "authorNameFormat",
+            "label": "Author name format",
+            "type": "select",
+            "default": "display_name",
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "options": [
+                {"value": "display_name", "label": "Full name"},
+                {"value": "byline", "label": "Byline"},
+                {"value": "sign_off", "label": "Sign off"}
+            ],
+            "help": "How to show the author name"
+        },
+        {
+            "name": "hasHighlights",
+            "label": "Has highlights",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users see the highlight button in embed"
+        },
+        {
+            "name": "blockSearchEngines",
+            "label": "Block search engines",
+            "type": "checkbox",
+            "default": true,
+            "help": "Block search engines from indexing my blogs"
+        }
+    ],
+    "l10n": {
+        "loadMore": "Load More",
+        "oldestFirst": "Oldest first",
+        "newestFirst": "Newest first",
+        "loadNewPosts": "Load new posts",
+        "timeAgo": {
+            "d": {"s": "A day ago", "p": "{} days ago"},
+            "h": {"s": "An hour ago", "p": "{} hours ago"},
+            "m": {"s": "A minute ago", "p": "{} minutes ago"}
+        }
+    }
+}

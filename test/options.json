@@ -1,0 +1,189 @@
+{
+  "blog" :{
+    "blog_status":"open",
+    "_created":"2017-03-08T11:30:20+00:00",
+    "_id":"58bfeb4c15720af1a94c1052",
+    "posts_order_sequence":37.0,
+    "_updated":"2017-03-23T10:43:42+00:00",
+    "description":"<p>Keeping you up to date on the world of live blogging and Live Blog from Sourcefabric.</p>",
+    "theme_settings":{
+      "blockSearchEngines":false,
+      "hasHighlights":true,
+      "authorNameLinksToEmail":false,
+      "showDescription":true,
+      "datetimeFormat":"lll",
+      "showAuthor":true,
+      "loadNewPostsManually":false,
+      "infinitScroll":true,
+      "permalinkDelimiter":"?",
+      "showImage":true,
+      "canComment":false,
+      "language":"en",
+      "postsPerPage":20,
+      "postOrder":"editorial",
+      "showAuthorAvatar":true,
+      "showTitle":true,
+      "authorNameFormat":"display_name",
+      "showGallery":false
+    },
+    "start_date":"2017-03-08T12:30:20+00:00",
+    "picture":{
+      "family_id":"urn:newsml:localhost:2017-03-08T12:30:17.912301:11bcf6fd-c80c-4ee5-ab6f-963813a0c70a",
+      "firstcreated":"2017-03-08T11:30:17+00:00",
+      "_created":"2017-03-08T11:30:17+00:00",
+      "byline":"Gideon",
+      "_updated":"2017-03-08T11:30:17+00:00",
+      "renditions":{
+        "viewImage":{
+          "mimetype":"image/png",
+          "height":720,
+          "href":"https://sourcefabric.liveblog.pro/sourcefabric/20170308120328/e5541e88d7ddd13d96c0a4c547ecef343ddfb0b20db22f8700a93cbde369dfd3.png",
+          "width":1158,
+          "media":"sourcefabric/20170308120328/e5541e88d7ddd13d96c0a4c547ecef343ddfb0b20db22f8700a93cbde369dfd3.png"
+        },
+        "original":{
+          "mimetype":"image/png",
+          "height":526,
+          "href":"https://sourcefabric.liveblog.pro/sourcefabric/20170308120328/011ba434fd8a267638eed34c3b07c21897a5beca9e5d15c4d7e3cc8b95ba8333.png",
+          "width":846,
+          "media":"sourcefabric/20170308120328/011ba434fd8a267638eed34c3b07c21897a5beca9e5d15c4d7e3cc8b95ba8333.png"
+        },
+        "baseImage":{
+          "mimetype":"image/png",
+          "height":1080,
+          "href":"https://sourcefabric.liveblog.pro/sourcefabric/20170308120328/633b730f845a1aeb349fff59ff9773955079cfbbc742c959754ac9231cc36f01.png",
+          "width":1737,
+          "media":"sourcefabric/20170308120328/633b730f845a1aeb349fff59ff9773955079cfbbc742c959754ac9231cc36f01.png"
+        },
+        "thumbnail":{
+          "mimetype":"image/png",
+          "height":298,
+          "href":"https://sourcefabric.liveblog.pro/sourcefabric/20170308120328/53a877bcd280e7e0d58f667c37e44831478b69d34499f6fa155383ccba5dd784.png",
+          "width":480,
+          "media":"sourcefabric/20170308120328/53a877bcd280e7e0d58f667c37e44831478b69d34499f6fa155383ccba5dd784.png"
+        }
+      },
+      "operation":"create",
+      "_current_version":1,
+      "source":"Liveblog",
+      "filemeta":{
+        "length":293264
+      },
+      "state":"draft",
+      "version_creator":"58bfe91915720af1a27e11d2",
+      "pubstatus":"usable",
+      "priority":3,
+      "guid":"tag:localhost:2017:cb5eacd8-d03a-4b31-a705-e9c31538fc52",
+      "unique_name":"#2",
+      "expiry":"2017-04-07T11:30:18+00:00",
+      "marked_for_not_publication":false,
+      "more_coming":false,
+      "dateline":{
+        "text":null,
+        "date":"2017-03-08T11:30:17+00:00",
+        "source":"SF",
+        "located":null
+      },
+      "urgency":3,
+      "_id":"urn:newsml:localhost:2017-03-08T12:30:17.912301:11bcf6fd-c80c-4ee5-ab6f-963813a0c70a",
+      "type":"picture",
+      "unique_id":2,
+      "versioncreated":"2017-03-08T11:30:17+00:00",
+      "mimetype":"image/png",
+      "event_id":"tag:localhost:2017:fff988bb-e0ee-4781-aab1-7995e6baf2fa",
+      "language":"en",
+      "place":[
+
+      ],
+      "media":"sourcefabric/20170308120328/011ba434fd8a267638eed34c3b07c21897a5beca9e5d15c4d7e3cc8b95ba8333.png",
+      "_etag":"277d1289483963e1bbe75196f0566abc2071bd89",
+      "sign_off":"GL",
+      "original_creator":"58bfe91915720af1a27e11d2"
+    },
+    "blog_preferences":{
+      "last_scorecard":{
+        "remember":false,
+        "away":{
+          "name":"England",
+          "scorers":[
+            {
+              "name":"",
+              "time":""
+            }
+          ],
+          "score":"0"
+        },
+        "home":{
+          "name":"Germany",
+          "scorers":[
+            {
+              "name":"Podolski",
+              "time":"69"
+            }
+          ],
+          "score":"1"
+        }
+      },
+      "language":"en",
+      "theme":"classic"
+    },
+    "picture_url":"https://sourcefabric.liveblog.pro/sourcefabric/20170308120328/e5541e88d7ddd13d96c0a4c547ecef343ddfb0b20db22f8700a93cbde369dfd3.png",
+    "version_creator":"58bfe91915720af1a27e11d2",
+    "public_url":"https://sourcefabric.liveblog.pro/sourcefabric/blogs/58bfeb4c15720af1a94c1052/index.html",
+    "members":[
+      {
+        "user":"58c7fcf215720a01175f108b"
+      },
+      {
+        "user":"58c8fd9915720a0102a5dea4"
+      },
+      {
+        "user":"58c9048415720a00fd41151b"
+      },
+      {
+        "user":"57fdde98fc57b2067512b01c"
+      },
+      {
+        "user":"58d27cee15720a8499397690"
+      }
+    ],
+    "_etag":"21276879ddc83b56e08318d714dffbf907695838",
+    "title":"The Latest News About Live Blog",
+    "versioncreated":"2017-03-23T10:43:42+00:00",
+    "original_creator":"58bfe91915720af1a27e11d2"
+  },
+  "settings": {
+    "showAuthorAvatar":true,
+    "authorNameFormat":"display_name",
+    "showTitle":true,
+    "blockSearchEngines":false,
+    "hasHighlights":true,
+    "loadNewPostsManually":true,
+    "canComment":true,
+    "showGallery":true,
+    "postsPerPage":10,
+    "language":"en",
+    "postOrder":"editorial",
+    "showDescription":true,
+    "permalinkDelimiter":"?",
+    "showImage":false,
+    "authorNameLinksToEmail":false,
+    "showAuthor":true,
+    "datetimeFormat":"lll",
+    "infinitScroll":false
+  },
+  "l10n": {
+    "loadMore": "Load More",
+    "oldestFirst": "Oldest first",
+    "newestFirst": "Newest first",
+    "loadNewPosts": "Load new posts",
+    "timeAgo": {
+        "d": {"s": "A day ago", "p": "{} days ago"},
+        "h": {"s": "An hour ago", "p": "{} hours ago"},
+        "m": {"s": "A minute ago", "p": "{} minutes ago"}
+    }
+  },
+  "api_host": "//sourcefabric-api.liveblog.pro/",
+  "assets_root": "https://sourcefabric.liveblog.pro/sourcefabric/2017031512034/themes_assets/classic/",
+  "debug": true
+}
