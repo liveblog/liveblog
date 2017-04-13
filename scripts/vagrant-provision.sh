@@ -7,18 +7,12 @@ NC='\033[0m' # No Color
 echo -e "${COLOR}Setting environment variables${NC}"
 
 echo -e "${COLOR}Upgrading and installing packages${NC}"
-sudo apt-get update && apt-get dist-upgrade -y
+sudo apt-get update
+sudo apt-get dist-upgrade -y
 sudo apt-get install mongodb wget -y
 
 # Redis server
 sudo apt-get install redis-server -y
-
-# elastic search 1.5
-#echo -e "${COLOR}Installing elasticsearch${NC}"
-#sudo apt-get install openjdk-7-jre -y
-#wget -c https://download.elastic.co/elasticsearch/elasticsearch/elasticsearch-1.5.0.deb
-#sudo dpkg -i elasticsearch-1.5.0.deb
-#rm elasticsearch-1.5.0.deb
 
 # Elasticsearch 1.7
 wget -qO - https://packages.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
@@ -41,7 +35,7 @@ libtiff5-dev libjpeg8-dev zlib1g-dev \
 libfreetype6-dev liblcms2-dev libwebp-dev \
 curl libfontconfig libssl-dev
 
-sudo npm install -g grunt-cli bower
+sudo npm install -g grunt-cli
 
 # set locale
 locale-gen en_US.UTF-8
@@ -56,7 +50,8 @@ export CELERYBEAT_SCHEDULE_FILENAME=/tmp/celerybeatschedule
 
 # Install server requirements
 cd /opt/liveblog/server
-sudo pip3 install -U -r requirements.txt
+sudo pip3 install --upgrade setuptools
+sudo pip3 install -r requirements.txt
 
 source /opt/liveblog/scripts/vagrant-init-database.sh
 

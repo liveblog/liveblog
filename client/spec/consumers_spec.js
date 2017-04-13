@@ -21,6 +21,8 @@ var contact2 = {
     email: 'paul.sabatier@gmail.com'
 };
 
+const originalCount = 25;
+
 describe('Consumers', function() {
 
     beforeEach(function(done) {
@@ -33,6 +35,17 @@ describe('Consumers', function() {
     describe('list', function() {
         it('can open consumers managements and list the consumers', function() {
             consumersManagement.openConsumersManagement();
+        });
+
+        it('can switch to page 2', function() {
+            consumersManagement.openConsumersManagement();
+
+            element(by.css('button[ng-click="setPage(page + 1)"]'))
+                .click()
+                .then(() => element.all(by.repeater('consumer in consumers')).count())
+                .then((count) => {
+                    expect(count).toEqual(11);
+                })
         });
 
         it('can show an error when some required field are empty', function() {
@@ -130,7 +143,7 @@ describe('Consumers', function() {
                     return element.all(by.repeater('consumer in consumers')).count();
                 })
                 .then(function(count) {
-                    expect(count).toEqual(2);
+                    expect(count).toEqual(originalCount + 1);
                 });
         });
 
@@ -175,7 +188,7 @@ describe('Consumers', function() {
                         return element.all(by.repeater('consumer in consumers')).count();
                     })
                     .then(function(count) {
-                        return expect(count).toEqual(1);
+                        return expect(count).toEqual(originalCount);
                     });
             };
 
@@ -204,7 +217,7 @@ describe('Consumers', function() {
                     return element.all(by.repeater('consumer in consumers')).count();
                 })
                 .then(function(count) {
-                    expect(count).toEqual(0);
+                    expect(count).toEqual(originalCount - 1);
                 });
         });
     });

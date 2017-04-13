@@ -34,10 +34,8 @@ export default function freetypeRender($compile, freetypeService) {
                             obj[key].splice(1);
                         }
                         recursiveClean(obj[key]);
-                    } else {
-                        if (angular.isString(obj[key])) {
-                            obj[key] = '';
-                        }
+                    } else if (angular.isString(obj[key])) {
+                        obj[key] = '';
                     }
                 }
             };

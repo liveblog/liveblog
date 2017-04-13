@@ -4,7 +4,7 @@ var root = path.dirname(path.dirname(__dirname));
 module.exports = {
     options: {
         configFile: path.join(root, '.eslintrc.json'),
-        quiet: false
+        quiet: true
     },
 
     app: {

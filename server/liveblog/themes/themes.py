@@ -24,7 +24,6 @@ from superdesk.errors import SuperdeskError
 import zipfile
 import os
 import magic
-from liveblog.blogs.blogs import publish_blog_embed_on_s3
 import logging
 from flask import make_response
 from settings import (SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
@@ -266,10 +265,11 @@ class ThemesService(BaseService):
             return dict(status='created', theme=theme)
 
     def publish_related_blogs(self, theme):
+        from liveblog.blogs.tasks import publish_blog_embed_on_s3
         # FIXME: retrieve only the blogs who use a specified theme
         # terms = []
         # for t in self.get_children(theme['name']) + [theme['name']]:
-            # terms.append({'term': {'blog_preferences.theme': t}})
+        #     terms.append({'term': {'blog_preferences.theme': t}})
         blogs = get_resource_service('blogs').get(req=None, lookup={})
         # get all the children for the theme that we modify the settings for
         theme_children = self.get_children(theme.get('name'))

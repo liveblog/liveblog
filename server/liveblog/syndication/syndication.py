@@ -231,7 +231,7 @@ class SyndicationIn(Resource):
     schema = syndication_in_schema
 
 
-@syndication_blueprint.route('/api/syndication/webhook', methods=['POST', 'PUT', 'DELETE'])
+@syndication_blueprint.route('/api/syndication/webhook', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def syndication_webhook():
     in_service = get_resource_service('syndication_in')
     blog_token = request.headers['Authorization']
@@ -258,7 +258,9 @@ def syndication_webhook():
         return api_error('Post "{}" cannot be updated: already updated by "{}"'.format(
                          post_id, publisher), 409)
 
-    if request.method in ('POST', 'PUT'):
+    if request.method == 'GET':
+        return api_response({}, 200)
+    elif request.method in ('POST', 'PUT'):
         new_post = create_syndicated_blog_post(producer_post, items, in_syndication)
         if request.method == 'POST':
             # Create post

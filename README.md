@@ -68,6 +68,7 @@ Now we can create the python virtual environment and install the server dependen
 cd server
 virtualenv -p python3 env
 source env/bin/activate
+pip install --upgrade setuptools
 pip install -r requirements.txt
 ```
 

@@ -19,6 +19,7 @@ def update_dates_for(doc):
 
 
 def check_comment_length(text):
+    # TODO: move to validators.
     if not 1 <= len(text) <= 300:
         raise SuperdeskApiError(payload='Allowed length: between 1 and 300. You exceeded the allowed length')
 

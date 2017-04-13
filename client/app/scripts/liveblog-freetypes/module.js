@@ -66,11 +66,9 @@ $q, $sce, config, _, upload, blogService, modal) {
                         if (!vm.editFreetype) {
                             //it's a new freetype so not unique
                             unique = false;
-                        } else {
-                            if (vm.editFreetype._id !== freetype._id) {
-                                //not editing the same freetype
-                                unique = false;
-                            }
+                        } else if (vm.editFreetype._id !== freetype._id) {
+                            //not editing the same freetype
+                            unique = false;
                         }
                     }
                 });
