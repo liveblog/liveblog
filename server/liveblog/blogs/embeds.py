@@ -215,7 +215,7 @@ def embed(blog_id, api_host=None, theme=None):
         theme = theme_json = get_theme_json(theme_name)
     else:
         theme_name = theme['name']
-        theme_json = theme
+        theme_json = get_theme_json(theme_name)
 
     try:
         assets, template_content = collect_theme_assets(theme)
