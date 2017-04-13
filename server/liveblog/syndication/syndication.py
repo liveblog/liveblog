@@ -243,10 +243,13 @@ class SyndicationIn(Resource):
 @syndication_blueprint.route('/api/syndication/webhook', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def syndication_webhook():
     in_service = get_resource_service('syndication_in')
-    blog_token = request.headers['Authorization']
+    blog_token = request.headers.get('Authorization')
+    if not blog_token and request.method=='GET':
+        return api_response({}, 200)
+
     in_syndication = in_service.find_one(blog_token=blog_token, req=None)
     if in_syndication is None:
-        return api_error('Blog is not being syndication', 406)
+        return api_error('Blog is not being syndicated', 406)
 
     blog_service = get_resource_service('client_blogs')
     blog = blog_service.find_one(req=None, _id=in_syndication['blog_id'])
@@ -308,7 +311,7 @@ def syndication_webhook():
 
 def _syndication_blueprint_auth():
     auth = ConsumerBlogTokenAuth()
-    authorized = auth.authorized(allowed_roles=[], resource='syndication_blogs')
+    authorized = request.method=='GET' or auth.authorized(allowed_roles=[], resource='syndication_blogs')
     if not authorized:
         return abort(401, 'Authorization failed.')
 

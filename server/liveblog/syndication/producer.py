@@ -300,5 +300,18 @@ def producer_blogs_syndicate(producer_id, blog_id):
         return _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish, auto_retrieve,
                                                 start_date)
 
+@producers_blueprint.route('/api/producers/<producer_id>/check_connection', methods=['GET'])
+def producer_check_connection(producer_id):
+    producers = get_resource_service('producers')
+    try:
+        response = producers.get_blogs(producer_id, json_loads=False)
+    except ProducerAPIError:
+        return api_response('invalid url', 200)
+
+    if response.status_code != 200:
+        return api_response('invalid key', 200)
+    else:
+        return api_response('valid', 200)
+
 
 producers_blueprint.before_request(blueprint_superdesk_token_auth)
