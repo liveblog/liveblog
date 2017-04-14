@@ -356,14 +356,13 @@
                 <!-- Output channels -->
                 <div class="split-content tab-content outer outputs" ng-if="(settings.tab === 'outputs')">
                     <div class="header">
-                        <h2 translate>Output channels</h2>
+                        <h2 translate>Output channels</h2>{{ settings.outputModalActive }}
                         <div class="dropdown navbtn strict add-new-div" title="{{ :: 'Create' | translate }}" dropdown>
                             <button class="dropdown__toggle sd-create-btn" ng-click="settings.openOutputDialog();"></button>
                         </div>
                     </div>
                      <div class="content">
                         <div class="settings-subsection">
-                            
                             <!-- OUTPUTS LIST VIEW -->
                             <div class="outputs-list-holder">
                                 <div class="shadow-list-holder" sd-shadow>
@@ -394,11 +393,13 @@
                 </div>
 
                 <div ng-if="settings.outputsLoading" class="loading-indicator" style="margin-top: 170px;"><span translate>Output channels loading...</span></div>
-
             </div>
         </div>
     </div>
 </div>
 <!-- MODAL FOR ADDING EDITING OUTPUTS -->
-{{ settings.outputModalTpl.outputModalTpl }}
-<div ng-include="settings.outputModalTpl"></div>
+<output-modal
+    modal-active="settings.outputModalActive"
+    output="settings.output"
+    blog-id="{{ settings.blog._id }}"
+></output-modal>
