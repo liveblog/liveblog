@@ -1,0 +1,244 @@
+FORMAT: 1A
+HOST: http://liveblog.sd-test.sourcefabric.org/api/client_
+
+# liveblog-embed
+
+Liveblog Open Embed is a small API allowing consumer plugin-liveblog-embed to view a blog with timeline of posts.
+
+## Root Endpoint [/]
+
+### Fetch all available resources [GET]
++ Response 200 (application/json)
+
+        {
+           "links": {
+               "child": [
+                   {
+                       "title": "blog",
+                       "href": "/blogs/<path:blog>"
+                   }, {
+                       "title": "posts",
+                       "href": "/blogs/<path:blog>/posts"
+                   }, {
+                       "title": "user",
+                       "href": "/users"
+                   }, {
+                       "title": "users",
+                       "href": "/blogs/<path:blog>/users"
+                   }
+               ]
+           }
+        }
+
+
+
+## Blog [/blogs/{blog}]
+We need the blog to know how to render the title and description of a blog for some themes.
+
+Also additional we need the blog_preferences before we render the hole embed.
+
+A Blog object has the following attributes:
++ _id (string) - Identificator.
++ _etag (string) - A standar impleneation of [etag](http://en.wikipedia.org/wiki/HTTP_ETag)
++ _created (date) - An ISO8601 date when the blog was created ( mongodb ).
++ _updated (date) - An ISO8601 date when the blog was last updated ( mongodb ).
++ _version- That
++ blog_preferences (object) - An object with preferences details.
++ blog_status - An option between 'open' or 'close'.
++ original_creator (string) - Id of the user who created the blog.
++ version_creator (string) - Id of the user who updated the blog last time. 
++ title (string) - That.
++ description (string) - That.
+
+
++ Parameters
+    + blog (required, string)  identification of the blog.
+
+### View a Blog [GET]
++ Response 200 (application/json)
+
+                {  
+                   "_id": "551bf4fc102454816af7c83a",
+                   "_etag": "a9dbcae25770d1c49505e363ac6576ecd523063b",
+                   "_created": "2015-04-01T13:39:08+0000",
+                   "_updated": "2015-04-01T13:39:16+0000",
+                   "_version": "6",
+                   "blog_preferences": {},
+                   "blog_status": "open",                   
+                   "original_creator": "5480329c102454052b4e3ad6",
+                   "version_creator": "5480329c102454052b4e3ad6",
+                   "title": "Las Vegas",
+                   "description": "In the west"
+                }
+
+
+## Posts [/blogs/{blog}/posts?cid.since={cid_since}&cid.until={cid_until}&order.since={order_since}&order.until={order_until}&since={since}&&until={until}&deleted={deleted}&status={status}&limit={limit}]
+We need the posts from a blog to render the timeline.
+This request should be splited in three actions parts based on the functionality
+a) first page
+   main concearn is that this request needs to send us posts witch aren't deleted. 
+
+b) next page
+    fetch the next page should be easy but is not, when dealing with updates the list of posts is dinamicaly so 
+    it isn't possible to request just a number page.
+    instead using a filter for `created` field ending until a specific date is the solution.
+    main concearn is that this needs also to get the deleted posts and items.
+
+c) updates
+    fetch the updates should be the revers of b) next page. 
+    using a filter for `updated` field starting since a specific date should be the solution
+    main concearn is that this needs also to get the deleted posts and items.
+
+Posts should also contain items.
+
+A Posts and Items list:
+
++ Parameters
+    + blog (required, string) identification of the blog
+    + limit (optional, number, `25`) The max. number of posts to be retrieved.
+    + since (optional, date) Date rage since for _created field, should be exclusive range.
+    + until (optional, date) Date rage until for _created field should be exclusive range.
+    + deleted (optional, boolean, `false`) when is false it should contain only posts without the filed deleted.
+    + status (optional, string, `open`) filter based on status of the post.
+    + cid_since (optional, number) see point a) b) and c)
+    + cid_until (optional, number) see point a) b) and c)
+    + order_until (optional, float) see pont a) b) and c)
+    + order_since (optional, float ) see point a) b) and c)
+
+### View a Posts [GET]
++ Response 200 (application/json)
+
+                {  
+                   "_items":[  
+                      {  
+                         "_created":"2015-04-02T12:43:52+0000",
+                         "_etag":"8df0428fd22b7caaa4c5c700c8babe6a02b544a7",
+                         "_id":"urn:newsml:localhost:2015-04-02T12:43:52.024809:0e7049ca-31e7-4326-b821-80ff95fb39a1",
+                         "_updated":"2015-04-02T12:43:52+0000",
+                         "_version":1,
+                         "blog":"551bf4fc102454816af7c83a",
+                         "items":[{  
+                                    "_created":"2015-04-02T12:43:51+0000",
+                                    "_etag":"117ad97a247ca53b140eda256b0a50c80157affe",
+                                    "_id":"urn:newsml:localhost:2015-04-02T12:43:51.827571:a0af6879-ed63-499d-905d-25c8bf77d00e",
+                                    "_updated":"2015-04-02T12:43:51+0000",
+                                    "blog":"551bf4fc102454816af7c83a",
+                                    "linked_in_packages":[  
+                                           {  
+                                              "package":"urn:newsml:localhost:2015-04-02T12:43:52.024809:0e7049ca-31e7-4326-b821-80ff95fb39a1"
+                                           }
+                                        ],
+                                        "meta":{  
+                                           "author_name":"Richard Corey",
+                                           "author_url":"http://www.youtube.com/channel/UC1oxOXG1jcfqIs6n3Kzo1cw",
+                                           "credit":"YouTube | by Richard Corey",
+                                           "description":"read the story at www.lasvegassun.com/vegasdeluxe",
+                                           "height":263,
+                                           "html":"<iframe class=\"embedly-embed\" src=\"//cdn.embedly.com/widgets/media.html?src=http%3A%2F%2Fwww.youtube.com%2Fembed%2FtZ5Kn4rdBpI%3Ffeature%3Doembed&url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DtZ5Kn4rdBpI&image=http%3A%2F%2Fi.ytimg.com%2Fvi%2FtZ5Kn4rdBpI%2Fhqdefault.jpg&key=979cf63d19e24e8cbcfcc7c5063867e2&type=text%2Fhtml&schema=youtube\" width=\"350\" height=\"263\" scrolling=\"no\" frameborder=\"0\" allowfullscreen></iframe>",
+                                           "original_url":"https://www.youtube.com/watch?v=tZ5Kn4rdBpI&hd=1",
+                                           "provider_name":"YouTube",
+                                           "provider_url":"http://www.youtube.com/",
+                                           "thumbnail_height":360,
+                                           "thumbnail_url":"http://i.ytimg.com/vi/tZ5Kn4rdBpI/hqdefault.jpg",
+                                           "thumbnail_width":480,
+                                           "title":"2015 Vince Neil's Las Vegas Outlaws 1st game & Sexxy Halftime Show",
+                                           "type":"video",
+                                           "url":"http://www.youtube.com/watch?v=tZ5Kn4rdBpI",
+                                           "version":"1.0",
+                                           "width":350
+                                        },
+                                        "original_creator":"5480329c102454052b4e3ad6",
+                                        "particular_type":"item",
+                                        "pubstatus":"Usable",
+                                        "state":"draft",
+                                        "text":"<div class=\"liveblog--card\">\n  <div class=\"st-embed-block embed-preview\"><iframe class=\"embedly-embed\" src=\"//cdn.embedly.com/widgets/media.html?src=http%3A%2F%2Fwww.youtube.com%2Fembed%2FtZ5Kn4rdBpI%3Ffeature%3Doembed&amp;url=https%3A%2F%2Fwww.youtube.com%2Fwatch%3Fv%3DtZ5Kn4rdBpI&amp;image=http%3A%2F%2Fi.ytimg.com%2Fvi%2FtZ5Kn4rdBpI%2Fhqdefault.jpg&amp;key=979cf63d19e24e8cbcfcc7c5063867e2&amp;type=text%2Fhtml&amp;schema=youtube\" scrolling=\"no\" allowfullscreen=\"\" frameborder=\"0\" height=\"263\" width=\"350\"></iframe></div>\n  <div class=\"hidden st-embed-block cover-preview-handler\">\n    <div class=\"st-embed-block cover-preview\"></div>\n  </div>\n  <div class=\"st-embed-block title-preview\">2015 Vince Neil's Las Vegas Outlaws 1st game &amp; Sexxy Halftime Show</div>\n  <div class=\"st-embed-block description-preview\">read the story at www.lasvegassun.com/vegasdeluxe</div>\n  <div class=\"st-embed-block credit-preview\">YouTube | by <a href=\"http://www.youtube.com/channel/UC1oxOXG1jcfqIs6n3Kzo1cw\" target=\"_blank\">Richard Corey</a></div>\n  <a href=\"https://www.youtube.com/watch?v=tZ5Kn4rdBpI&amp;hd=1\" class=\"st-embed-block link-preview\" target=\"_blank\">https://www.youtube.com/watch?v=tZ5Kn4rdBpI&amp;hd=1</a>\n",
+                                        "type":"text",
+                                        "unique_id":240884,
+                                        "unique_name":"#240884",
+                                        "version_creator":"5480329c102454052b4e3ad6",
+                                        "versioncreated":"2015-04-02T12:43:51+0000"
+                                     },
+                                     "residRef":"urn:newsml:localhost:2015-04-02T12:43:51.827571:a0af6879-ed63-499d-905d-25c8bf77d00e",
+                                     "type":"text"
+                                  }
+                               ],
+                               "role":"grpRole:Main"
+                            }
+                         ],
+                         "original_creator":"5480329c102454052b4e3ad6",
+                         "post_status":"open",
+                         "version_creator":"5480329c102454052b4e3ad6",
+                         "versioncreated":"2015-04-02T12:43:52+0000"
+                      }
+                   ]
+                   "_meta":{  
+                      "max_results":10,
+                      "page":1,
+                      "total":1
+                   }
+                }
+
+## User [/users/{user}]
+We need the users from a blog to render to be rendered on a post/item.
+
++ Parameters
+    + user (required, string) identification of the user.
+
+### View a User [GET]
++ Response 200 (application/json)
+
+                {
+                    "_created": "2015-02-16T10:39:12+0000",
+                    "_etag": "fe53d2142d8ae1bc237591691cbf87ed25a1e572",
+                    "_id": "54e1c8d0102454fcded0f398",
+                    "_updated": "2015-02-16T10:39:32+0000",
+                    "display_name": "Sebastian Horn",
+                    "email": "sebastian.horn@sourcefabric.org",
+                    "first_name": "Sebastian",
+                    "is_active": true,
+                    "is_enabled": true,
+                    "last_name": "Horn",
+                    "needs_activation": false,
+                    "role": null,
+                    "user_type": "administrator",
+                    "username": "herrhorn"
+                }
+
+
+## Users [/blogs/{blog}/users?date_field={date_field}&since={since}&until={until}]
+We need the users from a blog to be rendered on a post/item.
+* experimental get all the users for that blog and render them from that collection.
+* collection get updates if user list or users are changed via de range date field for _updated.
+
++ Parameters
+    + blog (required, string) identification of the blog, just a specific set of users have access over a blog.
+    + date_field (optional, string, `_updated`) user date field where the since and until range will be applied.
+    + since (optional, date) to fetch the updates for user.
+    + until (optional, date) because symmetry.
+
+### View Users list [GET]
++ Response 200 (application/json)
+
+                {
+                    "_items": [{
+                        "_created": "2015-02-16T10:39:12+0000",
+                        "_etag": "fe53d2142d8ae1bc237591691cbf87ed25a1e572",
+                        "_id": "54e1c8d0102454fcded0f398",
+                        "_updated": "2015-02-16T10:39:32+0000",
+                        "display_name": "Sebastian Horn",
+                        "email": "sebastian.horn@sourcefabric.org",
+                        "first_name": "Sebastian",
+                        "is_active": true,
+                        "is_enabled": true,
+                        "last_name": "Horn",
+                        "needs_activation": false,
+                        "role": null,
+                        "user_type": "administrator",
+                        "username": "herrhorn"
+                    }],
+                    "_meta": {
+                        "max_results": 25,
+                        "page": 1,
+                        "total": 3
+                    }
+                }
