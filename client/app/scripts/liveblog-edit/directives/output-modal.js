@@ -6,54 +6,55 @@ import outputModalTpl from 'scripts/liveblog-edit/views/output-modal.html';
  */
 
 export default function outputModal() {
-	return {
-		restrict: 'E',
-		scope: {
-			modalActive: '=',
-			outputs: '=',
-			output: '=',
-			blogId: '@'
-		},
-		templateUrl: outputModalTpl,
-		controllerAs: 'vm',
-		controller: outputModalController,
-		bindToController: true
-	};
+    return {
+        restrict: 'E',
+        scope: {
+            modalActive: '=',
+            outputs: '=',
+            output: '=',
+            blogId: '@'
+        },
+        templateUrl: outputModalTpl,
+        controllerAs: 'vm',
+        controller: outputModalController,
+        bindToController: true
+    };
 }
 
 outputModalController.$inject = ['$rootScope', 'api', 'urls', 'notify', 'modal', 'upload'];
 
 function outputModalController($rootScope, api, urls, notify, modal, upload) {
-	var vm = this;
-	vm.collections = [];
-	vm.readyToSave = false;
-	vm.disableSave = false;
-	vm.imageSaved = false;
-	vm.cancelModal = cancelModal;
-	vm.saveOutput = saveOutput;
-	vm.saveOutputImage = saveOutputImage;
-	vm.removeOutputImage = removeOutputImage;
+    //console.log('utilService ', utilService);
+    var vm = this;
+    vm.collections = [];
+    vm.readyToSave = false;
+    vm.disableSave = false;
+    vm.imageSaved = false;
+    vm.cancelModal = cancelModal;
+    vm.saveOutput = saveOutput;
+    vm.saveOutputImage = saveOutputImage;
+    vm.removeOutputImage = removeOutputImage;
 
-	initialize().then(function() {
-		vm.readyToSave = true;
-	});
+    initialize().then(function() {
+        vm.readyToSave = true;
+    });
 
-	function cancelModal() {
-		vm.modalActive = false;
-		vm.disableSave = false;
-	}
+    function cancelModal() {
+        vm.modalActive = false;
+        vm.disableSave = false;
+    }
 
-	function initialize() {
-		return api('collections').query({where: {deleted: false}}).then(function(data) {
+    function initialize() {
+        return api('collections').query({where: {deleted: false}}).then(function(data) {
             vm.collections = data._items;
         }).catch(function(data) {
             notify.error(gettext('There was an error getting the collections'));
         });
-	}
+    }
 
-	function saveOutput() {
-		var newOutput = {
-            name : vm.output.name,
+    function saveOutput() {
+        var newOutput = {
+            name: vm.output.name,
             blog: vm.blogId,
             collection: vm.output.collection,
             style: vm.output.style
@@ -61,14 +62,14 @@ function outputModalController($rootScope, api, urls, notify, modal, upload) {
         // disable save button
         vm.disableSave = true;
         // if there is a new image uploaded
-		if (vm.output.preview.img) {
-			saveOutputImage().then(function() {
-				newOutput.style['background-image'] = vm.output.style['background-image'];
-				return api('outputs').save(vm.output, newOutput).then(handleSuccessSave, handleErrorSave);
-			})
-		} else {
-			return api('outputs').save(vm.output, newOutput).then(handleSuccessSave, handleErrorSave);
-		}
+        if (vm.output.preview && vm.output.preview.img) {
+            saveOutputImage().then(function() {
+                newOutput.style['background-image'] = vm.output.style['background-image'];
+                return api('outputs').save(vm.output, newOutput).then(handleSuccessSave, handleErrorSave);
+            })
+        } else {
+            return api('outputs').save(vm.output, newOutput).then(handleSuccessSave, handleErrorSave);
+        }
     }
 
     function handleSuccessSave() {
@@ -114,7 +115,7 @@ function outputModalController($rootScope, api, urls, notify, modal, upload) {
             );
         }, (progress) => {
             vm.output.progress = {
-            	width: Math.round(progress.loaded / progress.total * 100.0)
+                width: Math.round(progress.loaded / progress.total * 100.0)
             }
         }));
     }

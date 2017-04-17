@@ -97,9 +97,14 @@ function BlogSettingsController(
             if (!silent) {
                 vm.outputsLoading = true;
             }
-            api('outputs').query({where: {deleted: false}}).then(function(data) {
+            var criteria = {where: JSON.stringify({
+                '$and': [
+                    {deleted: false},
+                    {blog: vm.blog._id}
+                ]
+            })}
+            api('outputs').query(criteria).then(function(data) {
                 vm.outputs = data._items;
-                console.log('outputs ', vm.outputs);
                 if (!silent) {
                     notify.info('Output channels loaded');
                 }
@@ -114,7 +119,7 @@ function BlogSettingsController(
             vm.output = angular.copy(output);
             if (vm.output.style) {
                 vm.output.preview = {
-                    url:  vm.output.style['background-image']
+                    url: vm.output.style['background-image']
                 }
             } else {
                 vm.output.style = {};
@@ -457,8 +462,7 @@ function BlogSettingsController(
         vm.start_time = datetime.time;
     }
 
-    // vm.changeTab('general');
-    vm.changeTab('outputs');
+    vm.changeTab('general');
     vm.blog_switch = vm.newBlog.blog_status === 'open';
     vm.syndication_enabled = vm.newBlog.syndication_enabled;
     vm.market_enabled = vm.newBlog.market_enabled;
