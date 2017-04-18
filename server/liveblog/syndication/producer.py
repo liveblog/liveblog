@@ -7,6 +7,7 @@ from flask import Blueprint, request
 from flask_cors import CORS
 from eve.utils import str_to_date
 from superdesk import get_resource_service
+from flask import current_app as app
 from .exceptions import APIConnectionError, ProducerAPIError
 from .utils import trailing_slash, api_response, api_error, send_api_request, blueprint_superdesk_token_auth
 from .tasks import check_api_status
@@ -65,6 +66,10 @@ producers_schema = {
 
 class ProducerService(BaseService):
     notification_key = 'producers'
+
+    def _cursor(self, resource=None):
+        resource = resource or self.datasource
+        return app.data.mongo.pymongo(resource=resource).db[resource]
 
     def _get_producer(self, producer):
         if isinstance(producer, (str, ObjectId)):
@@ -317,7 +322,7 @@ def producer_check_connection(producer_id):
     producer = producers.find_one(_id=producer_id, req=None)
     if not producer:
         return api_response('invalid_producer_id', 404)
-    check_api_status.delay(producer_id)
+    check_api_status(producer_id)
     return api_response('OK', 200)
 
 
