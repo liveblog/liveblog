@@ -300,6 +300,7 @@ def producer_blogs_syndicate(producer_id, blog_id):
         return _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish, auto_retrieve,
                                                 start_date)
 
+
 @producers_blueprint.route('/api/producers/<producer_id>/check_connection', methods=['GET'])
 def producer_check_connection(producer_id):
     producers = get_resource_service('producers')
