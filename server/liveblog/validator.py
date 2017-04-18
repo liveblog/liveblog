@@ -63,4 +63,4 @@ class LiveblogValidator(SuperdeskValidator):
                 except APIConnectionError:
                     return self._error(field, "Unable to connect to the the given url.")
                 if response.status_code != 200:
-                    return self._error(field, "Unexpected response code {} to the the given url.".format(response.status_code))
+                    return self._error(field, "Unexpected response code {} to url.".format(response.status_code))
