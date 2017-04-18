@@ -115,7 +115,7 @@ def check_api_status(self, producer_id):
             api_status = 'invalid_url'
         else:
             if response.status_code != 200:
-                api_status = 'invalid key'
+                api_status = 'invalid_key'
             else:
                 api_status = 'enabled'
 
