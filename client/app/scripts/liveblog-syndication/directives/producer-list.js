@@ -1,8 +1,8 @@
 import producerListItemTpl from 'scripts/liveblog-syndication/views/producer-list-item.html';
 
-producerList.$inject = ['api', '$http', 'modal', 'config'];
+producerList.$inject = ['api', '$http', 'modal', 'config', 'notify'];
 
-export default function producerList(api, $http, modal, config) {
+export default function producerList(api, $http, modal, config, notify) {
     return {
         templateUrl: producerListItemTpl,
         scope: {
@@ -39,11 +39,35 @@ export default function producerList(api, $http, modal, config) {
                     headers: {
                         'Content-Type': 'application/json;charset=utf-8'
                     }
-                })
-                    .then((result) => {
-                        console.log(result);
-                    });
+                });
             };
+
+            scope.$on('producers', (e, data) => {
+                if (scope.producers
+                && scope.producers.length > 0
+                && data.producer
+                && data.producer.hasOwnProperty('api_status')) {
+                    scope.producers = scope.producers.map((producer) => {
+                        if (producer._id === data.producer._id) {
+                            console.log(data);
+                            producer.api_status = data.producer.api_status;
+
+                            scope.$apply(() => {
+                                notify.pop();
+
+                                if (producer.api_status) {
+                                    notify.success(gettext(`${producer.name} is online`));
+                                } else {
+                                    notify.error(gettext(`${producer.name} is offline`));
+                                }
+                            });
+                        }
+
+                        return producer;
+                    });
+                }
+            });
+
         }
     };
 }
