@@ -8,6 +8,7 @@ from eve.utils import str_to_date
 from superdesk import get_resource_service
 from .exceptions import APIConnectionError, ProducerAPIError
 from .utils import trailing_slash, api_response, api_error, send_api_request, blueprint_superdesk_token_auth
+from .tasks import check_api_status
 
 logger = logging.getLogger('superdesk')
 producers_blueprint = Blueprint('producers', __name__)
@@ -53,6 +54,10 @@ producers_schema = {
     'consumer_api_key': {
         'type': 'string',
         'required': True
+    },
+    'api_status': {
+        'allowed': ['enabled', 'invalid_key', 'invalid_url'],
+        'default': 'enabled'
     }
 }
 
@@ -125,11 +130,15 @@ class ProducerService(BaseService):
                 doc['api_url'] = trailing_slash(doc['api_url'])
         super().on_create(docs)
 
+    def on_created(self, docs):
+        for doc in docs:
+            check_api_status.delay(doc['_id'])
+
     def on_update(self, updates, original):
         if 'api_url' in updates:
             updates['api_url'] = trailing_slash(updates['api_url'])
         super().on_update(updates, original)
-
+        check_api_status.delay(original['_id'])
 
 class ProducerResource(Resource):
     datasource = {
@@ -304,15 +313,11 @@ def producer_blogs_syndicate(producer_id, blog_id):
 @producers_blueprint.route('/api/producers/<producer_id>/check_connection', methods=['GET'])
 def producer_check_connection(producer_id):
     producers = get_resource_service('producers')
-    try:
-        response = producers.get_blogs(producer_id, json_loads=False)
-    except ProducerAPIError:
-        return api_response('invalid url', 200)
-
-    if response.status_code != 200:
-        return api_response('invalid key', 200)
-    else:
-        return api_response('valid', 200)
+    producer = producers.find_one(_id=producer_id, req=None)
+    if not producer:
+        return api_response('invalid_producer_id', 404)
+    check_api_status.delay(producer_id)
+    return api_response('OK', 200)
 
 
 producers_blueprint.before_request(blueprint_superdesk_token_auth)

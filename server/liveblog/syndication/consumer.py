@@ -154,15 +154,8 @@ def consumer_check_connection(consumer_id):
     consumer = consumers.find_one(_id=consumer_id, req=None)
     if not consumer:
         return api_response('invalid consumer id', 404)
-    try:
-        response = consumers.send_webhook_request(consumer_id)
-    except ConsumerAPIError:
-        return api_response('invalid webhook url', 200)
-
-    if response.status_code != 200:
-        return api_response('invalid with und')
-    else:
-        return api_response('valid', 200)
+    check_webhook_status.delay(consumer_id)
+    return api_response('OK', 200)
 
 
 consumers_blueprint.before_request(blueprint_superdesk_token_auth)
