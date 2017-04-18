@@ -19,7 +19,7 @@
         {% endif %}
     </head>
 
-    <body style="{{ output.get('style') | tostyle | safe }}">
+    <body style="{{ (output and output.get('style')) | tostyle | safe }}">
 
         {{ template | safe }}
 
