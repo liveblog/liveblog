@@ -56,20 +56,11 @@ class LiveblogValidator(SuperdeskValidator):
                 if not api_key:
                     return self._error(field, "Unable to find '{}' for the given resource url.".format(key_field))
 
-                if chech_auth_enabled:
-                    api_url = value if webhook else urllib.parse.urljoin(value, 'syndication/blogs')
-                    try:
-                        response = send_api_request(api_url, api_key, json_loads=False, timeout=5)
-                    except APIConnectionError:
-                        return self._error(field, "Unable to connect to the the given url.")
-                    if response.status_code != 200:
-                        return self._error(field, "Unable to authenticate to the the given url.")
-
-            # for validating webhook, no authorization required
-            else:
+            if chech_auth_enabled:
+                api_url = value if webhook else urllib.parse.urljoin(value, 'syndication/blogs')
                 try:
-                    response = send_api_request(value, None)
+                    response = send_api_request(api_url, api_key, json_loads=False, timeout=5)
                 except APIConnectionError:
                     return self._error(field, "Unable to connect to the the given url.")
                 if response.status_code != 200:
-                    return self._error(field, "Unexpected response to the the given url.")
+                    return self._error(field, "Unexpected response code {} to the the given url.".format(response.status_code))
