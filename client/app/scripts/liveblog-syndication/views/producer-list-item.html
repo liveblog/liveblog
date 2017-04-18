@@ -12,7 +12,10 @@
 
     <div class="row-wrapper four-col" sd-col-width>
         <div class="name">{{ producer.name }}</div>
-        <div class="email">{{ producer.api_url }}</div>
+        <div class="email">
+            <span>{{ producer.api_url }}</span>
+            <button ng-click="checkOnlineStatus($event, producer)">Check</button>
+        </div>
         <div class="username">{{ producer.consumer_api_key }}</div>
         <div lb-first-contact prosumer="producer"></div>
     </div>
