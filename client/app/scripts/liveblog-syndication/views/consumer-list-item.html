@@ -21,15 +21,22 @@
                 class="icon-ok webhook-status on"
                 title="Webhook URL up & running"
                 ng-show="consumer.webhook_enabled"></i>
+            <a
+                title="Check API status"
+                ng-href=""
+                ng-click="checkOnlineStatus($event, consumer)">
+                <i class="icon-refresh true"></i>
+            </a>
             <span>{{ consumer.webhook_url }}</span>
         </div>
         <div class="name api-key">
             <span id="api-key-{{$index}}">{{ consumer.api_key }}</span>
             <span>
-                <a title="Refresh api key"
-                   ng-href=""
-                   ng-click="updateApiKey($event, consumer)"
-                   class="ng-scope refresh-api-key">
+                <a
+                    title="Refresh api key"
+                    ng-href=""
+                    ng-click="updateApiKey($event, consumer)"
+                    class="ng-scope refresh-api-key">
                     <i class="icon-refresh true"></i>
                 </a>
             </span>
