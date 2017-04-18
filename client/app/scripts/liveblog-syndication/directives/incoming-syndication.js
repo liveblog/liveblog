@@ -61,7 +61,8 @@ export default function incomingSyndication(
             // On incoming post, we reload all the posts.
             // Not very fast, but easy to setup
             scope.$on('posts', (e, data) => {
-                if (data.posts[0].syndication_in) {
+                if (data.hasOwnProperty('deleted') && data.deleted === true
+                || data.posts && data.posts[0].syndication_in) {
                     IncomingSyndicationActions
                         .getPosts(scope.blogId, scope.syndId);
                 }
