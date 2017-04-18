@@ -72,7 +72,8 @@ function outputModalController($rootScope, api, urls, notify, modal, upload) {
                 .then(handleSuccessSave, handleErrorSave);
             })
         } else {
-            return api('outputs').save(vm.output, newOutput).then(handleSuccessSave, handleErrorSave);
+            return api('outputs').save(vm.output, newOutput)
+            .then(handleSuccessSave, handleErrorSave);
         }
     }
 

@@ -133,7 +133,8 @@ upload, $templateCache, freetypeService, modal) {
                 notify.info(gettext('Collections loaded'));
             }
             $scope.collectionsLoading = false;
-        }).catch(function(data) {
+        })
+        .catch(function(data) {
             $scope.collectionsLoading = false;
             notify.error(gettext('There was an error getting the adverts'));
         })
@@ -201,7 +202,8 @@ upload, $templateCache, freetypeService, modal) {
     $scope.removeCollection = function (collection, $index) {
         modal.confirm(gettext('Are you sure you want to remove this collection?'))
         .then(function() {
-            api('collections').save(collection, {deleted: true}).then(function(data) {
+            api('collections').save(collection, {deleted: true})
+            .then(function(data) {
                 $scope.collections.splice($index, 1);
             }, function(data) {
                 notify.error(gettext('Can\'t remove collection'));

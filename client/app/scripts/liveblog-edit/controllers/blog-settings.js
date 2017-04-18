@@ -130,7 +130,8 @@ function BlogSettingsController(
         removeOutput: function (output, $index) {
             modal.confirm(gettext('Are you sure you want to remove this output chanell?'))
             .then(function() {
-                api('outputs').save(output, {deleted: true}).then(function(data) {
+                api('outputs').save(output, {deleted: true})
+                .then(function(data) {
                     vm.outputs.splice($index, 1);
                 }, function(data) {
                     notify.error(gettext('Can\'t remove output'));
