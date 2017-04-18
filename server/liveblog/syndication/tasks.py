@@ -123,5 +123,5 @@ def check_api_status(self, producer_id):
     cursor.find_one_and_update({'_id': producer['_id']}, {'$set': {'api_status': api_status}})
     push_notification(producers.notification_key, producer={
         '_id': producer['_id'],
-        'api_status': api_status
+        'api_status': 'enabled'#api_status
     }, updated=True)

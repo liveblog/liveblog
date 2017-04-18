@@ -154,7 +154,7 @@ def consumer_check_connection(consumer_id):
     consumer = consumers.find_one(_id=consumer_id, req=None)
     if not consumer:
         return api_response('invalid consumer id', 404)
-    check_webhook_status.delay(consumer_id)
+    check_webhook_status(consumer_id)
     return api_response('OK', 200)
 
 
