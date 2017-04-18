@@ -106,7 +106,7 @@ def check_webhook_status(self, consumer_id):
 @celery.task(bind=True)
 def check_api_status(self, producer_id):
     producers = get_resource_service('producers')
-    producer = producers._get_consumer(producer_id) or {}
+    producer = producers._get_producer(producer_id) or {}
     if 'api_url' in producer:
         try:
             response = producers.get_blogs(producer_id, json_loads=False)
