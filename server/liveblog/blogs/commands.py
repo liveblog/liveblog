@@ -20,7 +20,7 @@ class PublishBlogsCommand(superdesk.Command):
             for output in outputs:
                 if output['blog'] == blog['_id']:
                     url = publish_blog_embeds_on_s3(blog_id=str(blog['_id']), output=output, safe=False)
-                    print('  - Blog "%s" output "%s" republished: %s' % (blog['title'], output['name'],url))
+                    print('  - Blog "%s" output "%s" republished: %s' % (blog['title'], output['name'], url))
             url = publish_blog_embeds_on_s3(blog_id=str(blog['_id']), safe=False)
             print('  - Blog "%s" republished: %s' % (blog['title'], url))
 
