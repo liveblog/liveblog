@@ -12,8 +12,8 @@ def check_media_storage():
 
 def get_blog_path(blog_id, theme=None, output_id=None):
     return 'blogs/{}/{}{}index.html'.format(blog_id,
-                        '{}/'.format(theme) if theme else '',
-                        '{}/'.format(output_id) if output_id else '')
+                                            '{}/'.format(theme) if theme else '',
+                                            '{}/'.format(output_id) if output_id else '')
 
 
 def get_bloglist_path():

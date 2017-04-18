@@ -9,7 +9,8 @@
 # at https://www.sourcefabric.org/superdesk/license
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from liveblog.blogs.tasks import delete_blog_embed_on_s3, publish_blog_embed_on_s3
+from liveblog.blogs.tasks import delete_blog_embeds_on_s3, publish_blog_embed_on_s3
+
 
 class OutputsResource(Resource):
     schema = {
@@ -61,6 +62,6 @@ class OutputsService(BaseService):
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
         if updates.get('deleted', False):
-            delete_blog_embed_on_s3(original.get('blog'), output=original)
+            delete_blog_embeds_on_s3(original.get('blog'), output=original)
         else:
             publish_blog_embed_on_s3(original.get('blog'), output=original)
