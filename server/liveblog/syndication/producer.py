@@ -1,4 +1,5 @@
 import logging
+from bson import ObjectId
 from urllib.parse import urljoin
 from superdesk.resource import Resource
 from superdesk.services import BaseService
@@ -66,7 +67,7 @@ class ProducerService(BaseService):
     notification_key = 'producers'
 
     def _get_producer(self, producer):
-        if isinstance(producer, str):
+        if isinstance(producer, (str, ObjectId)):
             producer = self.find_one(_id=producer, req=None)
         return producer
 

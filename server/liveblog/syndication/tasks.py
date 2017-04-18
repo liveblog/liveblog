@@ -1,5 +1,6 @@
 import logging
 
+from urllib.parse import urljoin
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
 from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
@@ -107,9 +108,9 @@ def check_webhook_status(self, consumer_id):
 def check_api_status(self, producer_id):
     producers = get_resource_service('producers')
     producer = producers._get_producer(producer_id) or {}
-    if 'api_url' in producer:
+    if 'consumer_api_key' in producer:
         try:
-            response = producers.get_blogs(producer_id, json_loads=False)
+            response = producers._send_api_request(producer_id, 'syndication/blogs', method='GET', json_loads=False)
         except ProducerAPIError:
             api_status = 'invalid_url'
         else:
@@ -118,9 +119,9 @@ def check_api_status(self, producer_id):
             else:
                 api_status = 'enabled'
 
-        cursor = producers._cursor()
-        cursor.find_one_and_update({'_id': producer['_id']}, {'$set': {'api_status': api_status}})
-        push_notification(producers.notification_key, producer={
-            '_id': producer['_id'],
-            'api_status': api_status
-        }, updated=True)
+    cursor = producers._cursor()
+    cursor.find_one_and_update({'_id': producer['_id']}, {'$set': {'api_status': api_status}})
+    push_notification(producers.notification_key, producer={
+        '_id': producer['_id'],
+        'api_status': api_status
+    }, updated=True)
