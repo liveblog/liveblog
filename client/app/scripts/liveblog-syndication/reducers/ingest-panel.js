@@ -102,16 +102,6 @@ export default function ingestPanelReducers(moment) {
         case 'ON_SET_UNREAD_QUEUE':
             return angular.extend(state, {
                 unreadQueue: action.unreadQueue
-                //locallySyndicatedItems: state.locallySyndicatedItems.map((blog) => {
-                //    // Set unread (pending notifications) value for each
-                //    action.unreadQueue.forEach((element) => {
-                //        if (blog._id === element.syndication_in) {
-                //            blog.unread++;
-                //        }
-                //    });
-
-                //    return blog;
-                //})
             });
         }
     };
