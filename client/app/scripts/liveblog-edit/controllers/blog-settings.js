@@ -103,7 +103,8 @@ function BlogSettingsController(
                     {blog: vm.blog._id}
                 ]
             })}
-            api('outputs').query(criteria).then(function(data) {
+            api('outputs').query(criteria)
+            .then(function(data) {
                 vm.outputs = data._items;
                 if (!silent) {
                     notify.info('Output channels loaded');
@@ -127,7 +128,8 @@ function BlogSettingsController(
             vm.outputModalActive = true;
         },
         removeOutput: function (output, $index) {
-            modal.confirm(gettext('Are you sure you want to remove this output chanell?')).then(function() {
+            modal.confirm(gettext('Are you sure you want to remove this output chanell?'))
+            .then(function() {
                 api('outputs').save(output, {deleted: true}).then(function(data) {
                     vm.outputs.splice($index, 1);
                 }, function(data) {

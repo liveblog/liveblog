@@ -45,9 +45,11 @@ function outputModalController($rootScope, api, urls, notify, modal, upload) {
     }
 
     function initialize() {
-        return api('collections').query({where: {deleted: false}}).then(function(data) {
+        return api('collections').query({where: {deleted: false}})
+        .then(function(data) {
             vm.collections = data._items;
-        }).catch(function(data) {
+        })
+        .catch(function(data) {
             notify.error(gettext('There was an error getting the collections'));
         });
     }
@@ -63,9 +65,11 @@ function outputModalController($rootScope, api, urls, notify, modal, upload) {
         vm.disableSave = true;
         // if there is a new image uploaded
         if (vm.output.preview && vm.output.preview.img) {
-            saveOutputImage().then(function() {
+            saveOutputImage()
+            .then(function() {
                 newOutput.style['background-image'] = vm.output.style['background-image'];
-                return api('outputs').save(vm.output, newOutput).then(handleSuccessSave, handleErrorSave);
+                return api('outputs').save(vm.output, newOutput)
+                .then(handleSuccessSave, handleErrorSave);
             })
         } else {
             return api('outputs').save(vm.output, newOutput).then(handleSuccessSave, handleErrorSave);
