@@ -9,17 +9,21 @@
 # at https://www.sourcefabric.org/superdesk/license
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-
+from liveblog.blogs.tasks import delete_blog_embed_on_s3, publish_blog_embed_on_s3
 
 class OutputsResource(Resource):
     schema = {
         'name': {
             'type': 'string',
+            'required': True,
             'unique': True
         },
         'collection': Resource.rel('collections', True),
         'blog': Resource.rel('blogs'),
-        'theme': Resource.rel('themes'),
+        'theme': {
+            'type': 'string',
+            'nullable': True
+        },
         'style': {
             'type': 'dict',
             'schema': {
@@ -49,9 +53,14 @@ class OutputsResource(Resource):
 
 
 class OutputsService(BaseService):
+    def on_created(self, outputs):
+        for output in outputs:
+            if output.get('blog'):
+                publish_blog_embed_on_s3(output.get('blog'), output=output)
+
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
-
-        # @TODO: deletes s3 blog
         if updates.get('deleted', False):
-            pass
+            delete_blog_embed_on_s3(original.get('blog'), output=original)
+        else:
+            publish_blog_embed_on_s3(original.get('blog'), output=original)

@@ -85,22 +85,24 @@ def render_bloglist_embed(api_host=None, assets_root=None):
     return render_template('blog-list-embed.html', **scope)
 
 
-@embed_blueprint.route('/embed/<blog_id>', defaults={'theme': None, 'output_id': None})
-@embed_blueprint.route('/embed/<blog_id>/<theme>', defaults={'output_id': None})
-@embed_blueprint.route('/embed/<blog_id>/<theme>/<output_id>')
-def embed(blog_id, theme=None, output_id=None, api_host=None):
+@embed_blueprint.route('/embed/<blog_id>', defaults={'theme': None, 'output': None})
+@embed_blueprint.route('/embed/<blog_id>/<theme>', defaults={'output': None})
+@embed_blueprint.route('/embed/<blog_id>/<theme>/<output>')
+def embed(blog_id, theme=None, output=None, api_host=None):
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if not blog:
         return 'blog not found', 404
 
+    # if the `output` is the `_id` get the data.
+    if output and isinstance(output, str):
+        output = get_resource_service('outputs').find_one(req=None, _id=output)
+        if not output:
+            return 'output not found', 404
+
     # Retrieve picture url from relationship.
     if blog.get('picture', None):
         blog['picture'] = get_resource_service('archive').find_one(req=None, _id=blog['picture'])
-
-    output = {}
-    if output_id:
-        output = get_resource_service('outputs').find_one(req=None, _id=output_id)
 
     # Retrieve the wanted theme and add it to blog['theme'] if is not the registered one.
     try:
