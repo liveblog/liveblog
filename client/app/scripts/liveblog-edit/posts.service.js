@@ -42,6 +42,7 @@ export default function postsService(api, $q, userList) {
             page: page,
             max_results: max_results
         };
+
         // filters.excludeDeleted
         if (filters.excludeDeleted) {
             posts_criteria.source.query.filtered.filter.and.push({not: {term: {deleted: true}}});
@@ -50,11 +51,13 @@ export default function postsService(api, $q, userList) {
         if (angular.isDefined(filters.sort)) {
             // this converts the format '-_created' to the elasticsearch one
             var order = 'asc';
+
             if (filters.sort.charAt(0) === '-') {
                 filters.sort = filters.sort.slice(1);
                 order = 'desc';
             }
             var sort = {};
+
             sort[filters.sort] = {order: order, missing: '_last', unmapped_type: 'long'};
             posts_criteria.source.sort = [sort];
         }
@@ -104,7 +107,7 @@ export default function postsService(api, $q, userList) {
 
         if (angular.isDefined(filters.noSyndication)) {
             posts_criteria.source.query.filtered.filter.and.push({
-                missing: { field: 'syndication_in' }
+                missing: {field: 'syndication_in'}
             });
         }
 
@@ -115,7 +118,10 @@ export default function postsService(api, $q, userList) {
         if (obj.commenter) {
             obj.user = {display_name: obj.commenter};
         } else {
-            userList.getUser(obj.original_creator).then(function(user) {
+            // TODO: way too many requests in there
+            // This getUser func is returning a list of users,
+            // who would have thought?
+            userList.getUser(obj.original_creator).then((user) => {
                 obj.user = user;
             });
         }
@@ -153,35 +159,6 @@ export default function postsService(api, $q, userList) {
             _completeUser(post.mainItem.item);
 
             resolve(post);
-            //if (post.syndication_in && api.hasOwnProperty('syndicationIn')) {
-            //    let isProducerCached = false;
-
-            //    if (producersList.length > 0) {
-            //        producersList.forEach((producer) => {
-            //            if (post.syndication_in === producer.syndId) {
-            //                post.producer_blog_title = producer.blogTitle;
-            //                resolve(post);
-            //                isProducerCached = true;
-            //            }
-            //        });
-            //    }
-
-            //    if (!isProducerCached) {
-            //        api.syndicationIn.getById(post.syndication_in).then((synd) => {
-            //            producersList.push({
-            //                syndId: post.syndication_in,
-            //                blogTitle: synd.producer_blog_title
-            //            });
-
-            //            post.producer_blog_title = synd.producer_blog_title;
-            //            resolve(post);
-            //        }, () => {
-            //            resolve(post);
-            //        });
-            //    }
-            //} else {
-            //    resolve(post);
-            //}
         });
     }
 
@@ -239,7 +216,8 @@ export default function postsService(api, $q, userList) {
             return;
         }
         var latest_date, date;
-        posts.forEach(function (post) {
+
+        posts.forEach((post) => {
             date = moment(post._updated);
             if (angular.isDefined(latest_date)) {
                 if (latest_date.diff(date) < 0) {
@@ -320,6 +298,7 @@ export default function postsService(api, $q, userList) {
 
     function removePost(post) {
         var deleted = {deleted: true};
+
         return savePost(post.blog, post, [], deleted);
     }
 
