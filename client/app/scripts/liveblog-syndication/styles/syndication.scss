@@ -213,6 +213,10 @@ i.webhook-status.off {
     color: $red;
 }
 
+i.webhook-status.warn {
+    color: $orange;
+}
+
 i.webhook-status.on {
     color: $green;
 }
