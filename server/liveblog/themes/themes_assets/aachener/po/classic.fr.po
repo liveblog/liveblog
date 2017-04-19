@@ -1,0 +1,116 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Classic Theme\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: comments.html:38
+msgid "Cancel"
+msgstr "Annuler"
+
+#: template.html:42
+msgid "Comment"
+msgstr "Commentaire"
+
+#: comments.html:28
+msgid "Comment *"
+msgstr "Commentaire *"
+
+#: comments.html:32
+msgid "Comment should be maximum 300 characters in length."
+msgstr "Un commentaire ne peut excéder 300 signes"
+
+#: main.js:49 template.html:13
+msgid "Editorial"
+msgstr "Éditorial"
+
+#: template.html:96
+msgid "Load more posts"
+msgstr "Afficher plus de messages"
+
+#: template.html:99
+msgid "Loading"
+msgstr "Chargement"
+
+#: comments.html:20
+msgid "Name *"
+msgstr "Nom *"
+
+#: comments.html:24
+msgid "Name should be maximum 30 characters in length."
+msgstr "Le nom ne peut excéder 30 signes"
+
+#: main.js:52 template.html:17
+msgid "Newest first"
+msgstr "Le plus récent d'abord"
+
+#: template.html:59
+#, fuzzy
+msgid "No posts for now."
+msgstr "Aucun message pour le moment."
+
+#: main.js:55 template.html:21
+msgid "Oldest first"
+msgstr "Plus ancien en premier"
+
+#: template.html:83
+#, fuzzy
+msgid "One pinned post"
+msgid_plural "{{$count}} pined posts"
+msgstr[0] "Voir le nouveau message"
+msgstr[1] "Voir {{$count}} nouveaux messages"
+
+#: comments.html:31
+msgid "Please fill in your Comment."
+msgstr "Votre commentaire."
+
+#: comments.html:23
+msgid "Please fill in your Name."
+msgstr "Votre nom."
+
+#: comments.html:15
+msgid "Post a comment"
+msgstr "Envoyer un commentaire"
+
+#: template.html:67
+#, fuzzy
+msgid "See one new update"
+msgid_plural "See {{$count}} new updates"
+msgstr[0] "Voir le nouveau message"
+msgstr[1] "Voir {{$count}} nouveaux messages"
+
+#: comments.html:39
+msgid "Send"
+msgstr "Envoyer"
+
+#: template.html:38
+msgid "Show all posts"
+msgstr ""
+
+#: template.html:37
+msgid "Show highlighted post only"
+msgstr ""
+
+#: template.html:11 template.html:27
+msgid "Sort by:"
+msgstr "Trier par:"
+
+#: posts.html:27
+msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
+msgstr ""
+
+#: comments.html:7
+msgid "Your comment was sent for approval."
+msgstr "Votre commentaire a été envoyé et est en attente de validation."
+
+#: item.html:13
+msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
+msgstr ""
