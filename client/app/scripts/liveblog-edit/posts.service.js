@@ -18,6 +18,7 @@ postsService.$inject = [
 ];
 
 export default function postsService(api, $q, userList) {
+    let producersList = [];
     /**
      * Fetch a page of posts
      * @param {string} blog_id - The id of the blog
@@ -151,16 +152,36 @@ export default function postsService(api, $q, userList) {
             });
             _completeUser(post.mainItem.item);
 
-            if (post.syndication_in && api.hasOwnProperty('syndicationIn')) {
-                api.syndicationIn.getById(post.syndication_in).then(function(synd) {
-                    post.producer_blog_title = synd.producer_blog_title;
-                    resolve(post);
-                }, function() {
-                    resolve(post);
-                });
-            } else {
-                resolve(post)
-            }
+            resolve(post);
+            //if (post.syndication_in && api.hasOwnProperty('syndicationIn')) {
+            //    let isProducerCached = false;
+
+            //    if (producersList.length > 0) {
+            //        producersList.forEach((producer) => {
+            //            if (post.syndication_in === producer.syndId) {
+            //                post.producer_blog_title = producer.blogTitle;
+            //                resolve(post);
+            //                isProducerCached = true;
+            //            }
+            //        });
+            //    }
+
+            //    if (!isProducerCached) {
+            //        api.syndicationIn.getById(post.syndication_in).then((synd) => {
+            //            producersList.push({
+            //                syndId: post.syndication_in,
+            //                blogTitle: synd.producer_blog_title
+            //            });
+
+            //            post.producer_blog_title = synd.producer_blog_title;
+            //            resolve(post);
+            //        }, () => {
+            //            resolve(post);
+            //        });
+            //    }
+            //} else {
+            //    resolve(post);
+            //}
         });
     }
 
@@ -172,9 +193,39 @@ export default function postsService(api, $q, userList) {
             });
     }
 
+    function retrieveSyndications(posts) {
+        let syndIds = [];
+
+        // This means the syndication module is not enabled
+        if (!api.hasOwnProperty('syndicationIn')) {
+            return posts;
+        }
+
+        posts._items.forEach((post) => {
+            if (post.syndication_in && syndIds.indexOf(post.syndication_in) === -1) {
+                syndIds.push(post.syndication_in);
+            }
+        });
+
+        return $q
+            .all(syndIds.map((syndId) => api.syndicationIn.getById(syndId)))
+            .then((syndList) => angular.extend(posts, {
+                _items: posts._items.map((post) => {
+                    syndList.forEach((synd) => {
+                        if (post.syndication_in === synd._id) {
+                            post.producer_blog_title = synd.producer_blog_title;
+                        }
+                    });
+
+                    return post;
+                })
+            }));
+    }
+
     function retrievePosts(blog_id, posts_criteria) {
         return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
             .query(posts_criteria)
+            .then(retrieveSyndications)
             .then(function(data) {
                 return $q.all(data._items.map(_completePost))
                     .then(function(result) {
