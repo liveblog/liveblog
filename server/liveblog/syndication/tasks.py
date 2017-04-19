@@ -1,6 +1,5 @@
 import logging
 
-from urllib.parse import urljoin
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
 from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
