@@ -286,8 +286,9 @@ class ThemesService(BaseService):
                 # for which we modify the settings, we redeploy the blog on s3
                 for child in theme_children:
                     if blog_pref['theme'] == child:
-                        if output.get('blog') == blog.get('_id'):
-                            publish_blog_embed_on_s3.delay(str(blog['_id']), output=output)
+                        for output in outputs:
+                            if output.get('blog') == blog.get('_id'):
+                                publish_blog_embed_on_s3.delay(str(blog['_id']), output=output)
                         publish_blog_embed_on_s3.delay(str(blog['_id']))
                         break
         return blogs
