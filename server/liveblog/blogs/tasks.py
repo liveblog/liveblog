@@ -25,7 +25,7 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
     # Get html using embed() blueprint.
     html = embed(blog_id, theme, output, api_host)
     check_media_storage()
-    file_path = get_blog_path(blog_id, theme, output)
+    file_path = get_blog_path(blog_id, theme, output['_id'])
     # Remove existing file.
     app.media.delete(app.media.media_id(file_path, version=False))
     logger.warning('Embed file "{}" for blog "{}" removed from s3'.format(file_path, blog_id))
