@@ -49,16 +49,17 @@ export default function producerList(api, $http, modal, config, notify) {
                 && data.producer.hasOwnProperty('api_status')) {
                     scope.producers = scope.producers.map((producer) => {
                         if (producer._id === data.producer._id) {
-                            console.log(data);
                             producer.api_status = data.producer.api_status;
 
                             scope.$apply(() => {
                                 notify.pop();
 
-                                if (producer.api_status) {
+                                if (producer.api_status === 'enabled') {
                                     notify.success(gettext(`${producer.name} is online`));
+                                } else if (producer.api_status === 'invalid_key') {
+                                    notify.warning(gettext(`${producer.name} key is invalid`));
                                 } else {
-                                    notify.error(gettext(`${producer.name} is offline`));
+                                    notify.error(gettext(`${producer.name} is not reachable`));
                                 }
                             });
                         }
@@ -67,7 +68,6 @@ export default function producerList(api, $http, modal, config, notify) {
                     });
                 }
             });
-
         }
     };
 }
