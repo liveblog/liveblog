@@ -31,6 +31,9 @@
                 <li ng-class="{active: (settings.tab === 'team')}" data="blog-settings-team">
                     <a ng-href="" ng-click="settings.changeTab('team')" translate>Team</a>
                 </li>
+                <li ng-class="{active: (settings.tab === 'outputs')}" ">
+                    <a ng-href="" ng-click="settings.changeTab('outputs')" translate>Output Channels</a>
+                </li>
             </ul>
             <div>
                 <!-- GENERAL -->
@@ -348,7 +351,55 @@
                         </div>
                     </div>
                 </div>
+
+
+                <!-- Output channels -->
+                <div class="split-content tab-content outer outputs" ng-if="(settings.tab === 'outputs')">
+                    <div class="header">
+                        <h2 translate>Output channels</h2>
+                        <div class="dropdown navbtn strict add-new-div" title="{{ :: 'Create' | translate }}" dropdown>
+                            <button class="dropdown__toggle sd-create-btn" ng-click="settings.openOutputDialog();"></button>
+                        </div>
+                    </div>
+                     <div class="content">
+                        <div class="settings-subsection">
+                            <!-- OUTPUTS LIST VIEW -->
+                            <div class="outputs-list-holder">
+                                <div class="shadow-list-holder" sd-shadow>
+                                    <ul class="pills-list">
+                                        <li ng-repeat="output in settings.outputs">
+                                            <h6 class="pull-left">
+                                                {{ output.name }}
+                                            </h6>
+                                            
+                                            <div class="actions">
+                                                <button ng-click="settings.openOutputDialog(output);" title="Edit">
+                                                    <i class="icon-pencil"></i>
+                                                </button>&nbsp;
+                                                <button ng-click="settings.removeOutput(output, $index);" title="Delete">
+                                                    <i class="icon-trash"></i>
+                                                </button>    
+                                            </div>
+                                     
+                                        </li>
+                                        <li ng-if="settings.outputs.length === 0">
+                                            {{ 'No outputs for now' | translate }}
+                                        </li>
+                                    </ul>    
+                                </div>
+                            </div>    
+                        </div>
+                    </div>
+                </div>
+
+                <div ng-if="settings.outputsLoading" class="loading-indicator" style="margin-top: 170px;"><span translate>Output channels loading...</span></div>
             </div>
         </div>
     </div>
 </div>
+<!-- MODAL FOR ADDING EDITING OUTPUTS -->
+<output-modal
+    modal-active="settings.outputModalActive"
+    output="settings.output"
+    blog-id="{{ settings.blog._id }}"
+></output-modal>

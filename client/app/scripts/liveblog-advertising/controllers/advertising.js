@@ -68,7 +68,8 @@ upload, $templateCache, freetypeService, modal) {
     function loadAdverts(silent) {
         silent = silent || false;
         !silent ? $scope.advertsLoading = true : $scope.advertsLoading = false;
-        return api('advertisements').query({where: {deleted: false}}).then(function(data) {
+        return api('advertisements').query({where: {deleted: false}})
+        .then(function(data) {
             $scope.adverts = data._items;
             if (!silent) {
                 notify.info('Adverts loaded');
@@ -94,7 +95,8 @@ upload, $templateCache, freetypeService, modal) {
 
     $scope.removeAdvert = function (advert, $index) {
         modal.confirm(gettext('Are you sure you want to remove this advert?')).then(function() {
-            api('advertisements').save(advert, {deleted: true}).then(function(data) {
+            api('advertisements').save(advert, {deleted: true})
+            .then(function(data) {
                 $scope.adverts.splice($index, 1);
             }, function(data) {
                 notify.error(gettext('Can\'t remove advert'));
@@ -124,13 +126,15 @@ upload, $templateCache, freetypeService, modal) {
         if (!silent) {
             $scope.collectionsLoading = true;
         }
-        return api('collections').query({where: {deleted: false}}).then(function(data) {
+        return api('collections').query({where: {deleted: false}})
+        .then(function(data) {
             $scope.collections = data._items;
             if (!silent) {
                 notify.info(gettext('Collections loaded'));
             }
             $scope.collectionsLoading = false;
-        }).catch(function(data) {
+        })
+        .catch(function(data) {
             $scope.collectionsLoading = false;
             notify.error(gettext('There was an error getting the adverts'));
         })
@@ -196,8 +200,10 @@ upload, $templateCache, freetypeService, modal) {
     }
 
     $scope.removeCollection = function (collection, $index) {
-        modal.confirm(gettext('Are you sure you want to remove this collection?')).then(function() {
-            api('collections').save(collection, {deleted: true}).then(function(data) {
+        modal.confirm(gettext('Are you sure you want to remove this collection?'))
+        .then(function() {
+            api('collections').save(collection, {deleted: true})
+            .then(function(data) {
                 $scope.collections.splice($index, 1);
             }, function(data) {
                 notify.error(gettext('Can\'t remove collection'));
