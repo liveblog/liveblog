@@ -276,7 +276,7 @@ class ThemesService(BaseService):
         theme_children = self.get_children(theme.get('name'))
         for blog in blogs:
             blog_pref = blog.get('blog_preferences')
-            if blog_pref['theme'] == theme['name']:
+            if blog_pref.get('theme') == theme['name']:
                 for output in outputs:
                     if output.get('blog') == blog.get('_id'):
                         publish_blog_embed_on_s3.delay(str(blog['_id']), output=output)
