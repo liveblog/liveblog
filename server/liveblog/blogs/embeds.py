@@ -116,10 +116,6 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         raise SuperdeskApiError.badRequestError(
             message='You will be able to access the embed after you register the themes')
 
-    # If a theme is provided, overwrite the default theme.
-    if theme_name:
-        theme_package = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
-        theme = json.loads(open(theme_package).read())
 
     try:
         assets, template_file = collect_theme_assets(theme)
