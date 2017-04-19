@@ -146,6 +146,7 @@ class ProducerService(BaseService):
         super().on_update(updates, original)
         check_api_status.delay(original['_id'])
 
+
 class ProducerResource(Resource):
     datasource = {
         'source': 'producers',
