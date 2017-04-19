@@ -45,27 +45,6 @@ upload, $templateCache, freetypeService, modal) {
         }
     }
 
-    $scope.output = function() {
-        // api('themes')
-        //     .query()
-        //     .then((data) => {
-        //         console.log(data._items);
-        //     });
-        // api('outputs').save({
-        //     name: 'where',
-        //     theme: '58ee15248c1ff566dbe0fb01',
-        //     blog: '58ee15678c1ff5637e82e650',
-        //     style: {
-        //         'background-color': '#ff0000'
-        //     }   
-        // })
-        api('outputs')
-            .query({where: {deleted: false}})
-            .then((data) => {
-                console.log(data._items)
-            });
-    }
-
     $scope.openAdvertDialog = function(ad) {
         if (ad._id) {
             // editing advert
