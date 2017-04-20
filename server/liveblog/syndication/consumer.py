@@ -79,7 +79,7 @@ class ConsumerService(BaseService):
             consumer = self.find_one(_id=consumer, req=None)
         return consumer
 
-    def send_webhook_request(self, consumer_id, consumer_blog_token=None, method='GET', data=None, json_loads=True,
+    def _send_webhook_request(self, consumer_id, consumer_blog_token=None, method='GET', data=None, json_loads=True,
                              timeout=5):
         consumer = self._get_consumer(consumer_id)
         if not consumer:
