@@ -168,6 +168,7 @@ class BlogService(BaseService):
     def on_updated(self, updates, original):
         original_id = str(original['_id'])
         publish_blog_embeds_on_s3.delay(original_id)
+        publish_blog_embeds_on_s3.delay(blog_id=original_id)
         # Invalidate cache for updated blog.
         app.blog_cache.invalidate(original_id)
         # Send notifications,

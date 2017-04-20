@@ -129,7 +129,7 @@ def publish_blog_embed_on_s3(self, blog_id, theme=None, output=None, safe=True):
     finally:
         logger.warning('publish_blog_on_s3 for blog "{}" finished.'.format(blog_id))
 
-
+@celery.task(bind=True, soft_time_limit=1800)
 def publish_blog_embeds_on_s3(self, blog_id, safe=True):
     logger.warning('publish_blog_embeds_on_s3 for blog "{}" started.'.format(blog_id))
     publish_blog_embed_on_s3.delay(self, blog_id, safe=safe)
