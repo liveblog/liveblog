@@ -91,12 +91,7 @@
                                             data-language="en"
                                             ng-model="settings.newBlog.description"
                                     ></div>
-<!--                                     <textarea
-                                        name="inputDescription"
-                                        ng-model="settings.newBlog.description"
-                                        class="form-control"
-                                    ></textarea>
- -->                                </div>
+                               </div>
                             </div>
 
                             <div class="form-group">
@@ -369,14 +364,17 @@
                                     <ul class="pills-list">
                                         <li ng-repeat="output in settings.outputs">
                                             <h6 class="pull-left">
-                                                {{ output.name }}
+                                                <span class="cursor-pointer" ng-click="settings.openOutputDialog(output);">{{ output.name }}</span>
                                             </h6>
                                             
                                             <div class="actions">
-                                                <button ng-click="settings.openOutputDialog(output);" title="Edit">
+                                                <button ng-click="settings.showOutputEmbedCode(output);" title="{{ 'Show output chanel embed code' | translate }}">
+                                                    <i class="icon-globe"></i>
+                                                </button>&nbsp;
+                                                <button ng-click="settings.openOutputDialog(output);" title="{{ 'Edit' | translate }}">
                                                     <i class="icon-pencil"></i>
                                                 </button>&nbsp;
-                                                <button ng-click="settings.removeOutput(output, $index);" title="Delete">
+                                                <button ng-click="settings.removeOutput(output, $index);" title="{{ 'Delete' | translate }}">
                                                     <i class="icon-trash"></i>
                                                 </button>    
                                             </div>
@@ -401,5 +399,8 @@
 <output-modal
     modal-active="settings.outputModalActive"
     output="settings.output"
-    blog-id="{{ settings.blog._id }}"
+    blog="settings.blog"
 ></output-modal>
+
+ <!-- MODAL FOR PRESENTING OUPUT EMBED CODE -->
+ <div ng-include="settings.outputEmbedCodeTpl"></div>

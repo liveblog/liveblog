@@ -15,6 +15,8 @@ import './../../ng-sir-trevor';
 import './../../ng-sir-trevor-blocks';
 import './../unread.posts.service';
 
+import outputEmbedCodeTpl from 'scripts/liveblog-edit/views/output-embed-code-modal.html'
+
 BlogSettingsController.$inject = [
     '$scope',
     'blog',
@@ -92,6 +94,7 @@ function BlogSettingsController(
         // by default themes are not accepting embed multi height and code.
         embedMultiHight: false,
         outputs: [],
+        outputEmbedCodeTpl: outputEmbedCodeTpl,
         loadOutputs: function(silent) {
             silent = silent || false;
             if (!silent) {
@@ -114,6 +117,10 @@ function BlogSettingsController(
                 notify.error(gettext('There was an error getting the output channels'));
                 vm.outputsLoading = false;
             })
+        },
+        showOutputEmbedCode: function(output) {
+            vm.outputEmbedModal = true;
+            vm.output = output;
         },
         openOutputDialog: function(output) {
             output = output || {};
