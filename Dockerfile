@@ -62,4 +62,4 @@ COPY ./client /opt/superdesk/client
 # TODO: this is hack to update basic themes during bamboo deployment
 COPY ./server/liveblog/themes/themes_assets/ /opt/superdesk/themes_assets/
 
-RUN cd ./client && grunt build
+RUN cd ./client && npm i && grunt build
