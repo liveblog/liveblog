@@ -82,7 +82,7 @@ def check_webhook_status(self, consumer_id):
     consumer = consumers._get_consumer(consumer_id) or {}
     if 'webhook_url' in consumer:
         try:
-            response = send_api_request(consumer['webhook_url'], consumer['api_key'], method='GET', json_loads=False)
+            response = send_api_request(consumer['webhook_url'], None, method='GET', json_loads=False)
         except:
             logger.warning('Unable to connect to webhook_url "{}"'.format(consumer['webhook_url']))
             webhook_enabled = False
