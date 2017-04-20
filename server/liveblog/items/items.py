@@ -12,8 +12,6 @@ from werkzeug.datastructures import FileStorage
 from flask import Blueprint, request, make_response
 from flask_cors import CORS
 from superdesk import get_resource_service
-from liveblog.syndication.utils import fetch_url
-from liveblog.syndication.exceptions import DownloadError
 from bson.json_util import dumps
 from requests.exceptions import RequestException
 
@@ -155,7 +153,7 @@ def drag_and_drop():
     try:
         response = requests.get(url, timeout=5)
     except (ConnectionError, RequestException):
-        return make_response('Unable to get url: "{}"'.format(url),406)
+        return make_response('Unable to get url: "{}"'.format(url), 406)
     fd = tempfile.NamedTemporaryFile()
     for chunk in response.iter_content(chunk_size=1024):
         if chunk:
@@ -164,7 +162,7 @@ def drag_and_drop():
 
     content_type = response.headers.get('content-type')
     if 'image' not in content_type:
-        return make_response('Invalid content_type {}'.format(content_type),406)
+        return make_response('Invalid content_type {}'.format(content_type), 406)
 
     item_data = dict()
     item_data['type'] = 'picture'
