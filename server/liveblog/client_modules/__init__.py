@@ -15,11 +15,11 @@ def init_app(app):
     service = ClientPostsService(endpoint_name, backend=superdesk.get_backend())
     ClientPostsResource(endpoint_name, app=app, service=service)
 
-    endpoint_name = 'client_collections'
+    endpoint_name = 'client_advertisement_collections'
     service = ClientCollectionsService(endpoint_name, backend=superdesk.get_backend())
     ClientCollectionsResource(endpoint_name, app=app, service=service)
 
-    endpoint_name = 'client_outputs'
+    endpoint_name = 'client_advertisement_outputs'
     service = ClientOutputsService(endpoint_name, backend=superdesk.get_backend())
     ClientOutputsResource(endpoint_name, app=app, service=service)
 
