@@ -76,9 +76,10 @@ export default function imageBlock(SirTrevor, config) {
             });
 
             // TODO: This shouldn't be here, max image size is defined in the configuration
-            //image size warning
-            var maxFileSize = 2; //in MB
-            if ( data.file && (data.file.size / 1048576) > maxFileSize) {
+            // Image size warning
+            var maxFileSize = 2; // in MB
+
+            if (data.file && data.file.size / 1048576 > maxFileSize) {
                 this.$editor.prepend($('<div>', {
                     name: 'size-warning',
                     class: 'alert alert-warning',
@@ -88,23 +89,24 @@ export default function imageBlock(SirTrevor, config) {
                     'The image is being uploaded, please stand by. ' +
                     'It may take a while as the file is bigger than ' + maxFileSize + 'MB.'
                 )));
-                window.setTimeout(function() {
+                window.setTimeout(() => {
                     that.$editor.find('[name="size-warning"]').css('display', 'none');
                 }, 10000);
             }
 
-            //remove placeholders
-            handlePlaceholder(this.$('[name=caption]'), that.descriptionPlaceholder)
-            handlePlaceholder(this.$('[name=credit]'), that.authorPlaceholder, {tabbedOrder: true})
+            // Remove placeholders
+            handlePlaceholder(this.$('[name=caption]'), that.descriptionPlaceholder);
+            handlePlaceholder(this.$('[name=credit]'), that.authorPlaceholder, {tabbedOrder: true});
         },
         onBlockRender: function() {
             var that = this;
+
             // assert we have an uploader function in options
             if (typeof this.getOptions().uploader !== 'function') {
                 throw 'Image block need an `uploader` function in options.';
             }
             // setup the upload button
-            this.$inputs.find('button').bind('click', function(ev) {
+            this.$inputs.find('button').bind('click', (ev) => {
                 ev.preventDefault();
             });
             this.$inputs.find('input').on('change', _.bind(function(ev) {
@@ -152,7 +154,14 @@ export default function imageBlock(SirTrevor, config) {
                     })
                     .catch((err) => {
                         addContentBtns.show();
-                        this.addMessage(window.i18n.t('blocks:image:upload_error'));
+                        this.addMessage(window.i18n.t('blocks:image:remote_upload_error'));
+                        this.addMessage(gettext(`
+                            Liveblog can not access the link to the file you have dropped.
+                            This can have several reasons -
+                            the link could be expired or only be accessible from your network.
+                            Please try downloading the file and then uploading it
+                            instead of dragging & dropping
+                        `));
                         this.ready();
                     });
             }
