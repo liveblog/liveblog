@@ -166,7 +166,7 @@ def drag_and_drop():
 
     item_data = dict()
     item_data['type'] = 'picture'
-    item_data['media'] = FileStorage(stream=fd,content_type=content_type)
+    item_data['media'] = FileStorage(stream=fd, content_type=content_type)
     archive_service = get_resource_service('archive')
     archive_id = archive_service.post([item_data])[0]
     archive = archive_service.find_one(req=None, _id=archive_id)
