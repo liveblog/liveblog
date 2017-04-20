@@ -1,7 +1,7 @@
 (function(angular) {
     'use strict';
-    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink', 'transformBlog', 'gettext'];
-    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, transformBlog, gettext) {
+    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink', 'transformBlog', 'gettext', 'outputs'];
+    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, transformBlog, gettext, outputsService) {
 
         var POSTS_PER_PAGE = config.settings.postsPerPage;
         var STICKY_POSTS_PER_PAGE = 100;
@@ -33,6 +33,18 @@
                 }
                 angular.extend(vm.blog, blog);
             });
+
+            if (config.output && config.output._id) {
+                outputsService.get({id: config.output._id}, function(output) {
+                    if (!angular.equals(config.output, output)) {
+                        config.output = output;
+                        vm.outputStyle = config.output.style;
+                        if (vm.outputStyle['background-image']) {
+                            vm.outputStyle['background-image'] = 'url(' + vm.outputStyle['background-image'] + ')';
+                        }
+                    }
+                })
+            }
         }
 
         // define view model
@@ -40,6 +52,7 @@
             templateDir: config.assets_root,
             blog: transformBlog(config.blog),
             loading: true,
+            outputStyle: config.output? config.output.style: '',
             finished: false,
             highlightsOnly: false,
             settings: config.settings,
