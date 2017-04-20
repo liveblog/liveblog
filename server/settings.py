@@ -312,3 +312,9 @@ SUBSCRIPTION_MAX_THEMES = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 
 
 # Settings to NO_TAKES for PACKAGES in ARCHIVE
 NO_TAKES = True
+
+# Blog embeds S3 publishing options.
+S3_PUBLISH_BLOGSLIST = env('S3_PUBLISH_BLOGSLIST', True)
+
+# Superdesk-core related settings.
+CONTENTAPI_URL = None

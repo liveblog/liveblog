@@ -274,8 +274,8 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
                 'refs': item_refs
             }
         ],
-        'lb_highlight': False,
-        'sticky': False,
+        'lb_highlight': producer_post['lb_highlight'] if 'lb_highlight' in producer_post.keys() else False,
+        'sticky': producer_post['sticky'] if 'sticky' in producer_post.keys() else False,
         'syndication_in': in_syndication['_id'],
         'particular_type': 'post',
         'post_status': post_status,

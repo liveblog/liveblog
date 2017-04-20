@@ -1,8 +1,8 @@
 import producerListItemTpl from 'scripts/liveblog-syndication/views/producer-list-item.html';
 
-producerList.$inject = ['api', 'modal'];
+producerList.$inject = ['api', '$http', 'modal', 'config', 'notify'];
 
-export default function producerList(api, modal) {
+export default function producerList(api, $http, modal, config, notify) {
     return {
         templateUrl: producerListItemTpl,
         scope: {
@@ -29,6 +29,45 @@ export default function producerList(api, modal) {
                         });
                     });
             };
+
+            scope.checkOnlineStatus = function(e, producer) {
+                e.stopPropagation();
+
+                $http({
+                    url: `${config.server.url}/producers/${producer._id}/check_connection`,
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8'
+                    }
+                });
+            };
+
+            scope.$on('producers', (e, data) => {
+                if (scope.producers
+                && scope.producers.length > 0
+                && data.producer
+                && data.producer.hasOwnProperty('api_status')) {
+                    scope.producers = scope.producers.map((producer) => {
+                        if (producer._id === data.producer._id) {
+                            producer.api_status = data.producer.api_status;
+
+                            scope.$apply(() => {
+                                notify.pop();
+
+                                if (producer.api_status === 'enabled') {
+                                    notify.success(gettext(`${producer.name} is online`));
+                                } else if (producer.api_status === 'invalid_key') {
+                                    notify.warning(gettext(`${producer.name} key is invalid`));
+                                } else {
+                                    notify.error(gettext(`${producer.name} is not reachable`));
+                                }
+                            });
+                        }
+
+                        return producer;
+                    });
+                }
+            });
         }
     };
 }

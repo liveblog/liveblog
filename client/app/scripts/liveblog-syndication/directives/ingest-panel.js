@@ -26,7 +26,10 @@ export default function ingestPanel(
         link: function(scope) {
             var handleError = function() {
                 notify.pop();
-                notify.error(gettext('An error has been occurred. Please try again later!'));
+                notify.error(gettext(`
+                    An error has occurred.
+                    Please verify your API key.
+                `));
 
                 IngestPanelActions.flushErrors();
             };
@@ -90,10 +93,12 @@ export default function ingestPanel(
 
             // This watches for incoming posts when ingest is in focus
             scope.$on('posts', (e, data) => {
-                let syndPosts = data.posts
-                    .filter((post) => post.hasOwnProperty('syndication_in'));
+                if (data.posts) {
+                    let syndPosts = data.posts
+                        .filter((post) => post.hasOwnProperty('syndication_in'));
 
-                IngestPanelActions.setUnreadQueue(syndPosts);
+                    IngestPanelActions.setUnreadQueue(syndPosts);
+                }
             });
 
             scope.openSyndBlogsModal = function() {
