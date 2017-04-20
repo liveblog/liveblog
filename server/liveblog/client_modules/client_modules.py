@@ -88,6 +88,7 @@ class ClientPostsResource(PostsResource):
 class ClientPostsService(PostsService):
     pass
 
+
 class ClientCollectionsResource(CollectionsResource):
     datasource = {
         'source': 'collections',
@@ -100,8 +101,10 @@ class ClientCollectionsResource(CollectionsResource):
     schema = {}
     schema.update(CollectionsResource.schema)
 
+
 class ClientCollectionsService(CollectionsService):
     pass
+
 
 class ClientOutputsResource(OutputsResource):
     datasource = {
@@ -115,8 +118,10 @@ class ClientOutputsResource(OutputsResource):
     schema = {}
     schema.update(OutputsResource.schema)
 
+
 class ClientOutputsService(OutputsService):
     pass
+
 
 class ClientAdvertisementsResource(AdvertisementsResource):
     datasource = {
@@ -130,8 +135,10 @@ class ClientAdvertisementsResource(AdvertisementsResource):
     schema = {}
     schema.update(AdvertisementsResource.schema)
 
+
 class ClientAdvertisementsService(AdvertisementsService):
     pass
+
 
 class ClientItemsResource(ItemsResource):
     datasource = {

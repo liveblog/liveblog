@@ -116,7 +116,6 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         raise SuperdeskApiError.badRequestError(
             message='You will be able to access the embed after you register the themes')
 
-
     try:
         assets, template_file = collect_theme_assets(theme)
     except UnknownTheme as e:
