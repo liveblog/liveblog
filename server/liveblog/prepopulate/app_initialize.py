@@ -35,6 +35,7 @@ dictionary:
 [[("first_name", pymongo.ASCENDING), ("last_name", pymongo.ASCENDING)], {'sparse': True}]]
 """
 __entities__ = OrderedDict([
+    ('global_preferences', ('global_preferences.json', ['key'], False)),
     ('roles', ('roles.json', ['name'], False)),
     ('users', ('users.json', [], False)),
     ('stages', ('stages.json', ['desk'], False)),

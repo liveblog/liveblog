@@ -6,7 +6,7 @@ from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
 from superdesk.notification import push_notification
 from werkzeug.datastructures import FileStorage
 
-from .exceptions import APIConnectionError, DownloadError
+from .exceptions import APIConnectionError, DownloadError, ProducerAPIError
 from settings import SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOWN
 
 
@@ -101,3 +101,26 @@ def check_webhook_status(self, consumer_id):
             '_id': consumer['_id'],
             'webhook_enabled': webhook_enabled
         }, updated=True)
+
+
+@celery.task(bind=True)
+def check_api_status(self, producer_id):
+    producers = get_resource_service('producers')
+    producer = producers._get_producer(producer_id) or {}
+    if 'consumer_api_key' in producer:
+        try:
+            response = producers._send_api_request(producer_id, 'syndication/blogs', method='GET', json_loads=False)
+        except ProducerAPIError:
+            api_status = 'invalid_url'
+        else:
+            if response.status_code != 200:
+                api_status = 'invalid_key'
+            else:
+                api_status = 'enabled'
+
+    cursor = producers._cursor()
+    cursor.find_one_and_update({'_id': producer['_id']}, {'$set': {'api_status': api_status}})
+    push_notification(producers.notification_key, producer={
+        '_id': producer['_id'],
+        'api_status': api_status
+    }, updated=True)
