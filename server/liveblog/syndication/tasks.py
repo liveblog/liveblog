@@ -87,7 +87,7 @@ def check_webhook_status(self, consumer_id):
             logger.warning('Unable to connect to webhook_url "{}"'.format(consumer['webhook_url']))
             webhook_enabled = False
         else:
-            if response.status_code == 401:
+            if response.status_code == 200:
                 logger.info('Connected to webhook_url "{}".'.format(consumer['webhook_url']))
                 webhook_enabled = True
             else:
