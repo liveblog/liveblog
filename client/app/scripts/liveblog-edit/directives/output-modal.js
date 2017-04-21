@@ -2,7 +2,7 @@ import outputModalTpl from 'scripts/liveblog-edit/views/output-modal.html';
 
 /**
  * @desc directive to open a modal to create or edit a channel output
- * @example <output-modal modal-active="x" outputs="array" output="object" blog-id="id"></output-modal>
+ * @example <output-modal modal-active="x" outputs="array" output="object" blog="blog"></output-modal>
  */
 
 export default function outputModal() {
@@ -12,7 +12,7 @@ export default function outputModal() {
             modalActive: '=',
             outputs: '=',
             output: '=',
-            blogId: '@'
+            blog: '='
         },
         templateUrl: outputModalTpl,
         controllerAs: 'vm',
@@ -57,7 +57,7 @@ function outputModalController($rootScope, api, urls, notify, modal, upload) {
     function saveOutput() {
         var newOutput = {
             name: vm.output.name,
-            blog: vm.blogId,
+            blog: vm.blog._id,
             collection: vm.output.collection,
             style: vm.output.style
         };
@@ -78,7 +78,7 @@ function outputModalController($rootScope, api, urls, notify, modal, upload) {
     }
 
     function handleSuccessSave() {
-        notify.info(gettext('Advert saved successfully'));
+        notify.info(gettext('Output saved successfully'));
         vm.output = {};
         vm.modalActive = false;
         vm.disableSave = false;
