@@ -1,6 +1,6 @@
 module.exports = {
-  content: require("../../templates/content.html"),
-  post: require("../../templates/post.html"),
-  itemImage: require("../../templates/item-image.html"),
-  itemEmbed: require("../../templates/item-embed.html")
+  post: require("../../templates/template-post.html"),
+  timeline: require("../../templates/template-timeline.html"),
+  itemImage: require("../../templates/template-item-image.html"),
+  itemEmbed: require("../../templates/template-item-embed.html")
 }
