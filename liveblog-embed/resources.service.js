@@ -168,7 +168,7 @@
 
     Outputs.$inject = ['$resource', 'config'];
     function Outputs($resource, config) {
-        return $resource(config.api_host + 'api/client_outputs/:id')
+        return $resource(config.api_host + 'api/client_advertisement_outputs/:id')
     }
 
     angular.module('liveblog-embed')
