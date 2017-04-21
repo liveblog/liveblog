@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Liveblog Test</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    {% if theme_settings.blockSearchEngines -%}
+      <meta name="robots" content="noindex, follow">
+    {% endif %}
+    <!-- inject:css -->
+    <!-- endinject -->
+  </head>
+  <body>
+    <div class="" data-js-target="timeline">
+      {% include "template-timeline.html" %}
+    </div>
+    <script type="text/javascript">
+      window.LB = {{ options|safe }}
+    </script>
+    <!-- inject:js -->
+    <!-- endinject -->
+    {% include "template-embed-providers.html" %}
+  </body>
+</html>
