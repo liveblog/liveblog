@@ -4,12 +4,27 @@
 
 'use strict';
 var helpers = require("./helpers")
+var templates = require('./templates')
 
 var timelineElem = helpers.getElems("lb-posts")
   , loadMorePostsButton = helpers.getElems("load-more-posts");
 
 function renderTimeline(posts) {
-  console.log('posts', posts);
+  var renderedPosts = [];
+
+  posts._items.forEach(function(post) {
+    renderedPosts.push(templates.post({
+      item: post
+    }))
+  });
+
+  document.querySelectorAll('.lb-post').forEach(function(el) {
+    el.remove();
+  });
+
+  renderedPosts.forEach(function(renderedPost) {
+    timelineElem[0].innerHTML += renderedPost;
+  });
 }
 
 /**
@@ -53,6 +68,7 @@ function loadEmbeds() {
 function toggleLoadMore(shouldToggle) {
   loadMorePostsButton[0].classList.toggle(
     "mod--hide", shouldToggle)
+  return;
 };
 
 /**

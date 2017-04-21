@@ -39,7 +39,10 @@ function getPosts(opts) {
 
   return helpers.getJSON(fullPath)
     .then(function(api_response) {
-      console.log('api response', api_response);
+      if (opts.returnPromise) {
+        return api_response;
+      }
+
       updateViewModel(api_response, opts);
       renderPosts(api_response, opts);
     })
@@ -68,9 +71,13 @@ function loadPosts(opts) {
   var opts = opts || {};
   opts.fromDate = vm.latestUpdate;
 
-  return getPosts(opts).catch(function(err) {
-    // catch all errors here
-  })
+  return getPosts(opts)
+    .then(function(posts) {
+      return posts;
+    })
+    .catch(function(err) {
+      // catch all errors here
+    })
 };
 
 /**
@@ -102,11 +109,9 @@ function renderPosts(api_response, opts) {
     renderedPosts.push(renderedPost) // create operation
   };
 
-  console.log('before rendered posts', renderedPosts, posts);
   if (!renderedPosts.length) return // early
   if (settings.postOrder === "descending") renderedPosts.reverse()
 
-  console.log('rendered posts', api_response._items, renderedPosts);
   view.addPosts(renderedPosts, { // if creates
     position: opts.fromDate ? "top" : "bottom"
   })
@@ -117,7 +122,6 @@ function renderPosts(api_response, opts) {
  * @param {object} api_response - liveblog API response JSON.
  */
 function updateViewModel(api_response, opts) {
-  console.log('update view model', opts);
   if (opts.sort === 'oldest_first')
     vm._items = api_reponse._items;
   else
@@ -205,7 +209,6 @@ function getQuery(opts) {
   };
 
   if (opts.sort === "oldest_first") {
-    console.log('oldest first', query, Object.keys(query.query.filtered.filter.and));
     query.sort[0]._updated.order = "asc"
 
     query.query.filtered.filter.and.forEach(function(rule, index) {
@@ -213,8 +216,6 @@ function getQuery(opts) {
         query.query.filtered.filter.and.splice(index, 1);
       }
     });
-
-    console.log('afiter', query);
   }
 
   return encodeURI(JSON.stringify(query));

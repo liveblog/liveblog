@@ -21,7 +21,7 @@ var buttons = {
         })
     },
     "[data-js-orderby-oldest-first]": function() {
-      viewmodel.loadPosts({sort: 'oldest_first'})
+      viewmodel.loadPosts({sort: 'oldest_first', returnPromise: true})
         .then(view.renderTimeline);
     }
   },
