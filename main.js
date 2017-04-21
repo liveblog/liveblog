@@ -10,7 +10,7 @@
         var UPDATE_MANUALLY = config.settings.loadNewPostsManually;
         var UPDATE_STICKY_MANUALLY = typeof config.settings.loadNewStickyPostsManually === 
         'boolean' ? config.settings.loadNewStickyPostsManually : config.settings.loadNewPostsManually;
-        var UPDATE_EVERY = 10*1000; // retrieve update interval in millisecond
+        var UPDATE_EVERY = 1000; // retrieve update interval in millisecond
         var vm = this;
         var pagesManager = new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER, false),
             permalink = new Permalink(pagesManager, PERMALINK_DELIMITER);
@@ -38,21 +38,33 @@
                 outputsService.get({id: config.output._id}, function(output) {
                     if (!angular.equals(config.output, output)) {
                         config.output = output;
-                        vm.outputStyle = config.output.style;
-                        if (vm.outputStyle['background-image']) {
-                            vm.outputStyle['background-image'] = 'url(' + vm.outputStyle['background-image'] + ')';
-                        }
+                        applyOutputStyle();
                     }
                 })
             }
         }
+
+        function fixBackgroundImage(style) {
+            if (style['background-image']) {
+                style['background-image'] = 'url(' + style['background-image'] + ')';
+            }
+        }
+
+        function applyOutputStyle() {
+            if (config.output && config.output.style) {
+                fixBackgroundImage(config.output.style);
+                $('body').css(config.output.style);
+            }
+            
+        }
+
+        applyOutputStyle();
 
         // define view model
         angular.extend(vm, {
             templateDir: config.assets_root,
             blog: transformBlog(config.blog),
             loading: true,
-            outputStyle: config.output? config.output.style: '',
             finished: false,
             highlightsOnly: false,
             settings: config.settings,
