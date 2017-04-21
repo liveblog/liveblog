@@ -27,6 +27,18 @@ function renderTimeline(posts) {
   });
 }
 
+function toggleSortBtn(name) {
+  document
+    .querySelectorAll('.sorting-bar__order')
+    .forEach(function(btn) {
+      btn.classList.remove('sorting-bar__order--active');
+
+      if (btn.id === name) {
+        btn.classList.add('sorting-bar__order--active');
+      }
+    });
+}
+
 /**
  * Add post nodes to DOM, do so regardless of settings.autoApplyUpdates,
  * but rather set them to NOT BE DISPLAYED if auto-apply is false.
@@ -121,5 +133,6 @@ module.exports = {
   renderTimeline: renderTimeline,
   updatePost: updatePost,
   updateTimestamps: updateTimestamps,
-  toggleLoadMore: toggleLoadMore
+  toggleLoadMore: toggleLoadMore,
+  toggleSortBtn: toggleSortBtn
 }

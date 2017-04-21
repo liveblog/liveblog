@@ -22,7 +22,10 @@ var buttons = {
     },
     "[data-js-orderby-oldest-first]": function() {
       viewmodel.loadPosts({sort: 'oldest_first', returnPromise: true})
-        .then(view.renderTimeline);
+        .then(view.renderTimeline)
+        .then(function() {
+          view.toggleSortBtn('oldest_first')
+        })
     }
   },
 
