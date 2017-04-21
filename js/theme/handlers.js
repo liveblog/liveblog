@@ -19,6 +19,10 @@ var buttons = {
         .then(function() {
           view.displayNewPosts();
         })
+    },
+    "[data-js-orderby-oldest-first]": function() {
+      viewmodel.loadPosts({sort: 'oldest_first'})
+        .then(view.renderTimeline);
     }
   },
 

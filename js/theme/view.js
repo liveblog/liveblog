@@ -8,6 +8,10 @@ var helpers = require("./helpers")
 var timelineElem = helpers.getElems("lb-posts")
   , loadMorePostsButton = helpers.getElems("load-more-posts");
 
+function renderTimeline(posts) {
+  console.log('posts', posts);
+}
+
 /**
  * Add post nodes to DOM, do so regardless of settings.autoApplyUpdates,
  * but rather set them to NOT BE DISPLAYED if auto-apply is false.
@@ -98,6 +102,7 @@ module.exports = {
   addPosts: addPosts,
   deletePost: deletePost,
   displayNewPosts: displayNewPosts,
+  renderTimeline: renderTimeline,
   updatePost: updatePost,
   updateTimestamps: updateTimestamps,
   toggleLoadMore: toggleLoadMore
