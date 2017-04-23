@@ -11,8 +11,9 @@ export default function copyToClipboard(notify) {
             '</a>',
         link: function(scope, elem, attrs) {
             scope.copyToClipboard = function(e) {
-                if (!attrs.for)
+                if (!attrs.for) {
                     return;
+                }
 
                 e.stopPropagation();
 
@@ -26,10 +27,11 @@ export default function copyToClipboard(notify) {
                     selection.addRange(range);
                     document.execCommand('copy');
 
-                    if (selection.hasOwnProperty('removeRange'))
+                    if (selection.hasOwnProperty('removeRange')) {
                         selection.removeRange(range);
-                    else
+                    } else {
                         selection.removeAllRanges();
+                    }
 
                     notify.pop();
                     notify.success('Selection successfully copied to clipboard');
@@ -37,4 +39,4 @@ export default function copyToClipboard(notify) {
             };
         }
     };
-};
+}

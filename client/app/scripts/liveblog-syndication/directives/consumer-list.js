@@ -1,8 +1,8 @@
 import consumerListItemTpl from 'scripts/liveblog-syndication/views/consumer-list-item.html';
 
-consumerList.$inject = ['api', 'notify', 'modal'];
+consumerList.$inject = ['api', 'notify', 'modal', '$http', 'config'];
 
-export default function consumerList(api, notify, modal) {
+export default function consumerList(api, notify, modal, $http, config) {
     return {
         templateUrl: consumerListItemTpl,
         scope: {
@@ -28,6 +28,12 @@ export default function consumerList(api, notify, modal) {
                                 scope.consumers.splice(i, 1);
                             }
                         });
+                    })
+                    .catch((err) => {
+                        if (err.data && err.data._message) {
+                            notify.pop();
+                            notify.error(err.data._message);
+                        }
                     });
             };
 
@@ -49,6 +55,43 @@ export default function consumerList(api, notify, modal) {
                         }
                     });
             };
+
+            scope.checkOnlineStatus = function(e, consumer) {
+                e.stopPropagation();
+
+                $http({
+                    url: `${config.server.url}/consumers/${consumer._id}/check_connection`,
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json;charset=utf-8'
+                    }
+                });
+            };
+
+            scope.$on('consumers', (e, data) => {
+                if (scope.consumers
+                && scope.consumers.length > 0
+                && data.consumer
+                && data.consumer.hasOwnProperty('webhook_enabled')) {
+                    scope.consumers = scope.consumers.map((consumer) => {
+                        if (consumer._id === data.consumer._id) {
+                            consumer.webhook_enabled = data.consumer.webhook_enabled;
+
+                            scope.$apply(() => {
+                                notify.pop();
+
+                                if (consumer.webhook_enabled) {
+                                    notify.success(gettext(`${consumer.name} is online`));
+                                } else {
+                                    notify.error(gettext(`${consumer.name} is offline`));
+                                }
+                            });
+                        }
+
+                        return consumer;
+                    });
+                }
+            });
         }
     };
 }
