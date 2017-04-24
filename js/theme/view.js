@@ -31,11 +31,7 @@ function toggleSortBtn(name) {
   document
     .querySelectorAll('.sorting-bar__order')
     .forEach(function(btn) {
-      btn.classList.remove('sorting-bar__order--active');
-
-      if (btn.id === name) {
-        btn.classList.add('sorting-bar__order--active');
-      }
+      btn.classList.toggle('sorting-bar__order--active', btn.id === name);
     });
 }
 
