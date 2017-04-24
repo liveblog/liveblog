@@ -141,6 +141,11 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                     return false;
                 }
 
+                if (!$element.hasClass('timeline-posts-list')
+                && angular.isDefined(event_params.stages)) {
+                    return false;
+                }
+
                 vm.isLoading = true;
                 vm.pagesManager.retrieveUpdate(true).then(function() {
                     // Regenerate the embed otherwise the image doesn't appear
