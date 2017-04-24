@@ -15,9 +15,9 @@
   {% for ref in item.groups[1].refs %}
     <div class="lb-item">
       {% if ref.item.item_type == "embed" %}
-        {% include "item-embed.html" %}
+        {% include "template-item-embed.html" %}
       {% elif ref.item.item_type == "image" %}
-        {% include "item-image.html" %}
+        {% include "template-item-image.html" %}
       {% else %}
         <article>{{ ref.item.text | safe }}</article>
       {% endif %}
