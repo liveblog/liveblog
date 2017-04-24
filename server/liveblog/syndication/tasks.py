@@ -5,7 +5,7 @@ from superdesk.celery_app import celery
 from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
 from superdesk.notification import push_notification
 
-from .exceptions import APIConnectionError, DownloadError
+from .exceptions import APIConnectionError
 from settings import SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOWN
 from .utils import send_api_request
 
@@ -97,9 +97,9 @@ def check_webhook_status(self, consumer_id):
 def check_api_status(self, producer_id):
     producers = get_resource_service('producers')
     producer = producers._get_producer(producer_id) or {}
-    if not 'api_url' in producer:
+    if 'api_url' not in producer:
         api_status = 'invalid_url'
-    elif not 'consumer_api_key' in producer:
+    elif 'consumer_api_key' not in producer:
         api_status = 'invalid_key'
     else:
         try:
