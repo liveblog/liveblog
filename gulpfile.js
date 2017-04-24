@@ -141,7 +141,7 @@ gulp.task('template-inject', ['less', 'browserify'], function() {
     }))
 
     // Add nunjucks/jinja2 template for server-side processing.
-    .pipe(plugins.inject(gulp.src(['./templates/content.html']), {
+    .pipe(plugins.inject(gulp.src(['./templates/template-timeline.html']), {
       starttag: '<!-- inject:template-content -->',
       transform: function(filepath, file) {
         return file.contents.toString();
