@@ -5,8 +5,16 @@
         <div class="header-bar">
             <div class="sorting-bar">
                 <div class="sorting-bar__orders">
-                    <div class="sorting-bar__order sorting-bar__order--active" onClick="timeline.orderBy('newest_first')">{{ theme_options.l10n.newestFirst }}</div>
-                    <div class="sorting-bar__order" onClick="timeline.orderBy('oldest_first')">{{ theme_options.l10n.oldestFirst }}</div>
+                    <div
+                      id="newest_first"
+                      class="sorting-bar__order sorting-bar__order--active"
+                      data-js-orderby-newest-first>
+                      {{ theme_options.l10n.newestFirst }}</div>
+                    <div
+                      id="oldest_first"
+                      class="sorting-bar__order"
+                      data-js-orderby-oldest-first>
+                      {{ theme_options.l10n.oldestFirst }}</div>
                 </div>
             </div>
             <div class="header-bar__actions"></div>

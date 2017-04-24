@@ -210,7 +210,9 @@ function getQuery(opts) {
 
   if (opts.sort === "oldest_first") {
     query.sort[0]._updated.order = "asc"
+  }
 
+  if (opts.sort === "oldest_first" || opts.sort === "newest_first") {
     query.query.filtered.filter.and.forEach(function(rule, index) {
       if (rule.hasOwnProperty('range')) {
         query.query.filtered.filter.and.splice(index, 1);

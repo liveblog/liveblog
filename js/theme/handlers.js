@@ -26,6 +26,13 @@ var buttons = {
         .then(function() {
           view.toggleSortBtn('oldest_first')
         })
+    },
+    "[data-js-orderby-newest-first]": function() {
+      viewmodel.loadPosts({sort: 'newest_first', returnPromise: true})
+        .then(view.renderTimeline)
+        .then(function() {
+          view.toggleSortBtn('newest_first')
+        })
     }
   },
 
