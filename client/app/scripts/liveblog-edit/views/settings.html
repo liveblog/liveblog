@@ -19,8 +19,8 @@
     <div class="settings-page">
         <div class="subnav">
             <h3 class="page-nav-title">Settings</h3>
-            <button ng-click="settings.saveAndClose()" class="btn btn-info pull-right" type="button" translate ng-disabled="!(settings.forms.dirty || settings.forms[settings.tab].$dirty)">Done</button>
-            <button ng-click="settings.save()"  class="btn btn-info pull-right" type="button" translate ng-disabled="!(settings.forms.dirty || settings.forms[settings.tab].$dirty)">Save</button>
+            <button ng-click="settings.saveAndClose()" class="btn btn--primary pull-right" type="button" translate ng-disabled="!(settings.forms.dirty || settings.forms[settings.tab].$dirty)">Done</button>
+            <button ng-click="settings.save()"  class="btn btn--primary pull-right" type="button" translate ng-disabled="!(settings.forms.dirty || settings.forms[settings.tab].$dirty)">Save</button>
             <button ng-click="settings.close()" class="btn btn-default pull-right last-right" type="button" translate>Cancel</button>
         </div>
         <div class="tabbable outer">
@@ -67,12 +67,12 @@
                                     <figure class="blog-media" ng-show="settings.newBlog.picture_url">
                                         <img ng-src="{{settings.newBlog.picture_url}}"/>
                                         <div class="blog-image-actions">
-                                            <button class="btn btn-info pull-right" ng-click="settings.openUploadModal()" translate>Change</button>
+                                            <button class="btn btn--primary pull-right" ng-click="settings.openUploadModal()" translate>Change</button>
                                             <button class="btn btn-default pull-right" ng-click="settings.removeImage()" translate>Remove</button>
                                         </div>
                                     </figure>
                                     <div ng-hide="settings.newBlog.picture_url">
-                                        <button class="btn btn-info pull-left" ng-click="settings.openUploadModal()" translate>Upload Image</button>
+                                        <button class="btn btn--primary pull-left" ng-click="settings.openUploadModal()" translate>Upload Image</button>
                                         <div class="image-text pull-left" translate>Image has not been set so far</div>
                                     </div>
                                 </div>
@@ -225,7 +225,7 @@
                                 </div>
                                 <div class="footer">
                                     <span class="clear pull-left" ng-click="settings.search = null" ng-show="settings.search" translate>Clear</span>
-                                    <button class="btn btn-info pull-right" ng-click="settings.buildOwner(settings.temp_selected_owner._id); settings.openOwner = false; $event.stopPropagation(); settings.forms.team.$setDirty();" ng-disabled="!settings.temp_selected_owner" translate>Select</button>
+                                    <button class="btn btn--primary pull-right" ng-click="settings.buildOwner(settings.temp_selected_owner._id); settings.openOwner = false; $event.stopPropagation(); settings.forms.team.$setDirty();" ng-disabled="!settings.temp_selected_owner" translate>Select</button>
                                     <button class="btn pull-right" ng-click="settings.openOwner = false;  $event.stopPropagation();" translate>Cancel</button>
                                 </div>
                             </div>
@@ -342,7 +342,7 @@
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-default" translate ng-click="settings.cancelTeamEdit()">Cancel</button>
-                                    <button type="button" class="btn btn-primary btn-info" ng-click="settings.doneTeamEdit()" translate>Done</button>
+                                    <button type="button" class="btn btn--primary" ng-click="settings.doneTeamEdit()" translate>Done</button>
                                 </div>
                             </div>
                         </div>

@@ -183,6 +183,13 @@
                     }
                 }
             }
+            .button-stack {
+                &.right-stack {
+                    .navbtn {
+                    width: 48px;
+                    }
+                }
+            }
         }
         // editor
         &--editor .content {

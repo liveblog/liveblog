@@ -1,13 +1,14 @@
 <div class="subnav ng-scope themes-manager">
-    <h3 class="page-nav-title" translate>Theme Manager</h3>
-    <div class="button-stack right-stack">
+    <h3 class="subnav__page-title" translate>Theme Manager</h3>
+    <div class="subnav__button-stack--square-buttons">
         <form
             action="#"
             method="post"
             enctype="multipart/form-data"
             ng-if="!vm.hasReachedThemesLimit() && !vm.isSolo()">
-            <label class="navbtn navbtn-info" for="uploadAThemeFile" title="{{ 'New Theme' | translate }}">
-                <i class="svg-icon-add inverse"></i>
+            <label class="navbtn sd-create-btn" for="uploadAThemeFile" title="{{ 'New Theme' | translate }}">
+                <i class="svg-icon-plus"></i>
+                <span class="circle"></span>
             </label>
             <input
                 type="file" 
@@ -18,9 +19,10 @@
 
         <button
             ng-if="vm.hasReachedThemesLimit()"
-            class="navbtn navbtn-info"
+            class="navbtn sd-create-btn"
             ng-click="vm.showUpgradeModal()" title="{{ 'New Theme' | translate }}">
-            <i class="svg-icon-add inverse"></i>
+            <i class="svg-icon-plus"></i>
+            <span class="circle"></span>
         </button>
     </div>
 </div>
@@ -85,13 +87,13 @@
                         <div class="side">
                             <div ng-style="{'visibility': (vm.isDefaultTheme(theme) && 'hidden') || 'visible'}">
                                 <button ng-disabled="vm.hasChildren(theme)" ng-click="vm.removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
-                                <button ng-if="!theme.abstract" ng-click="vm.makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
+                                <button ng-if="!theme.abstract" ng-click="vm.makeDefault(theme)" class="btn btn--primary pull-right" type="button" translate>Make default</button>
                             </div>
                             <button ng-click="vm.openThemeSettings(theme)" class="btn btn-default pull-right" type="button" translate>Settings</button>
                             <button
                                 ng-if="!vm.isSolo()"
                                 ng-click="vm.download(theme)"
-                                class="btn btn-info pull-right"
+                                class="btn btn--primary pull-right"
                                 type="button"
                                 translate>Download</button>
                         </div>
