@@ -29,7 +29,8 @@
                 settings: {{ settings | tojson | safe }},
                 api_host: '{{ api_host }}',
                 assets_root: '{{ assets_root }}',
-                debug: {{ debug | tojson | safe }}
+                debug: {{ debug | tojson | safe }},
+                l10n: {{ l10n | tojson | safe }}
             };
         </script>
         {% if debug %}
