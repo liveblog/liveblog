@@ -167,8 +167,6 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                     || (self.highlight && !post.lb_highlight)) {
                        removePost(post);
                     } else {
-                          // update
-                        self.pages[existing_post_indexes[0]].posts[existing_post_indexes[1]] = post;
                         createPagesWithPosts(self.allPosts(), true);
                     }
                     // post doesn't exist in the list
@@ -298,6 +296,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                 var page_index = indexes[0];
                 var post_index = indexes[1];
                 self.pages[page_index].posts.splice(post_index, 1);
+
                 createPagesWithPosts(self.allPosts(), true);
             }
         }
