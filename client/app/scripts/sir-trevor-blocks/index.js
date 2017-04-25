@@ -10,6 +10,9 @@
 import angular from 'angular';
 import _ from 'lodash';
 
+import imageBlock from './image-block';
+import handlePlaceholder from './handle-placeholder';
+
 function createCaretPlacer(atStart) {
     return function(el) {
         el.focus();
@@ -30,30 +33,17 @@ function createCaretPlacer(atStart) {
     };
 }
 
-var AddContentBtns = function() {
-    this.top = $('.st-block-controls__top');
-    this.bottom = $('[data-icon-after="ADD CONTENT HERE"]');
-};
-
-AddContentBtns.prototype.hide = function() {
-    this.top.hide();
-    this.bottom.removeAttr('data-icon-after');
-}
-
-AddContentBtns.prototype.show = function() {
-    this.top.show();
-    this.bottom.attr('data-icon-after', 'ADD CONTENT HERE');
-}
-
 var placeCaretAtStart = createCaretPlacer(true);
 var placeCaretAtEnd = createCaretPlacer(false);
 var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
 
 function fixSecureEmbed(string) {
     var ret;
+
     if (window.location.protocol === 'https:') {
         var pattern = new RegExp(uriRegx, 'i'),
             matches = string.match(pattern);
+
         if (matches && matches.length && matches[1] === 'http:') {
             ret = matches[0];
         } else {
@@ -71,49 +61,33 @@ function isURI(string) {
     var pattern = new RegExp('^' + uriRegx, 'i');
     return pattern.test(string);
 }
-function handlePlaceholder(selector, placeHolderText, options) {
-    var onEvents = 'click';
-    if (options && options.tabbedOrder) {
-        onEvents += ' focus';
-    }
-    selector.on(onEvents, function(ev) {
-        var $this = $(this);
-        if (_.trim($this.html()) === '') {
-            $this.attr('placeholder', '');
-        }
-    });
-    selector.on('focusout', function(ev) {
-        var $this = $(this);
-        if (_.trim($this.html()) === '') {
-            $this.attr('placeholder', placeHolderText);
-        }
-    });
-}
+
 angular
 .module('SirTrevorBlocks', [])
     .config(['SirTrevorProvider', 'config', function(SirTrevor, config) {
 
-        //replace the plus symbol with text description
+        // replace the plus symbol with text description
         SirTrevor.FloatingBlockControls.prototype.attributes = function() {
             return {
-              'data-icon': 'ADD CONTENT HERE'
+                'data-icon': 'ADD CONTENT HERE'
             };
-        }
+        };
         SirTrevor.Block.prototype.attributes = function() {
             return _.extend(SirTrevor.SimpleBlock.fn.attributes.call(this), {
-                'data-icon-after': "ADD CONTENT HERE"
+                'data-icon-after': 'ADD CONTENT HERE'
             });
-        }
+        };
         // Add toMeta method to all blocks.
         SirTrevor.Block.prototype.toMeta = function() {return;};
         SirTrevor.Block.prototype.getOptions = function() {
             var instance = SirTrevor.$get().getInstance(this.instanceID);
+
             return instance ? instance.options : null;
         };
         SirTrevor.Blocks.Embed = SirTrevor.Block.extend({
             type: 'embed',
             data: {},
-            title: function() { return 'Embed'; },
+            title: () => 'Embed',
             icon_name: 'embed',
             embedPlaceholder: window.gettext('url or embed code'),
             editorHTML: function() {
@@ -124,13 +98,16 @@ angular
             },
             onBlockRender: function() {
                 var that = this;
+
                 // create and trigger a 'change' event for the $editor which is a contenteditable
                 this.$editor.filter('[contenteditable]').on('focus', function(ev) {
                     var $this = $(this);
+
                     $this.data('before', $this.html());
                 });
                 this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
                     var $this = $(this);
+
                     if ($this.data('before') !== $this.html()) {
                         $this.data('before', $this.html());
                         $this.trigger('change');
@@ -171,7 +148,7 @@ angular
                     } else {
                         that.loadData({html: input});
                     }
-                }
+                };
                 this.$editor.on('paste', _.debounce(callServiceAndLoadData, 200));
 
                 this.$editor.on('keydown', function(e) {
@@ -192,6 +169,7 @@ angular
                     description: that.$('.description-preview').text(),
                     credit: that.$('.credit-preview').text()
                 };
+
                 // remove thumbnail_url if it was removed by user
                 if (that.$('.cover-preview').hasClass('hidden')) {
                     editor_data.thumbnail_url = null;
@@ -199,8 +177,8 @@ angular
                 // add data which are not in the editor but has been saved before (like thumbnail_width)
                 _.merge(that.data, editor_data);
                 // clean data by removing empty string
-                _.forEach(that.data, function(value, key) {
-                    if (typeof(value) === 'string' && value.trim() === '') {
+                _.forEach(that.data, (value, key) => {
+                    if (typeof value === 'string' && value.trim() === '') {
                         delete that.data[key];
                     }
                 });
@@ -208,6 +186,7 @@ angular
             },
             renderCard: function(data) {
                 var card_class = 'liveblog--card';
+
                 var html = $([
                     '<div class="' + card_class + ' hidden">',
                     '  <div class="hidden st-embed-block embed-preview"></div>',
@@ -220,10 +199,13 @@ angular
                     '  <a class="hidden st-embed-block link-preview" target="_blank"></a>',
                     '</div>'
                 ].join('\n'));
+
                 // hide everything
                 html.find(
-                    ['.embed-preview',
-                    '.cover-preview-handler'].join(', ')
+                    [
+                        '.embed-preview',
+                        '.cover-preview-handler'
+                    ].join(', ')
                 ).addClass('hidden');
                 // set the link
                 if (_.has(data, 'url')) {
@@ -244,6 +226,7 @@ angular
                     var ratio = data.thumbnail_width / data.thumbnail_height;
                     var cover_width = Math.min(this.getOptions().coverMaxWidth, data.thumbnail_width);
                     var cover_height = cover_width / ratio;
+
                     html.find('.cover-preview').css({
                         'background-image': 'url("' + data.thumbnail_url + '")',
                         width: cover_width,
@@ -265,6 +248,7 @@ angular
                 // set the credit
                 if (_.has(data, 'provider_name')) {
                     var credit_text = data.provider_name;
+
                     if (_.has(data, 'author_name')) {
                         credit_text += ' | by <a href="' + data.author_url + '" target="_blank">' +
                             data.author_name + '</a>';
@@ -461,183 +445,9 @@ angular
 
         SirTrevor.DEFAULTS.Block.upload_options = upload_options;
         SirTrevor.Locales.en.general.upload = 'Select from folder';
-        SirTrevor.Blocks.Image = SirTrevor.Block.extend({
-            type: 'image',
-            title: function() {
-                return 'Image';
-            },
-            droppable: true,
-            uploadable: true,
-            icon_name: 'image',
-            descriptionPlaceholder: window.gettext('Add a description'),
-            authorPlaceholder: window.gettext('Add author / photographer'),
-            loadData: function(data) {
-                var that = this;
 
-                let fileUrl = '';
+        SirTrevor.Blocks.Image = imageBlock(SirTrevor, config);
 
-                if (typeof(data.file) !== 'undefined') {
-                    fileUrl = data.file.url;
-                } else if (data.media._url) {
-                    fileUrl = data.media._url;
-                } else if (data.media.renditions.thumbnail.href) {
-                    fileUrl = data.media.renditions.thumbnail.href;
-                }
-
-                this.$editor.html($('<img>', {
-                    src: fileUrl
-                })).show();
-                this.$editor.append($('<div>', {
-                    name: 'caption',
-                    class: 'st-image-block',
-                    contenteditable: true,
-                    placeholder: that.descriptionPlaceholder
-                }).html(data.caption));
-
-                //add hidden credit size warning just in case
-                this.$editor.append($('<div>', {
-                    name: 'credit-size-alert',
-                    class: 'alert alert-error',
-                    role: 'alert',
-                    style: 'display: none'
-                })
-                .html(window.gettext('Max. amount of 300 characters is reached')));
-
-                this.$editor.append($('<div>', {
-                    name: 'credit',
-                    class: 'st-image-block',
-                    contenteditable: true,
-                    placeholder: that.authorPlaceholder
-                }).html(data.credit));
-
-                //limit characters for credit to a max of 300
-                this.$editor.find('[name="credit"]').bind('input', function(ev) {
-                    if (this.innerText.length > 300) {
-                        this.innerText = this.innerText.substring(0, 300);
-                        $(this).css('border', '1px solid red');
-                        that.$editor.find('[name="credit-size-alert"]').css('display', 'block');
-                    } else {
-                        that.$editor.find('[name="credit-size-alert"]').css('display', 'none');
-                        $(this).css({'border': '0px', 'border-bottom': '1px solid #999'});
-                    }
-                });
-
-                //image size warning
-                var maxFileSize = 2; //in MB
-                if ( data.file && (data.file.size / 1048576) > maxFileSize) {
-                    this.$editor.prepend($('<div>', {
-                        name: 'size-warning',
-                        class: 'alert alert-warning',
-                        role: 'alert',
-                    })
-                    .html(window.gettext(
-                        'The image is being uploaded, please stand by. ' +
-                        'It may take a while as the file is bigger than ' + maxFileSize + 'MB.'
-                    )));
-                    window.setTimeout(function() {
-                        that.$editor.find('[name="size-warning"]').css('display', 'none');
-                    }, 10000);
-                }
-
-                //remove placeholders
-                handlePlaceholder(this.$('[name=caption]'), that.descriptionPlaceholder)
-                handlePlaceholder(this.$('[name=credit]'), that.authorPlaceholder, {tabbedOrder: true})
-            },
-            onBlockRender: function() {
-                var that = this;
-                // assert we have an uploader function in options
-                if (typeof(this.getOptions().uploader) !== 'function') {
-                    throw 'Image block need an `uploader` function in options.';
-                }
-                // setup the upload button
-                this.$inputs.find('button').bind('click', function(ev) {
-                    ev.preventDefault();
-                });
-                this.$inputs.find('input').on('change', _.bind(function(ev) {
-                    this.onDrop(ev.currentTarget);
-                }, this));
-            },
-            onDrop: function(transferData) {
-                var that = this;
-                var file = transferData.files[0];
-                var urlAPI = window.URL;
-                var addContentBtns = new AddContentBtns();
-
-                if (typeof urlAPI === 'undefined') {
-                    urlAPI = window.webkitURL;
-                }
-
-                if (file.size > config.maxContentLength) {
-                    var message = "Image bigger than " +
-                        (config.maxContentLength / 1024 / 1024) +
-                        "MB";
-
-                    that.addMessage(message);
-                    that.ready();
-
-                    return;
-                }
-
-                // Handle one upload at a time
-                if (/image/.test(file.type)) {
-                    this.loading();
-
-                    // Hide add content buttons while uploading
-                    addContentBtns.hide();
-
-                    // Show this image on here
-                    this.$inputs.hide();
-                    this.loadData({
-                        file: {
-                            url: urlAPI.createObjectURL(file),
-                            size: file.size
-                        }
-                    });
-                    this.getOptions().uploader(
-                        file,
-                        function(data) {
-                            addContentBtns.show();
-                            that.getOptions().disableSubmit(false);
-                            that.setData(data);
-                            that.ready();
-                        },
-                        function(error) {
-                            addContentBtns.show();
-                            var message = error || window.i18n.t('blocks:image:upload_error');
-                            that.addMessage(message);
-                            that.ready();
-                        }
-                    );
-                }
-            },
-            retrieveData: function() {
-                return {
-                    media: this.getData().media,
-                    caption: this.$('[name=caption]').text(),
-                    credit: this.$('[name=credit]').text()
-                };
-            },
-            toHTML: function() {
-                var data = this.retrieveData();
-                var srcset = '';
-                _.forEach(data.media.renditions, function(value) {
-                    srcset += ', ' + value.href + ' ' + value.width + 'w';
-                });
-                return [
-                    '<figure>',
-                    '    <img src="' + data.media._url + '" alt="' + data.caption + '"',
-                    srcset? ' srcset="' + srcset.substring(2) + '"' : '',
-                    '/>',
-                    '    <figcaption>' + 
-                    data.caption + (data.credit === '' ? '' : ' Credit: ' + data.credit) + 
-                    '</figcaption>',
-                    '</figure>'
-                ].join('');
-            },
-            toMeta: function() {
-                return this.retrieveData();
-            }
-        });
         SirTrevor.Blocks.Text.prototype.loadData = function(data) {
             this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
         };
