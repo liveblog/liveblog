@@ -64,11 +64,6 @@ blogs_schema = {
             '_id': {'type': 'objectid'},
             '_updated': {'type': 'datetime'},
         },
-        'data_relation': {
-            'resource': 'posts',
-            'field': '_id',
-            'embeddable': True
-        },
         'default': {}
     },
     'last_updated_post': {
@@ -76,11 +71,6 @@ blogs_schema = {
         'schema': {
             '_id': {'type': 'objectid'},
             '_updated': {'type': 'datetime'},
-        },
-        'data_relation': {
-            'resource': 'posts',
-            'field': '_id',
-            'embeddable': True
         },
         'default': {}
     },
