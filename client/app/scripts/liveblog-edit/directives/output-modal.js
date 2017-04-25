@@ -21,10 +21,9 @@ export default function outputModal() {
     };
 }
 
-outputModalController.$inject = ['$rootScope', 'api', 'urls', 'notify', 'modal', 'upload'];
+outputModalController.$inject = ['$rootScope', 'api', 'urls', 'notify', 'modal', 'upload', 'adsUtilSevice', '$scope'];
 
-function outputModalController($rootScope, api, urls, notify, modal, upload) {
-    //console.log('utilService ', utilService);
+function outputModalController($rootScope, api, urls, notify, modal, upload, adsUtilSevice, $scope) {
     var vm = this;
     vm.collections = [];
     vm.readyToSave = false;
@@ -34,6 +33,7 @@ function outputModalController($rootScope, api, urls, notify, modal, upload) {
     vm.saveOutput = saveOutput;
     vm.saveOutputImage = saveOutputImage;
     vm.removeOutputImage = removeOutputImage;
+    vm.notValidName = adsUtilSevice.uniqueNameInItems;
 
     initialize().then(function() {
         vm.readyToSave = true;

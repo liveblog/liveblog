@@ -7,7 +7,7 @@
         <div class="item-creation">
             <fieldset>
                 <div class="field">
-                    <label translate>Output Name<span class="ft-alert" ng-if="!vm.output.name" translate>required</span></label>
+                    <label translate>Output Name<span class="ft-alert" ng-if="vm.notValidName(vm.output, vm.outputs)">{{ vm.notValidName(vm.output, vm.outputs) }}</span></label>
                     <input type="text" ng-model="vm.output.name" maxlength="24" required>
                 </div>
                 <div class="field">
@@ -74,7 +74,7 @@
         <div>
             <button type="button" class="btn btn-default pull-left" translate ng-click="vm.cancelModal()">Cancel</button>
             <button type="button" class="btn btn-primary btn-info" translate ng-click="vm.saveOutput()"            
-            ng-disabled="!vm.output.name || !vm.readyToSave || vm.disableSave" >Save</button>
+            ng-disabled="vm.notValidName(vm.output, vm.outputs) || !vm.output.name || !vm.readyToSave || vm.disableSave" >Save</button>
         </div>
     </div>
 </div>
