@@ -26,7 +26,7 @@ var vm = {
  */
 function getPosts(opts) {
   var dbQuery = getQuery({
-    sort: settings.postOrder || opts.sort,
+    sort: opts.sort || settings.postOrder,
     highlightsOnly: false || opts.highlightsOnly,
     fromDate: opts.fromDate
       ? opts.fromDate
@@ -39,6 +39,10 @@ function getPosts(opts) {
 
   return helpers.getJSON(fullPath)
     .then(function(api_response) {
+      if (opts.returnPromise) {
+        return api_response;
+      }
+
       updateViewModel(api_response, opts);
       renderPosts(api_response, opts);
     })
@@ -67,9 +71,13 @@ function loadPosts(opts) {
   var opts = opts || {};
   opts.fromDate = vm.latestUpdate;
 
-  return getPosts(opts).catch(function(err) {
-    // catch all errors here
-  })
+  return getPosts(opts)
+    .then(function(posts) {
+      return posts;
+    })
+    .catch(function(err) {
+      // catch all errors here
+    })
 };
 
 /**
@@ -114,7 +122,11 @@ function renderPosts(api_response, opts) {
  * @param {object} api_response - liveblog API response JSON.
  */
 function updateViewModel(api_response, opts) {
-  vm._items.push.apply(vm._items, api_response._items);
+  if (opts.sort === 'oldest_first') {
+    vm._items = api_reponse._items;
+  } else {
+    vm._items.push.apply(vm._items, api_response._items);
+  }
 
   if (!opts.fromDate) { // Means we're not polling
     view.toggleLoadMore(isTimelineEnd(api_response)) // the end?
@@ -198,7 +210,15 @@ function getQuery(opts) {
   };
 
   if (opts.sort === "oldest_first") {
-    query.sort[0].order.order = "asc"
+    query.sort[0]._updated.order = "asc"
+  }
+
+  if (opts.sort === "oldest_first" || opts.sort === "newest_first") {
+    query.query.filtered.filter.and.forEach(function(rule, index) {
+      if (rule.hasOwnProperty('range')) {
+        query.query.filtered.filter.and.splice(index, 1);
+      }
+    });
   }
 
   return encodeURI(JSON.stringify(query));

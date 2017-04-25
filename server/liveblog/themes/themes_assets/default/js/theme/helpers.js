@@ -57,7 +57,9 @@ function getJSON(url) {
 
     xhr.open('GET', url);
     xhr.onload = function() {
-      if (xhr.status === 200) resolve(JSON.parse(xhr.responseText));
+      if (xhr.status === 200) {
+        resolve(JSON.parse(xhr.responseText));
+      }
       else reject(xhr.responseText);
     };
 
