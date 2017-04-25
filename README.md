@@ -3,7 +3,7 @@
 [Fork](https://github.com/liveblog/liveblog) •
 [License](https://github.com/liveblog/liveblog/blob/master/LICENSE) •
 [Documentation](http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/) •
-*Version 3.1.2*
+*Version 3.1.3*
 
 [![Build Status](https://travis-ci.org/liveblog/liveblog.svg?branch=master)](https://travis-ci.org/liveblog/liveblog)
 
@@ -194,4 +194,14 @@ Once the provisioning done whil still in the virtual machine:
 
 ```
 /opt/liveblog/scripts/vagrant-start-dev.sh
+```
+
+### Miscellaneous
+
+**Run liveblog front end in production mode**
+
+```javascript
+cd client
+grunt build --force
+grunt connect:build
 ```

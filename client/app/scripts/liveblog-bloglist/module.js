@@ -157,22 +157,25 @@
             $scope.accessRequestedTo = blog;
             $scope.showBlogAccessModal = true;
 
-            if (config.subscriptionLevel && !config.subscriptionLevel == '')
+            if (config.subscriptionLevel
+            && ['solo', 'team'].indexOf(config.subscriptionLevel) !== -1) {
                 $scope.checkAccessRequestLimit(blog);
-            else
+            } else {
                 $scope.allowAccessRequest = true;
+            }
         };
 
         $scope.checkAccessRequestLimit = function(blog) {
-            console.log('check access request limit');
             $scope.allowAccessRequest = false;
 
             var theoricalMembers = [];
 
-            blog.members.forEach(function(member) {
-                if (theoricalMembers.indexOf(member.user) === -1)
-                  theoricalMembers.push(member.user);
-            });
+            if (blog.members) {
+                blog.members.forEach(function(member) {
+                    if (theoricalMembers.indexOf(member.user) === -1)
+                      theoricalMembers.push(member.user);
+                });
+            }
 
             $http({
                 url: config.server.url + '/blogs/' + blog._id + '/request_membership',
