@@ -1,4 +1,4 @@
-<button ng-click="vm.toggleSelector()" class="btn btn-info btn-mini btn--plus"><i class="icon-white icon-plus-large"></i></button>
+<button ng-click="vm.toggleSelector()" class="btn btn--primary btn-mini btn--plus"><i class="icon-white icon-plus-large"></i></button>
 <div class="dropdown-content" ng-click="$event.stopPropagation();" ng-if="vm.openSelector">
     <div class="user-select">
         <div>
@@ -21,7 +21,7 @@
     </div>
     <div class="footer">
         <button
-            class="btn btn-info pull-right"
+            class="btn btn--primary pull-right"
             ng-click="vm.confirmPreselection(); vm.toggleSelector()"
             translate>Select</button>
         <button
