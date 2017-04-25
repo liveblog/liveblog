@@ -113,6 +113,10 @@ class ThemesResource(Resource):
         'seoTheme': {
             'type': 'boolean',
             'default': False
+        },
+        'l10n': {
+            'type': 'dict',
+            'default': {}
         }
     }
     datasource = {
