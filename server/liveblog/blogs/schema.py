@@ -57,5 +57,35 @@ blogs_schema = {
     'start_date': {
         'type': 'datetime',
         'default': None
+    },
+    'last_created_post': {
+        'type': 'dict',
+        'schema': {
+            '_id': {'type': 'objectid'},
+            '_updated': {'type': 'datetime'},
+        },
+        'data_relation': {
+            'resource': 'posts',
+            'field': '_id',
+            'embeddable': True
+        },
+        'default': {}
+    },
+    'last_updated_post': {
+        'type': 'dict',
+        'schema': {
+            '_id': {'type': 'objectid'},
+            '_updated': {'type': 'datetime'},
+        },
+        'data_relation': {
+            'resource': 'posts',
+            'field': '_id',
+            'embeddable': True
+        },
+        'default': {}
+    },
+    'total_posts': {
+        'type': 'integer',
+        'default': 0
     }
 }
