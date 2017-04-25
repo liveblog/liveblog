@@ -122,10 +122,11 @@ function renderPosts(api_response, opts) {
  * @param {object} api_response - liveblog API response JSON.
  */
 function updateViewModel(api_response, opts) {
-  if (opts.sort === 'oldest_first')
+  if (opts.sort === 'oldest_first') {
     vm._items = api_reponse._items;
-  else
+  } else {
     vm._items.push.apply(vm._items, api_response._items);
+  }
 
   if (!opts.fromDate) { // Means we're not polling
     view.toggleLoadMore(isTimelineEnd(api_response)) // the end?
