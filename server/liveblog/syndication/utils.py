@@ -15,8 +15,7 @@ from superdesk import get_resource_service
 from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
 from apps.auth import SuperdeskTokenAuth
 from .exceptions import APIConnectionError, DownloadError
-from .tasks import fetch_image
-
+from werkzeug.datastructures import FileStorage
 
 logger = logging.getLogger('superdesk')
 
@@ -181,7 +180,7 @@ def _fetch_and_create_image_item(renditions, **meta):
 
     item_data = dict()
     item_data['type'] = 'picture'
-    item_data['media'] = fetch_image(image_url, mimetype)
+    item_data['media'] = FileStorage(stream=fetch_url(image_url), content_type=mimetype)
     archive_service = get_resource_service('archive')
     item_id = archive_service.post([item_data])[0]
     archive = archive_service.find_one(req=None, _id=item_id)
