@@ -4,9 +4,36 @@
 
 'use strict';
 var helpers = require("./helpers")
+var templates = require('./templates')
 
 var timelineElem = helpers.getElems("lb-posts")
   , loadMorePostsButton = helpers.getElems("load-more-posts");
+
+function renderTimeline(posts) {
+  var renderedPosts = [];
+
+  posts._items.forEach(function(post) {
+    renderedPosts.push(templates.post({
+      item: post
+    }))
+  });
+
+  document.querySelectorAll('.lb-post').forEach(function(el) {
+    el.remove();
+  });
+
+  renderedPosts.forEach(function(renderedPost) {
+    timelineElem[0].innerHTML += renderedPost;
+  });
+}
+
+function toggleSortBtn(name) {
+  document
+    .querySelectorAll('.sorting-bar__order')
+    .forEach(function(btn) {
+      btn.classList.toggle('sorting-bar__order--active', btn.id === name);
+    });
+}
 
 /**
  * Add post nodes to DOM, do so regardless of settings.autoApplyUpdates,
@@ -49,6 +76,7 @@ function loadEmbeds() {
 function toggleLoadMore(shouldToggle) {
   loadMorePostsButton[0].classList.toggle(
     "mod--hide", shouldToggle)
+  return;
 };
 
 /**
@@ -98,7 +126,9 @@ module.exports = {
   addPosts: addPosts,
   deletePost: deletePost,
   displayNewPosts: displayNewPosts,
+  renderTimeline: renderTimeline,
   updatePost: updatePost,
   updateTimestamps: updateTimestamps,
-  toggleLoadMore: toggleLoadMore
+  toggleLoadMore: toggleLoadMore,
+  toggleSortBtn: toggleSortBtn
 }
