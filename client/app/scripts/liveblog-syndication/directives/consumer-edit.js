@@ -58,10 +58,11 @@ export default function consumerEdit(api, notify, _) {
                     if (err.data.hasOwnProperty('_issues')) {
                         Object.keys(err.data._issues).forEach(function(key) {
                             var issue = err.data._issues[key];
-                            if (typeof issue === 'object') {
-                                if (issue.unique === true)
-                                    issue = gettext('The selected field value is not unique.');
+
+                            if (typeof issue === 'object' && issue.unique === 1) {
+                                issue = gettext('The selected field value is not unique.');
                             }
+
                             scope.consumerForm[key].issue = issue;
                         });
                     }
