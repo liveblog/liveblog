@@ -105,7 +105,7 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
     read: false // We're only after the file paths
   });
 
-  return gulp.src('./templates/index.html')
+  return gulp.src('./templates/template-index.html')
     .pipe(plugins.inject(sources))
     .pipe(plugins.nunjucks.compile({
       api_response: testdata.api_response,
@@ -141,7 +141,7 @@ gulp.task('template-inject', ['less', 'browserify'], function() {
     }))
 
     // Add nunjucks/jinja2 template for server-side processing.
-    .pipe(plugins.inject(gulp.src(['./templates/content.html']), {
+    .pipe(plugins.inject(gulp.src(['./templates/template-timeline.html']), {
       starttag: '<!-- inject:template-content -->',
       transform: function(filepath, file) {
         return file.contents.toString();
@@ -182,7 +182,7 @@ gulp.task('serve', ['browserify', 'less', 'index-inject'], function() {
 
 
 // Watch
-gulp.task('watch-static', ['debug', 'serve'], function() {
+gulp.task('watch-static', ['serve'], function() {
   var js = gulp.watch(paths.js, ['browserify', 'index-inject'])
     , less = gulp.watch(paths.less, ['less', 'index-inject'])
     , templates = gulp.watch(paths.templates, ['index-inject']);
