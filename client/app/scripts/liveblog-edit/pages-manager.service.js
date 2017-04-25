@@ -184,7 +184,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
         /**
          * Replace the old post with the new updated post.
          * Compare post ids instead of relying on indexes.
-         * This method does not returning anything and modifies directly self.pages
+         * This method does not return anything and modifies directly self.pages
          */
         function updatePost(postToUpdate) {
             self.pages.forEach((page, pageIndex) => {
