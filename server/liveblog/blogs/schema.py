@@ -61,7 +61,7 @@ blogs_schema = {
     'last_created_post': {
         'type': 'dict',
         'schema': {
-            '_id': {'type': 'objectid'},
+            '_id': {'type': 'string'},
             '_updated': {'type': 'datetime'},
         },
         'default': {}
@@ -69,7 +69,7 @@ blogs_schema = {
     'last_updated_post': {
         'type': 'dict',
         'schema': {
-            '_id': {'type': 'objectid'},
+            '_id': {'type': 'string'},
             '_updated': {'type': 'datetime'},
         },
         'default': {}
