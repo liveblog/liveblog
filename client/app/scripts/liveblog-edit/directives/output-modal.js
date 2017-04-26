@@ -34,6 +34,7 @@ function outputModalController($rootScope, api, urls, notify, modal, upload) {
     vm.saveOutput = saveOutput;
     vm.saveOutputImage = saveOutputImage;
     vm.removeOutputImage = removeOutputImage;
+    vm.ordering = [{'title': 'Ascending', 'value': '1'}, {'title': 'Descending', 'value': '-1'}];
 
     initialize().then(function() {
         vm.readyToSave = true;
@@ -59,7 +60,8 @@ function outputModalController($rootScope, api, urls, notify, modal, upload) {
             name: vm.output.name,
             blog: vm.blog._id,
             collection: vm.output.collection,
-            style: vm.output.style
+            style: vm.output.style,
+            settings: vm.output.settings
         };
         // disable save button
         vm.disableSave = true;
