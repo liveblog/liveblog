@@ -1,28 +1,21 @@
-import hmac
 import json
-import uuid
 import hmac
 import logging
-import requests
 import tempfile
 import urllib.parse
 import uuid
-from hashlib import sha1
 from flask import make_response, abort
 import requests
 from bson import ObjectId
 from hashlib import sha1
-from flask import make_response
 from eve.io.mongo import MongoJSONEncoder
-from .exceptions import APIConnectionError, DownloadError
-from requests.exceptions import RequestException
+from requests.exceptions import RequestException, ConnectionError, ConnectTimeout
 from requests.packages.urllib3.exceptions import MaxRetryError
 from superdesk import get_resource_service
 from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
 from apps.auth import SuperdeskTokenAuth
 from .exceptions import APIConnectionError, DownloadError
-from .tasks import fetch_image
-
+from werkzeug.datastructures import FileStorage
 
 logger = logging.getLogger('superdesk')
 
@@ -79,6 +72,10 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
 
     session = requests.Session()
     session.trust_env = False
+    adapter = requests.adapters.HTTPAdapter(max_retries=0)
+    session.mount('http://', adapter)
+    session.mount('https://', adapter)
+
     logger.info('API {} request to {} with params={} and data={}'.format(method, api_url, args, data))
     headers = {
         'Content-Type': 'application/json'
@@ -88,7 +85,7 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
 
     try:
         response = requests.request(method, api_url, headers=headers, params=args, data=data, timeout=timeout)
-    except (ConnectionError, RequestException, MaxRetryError):
+    except (ConnectionError, ConnectTimeout, RequestException, MaxRetryError):
         raise APIConnectionError('Unable to connect to api_url "{}".'.format(api_url))
 
     logger.warning('API {} request to {} - response: {} {}'.format(
@@ -183,7 +180,7 @@ def _fetch_and_create_image_item(renditions, **meta):
 
     item_data = dict()
     item_data['type'] = 'picture'
-    item_data['media'] = fetch_image(image_url, mimetype)
+    item_data['media'] = FileStorage(stream=fetch_url(image_url), content_type=mimetype)
     archive_service = get_resource_service('archive')
     item_id = archive_service.post([item_data])[0]
     archive = archive_service.find_one(req=None, _id=item_id)
@@ -214,7 +211,7 @@ def get_producer_post_id(in_syndication, post_id):
 
 def extract_producer_post_data(post, fields=('_id', '_updated', 'lb_highlight', 'sticky', 'post_status')):
     """Extract only useful data from original producer blog post."""
-    return {key: post[key] for key in fields}
+    return {key: post.get(key) for key in fields}
 
 
 def get_post_creator(post):
@@ -235,13 +232,14 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
     """Create syndicted blog post data using producer post, fetched items and incoming syndication."""
     post_items = []
     for item in items:
-        meta = item.pop('meta')
-        if item['item_type'] == 'image':
-            item = _fetch_and_create_image_item(
-                renditions=meta['media']['renditions'],
-                caption=meta['caption'],
-                credit=meta['credit']
-            )
+        if item['item_type'] != 'embed':
+            meta = item.pop('meta')
+            if item['item_type'] == 'image':
+                item = _fetch_and_create_image_item(
+                    renditions=meta['media']['renditions'],
+                    caption=meta['caption'],
+                    credit=meta['credit']
+                )
         item['blog'] = in_syndication['blog_id']
         post_items.append(item)
 
@@ -276,12 +274,13 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
                 'refs': item_refs
             }
         ],
-        'lb_highlight': False,
-        'sticky': False,
+        'lb_highlight': producer_post['lb_highlight'] if 'lb_highlight' in producer_post.keys() else False,
+        'sticky': producer_post['sticky'] if 'sticky' in producer_post.keys() else False,
         'syndication_in': in_syndication['_id'],
         'particular_type': 'post',
         'post_status': post_status,
-        'producer_post_id': producer_post_id
+        'producer_post_id': producer_post_id,
+        'deleted': False
     }
     return new_post
 

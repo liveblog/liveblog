@@ -1,7 +1,6 @@
-'use strict'
+liveblogAnalyticsController.$inject = ['$scope','$location', 'api', 'analytics', 'blog', 'notify'];
 
-LiveblogAnalyticsController.$inject = ['$scope','$location', 'api', 'analytics', 'blog', 'notify', ];
-function LiveblogAnalyticsController($scope, $location, api, analytics, blog, notify) {
+function liveblogAnalyticsController($scope, $location, api, analytics, blog, notify) {
   var vm = this;
 
   var close = function() { // Return to blog list page
@@ -10,12 +9,13 @@ function LiveblogAnalyticsController($scope, $location, api, analytics, blog, no
 
   var loadAnalytics = function(page) {
     var q = { page: page || 1, max_results: 200 };
-    api('blogs/<regex("[a-f0-9]{24}"):blog_id>/bloganalytics', {_id: blog._id}).query(q)
-    .then(function(data) {
-      if (q.page == 1) $scope.analytics_data = data;
-      else $scope.analytics_data._items.concat(data._items);
-      if (data._links.next) loadAnalytics(q.page + 1)
-    })
+    api('blogs/<regex("[a-f0-9]{24}"):blog_id>/bloganalytics', {_id: blog._id})
+        .query(q)
+        .then(function(data) {
+          if (q.page === 1) $scope.analytics_data = data;
+          else $scope.analytics_data._items.concat(data._items);
+          if (data._links.next) loadAnalytics(q.page + 1)
+        })
   };
 
   var downloadCSV = function() { // Convert relevant item fields to CSV
@@ -62,5 +62,4 @@ function LiveblogAnalyticsController($scope, $location, api, analytics, blog, no
 
 };
 
-angular.module('liveblog.analytics')
-  .controller('LiveblogAnalyticsController', LiveblogAnalyticsController)
+export default liveblogAnalyticsController;

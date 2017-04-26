@@ -21,7 +21,7 @@
             <h3 class="page-nav-title">Settings</h3>
             <button ng-click="settings.saveAndClose()" class="btn btn-info pull-right" type="button" translate ng-disabled="!(settings.forms.dirty || settings.forms[settings.tab].$dirty)">Done</button>
             <button ng-click="settings.save()"  class="btn btn-info pull-right" type="button" translate ng-disabled="!(settings.forms.dirty || settings.forms[settings.tab].$dirty)">Save</button>
-            <button ng-click="settings.close()" class="btn btn-default pull-right" type="button" translate>Cancel</button>
+            <button ng-click="settings.close()" class="btn btn-default pull-right last-right" type="button" translate>Cancel</button>
         </div>
         <div class="tabbable outer">
             <ul class="nav-tabs nav-stacked">
@@ -83,6 +83,7 @@
                                 <div class="form-input">
                                     <div class="form-box"
                                             sd-text-editor
+                                            contenteditable="true"
                                             data-config="{toolbar: {buttons: ['bold', 'italic', 'underline', 'strikethrough', 'orderedlist', 'unorderedlist'],sticky: false,static: true,align: 'left',updateOnEmptySelection: true}}"
                                             data-language="en"
                                             ng-model="settings.newBlog.description"
@@ -350,46 +351,4 @@
             </div>
         </div>
     </div>
-</div>
-
-<div sd-modal="" data-model="settings.uploadModal">
-    <form ng-submit="settings.upload(settings.preview)" name="uploadImageForm">
-        <div class="modal-header">
-            <button class="close" ng-click="settings.closeUploadModal()"><i class="icon-close-small"></i></button>
-            <h3 translate>Upload Blog Image</h3>
-        </div>
-        <div class="modal-body">
-            <div class="upload-form">
-                <section
-                    class="main"
-                    sd-image-preview="settings.preview.url"
-                    data-file="settings.preview.img"
-                    data-progress-width="settings.progress.width">
-                    <div class="upload-progress" ng-show="progress.width">
-                        <div class="bar" style="width: {{ progress.width }}%;"></div>
-                    </div>
-                    <div class="computer" ng-if="!settings.preview.url" ng-hide="settings.progress.width">
-                        <div class="dropzone" ng-file-drop="settings.preview.img = $files[0]">
-                            <div class="text" translate>Drop it here</div>
-                            <div class="input-holder">
-                                <input type="file" accept="image/*;capture=camera" ng-file-select="settings.preview.img = $files[0]">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="preview" ng-if="settings.preview.url">
-                        <div class="original">
-                            <div sd-plain-image
-                                data-src="settings.preview.url"
-                                data-progress-width="settings.progress.width"
-                                data-file="settings.preview.img"
-                            ></div>
-                        </div>
-                    </div>
-            </div>
-        </div>
-
-        <div class="modal-footer">
-            <button type="submit" class="btn btn-primary btn-info" translate ng-disabled="!settings.preview.url">Upload</button>
-        </div>
-    </form>
 </div>

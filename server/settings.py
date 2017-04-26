@@ -22,14 +22,37 @@ except ImportError:
 
 
 def env(variable, fallback_value=None):
+    # Get env value from env
     env_value = os.environ.get(variable, '')
-    if len(env_value) == 0:
+    env_value = env_value.strip()
+    if not env_value:
+        # No env value, return fallback_value.
         return fallback_value
-    else:
-        if env_value == "__EMPTY__":
-            return ''
+
+    if env_value == "__EMPTY__":
+        # Return None for __EMPTY__.
+        return ''
+
+    if not fallback_value:
+        # Return env value if fallback is not available
+        return env_value
+
+    # Get type of fallback value.
+    type_of = type(fallback_value)
+    if isinstance(fallback_value, (list, tuple)):
+        # Cast comma-separated env value to list.
+        return [value.strip() for value in env_value.split(',')]
+    elif isinstance(fallback_value, bool):
+        # Cast string env value to bool.
+        if env_value in ('1', 'true', 'True'):
+            return True
+        elif env_value in ('0', 'false', 'False'):
+            return False
         else:
-            return env_value
+            return fallback_value
+    else:
+        # Cast env value to fallback type.
+        return type_of(env_value)
 
 
 ABS_PATH = os.path.abspath(os.path.dirname(__file__))
@@ -135,7 +158,6 @@ INSTALLED_APPS = [
     'liveblog.themes',
     'liveblog.global_preferences',
     'liveblog.client_modules',
-    'liveblog.blogslist',
     'liveblog.syndication',
     'liveblog.freetypes',
     'liveblog.marketplace',
@@ -226,7 +248,7 @@ if LDAP_SERVER:
 else:
     INSTALLED_APPS.append('apps.auth.db')
 
-SUPERDESK_TESTING = (env('SUPERDESK_TESTING', 'true').lower() == 'true')
+SUPERDESK_TESTING = (env('SUPERDESK_TESTING', 'false').lower() == 'true')
 
 # Debuging state, this is used when generating theme emebed files default `false`.
 LIVEBLOG_DEBUG = (env('LIVEBLOG_DEBUG', 'false').lower() == 'true')
@@ -272,6 +294,10 @@ SYNDICATION_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
 SYNDICATION_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)
 SYNDICATION_EXCLUDED_ITEMS = env('SYNDICATION_EXCLUDED_ITEMS', ('Advertisement Local', 'Advertisement Remote'))
 
+# S3 Blog Publishing Settings
+S3_CELERY_MAX_RETRIES = env('SYNDICATION_CELERY_MAX_RETRIES', 5)
+S3_CELERY_COUNTDOWN = env('SYNDICATION_CELERY_COUNTDOWN', 60)
+
 # Marketplace Settings
 MARKETPLACE_APP_URL = env('MARKETPLACE_APP_URL', 'https://lb-market.lab.sourcefabric.org/api')
 
@@ -283,3 +309,12 @@ SUBSCRIPTION_LEVEL = env('SUBSCRIPTION_LEVEL', SUBSCRIPTION_LEVEL_NETWORK)
 SUBSCRIPTION_MAX_ACTIVE_BLOGS = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 3}
 SUBSCRIPTION_MAX_BLOG_MEMBERS = {SUBSCRIPTION_LEVEL_SOLO: 2, SUBSCRIPTION_LEVEL_TEAM: 4}
 SUBSCRIPTION_MAX_THEMES = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 3}
+
+# Settings to NO_TAKES for PACKAGES in ARCHIVE
+NO_TAKES = True
+
+# Blog embeds S3 publishing options.
+S3_PUBLISH_BLOGSLIST = env('S3_PUBLISH_BLOGSLIST', True)
+
+# Superdesk-core related settings.
+CONTENTAPI_URL = None

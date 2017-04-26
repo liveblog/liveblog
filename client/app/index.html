@@ -1,31 +1,21 @@
 <!doctype html>
 <html class="no-js">
   <head>
+    <base href="/">
     <meta charset="utf-8">
     <title>Liveblog</title>
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <link rel="icon" href="favicon.ico">
-
-    <!-- Liveblog specific styles -->
-    <link rel="stylesheet" href="styles/css/lb-bootstrap.css">
-    <link rel="stylesheet" href="styles/css/app.css">
-    <link rel="stylesheet" href="styles/css/liveblog.css">
-
-    <!-- Dependecy specific styles -->
-    <link rel="stylesheet" href="styles/css/sir-trevor-icons.css" type="text/css" media="screen" title="no title" charset="utf-8">
-    <link rel="stylesheet" href="styles/css/sir-trevor.css" type="text/css" media="screen" title="no title" charset="utf-8">
-    <link rel="stylesheet" href="scripts/bower_components/jcrop/css/jquery.Jcrop.css">
-    <link rel="stylesheet" href="scripts/bower_components/sir-trevor-js/sir-trevor.css" type="text/css" media="screen" title="no title" charset="utf-8">
-
+    <link rel="stylesheet" href="sir-trevor.css" type="text/css" media="screen" title="no title" charset="utf-8">
   </head>
   <body>
 
     <div sd-superdesk-view></div>
-    <div class="dropdown help-link" dropdown>
-        <div class="dropdown-toggle" dropdown-toggle style="cursor:pointer">Help <b class="caret"></b></div>
-        <ul class="dropdown-menu">
+    <div class="dropdown help-link liveblog-help" dropdown style="visibility: hidden">
+        <div class="dropdown__toggle" dropdown__toggle style="cursor:pointer">Help <b class="caret"></b></div>
+        <ul class="dropdown__menu" style="min-width: 90px;">
             <li><a href="https://github.com/liveblog/liveblog" target="_blank">Github</a></li>
             <li translate ng-click="aboutModal = aboutModal? false: true"><button translate>About</button></li>
         </ul>
@@ -52,7 +42,7 @@
             <div class="about-page-text">
                 <p>
                     <div style="font-weight: 700" translate>
-                        Live Blog 3.1.3
+                        Live Blog 3.2.0
                     </div>
                     <div translate>
                         Released on 16/03/2017
@@ -80,223 +70,9 @@
         </div>
     </div>
 
-
-    <!-- build:js scripts/vendor.js -->
-    <script src="scripts/bower_components/jquery/dist/jquery.js"></script>
-    <script src="scripts/bower_components/jquery-ui/jquery-ui.js"></script>
-    <script src="scripts/bower_components/bootstrap/dist/js/bootstrap.js"></script>
-
-    <script src="scripts/bower_components/angular/angular.js"></script>
-    <script src="scripts/bower_components/angular-messages/angular-messages.min.js"></script>
-    <script src="scripts/bower_components/gridster/dist/jquery.gridster.with-extras.js"></script>
-    <script src="scripts/bower_components/medium-editor/dist/js/medium-editor.js"></script>
-    <script src="scripts/bower_components/ment.io/dist/mentio.js"></script>
-    <script src="scripts/bower_components/rangy/rangy-core.js"></script>
-    <script src="scripts/bower_components/rangy/rangy-selectionsaverestore.js"></script>
-    <script src="scripts/bower_components/requirejs/require.js"></script>
-    <script src="scripts/bower_components/medium-editor/dist/medium-editor.min.js"></script>
-    <!--  from liveblog -->
-    <script src="scripts/bower_components/lrInfiniteScroll/lrInfiniteScroll.js"></script>
-    <!-- endbuild -->
-
-    <!-- build:js scripts/superdesk-core.js -->
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/editor/editor.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/editor/spellcheck/spellcheck.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/features/features.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/services/asset.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/services/image-factory.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/list/list.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/keyboard/keyboard.js"></script>
-
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/privileges/privileges.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/notification/notification.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/itemList/itemList.js"></script>
-
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/menu/menu.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/editor/editor.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/menu/notifications/notifications.js"></script>
-
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-workspace/content/content.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-dashboard/workspace-tasks/tasks.js"></script>
-
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-users/users.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-users/profile.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-users/activity/activity.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-users/import/import.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-groups/groups.js"></script>
-
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-publish/publish.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-templates/templates.js"></script>
-    <!-- endbuild -->
-
-    <!-- build:js scripts/superdesk.js -->
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-desks/aggregate.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-desks/aggregate-widget/aggregate.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-desks/desks.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/authoring.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/widgets/widgets.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/comments/comments.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/versioning/versioning.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/versioning/versions/versions.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/versioning/history/history.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/metadata/metadata.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/workqueue/workqueue.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/packages/packages.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/editor/find-replace.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/multiedit/multiedit.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-authoring/macros/macros.js"></script>
-
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-search/search.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-legal-archive/legal_archive.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-stream/stream.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-packaging/packaging.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-highlights/highlights.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-content-filters/content-filters.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-dictionaries/dictionaries.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-vocabularies/vocabularies.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-archive/directives.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk/editor/spellcheck/spellcheck.js"></script>
-
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-monitoring/monitoring.js"></script>
-    <script src="scripts/bower_components/superdesk/client/app/scripts/superdesk-workspace/workspace.js"></script>
-    <!-- endbuild -->
-
-    <!-- build:js scripts/liveblog.js -->
-    <script src="scripts/liveblog-security.service.js"></script>
-    <script src="scripts/liveblog-bloglist/module.js"></script>
-    <script src="scripts/liveblog-settings/module.js"></script>
-    <script src="scripts/liveblog-themes/module.js"></script>
-    <script src="scripts/liveblog-themes/theme-settings-modal.js"></script>
-    <script src="scripts/liveblog-themes/themes.services.js"></script>    
-    <script src="scripts/liveblog-themes/directives.js"></script>
-
-    <script src="scripts/flux.js"></script>
-
-    <!--Liveblog Analytics-->
-    <script src="scripts/liveblog-analytics/index.js"></script>
-    <script src="scripts/liveblog-analytics/controllers/controller-analytics.js"></script>
-    <script src="scripts/liveblog-analytics/directives/directives-analytics.js"></script>
-
-    <!--Liveblog Syndication-->
-    <script src="scripts/liveblog-syndication/index.js"></script>
-    <script src="scripts/liveblog-syndication/controllers/base.js"></script>
-    <script src="scripts/liveblog-syndication/controllers/syndication.js"></script>
-
-    <script src="scripts/liveblog-syndication/actions/ingest-panel.js"></script>
-    <script src="scripts/liveblog-syndication/reducers/ingest-panel.js"></script>
-    <script src="scripts/liveblog-syndication/actions/incoming-syndication.js"></script>
-    <script src="scripts/liveblog-syndication/reducers/incoming-syndication.js"></script>
-
-    <script src="scripts/liveblog-syndication/directives/notifications-count.js"></script>
-    <script src="scripts/liveblog-syndication/directives/first-contact.js"></script>
-    <script src="scripts/liveblog-syndication/directives/ingest-panel.js"></script>
-    <script src="scripts/liveblog-syndication/directives/ingest-panel-dropdown.js"></script>
-    <script src="scripts/liveblog-syndication/directives/copy-to-clipboard.js"></script>
-    <script src="scripts/liveblog-syndication/directives/attach-syndicated-blogs-modal.js"></script>
-    <script src="scripts/liveblog-syndication/directives/incoming-syndication.js"></script>
-    <script src="scripts/liveblog-syndication/directives/syndication-switch.js"></script>
-    <script src="scripts/liveblog-syndication/directives/synd-rm-blog.js"></script>
-
-    <script src="scripts/liveblog-syndication/directives/consumers.js"></script>
-    <script src="scripts/liveblog-syndication/directives/consumer-edit.js"></script>
-    <script src="scripts/liveblog-syndication/directives/consumer-list.js"></script>
-    <script src="scripts/liveblog-syndication/directives/contacts-edit.js"></script>
-
-    <script src="scripts/liveblog-syndication/directives/producers.js"></script>
-    <script src="scripts/liveblog-syndication/directives/producer-edit.js"></script>
-    <script src="scripts/liveblog-syndication/directives/producer-list.js"></script>
-
-    <script src="scripts/liveblog-freetypes/module.js"></script>
-
-    <!--Liveblog Marketplace-->
-    <script src="scripts/liveblog-marketplace/index.js"></script>
-    <script src="scripts/liveblog-marketplace/controllers/marketplace.js"></script>
-    <script src="scripts/liveblog-marketplace/directives/search-panel.js"></script>
-    <script src="scripts/liveblog-marketplace/directives/blog-preview-modal.js"></script>
-    <script src="scripts/liveblog-marketplace/directives/blogs-list.js"></script>
-    <script src="scripts/liveblog-marketplace/directives/marketplace-switch.js"></script>
-    <script src="scripts/liveblog-marketplace/actions/marketplace.js"></script>
-    <script src="scripts/liveblog-marketplace/reducers/marketplace.js"></script>
-
-    <!-- endbuild -->
-
-    <script src="scripts/lb-templates.js"></script>
-
-    <!-- build:js scripts/config.js -->
-    <script src="scripts/config.js"></script>
-    <!-- endbuild -->
-
-    <!-- build:js scripts/main.js -->
-    <script src="scripts/main.js"></script>
-    <!-- endbuild -->
-
     <script src="config.js"></script>
+    <script src="sir-trevor.js"></script>
+    <script src="app.bundle.js"></script>
 
-        <script>
-            var config = <%= grunt.toJSON(config) %>;
-            config.paths = {
-                superdesk: 'scripts/bower_components/superdesk/client/app/'
-            };
-
-            if (typeof window.superdeskConfig != 'undefined')
-                angular.extend(config, window.superdeskConfig);
-
-            var modules = [
-            'liveblog.bloglist',
-            'liveblog.edit',
-            'liveblog.posts',
-            'liveblog.blog',
-            'liveblog.analytics',
-            'liveblog.freetypes',
-            'liveblog.themes',
-            'liveblog.flux',
-            'superdesk.settings',
-            'superdesk.dashboard',
-            'superdesk.users',
-            'superdesk.archive',
-            'superdesk.archive.directives',
-            'superdesk.ingest',
-            'superdesk.desks',
-            'superdesk.groups',
-            'superdesk.authoring',
-            'superdesk.authoring.multiedit',
-            'superdesk.packaging',
-            'superdesk.editor',
-            'superdesk.editor.spellcheck',
-            'superdesk.notification',
-            'superdesk.highlights',
-            'superdesk.content_filters',
-            'superdesk.dictionaries',
-            'superdesk.vocabularies',
-            'superdesk.users.import',
-            'superdesk.users.profile',
-            'superdesk.users.activity',
-            'superdesk.stream',
-            'superdesk.publish',
-            'superdesk.templates',
-            'superdesk.monitoring',
-            'superdesk.loading',
-            'lb.templates',
-            'ngMessages'
-        ];
-
-        if (config.syndication)
-            modules.push('liveblog.syndication');
-
-        if (config.marketplace)
-            modules.push('liveblog.marketplace');
-
-        require([
-            'main',
-            'liveblog-edit/module',
-            'liveblog-edit/directives',
-            'superdesk-settings/module',
-            'superdesk-dashboard/module',
-            'superdesk-archive/module',
-            'superdesk-ingest/module'
-            ], function(bootstrap) {
-                bootstrap(config, modules);
-            });
-    </script>
   </body>
 </html>

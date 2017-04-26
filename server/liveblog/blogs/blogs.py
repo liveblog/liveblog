@@ -9,87 +9,30 @@
 # AUTHORS and LICENSE files distributed with this source code, or
 # at https://www.sourcefabric.org/superdesk/license
 
-from superdesk.notification import push_notification
-from superdesk.utc import utcnow
-from superdesk.services import BaseService
-from liveblog.common import get_user, update_dates_for
-from superdesk.metadata.item import metadata_schema
-from superdesk.celery_app import celery
-from superdesk import get_resource_service
-from superdesk.resource import Resource
-from superdesk.activity import add_activity
-from flask import current_app as app, render_template
-from superdesk.emails import send_email
-import liveblog.embed
-from bson.objectid import ObjectId
-import superdesk
-from superdesk.users.services import is_admin
-from superdesk.errors import SuperdeskApiError
 import logging
-from liveblog.blogslist.blogslist import publish_bloglist_embed_on_s3
-from settings import (SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS)
-from superdesk.utc import utcnow
 
+from bson.objectid import ObjectId
+from flask import current_app as app
+from flask import render_template
+from superdesk import get_resource_service
+from superdesk.activity import add_activity
+from superdesk.emails import send_email
+from superdesk.errors import SuperdeskApiError
+from superdesk.notification import push_notification
+from superdesk.resource import Resource
+from superdesk.services import BaseService
+from superdesk.users.services import is_admin
+from superdesk.utc import utcnow
+from liveblog.syndication.exceptions import ProducerAPIError
+
+from liveblog.blogs.tasks import publish_bloglist_embed_on_s3
+from liveblog.common import get_user, update_dates_for
+from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS
+
+from .schema import blogs_schema
+from .tasks import delete_blog_embed_on_s3, publish_blog_embed_on_s3
 
 logger = logging.getLogger('superdesk')
-
-blogs_schema = {
-    'title': metadata_schema['headline'],
-    'description': metadata_schema['description_text'],
-    'picture_url': {
-        'type': 'string',
-        'nullable': True
-    },
-    'picture': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
-    'original_creator': metadata_schema['original_creator'],
-    'version_creator': metadata_schema['version_creator'],
-    'versioncreated': metadata_schema['versioncreated'],
-    'posts_order_sequence': {
-        'type': 'float',
-        'default': 0.00
-    },
-    'blog_status': {
-        'type': 'string',
-        'allowed': ['open', 'closed'],
-        'default': 'open'
-    },
-    'members': {
-        'type': 'list',
-        'schema': {
-            'type': 'dict',
-            'schema': {
-                'user': Resource.rel('users', True)
-            }
-        },
-        'maxmembers': True
-    },
-    'blog_preferences': {
-        'type': 'dict'
-    },
-    'theme_settings': {
-        'type': 'dict'
-    },
-    'public_url': {
-        'type': 'string'
-    },
-    'syndication_enabled': {
-        'type': 'boolean',
-        'default': False
-    },
-    'market_enabled': {
-        'type': 'boolean',
-        'default': False
-    },
-    'category': {
-        'type': 'string',
-        'allowed': ["", "Breaking News", "Entertainment", "Business and Finance", "Sport", "Technology"],
-        'default': ""  # unsetting a variable is a world of pain
-    },
-    'start_date': {
-        'type': 'datetime',
-        'default': None
-    }
-}
 
 
 class BlogsResource(Resource):
@@ -114,15 +57,16 @@ def send_email_to_added_members(blog, recipients, origin):
     prefs_service = get_resource_service('preferences')
     recipients_email = []
     for user in recipients:
-        # if user want to receive email notification, we add him as recipient
+        # If user want to receive email notification, we add him as recipient.
         if prefs_service.email_notification_is_enabled(user_id=user):
             if isinstance(user, ObjectId):
                 user_doc = get_resource_service('users').find_one(req=None, _id=ObjectId(user))
             else:
                 user_doc = get_resource_service('users').find_one(req=None, _id=ObjectId(user['user']))
             recipients_email.append(user_doc['email'])
+
     if recipients_email:
-        # send emails
+        # Send emails.
         url = '{}/#/liveblog/edit/{}'.format(origin, blog['_id'])
         title = blog['title']
         admins = app.config['ADMINS']
@@ -134,54 +78,31 @@ def send_email_to_added_members(blog, recipients, origin):
                          text_body=text_body, html_body=html_body)
 
 
-@celery.task(soft_time_limit=1800)
-def publish_blog_embed_on_s3(blog_id, safe=True):
-    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
-    if blog['blog_preferences'].get('theme', False):
-        try:
-            public_url = liveblog.embed.publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
-            get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
-            push_notification('blog', published=1, blog_id=str(blog.get('_id')), public_url=public_url)
-            return public_url
-        except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
-            if not safe:
-                raise e
-
-            public_url = '{}://{}/embed/{}'.format(app.config['URL_PROTOCOL'], app.config['SERVER_NAME'],
-                                                   blog.get('_id'))
-            get_resource_service('blogs').system_update(blog['_id'], {'public_url': public_url}, blog)
-            push_notification('blog', published=1, blog_id=str(blog.get('_id')), public_url=public_url)
-            return public_url
-
-
-@celery.task(soft_time_limit=1800)
-def delete_blog_embed_on_s3(blog_id, safe=True):
-        try:
-            liveblog.embed.delete_embed(blog_id)
-        except liveblog.embed.MediaStorageUnsupportedForBlogPublishing as e:
-            if not safe:
-                raise e
-
-
 class BlogService(BaseService):
     notification_key = 'blog'
+
+    def _update_theme_settings(self, doc, theme_name):
+        theme = get_resource_service('themes').find_one(req=None, name=theme_name)
+        if theme:
+            # retrieve the default settings of the theme
+            default_theme_settings = get_resource_service('themes').get_default_settings(theme)
+            # save the theme settings on the blog level
+            doc['theme_settings'] = default_theme_settings
 
     def on_create(self, docs):
         self._check_max_active(len(docs))
         for doc in docs:
             update_dates_for(doc)
             doc['original_creator'] = str(get_user().get('_id'))
-            # set the blog_preferences by merging given preferences with global_prefs
+            # Set the blog_preferences by merging given preferences with global_prefs.
             global_prefs = get_resource_service('global_preferences').get_global_prefs()
             prefs = global_prefs.copy()
             prefs.update(doc.get('blog_preferences', {}))
             doc['blog_preferences'] = prefs
             # find the theme that is assigned to the blog
-            my_theme = get_resource_service('themes').find_one(req=None, name=doc['blog_preferences']['theme'])
-            # retrieve the default settings of the theme
-            default_theme_settings = get_resource_service('themes').get_default_settings(my_theme)
-            # save the theme settings on the blog level
-            doc['theme_settings'] = default_theme_settings
+            theme_name = doc['blog_preferences'].get('theme')
+            if theme_name:
+                self._update_theme_settings(doc, theme_name)
 
             # If "start_date" is set to None, change the value to utcnow().
             if doc['start_date'] is None:
@@ -189,11 +110,12 @@ class BlogService(BaseService):
 
     def on_created(self, docs):
         for blog in docs:
-            # Publish on s3 if possible and save the public_url in the blog
-            publish_blog_embed_on_s3.delay(str(blog['_id']))
-            # notify client with websocket
-            push_notification(self.notification_key, created=1, blog_id=str(blog.get('_id')))
-            # and members with emails
+            blog_id = str(blog['_id'])
+            # Publish on s3 if possible and save the public_url in the blog.
+            publish_blog_embed_on_s3.delay(blog_id)
+            # Notify client with websocket.
+            push_notification(self.notification_key, created=1, blog_id=blog_id)
+            # And with member emails
             members = blog.get('members', {})
             recipients = []
             for user in members:
@@ -201,7 +123,9 @@ class BlogService(BaseService):
                     recipients.append(user)
                 else:
                     recipients.append(user['user'])
+
             notify_members(blog, app.config['CLIENT_URL'], recipients)
+
         # Publish bloglist aswell
         publish_bloglist_embed_on_s3()
 
@@ -232,17 +156,27 @@ class BlogService(BaseService):
         if syndication_enabled is False and out.count():
             raise SuperdeskApiError.forbiddenError(message='Cannot disable syndication: blog has active consumers.')
 
+        # If archiving a blog, remove any syndication in records
+        if blog_status == 'closed':
+            self._on_deactivate(original['_id'])
+
         # If missing, set "start_date" to original post "_created" value.
         if not updates.get('start_date') and original['start_date'] is None:
             updates['start_date'] = original['_created']
 
+        if 'blog_preferences' in updates:
+            theme_name = updates['blog_preferences'].get('theme')
+            if theme_name:
+                self._update_theme_settings(updates, theme_name)
+
     def on_updated(self, updates, original):
-        publish_blog_embed_on_s3.delay(str(original['_id']))
-        # invalidate cache for updated blog
-        app.blog_cache.invalidate(original.get('_id'))
-        # send notifications
+        original_id = str(original['_id'])
+        publish_blog_embed_on_s3.delay(original_id)
+        # Invalidate cache for updated blog.
+        app.blog_cache.invalidate(original_id)
+        # Send notifications,
         push_notification('blogs', updated=1)
-        # notify newly added members
+        # Notify newly added members.
         blog = original.copy()
         blog.update(updates)
         members = updates.get('members', {})
@@ -264,27 +198,52 @@ class BlogService(BaseService):
         delete_blog_embed_on_s3.delay(doc.get('_id'))
 
     def on_deleted(self, doc):
-        # invalidate cache for updated blog
-        blog_id = doc.get('_id')
+        # Invalidate cache for updated blog.
+        blog_id = str(doc['_id'])
         app.blog_cache.invalidate(blog_id)
         delete_blog_embed_on_s3.delay(blog_id)
 
         # Remove syndication on blog post delete.
-        syndication_in = get_resource_service('syndication_in')
         syndication_out = get_resource_service('syndication_out')
         lookup = {'blog_id': blog_id}
-        syndication_in.delete_action(lookup)
         syndication_out.delete_action(lookup)
 
+        self._on_deactivate(blog_id)
+
         # send notifications
+        # Send notifications.
         push_notification('blogs', deleted=1)
 
     def _check_max_active(self, increment):
         subscription = SUBSCRIPTION_LEVEL
         if subscription in SUBSCRIPTION_MAX_ACTIVE_BLOGS:
             active = self.find({'blog_status': 'open'})
-            if (active.count() + increment > SUBSCRIPTION_MAX_ACTIVE_BLOGS[subscription]):
+            if active.count() + increment > SUBSCRIPTION_MAX_ACTIVE_BLOGS[subscription]:
                 raise SuperdeskApiError.forbiddenError(message='Cannot add another active blog.')
+
+    def _on_deactivate(self, blog_id):
+        # Stop syndication when archiving or deleting a blog
+        syndication_in_service = get_resource_service('syndication_in')
+        syndication_ins = syndication_in_service.find({'blog_id': blog_id})
+        producers = get_resource_service('producers')
+        for syndication_in in syndication_ins:
+            producer_id = syndication_in['producer_id']
+            producer_blog_id = syndication_in['producer_blog_id']
+            try:
+                response = producers.unsyndicate(producer_id, producer_blog_id, syndication_in['blog_id'])
+            except ProducerAPIError:
+                logger.warning(
+                    'Producer "{}" responded with error when deleting syndication blog "{}"'.format(
+                        producer_id, producer_blog_id
+                    )
+                )
+
+            if response.status_code != 204:
+                logger.warning('Producer "{}" responded with code "{}" when deleting blog "{}"'.format(
+                    producer_id, response.status_code, producer_blog_id
+                ))
+            else:
+                syndication_in_service.delete_action(lookup={'_id': syndication_in['_id']})
 
 
 class UserBlogsResource(Resource):
@@ -303,22 +262,3 @@ class UserBlogsService(BaseService):
             lookup['members.user'] = ObjectId(lookup['user_id'])
             del lookup['user_id']
         return super().get(req, lookup)
-
-
-class PublishBlogsCommand(superdesk.Command):
-    """
-    Republish blogs on s3 with the right theme
-    """
-
-    def run(self):
-        # retrieves all opened blogs
-        blogs_service = get_resource_service('blogs')
-        blogs = blogs_service.get(req=None, lookup=dict(blog_status='open'))
-        # republish on s3
-        print('\n* Republishing blogs:\n')
-        for blog in blogs:
-            url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
-            print('  - Blog "%s" republished: %s' % (blog['title'], url))
-
-
-superdesk.command('publish_blogs', PublishBlogsCommand())

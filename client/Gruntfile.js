@@ -1,6 +1,4 @@
 module.exports = function (grunt) {
-    'use strict';
-
     // util for grunt.template
     grunt.toJSON = function(input) {
         return JSON.stringify(input);
@@ -11,7 +9,6 @@ module.exports = function (grunt) {
         appDir: 'app',
         tmpDir: '.tmp',
         distDir: 'dist',
-        bowerDir: 'bower',
         poDir: 'po',
         livereloadPort: 35729
     };
@@ -24,66 +21,45 @@ module.exports = function (grunt) {
         configPath: require('path').join(process.cwd(), 'tasks', 'options')
     });
 
-    grunt.registerTask('style', ['less:dev', 'cssmin']);
-
     grunt.registerTask('test', ['karma:unit']);
-    grunt.registerTask('hint', ['jshint', 'jscs']);
-    grunt.registerTask('hint:docs', ['jshint:docs', 'jscs:docs']);
-    grunt.registerTask('ci', ['hint']);
-    grunt.registerTask('ci:travis', ['hint']);
+    grunt.registerTask('ci', ['eslint']);
     grunt.registerTask('bamboo', ['karma:bamboo']);
 
     grunt.registerTask('docs', [
         'clean',
-        'less:docs',
-        'cssmin',
         'template:docs',
         'connect:test',
         'open:docs',
-        'ngtemplates',
-        'watch'
+        'ngtemplates:docs'
     ]);
 
     grunt.registerTask('server', [
         'clean',
-        'style',
-        'template:test',
-        'connect:test',
-        'open:test',
-        'ngtemplates',
-        'watch'
+        'copy:assets',
+        'copy:locales',
+        'copy:index',
+        'copy:config',
+        'copy:sirTrevor',
+        'webpack-dev-server:start'
     ]);
+
+    grunt.registerTask('ci:travis', ['eslint']);
+
     grunt.registerTask('server:e2e', [
         'clean',
-        'style',
         'template:mock',
-        'ngtemplates',
+        'ngtemplates:core',
         'connect:mock' // nothing will be run after that
     ]);
-    grunt.registerTask('server:travis', ['clean', 'style', 'template:travis', 'connect:travis']);
+    grunt.registerTask('server:travis', ['clean', 'template:travis', 'connect:travis']);
 
-    grunt.registerTask('bower', [
-        'build',
-        'copy:bower'
-    ]);
     grunt.registerTask('build', [
         'clean',
-        'less:dev',
-        'ngtemplates',
-        'useminPrepare',
-        'concat',
-        'requirejs', // must go after concat
-        'uglify',
-        'cssmin',
         'copy:assets',
-        'copy:tmp',
-        'copy:js',
-        'copy:fonts',
-        'copy:docs',
-        'template:test',
-        'nggettext_compile',
-        'filerev',
-        'usemin'
+        'copy:locales',
+        'copy:index',
+        'copy:sirTrevor',
+        'webpack:build'
     ]);
 
     grunt.registerTask('package', ['ci', 'build']);

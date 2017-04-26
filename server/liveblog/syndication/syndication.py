@@ -73,6 +73,15 @@ class SyndicationOutService(BaseService):
         except IndexError:
             return
 
+    def consumer_is_syndicating(self, consumer_id):
+        try:
+            result = self.find({'$and': [
+                {'consumer_id': {'$eq': consumer_id}}
+            ]})
+            return result.count() > 0
+        except IndexError:
+            return
+
     def get_blog_syndication(self, blog_id):
         blog = self._get_blog(blog_id)
         if not blog.get('syndication_enabled'):
@@ -231,11 +240,25 @@ class SyndicationIn(Resource):
     schema = syndication_in_schema
 
 
-@syndication_blueprint.route('/api/syndication/webhook', methods=['POST', 'PUT', 'DELETE'])
+@syndication_blueprint.route('/api/syndication/webhook', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def syndication_webhook():
     in_service = get_resource_service('syndication_in')
-    blog_token = request.headers['Authorization']
+    blog_token = request.headers.get('Authorization')
+    # assume if there is no blog token that a get request is just checking for a response from the webhook
+    if not blog_token and request.method == 'GET':
+        return api_response({}, 200)
+
     in_syndication = in_service.find_one(blog_token=blog_token, req=None)
+    if in_syndication is None:
+        return api_error('Blog is not being syndicated', 406)
+
+    blog_service = get_resource_service('client_blogs')
+    blog = blog_service.find_one(req=None, _id=in_syndication['blog_id'])
+    if blog is None:
+        return api_error('Blog not found', 404)
+
+    if blog['blog_status'] != 'open':
+        return api_error('Updates should not be sent for a blog which is not open', 409)
 
     data = request.get_json()
     try:
@@ -258,12 +281,19 @@ def syndication_webhook():
         return api_error('Post "{}" cannot be updated: already updated by "{}"'.format(
                          post_id, publisher), 409)
 
-    if request.method in ('POST', 'PUT'):
+    if request.method == 'GET':
+        return api_response({}, 200)
+    elif request.method in ('POST', 'PUT'):
         new_post = create_syndicated_blog_post(producer_post, items, in_syndication)
         if request.method == 'POST':
             # Create post
             if post:
-                return api_error('Post already exist', 409)
+                # Post may have been previously deleted
+                if post.get('deleted'):
+                    posts_service.update(post_id, new_post, post)
+                    return api_response({'post_id': post_id}, 200)
+                else:
+                    return api_error('Post already exist', 409)
 
             new_post_id = posts_service.post([new_post])[0]
             return api_response({'post_id': str(new_post_id)}, 201)
@@ -272,17 +302,18 @@ def syndication_webhook():
             if not post:
                 return api_error('Post does not exist', 404)
 
-            posts_service.update(post_id, new_post, post)
+            posts_service.patch(post_id, new_post)
             return api_response({'post_id': post_id}, 200)
     else:
         # Delete post
-        posts_service.update(post_id, {'deleted': True}, post)
+        posts_service.patch(post_id, {'deleted': True})
         return api_response({'post_id': post_id}, 200)
 
 
 def _syndication_blueprint_auth():
     auth = ConsumerBlogTokenAuth()
-    authorized = auth.authorized(allowed_roles=[], resource='syndication_blogs')
+    # get requests do no require authorization
+    authorized = request.method == 'GET' or auth.authorized(allowed_roles=[], resource='syndication_blogs')
     if not authorized:
         return abort(401, 'Authorization failed.')
 

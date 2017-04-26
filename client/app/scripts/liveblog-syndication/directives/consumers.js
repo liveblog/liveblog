@@ -1,12 +1,13 @@
-liveblogSyndication
-    .directive('lbConsumers', function() {
-        return {
-            templateUrl: 'scripts/liveblog-syndication/views/consumer-list.html',
-            controller: ['$scope', '$controller', function($scope, $controller) {
-                $scope.endPoint = 'consumers';
-                $scope.entryName = 'consumer';
+import consumerListTpl from 'scripts/liveblog-syndication/views/consumer-list.html';
 
-                angular.extend(this, $controller('BaseController', {$scope: $scope}));
-            }]
-        }
-    });
+export default function lbConsumers() {
+    return {
+        templateUrl: consumerListTpl,
+        controller: ['$scope', '$controller', function($scope, $controller) {
+            $scope.endPoint = 'consumers';
+            $scope.entryName = 'consumer';
+
+            angular.extend(this, $controller('BaseController', {$scope: $scope}));
+        }]
+    };
+}

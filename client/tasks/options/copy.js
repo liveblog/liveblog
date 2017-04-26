@@ -6,12 +6,50 @@ module.exports = {
             cwd: '<%= appDir %>',
             dest: '<%= distDir %>',
             src: [
+                'fonts/**/*',
                 'images/**/*',
                 'favicon.ico',
-                'styles/css/*.css',
-                'scripts/**/*.{html,css,jpg,jpeg,png,gif,json}',
-                'scripts/bower_components/requirejs/require.js'
+                'styles/css/*.css'
             ]
+        },
+        {
+            expand: true,
+            dot: true,
+            cwd: 'node_modules/superdesk-core/',
+            dest: '<%= distDir %>',
+            src: [
+                'scripts/**/*.html',
+            ]
+        }]
+    },
+    locales: {
+        files: [
+            {
+                expand: true,
+                cwd: process.cwd(),
+                src: ['node_modules/angular-i18n/angular-locale_*.js'],
+                dest: '<%= distDir %>/locales/',
+                flatten: true,
+                filter: 'isFile'
+            }
+        ]
+    },
+    index: {
+        files: [{
+            expand: true,
+            dot: true,
+            cwd: '<%= appDir %>',
+            dest: '<%= distDir %>',
+            src: ['index.html']
+        }]
+    },
+    sirTrevor: {
+        files: [{
+            expand: true,
+            dot: true,
+            cwd: 'node_modules/sir-trevor/',
+            dest: '<%= distDir %>',
+            src: ['sir-trevor.js', 'sir-trevor.css']
         }]
     },
     tmp: {
@@ -45,15 +83,14 @@ module.exports = {
             ]
         }]
     },
-    js: {
+    config: {
         files: [{
             expand: true,
             dot: true,
             cwd: '<%= appDir %>',
             dest: '<%= distDir %>',
             src: [
-                'scripts/config.js',
-                'scripts/bower_components/**/*.js'
+                'config.js'
             ]
         }]
     },
@@ -67,29 +104,7 @@ module.exports = {
                 'fonts/sd_icons.woff',
                 'fonts/sd_icons.eot',
                 'fonts/sd_icons.svg',
-                'fonts/sd_icons.ttf',
-                'scripts/bower_components/**/*.ttf',
-                'scripts/bower_components/**/*.woff',
-                'scripts/bower_components/**/*.woff2'
-            ]
-        }]
-    },
-    bower: {
-        files: [{
-            expand: true,
-            dot: true,
-            cwd: '<%= distDir %>',
-            dest: '<%= bowerDir %>',
-            src: [
-                'images/**',
-                'styles/css/bootstrap.css',
-                'styles/css/app.css',
-                'scripts/vendor.js',
-                'scripts/superdesk-core.js',
-                'scripts/superdesk.js',
-                'scripts/vendor-docs.js',
-                'scripts/superdesk-docs-core.js',
-                'scripts/superdesk-docs-main.js'
+                'fonts/sd_icons.ttf'
             ]
         }]
     }

@@ -1,5 +1,4 @@
 (function() {
-    'use strict';
     angular.module('liveblog.themes')
     .service('themesService', ['$sce', 'api', 'blogService', function($sce, api, blogService) {
         /**
@@ -37,19 +36,15 @@
                             todo.splice(index, 1);
                         }
                         parent_node[name] = {};
-                    } else {
-                        if (index === -1) {
-                            todo.push([name, extend]);
-                        }
+                    } else if (index === -1) {
+                        todo.push([name, extend]);
                     }
-                } else {
-                    if (!angular.isDefined(themes_hierachy[name])) {
-                        themes_hierachy[name] = {};
-                    }
+                } else if (!angular.isDefined(themes_hierachy[name])) {
+                    themes_hierachy[name] = {};
                 }
             }
-            themes.map(function(theme) {
-                addToHierarchy(theme.name, theme['extends']);
+            themes.forEach(function(theme) {
+                addToHierarchy(theme.name, theme.extends);
             });
             var max_loops = todo.length * todo.length;
             while (todo.length > 0 && max_loops > 0) {
@@ -95,19 +90,19 @@
                 }).concat(options);
             }
             // retrieve parent options
-            if (currenTheme['extends']) {
-                return api.themes.getById(currenTheme['extends']).then(function(parentTheme) {
+            if (currenTheme.extends) {
+                return api.themes.getById(currenTheme.extends).then(function(parentTheme) {
                     return collectOptions(currenTheme, options, parentTheme);
                 });
-            } else {
-                // return the options when there is no more parent theme
-                // set default settings value from options default values
-                options.forEach(function(option) {
-                    if (!angular.isDefined(theme.settings[option.name])) {
-                        theme.settings[option.name] = option['default'];
-                    }
-                });
             }
+
+            // return the options when there is no more parent theme
+            // set default settings value from options default values
+            options.forEach(function(option) {
+                if (!angular.isDefined(theme.settings[option.name])) {
+                    theme.settings[option.name] = option.default;
+                }
+            });
         }
         return {
             getHierachy: function (themes) {
@@ -154,7 +149,8 @@
                 });
             }
         }
-    }]).config(['apiProvider', function(apiProvider) {
+    }])
+    .config(['apiProvider', function(apiProvider) {
         apiProvider.api('global_preferences', {
             type: 'http',
             backend: {rel: 'global_preferences'}

@@ -32,6 +32,7 @@
         </button>
         <button 
             class="navbtn" 
+            title="{{ 'Ingest' | translate }}"
             ng-if="syndicationEnabled"
             lb-notifications-count
             ng-click="openPanel('ingest')" 
@@ -114,7 +115,11 @@
                     </div>
                 </div>
                 <!-- ingest -->
-                <div lb-ingest-panel ng-if="panelState === 'ingest'"></div>
+                <div
+                    lb-ingest-panel
+                    ingest-queue="ingestQueue"
+                    open-panel="openPanel"
+                    ng-if="panelState === 'ingest'"></div>
                 <!-- incoming syndication -->
                 <div
                     lb-incoming-syndication 
@@ -171,12 +176,13 @@
                     <div class="content">
                         <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">
-                                <div 
-                                    class="editor"
+                                <div
+                                    class="editor" 
+                                    ng-if="selectedPostType=='Default' && enableEditor"
                                     ng-sir-trevor
                                     st-model="blogEdit.editor"
                                     st-params="stParams"
-                                    ng-if="selectedPostType=='Default'"></div>
+                                    st-change="onEditorChanges"></div>
                             </div>
                             <freetype-render
                                     ng-if="selectedPostType!='Default'" 

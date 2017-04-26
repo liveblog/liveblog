@@ -1,12 +1,13 @@
-liveblogSyndication
-    .directive('lbProducers', function() {
-        return {
-            templateUrl: 'scripts/liveblog-syndication/views/producer-list.html',
-            controller: ['$scope', '$controller', function($scope, $controller) {
-                $scope.endPoint = 'producers';
-                $scope.entryName = 'producer';
+import producerListTpl from 'scripts/liveblog-syndication/views/producer-list.html';
 
-                angular.extend(this, $controller('BaseController', {$scope: $scope}));
-            }]
-        }
-    });
+export default function lbProducers() {
+    return {
+        templateUrl: producerListTpl,
+        controller: ['$scope', '$controller', function($scope, $controller) {
+            $scope.endPoint = 'producers';
+            $scope.entryName = 'producer';
+
+            angular.extend(this, $controller('BaseController', {$scope: $scope}));
+        }]
+    }
+}
