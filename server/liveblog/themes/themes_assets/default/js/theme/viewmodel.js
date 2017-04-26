@@ -8,7 +8,7 @@ var templates = require('./templates')
   , helpers = require('./helpers')
   , view = require('./view');
 
-var endpoint = LB.api_host + "api/client_blogs/" + LB.blog._id + "/posts"
+var endpoint = LB.api_host + "/api/client_blogs/" + LB.blog._id + "/posts"
   , settings = LB.settings;
 
 var vm = {
@@ -38,14 +38,6 @@ function getPosts(opts) {
     , fullPath = endpoint + qs + dbQuery;
 
   return helpers.getJSON(fullPath)
-    .then(function(api_response) {
-      if (opts.returnPromise) {
-        return api_response;
-      }
-
-      updateViewModel(api_response, opts);
-      renderPosts(api_response, opts);
-    })
 };
 
 /**
@@ -57,7 +49,12 @@ function loadPostsPage(opts) {
   var opts = opts || {}
   opts.page = ++vm.currentPage;
 
-  return getPosts(opts).catch(function(err) {
+  return getPosts(opts)
+    .then(function(posts) {
+      updateViewModel(posts, opts);
+      return posts
+    })
+    .catch(function(err) {
     // catch all errors here
   })
 };
@@ -73,48 +70,12 @@ function loadPosts(opts) {
 
   return getPosts(opts)
     .then(function(posts) {
-      return posts;
+      updateViewModel(posts, opts);
+      return posts
     })
     .catch(function(err) {
       // catch all errors here
     })
-};
-
-/**
- * Render posts currently in pipeline to template, store results in viewmodel
- * To reduce DOM calls/paints we hand off add operations to view in bulk.
- * @param {object} api_response - liveblog API response JSON.
- */
-function renderPosts(api_response, opts) {
-  var renderedPosts = [] // temporary store
-    , posts = api_response._items;
-
-  for (var i = 0; i < posts.length; i++) {
-    var post = posts[i];
-
-    if ("delete" === posts.operation) {
-      view.deletePost(post._id);
-      return; // early
-    };
-
-    var renderedPost = templates.post({
-      item: post
-    });
-
-    if ("update" === posts.operation) {
-      view.updatePost(renderedPost)
-      return; // early
-    }
-
-    renderedPosts.push(renderedPost) // create operation
-  };
-
-  if (!renderedPosts.length) return // early
-  if (settings.postOrder === "descending") renderedPosts.reverse()
-
-  view.addPosts(renderedPosts, { // if creates
-    position: opts.fromDate ? "top" : "bottom"
-  })
 };
 
 /**
@@ -123,7 +84,7 @@ function renderPosts(api_response, opts) {
  */
 function updateViewModel(api_response, opts) {
   if (opts.sort === 'oldest_first') {
-    vm._items = api_reponse._items;
+    Object.assign(vm, api_response);
   } else {
     vm._items.push.apply(vm._items, api_response._items);
   }
@@ -134,6 +95,8 @@ function updateViewModel(api_response, opts) {
     if (!api_response._items.length) return;
     vm.latestUpdate = getLatestUpdate(api_response);
   }
+
+  return api_response
 };
 
 /**
@@ -228,6 +191,5 @@ module.exports = {
   getLatestUpdate: getLatestUpdate,
   loadPosts: loadPosts,
   loadPostsPage: loadPostsPage,
-  renderPosts: renderPosts,
   init: init
 }

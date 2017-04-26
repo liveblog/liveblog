@@ -1,6 +1,6 @@
 'use strict';
 
-var DEBUG = process.env.DEBUG;
+var DEBUG = process.env.NODE_ENV != "production";
 
 var gulp = require('gulp')
   , browserify = require('browserify')
@@ -12,15 +12,11 @@ var gulp = require('gulp')
   , path = require('path')
   , del = require('del')
   , minimist = require('minimist')
-  , fs = require('fs')
-  , nunjucks_extensions = require('./js/nunjucks_extensions');
-
-
+  , fs = require('fs');
 
 var nunjucksOptions = {
-    env: nunjucks_extensions.nunjucksEnv
+  env: require('./js/nunjucks_extensions').nunjucksEnv
 }
-
 
 var paths = {
   less: 'less/*.less',
@@ -30,12 +26,10 @@ var paths = {
   templates: 'templates/*.html'
 };
 
-
 // Command-line and default theme options from theme.json.
-var themeSettings = require('./theme.json');
+var theme = require('./theme.json');
 
-
-function getThemeOptions(options) {
+function getThemeSettings(options) {
   var _options = {}
   for (var option in options) {
     _options[option.name] = option.default;
@@ -47,10 +41,9 @@ function getThemeOptions(options) {
 // Function to async reload default theme options.
 function loadThemeJSON() {
   fs.readFile('theme.json', 'utf8', function (err, data) {
-    themeSettings = JSON.parse(data);
+    theme = JSON.parse(data);
   });
 }
-
 
 // Browserify.
 gulp.task('browserify', ['clean-js'], function(cb) {
@@ -83,7 +76,6 @@ gulp.task('browserify', ['clean-js'], function(cb) {
     .pipe(gulp.dest(''));
 });
 
-
 // Compile LESS files.
 gulp.task('less', ['clean-css'], function () {
   return gulp.src('./less/liveblog.less')
@@ -108,10 +100,10 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
   return gulp.src('./templates/template-index.html')
     .pipe(plugins.inject(sources))
     .pipe(plugins.nunjucks.compile({
+      theme: testdata.options,
+      theme_json: JSON.stringify(testdata.options, null, 4),
+      settings: testdata.options.theme_settings,
       api_response: testdata.api_response,
-      theme_settings: testdata.options.theme_settings,
-      theme_options: testdata.options,
-      options: JSON.stringify(testdata.options, null, 4),
       include_js_options: true,
       debug: DEBUG
     }, nunjucksOptions))
@@ -121,10 +113,9 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
     .pipe(plugins.connect.reload());
 });
 
-
 // Inject jinja/nunjucks template for production use.
 gulp.task('template-inject', ['less', 'browserify'], function() {
-  var theme_options = getThemeOptions(themeSettings.options);
+  var themeSettings = getThemeSettings(theme.options);
 
   var _api_response = {};
   var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
@@ -133,9 +124,9 @@ gulp.task('template-inject', ['less', 'browserify'], function() {
 
   return gulp.src('./templates/template.html')
     .pipe(plugins.nunjucks.compile({
-      theme_options: theme_options,
-      theme_settings: themeSettings,
-      options: JSON.stringify(theme_options, null, 4),
+      theme: theme,
+      theme_json: JSON.stringify(theme, null, 4),
+      settings: themeSettings,
       include_js_options: false,
       debug: DEBUG
     }))
@@ -154,7 +145,6 @@ gulp.task('template-inject', ['less', 'browserify'], function() {
     .pipe(plugins.connect.reload());
 });
 
-
 // Replace assets paths in theme.json file and reload options.
 gulp.task('theme-replace', ['browserify', 'less'], function() {
   var manifest = require("./dist/rev-manifest.json");
@@ -169,7 +159,6 @@ gulp.task('theme-replace', ['browserify', 'less'], function() {
   loadThemeJSON();
 });
 
-
 // Serve index.html for local testing.
 gulp.task('serve', ['browserify', 'less', 'index-inject'], function() {
   plugins.connect.server({
@@ -179,7 +168,6 @@ gulp.task('serve', ['browserify', 'less', 'index-inject'], function() {
     livereload: true
   });
 });
-
 
 // Watch
 gulp.task('watch-static', ['serve'], function() {
@@ -194,22 +182,18 @@ gulp.task('watch-static', ['serve'], function() {
   })
 });
 
-
 // Clean CSS
 gulp.task('clean-css', function() {
   return del(['dist/*.css'])
 });
-
 
 // Clean JS
 gulp.task('clean-js', function() {
   return del(['dist/*.js'])
 });
 
-
 // Default build for production
 gulp.task('default', ['browserify', 'less', 'theme-replace', 'template-inject']);
-
 
 // Default build for development
 gulp.task('devel', ['browserify', 'less', 'theme-replace', 'index-inject']);
