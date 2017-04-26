@@ -167,8 +167,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                     || (self.highlight && !post.lb_highlight)) {
                        removePost(post);
                     } else {
-                          // update
-                        self.pages[existing_post_indexes[0]].posts[existing_post_indexes[1]] = post;
+                        updatePost(post);
                         createPagesWithPosts(self.allPosts(), true);
                     }
                     // post doesn't exist in the list
@@ -180,6 +179,21 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
             });
             // update date
             updateLatestDates(updates);
+        }
+
+        /**
+         * Replace the old post with the new updated post.
+         * Compare post ids instead of relying on indexes.
+         * This method does not return anything and modifies directly self.pages
+         */
+        function updatePost(postToUpdate) {
+            self.pages.forEach((page, pageIndex) => {
+                page.posts.forEach((post, postIndex) => {
+                    if (post._id === postToUpdate._id) {
+                        self.pages[pageIndex].posts[postIndex] = postToUpdate;
+                    }
+                });
+            });
         }
 
         /**
@@ -298,6 +312,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                 var page_index = indexes[0];
                 var post_index = indexes[1];
                 self.pages[page_index].posts.splice(post_index, 1);
+
                 createPagesWithPosts(self.allPosts(), true);
             }
         }

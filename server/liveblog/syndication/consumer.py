@@ -79,8 +79,8 @@ class ConsumerService(BaseService):
             consumer = self.find_one(_id=consumer, req=None)
         return consumer
 
-    def send_webhook_request(self, consumer_id, consumer_blog_token=None, method='GET', data=None, json_loads=True,
-                             timeout=5):
+    def _send_webhook_request(self, consumer_id, consumer_blog_token=None, method='GET', data=None, json_loads=True,
+                              timeout=5):
         consumer = self._get_consumer(consumer_id)
         if not consumer:
             raise ConsumerAPIError('Unable to get consumer "{}".'.format(consumer_id))
@@ -100,8 +100,7 @@ class ConsumerService(BaseService):
         if action not in WEBHOOK_METHODS:
             raise NotImplementedError('send_syndication_post "{}" not implemented yet.'.format(action))
         else:
-            return self._send_webhook_request(consumer_id, blog_token, method=WEBHOOK_METHODS[action],
-                                              data=new_post)
+            return self._send_webhook_request(consumer_id, blog_token, method=WEBHOOK_METHODS[action], data=new_post)
 
     def on_create(self, docs):
         for doc in docs:
