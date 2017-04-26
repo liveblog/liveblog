@@ -103,11 +103,11 @@ def _publish_blog_embed_on_s3(blog_id, theme=None, output=None, safe=True):
             if not safe:
                 raise e
             logger.warning('Media storage not supported for blog "{}"'.format(blog_id))
-            public_url = '{}://{}/embed/{}{}{}'.format(app.config['URL_PROTOCOL'],
+            public_url = '{}://{}/embed/{}/{}{}'.format(app.config['URL_PROTOCOL'],
                                                        app.config['SERVER_NAME'],
                                                        blog_id,
                                                        '{}/'.format(theme) if theme else '',
-                                                       '{}/'.format(output_id) if output_id else '')
+                                                       '{}'.format(output_id) if output_id else '')
             public_urls = blog.get('public_urls', {'output': {}, 'theme': {}})
             if output_id:
                 public_urls['output'][output_id] = public_url
