@@ -4,10 +4,10 @@ from superdesk import get_resource_service
 from superdesk.celery_app import celery
 from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
 from superdesk.notification import push_notification
-from werkzeug.datastructures import FileStorage
 
-from .exceptions import APIConnectionError, DownloadError, ProducerAPIError
+from .exceptions import APIConnectionError
 from settings import SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOWN
+from .utils import send_api_request
 
 
 logger = logging.getLogger('superdesk')
@@ -65,16 +65,6 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=25, po
 
 
 @celery.task(bind=True)
-def fetch_image(self, url, mimetype):
-    """Fetch image from given url."""
-    from .utils import fetch_url
-    try:
-        return FileStorage(stream=fetch_url(url), content_type=mimetype)
-    except DownloadError as e:
-        raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
-
-
-@celery.task(bind=True)
 def check_webhook_status(self, consumer_id):
     """Check if consumer webhook is enabled by sending a fake http api request."""
     from .utils import send_api_request
@@ -107,10 +97,15 @@ def check_webhook_status(self, consumer_id):
 def check_api_status(self, producer_id):
     producers = get_resource_service('producers')
     producer = producers._get_producer(producer_id) or {}
-    if 'consumer_api_key' in producer:
+    if 'api_url' not in producer:
+        api_status = 'invalid_url'
+    elif 'consumer_api_key' not in producer:
+        api_status = 'invalid_key'
+    else:
         try:
-            response = producers._send_api_request(producer_id, 'syndication/blogs', method='GET', json_loads=False)
-        except ProducerAPIError:
+            api_url = producers._get_api_url(producer, 'syndication/blogs')
+            response = send_api_request(api_url, producer['consumer_api_key'])
+        except:
             api_status = 'invalid_url'
         else:
             if response.status_code != 200:
