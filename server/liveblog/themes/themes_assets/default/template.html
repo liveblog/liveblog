@@ -3,12 +3,12 @@
   {% block timeline %}
   <div class="lb-timeline {{ settings.language }}">
     {% if settings.showTitle and blog.title %}
-      <h1>{{ blog.title }}</h1>
+      <h1>{{ settings.blog.title }}</h1>
     {% endif %}
 
     {% if settings.showDescription and blog.description %}
       <div class="description">
-        {{ blog.description | safe}}
+        {{ blog.description | safe }}
       </div>
     {% endif %}
 
@@ -19,18 +19,14 @@
     <!-- Header -->
     <div class="header-bar">
       <div class="sorting-bar">
-          <div class="sorting-bar__orders">
-              <div
-                id="newest_first"
-                class="sorting-bar__order sorting-bar__order--active"
-                data-js-orderby-newest-first>
-                {{ theme.l10n.newestFirst }}</div>
-              <div
-                id="oldest_first"
-                class="sorting-bar__order"
-                data-js-orderby-oldest-first>
-                {{ theme.l10n.oldestFirst }}</div>
+        <div class="sorting-bar__orders">
+          <div class="sorting-bar__order sorting-bar__order--active" data-js-orderby_newest_first>
+            {{ theme.l10n.newestFirst }}
           </div>
+          <div class="sorting-bar__order" data-js-orderby_oldest_first>
+            {{ theme.l10n.oldestFirst }}
+          </div>
+        </div>
       </div>
       <div class="header-bar__actions"></div>
     </div>
