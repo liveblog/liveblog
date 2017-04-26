@@ -44,6 +44,7 @@ upload, $templateCache, freetypeService, modal) {
                 loadAdverts();
         }
     }
+
     $scope.openAdvertDialog = function(ad) {
         if (ad._id) {
             // editing advert

@@ -85,12 +85,20 @@ def render_bloglist_embed(api_host=None, assets_root=None):
     return render_template('blog-list-embed.html', **scope)
 
 
-@embed_blueprint.route('/embed/<blog_id>')
-def embed(blog_id, api_host=None, theme=None):
+@embed_blueprint.route('/embed/<blog_id>', defaults={'theme': None, 'output': None})
+@embed_blueprint.route('/embed/<blog_id>/<theme>', defaults={'output': None})
+@embed_blueprint.route('/embed/<blog_id>/<theme>/<output>')
+def embed(blog_id, theme=None, output=None, api_host=None):
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if not blog:
         return 'blog not found', 404
+
+    # if the `output` is the `_id` get the data.
+    if output and isinstance(output, str):
+        output = get_resource_service('outputs').find_one(req=None, _id=output)
+        if not output:
+            return 'output not found', 404
 
     # Retrieve picture url from relationship.
     if blog.get('picture', None):
@@ -107,11 +115,6 @@ def embed(blog_id, api_host=None, theme=None):
     if theme is None and theme_name is None:
         raise SuperdeskApiError.badRequestError(
             message='You will be able to access the embed after you register the themes')
-
-    # If a theme is provided, overwrite the default theme.
-    if theme_name:
-        theme_package = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'theme.json')
-        theme = json.loads(open(theme_package).read())
 
     try:
         assets, template_file = collect_theme_assets(theme)
@@ -133,6 +136,7 @@ def embed(blog_id, api_host=None, theme=None):
         'blog': blog,
         'settings': get_resource_service('themes').get_default_settings(theme),
         'assets': assets,
+        'output': output,
         'api_host': api_host,
         'template': template_file,
         'debug': app.config.get('LIVEBLOG_DEBUG'),
@@ -157,6 +161,13 @@ def embed_overview(blog_id, api_host=None):
 @embed_blueprint.app_template_filter('tojson')
 def tojson(obj):
     return json.dumps(obj, cls=MongoJSONEncoder)
+
+
+@embed_blueprint.app_template_filter('tostyle')
+def tostyle(obj):
+    if obj:
+        return ','.join(["{}: {}".format(key, value) for (key, value) in obj.items()])
+    return ''
 
 
 @embed_blueprint.app_template_filter('is_relative_to_current_folder')

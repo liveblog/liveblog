@@ -41,6 +41,9 @@ blogs_schema = {
     'public_url': {
         'type': 'string'
     },
+    'public_urls': {
+        'type': 'dict'
+    },
     'syndication_enabled': {
         'type': 'boolean',
         'default': False
