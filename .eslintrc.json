@@ -9,7 +9,10 @@
         "LB": false,
         "Promise": false,
         "instgrm": false,
-        "twttr": false
+        "twttr": false,
+        "settings": false,
+        "theme": false,
+        "theme_json": false
     },
 
     "parserOptions": {

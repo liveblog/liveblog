@@ -1,4 +1,6 @@
+dist: trusty
 language: node_js
+nodejs: 6
 
 install:
   - npm install -g gulp
