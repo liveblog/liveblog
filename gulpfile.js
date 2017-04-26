@@ -110,7 +110,7 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
     .pipe(plugins.nunjucks.compile({
       theme: testdata.options,
       theme_json: JSON.stringify(testdata.options, null, 4),
-      settings: testdata.options.theme_settings,
+      settings: testdata.options.settings,
       api_response: testdata.api_response,
       include_js_options: true,
       debug: DEBUG
