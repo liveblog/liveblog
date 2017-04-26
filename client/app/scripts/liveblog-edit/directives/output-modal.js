@@ -21,9 +21,9 @@ export default function outputModal() {
     };
 }
 
-outputModalController.$inject = ['$rootScope', 'api', 'urls', 'notify', 'modal', 'upload', 'adsUtilSevice', '$scope'];
+outputModalController.$inject = ['$rootScope', 'api', 'urls', 'notify', 'modal', 'upload', 'adsUtilSevice'];
 
-function outputModalController($rootScope, api, urls, notify, modal, upload, adsUtilSevice, $scope) {
+function outputModalController($rootScope, api, urls, notify, modal, upload, adsUtilSevice) {
     var vm = this;
     vm.collections = [];
     vm.readyToSave = false;
