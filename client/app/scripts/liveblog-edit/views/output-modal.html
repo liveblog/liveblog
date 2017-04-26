@@ -63,7 +63,7 @@
                 <div class="field" ng-if="vm.output._id">
                     <label for="inputEmbedCode" class="control-label" translate>Embed code</label>
                     <div class="form-input">
-                        <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click><iframe src="{{ vm.blog.public_urls.output[vm.output._id] }}"</iframe></textarea>
+                        <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click><iframe width="100%" height="715" src="{{ vm.blog.public_urls.output[vm.output._id] }}" frameborder="0" allowfullscreen></iframe></textarea>
                         <a href="{{ vm.blog.public_urls.output[vm.output._id] }}" target="_blank"><span ng-bind="vm.blog.public_urls.output[vm.output._id]"></span> <i class="icon-external"></i></a>
                     </div>
                 </div>
