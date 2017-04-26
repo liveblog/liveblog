@@ -5,6 +5,7 @@
 'use strict';
 var helpers = require("./helpers")
 var templates = require('./templates')
+var view = require('./view');
 
 var timelineElem = helpers.getElems("lb-posts")
   , loadMorePostsButton = helpers.getElems("load-more-posts");
@@ -39,7 +40,7 @@ function renderPosts(api_response, opts) {
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
 
-    if ("delete" === posts.operation) {
+    if (posts.operation === "delete") {
       view.deletePost(post._id);
       return; // early
     };
@@ -48,7 +49,7 @@ function renderPosts(api_response, opts) {
       item: post
     });
 
-    if ("update" === posts.operation) {
+    if (posts.operation === "update") {
       view.updatePost(renderedPost)
       return; // early
     }
@@ -57,7 +58,8 @@ function renderPosts(api_response, opts) {
   };
 
   if (!renderedPosts.length) return // early
-  if (settings.postOrder === "descending") renderedPosts.reverse()
+  if (settings.postOrder === "descending")
+    renderedPosts.reverse();
 
   view.addPosts(renderedPosts, { // if creates
     position: opts.fromDate ? "top" : "bottom"

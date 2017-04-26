@@ -12,6 +12,7 @@ var gulp = require('gulp')
   , path = require('path')
   , del = require('del')
   , minimist = require('minimist')
+  , eslint = require('gulp-eslint')
   , fs = require('fs');
 
 var nunjucksOptions = {
@@ -44,6 +45,13 @@ function loadThemeJSON() {
     theme = JSON.parse(data);
   });
 }
+
+gulp.task('lint', () => {
+  return gulp.src(['js/**/*.js','!node_modules/**'])
+    .pipe(eslint({ quiet: true }))
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
+});
 
 // Browserify.
 gulp.task('browserify', ['clean-js'], function(cb) {

@@ -46,7 +46,8 @@ function getPosts(opts) {
  * @returns {promise} resolves to posts array.
  */
 function loadPostsPage(opts) {
-  var opts = opts || {}
+  opts = opts || {}
+
   opts.page = ++vm.currentPage;
 
   return getPosts(opts)
@@ -65,7 +66,7 @@ function loadPostsPage(opts) {
  * @returns {promise} resolves to posts array.
  */
 function loadPosts(opts) {
-  var opts = opts || {};
+  opts = opts || {};
   opts.fromDate = vm.latestUpdate;
 
   return getPosts(opts)
@@ -76,6 +77,44 @@ function loadPosts(opts) {
     .catch(function(err) {
       // catch all errors here
     })
+};
+
+/**
+<<<<<<< HEAD
+ * Render posts currently in pipeline to template, store results in viewmodel
+ * To reduce DOM calls/paints we hand off add operations to view in bulk.
+ * @param {object} api_response - liveblog API response JSON.
+ */
+function renderPosts(api_response, opts) {
+  var renderedPosts = [] // temporary store
+    , posts = api_response._items;
+
+  for (var i = 0; i < posts.length; i++) {
+    var post = posts[i];
+
+    if (posts.operation === "delete") {
+      view.deletePost(post._id);
+      return; // early
+    };
+
+    var renderedPost = templates.post({
+      item: post
+    });
+
+    if (posts.operation === "update") {
+      view.updatePost(renderedPost)
+      return; // early
+    }
+
+    renderedPosts.push(renderedPost) // create operation
+  };
+
+  if (!renderedPosts.length) return // early
+  if (settings.postOrder === "descending") renderedPosts.reverse()
+
+  view.addPosts(renderedPosts, { // if creates
+    position: opts.fromDate ? "top" : "bottom"
+  })
 };
 
 /**
@@ -155,9 +194,11 @@ function getQuery(opts) {
         }
       }
     },
-    "sort":[{
-      "_updated": {"order": "desc"}
-    }]
+    "sort": [
+      {
+        "_updated": {"order": "desc"}
+      }
+    ]
   };
 
   if (opts.fromDate) {
