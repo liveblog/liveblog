@@ -10,7 +10,7 @@ logger = logging.getLogger('superdesk')
 
 
 @celery.task()
-def update_post_blog_data(post, updated=False):
+def update_post_blog_data(post, action='created'):
     """
     Update blog data num_post and last created or updated post.
 
@@ -28,19 +28,20 @@ def update_post_blog_data(post, updated=False):
         {'post_status': {'$eq': 'open'}},
         {'deleted': {'$eq': False}}
     ]}).count()
-
-    date_field = 'created'
-    if updated:
-        date_field = 'updated'
-    post_field = 'last_{}_post'.format(date_field)
-    blogs.patch(blog_id, {
+    updates = {
         'total_posts': total_posts,
-        post_field: {
+    }
+
+    if action in ('updated', 'created'):
+        # Update last_updated_post or last_created_post.
+        post_field = 'last_{}_post'.format(action)
+        updates[post_field] = {
             '_id': post['_id'],
             '_updated': post['_updated']
         }
-    })
-    logger.info('Blog "{}" post data has been {}.'.format(blog_id, date_field))
+
+    blogs.patch(blog_id, updates)
+    logger.info('Blog "{}" post data has been updated.'.format(blog_id))
 
 
 @celery.task(bind=True)
@@ -60,7 +61,7 @@ def update_post_blog_embed(self, post):
     # Check if theme is SEO-enabled.
     theme = themes.find_one(req=None, name=theme_name)
     if not theme.get('seoTheme'):
-        logger.info('Skipping embed update: blog "{}" theme "{}" is not SEO-enabled.'.format(blog_id, theme_name))
+        logger.warning('Skipping embed update: blog "{}" theme "{}" is not SEO-enabled.'.format(blog_id, theme_name))
         return
 
     # TODO: add locking or check last_updated_post_date or last_created_post_date.

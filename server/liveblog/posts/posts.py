@@ -200,7 +200,7 @@ class PostsService(ArchiveService):
             app.blog_cache.invalidate(doc.get('blog'))
 
             # Update blog post data and embed for SEO-enabled blogs.
-            update_post_blog_data.delay(doc)
+            update_post_blog_data.delay(doc, action='created')
             update_post_blog_embed.delay(doc)
 
             # send post to consumer webhook
@@ -269,24 +269,28 @@ class PostsService(ArchiveService):
         out_service = get_resource_service('syndication_out')
         # invalidate cache for updated blog
         app.blog_cache.invalidate(original.get('blog'))
+        doc = original.copy()
+        doc.update(updates)
         posts = []
         # send notifications
         if updates.get('deleted', False):
+            # Update blog post data and embed for SEO-enabled blogs.
+            update_post_blog_data.delay(doc, action='updated')
+            update_post_blog_embed.delay(doc)
+            # Syndication.
             out_service.send_syndication_post(original, action='deleted')
+            # Push notification.
             push_notification('posts', deleted=True, post_id=original.get('_id'))
         # NOTE: Seems unsused, to be removed later if no bug appears.
         # elif updates.get('post_status') == 'draft':
         #     push_notification('posts', drafted=True, post_id=original.get('_id'),
         #                       author_id=original.get('original_creator'))
         else:
-            # Syndication
-            doc = original.copy()
-            doc.update(updates)
-
             # Update blog post data and embed for SEO-enabled blogs.
-            update_post_blog_data.delay(doc, updated=True)
+            update_post_blog_data.delay(doc, action='updated')
             update_post_blog_embed.delay(doc)
 
+            # Syndication
             logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
             posts.append(doc)
 
@@ -313,12 +317,18 @@ class PostsService(ArchiveService):
 
     def on_deleted(self, doc):
         super().on_deleted(doc)
-        # invalidate cache for updated blog
+        # Invalidate cache for updated blog
         app.blog_cache.invalidate(doc.get('blog'))
+
+        # Update blog post data and embed for SEO-enabled blogs.
+        update_post_blog_data.delay(doc, action='deleted')
+        update_post_blog_embed.delay(doc)
+
         # Syndication
         out_service = get_resource_service('syndication_out')
         out_service.send_syndication_post(doc, action='deleted')
-        # send notifications
+
+        # Send notifications
         push_notification('posts', deleted=True)
 
 
