@@ -1,29 +1,19 @@
 <!-- inject:template-content -->
 <div class="lb-timeline" data-js-target="timeline">
   {% block timeline %}
-<<<<<<< HEAD
   <div class="lb-timeline {{ settings.language }}">
     {% if settings.showTitle and blog.title %}
       <h1>{{ settings.blog.title }}</h1>
-=======
-  <div class="lb-timeline {{ options.language }}">
-    {% if theme_options.settings.showTitle and theme_options.blog.title %}
-      <h1>{{theme_options.blog.title}}</h1>
->>>>>>> d5c169e6b0174b00dfca227ffae645c023d7def9
     {% endif %}
 
-    {% if theme_options.settings.showDescription and theme_options.blog.description %}
+    {% if settings.showDescription and blog.description %}
       <div class="description">
-<<<<<<< HEAD
         {{ blog.description | safe }}
-=======
-        {{theme_options.blog.description | safe}}
->>>>>>> d5c169e6b0174b00dfca227ffae645c023d7def9
       </div>
     {% endif %}
 
-    {% if theme_options.settings.showImage and theme_options.blog.picture_url %}
-      <img src="{{theme_options.blog.picture_url}}" />
+    {% if settings.showImage and blog.picture_url %}
+      <img src="{{ blog.picture_url }}" />
     {% endif %}
 
     <!-- Header -->
