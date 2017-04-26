@@ -5,34 +5,77 @@
 'use strict';
 var helpers = require("./helpers")
 var templates = require('./templates')
+var view = require('./view');
 
 var timelineElem = helpers.getElems("lb-posts")
   , loadMorePostsButton = helpers.getElems("load-more-posts");
 
-function renderTimeline(posts) {
+/**
+ * Replace the current timeline unconditionally.
+ * @param {array} api_response - liveblog API response JSON
+ * @param {object} opts - keyword args
+ */
+function renderTimeline(api_response, opts) {
   var renderedPosts = [];
 
-  posts._items.forEach(function(post) {
+  api_response._items.forEach(function(post) {
     renderedPosts.push(templates.post({
       item: post
     }))
   });
 
-  document.querySelectorAll('.lb-post').forEach(function(el) {
-    el.remove();
-  });
-
-  renderedPosts.forEach(function(renderedPost) {
-    timelineElem[0].innerHTML += renderedPost;
-  });
+  timelineElem[0].innerHTML = renderedPosts.join("");
+  loadEmbeds();
 }
 
-function toggleSortBtn(name) {
-  document
-    .querySelectorAll('.sorting-bar__order')
-    .forEach(function(btn) {
-      btn.classList.toggle('sorting-bar__order--active', btn.id === name);
+/**
+ * Render posts currently in pipeline to template.
+ * To reduce DOM calls/paints we hand off rendered HTML in bulk.
+ * @param {object} api_response - liveblog API response JSON.
+ */
+function renderPosts(api_response, opts) {
+  var renderedPosts = [] // temporary store
+    , posts = api_response._items;
+
+  for (var i = 0; i < posts.length; i++) {
+    var post = posts[i];
+
+    if (posts.operation === "delete") {
+      view.deletePost(post._id);
+      return; // early
+    };
+
+    var renderedPost = templates.post({
+      item: post
     });
+
+    if (posts.operation === "update") {
+      view.updatePost(renderedPost)
+      return; // early
+    }
+
+    renderedPosts.push(renderedPost) // create operation
+  };
+
+  if (!renderedPosts.length) return // early
+  if (settings.postOrder === "descending")
+    renderedPosts.reverse();
+
+  view.addPosts(renderedPosts, { // if creates
+    position: opts.fromDate ? "top" : "bottom"
+  })
+}
+
+/**
+ * Set sorting order button of class @name to active.
+ * @param {string} name - liveblog API response JSON.
+ */
+function toggleSortBtn(name) {
+  var sortingBtns = document.querySelectorAll('.sorting-bar__order');
+  sortingBtns.forEach(function(el) {
+    var shouldBeActive = el.dataset.hasOwnProperty("jsOrderby_" + name)
+    el.classList.toggle('sorting-bar__order--active', shouldBeActive);
+  });
 }
 
 /**
