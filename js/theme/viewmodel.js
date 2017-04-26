@@ -54,7 +54,8 @@ function getPosts(opts) {
  * @returns {promise} resolves to posts array.
  */
 function loadPostsPage(opts) {
-  var opts = opts || {}
+  opts = opts || {}
+
   opts.page = ++vm.currentPage;
 
   return getPosts(opts).catch(function(err) {
@@ -68,7 +69,7 @@ function loadPostsPage(opts) {
  * @returns {promise} resolves to posts array.
  */
 function loadPosts(opts) {
-  var opts = opts || {};
+  opts = opts || {};
   opts.fromDate = vm.latestUpdate;
 
   return getPosts(opts)
@@ -92,7 +93,7 @@ function renderPosts(api_response, opts) {
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
 
-    if ("delete" === posts.operation) {
+    if (posts.operation === "delete") {
       view.deletePost(post._id);
       return; // early
     };
@@ -101,7 +102,7 @@ function renderPosts(api_response, opts) {
       item: post
     });
 
-    if ("update" === posts.operation) {
+    if (posts.operation === "update") {
       view.updatePost(renderedPost)
       return; // early
     }
@@ -123,7 +124,7 @@ function renderPosts(api_response, opts) {
  */
 function updateViewModel(api_response, opts) {
   if (opts.sort === 'oldest_first') {
-    vm._items = api_reponse._items;
+    vm._items = api_response._items;
   } else {
     vm._items.push.apply(vm._items, api_response._items);
   }
@@ -192,9 +193,11 @@ function getQuery(opts) {
         }
       }
     },
-    "sort":[{
-      "_updated": {"order": "desc"}
-    }]
+    "sort": [
+      {
+        "_updated": {"order": "desc"}
+      }
+    ]
   };
 
   if (opts.fromDate) {

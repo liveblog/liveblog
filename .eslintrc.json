@@ -7,6 +7,7 @@
 
     "globals": {
         "LB": false,
+        "Promise": false,
         "instgrm": false,
         "twttr": false
     },
@@ -17,8 +18,6 @@
         "ecmaFeatures": {
             "modules": true,
             "globalReturn": false,
-            "impliedStrict": true,
-            "jsx": true,
             "experimentalObjectRestSpread": true
         }
     },
@@ -57,7 +56,7 @@
         "no-caller": 2,
         "no-case-declarations": 2,
         "no-else-return": 2,
-        "no-empty-function": 2,
+        "no-empty-function": 1,
         "no-empty-pattern": 2,
         "no-eval": 2,
         "no-extend-native": 2,
@@ -88,8 +87,6 @@
         "no-with": 2,
         "radix": 1,
         "yoda": 2,
-
-        "strict": [2, "never"],
 
         "no-shadow-restricted-names": 2,
         "no-unused-vars": [1, {"vars": "all", "args": "none"}],
