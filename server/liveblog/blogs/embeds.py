@@ -244,11 +244,9 @@ def embed(blog_id, api_host=None, theme=None):
         template_content = embed_template.render(
             blog=blog,
             theme=theme,
+            theme_json=bson_dumps(theme),
             settings=theme_settings,
-            api_response=api_response,
-            theme_settings=theme_settings,
-            theme_options=theme_json,
-            options=bson_dumps(theme_json)
+            api_response=api_response
         )
 
     scope = {
