@@ -71,7 +71,7 @@ function renderPosts(api_response, opts) {
 function toggleSortBtn(name) {
   var sortingBtns = document.querySelectorAll('.sorting-bar__order');
   sortingBtns.forEach(function(el) {
-    var shouldBeActive = el.dataset.hasOwnProperty("jsOrderBy_" + name)
+    var shouldBeActive = el.dataset.hasOwnProperty("jsOrderby_" + name)
     el.classList.toggle('sorting-bar__order--active', shouldBeActive);
   });
 }
