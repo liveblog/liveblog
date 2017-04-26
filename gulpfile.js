@@ -1,6 +1,6 @@
 'use strict';
 
-var DEBUG = process.env.DEBUG;
+var DEBUG = process.env.NODE_ENV != "production";
 
 var gulp = require('gulp')
   , browserify = require('browserify')
@@ -12,15 +12,11 @@ var gulp = require('gulp')
   , path = require('path')
   , del = require('del')
   , minimist = require('minimist')
-  , fs = require('fs')
-  , nunjucks_extensions = require('./js/nunjucks_extensions');
-
-
+  , fs = require('fs');
 
 var nunjucksOptions = {
-    env: nunjucks_extensions.nunjucksEnv
+  env: require('./js/nunjucks_extensions').nunjucksEnv
 }
-
 
 var paths = {
   less: 'less/*.less',
@@ -30,10 +26,8 @@ var paths = {
   templates: 'templates/*.html'
 };
 
-
 // Command-line and default theme options from theme.json.
 var themeSettings = require('./theme.json');
-
 
 function getThemeOptions(options) {
   var _options = {}
@@ -43,14 +37,12 @@ function getThemeOptions(options) {
   return _options;
 }
 
-
 // Function to async reload default theme options.
 function loadThemeJSON() {
   fs.readFile('theme.json', 'utf8', function (err, data) {
     themeSettings = JSON.parse(data);
   });
 }
-
 
 // Browserify.
 gulp.task('browserify', ['clean-js'], function(cb) {
@@ -82,7 +74,6 @@ gulp.task('browserify', ['clean-js'], function(cb) {
     .pipe(plugins.rev.manifest('dist/rev-manifest.json', {merge: true}))
     .pipe(gulp.dest(''));
 });
-
 
 // Compile LESS files.
 gulp.task('less', ['clean-css'], function () {
@@ -121,7 +112,6 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
     .pipe(plugins.connect.reload());
 });
 
-
 // Inject jinja/nunjucks template for production use.
 gulp.task('template-inject', ['less', 'browserify'], function() {
   var theme_options = getThemeOptions(themeSettings.options);
@@ -154,7 +144,6 @@ gulp.task('template-inject', ['less', 'browserify'], function() {
     .pipe(plugins.connect.reload());
 });
 
-
 // Replace assets paths in theme.json file and reload options.
 gulp.task('theme-replace', ['browserify', 'less'], function() {
   var manifest = require("./dist/rev-manifest.json");
@@ -169,7 +158,6 @@ gulp.task('theme-replace', ['browserify', 'less'], function() {
   loadThemeJSON();
 });
 
-
 // Serve index.html for local testing.
 gulp.task('serve', ['browserify', 'less', 'index-inject'], function() {
   plugins.connect.server({
@@ -179,7 +167,6 @@ gulp.task('serve', ['browserify', 'less', 'index-inject'], function() {
     livereload: true
   });
 });
-
 
 // Watch
 gulp.task('watch-static', ['serve'], function() {
@@ -194,22 +181,18 @@ gulp.task('watch-static', ['serve'], function() {
   })
 });
 
-
 // Clean CSS
 gulp.task('clean-css', function() {
   return del(['dist/*.css'])
 });
-
 
 // Clean JS
 gulp.task('clean-js', function() {
   return del(['dist/*.js'])
 });
 
-
 // Default build for production
 gulp.task('default', ['browserify', 'less', 'theme-replace', 'template-inject']);
-
 
 // Default build for development
 gulp.task('devel', ['browserify', 'less', 'theme-replace', 'index-inject']);
