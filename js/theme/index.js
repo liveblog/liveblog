@@ -19,7 +19,7 @@ module.exports = {
     viewmodel.init();
 
     setInterval(function() {
-      viewmodel.loadPosts(); // Start polling
+      viewmodel.loadPosts().then(view.renderPosts); // Start polling
       view.updateTimestamps(); // Convert ISO dates to timeago
     }, 10*1000)
   }

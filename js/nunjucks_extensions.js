@@ -1,11 +1,12 @@
-var nunjucks = require('nunjucks');
-var path = require('path');
+'use strict';
 
-var templatePath = path.resolve(__dirname, '../templates');
-var nunjucksLoader = new nunjucks.FileSystemLoader(templatePath);
-var nunjucksEnv = new nunjucks.Environment(nunjucksLoader);
+var path = require('path')
+  , nunjucks = require('nunjucks');
 
+var templatePath = path.resolve(__dirname, '../templates')
+  , nunjucksLoader = new nunjucks.FileSystemLoader(templatePath)
+  , nunjucksEnv = new nunjucks.Environment(nunjucksLoader);
 
 module.exports = {
-    nunjucksEnv: nunjucksEnv
+  nunjucksEnv: nunjucksEnv
 }
