@@ -103,7 +103,7 @@
         "computed-property-spacing": 2,
         "consistent-this": [1, "self"],
         "func-call-spacing": 2,
-        "indent": [1, 4],
+        "indent": [1, 2],
         "jsx-quotes": 2,
         "key-spacing": 2,
         "keyword-spacing": 2,
