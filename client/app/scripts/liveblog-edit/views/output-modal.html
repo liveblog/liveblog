@@ -11,8 +11,16 @@
                     <input type="text" ng-model="vm.output.name" maxlength="24" required>
                 </div>
                 <div class="field">
-                    <label translate>Choose advertising collection</label>
+                    <label translate>Advertising collection</label>
                     <select ng-model="vm.output.collection" ng-options="collection._id as collection.name for collection in vm.collections"></select>
+                </div>
+                <div class="field">
+                    <label translate>Adverts frequency</label>
+                    <input type="number" min="4" max="20" ng-model="vm.output.settings.frequency">
+                </div>
+                <div class="field">
+                    <label translate>Order</label>
+                    <select ng-model="vm.output.collection" ng-options="order.value as order.title for order in vm.ordering"></select>
                 </div>
                 <div class="field">
                     <label translate>Background color</label>
