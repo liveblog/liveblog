@@ -48,7 +48,7 @@ var buttons = {
 };
 
 function catchError(err) {
-  console.log("Handler error: ", err)
+  console.error("Handler error: ", err)
 }
 
 var events = {

@@ -53,7 +53,7 @@ vm.getPosts = function(opts) {
       return posts
     })
     .catch(function(err) {
-      console.log(err);
+      console.error(err);
     })
 };
 
@@ -87,11 +87,11 @@ vm.loadPosts = function(opts) {
 vm.updateViewModel = function(api_response, opts) {
   var self = this;
 
-  if (opts.sort != self.settings.postOrder) {
+  if (opts.sort !== self.settings.postOrder) {
     self.vm = getEmptyVm();
   }
 
-  if (!opts.fromDate || opts.sort != self.settings.postOrder) { // Means we're not polling
+  if (!opts.fromDate || opts.sort !== self.settings.postOrder) { // Means we're not polling
     view.toggleLoadMore(self.isTimelineEnd(api_response)) // the end?
   } else { // Means we're polling for new posts
     if (!api_response._items.length) return;
