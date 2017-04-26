@@ -2,9 +2,13 @@
     "env": {
         "browser": true,
         "node": true,
-        "jasmine": true,
-        "amd": true,
-        "es6": true
+        "amd": true
+    },
+
+    "globals": {
+        "LB": false,
+        "instgrm": false,
+        "twttr": false
     },
 
     "parserOptions": {
