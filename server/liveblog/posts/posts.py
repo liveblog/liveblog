@@ -15,7 +15,7 @@ from superdesk.errors import SuperdeskApiError
 from superdesk import get_resource_service
 from liveblog.common import check_comment_length
 
-from .tasks import update_post_blog_data
+from .tasks import update_post_blog_data, update_post_blog_embed
 
 
 logger = logging.getLogger('superdesk')
@@ -199,8 +199,9 @@ class PostsService(ArchiveService):
             posts.append(post)
             app.blog_cache.invalidate(doc.get('blog'))
 
-            # Update blog post data
+            # Update blog post data and embed for SEO-enabled blogs.
             update_post_blog_data.delay(doc)
+            update_post_blog_embed.delay(doc)
 
             # send post to consumer webhook
             if doc['post_status'] == 'open':
@@ -282,8 +283,9 @@ class PostsService(ArchiveService):
             doc = original.copy()
             doc.update(updates)
 
-            # Update blog post data
+            # Update blog post data and embed for SEO-enabled blogs.
             update_post_blog_data.delay(doc, updated=True)
+            update_post_blog_embed.delay(doc)
 
             logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
             posts.append(doc)
