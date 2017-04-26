@@ -8,7 +8,7 @@ var templates = require('./templates')
   , helpers = require('./helpers')
   , view = require('./view');
 
-var endpoint = LB.api_host + "api/client_blogs/" + LB.blog._id + "/posts"
+var endpoint = LB.api_host + "/api/client_blogs/" + LB.blog._id + "/posts"
   , settings = LB.settings;
 
 var vm = {
