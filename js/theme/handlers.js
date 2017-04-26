@@ -16,19 +16,20 @@ var buttons = {
   handlers: {
     "[data-js-loadmore]": function() {
       viewmodel.loadPostsPage()
-        .then(function() {
-          view.displayNewPosts();
-        })
+        .then(view.renderPosts)
+        .then(view.displayNewPosts);
     },
-    "[data-js-orderby-oldest-first]": function() {
-      viewmodel.loadPosts({sort: 'oldest_first', returnPromise: true})
+
+    "[data-js-orderby_oldest_first]": function() {
+      viewmodel.loadPosts({sort: 'oldest_first'})
         .then(view.renderTimeline)
         .then(function() {
           view.toggleSortBtn('oldest_first')
         })
     },
-    "[data-js-orderby-newest-first]": function() {
-      viewmodel.loadPosts({sort: 'newest_first', returnPromise: true})
+
+    "[data-js-orderby_newest_first]": function() {
+      viewmodel.loadPosts({sort: 'newest_first'})
         .then(view.renderTimeline)
         .then(function() {
           view.toggleSortBtn('newest_first')
@@ -39,8 +40,8 @@ var buttons = {
   attach: function() {
     for (var handler in buttons.handlers) {
       var el = helpers.getElems(handler)[0];
-      if (el)
-        el.addEventListener('click', buttons.handlers[handler], false);
+      if (!el) return false
+      el.addEventListener('click', buttons.handlers[handler], false);
     }
   }
 };
