@@ -32,10 +32,10 @@ var paths = {
 
 
 // Command-line and default theme options from theme.json.
-var themeSettings = require('./theme.json');
+var theme = require('./theme.json');
 
 
-function getThemeOptions(options) {
+function getThemeSettings(options) {
   var _options = {}
   for (var option in options) {
     _options[option.name] = option.default;
@@ -47,7 +47,7 @@ function getThemeOptions(options) {
 // Function to async reload default theme options.
 function loadThemeJSON() {
   fs.readFile('theme.json', 'utf8', function (err, data) {
-    themeSettings = JSON.parse(data);
+    theme = JSON.parse(data);
   });
 }
 
@@ -108,10 +108,10 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
   return gulp.src('./templates/template-index.html')
     .pipe(plugins.inject(sources))
     .pipe(plugins.nunjucks.compile({
+      theme: testdata.options,
+      theme_json: JSON.stringify(testdata.options, null, 4),
+      settings: testdata.options.theme_settings,
       api_response: testdata.api_response,
-      theme_settings: testdata.options.theme_settings,
-      theme_options: testdata.options,
-      options: JSON.stringify(testdata.options, null, 4),
       include_js_options: true,
       debug: DEBUG
     }, nunjucksOptions))
@@ -124,7 +124,7 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
 
 // Inject jinja/nunjucks template for production use.
 gulp.task('template-inject', ['less', 'browserify'], function() {
-  var theme_options = getThemeOptions(themeSettings.options);
+  var themeSettings = getThemeSettings(theme.options);
 
   var _api_response = {};
   var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
@@ -133,9 +133,9 @@ gulp.task('template-inject', ['less', 'browserify'], function() {
 
   return gulp.src('./templates/template.html')
     .pipe(plugins.nunjucks.compile({
-      theme_options: theme_options,
-      theme_settings: themeSettings,
-      options: JSON.stringify(theme_options, null, 4),
+      theme: theme,
+      theme_json: JSON.stringify(theme, null, 4),
+      settings: themeSettings,
       include_js_options: false,
       debug: DEBUG
     }))
