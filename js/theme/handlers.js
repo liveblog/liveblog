@@ -17,23 +17,24 @@ var buttons = {
     "[data-js-loadmore]": function() {
       viewmodel.loadPostsPage()
         .then(view.renderPosts)
-        .then(view.displayNewPosts);
+        .then(view.displayNewPosts)
+        .catch(catchError)
     },
 
-    "[data-js-orderby_oldest_first]": function() {
-      viewmodel.loadPosts({sort: 'oldest_first'})
+    "[data-js-orderby_ascending]": function() {
+      viewmodel.loadPosts({sort: 'ascending'})
         .then(view.renderTimeline)
-        .then(function() {
-          view.toggleSortBtn('oldest_first')
-        })
+        .then(view.displayNewPosts)
+        .then(view.toggleSortBtn('ascending'))
+        .catch(catchError)
     },
 
-    "[data-js-orderby_newest_first]": function() {
-      viewmodel.loadPosts({sort: 'newest_first'})
+    "[data-js-orderby_descending]": function() {
+      viewmodel.loadPosts({sort: 'descending'})
         .then(view.renderTimeline)
-        .then(function() {
-          view.toggleSortBtn('newest_first')
-        })
+        .then(view.displayNewPosts)
+        .then(view.toggleSortBtn('descending'))
+        .catch(catchError)
     }
   },
 
@@ -45,6 +46,10 @@ var buttons = {
     }
   }
 };
+
+function catchError(err) {
+  console.log("Handler error: ", err)
+}
 
 var events = {
   attach: function() {} // todo

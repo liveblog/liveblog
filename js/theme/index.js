@@ -18,9 +18,12 @@ module.exports = {
     handlers.events.attach(); // Register Event, Message Handlers
     viewmodel.init();
 
+    // setInterval(function() {
+    //   viewmodel.loadPosts().then(view.renderPosts); // Start polling
+    // }, 10*1000)
+
     setInterval(function() {
-      viewmodel.loadPosts().then(view.renderPosts); // Start polling
       view.updateTimestamps(); // Convert ISO dates to timeago
-    }, 10*1000)
+    }, 1000)
   }
 }
