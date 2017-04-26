@@ -16,9 +16,11 @@
   },
   "devDependencies": {
     "del": "^2.2.0",
+    "eslint": "^3.19.0",
     "graceful-fs": "^4.1.4",
     "gulp": "^3.9.1",
     "gulp-connect": "^5.0.0",
+    "gulp-eslint": "^3.0.1",
     "gulp-html-replace": "^1.6.1",
     "gulp-if": "^2.0.0",
     "gulp-inject": "^4.0.0",
