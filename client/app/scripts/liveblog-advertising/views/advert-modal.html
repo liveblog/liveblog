@@ -1,7 +1,7 @@
 <div sd-modal data-model="advertModalActive">
     <div class="modal-header">
         <button class="close" ng-click="cancelAdvertCreate()"><i class="icon-close-small"></i></button>
-        <h3 translate>{{ advertType.name }}</h3>
+        <h3 translate>{{ advert._id? 'Edit Advert': 'Add Advert' | translate }}</h3>
     </div>
     <div class="modal-body" style="min-height: 300px;">
         <div class="item-creation advertising">
