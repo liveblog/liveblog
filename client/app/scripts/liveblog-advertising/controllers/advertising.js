@@ -5,10 +5,10 @@ import collectionModalTpl from 'scripts/liveblog-advertising/views/collection-mo
 import _ from 'lodash';
 
 LiveblogAdvertisingController.$inject = ['$scope', 'api', 'notify', 'gettext',
-'upload','$templateCache', 'freetypeService', 'modal'];
+'upload','$templateCache', 'freetypeService', 'modal', 'adsUtilSevice'];
 
 export default function LiveblogAdvertisingController($scope, api, notify, gettext,
-upload, $templateCache, freetypeService, modal) {
+upload, $templateCache, freetypeService, modal, adsUtilSevice) {
     $scope.activeState = 'adverts';
     $scope.advertType = '';
     $scope.advert = {};
@@ -227,21 +227,7 @@ upload, $templateCache, freetypeService, modal) {
         return hasAdvert;
     }
 
-    $scope.notValidName = function (item, existingItems) {
-        var invalid = false;
-        if (!item || !item.name) {
-            invalid = gettext('required');
-        }
-        if (!invalid) {
-            angular.forEach(existingItems, function(existingItem) {
-                // make sure name is unique but don't compare with itself
-                if (item.name === existingItem.name && (!item._id || item._id !== existingItem._id)) {
-                    invalid = gettext('must be unique');
-                }
-            });
-        }
-        return invalid;
-    }
+    $scope.notValidName = adsUtilSevice.uniqueNameInItems;
 
     $scope.freetypeValid = function() {
         var valid = true;
