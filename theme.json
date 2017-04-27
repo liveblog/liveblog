@@ -120,8 +120,8 @@
         "oldestFirst": "Oldest first",
         "newestFirst": "Newest first",
         "loadNewPosts": "Load new posts",
-        "ascending": "Ascending",
-        "descending": "Descending",
+        "ascending": "Oldest first",
+        "descending": "Newest first",
         "timeAgo": {
             "d": {"s": "A day ago", "p": "{} days ago"},
             "h": {"s": "An hour ago", "p": "{} hours ago"},
