@@ -14,9 +14,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/liveblog-a05d52107b.css"],
-    "devScripts": ["dist/liveblog-f7ba4697b4.js"],
+    "devScripts": ["dist/liveblog-05ac90c682.js"],
     "styles": ["dist/liveblog-a05d52107b.css"],
-    "scripts": ["dist/liveblog-f7ba4697b4.js"],
+    "scripts": ["dist/liveblog-05ac90c682.js"],
     "options": [
         {
             "name": "postsPerPage",
@@ -117,11 +117,9 @@
     ],
     "l10n": {
         "loadMore": "Load More",
-        "oldestFirst": "Oldest first",
-        "newestFirst": "Newest first",
+        "ascending": "Oldest first",
+        "descending": "Newest first",
         "loadNewPosts": "Load new posts",
-        "ascending": "Ascending",
-        "descending": "Descending",
         "timeAgo": {
             "d": {"s": "A day ago", "p": "{} days ago"},
             "h": {"s": "An hour ago", "p": "{} hours ago"},
