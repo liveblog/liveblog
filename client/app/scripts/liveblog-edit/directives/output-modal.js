@@ -21,9 +21,9 @@ export default function outputModal() {
     };
 }
 
-outputModalController.$inject = ['$rootScope', 'api', 'urls', 'notify', 'modal', 'upload', 'adsUtilSevice'];
+outputModalController.$inject = ['$rootScope', '$q', 'api', 'urls', 'notify', 'modal', 'upload', 'adsUtilSevice'];
 
-function outputModalController($rootScope, api, urls, notify, modal, upload, adsUtilSevice) {
+function outputModalController($rootScope, $q, api, urls, notify, modal, upload, adsUtilSevice) {
     var vm = this;
     vm.collections = [];
     vm.readyToSave = false;
@@ -35,6 +35,13 @@ function outputModalController($rootScope, api, urls, notify, modal, upload, ads
     vm.removeOutputImage = removeOutputImage;
     vm.notValidName = adsUtilSevice.uniqueNameInItems;
     vm.ordering = [{'title': 'Ascending', 'value': 1}, {'title': 'Descending', 'value': -1}];
+
+    var notif_listener = $rootScope.$on('blog', (e, data) => {
+        if (data.blog_id === vm.blog._id && data.published === 1) {
+            // update the blog property
+            vm.blog.public_urls = data.public_urls;
+        }
+    });
 
     initialize().then(function() {
         vm.readyToSave = true;
