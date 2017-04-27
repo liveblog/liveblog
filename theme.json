@@ -13,10 +13,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/liveblog-0f4b11e354.css"],
-    "devScripts": ["dist/liveblog-0d96929f30.js"],
-    "styles": ["dist/liveblog-0f4b11e354.css"],
-    "scripts": ["dist/liveblog-0d96929f30.js"],
+    "devStyles": ["dist/liveblog-a05d52107b.css"],
+    "devScripts": ["dist/liveblog-f22feaa7d3.js"],
+    "styles": ["dist/liveblog-a05d52107b.css"],
+    "scripts": ["dist/liveblog-f22feaa7d3.js"],
     "options": [
         {
             "name": "postsPerPage",
@@ -117,8 +117,8 @@
     ],
     "l10n": {
         "loadMore": "Load More",
-        "oldestFirst": "Oldest first",
-        "newestFirst": "Newest first",
+        "ascending": "Oldest first",
+        "descending": "Newest first",
         "loadNewPosts": "Load new posts",
         "timeAgo": {
             "d": {"s": "A day ago", "p": "{} days ago"},

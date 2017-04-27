@@ -12,6 +12,7 @@ var gulp = require('gulp')
   , path = require('path')
   , del = require('del')
   , minimist = require('minimist')
+  , eslint = require('gulp-eslint')
   , fs = require('fs');
 
 var nunjucksOptions = {
@@ -44,6 +45,13 @@ function loadThemeJSON() {
     theme = JSON.parse(data);
   });
 }
+
+gulp.task('lint', () => {
+  return gulp.src(['js/**/*.js','!node_modules/**'])
+    .pipe(eslint({ quiet: true }))
+    .pipe(eslint.format())
+    .pipe(eslint.failAfterError());
+});
 
 // Browserify.
 gulp.task('browserify', ['clean-js'], function(cb) {
@@ -102,7 +110,7 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
     .pipe(plugins.nunjucks.compile({
       theme: testdata.options,
       theme_json: JSON.stringify(testdata.options, null, 4),
-      settings: testdata.options.theme_settings,
+      settings: testdata.options.settings,
       api_response: testdata.api_response,
       include_js_options: true,
       debug: DEBUG

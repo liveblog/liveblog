@@ -9,12 +9,14 @@ var templates = require('./templates')
 var timelineElem = helpers.getElems("lb-posts")
   , loadMorePostsButton = helpers.getElems("load-more-posts");
 
+var settings = LB.settings;
+
 /**
  * Replace the current timeline unconditionally.
- * @param {array} api_response - liveblog API response JSON
- * @param {object} opts - keyword args
+ * @typedef {Object} api_response – contains request opts.
+ * @property {Object} requestOpts - API request params.
  */
-function renderTimeline(api_response, opts) {
+function renderTimeline(api_response) {
   var renderedPosts = [];
 
   api_response._items.forEach(function(post) {
@@ -25,22 +27,23 @@ function renderTimeline(api_response, opts) {
 
   timelineElem[0].innerHTML = renderedPosts.join("");
   loadEmbeds();
-}
+};
 
 /**
  * Render posts currently in pipeline to template.
  * To reduce DOM calls/paints we hand off rendered HTML in bulk.
- * @param {object} api_response - liveblog API response JSON.
+ * @typedef {Object} api_response – contains request opts.
+ * @property {Object} requestOpts - API request params.
  */
-function renderPosts(api_response, opts) {
+function renderPosts(api_response) {
   var renderedPosts = [] // temporary store
     , posts = api_response._items;
 
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
 
-    if ("delete" === posts.operation) {
-      view.deletePost(post._id);
+    if (posts.operation === "delete") {
+      deletePost(post._id);
       return; // early
     };
 
@@ -48,33 +51,28 @@ function renderPosts(api_response, opts) {
       item: post
     });
 
-    if ("update" === posts.operation) {
-      view.updatePost(renderedPost)
+    if (posts.operation === "update") {
+      updatePost(renderedPost)
       return; // early
     }
 
     renderedPosts.push(renderedPost) // create operation
   };
 
-  if (!renderedPosts.length) return // early
-  if (settings.postOrder === "descending") renderedPosts.reverse()
+  if (!renderedPosts.length) {
+    return // early
+  }
+  
+  if (api_response.requestOpts.sort !== "ascending") {
+    renderedPosts.reverse()
+  }
 
-  view.addPosts(renderedPosts, { // if creates
-    position: opts.fromDate ? "top" : "bottom"
+  addPosts(renderedPosts, { // if creates
+    position: api_response.requestOpts.fromDate ? "top" : "bottom"
   })
-}
 
-/**
- * Set sorting order button of class @name to active.
- * @param {string} name - liveblog API response JSON.
- */
-function toggleSortBtn(name) {
-  var sortingBtns = document.querySelectorAll('.sorting-bar__order');
-  sortingBtns.forEach(function(el) {
-    var shouldBeActive = el.dataset.hasOwnProperty("jsOrderby_" + name)
-    el.classList.toggle('sorting-bar__order--active', shouldBeActive);
-  });
-}
+  loadEmbeds();
+};
 
 /**
  * Add post nodes to DOM, do so regardless of settings.autoApplyUpdates,
@@ -98,36 +96,6 @@ function addPosts(posts, opts) {
   };
 
   timelineElem[0].insertAdjacentHTML(position, postsHTML);
-  loadEmbeds();
-};
-
-/**
- * Trigger embed provider unpacking
- * Todo: Make required scripts available on subsequent loads
- */
-function loadEmbeds() {
-  if (window.instgrm) instgrm.Embeds.process()
-  if (window.twttr) twttr.widgets.load()
-};
-
-/**
- * Toggle display of load-more-posts button.
- * @param {bool} shouldToggle - true => display
- */
-function toggleLoadMore(shouldToggle) {
-  loadMorePostsButton[0].classList.toggle(
-    "mod--hide", shouldToggle)
-  return;
-};
-
-/**
- * Show new posts loaded via XHR
- */
-function displayNewPosts() {
-  var newPosts = helpers.getElems("lb-post-new")
-  for (var i = newPosts.length - 1; i >= 0; i--) {
-    newPosts[i].classList.remove("lb-post-new")
-  }
 };
 
 /**
@@ -146,7 +114,47 @@ function deletePost(postId) {
 function updatePost(postId, renderedPost) {
   var elem = helpers.getElems('data-js-post-id=\"' + postId + '\"');
   elem[0].innerHTML = renderedPost;
-  loadEmbeds();
+};
+
+/**
+ * Show new posts loaded via XHR
+ */
+function displayNewPosts() {
+  var newPosts = helpers.getElems("lb-post-new")
+  for (var i = newPosts.length - 1; i >= 0; i--) {
+    newPosts[i].classList.remove("lb-post-new")
+  }
+};
+
+/**
+ * Trigger embed provider unpacking
+ * Todo: Make required scripts available on subsequent loads
+ */
+function loadEmbeds() {
+  if (window.instgrm) instgrm.Embeds.process()
+  if (window.twttr) twttr.widgets.load()
+};
+
+/**
+ * Set sorting order button of class @name to active.
+ * @param {string} name - liveblog API response JSON.
+ */
+function toggleSortBtn(name) {
+  var sortingBtns = document.querySelectorAll('.sorting-bar__order');
+  sortingBtns.forEach(function(el) {
+    var shouldBeActive = el.dataset.hasOwnProperty("jsOrderby_" + name)
+    el.classList.toggle('sorting-bar__order--active', shouldBeActive);
+  });
+};
+
+/**
+ * Conditionally hide load-more-posts button.
+ * @param {bool} shouldToggle - true => hide
+ */
+function hideLoadMore(shouldHide) {
+  loadMorePostsButton[0].classList.toggle(
+    "mod--hide", shouldHide)
+  return;
 };
 
 /**
@@ -168,8 +176,9 @@ module.exports = {
   deletePost: deletePost,
   displayNewPosts: displayNewPosts,
   renderTimeline: renderTimeline,
+  renderPosts: renderPosts,
   updatePost: updatePost,
   updateTimestamps: updateTimestamps,
-  toggleLoadMore: toggleLoadMore,
+  hideLoadMore: hideLoadMore,
   toggleSortBtn: toggleSortBtn
 }

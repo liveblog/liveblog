@@ -173,9 +173,9 @@
     "infinitScroll":false
   },
   "l10n": {
+    "ascending": "Oldest first",
+    "descending": "Newest first",
     "loadMore": "Load More",
-    "oldestFirst": "Oldest first",
-    "newestFirst": "Newest first",
     "loadNewPosts": "Load new posts",
     "timeAgo": {
         "d": {"s": "A day ago", "p": "{} days ago"},
