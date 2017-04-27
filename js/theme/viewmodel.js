@@ -87,18 +87,16 @@ vm.loadPosts = function(opts) {
 vm.updateViewModel = function(api_response, opts) {
   var self = this;
 
-  if (opts.sort !== self.settings.postOrder) {
-    self.vm = getEmptyVm();
-  }
-
   if (!opts.fromDate || opts.sort !== self.settings.postOrder) { // Means we're not polling
-    view.toggleLoadMore(self.isTimelineEnd(api_response)) // the end?
+    view.hideLoadMore(self.isTimelineEnd(api_response)) // the end?
   } else { // Means we're polling for new posts
     if (!api_response._items.length) return;
     self.vm.latestUpdate = self.getLatestUpdate(api_response);
   }
 
-  if (opts.sort === 'oldest_first') {
+  if (opts.sort !== self.settings.postOrder) {
+    self.vm = getEmptyVm();
+    view.hideLoadMore(false);
     Object.assign(self.vm, api_response);
   } else {
     self.vm._items.push.apply(self.vm._items, api_response._items);
@@ -147,7 +145,7 @@ vm.init = function() {
  * Build urlencoded ElasticSearch Querystring
  * TODO: abstract away, we only need sticky flag and order
  * @param {Object} opts - arguments object
- * @param {string} opts.sort - if "oldest_first", get items in ascending order
+ * @param {string} opts.sort - if "ascending", get items in ascending order
  * @param {string} opts.fromDate - results with a ISO 8601 timestamp gt this only
  * @param {bool} opts.highlightsOnly - get editorial/highlighted items only
  * @returns {string} Querystring
