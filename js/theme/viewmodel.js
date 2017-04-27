@@ -4,8 +4,7 @@
 
 'use strict';
 
-var templates = require('./templates')
-  , helpers = require('./helpers')
+var helpers = require('./helpers')
   , view = require('./view');
 
 var endpoint = LB.api_host + "/api/client_blogs/" + LB.blog._id + "/posts"
@@ -21,8 +20,8 @@ function getEmptyVm(items) {
     _items: new Array(items) || 0,
     currentPage: 1,
     totalPosts: 0
-  }
-};
+  };
+}
 
 /**
  * Private API request method
@@ -40,21 +39,21 @@ vm.getPosts = function(opts) {
     fromDate: opts.fromDate
       ? opts.fromDate
       : false
-  })
+  });
 
   var page = opts.fromDate ? 1 : opts.page;
   var qs = "?max_results=" + settings.postsPerPage + "&page=" + page + "&source="
     , fullPath = endpoint + qs + dbQuery;
 
   return helpers.getJSON(fullPath)
-    .then(function(posts) {
+    .then((posts) => {
       self.updateViewModel(posts, opts);
-      posts.requestOpts = opts
-      return posts
+      posts.requestOpts = opts;
+      return posts;
     })
-    .catch(function(err) {
+    .catch((err) => {
       console.error(err);
-    })
+    });
 };
 
 /**
@@ -63,10 +62,10 @@ vm.getPosts = function(opts) {
  * @returns {promise} resolves to posts array.
  */
 vm.loadPostsPage = function(opts) {
-  opts = opts || {}
+  opts = opts || {};
   opts.page = ++this.vm.currentPage;
   opts.sort = this.settings.postOrder;
-  return this.getPosts(opts)
+  return this.getPosts(opts);
 };
 
 /**
@@ -77,7 +76,7 @@ vm.loadPostsPage = function(opts) {
 vm.loadPosts = function(opts) {
   opts = opts || {};
   opts.fromDate = this.vm.latestUpdate;
-  return this.getPosts(opts)
+  return this.getPosts(opts);
 };
 
 /**
@@ -88,9 +87,12 @@ vm.updateViewModel = function(api_response, opts) {
   var self = this;
 
   if (!opts.fromDate || opts.sort !== self.settings.postOrder) { // Means we're not polling
-    view.hideLoadMore(self.isTimelineEnd(api_response)) // the end?
+    view.hideLoadMore(self.isTimelineEnd(api_response)); // the end?
   } else { // Means we're polling for new posts
-    if (!api_response._items.length) return;
+    if (!api_response._items.length) {
+      return;
+    }
+
     self.vm.latestUpdate = self.getLatestUpdate(api_response);
   }
 
@@ -103,7 +105,7 @@ vm.updateViewModel = function(api_response, opts) {
   }
 
   self.settings.postOrder = opts.sort;
-  return api_response
+  return api_response;
 };
 
 /**
@@ -112,12 +114,10 @@ vm.updateViewModel = function(api_response, opts) {
  * @returns {string} - ISO 8601 encoded date
  */
 vm.getLatestUpdate = function(api_response) {
-  var timestamps = api_response._items.map(function(post) {
-    return new Date(post._updated)
-  });
+  var timestamps = api_response._items.map((post) => new Date(post._updated));
 
   var latest = new Date(Math.max.apply(null, timestamps));
-  return latest.toISOString() // convert timestamp to ISO
+  return latest.toISOString(); // convert timestamp to ISO
 };
 
 /**
@@ -151,8 +151,6 @@ vm.init = function() {
  * @returns {string} Querystring
  */
 vm.getQuery = function(opts) {
-  var self = this;
-
   var query = {
     "query": {
       "filtered": {
@@ -176,21 +174,21 @@ vm.getQuery = function(opts) {
   if (opts.fromDate) {
     query.query.filtered.filter.and[3].range._updated = {
       "gt": opts.fromDate
-    }
-  };
+    };
+  }
 
   if (opts.highlightsOnly === true) {
     query.query.filtered.filter.and.push({
-        term: {highlight: true}
-    })
-  };
+      term: {highlight: true}
+    });
+  }
 
   if (opts.sort === "ascending") {
-    query.sort[0]._updated.order = "asc"
+    query.sort[0]._updated.order = "asc";
   }
 
   if (opts.sort === "ascending" || opts.sort === "descending") {
-    query.query.filtered.filter.and.forEach(function(rule, index) {
+    query.query.filtered.filter.and.forEach((rule, index) => {
       if (rule.hasOwnProperty('range')) {
         query.query.filtered.filter.and.splice(index, 1);
       }
@@ -198,6 +196,6 @@ vm.getQuery = function(opts) {
   }
 
   return encodeURI(JSON.stringify(query));
-}
+};
 
 module.exports = vm;

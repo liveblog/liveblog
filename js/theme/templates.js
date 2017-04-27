@@ -3,4 +3,4 @@ module.exports = {
   timeline: require("../../templates/template-timeline.html"),
   itemImage: require("../../templates/template-item-image.html"),
   itemEmbed: require("../../templates/template-item-embed.html")
-}
+};

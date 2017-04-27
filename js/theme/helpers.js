@@ -3,8 +3,6 @@
  */
 
 'use strict';
-var moment;
-
 /**
  * Convert ISO timestamps to relative moment timestamps
  * @param {Node} elem - a DOM element with ISO timestamp in data-js-timestamp attr
@@ -26,14 +24,19 @@ function convertTimestamp(timestamp) {
   }
 
   function timeAgo(timestamp) {
-    if (timestamp < units.h) return getTimeAgoString(timestamp, "m");
-    if (timestamp < units.d) return getTimeAgoString(timestamp, "h");
+    if (timestamp < units.h) {
+      return getTimeAgoString(timestamp, "m");
+    }
+
+    if (timestamp < units.d) {
+      return getTimeAgoString(timestamp, "h");
+    }
 
     return getTimeAgoString(timestamp, "d"); // default
-  };
+  }
 
   return timeAgo(diff);
-};
+}
 
 /**
  * Wrap element selector api
@@ -44,23 +47,23 @@ function getElems(query) {
   return isDataAttr
     ? document.querySelectorAll(query)
     : document.getElementsByClassName(query);
-};
+}
 
 /**
  * jQuery's $.getJSON in a nutshell
  * @param {string} url - a request URL
  */
 function getJSON(url) {
-  return new Promise(function(resolve, reject) {
-    var promise = Promise;
+  return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest();
 
     xhr.open('GET', url);
     xhr.onload = function() {
       if (xhr.status === 200) {
         resolve(JSON.parse(xhr.responseText));
+      } else {
+        reject(xhr.responseText);
       }
-      else reject(xhr.responseText);
     };
 
     xhr.send();
@@ -71,4 +74,4 @@ module.exports = {
   getElems: getElems,
   getJSON: getJSON,
   convertTimestamp: convertTimestamp
-}
+};
