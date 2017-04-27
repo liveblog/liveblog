@@ -23,7 +23,7 @@ from flask import json, render_template, request, url_for
 from liveblog.themes import UnknownTheme
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
-from liveblog.client_modules.client_modules import Blog
+from liveblog.blogs.blog import Blog
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR, THEMES_ASSETS_DIR
 from .utils import is_relative_to_current_folder, get_template_file_name, get_theme_json
