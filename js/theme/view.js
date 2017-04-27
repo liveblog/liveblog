@@ -63,7 +63,7 @@ function renderPosts(api_response) {
     return // early
   }
   
-  if (api_response.requestOpts.sort === "ascending") {
+  if (api_response.requestOpts.sort !== "ascending") {
     renderedPosts.reverse()
   }
 
@@ -148,12 +148,12 @@ function toggleSortBtn(name) {
 };
 
 /**
- * Toggle display of load-more-posts button.
- * @param {bool} shouldToggle - true => display
+ * Conditionally hide load-more-posts button.
+ * @param {bool} shouldToggle - true => hide
  */
-function toggleLoadMore(shouldToggle) {
+function hideLoadMore(shouldHide) {
   loadMorePostsButton[0].classList.toggle(
-    "mod--hide", shouldToggle)
+    "mod--hide", shouldHide)
   return;
 };
 
@@ -179,6 +179,6 @@ module.exports = {
   renderPosts: renderPosts,
   updatePost: updatePost,
   updateTimestamps: updateTimestamps,
-  toggleLoadMore: toggleLoadMore,
+  hideLoadMore: hideLoadMore,
   toggleSortBtn: toggleSortBtn
 }
