@@ -34,7 +34,7 @@ function outputModalController($rootScope, api, urls, notify, modal, upload, ads
     vm.saveOutputImage = saveOutputImage;
     vm.removeOutputImage = removeOutputImage;
     vm.notValidName = adsUtilSevice.uniqueNameInItems;
-    vm.ordering = [{'title': 'Ascending', 'value': '1'}, {'title': 'Descending', 'value': '-1'}];
+    vm.ordering = [{'title': 'Ascending', 'value': 1}, {'title': 'Descending', 'value': -1}];
 
     initialize().then(function() {
         vm.readyToSave = true;
