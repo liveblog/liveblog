@@ -40,7 +40,7 @@ function convertTimestamp(timestamp) {
  * @param {string} query - a jQuery syntax DOM query (with dots)
  */
 function getElems(query) {
-  var isDataAttr = -1 < query.indexOf("data-");
+  var isDataAttr = query.indexOf("data-") > -1;
   return isDataAttr
     ? document.querySelectorAll(query)
     : document.getElementsByClassName(query);
