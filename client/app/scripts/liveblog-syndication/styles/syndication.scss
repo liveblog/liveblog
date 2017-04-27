@@ -19,10 +19,14 @@
 .users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.api-key {
     width: 40%;
 }
+.users-table .table-body > li > div:not(.tooltip).action {
+    width: auto;
+}
 
 div.subnav.pan-right {
     float: right;
     left: auto;
+    box-shadow: none;
 }
 
 .producers-list, .syndicated-blogs-list {
@@ -151,6 +155,7 @@ div.subnav.pan-right {
 }
 
 div.select-producer {
+    overflow: hidden;
     select {
         width: 85%;
         float: left;
@@ -171,7 +176,7 @@ form[name="producerForm"] div.error {
     color: #fe0201;
 }
 
-div.profile-info div.details-info {
+.profile-info .details-info.details-info--no-avatar {
     top: 15px;
 }
 
