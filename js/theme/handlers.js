@@ -12,6 +12,7 @@ var view = require('./view')
  * Contains a mapping of element data-selectors and click handlers
  * buttons.attach {function} - registers handlers found in handlers object
  */
+
 var buttons = {
   handlers: {
     "[data-js-loadmore]": () => {
@@ -38,7 +39,14 @@ var buttons = {
     },
 
     "[data-js-show-comment-dialog]": () => {
-      view.toggleCommentDialog();
+      let isVisible = view.toggleCommentDialog();
+      let commentForm = document.querySelector('form.comment');
+
+      if (isVisible) {
+        commentForm.addEventListener('submit', viewmodel.sendComment);
+      } else {
+        commentForm.removeEventListener('submit', viewmodel.sendComment);
+      }
     }
   },
 

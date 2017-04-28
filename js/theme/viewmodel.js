@@ -7,6 +7,8 @@
 var helpers = require('./helpers')
   , view = require('./view');
 
+const commentEndpoint = `${LB.api_host}api/client_items`;
+
 var endpoint = LB.api_host + "/api/client_blogs/" + LB.blog._id + "/posts"
   , settings = LB.settings
   , vm = {};
@@ -22,6 +24,25 @@ function getEmptyVm(items) {
     totalPosts: 0
   };
 }
+
+vm.sendComment = (e) => {
+  e.preventDefault();
+  console.log('send comment', e);
+
+  let name = document.querySelector('#comment-name').value;
+  let comment = document.querySelector('#comment-content').value;
+
+  if (!name || !comment) {
+    return false;
+  }
+
+  helpers.post(commentEndpoint, {
+    item_type: "comment",
+    client_blog: LB.blog._id,
+    commenter: name,
+    text: comment
+  });
+};
 
 /**
  * Private API request method

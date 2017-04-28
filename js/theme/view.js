@@ -139,10 +139,13 @@ function loadEmbeds() {
 
 function toggleCommentDialog() {
   let commentForm = document.querySelector('form.comment');
+  let isHidden = false;
 
   if (commentForm) {
-    commentForm.classList.toggle('hide');
+    isHidden = commentForm.classList.toggle('hide');
   }
+
+  return !isHidden;
 }
 
 /**
