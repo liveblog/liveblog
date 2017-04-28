@@ -51,6 +51,13 @@
             "help": "Otherwise they will pop up as new posts."
         },
         {
+            "name": "canComment",
+            "label": "Users can comment",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users can comment on the blog"
+        },
+        {
             "name": "showImage",
             "label": "Show the blog image",
             "type": "checkbox",
