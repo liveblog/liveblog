@@ -33,7 +33,9 @@ BlogSettingsController.$inject = [
     'blogSecurityService',
     'moment',
     'superdesk',
-    'urls'
+    'urls',
+    '$rootScope'
+
 ];
 
 function BlogSettingsController(
@@ -52,11 +54,19 @@ function BlogSettingsController(
     blogSecurityService,
     moment,
     superdesk,
-    urls
+    urls,
+    $rootScope
 ) {
 
     // set view's model
     var vm = this;
+
+    var notif_listener = $rootScope.$on('blog', (e, data) => {
+        if (data.blog_id === vm.blog._id && data.published === 1) {
+            // update the blog property
+            vm.blog.public_urls = data.public_urls;
+        }
+    });
 
     angular.extend(vm, {
         mailto: 'mail:upgrade@liveblog.pro?subject='+

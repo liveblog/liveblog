@@ -38,6 +38,22 @@ class OutputsResource(Resource):
                 }
             }
         },
+        'settings': {
+            'type': 'dict',
+            'schema': {
+                'frequency': {
+                    'type': 'integer',
+                    'default': 10,
+                    'nullable': True
+                },
+                'order': {
+                    'type': 'integer',
+                    'allowed': [-1, 1],
+                    'default': -1,
+                    'nullable': True
+                }
+            }
+        },
         'deleted': {
             'type': 'boolean',
             'default': False
