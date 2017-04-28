@@ -16,16 +16,16 @@ const defaultTemplates = {
 
 function getCustomTemplates() {
   let customTemplates = settings.customTemplates
-    , mergedTemplates = defaultTemplates
+    , mergedTemplates = defaultTemplates;
 
   for (let template in customTemplates) {
     let customTemplateName = customTemplates[template];
     defaultTemplates[template] = (ctx, cb) => {
-      nunjucks.render(customTemplateName, ctx, cb)
-    }
+      nunjucks.render(customTemplateName, ctx, cb);
+    };
   }
 
-  return mergedTemplates
+  return mergedTemplates;
 }
 
 module.exports = settings.customTemplates
