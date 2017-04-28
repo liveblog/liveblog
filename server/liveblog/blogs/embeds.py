@@ -56,9 +56,15 @@ class Blog:
     """
     Utility class to fetch blog data directly from mongo collections.
     """
-    order_by = ('_updated', '_created')
-    default_order_by = '_updated'
+    order_by = ('_updated', '_created', 'order')
     sort = ('asc', 'desc')
+    ordering = {
+        'newest_first': ('_updated', 'desc'),
+        'oldest_first': ('_editorial', 'desc'),
+        'editorial': ('order', 'desc')
+    }
+    default_ordering = 'newest_first'
+    default_order_by = '_updated'
     default_sort = 'desc'
 
     def __init__(self, blog):
@@ -67,14 +73,6 @@ class Blog:
 
         self._blog = blog
         self._posts = get_resource_service('client_posts')
-
-    def _validate_order_by(self, order_by):
-        if order_by not in self.order_by:
-            raise ValueError(order_by)
-
-    def _validate_sort(self, sort):
-        if sort not in self.sort:
-            raise ValueError(sort)
 
     def _posts_lookup(self, sticky=None, highlight=None):
         filters = [
@@ -88,11 +86,15 @@ class Blog:
             filters.append({'highlight': {'$eq': highlight}})
         return {'$and': filters}
 
-    def posts(self, sticky=None, highlight=None, order_by=default_order_by, sort=default_sort, page=1, limit=25,
-              wrap=False):
-        # Validate parameters.
-        self._validate_sort(sort)
-        self._validate_order_by(order_by)
+    def get_ordering(self, label):
+        try:
+            order_by, sort = self.ordering[label]
+            return order_by, sort
+        except KeyError:
+            return self.default_order_by, self.default_sort
+
+    def posts(self, sticky=None, highlight=None, ordering=None, page=1, limit=25, wrap=False):
+        sort, order_by = self.get_ordering(ordering or self.default_ordering)
 
         # Fetch total.
         results = self._posts.find(self._posts_lookup(sticky, highlight))
@@ -240,7 +242,8 @@ def embed(blog_id, api_host=None, theme=None):
         # Fetch initial blog posts for SEO theme
         blog_instance = Blog(blog)
         page_limit = theme_settings.get('postsPerPage', 10)
-        api_response = blog_instance.posts(wrap=True, limit=page_limit)
+        ordering = theme_settings.get('postOrder', blog_instance.default_ordering)
+        api_response = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering)
         embed_template = jinja2.Environment(loader=ThemeTemplateLoader(theme)).from_string(template_content)
         template_content = embed_template.render(
             blog=blog,
