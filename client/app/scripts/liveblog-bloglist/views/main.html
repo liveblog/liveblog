@@ -9,8 +9,11 @@
         </ul>
     </div>
 
-    <div class="button-stack right-stack" ng-if="isUserAllowedToCreateABlog();">
-        <button class="navbtn navbtn-info" ng-click="openNewBlog();" title="{{ 'Create Blog' | translate }}">
+    <div class="button-stack right-stack create-blog" ng-if="isUserAllowedToCreateABlog();">
+        <button
+            class="navbtn navbtn-info"
+            ng-click="openNewBlog();"
+            title="{{ 'Create Blog' | translate }}">
             <i class="svg-icon-add inverse"></i>
         </button>
     </div>
