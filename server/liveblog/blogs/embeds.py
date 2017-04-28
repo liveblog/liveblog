@@ -234,6 +234,7 @@ def embed(blog_id, api_host=None, theme=None):
 
     theme_service = get_resource_service('themes')
     theme_settings = theme_service.get_default_settings(theme)
+    l10n = theme.get('l10n', {})
 
     if theme.get('seoTheme', False):
         # Fetch initial blog posts for SEO theme
@@ -246,7 +247,8 @@ def embed(blog_id, api_host=None, theme=None):
             theme=theme,
             theme_json=bson_dumps(theme),
             settings=theme_settings,
-            api_response=api_response
+            api_response=api_response,
+            l10n=l10n
         )
 
     scope = {
@@ -257,7 +259,7 @@ def embed(blog_id, api_host=None, theme=None):
         'template': template_content,
         'debug': app.config.get('LIVEBLOG_DEBUG'),
         'assets_root': assets_root,
-        'l10n': theme.get('l10n', {})
+        'l10n': l10n
     }
     return render_template('embed.html', **scope)
 
