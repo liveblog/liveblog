@@ -3,6 +3,7 @@
  */
 
 'use strict';
+
 var helpers = require("./helpers");
 var templates = require('./templates');
 
