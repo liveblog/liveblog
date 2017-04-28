@@ -238,7 +238,8 @@ def embed(blog_id, api_host=None, theme=None):
     if theme.get('seoTheme', False):
         # Fetch initial blog posts for SEO theme
         blog_instance = Blog(blog)
-        api_response = blog_instance.posts(wrap=True)
+        page_limit = theme_settings.get('postsPerPage', 10)
+        api_response = blog_instance.posts(wrap=True, limit=page_limit)
         embed_template = jinja2.Environment(loader=ThemeTemplateLoader(theme)).from_string(template_content)
         template_content = embed_template.render(
             blog=blog,
