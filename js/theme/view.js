@@ -61,9 +61,7 @@ function renderPosts(api_response) {
     return; // early
   }
   
-  if (api_response.requestOpts.sort !== "ascending") {
-    renderedPosts.reverse();
-  }
+  renderedPosts.reverse();
 
   addPosts(renderedPosts, { // if creates
     position: api_response.requestOpts.fromDate ? "top" : "bottom"
