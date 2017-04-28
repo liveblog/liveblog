@@ -137,6 +137,14 @@ function loadEmbeds() {
   }
 }
 
+function toggleCommentDialog() {
+  let commentForm = document.querySelector('form.comment');
+
+  if (commentForm) {
+    commentForm.classList.toggle('hide');
+  }
+}
+
 /**
  * Set sorting order button of class @name to active.
  * @param {string} name - liveblog API response JSON.
@@ -181,5 +189,6 @@ module.exports = {
   updatePost: updatePost,
   updateTimestamps: updateTimestamps,
   hideLoadMore: hideLoadMore,
-  toggleSortBtn: toggleSortBtn
+  toggleSortBtn: toggleSortBtn,
+  toggleCommentDialog: toggleCommentDialog
 };

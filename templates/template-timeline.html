@@ -30,9 +30,16 @@
         </div>
       </div>
     </div>
-    <div class="header-bar__actions"></div>
+    <div class="header-bar__actions">
+      {% if settings.canComment %}
+        <button data-js-show-comment-dialog>Comment</button>
+      {% endif %}
+    </div>
   </div>
   <!-- Header End -->
+  {% if settings.canComment %}
+    {% include "template-comment.html" %}
+  {% endif %}
 
   <!-- Timeline -->
   <div class="timeline-body timeline-body--loaded">

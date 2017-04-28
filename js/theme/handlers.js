@@ -35,6 +35,10 @@ var buttons = {
         .then(view.displayNewPosts)
         .then(view.toggleSortBtn('descending'))
         .catch(catchError);
+    },
+
+    "[data-js-show-comment-dialog]": () => {
+      view.toggleCommentDialog();
     }
   },
 
