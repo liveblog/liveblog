@@ -153,6 +153,7 @@
     "original_creator":"58bfe91915720af1a27e11d2"
   },
   "settings": {
+    "showLiveblogLogo": true,
     "showAuthorAvatar":true,
     "authorNameFormat":"display_name",
     "showTitle":true,
