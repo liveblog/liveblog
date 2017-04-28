@@ -107,6 +107,8 @@ export default function lbUserSelectList(api) {
             scope.select = function(user) {
                 scope.selected = user;
             };
+
+            scope.getUserDisplay = (user) => user.display_name;
         }
     };
 }
