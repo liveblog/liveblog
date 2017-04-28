@@ -22,7 +22,7 @@ class CollectionsResource(Resource):
             'schema': {
                 'type': 'dict',
                 'schema': {
-                    'advertisement_id': Resource.rel('advertisements', True),
+                    'advertisement_id': Resource.rel('advertisements', embeddable=True),
                 }
             },
             'nullable': True
