@@ -77,7 +77,7 @@ function post(url, data) {
     xhr.open('POST', url);
     xhr.setRequestHeader("Content-type", "application/json");
     xhr.onload = function() {
-      if (xhr.status === 200) {
+      if (xhr.status === 201) {
         resolve(JSON.parse(xhr.responseText));
       } else {
         reject(xhr.responseText);

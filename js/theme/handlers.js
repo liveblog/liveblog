@@ -13,6 +13,22 @@ var view = require('./view')
  * buttons.attach {function} - registers handlers found in handlers object
  */
 
+const sendComment = (e) => {
+  e.preventDefault();
+
+  let name = document.querySelector('#comment-name').value;
+  let comment = document.querySelector('#comment-content').value;
+
+  return viewmodel.sendComment(name, comment)
+    .then(view.toggleCommentDialog)
+    .then(() => {
+      document
+        .querySelector('form.comment')
+        .removeEventListener('submit', sendComment);
+    });
+
+};
+
 var buttons = {
   handlers: {
     "[data-js-loadmore]": () => {
@@ -43,9 +59,9 @@ var buttons = {
       let commentForm = document.querySelector('form.comment');
 
       if (isVisible) {
-        commentForm.addEventListener('submit', viewmodel.sendComment);
+        commentForm.addEventListener('submit', sendComment);
       } else {
-        commentForm.removeEventListener('submit', viewmodel.sendComment);
+        commentForm.removeEventListener('submit', sendComment);
       }
     }
   },

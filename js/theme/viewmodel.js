@@ -7,7 +7,8 @@
 var helpers = require('./helpers')
   , view = require('./view');
 
-const commentEndpoint = `${LB.api_host}api/client_items`;
+const commentItemEndpoint = `${LB.api_host}api/client_items`;
+const commentPostEndpoint = `${LB.api_host}api/client_comments`;
 
 var endpoint = LB.api_host + "/api/client_blogs/" + LB.blog._id + "/posts"
   , settings = LB.settings
@@ -25,23 +26,34 @@ function getEmptyVm(items) {
   };
 }
 
-vm.sendComment = (e) => {
-  e.preventDefault();
-  console.log('send comment', e);
-
-  let name = document.querySelector('#comment-name').value;
-  let comment = document.querySelector('#comment-content').value;
-
+vm.sendComment = (name, comment) => {
   if (!name || !comment) {
     return false;
   }
 
-  helpers.post(commentEndpoint, {
-    item_type: "comment",
-    client_blog: LB.blog._id,
-    commenter: name,
-    text: comment
-  });
+  return helpers
+    .post(commentItemEndpoint, {
+      item_type: "comment",
+      client_blog: LB.blog._id,
+      commenter: name,
+      text: comment
+    })
+    .then((item) => helpers.post(commentPostEndpoint, {
+      post_status: "comment",
+      client_blog: LB.blog._id,
+      groups: [{
+        id: "root",
+        refs: [{idRef: "main"}],
+        role: "grpRole:NEP"
+      },{
+        id: "main",
+        refs: [{residRef: item._id}],
+        role: "grpRole:Main"}
+      ]
+    }))
+    .catch((err) => {
+      console.error(err);
+    });
 };
 
 /**
