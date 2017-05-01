@@ -195,6 +195,7 @@ function AdvertisingManagerPage() {
     self.getAdverts = function() {
         return element.all(by.repeater('advert in adverts'));
     };
+
     self.getCollections = function() {
         return element.all(by.repeater('collection in collections'));
     };
@@ -763,6 +764,44 @@ function BlogSettingsPage(blog) {
             browser.waitForAngular();
             return self;
         });
+    };
+
+    self.openOutputs = function() {
+        return element(by.css('[data="blog-settings-outputs"] a')).click().then(function() {
+            browser.waitForAngular();
+            return self;
+        });
+    };
+
+    self.getOutputs = function() {
+        return element.all(by.repeater('output in settings.outputs'));
+    };
+
+    self.openOutputDialog = function() {
+        element(by.css('[ng-click="settings.openOutputDialog();"]')).click();
+    };
+
+    self.createOutputData = function() {
+        return {
+            title: randomString(5)
+        }
+    }
+
+    self.saveOutput = function() {
+        element(by.css('[ng-click="vm.saveOutput()"]')).click();
+    }
+
+    self.editOutput = function() {
+        var outputData = self.createOutputData();
+        element(by.css('[ng-model="vm.output.name"]')).sendKeys(outputData.title);
+        return self.saveOutput().then(function() {return outputData;});
+    }
+
+    self.removeOutput = function(index) {
+        index = index || 0;
+        self.getOutputs().get(index).click();
+        element(by.css('[ng-click="settings.removeOutput(output, $index);"]')).click();
+        okModal();
     };
 
     self.switchStatus = function() {

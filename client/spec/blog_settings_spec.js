@@ -184,4 +184,46 @@ describe('Blog settings', function() {
             blogs.expectCount(3);
         });
     });
+
+    it('should do CRUD operations on output channels', function() {
+
+        blogs.openBlog(0).openSettings().then(function(sp) {
+            sp.openOutputs();
+            // no outputs by default
+            expect(sp.getOutputs().count()).toBe(0);
+
+            sp.openOutputDialog();
+
+            sp.editOutput().then(function(outputData) {
+                var outputTitle = element(by.css('[ng-model="vm.output.name"]'));
+                // we should now have one output
+                expect(sp.getOutputs().count()).toBe(1);
+                //open 1st output and check contents
+
+                sp.getOutputs().get(0).click();
+                element(by.css('[ng-click="settings.openOutputDialog(output);"]')).click();
+
+                expect(outputTitle.getAttribute('value')).toEqual(outputData.title);
+                
+                
+                // edit output
+                var newData = sp.createOuputData();
+                sp.outputTitle.sendKeys(newData.title);
+
+               
+                sp.saveOutput().then(function() {
+                    //check the new contents to match
+                    var newTitle = outputData.title + newData.title;
+                    newTitle = newTitle.toUpperCase();
+                    expect(outputTitle.getText()).toEqual(newTitle);
+                });
+                
+                // remove first output
+                sp.removeOutput(0);
+                
+                // expect no outputs available
+                expect(sp.getOutputs().count()).toBe(0);
+            });
+        });
+    });
 });
