@@ -37,7 +37,10 @@
         <!-- empty state -->
         <div ng-if="blogs._meta.total === 0" class="empty-state">
             <div translate>No blogs found.</div>
-            <button ng-if="activeState.code === 'open'" class="btn btn-info btn-large" ng-click="openNewBlog();">
+            <button
+                ng-if="activeState.code === 'open' && isUserAllowedToCreateABlog();"
+                class="btn btn-info btn-large"
+                ng-click="openNewBlog();">
                 <i class="svg-icon-add inverse"></i>
                 <span class="title" translate>Create a Blog</span>
             </button>
