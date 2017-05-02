@@ -4,7 +4,7 @@
 
 'use strict';
 
-var helpers = require("./helpers");
+var helpers = require('./helpers');
 var templates = require('./templates');
 
 var timelineElem = helpers.getElems("lb-posts")
@@ -195,6 +195,29 @@ function showSuccessCommentMsg() {
   }, 5000);
 }
 
+function clearCommentFormErrors() {
+  let errorsMsgs = document.querySelectorAll('p.err-msg');
+
+  if (errorsMsgs) {
+    errorsMsgs.forEach((errorsMsg) => errorsMsg.remove());
+  }
+}
+
+function displayCommentFormErrors(errors) {
+  if (Array.isArray(errors)) {
+    errors.forEach((error) => {
+      let element = document.querySelector(error.id);
+
+      if (element) {
+        element.insertAdjacentHTML(
+          'afterend',
+          `<p class="err-msg">${error.msg}</p>`
+        );
+      }
+    });
+  }
+}
+
 module.exports = {
   addPosts: addPosts,
   deletePost: deletePost,
@@ -206,5 +229,7 @@ module.exports = {
   hideLoadMore: hideLoadMore,
   toggleSortBtn: toggleSortBtn,
   toggleCommentDialog: toggleCommentDialog,
-  showSuccessCommentMsg: showSuccessCommentMsg
+  showSuccessCommentMsg: showSuccessCommentMsg,
+  displayCommentFormErrors: displayCommentFormErrors,
+  clearCommentFormErrors: clearCommentFormErrors
 };

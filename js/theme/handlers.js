@@ -19,13 +19,16 @@ const sendComment = (e) => {
   let name = document.querySelector('#comment-name').value;
   let comment = document.querySelector('#comment-content').value;
 
+  view.clearCommentFormErrors();
+
   return viewmodel.sendComment(name, comment)
     .then(view.toggleCommentDialog)
     .then(() => document
         .querySelector('form.comment')
         .removeEventListener('submit', sendComment)
     )
-    .then(view.showSuccessCommentMsg);
+    .then(view.showSuccessCommentMsg)
+    .catch(view.displayCommentFormErrors);
 };
 
 var buttons = {

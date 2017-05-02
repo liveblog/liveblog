@@ -27,8 +27,18 @@ function getEmptyVm(items) {
 }
 
 vm.sendComment = (name, comment) => {
-  if (!name || !comment) {
-    return false;
+  let errors = [];
+
+  if (!name) {
+    errors.push({id: '#comment-name', msg: 'Missing name'});
+  }
+
+  if (!comment) {
+    errors.push({id: '#comment-content', msg: 'Missing content'});
+  }
+
+  if (errors.length > 0) {
+    return new Promise((resolve, reject) => reject(errors));
   }
 
   return helpers
@@ -50,10 +60,10 @@ vm.sendComment = (name, comment) => {
         refs: [{residRef: item._id}],
         role: "grpRole:Main"}
       ]
-    }))
-    .catch((err) => {
-      console.error(err);
-    });
+    }));
+    //.catch((err) => {
+    //  console.error(err);
+    //});
 };
 
 /**
