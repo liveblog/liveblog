@@ -23,7 +23,7 @@ describe('Free types Manager', function() {
             //open 1st freetype and check contents
             freetypesManager.getFreetypes().get(0).click().all(by.css('[ng-click="vm.openFreetypeDialog(freetype);"]')).click();
             expect(freetypesManager.title.getAttribute('value')).toEqual(freeData.title);
-            expect(freetypesManager.template.getText()).toEqual(freeData.template);
+            expect(freetypesManager.template.getAttribute('value')).toEqual(freeData.template);
 
             //edit freetype
             var newData = freetypesManager.createFreetypeData();
@@ -33,7 +33,7 @@ describe('Free types Manager', function() {
                 //check the new contents to match
                 freetypesManager.getFreetypes().get(0).click().all(by.css('[ng-click="vm.openFreetypeDialog(freetype);"]')).click();
                 expect(freetypesManager.title.getAttribute('value')).toEqual(freeData.title + newData.title);
-                expect(freetypesManager.template.getText()).toEqual(newData.template + freeData.template);
+                expect(freetypesManager.template.getAttribute('value')).toEqual(freeData.template + newData.template);
             });
             //close edit freetype dialog
             element(by.css('[ng-click="vm.cancelCreate()"]')).click();
