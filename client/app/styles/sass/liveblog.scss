@@ -1,9 +1,28 @@
 .main-section {
 	z-index: auto;
 }
+.navbtn {
+    width: auto !important;
+}
 
 .navbtn.hover {
 	background: #e0e0e0;
+}
+
+.navbtn .title {
+  text-transform: uppercase;
+}
+
+.navbtn i + .title {
+  margin-left: 10px;
+}
+
+.navbtn.navbtn-hover .title {
+  display: none;
+}
+
+.navbtn.navbtn-hover:hover .title {
+  display: inline;
 }
 
 .button-stack > .btn {
