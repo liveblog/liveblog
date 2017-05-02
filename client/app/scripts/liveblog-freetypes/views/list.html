@@ -1,8 +1,9 @@
 <div class="subnav ng-scope items-manager">
-    <h3 class="page-nav-title" translate>Free types manager</h3>
-    <div class="button-stack right-stack">
-        <button class="navbtn navbtn-info" ng-click="vm.openFreetypeDialog();" title="{{ 'Create Free Type' | translate }}">
-            <i class="svg-icon-add inverse"></i>
+    <h3 class="subnav__page-title" translate>Free types manager</h3>
+    <div class="subnav__button-stack--square-buttons">
+        <button class="navbtn sd-create-btn" ng-click="vm.openFreetypeDialog();" title="{{ 'Create Free Type' | translate }}">
+            <i class="svg-icon-plus"></i>
+            <span class="circle"></span>
         </button>
     </div>
 </div>
@@ -70,7 +71,7 @@
         <div class="modal-footer">
             <div>
                 <button type="button" class="btn btn-default pull-left" translate ng-click="vm.cancelCreate()">Cancel</button>
-                <button type="button" class="btn btn-primary btn-info" translate ng-click="vm.saveFreetype()"
+                <button type="button" class="btn btn--primary" translate ng-click="vm.saveFreetype()"
                 ng-disabled="!vm.dialogFreetype.name || !vm.dialogFreetype.template || vm.dialogPostLoading"
                 >Save</button>
             </div>
