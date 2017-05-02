@@ -65,6 +65,11 @@ var buttons = {
       } else {
         commentForm.removeEventListener('submit', sendComment);
       }
+    },
+
+    '[data-js-close-comment-dialog]': (e) => {
+      e.preventDefault();
+      view.toggleCommentDialog();
     }
   },
 
