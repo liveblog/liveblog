@@ -1,10 +1,15 @@
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     blogs = require('./helpers/pages').blogs;
 
 describe('Scorecards Posts', function() {
     'use strict';
 
-    beforeEach(function(done) {login('editor', 'editor').then(done);});
+    beforeEach(function(done) {
+        browser.ignoreSynchronization = true;
+        login('editor', 'editor')
+            .then(() => browser.ignoreSynchronization = false)
+            .then(done);
+    });
 
     it('can publish socrecard and edit it', function() {
         var blog = blogs.openBlog(0);

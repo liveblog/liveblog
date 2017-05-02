@@ -1,7 +1,7 @@
 <div class="subnav ng-scope items-manager">
     <h3 class="page-nav-title" translate>Free types manager</h3>
     <div class="button-stack right-stack">
-        <button class="navbtn navbtn-info" ng-click="vm.openFreetypeDialog();">
+        <button class="navbtn navbtn-info" ng-click="vm.openFreetypeDialog();" title="{{ 'Create Free Type' | translate }}">
             <i class="svg-icon-add inverse"></i> <span class="title" translate>Create Free Type</span>
         </button>
     </div>
@@ -54,11 +54,7 @@
                     </div>
                     <div class="field">
                         <label translate>Free Type Template <span class="ft-comments">*</span> <span class="ft-alert" translate ng-if="!vm.dialogFreetype.template">required</span></label>
-                        <div class="form-box"
-                            template-editable
-                            contenteditable="true"
-                            ng-model="vm.dialogFreetype.template"
-                        ></div>
+                        <textarea ng-model="vm.dialogFreetype.template" rows="15"></textarea>
                     </div>
                     <div class="field ft-comments">
                     * <span translate class="c">Must contain at least one variable.<span><span>&nbsp;Do not use the DOCTYPE, BODY and HEAD tags.</span><span translate>&nbsp;All used tags must be closed.</span>

@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('liveblog.security', [])
 .service('blogSecurityService',
     ['$q', '$rootScope', '$route', 'blogService', '$location', 'privileges', 'config', 'api',
@@ -12,7 +10,8 @@ angular.module('liveblog.security', [])
         }
         function isMemberOfBlog(blog) {
             // add the owner
-            var ids = [blog.original_creator._id];
+            var ids = (blog.original_creator) ? [blog.original_creator._id] : [];
+
             // add the members
             if (blog.members) {
                 ids.push.apply(ids, blog.members.map(function(member) {return member.user;}));

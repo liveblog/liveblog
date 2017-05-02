@@ -1,15 +1,13 @@
 import logging
 
-from settings import (SYNDICATION_CELERY_COUNTDOWN,
-                      SYNDICATION_CELERY_MAX_RETRIES)
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
 from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
 from superdesk.notification import push_notification
-from werkzeug.datastructures import FileStorage
 
-from .exceptions import APIConnectionError, DownloadError
+from .exceptions import APIConnectionError
 from settings import SYNDICATION_CELERY_MAX_RETRIES, SYNDICATION_CELERY_COUNTDOWN
+from .utils import send_api_request
 
 
 logger = logging.getLogger('superdesk')
@@ -67,38 +65,57 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=25, po
 
 
 @celery.task(bind=True)
-def fetch_image(self, url, mimetype):
-    """Fetch image from given url."""
-    from .utils import fetch_url
-    try:
-        return FileStorage(stream=fetch_url(url), content_type=mimetype)
-    except DownloadError as e:
-        raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
-
-
-@celery.task(bind=True)
 def check_webhook_status(self, consumer_id):
     """Check if consumer webhook is enabled by sending a fake http api request."""
     from .utils import send_api_request
     consumers = get_resource_service('consumers')
-    consumer = consumers._get_consumer(consumer_id)
+    consumer = consumers._get_consumer(consumer_id) or {}
     if 'webhook_url' in consumer:
         try:
-            response = send_api_request(consumer['webhook_url'], method='GET', json_loads=False)
-        except APIConnectionError as e:
-            raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
+            response = send_api_request(consumer['webhook_url'], None, method='GET', json_loads=False)
+        except:
+            logger.warning('Unable to connect to webhook_url "{}"'.format(consumer['webhook_url']))
+            webhook_enabled = False
         else:
-            # We can get "Authorization failed", as we are not providing an API Key.
-            # webhook_enabled field is updated using mongodb cursor to prevent multiple task execution
-            # on update.
-            cursor = consumers._cursor()
-            if response.status_code == 401:
+            if response.status_code == 200:
+                logger.info('Connected to webhook_url "{}".'.format(consumer['webhook_url']))
                 webhook_enabled = True
             else:
+                logger.warning('Unable to connect to webhook_url "{}", status: {}'.format(consumer['webhook_url'],
+                                                                                          response.status_code))
                 webhook_enabled = False
 
-            cursor.find_one_and_update({'_id': consumer['_id']}, {'$set': {'webhook_enabled': webhook_enabled}})
-            push_notification(consumers.notification_key, consumer={
-                '_id': consumer['_id'],
-                'webhook_enabled': webhook_enabled
-            }, updated=True)
+        cursor = consumers._cursor()
+        cursor.find_one_and_update({'_id': consumer['_id']}, {'$set': {'webhook_enabled': webhook_enabled}})
+        push_notification(consumers.notification_key, consumer={
+            '_id': consumer['_id'],
+            'webhook_enabled': webhook_enabled
+        }, updated=True)
+
+
+@celery.task(bind=True)
+def check_api_status(self, producer_id):
+    producers = get_resource_service('producers')
+    producer = producers._get_producer(producer_id) or {}
+    if 'api_url' not in producer:
+        api_status = 'invalid_url'
+    elif 'consumer_api_key' not in producer:
+        api_status = 'invalid_key'
+    else:
+        try:
+            api_url = producers._get_api_url(producer, 'syndication/blogs')
+            response = send_api_request(api_url, producer['consumer_api_key'], json_loads=False)
+        except:
+            api_status = 'invalid_url'
+        else:
+            if response.status_code != 200:
+                api_status = 'invalid_key'
+            else:
+                api_status = 'enabled'
+
+    cursor = producers._cursor()
+    cursor.find_one_and_update({'_id': producer['_id']}, {'$set': {'api_status': api_status}})
+    push_notification(producers.notification_key, producer={
+        '_id': producer['_id'],
+        'api_status': api_status
+    }, updated=True)

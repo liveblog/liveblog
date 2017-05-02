@@ -1,0 +1,336 @@
+.main-section {
+	z-index: auto;
+}
+.navbtn {
+    width: auto !important;
+}
+
+.navbtn.hover {
+	background: #e0e0e0;
+}
+
+.navbtn .title {
+  text-transform: uppercase;
+}
+
+.navbtn i + .title {
+  margin-left: 10px;
+}
+
+.navbtn.navbtn-hover .title {
+  display: none;
+}
+
+.navbtn.navbtn-hover:hover .title {
+  display: inline;
+}
+
+.button-stack > .btn {
+  margin-left: 20px;
+  margin-top: 10px;
+}
+
+.button-stack.right-stack {
+  float: right;
+  margin: -10px -20px 0 5px;
+}
+
+.button-stack.right-stack .navbtn {
+  border-left: 1px solid rgba(0, 0, 0, 0.1) !important;
+  //border-right: 0 !important;
+  line-height: 46px;
+}
+
+.button-stack.right-stack .navbtn .dropdown-toggle {
+  width: 100%;
+}
+
+.button-stack.right-stack > .btn {
+  margin-right: 12px;
+  margin-left: 0;
+}
+
+.button-stack.active {
+    //background-color: #eaeaea;
+}
+
+.button-stack.active .navbtn {
+    opacity: .4;
+}
+
+.button-stack.active .navbtn:hover{
+    background: transparent;
+}
+
+.button-stack .navbtn.navbtn-active {
+    opacity: 1;
+    height: 48px;
+    border-right: 1px solid rgb(216, 216, 216) !important;
+    margin-right: -1px;
+}
+
+.button-stack .navbtn.navbtn-active,
+.button-stack .navbtn.navbtn-active:hover {
+    background-color: #eaeaea;
+}
+
+.button-stack.active.right-stack {
+    height: 49px !important;
+}
+
+.button-stack.active.right-stack.navbtn {
+    border-left: none !important;
+}
+
+.button-stack.active.right-stack.navbtn:hover {
+    background-color: transparent;
+}
+
+.button-stack .nav-tabs {
+    margin-left: 20px;
+}
+
+.homebtn {
+	width: 48px;
+	padding: 0;
+}
+
+[ng-click],
+[data-ng-click],
+[x-ng-click] {
+    cursor: pointer;
+}
+
+// Hide the link to desks in the menu.
+// Needed since we import superdesk.desks in the modules
+#main-menu li > a[href="#/workspace"],
+#main-menu li > a[href="#/desks/"],
+#main-menu li > a[href="#/legal_archive/"],
+#main-menu li > a[href="#/settings"],
+#main-menu li > a[href="#/publish_queue"],
+#main-menu li > a[href="#/ingest_dashboard"]
+{
+    display: none !important;
+}
+// Main menu label inside menu menuite
+#main-menu .menu-label {
+    font-size: 8px;
+    color: white;
+    text-transform: uppercase;
+    background-color: rgba(255,255,255,.2);
+    letter-spacing: .1em;
+    border-radius: 1px;
+    padding: 1px 4px;
+    display: inline-block;
+    position: absolute;
+    top: 6px;
+    margin-left: 6px;
+    line-height: 1.4;
+}
+
+// Remove language options from general and blog settings
+// because the feature is not implemented yet
+// FIXME: must be uncommented after release (LBSD-546)
+.blog-settings-view div.form-group:nth-child(5),
+.general-settings div.form-group:nth-child(1) {
+    display: none !important;
+}
+
+//Hide liveblog tab in global settings
+:not(.blog-settings-view)>.settings-page>.tabbable.outer>.nav-stacked {
+    display: none !important;
+}
+
+:not(.blog-settings-view)>.settings-page .tabbable.outer .tab-content.outer {
+    position: inherit;
+}
+
+.help-link {
+    color: white;
+    z-index: 2000;
+    position:absolute;
+    right: 126px;
+    top:15px;
+    .dropdown-menu {
+        min-width: 90px;
+    }
+    .dropdown-menu:before {
+        width: 23px;
+        height: 16px;
+        display: block;
+        z-index: 9999;
+        position: absolute;
+        top: -16px;
+        left: 10px;
+        background: url(/images/dropdown-arrow-top.png) no-repeat;
+        content: " ";
+    }
+    .caret {
+        display: inline-block;
+        width: 0;
+        height: 0;
+        vertical-align: middle;
+        margin-top: -2px;
+        border-left: 4px solid transparent;
+        border-right: 4px solid transparent;
+        border-top: 4px solid white;
+        opacity: 0.3;
+        filter: alpha(opacity=30);
+        content: "";
+    }
+}
+.about-modal {
+    p {
+        margin-top: 20px;
+    }
+    .page-text {
+        font-size: 13px;
+        font-weight: 400;
+    }
+    .text-title {
+        font-size: 24px;
+        font-weight: 400;
+        margin-top:8px;
+    }
+    .text-subtitle {
+        font-size: 16px;
+        font-weight: 400;
+        margin-top:6px;
+    }
+}
+
+.beta-switch {
+    display: none!important;
+}
+
+//hide sub-nav from user's profile page
+.user-details-pane>header {
+    display:none;
+}
+.profile-activity-container>.profile-activity {
+    display: none;
+}
+// icons
+.icon-publish {
+    background-image: url("#{$iconSpritePath}"); 
+    width: 15px; 
+    background-position: -217px -187px;
+}
+.icon-unpublish {background-image: url("#{$iconSpritePath}"); width: 15px; background-position: -217px -187px; transform: rotate(180deg);}
+
+//remove the "use your initials instead" text from user avatar preferences
+.remove-avatar>label {
+    display: none;
+}
+
+//remove the url tab from profile image options
+.modal-body.split-popup>.main>.web {
+    display: none;
+}
+.modal-body.split-popup>.sidebar>ul>li:nth-of-type(3) {
+    display: none;
+}
+
+//disable main navigation link (does nothing for liveblog)
+#top-menu a.main-link {
+    cursor: default;
+    pointer-events: none;
+}
+
+// style for medium editor element.
+.form-box {
+    width: 100%;
+    @include box-sizing(border-box);
+    line-height:15px;
+    display:inline-block;
+    font-size:12px;
+    color:#000;
+    vertical-align:middle;
+    margin:0px;
+    @include border-radius(2px !important);
+    border: 1px solid  #d0d0d0 !important;
+    padding: 6px;
+    outline:none !important;
+    @include box-shadow(inset 0 0 0 #000 !important);
+    @include box-shadow(none !important);
+    -moz-appearance: none !important;
+    background: #fff;
+    &:focus {
+        @include box-shadow(0px 0px 5px 0px #d0d0d0 !important);
+        border-color: #b8b8b8 !important;
+        outline:none !important;
+    }
+    ul {
+        list-style-type: initial !important;
+        margin: 0px !important;
+        padding-left: 40px !important;
+    }
+    ol {
+        margin: 0px !important;
+    }
+}
+
+// additional modifiers
+.state-label--no-float {
+    float: none;
+}
+.sd-toggle--vertical-middle {
+    vertical-align: middle;
+}
+.label--simple {
+    background: transparent;
+    color: $gray;
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 400;
+    margin-bottom: 6px;
+    display: inline-block;
+}
+.label--no-padding {
+    padding: 0;
+}
+.dropdown__menu-label {
+    text-transform: uppercase;
+    font-size: 11px;
+    color: #999;
+    font-weight: 500;
+    padding-left: 16px;
+}
+.dropdown__sd-toggle {
+    display: inline-block;
+}
+.content--syndication {
+    top: 114px !important;
+}
+
+/* UI fixes */
+#main-container > div.subnav div.button-stack.right-stack {
+    margin: 0;
+}
+div.subnav div.button-stack.left-stack a.homebtn {
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+}
+div.settings-page button {
+    margin-top: 10px;
+}
+div.settings-page button.last-right {
+    margin-right: 20px;
+}
+div.settings-page div.datepicker-input button, div.settings-page div.timepicker-input button {
+    height: 22px!important;
+    margin-top: 0px!important;
+}
+button.btn-info {
+    background-color: #5ea9c8;
+}
+#main-menu .footer .icon-superdesk {
+    background-size: 156px 48px;
+}
+
+.liveblog-help {
+    visibility: visible!important;
+}
+
+i.icon-star.orange {
+    color: #f89406;
+}

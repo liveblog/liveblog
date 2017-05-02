@@ -1,0 +1,454 @@
+// Snippets of reusable CSS to develop faster and keep code readable
+// -----------------------------------------------------------------
+
+
+// UTILITY MIXINS
+// --------------------------------------------------
+
+// Hide an element
+.hidden {
+    display: none;
+    visibility: hidden;
+}
+
+// Clearfix
+// --------
+// For clearing floats like a boss h5bp.com/q
+.clearfix {
+    *zoom: 1;
+    &:before,
+    &:after {
+        display: table;
+        content: "";
+    }
+    &:after {
+        clear: both;
+    }
+}
+
+// Box sizing
+@mixin box-sizing($boxmodel) {
+    box-sizing: $boxmodel;
+}
+
+@mixin border-box() {
+    @include box-sizing(border-box);
+}
+
+// Webkit-style focus
+// ------------------
+@mixin tab-focus()
+{
+    // Default
+    outline: thin dotted #333;
+    // Webkit
+    outline: 5px auto -webkit-focus-ring-color;
+    outline-offset: -2px;
+}
+
+// Center-align a block level element
+// ----------------------------------
+@mixin center-block()
+{
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+// IE7 inline-block
+// ----------------
+@mixin ie7-inline-block()
+{
+    *display: inline; /* IE7 inline-block hack */
+    *zoom: 1;
+//comment
+}
+
+// IE7 likes to collapse whitespace on either side of the inline-block elements.
+// Ems because we're attempting to match the width of a space character. Left
+// version is for form buttons, which typically come after other elements, and
+// right version is for icons, which come before. Applying both is ok, but it will
+// mean that space between those elements will be .6em (~2 space characters) in IE7,
+// instead of the 1 space in other browsers.
+@mixin ie7-restore-left-whitespace()
+{
+    *margin-left: .3em;
+
+    &:first-child {
+        *margin-left: 0;
+    }
+}
+
+@mixin ie7-restore-right-whitespace()
+{
+    *margin-right: .3em;
+
+    &:last-child {
+        *margin-left: 0;
+    }
+}
+
+// Sizing shortcuts
+// -------------------------
+@mixin size($height: 5px, $width: 5px)
+{
+    width: $width;
+    height: $height;
+}
+@mixin square($size: 5px)
+{
+    @include size($size, $size);
+}
+
+// Placeholder text
+// -------------------------
+@mixin placeholder($color: $placeholderText)
+{
+    :-moz-placeholder {
+        color: $color;
+    }
+    ::-webkit-input-placeholder {
+        color: $color;
+    }
+}
+
+// Text overflow
+// -------------------------
+// Requires inline-block or block for proper styling
+@mixin text-overflow()
+{
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+
+
+// FONTS
+// --------------------------------------------------
+
+#font {
+    #family {
+        @mixin serif() {
+            font-family: Georgia, "Times New Roman", Times, serif;
+        }
+        @mixin sans-serif() {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+        @mixin monospace() {
+            font-family: Menlo, Monaco, "Courier New", monospace;
+        }
+    }
+    @mixin shorthand($size: $baseFontSize, $weight: normal, $lineHeight: $baseLineHeight) {
+        font-size: $size;
+        font-weight: $weight;
+        line-height: $lineHeight;
+    }
+    //@mixin serif($size: $baseFontSize, $weight: normal, $lineHeight: $baseLineHeight) {
+    //    #font > #family > .serif;
+    //    #font > @include shorthand($size, $weight, $lineHeight);
+    //}
+    //@mixin sans-serif($size: $baseFontSize, $weight: normal, $lineHeight: $baseLineHeight) {
+    //    #font > #family > .sans-serif;
+    //    #font > @include shorthand($size, $weight, $lineHeight);
+    //}
+    //@mixin monospace($size: $baseFontSize, $weight: normal, $lineHeight: $baseLineHeight) {
+    //    #font > #family > .monospace;
+    //    #font > @include shorthand($size, $weight, $lineHeight);
+    //}
+}
+    @mixin text-light() {
+        font-weight: 300;
+    }
+    @mixin text-normal() {
+        font-weight: 400;
+    }
+    @mixin text-semibold() {
+        font-weight: 600;
+    }
+    @mixin text-bold() {
+        font-weight: 700;
+    }
+    @mixin text-extrabold() {
+        font-weight: 800;
+    }
+
+
+// FORMS
+// --------------------------------------------------
+
+// Block level inputs
+.input-block-level {
+    display: block;
+    width: 100%;
+    min-height: 28px; /* Make inputs at least the height of their button counterpart */
+    /* Makes inputs behave like true block-level elements */
+    @include box-sizing(border-box);
+}
+
+
+// Mixin for form field states
+@mixin formFieldState($textColor: #555, $borderColor: #ccc, $backgroundColor: #f5f5f5)
+{
+    // Set the text color
+    > label,
+    .help-block,
+    .help-inline {
+        color: $textColor;
+    }
+    // Style inputs accordingly
+    input,
+    select,
+    textarea {
+        color: $textColor;
+        border-color: $borderColor;
+        &:focus {
+            border-color: darken($borderColor, 10%);
+            @include box-shadow(0 0 6px lighten($borderColor, 20%));
+        }
+    }
+    // Give a small background color for input-prepend/-append
+    .input-prepend .add-on,
+    .input-append .add-on {
+        color: $textColor;
+        background-color: $backgroundColor;
+        border-color: $textColor;
+    }
+}
+
+
+
+// CSS3 PROPERTIES
+// --------------------------------------------------
+
+// Border Radius
+@mixin border-radius($radius: 5px)
+{
+    border-radius: $radius;
+}
+
+// Drop shadows
+@mixin box-shadow($shadow: 0 1px 3px rgba(0,0,0,.25))
+{
+    box-shadow: $shadow;
+}
+@mixin box-shadow-both($shadow1 , $shadow2)
+{
+    box-shadow: $shadow1, $shadow2;
+}
+
+// Animate
+@mixin animate($animation)
+{
+  animation:  $animation;
+}
+
+// Transitions
+@mixin transition($transition)
+{
+    -webkit-transition: $transition;
+             -o-transition: $transition;
+                    transition: $transition;
+}
+
+// Transformations
+@mixin rotate($degrees)
+{
+    -webkit-transform: rotate($degrees);
+                    transform: rotate($degrees);
+}
+@mixin scale($ratio)
+{
+    -webkit-transform: scale($ratio);
+                    transform: scale($ratio);
+}
+@mixin scaleY($ratio)
+{
+    -webkit-transform: scaleY($ratio);
+                    transform: scaleY($ratio);
+}
+@mixin scaleX($ratio)
+{
+    -webkit-transform: scaleX($ratio);
+                    transform: scaleX($ratio);
+}
+@mixin translate($x: 0, $y: 0)
+{
+    -webkit-transform: translate($x, $y);
+                    transform: translate($x, $y);
+}
+@mixin skew($x: 0, $y: 0)
+{
+    -webkit-transform: skew($x, $y);
+                    transform: skew($x, $y);
+}
+@mixin translate3d($x: 0, $y: 0, $z: 0)
+{
+    -webkit-transform: translate($x, $y, $z);
+                    transform: translate($x, $y, $z);
+}
+
+// Background clipping
+// Heads up: FF 3.6 and under need "padding" instead of "padding-box"
+@mixin background-clip($clip)
+{
+    -webkit-background-clip: $clip;
+         -moz-background-clip: $clip;
+                    background-clip: $clip;
+}
+
+// User select
+// For selecting text on the page
+@mixin user-select($select)
+{
+    -webkit-user-select: $select;
+         -moz-user-select: $select;
+             -o-user-select: $select;
+                    user-select: $select;
+-webkit-touch-callout: $select;
+     -khtml-user-select: $select;
+            -ms-user-select: $select;
+}
+
+// Resize anything
+@mixin resizable($direction: both)
+{
+    resize: $direction; // Options: horizontal, vertical, both
+    overflow: auto; // Safari fix
+}
+
+// CSS3 Content Columns
+@mixin content-columns($columnCount, $columnGap: $gridColumnGutter)
+{
+    -webkit-column-count: $columnCount;
+         -moz-column-count: $columnCount;
+                    column-count: $columnCount;
+    -webkit-column-gap: $columnGap;
+         -moz-column-gap: $columnGap;
+                    column-gap: $columnGap;
+}
+
+// Opacity
+@mixin opacity($opacity: 100)
+{
+    opacity: $opacity / 100;
+     filter: #{"alpha(opacity=${opacity})"};
+}
+
+
+
+// BACKGROUNDS
+// --------------------------------------------------
+
+// Add an alphatransparency value to any background or border color (via Elyse Holladay)
+#translucent {
+    @mixin background($color: $white, $alpha: 1)
+{
+        background-color: hsla(hue($color), saturation($color), lightness($color), $alpha);
+    }
+    @mixin border($color: $white, $alpha: 1)
+{
+        border-color: hsla(hue($color), saturation($color), lightness($color), $alpha);
+        @include background-clip(padding-box);
+    }
+}
+
+// Reset filters for IE
+@mixin reset-filter()
+{
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+
+
+// COMPONENT MIXINS
+// --------------------------------------------------
+
+// Horizontal dividers
+// -------------------------
+// Dividers (basically an hr) within dropdowns and nav lists
+@mixin nav-divider()
+{
+    height: 1px;
+    margin: (($baseLineHeight / 2) - 1) 1px; // 8px 1px
+    overflow: hidden;
+    background-color: #e5e5e5;
+    border-bottom: 1px solid $white;
+
+    // IE7 needs a set width since we gave a height. Restricting just
+    // to IE7 to keep the 1px left/right space in other browsers.
+    // It is unclear where IE is getting the extra space that we need
+    // to negative-margin away, but so it goes.
+    *width: 100%;
+    *margin: -5px 0 5px;
+}
+
+
+// Reset bootstrap
+// ------------------
+.reset-bootstrap-effects {
+    -webkit-transition: none;
+    -moz-transition: none;
+    -ms-transition: none;
+    -o-transition: none;
+    transition: none;
+}
+
+
+// Reset button styling
+// ------------------
+.reset-button {
+    border: 0;
+    background: 0;
+    color: #333;
+}
+
+// Navbar vertical align
+// -------------------------
+// Vertically center elements in the navbar.
+// Example: an element has a height of 30px, so write out `@include navbarVerticalAlign(30px);` to calculate the appropriate top margin.
+@mixin navbarVerticalAlign($elementHeight)
+{
+    margin-top: ($navbarHeight - $elementHeight) / 2;
+}
+
+// Popover arrows
+// -------------------------
+// For tipsies and popovers
+#popoverArrow {
+    @mixin top($arrowWidth: 5px, $color: $black)
+{
+        bottom: 0;
+        left: 50%;
+        margin-left: -$arrowWidth;
+        border-left: $arrowWidth solid transparent;
+        border-right: $arrowWidth solid transparent;
+        border-top: $arrowWidth solid $color;
+    }
+    @mixin left($arrowWidth: 5px, $color: $black)
+{
+        top: 50%;
+        right: 0;
+        margin-top: -$arrowWidth;
+        border-top: $arrowWidth solid transparent;
+        border-bottom: $arrowWidth solid transparent;
+        border-left: $arrowWidth solid $color;
+    }
+    @mixin bottom($arrowWidth: 5px, $color: $black)
+{
+        top: 0;
+        left: 50%;
+        margin-left: -$arrowWidth;
+        border-left: $arrowWidth solid transparent;
+        border-right: $arrowWidth solid transparent;
+        border-bottom: $arrowWidth solid $color;
+    }
+    @mixin right($arrowWidth: 5px, $color: $black)
+{
+        top: 50%;
+        left: 0;
+        margin-top: -$arrowWidth;
+        border-top: $arrowWidth solid transparent;
+        border-bottom: $arrowWidth solid transparent;
+        border-right: $arrowWidth solid $color;
+    }
+}

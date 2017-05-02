@@ -6,7 +6,7 @@
             method="post"
             enctype="multipart/form-data"
             ng-if="!vm.hasReachedThemesLimit() && !vm.isSolo()">
-            <label class="navbtn navbtn-info" for="uploadAThemeFile">
+            <label class="navbtn navbtn-info" for="uploadAThemeFile" title="{{ 'New Theme' | translate }}">
                 <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
             </label>
             <input
@@ -19,8 +19,8 @@
         <button
             ng-if="vm.hasReachedThemesLimit()"
             class="navbtn navbtn-info"
-            ng-click="vm.showUpgradeModal()">
-            <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
+            ng-click="vm.showUpgradeModal()" title="{{ 'New Theme' | translate }}">
+            <i class="svg-icon-add inverse"></i>
         </button>
     </div>
 </div>
@@ -97,11 +97,11 @@
                         </div>
                         <div class="default-theme" ng-show="vm.isDefaultTheme(theme)"></div>
                     </div>
-                    <ng-include ng-repeat="(themeName, themeChildren) in themeChildren | orderBy:'-themeName'" src="'themeTree'"></ng-include>
+                    <ng-include ng-repeat="(themeName, themeChildren) in themeChildren" src="'themeTree'"></ng-include>
                 </li>
             </ul>
         </script>
-        <ng-include ng-repeat="(themeName, themeChildren) in vm.themesHierachy | orderBy:'-themeName'" src="'themeTree'"></ng-include>
+        <ng-include ng-repeat="(themeName, themeChildren) in vm.themesHierachy" src="'themeTree'"></ng-include>
     </div>
 </section>
 <div sd-modal="" data-model="vm.themeBlogsModal" class="theme-blogs-modal" macro-team="">
@@ -161,5 +161,8 @@
     </div>
 </div>
 
-
-<theme-settings-modal theme="vm.themeSettingsModalTheme" ng-if="vm.themeSettingsModalTheme"></theme-settings-modal>
+<div
+    theme-settings-modal
+    theme="vm.themeSettingsModalTheme" 
+    modal-opened="vm.themeSettingsModal"
+    ng-if="vm.themeSettingsModal"></div>

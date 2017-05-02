@@ -6,7 +6,7 @@ Please visit {{url}} to choose your password.
 The above link expires in one week (168 hours).
 
 Next time you want to use {{app_name}}, please go to {{instance_url}} and log in as {{username}} with your password.
-See our User manual on http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/ to help you get started.
+See our User manual on https://sourcefabricberlin.zendesk.com/hc/en-us/sections/201858023-Live-Blog-Manual-Features to help you get started.
 
 Please ignore this email if you think your {{app_name}} account was created by mistake.
 
