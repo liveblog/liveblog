@@ -1,6 +1,6 @@
 'use strict';
 
-var DEBUG = process.env.NODE_ENV != "production";
+var DEBUG = process.env.NODE_ENV !== "production";
 
 var gulp = require('gulp')
   , browserify = require('browserify')
@@ -11,17 +11,16 @@ var gulp = require('gulp')
   , plugins = gulpLoadPlugins()
   , path = require('path')
   , del = require('del')
-  , minimist = require('minimist')
   , eslint = require('gulp-eslint')
   , fs = require('fs');
 
 var nunjucksOptions = {
   env: require('./js/nunjucks_extensions').nunjucksEnv
-}
+};
 
 var paths = {
   less: 'less/*.less',
-  js : ['js/*.js', 'js/*/*.js'],
+  js: ['js/*.js', 'js/*/*.js'],
   jsfile: 'liveblog.js',
   cssfile: 'liveblog.css',
   templates: 'templates/*.html'
@@ -31,7 +30,7 @@ var paths = {
 var theme = require('./theme.json');
 
 function getThemeSettings(options) {
-  var _options = {}
+  var _options = {};
   for (var option in options) {
     _options[option.name] = option.default;
   }
@@ -41,20 +40,19 @@ function getThemeSettings(options) {
 
 // Function to async reload default theme options.
 function loadThemeJSON() {
-  fs.readFile('theme.json', 'utf8', function (err, data) {
+  fs.readFile('theme.json', 'utf8', (err, data) => {
     theme = JSON.parse(data);
   });
 }
 
-gulp.task('lint', () => {
-  return gulp.src(['js/**/*.js','!node_modules/**'])
-    .pipe(eslint({ quiet: true }))
-    .pipe(eslint.format())
-    .pipe(eslint.failAfterError());
-});
+gulp.task('lint', () => gulp.src(['js/**/*.js','gulpfile.js'])
+  .pipe(eslint({ quiet: true }))
+  .pipe(eslint.format())
+  .pipe(eslint.failAfterError())
+);
 
 // Browserify.
-gulp.task('browserify', ['clean-js'], function(cb) {
+gulp.task('browserify', ['clean-js'], (cb) => {
   var b = browserify({
     entries: './js/liveblog.js',
     fullPaths: true,
@@ -63,11 +61,12 @@ gulp.task('browserify', ['clean-js'], function(cb) {
 
   var rewriteFilenames = function(filename) {
     var parts = filename.split("/");
-    return parts[parts.length-1]
+    return parts[parts.length - 1];
   };
 
   // Source-mapped
   return b
+    .transform("babelify", {presets: ["es2015"]})
     .transform(nunjucksify, {
       extension: '.html',
       nameFunction: rewriteFilenames
@@ -85,21 +84,20 @@ gulp.task('browserify', ['clean-js'], function(cb) {
 });
 
 // Compile LESS files.
-gulp.task('less', ['clean-css'], function () {
-  return gulp.src('./less/liveblog.less')
-    .pipe(plugins.less({
-      paths: [path.join(__dirname, 'less', 'includes')]
-    }))
+gulp.task('less', ['clean-css'], () => gulp.src('./less/liveblog.less')
+  .pipe(plugins.less({
+    paths: [path.join(__dirname, 'less', 'includes')]
+  }))
 
-    .pipe(plugins.if(!DEBUG, plugins.minifyCss({compatibility: 'ie8'})))
-    .pipe(plugins.rev())
-    .pipe(gulp.dest('./dist'))
-    .pipe(plugins.rev.manifest('dist/rev-manifest.json', {merge: true}))
-    .pipe(gulp.dest(''));
-});
+  .pipe(plugins.if(!DEBUG, plugins.minifyCss({compatibility: 'ie8'})))
+  .pipe(plugins.rev())
+  .pipe(gulp.dest('./dist'))
+  .pipe(plugins.rev.manifest('dist/rev-manifest.json', {merge: true}))
+  .pipe(gulp.dest(''))
+);
 
 // Inject API response into template for dev/test purposes.
-gulp.task('index-inject', ['less', 'browserify'], function() {
+gulp.task('index-inject', ['less', 'browserify'], () => {
   var testdata = require('./test');
   var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
     read: false // We're only after the file paths
@@ -122,13 +120,13 @@ gulp.task('index-inject', ['less', 'browserify'], function() {
 });
 
 // Inject jinja/nunjucks template for production use.
-gulp.task('template-inject', ['less', 'browserify'], function() {
+gulp.task('template-inject', ['less', 'browserify'], () => {
   var themeSettings = getThemeSettings(theme.options);
 
-  var _api_response = {};
-  var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
-    read: false // We're only after the file paths
-  });
+  //var _api_response = {};
+  //var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
+  //  read: false // We're only after the file paths
+  //});
 
   return gulp.src('./templates/template.html')
     .pipe(plugins.nunjucks.compile({
@@ -154,7 +152,7 @@ gulp.task('template-inject', ['less', 'browserify'], function() {
 });
 
 // Replace assets paths in theme.json file and reload options.
-gulp.task('theme-replace', ['browserify', 'less'], function() {
+gulp.task('theme-replace', ['browserify', 'less'], () => {
   var manifest = require("./dist/rev-manifest.json");
   var base = './';
 
@@ -168,7 +166,7 @@ gulp.task('theme-replace', ['browserify', 'less'], function() {
 });
 
 // Serve index.html for local testing.
-gulp.task('serve', ['browserify', 'less', 'index-inject'], function() {
+gulp.task('serve', ['browserify', 'less', 'index-inject'], () => {
   plugins.connect.server({
     port: 8008,
     root: '.',
@@ -178,27 +176,23 @@ gulp.task('serve', ['browserify', 'less', 'index-inject'], function() {
 });
 
 // Watch
-gulp.task('watch-static', ['serve'], function() {
+gulp.task('watch-static', ['serve'], () => {
   var js = gulp.watch(paths.js, ['browserify', 'index-inject'])
     , less = gulp.watch(paths.less, ['less', 'index-inject'])
     , templates = gulp.watch(paths.templates, ['index-inject']);
 
-  [js, less, templates].forEach(function(el, i) {
-    el.on('error', function(e) {
-      console.log(e.toString())
+  [js, less, templates].forEach((el, i) => {
+    el.on('error', (e) => {
+      console.error(e.toString());
     });
-  })
+  });
 });
 
 // Clean CSS
-gulp.task('clean-css', function() {
-  return del(['dist/*.css'])
-});
+gulp.task('clean-css', () => del(['dist/*.css']));
 
 // Clean JS
-gulp.task('clean-js', function() {
-  return del(['dist/*.js'])
-});
+gulp.task('clean-js', () => del(['dist/*.js']));
 
 // Default build for production
 gulp.task('default', ['browserify', 'less', 'theme-replace', 'template-inject']);

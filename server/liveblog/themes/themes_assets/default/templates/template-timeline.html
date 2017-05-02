@@ -1,54 +1,58 @@
 {% block timeline %}
 <div class="lb-timeline {{ settings.language }}">
-{% if settings.showTitle and blog.title %}
-  <h1>{{ settings.blog.title }}</h1>
-{% endif %}
-
-{% if settings.showDescription and blog.description %}
-  <div class="description">
-    {{ blog.description | safe }}
-  </div>
-{% endif %}
-
-{% if settings.showImage and blog.picture_url %}
-  <img src="{{ blog.picture_url }}" />
-{% endif %}
-
-<!-- Header -->
-<div class="header-bar">
-  <div class="sorting-bar">
-    <div class="sorting-bar__orders">
-      <div class="sorting-bar__order sorting-bar__order--active" data-js-orderby_descending>
-        {{ theme.l10n.descending }}
-      </div>
-      <div class="sorting-bar__order" data-js-orderby_ascending>
-        {{ theme.l10n.ascending }}
-      </div>
-    </div>
-  </div>
-  <div class="header-bar__actions"></div>
-</div>
-<!-- Header End -->
-
-<!-- Timeline -->
-<div class="timeline-body timeline-body--loaded">
-  {% if api_response._items|length == 0 %}
-    <div class="lb-post empty-message">
-      <div>Blog posts are not currently available.</div>
-    </div>
-    {% else %}
-    <section class="lb-posts list-group">
-      {% for item in api_response._items %}
-        {% if not item.deleted %}
-          {% include "template-post.html" %}
-        {% endif %}
-      {% endfor %}
-    </section>
-    {% if api_response._meta.max_results <= api_response._meta.total %}
-      <button class="lb-button load-more-posts" data-js-loadmore>{{ theme.l10n.loadNewPosts }}</button>
-    {% endif %}
+  {% if settings.showTitle and blog.title %}
+    <h1>{{ settings.blog.title }}</h1>
   {% endif %}
-</div>
+
+  {% if settings.showDescription and blog.description %}
+    <div class="description">
+      {{ blog.description | safe }}
+    </div>
+  {% endif %}
+
+  {% if settings.showImage and blog.picture_url %}
+    <img src="{{ blog.picture_url }}" />
+  {% endif %}
+
+  <!-- Header -->
+  <div class="header-bar">
+    <div class="sorting-bar">
+      <div class="sorting-bar__orders">
+        <div
+          class="sorting-bar__order {%if settings.postOrder != 'oldest_first' %}sorting-bar__order--active{% endif %}"
+          data-js-orderby_descending>
+          {{ theme.l10n.descending }}
+        </div>
+        <div
+          class="sorting-bar__order {%if settings.postOrder == 'oldest_first'%}sorting-bar__order--active{% endif %}"
+          data-js-orderby_ascending>
+          {{ theme.l10n.ascending }}
+        </div>
+      </div>
+    </div>
+    <div class="header-bar__actions"></div>
+  </div>
+  <!-- Header End -->
+
+  <!-- Timeline -->
+  <div class="timeline-body timeline-body--loaded">
+    {% if api_response._items|length == 0 %}
+      <div class="lb-post empty-message">
+        <div>Blog posts are not currently available.</div>
+      </div>
+      {% else %}
+      <section class="lb-posts list-group">
+        {% for item in api_response._items %}
+          {% if not item.deleted %}
+            {% include "template-post.html" %}
+          {% endif %}
+        {% endfor %}
+      </section>
+      {% if api_response._meta.max_results <= api_response._meta.total %}
+        <button class="lb-button load-more-posts" data-js-loadmore>{{ theme.l10n.loadNewPosts }}</button>
+      {% endif %}
+    {% endif %}
+  </div>
 <!-- Timeline End -->
 </div>
 {% endblock %}
@@ -56,7 +60,7 @@
 {% include "template-embed-providers.html" %}
 
 {% if include_js_options %}
-<script type="text/javascript">
-window.LB = {{ theme_json|safe }};
-</script>
+  <script type="text/javascript">
+    window.LB = {{ theme_json|safe }};
+  </script>
 {% endif %}

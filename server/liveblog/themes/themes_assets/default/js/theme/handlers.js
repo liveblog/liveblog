@@ -14,41 +14,45 @@ var view = require('./view')
  */
 var buttons = {
   handlers: {
-    "[data-js-loadmore]": function() {
+    "[data-js-loadmore]": () => {
       viewmodel.loadPostsPage()
         .then(view.renderPosts)
         .then(view.displayNewPosts)
-        .catch(catchError)
+        .catch(catchError);
     },
 
-    "[data-js-orderby_ascending]": function() {
+    "[data-js-orderby_ascending]": () => {
       viewmodel.loadPosts({sort: 'ascending'})
         .then(view.renderTimeline)
         .then(view.displayNewPosts)
         .then(view.toggleSortBtn('ascending'))
-        .catch(catchError)
+        .catch(catchError);
     },
 
-    "[data-js-orderby_descending]": function() {
+    "[data-js-orderby_descending]": () => {
       viewmodel.loadPosts({sort: 'descending'})
         .then(view.renderTimeline)
         .then(view.displayNewPosts)
         .then(view.toggleSortBtn('descending'))
-        .catch(catchError)
+        .catch(catchError);
     }
   },
 
   attach: function() {
     for (var handler in buttons.handlers) {
       var el = helpers.getElems(handler)[0];
-      if (!el) return false
+
+      if (!el) {
+        return false;
+      }
+
       el.addEventListener('click', buttons.handlers[handler], false);
     }
   }
 };
 
 function catchError(err) {
-  console.error("Handler error: ", err)
+  console.error("Handler error: ", err);
 }
 
 var events = {
@@ -58,4 +62,4 @@ var events = {
 module.exports = {
   buttons: buttons,
   events: events
-}
+};
