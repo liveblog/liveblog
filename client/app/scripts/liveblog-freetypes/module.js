@@ -6,7 +6,6 @@ LiveblogFreetypesController.$inject = ['api', '$location', 'notify', 'gettext',
 function LiveblogFreetypesController(api, $location, notify, gettext,
 $q, $sce, config, _, upload, blogService, modal) {
     var vm = this;
-
         function getFreetypes(silent) {
             silent = silent || false;
             api.freetypes.query().then(function(data) {
@@ -150,24 +149,7 @@ $q, $sce, config, _, upload, blogService, modal) {
         type: 'http',
         backend: {rel: 'freetypes'}
     });
-}])
-.directive("templateEditable", function() {
-    return {
-        restrict: "A",
-        require: "ngModel",
-        link: function(scope, element, attrs, ngModel) {
-            function read() {
-                ngModel.$setViewValue(element.text());
-            }
-            ngModel.$render = function() {
-                element.text(ngModel.$viewValue || "");
-            };
-            element.bind("blur keyup change", function() {
-                scope.$apply(read);
-            });
-        }
-    }
-});
+}]);
 
 export default liveblogFreetypesModule;
 
