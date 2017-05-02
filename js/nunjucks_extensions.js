@@ -9,4 +9,4 @@ var templatePath = path.resolve(__dirname, '../templates')
 
 module.exports = {
   nunjucksEnv: nunjucksEnv
-}
+};

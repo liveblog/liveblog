@@ -4,8 +4,7 @@
 
 'use strict';
 
-var helpers = require("./helpers")
-  , handlers = require("./handlers")
+var handlers = require("./handlers")
   , viewmodel = require("./viewmodel")
   , view = require("./view");
 
@@ -22,8 +21,8 @@ module.exports = {
     //   viewmodel.loadPosts().then(view.renderPosts); // Start polling
     // }, 10*1000)
 
-    setInterval(function() {
+    setInterval(() => {
       view.updateTimestamps(); // Convert ISO dates to timeago
-    }, 1000)
+    }, 1000);
   }
-}
+};
