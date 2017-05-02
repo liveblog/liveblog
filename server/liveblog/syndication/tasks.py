@@ -104,7 +104,7 @@ def check_api_status(self, producer_id):
     else:
         try:
             api_url = producers._get_api_url(producer, 'syndication/blogs')
-            response = send_api_request(api_url, producer['consumer_api_key'])
+            response = send_api_request(api_url, producer['consumer_api_key'], json_loads=False)
         except:
             api_status = 'invalid_url'
         else:
