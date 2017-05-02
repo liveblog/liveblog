@@ -37,7 +37,7 @@ export default function ingestPanel(
             scope.store = new Store(IngestPanelReducers, {
                 error: null,
                 consumerBlogId: $routeParams._id,
-                syndicationIn: {},
+                syndicationIn: {_items: []},
                 producers: {_items: []},
                 producerBlogs: {_items: []},
                 modalActive: false,
