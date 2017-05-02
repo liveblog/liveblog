@@ -154,8 +154,10 @@ function toggleCommentDialog() {
  */
 function toggleSortBtn(name) {
   var sortingBtns = document.querySelectorAll('.sorting-bar__order');
+
   sortingBtns.forEach((el) => {
     var shouldBeActive = el.dataset.hasOwnProperty("jsOrderby_" + name);
+
     el.classList.toggle('sorting-bar__order--active', shouldBeActive);
   });
 }
@@ -183,6 +185,16 @@ function updateTimestamps() {
   return null;
 }
 
+function showSuccessCommentMsg() {
+  let commentSent = document.querySelector('div.comment-sent');
+
+  commentSent.classList.toggle('hide');
+
+  setTimeout(() => {
+    commentSent.classList.toggle('hide');
+  }, 5000);
+}
+
 module.exports = {
   addPosts: addPosts,
   deletePost: deletePost,
@@ -193,5 +205,6 @@ module.exports = {
   updateTimestamps: updateTimestamps,
   hideLoadMore: hideLoadMore,
   toggleSortBtn: toggleSortBtn,
-  toggleCommentDialog: toggleCommentDialog
+  toggleCommentDialog: toggleCommentDialog,
+  showSuccessCommentMsg: showSuccessCommentMsg
 };

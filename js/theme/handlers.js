@@ -21,12 +21,11 @@ const sendComment = (e) => {
 
   return viewmodel.sendComment(name, comment)
     .then(view.toggleCommentDialog)
-    .then(() => {
-      document
+    .then(() => document
         .querySelector('form.comment')
-        .removeEventListener('submit', sendComment);
-    });
-
+        .removeEventListener('submit', sendComment)
+    )
+    .then(view.showSuccessCommentMsg);
 };
 
 var buttons = {
