@@ -166,7 +166,8 @@
         }
 
         vm.isAd = function(post) {
-            return (post.mainItem.item_type.indexOf('Advertisement') === -1)
+            return (post.mainItem.item_type.indexOf('Advertisement') !== -1) ||
+                    post.mainItem.item_type.indexOf('Advertisment') !== -1
         }
         vm.all_posts = all_posts;
     }
