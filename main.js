@@ -10,7 +10,7 @@
         var UPDATE_MANUALLY = config.settings.loadNewPostsManually;
         var UPDATE_STICKY_MANUALLY = typeof config.settings.loadNewStickyPostsManually === 
         'boolean' ? config.settings.loadNewStickyPostsManually : config.settings.loadNewPostsManually;
-        var UPDATE_EVERY = 1000; // retrieve update interval in millisecond
+        var UPDATE_EVERY = 10 * 1000; // retrieve update interval in millisecond
         var vm = this;
         var pagesManager = new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER, false),
             permalink = new Permalink(pagesManager, PERMALINK_DELIMITER);
