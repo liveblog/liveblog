@@ -136,6 +136,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
             // new post as well unpublished posts
             const onNotification = (e, event_params) => {
                 if (!$element.hasClass('timeline-posts-list')
+                && $scope.lbPostsStatus !== 'comment'
                 && event_params.posts
                 && event_params.posts[0].hasOwnProperty('syndication_in')) {
                     return false;
