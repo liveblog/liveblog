@@ -324,6 +324,10 @@ figure figcaption {
   right: 10px;
   top: 5px;
 }
+form.comment.hide,
+div.comment-sent.hide {
+  display: none;
+}
 .btn {
   background-color: rgba(0, 0, 0, 0.15);
   border: 0 none;
