@@ -232,14 +232,13 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
     """Create syndicted blog post data using producer post, fetched items and incoming syndication."""
     post_items = []
     for item in items:
-        if item['item_type'] != 'embed':
+        if item['item_type'] == 'image':
             meta = item.pop('meta')
-            if item['item_type'] == 'image':
-                item = _fetch_and_create_image_item(
-                    renditions=meta['media']['renditions'],
-                    caption=meta['caption'],
-                    credit=meta['credit']
-                )
+            item = _fetch_and_create_image_item(
+                renditions=meta['media']['renditions'],
+                caption=meta['caption'],
+                credit=meta['credit']
+            )
         item['blog'] = in_syndication['blog_id']
         post_items.append(item)
 
