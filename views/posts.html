@@ -4,9 +4,9 @@
          ng-class="['lb-mainitem-{{ post.mainItem.item_type | varname }}', {'show-author-avatar': 
                         ctrl.timeline.settings.showAuthor &&
                         ctrl.timeline.settings.showAuthorAvatar &&
-                        ctrl.isAd(post),
+                        !ctrl.isAd(post),
                     'lb-post-permalink-selected': post._id === timeline.permalink._id}]">
-    <span ng-if="ctrl.isAd(post)">
+    <span ng-if="!ctrl.isAd(post)">
         <lb-author item="post.mainItem" timeline="timeline"></lb-author>
         <div class="lb-post-highlighted" ng-if="post.lb_highlight">
             <i class="icon-star icon--orange"></i>
@@ -19,7 +19,7 @@
     </span>
     <lb-gallery items="post.items" ng-if="ctrl.showGallery(post)"></lb-gallery>
     
-    <span ng-if="!ctrl.isAd(post)">
+    <span ng-if="ctrl.isAd(post)">
         <div class="lb-advertisement" translate>Advertisement</div>
     </span>
     <span></span>    
