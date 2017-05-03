@@ -16,8 +16,7 @@ class OutputsResource(Resource):
     schema = {
         'name': {
             'type': 'string',
-            'required': True,
-            'unique': True
+            'required': True
         },
         'collection': Resource.rel('collections', True),
         'blog': Resource.rel('blogs'),
