@@ -44,6 +44,13 @@
             "help": "Turn off to prompt user to load updates"
         },
         {
+            "name": "showLiveblogLogo",
+            "label": "Show Liveblog logo.",
+            "type": "checkbox",
+            "default": true,
+            "help": "Show the liveblog logo"
+        },
+        {
             "name": "autoApplyEdits",
             "label": "Edits, deletes are applied without prompt",
             "type": "checkbox",
