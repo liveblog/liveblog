@@ -217,7 +217,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="freetype-selector" ng-click="$event.stopPropagation();" ng-if="selectPostTypeDialog">
+                    <div class="freetype-selector" ng-click="$event.stopPropagation();" ng-if="selectPostTypeDialog" ng-class="{'default': selectedPostType === 'Default'}">
                         <ul class="users-list-embed">
                             <li translate ng-click="selectPostType('Default')"
                             ng-class="{'active': selectedPostType === 'Default'}">Default</li>
