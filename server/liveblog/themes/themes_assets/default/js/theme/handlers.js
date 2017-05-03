@@ -12,6 +12,25 @@ var view = require('./view')
  * Contains a mapping of element data-selectors and click handlers
  * buttons.attach {function} - registers handlers found in handlers object
  */
+
+const sendComment = (e) => {
+  e.preventDefault();
+
+  let name = document.querySelector('#comment-name').value;
+  let comment = document.querySelector('#comment-content').value;
+
+  view.clearCommentFormErrors();
+
+  return viewmodel.sendComment(name, comment)
+    .then(view.toggleCommentDialog)
+    .then(() => document
+        .querySelector('form.comment')
+        .removeEventListener('submit', sendComment)
+    )
+    .then(view.showSuccessCommentMsg)
+    .catch(view.displayCommentFormErrors);
+};
+
 var buttons = {
   handlers: {
     "[data-js-loadmore]": () => {
@@ -35,6 +54,22 @@ var buttons = {
         .then(view.displayNewPosts)
         .then(view.toggleSortBtn('descending'))
         .catch(catchError);
+    },
+
+    "[data-js-show-comment-dialog]": () => {
+      let isVisible = view.toggleCommentDialog();
+      let commentForm = document.querySelector('form.comment');
+
+      if (isVisible) {
+        commentForm.addEventListener('submit', sendComment);
+      } else {
+        commentForm.removeEventListener('submit', sendComment);
+      }
+    },
+
+    '[data-js-close-comment-dialog]': (e) => {
+      e.preventDefault();
+      view.toggleCommentDialog();
     }
   },
 
