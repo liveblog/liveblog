@@ -219,12 +219,12 @@ export default function BlogEditController(
         };
 
         var adLocal = {
-            name: 'Advertisment Local',
+            name: 'Advertisement Local',
             template: $templateCache.get(adsLocalTpl)
         };
 
         var adRemote = {
-            name: 'Advertisment Remote',
+            name: 'Advertisement Remote',
             template: $templateCache.get(adsRemoteTpl)
         };
 
