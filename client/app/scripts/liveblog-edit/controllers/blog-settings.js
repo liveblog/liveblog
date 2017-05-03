@@ -273,6 +273,7 @@ function BlogSettingsController(
             delete vm.newBlog._current_version;
             delete vm.newBlog._version;
             delete vm.newBlog.marked_for_not_publication;
+            delete vm.newBlog._type;
             blogService.update(vm.blog, vm.newBlog).then(function(blog) {
                 vm.isSaved = true;
                 vm.blog = blog;
