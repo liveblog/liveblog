@@ -230,7 +230,8 @@ class BlogService(BaseService):
             producer_id = syndication_in['producer_id']
             producer_blog_id = syndication_in['producer_blog_id']
             try:
-                response = producers.unsyndicate(producer_id, producer_blog_id, syndication_in['blog_id'])
+                response = producers.unsyndicate(producer_id, producer_blog_id, syndication_in['blog_id'],
+                                                 json_loads=False)
             except ProducerAPIError:
                 logger.warning(
                     'Producer "{}" responded with error when deleting syndication blog "{}"'.format(
