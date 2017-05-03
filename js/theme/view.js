@@ -4,7 +4,7 @@
 
 'use strict';
 
-var helpers = require("./helpers");
+var helpers = require('./helpers');
 var templates = require('./templates');
 
 var timelineElem = helpers.getElems("lb-posts")
@@ -137,14 +137,27 @@ function loadEmbeds() {
   }
 }
 
+function toggleCommentDialog() {
+  let commentForm = document.querySelector('form.comment');
+  let isHidden = false;
+
+  if (commentForm) {
+    isHidden = commentForm.classList.toggle('hide');
+  }
+
+  return !isHidden;
+}
+
 /**
  * Set sorting order button of class @name to active.
  * @param {string} name - liveblog API response JSON.
  */
 function toggleSortBtn(name) {
   var sortingBtns = document.querySelectorAll('.sorting-bar__order');
+
   sortingBtns.forEach((el) => {
     var shouldBeActive = el.dataset.hasOwnProperty("jsOrderby_" + name);
+
     el.classList.toggle('sorting-bar__order--active', shouldBeActive);
   });
 }
@@ -172,6 +185,39 @@ function updateTimestamps() {
   return null;
 }
 
+function showSuccessCommentMsg() {
+  let commentSent = document.querySelector('div.comment-sent');
+
+  commentSent.classList.toggle('hide');
+
+  setTimeout(() => {
+    commentSent.classList.toggle('hide');
+  }, 5000);
+}
+
+function clearCommentFormErrors() {
+  let errorsMsgs = document.querySelectorAll('p.err-msg');
+
+  if (errorsMsgs) {
+    errorsMsgs.forEach((errorsMsg) => errorsMsg.remove());
+  }
+}
+
+function displayCommentFormErrors(errors) {
+  if (Array.isArray(errors)) {
+    errors.forEach((error) => {
+      let element = document.querySelector(error.id);
+
+      if (element) {
+        element.insertAdjacentHTML(
+          'afterend',
+          `<p class="err-msg">${error.msg}</p>`
+        );
+      }
+    });
+  }
+}
+
 module.exports = {
   addPosts: addPosts,
   deletePost: deletePost,
@@ -181,5 +227,9 @@ module.exports = {
   updatePost: updatePost,
   updateTimestamps: updateTimestamps,
   hideLoadMore: hideLoadMore,
-  toggleSortBtn: toggleSortBtn
+  toggleSortBtn: toggleSortBtn,
+  toggleCommentDialog: toggleCommentDialog,
+  showSuccessCommentMsg: showSuccessCommentMsg,
+  displayCommentFormErrors: displayCommentFormErrors,
+  clearCommentFormErrors: clearCommentFormErrors
 };
