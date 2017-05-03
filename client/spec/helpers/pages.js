@@ -788,7 +788,7 @@ function BlogSettingsPage(blog) {
     }
 
     self.saveOutput = function() {
-        element(by.css('[ng-click="vm.saveOutput()"]')).click();
+        return element(by.css('[ng-click="vm.saveOutput()"]')).click();
     }
 
     self.editOutput = function() {

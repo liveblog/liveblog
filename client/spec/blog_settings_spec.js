@@ -185,7 +185,7 @@ describe('Blog settings', function() {
         });
     });
 
-    it('should do CRUD operations on output channels', function() {
+    fit('should do CRUD operations on output channels', function() {
 
         blogs.openBlog(0).openSettings().then(function(sp) {
             sp.openOutputs();
@@ -204,18 +204,16 @@ describe('Blog settings', function() {
                 element(by.css('[ng-click="settings.openOutputDialog(output);"]')).click();
 
                 expect(outputTitle.getAttribute('value')).toEqual(outputData.title);
-                
-                
+                                
                 // edit output
-                var newData = sp.createOuputData();
-                sp.outputTitle.sendKeys(newData.title);
+                var newData = sp.createOutputData();
+                outputTitle.sendKeys(newData.title);
 
                
                 sp.saveOutput().then(function() {
                     //check the new contents to match
                     var newTitle = outputData.title + newData.title;
-                    newTitle = newTitle.toUpperCase();
-                    expect(outputTitle.getText()).toEqual(newTitle);
+                    expect(element(by.id('output-name')).getText()).toEqual(newTitle);
                 });
                 
                 // remove first output
