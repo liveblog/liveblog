@@ -70,8 +70,28 @@ function getJSON(url) {
   });
 }
 
+function post(url, data) {
+  return new Promise((resolve, reject) => {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('POST', url);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.onload = function() {
+      if (xhr.status === 201) {
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        reject(xhr.responseText);
+      }
+    };
+
+    xhr.send(JSON.stringify(data));
+  });
+
+}
+
 module.exports = {
   getElems: getElems,
   getJSON: getJSON,
+  post: post,
   convertTimestamp: convertTimestamp
 };
