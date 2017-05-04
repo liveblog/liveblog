@@ -9,16 +9,19 @@
         </ul>
     </div>
 
-    <div class="button-stack right-stack" ng-if="isUserAllowedToCreateABlog();">
-        <button class="navbtn navbtn-info" ng-click="openNewBlog();">
-            <i class="svg-icon-add inverse"></i> <span class="title" translate>Create Blog</span>
+    <div class="button-stack right-stack create-blog" ng-if="isUserAllowedToCreateABlog();">
+        <button
+            class="navbtn navbtn-info"
+            ng-click="openNewBlog();"
+            title="{{ 'Create Blog' | translate }}">
+            <i class="svg-icon-add inverse"></i>
         </button>
     </div>
 </div>
 
 <section class="main-section bloglist">
     <header>
-        <div sd-searchbar></div>
+        <div sd-searchbar style="float: left"></div>
         <div class="view-select pull-right">
             <button title="{{ 'switch to grid view' | translate}}" ng-show="blogsView === 'list'" ng-click="setBlogsView('grid');">
                 <i class="icon-th"></i>
@@ -37,7 +40,10 @@
         <!-- empty state -->
         <div ng-if="blogs._meta.total === 0" class="empty-state">
             <div translate>No blogs found.</div>
-            <button ng-if="activeState.code === 'open'" class="btn btn-info btn-large" ng-click="openNewBlog();">
+            <button
+                ng-if="activeState.code === 'open' && isUserAllowedToCreateABlog();"
+                class="btn btn-info btn-large"
+                ng-click="openNewBlog();">
                 <i class="svg-icon-add inverse"></i>
                 <span class="title" translate>Create a Blog</span>
             </button>
@@ -150,8 +156,10 @@
                             </div>
                             <div class="field">
                                 <label translate>Blog description</label>
+                                <!--TODO: Fix missing sd-editor-->
                                 <div class="form-box"
                                     sd-text-editor
+                                    contenteditable="true"
                                     data-config="{toolbar: {buttons: ['bold', 'italic', 'underline', 'strikethrough', 'orderedlist', 'unorderedlist'],sticky: false,static: true,align: 'left',updateOnEmptySelection: true}}"
                                     ng-model="newBlog.description"
                                 ></div>
@@ -159,36 +167,53 @@
                             <div class="field ">
                                 <label translate>Blog image</label>
                                 <div class="upload-form">
+
                                     <section
                                         class="main"
                                         sd-image-preview="preview.url"
                                         data-file="preview.img"
-                                        data-progress-width="progress.width"
-                                    >
-                                        <div class="upload-progress" ng-show="progress.width">
-                                            <div class="bar" style="width: {{ progress.width }}%;"></div>
+                                        data-progress-width="progress.width">
+
+                                        <div
+                                            class="upload-progress"
+                                            ng-show="progress.width">
+                                            <div
+                                                class="bar"
+                                                style="width: {{ progress.width }}%;"></div>
                                         </div>
+
+
                                         <div class="computer" ng-if="!preview.url" ng-hide="progress.width">
-                                            <div class="dropzone" ng-file-drop="preview.img = $files[0]">
+                                            <div class="dropzone" ngf-drop="preview.img = $files[0]">
                                                 <div class="text" translate>Drop it here</div>
                                                 <div class="input-holder">
-                                                    <input type="file" accept="image/*;capture=camera" ng-file-select="preview.img = $files[0]">
+                                                    <input type="file" accept="image/*;capture=camera" ngf-select="preview.img = $files[0]" label="{{ 'or Select from computer' | translate }}">
                                                 </div>
-                                                <div class="info" translate>The minimum image resolution should be 320x240 pixels.</div>
+                                                <div class="info" translate>The minimum image resolution is 200x200 pixels.</div>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="preview" ng-if="preview.url" ng-hide="progress.width">
-                                            <div class="original">
-                                                <div
-                                                    sd-plain-image
-                                                    data-src="preview.url"
-                                                    data-file="preview.img"
-                                                    data-progress-width="progress.width"
-                                                    ></div>
+
+                                            <div class="preview" ng-if="preview.url">
+                                            <label translate>Make sure you're looking the best</label>
+                                            <div class="crop-area">
+                                                <div class="preview">
+                                                    <div class="preview-large">
+                                                        <img ng-src="{{preview.url}}" class="preview-target-1">
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
                                     </section>
-                                    </div>
+
+
+
+                                    <!--<div sd-item-association-->
+                                    <!--    data-item="item"-->
+                                    <!--    data-rel="'featureimage'"-->
+                                    <!--    data-editable="_editable"-->
+                                    <!--    data-onchange="autosave(item)"-->
+                                    <!--    data-save="save()"></div>-->
+                                </div>
                             </div>
                         </fieldset>
                     </div>

@@ -1,27 +1,6 @@
-'use strict';
+lbAnalyticsListCtrl.$inject = ['$scope', '$element'];
 
-angular.module('liveblog.analytics')
-  .directive('lbAnalyticsList', ['notify', function(notify) {
-    return {
-      restrict: 'E',
-      scope: {
-        analytics: '='
-      },
-      templateUrl: 'scripts/liveblog-analytics/views/view-list.html',
-      controllerAs: 'analyticsList',
-      controller: LbAnalyticsListCtrl
-    };
-  }])
-
-  .filter('startFrom', function() {
-    return function(input, start) {
-      start = parseInt(start); // Parse to int
-      return input.slice(start);
-    }
-  });
-
-LbAnalyticsListCtrl.$inject = ['$scope', '$element'];
-function LbAnalyticsListCtrl($scope, $element) {
+export default function lbAnalyticsListCtrl($scope, $element) {
   $scope.predicate = '';
 
   $scope.order = function(predicate) {
@@ -30,7 +9,7 @@ function LbAnalyticsListCtrl($scope, $element) {
   };
 
   $scope.isReversePredicate = function(predicate) {
-    return $scope.reverse && $scope.predicate == predicate;
+    return $scope.reverse && $scope.predicate === predicate;
   };
 
   $scope.setPage = function($index) {

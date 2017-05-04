@@ -1,5 +1,4 @@
-angular
-    .module('liveblog.flux', [])
+export default angular.module('liveblog.flux', [])
     .factory('Dispatcher', function() {
         return {
             dispatch: function(action) {

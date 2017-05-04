@@ -1,6 +1,6 @@
 'use strict';
 
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     producersManagement = require('./helpers/pages').producersManagement,
     assertToastMsg = require('./helpers/assert-toast-msg');
 
@@ -16,8 +16,15 @@ var contact = {
     email: 'gmail@chucknorris.com'
 };
 
+const originalCount = 25;
+
 describe('Producers', function() {
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login()
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
 
     describe('list', function() {
         it('can open producers managements and list the producers', function() {
@@ -26,9 +33,21 @@ describe('Producers', function() {
             element.all(by.repeater('producer in producers'))
                 .count()
                 .then(function(count) {
-                    expect(count).toEqual(1);
+                    expect(count).toEqual(originalCount);
                 });
         });
+
+        it('can switch to page 2', function() {
+            producersManagement.openProducersManagement();
+
+            element(by.css('button[ng-click="setPage(page + 1)"]'))
+                .click()
+                .then(() => element.all(by.repeater('producer in producers')).count())
+                .then((count) => {
+                    expect(count).toEqual(11);
+                })
+        });
+
 
         it('can show an error when some required field are empty', function() {
             producersManagement.openProducersManagement();
@@ -128,7 +147,7 @@ describe('Producers', function() {
                     return element.all(by.repeater('producer in producers')).count();
                 })
                 .then(function(count) {
-                    expect(count).toEqual(2);
+                    expect(count).toEqual(originalCount + 1);
                 });
         });
 
@@ -169,7 +188,7 @@ describe('Producers', function() {
                         return element.all(by.repeater('producer in producers')).count();
                     })
                     .then(function(count) {
-                        return expect(count).toEqual(1);
+                        return expect(count).toEqual(originalCount);
                     });
             };
 
@@ -192,10 +211,14 @@ describe('Producers', function() {
                         .click();
                 })
                 .then(function() {
+                    return element(by.css('button[ng-click="ok()"]'))
+                        .click();
+                })
+                .then(function() {
                     return element.all(by.repeater('producer in producers')).count();
                 })
                 .then(function(count) {
-                    expect(count).toEqual(0);
+                    expect(count).toEqual(originalCount - 1);
                 });
 });
     });
