@@ -8,6 +8,18 @@ from liveblog.common import get_user, update_dates_for
 from apps.archive.archive import ArchiveResource, ArchiveService, ArchiveVersionsResource
 from superdesk.services import BaseService
 from superdesk.filemeta import set_filemeta, get_filemeta
+from werkzeug.datastructures import FileStorage
+from flask import Blueprint, request, make_response
+from flask_cors import CORS
+from superdesk import get_resource_service
+from bson.json_util import dumps
+from requests.exceptions import RequestException
+
+import requests
+import tempfile
+
+drag_and_drop_blueprint = Blueprint('drag_and_drop', __name__)
+CORS(drag_and_drop_blueprint)
 
 
 class ItemsVersionsResource(ArchiveVersionsResource):
@@ -131,3 +143,32 @@ class BlogItemsService(ArchiveService):
             lookup['blog'] = ObjectId(lookup['blog_id'])
             del lookup['blog_id']
         return super().get(req, lookup)
+
+
+@drag_and_drop_blueprint.route('/api/archive/draganddrop/', methods=['POST'])
+def drag_and_drop():
+    data = request.get_json()
+    url = data['image_url']
+
+    try:
+        response = requests.get(url, timeout=5)
+    except (ConnectionError, RequestException):
+        return make_response('Unable to get url: "{}"'.format(url), 406)
+    fd = tempfile.NamedTemporaryFile()
+    for chunk in response.iter_content(chunk_size=1024):
+        if chunk:
+            fd.write(chunk)
+    fd.seek(0)
+
+    content_type = response.headers.get('content-type')
+    if 'image' not in content_type:
+        return make_response('Invalid content_type {}'.format(content_type), 406)
+
+    item_data = dict()
+    item_data['type'] = 'picture'
+    item_data['media'] = FileStorage(stream=fd, content_type=content_type)
+    archive_service = get_resource_service('archive')
+    archive_id = archive_service.post([item_data])[0]
+    archive = archive_service.find_one(req=None, _id=archive_id)
+
+    return make_response(dumps(archive), 201)

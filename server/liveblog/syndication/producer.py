@@ -1,4 +1,5 @@
 import logging
+from bson import ObjectId
 from urllib.parse import urljoin
 from superdesk.resource import Resource
 from superdesk.services import BaseService
@@ -6,8 +7,10 @@ from flask import Blueprint, request
 from flask_cors import CORS
 from eve.utils import str_to_date
 from superdesk import get_resource_service
+from flask import current_app as app
 from .exceptions import APIConnectionError, ProducerAPIError
 from .utils import trailing_slash, api_response, api_error, send_api_request, blueprint_superdesk_token_auth
+from .tasks import check_api_status
 
 logger = logging.getLogger('superdesk')
 producers_blueprint = Blueprint('producers', __name__)
@@ -53,6 +56,10 @@ producers_schema = {
     'consumer_api_key': {
         'type': 'string',
         'required': True
+    },
+    'api_status': {
+        'allowed': ['enabled', 'invalid_key', 'invalid_url'],
+        'default': 'enabled'
     }
 }
 
@@ -60,8 +67,12 @@ producers_schema = {
 class ProducerService(BaseService):
     notification_key = 'producers'
 
+    def _cursor(self, resource=None):
+        resource = resource or self.datasource
+        return app.data.mongo.pymongo(resource=resource).db[resource]
+
     def _get_producer(self, producer):
-        if isinstance(producer, str):
+        if isinstance(producer, (str, ObjectId)):
             producer = self.find_one(_id=producer, req=None)
         return producer
 
@@ -125,10 +136,15 @@ class ProducerService(BaseService):
                 doc['api_url'] = trailing_slash(doc['api_url'])
         super().on_create(docs)
 
+    def on_created(self, docs):
+        for doc in docs:
+            check_api_status.delay(doc['_id'])
+
     def on_update(self, updates, original):
         if 'api_url' in updates:
             updates['api_url'] = trailing_slash(updates['api_url'])
         super().on_update(updates, original)
+        check_api_status.delay(original['_id'])
 
 
 class ProducerResource(Resource):
@@ -299,6 +315,16 @@ def producer_blogs_syndicate(producer_id, blog_id):
     else:
         return _create_producer_blogs_syndicate(producer_id, blog_id, consumer_blog_id, auto_publish, auto_retrieve,
                                                 start_date)
+
+
+@producers_blueprint.route('/api/producers/<producer_id>/check_connection', methods=['GET'])
+def producer_check_connection(producer_id):
+    producers = get_resource_service('producers')
+    producer = producers.find_one(_id=producer_id, req=None)
+    if not producer:
+        return api_response('invalid_producer_id', 404)
+    check_api_status(producer_id)
+    return api_response('OK', 200)
 
 
 producers_blueprint.before_request(blueprint_superdesk_token_auth)

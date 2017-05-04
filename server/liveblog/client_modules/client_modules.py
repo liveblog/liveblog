@@ -1,17 +1,17 @@
 import json
 
-from bson import ObjectId
 from liveblog.blogs.blogs import BlogsResource
 from superdesk.services import BaseService
 from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, BlogPostsResource
 from superdesk.users.users import UsersResource
 from superdesk.metadata.utils import item_url
-from superdesk import get_resource_service
 from flask import current_app as app
 from liveblog.items.items import ItemsResource, ItemsService
 from liveblog.common import check_comment_length
+from liveblog.blogs.blog import Blog
 from superdesk.resource import Resource
 from eve.utils import config
+from bson import json_util
 from flask import Blueprint, request, make_response
 from flask_cors import CORS
 
@@ -177,17 +177,17 @@ class ClientBlogPostsService(BlogPostsService):
 
 @blog_posts_blueprint.route('/api/v2/client_blogs/<blog_id>/posts', methods=['GET'])
 def get_blog_posts(blog_id):
+    blog = Blog(blog_id)
     args = request.args
+    posts = blog.posts(**args)
 
-    posts_service = get_resource_service('posts')
-    lookup = {'blog': ObjectId(blog_id)}
-    cursor = posts_service.get(req=None, lookup=lookup)
+    response_data = []
 
-    documents = []
-    for document in cursor:
-        documents.append(document)
+    # Convert posts
+    for post in posts:
+        doc = {}
+        doc['_id'] = post['_id']
+        response_data.append(doc)
 
-    return make_response(json.dumps(documents), 200)
-
-
-    # sticky highlight max_results page order_by order
+    data = json.dumps(response_data, default=json_util.default)
+    return make_response(data, 200)

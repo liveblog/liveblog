@@ -19,13 +19,13 @@ from liveblog.blogs import bloglist_assets_blueprint, bloglist_blueprint
 from liveblog.blogs.embeds import embed_blueprint
 from liveblog.common import BlogCache
 from liveblog.syndication.producer import producers_blueprint
+from liveblog.syndication.consumer import consumers_blueprint
 from liveblog.syndication.syndication import syndication_blueprint
 from liveblog.syndication.blogs import blogs_blueprint as syndication_blogs_blueprint
 from liveblog.marketplace.marketer import marketers_blueprint
-
 from liveblog.analytics.analytics import analytics_blueprint
 from liveblog.items.items import drag_and_drop_blueprint
-from liveblog.posts.posts import blog_posts_blueprint
+from liveblog.client_modules.client_modules import blog_posts_blueprint
 
 
 from superdesk.factory import get_app as superdesk_app
@@ -83,6 +83,7 @@ def get_app(config=None):
 
     # Syndication feature.
     app.register_blueprint(producers_blueprint)
+    app.register_blueprint(consumers_blueprint)
     app.register_blueprint(syndication_blueprint)
     app.register_blueprint(syndication_blogs_blueprint)
 

@@ -243,10 +243,14 @@ class SyndicationIn(Resource):
 @syndication_blueprint.route('/api/syndication/webhook', methods=['GET', 'POST', 'PUT', 'DELETE'])
 def syndication_webhook():
     in_service = get_resource_service('syndication_in')
-    blog_token = request.headers['Authorization']
+    blog_token = request.headers.get('Authorization')
+    # assume if there is no blog token that a get request is just checking for a response from the webhook
+    if not blog_token and request.method == 'GET':
+        return api_response({}, 200)
+
     in_syndication = in_service.find_one(blog_token=blog_token, req=None)
     if in_syndication is None:
-        return api_error('Blog is not being syndication', 406)
+        return api_error('Blog is not being syndicated', 406)
 
     blog_service = get_resource_service('client_blogs')
     blog = blog_service.find_one(req=None, _id=in_syndication['blog_id'])
@@ -298,17 +302,18 @@ def syndication_webhook():
             if not post:
                 return api_error('Post does not exist', 404)
 
-            posts_service.update(post_id, new_post, post)
+            posts_service.patch(post_id, new_post)
             return api_response({'post_id': post_id}, 200)
     else:
         # Delete post
-        posts_service.update(post_id, {'deleted': True}, post)
+        posts_service.patch(post_id, {'deleted': True})
         return api_response({'post_id': post_id}, 200)
 
 
 def _syndication_blueprint_auth():
     auth = ConsumerBlogTokenAuth()
-    authorized = auth.authorized(allowed_roles=[], resource='syndication_blogs')
+    # get requests do no require authorization
+    authorized = request.method == 'GET' or auth.authorized(allowed_roles=[], resource='syndication_blogs')
     if not authorized:
         return abort(401, 'Authorization failed.')
 
