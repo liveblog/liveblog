@@ -11,6 +11,17 @@
 
   <div class="lb-post-date" data-js-timestamp="{{ item._updated }}">{{ item._updated  }}</div>
 
+  <!-- author plus avatar -->
+  <div class="lb-author">
+    {% if settings.showAuthor %}
+      <div class="lb-author__name">{{ item.publisher.display_name }}</div>
+      {% if settings.showAuthorAvatar %}
+        <img class="lb-author__avatar" src="{{ item.publisher.picture_url }}" />
+      {% endif %}
+    {% endif %}
+  </div>
+  <!-- end author -->
+
   <!-- item start -->
   {% for ref in item.groups[1].refs %}
     <div class="lb-item">
@@ -24,16 +35,5 @@
     </div>
   {% endfor %}
   <!-- item end -->
-
-  <!-- author plus avatar -->
-  <div class="lb-author">
-    {% if settings.showAuthor %}
-      {% if settings.showAuthorAvatar %}
-        <img class="lb-author__avatar" src="{{ item.publisher.picture_url }}" />
-      {% endif %}
-      <div class="lb-author__name">{{ item.publisher.display_name }}</div>
-    {% endif %}
-  </div>
-  <!-- end author -->
 
 </article>
