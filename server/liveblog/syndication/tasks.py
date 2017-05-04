@@ -51,6 +51,9 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=25, po
 
     try:
         for producer_post in posts:
+            # Don't forward syndicated posts
+            if 'syndication_in' in producer_post.keys():
+                continue
             items = extract_post_items_data(producer_post)
             post = extract_producer_post_data(producer_post)
             # Force post_status for old posts
