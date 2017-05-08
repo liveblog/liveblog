@@ -33,11 +33,12 @@
     </div>
     <div class="header-bar__actions"></div>
       {% if settings.canComment %}
-        <button data-js-show-comment-dialog>Comment</button>
+        <button class="header-bar__comment" data-js-show-comment-dialog>Comment</button>
       {% endif %}
 
       {% if settings.showLiveblogLogo %}
-        <a href="https://www.liveblog.pro" target="_blank">
+        <a class="header-bar__logo" href="https://www.liveblog.pro" target="_blank">
+          <span>Powered by</span>
           <img
             ng-src="{{ assets_root }}/images/lb-logo.svg"
             src="{{ assets_root }}/images/lb-logo.svg" />
@@ -45,9 +46,12 @@
       {% endif %}
     </div>
   <!-- Header End -->
+
+  <!-- Comment -->
   {% if settings.canComment %}
     {% include "template-comment.html" %}
   {% endif %}
+  <!-- Comment End -->
 
   <!-- Timeline -->
   <div class="timeline-body timeline-body--loaded">
