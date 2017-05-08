@@ -88,7 +88,7 @@ class ItemsResource(ArchiveResource):
 
 class ItemsService(ArchiveService):
     embed_providers = {
-        'twitter':  re.compile('https?://twitter\.com/(?:\#!/)?(\w+)/status(es)?/(?P<original_id>\d+)'),
+        'twitter': re.compile('https?://twitter\.com/(?:\#!/)?(\w+)/status(es)?/(?P<original_id>\d+)'),
         'youtube': re.compile('(watch\?.*?(?=v=)v=|embed/|v/|.+\?v=)?(?P<original_id>[^&=%\?]{11})')
     }
 
