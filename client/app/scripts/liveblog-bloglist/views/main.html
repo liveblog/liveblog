@@ -11,10 +11,10 @@
 
     <div class="button-stack right-stack create-blog" ng-if="isUserAllowedToCreateABlog();">
         <button
-            class="navbtn navbtn-info"
+            class="navbtn navbtn-info navbtn-auto"
             ng-click="openNewBlog();"
             title="{{ 'Create Blog' | translate }}">
-            <i class="svg-icon-add inverse"></i>
+            <i class="svg-icon-add inverse"></i> <span class="title" translate>Create blog</span>
         </button>
     </div>
 </div>
