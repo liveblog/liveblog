@@ -238,7 +238,11 @@ def embed(blog_id, api_host=None, theme=None):
     theme_settings = theme_service.get_default_settings(theme)
     l10n = theme.get('l10n', {})
 
-    if theme.get('seoTheme', False):
+    # Check if theme is SEO and/or AMP compatible.
+    is_amp = theme.get('ampTheme', False)
+    is_seo = theme.get('seoTheme', False)
+
+    if is_seo:
         # Fetch initial blog posts for SEO theme
         blog_instance = Blog(blog)
         page_limit = theme_settings.get('postsPerPage', 10)
@@ -264,7 +268,11 @@ def embed(blog_id, api_host=None, theme=None):
         'assets_root': assets_root,
         'l10n': l10n
     }
-    return render_template('embed.html', **scope)
+    embed_template = 'embed.html'
+    if is_amp:
+        embed_template = 'embed_amp.html'
+
+    return render_template(embed_template, **scope)
 
 
 @embed_blueprint.route('/embed/<blog_id>/overview')
