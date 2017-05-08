@@ -3,10 +3,12 @@
     "name": "default",
     "version": "0.1.42",
     "seoTheme": true,
-    "author": "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>",
-    "authors": [
+    "author": "Sourcefabric <contact@sourcefabric.org>",
+    "contributors": [
         "Paul Solbach <psolbach@dpa-newslab.com>",
-        "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>"
+        "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>",
+        "Löic Nogues <loic.nogues@sourcefabric.org>",
+        "Aleksandar Backo Jelicic <aleksandar.jelicic@sourcefabric.org>"
     ],
     "repository": {
         "type" : "git",
