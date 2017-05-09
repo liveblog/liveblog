@@ -27,7 +27,7 @@ from liveblog.themes import UnknownTheme
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 
-from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR, THEMES_ASSETS_DIR
+from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR, THEMES_ASSETS_DIR, DEFAULT_THEME_DATE_FORMAT
 from .utils import is_relative_to_current_folder, get_template_file_name, get_theme_json
 
 logger = logging.getLogger('superdesk')
@@ -53,7 +53,7 @@ class ThemeTemplateLoader(jinja2.BaseLoader):
         return source, path, lambda: mtime == os.path.getmtime(path)
 
 
-def moment_date_filter(date, format='dddd, MMMM Do, YYYY, h:MM:ss A'):
+def moment_date_filter(date, format=None):
     """
     Jinja2 filter for moment.js compatible dates.
     :param date:
@@ -64,6 +64,8 @@ def moment_date_filter(date, format='dddd, MMMM Do, YYYY, h:MM:ss A'):
     # Workaround for "x" unsupported format
     if format == 'x':
         return parsed.timestamp
+    if not format:
+        format = DEFAULT_THEME_DATE_FORMAT
     return parsed.format(format)
 
 
@@ -74,9 +76,9 @@ class Blog:
     order_by = ('_updated', '_created', 'order')
     sort = ('asc', 'desc')
     ordering = {
-        'newest_first': ('_updated', 'desc'),
-        'oldest_first': ('_editorial', 'desc'),
-        'editorial': ('order', 'desc')
+        'newest_first': ('_created', 'desc'),
+        'oldest_first': ('_created', 'asc'),
+        'editorial': ('order', 'asc')
     }
     default_ordering = 'newest_first'
     default_order_by = '_updated'
