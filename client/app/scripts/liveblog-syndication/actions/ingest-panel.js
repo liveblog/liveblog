@@ -9,7 +9,7 @@ export default function ingestPanelActions(Dispatcher, api, $http, config, momen
     };
 
     return {
-        getSyndication: function(consumerBlogId) {
+        getSyndication: function(consumerBlogId, unreadQueue) {
             var params = {
                 where: {
                     blog_id: consumerBlogId
@@ -22,6 +22,13 @@ export default function ingestPanelActions(Dispatcher, api, $http, config, momen
                         type: 'ON_GET_SYND',
                         syndicationIn: syndicationIn
                     });
+
+                    if (unreadQueue) {
+                        Dispatcher.dispatch({
+                            type: 'ON_SET_UNREAD_QUEUE',
+                            unreadQueue: unreadQueue
+                        });
+                    }
                 })
                 .catch((error) => {
                     Dispatcher.dispatch({
