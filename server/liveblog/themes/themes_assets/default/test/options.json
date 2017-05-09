@@ -176,6 +176,7 @@
   "l10n": {
     "ascending": "Oldest first",
     "descending": "Newest first",
+    "editorial": "Editorial",
     "loadMore": "Load More",
     "loadNewPosts": "Load new posts",
     "timeAgo": {
