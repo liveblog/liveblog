@@ -20,7 +20,12 @@
     <div class="sorting-bar">
       <div class="sorting-bar__orders">
         <div
-          class="sorting-bar__order {%if settings.postOrder != 'oldest_first' %}sorting-bar__order--active{% endif %}"
+          class="sorting-bar__order {%if settings.postOrder == 'editorial' %}sorting-bar__order--active{% endif %}"
+          data-js-orderby_editorial>
+          {{ theme.l10n.editorial }}
+        </div>
+        <div
+          class="sorting-bar__order {%if settings.postOrder == 'newest_first' %}sorting-bar__order--active{% endif %}"
           data-js-orderby_descending>
           {{ theme.l10n.descending }}
         </div>

@@ -56,6 +56,14 @@ var buttons = {
         .catch(catchError);
     },
 
+    "[data-js-orderby_editorial]": () => {
+      viewmodel.loadPosts({sort: 'editorial'})
+        .then(view.renderTimeline)
+        .then(view.displayNewPosts)
+        .then(view.toggleSortBtn('editorial'))
+        .catch(catchError);
+    },
+
     "[data-js-show-comment-dialog]": () => {
       let isVisible = view.toggleCommentDialog();
       let commentForm = document.querySelector('form.comment');
