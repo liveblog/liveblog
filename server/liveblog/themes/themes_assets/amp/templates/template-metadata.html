@@ -1,0 +1,341 @@
+<script type="application/ld+json">
+  {
+    "@context": "http://schema.org",
+    "@type": "LiveBlogPosting",
+    "url": "{{ blog.public_url }}",
+    "articleBody": "{{ blog.description }}",
+    "datePublished": "{{ blog._created }}",
+    "about": {
+      "@type": "Event",
+      "description": "{{ blog.title }}",
+      {% if blog.start_date %}
+      "startDate": "{{ blog.start_date | tojson }}",
+      {% endif %}
+      {% if blog.end_date %}
+      "endDate": "{{ blog.end_date | tojson }}",
+      {% endif %}
+      "name": "{{ blog.title }}",
+      "url": "{{ blog.public_url }}"
+    },
+    "author": {
+      "@type": "Person",
+      "name": "{{ blog.author }}"
+    },
+    "image": {
+      "@type": "ImageObject",
+      "url": "https://ampbyexample.com/img/abe_preview.png",
+      "height": "1532",
+      "width": "2046"
+    },
+    {% if blog.start_date %}
+    "coverageStartTime": "{{ blog.start_date | tojson }}",
+    {% endif %}
+    {% if blog.end_date %}
+    "coverageEndTime": "{{ blog.end_date | tojson }}",
+    {% endif %}
+    "headline": "{{ blog.title }}",
+    "description": "{{ blog.description }}",
+    "liveBlogUpdate": [
+          {
+            "@type": "BlogPosting",
+            "headline": "Green landscape",
+            "url": "https://www.ampbyexample.com/samples_templates/live_blog/#post1",
+            "datePublished": "2017-05-02T20:30:00.681764+00:00",
+            "author": {
+              "@type": "Person",
+              "sameAs": "https://github.com/kul3r4",
+              "name": "Chiara Chiappini"
+            },
+            "articleBody": {
+              "@type": "Text"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "AMP By Example",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.ampbyexample.com/img/favicon.png",
+                "width": "512",
+                "height": "512"
+              }
+            },
+            "image": {
+              "@type": "ImageObject",
+              "url": "https://www.ampbyexample.com/img/landscape_green_1280x853.jpg",
+              "width": "853",
+              "height": "1280"
+            }
+          },
+          {
+            "@type": "BlogPosting",
+            "headline": "Mountains",
+            "url": "https://www.ampbyexample.com/samples_templates/live_blog/#post2",
+            "datePublished": "2017-05-02T20:30:00.681798+00:00",
+            "author": {
+              "@type": "Person",
+              "sameAs": "https://github.com/kul3r4",
+              "name": "Chiara Chiappini"
+            },
+            "articleBody": {
+              "@type": "Text"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "AMP By Example",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.ampbyexample.com/img/favicon.png",
+                "width": "512",
+                "height": "512"
+              }
+            },
+            "image": {
+              "@type": "ImageObject",
+              "url": "https://www.ampbyexample.com/img/landscape_mountains_1280x657.jpg",
+              "width": "853",
+              "height": "1280"
+            }
+          },
+          {
+            "@type": "BlogPosting",
+            "headline": "Road leading to a lake",
+            "url": "https://www.ampbyexample.com/samples_templates/live_blog/#post3",
+            "datePublished": "2017-05-02T20:30:00.6818+00:00",
+            "author": {
+              "@type": "Person",
+              "sameAs": "https://github.com/kul3r4",
+              "name": "Chiara Chiappini"
+            },
+            "articleBody": {
+              "@type": "Text"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "AMP By Example",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.ampbyexample.com/img/favicon.png",
+                "width": "512",
+                "height": "512"
+              }
+            },
+            "image": {
+              "@type": "ImageObject",
+              "url": "https://www.ampbyexample.com/img/landscape_lake_1280x857.jpg",
+              "width": "853",
+              "height": "1280"
+            }
+          },
+          {
+            "@type": "BlogPosting",
+            "headline": "Forested hills",
+            "url": "https://www.ampbyexample.com/samples_templates/live_blog/#post4",
+            "datePublished": "2017-05-02T20:30:00.681815+00:00",
+            "author": {
+              "@type": "Person",
+              "sameAs": "https://github.com/kul3r4",
+              "name": "Chiara Chiappini"
+            },
+            "articleBody": {
+              "@type": "Text"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "AMP By Example",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.ampbyexample.com/img/favicon.png",
+                "width": "512",
+                "height": "512"
+              }
+            },
+            "image": {
+              "@type": "ImageObject",
+              "url": "https://www.ampbyexample.com/img/landscape_trees_1280x960.jpg",
+              "width": "853",
+              "height": "1280"
+            }
+          },
+          {
+            "@type": "BlogPosting",
+            "headline": "Scattered houses",
+            "url": "https://www.ampbyexample.com/samples_templates/live_blog/#post5",
+            "datePublished": "2017-05-02T20:30:00.681817+00:00",
+            "author": {
+              "@type": "Person",
+              "sameAs": "https://github.com/kul3r4",
+              "name": "Chiara Chiappini"
+            },
+            "articleBody": {
+              "@type": "Text"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "AMP By Example",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.ampbyexample.com/img/favicon.png",
+                "width": "512",
+                "height": "512"
+              }
+            },
+            "image": {
+              "@type": "ImageObject",
+              "url": "https://www.ampbyexample.com/img/landscape_village_1280x853.jpg",
+              "width": "853",
+              "height": "1280"
+            }
+          },
+          {
+            "@type": "BlogPosting",
+            "headline": "Canyon",
+            "url": "https://www.ampbyexample.com/samples_templates/live_blog/#post6",
+            "datePublished": "2017-05-02T20:30:00.681818+00:00",
+            "author": {
+              "@type": "Person",
+              "sameAs": "https://github.com/kul3r4",
+              "name": "Chiara Chiappini"
+            },
+            "articleBody": {
+              "@type": "Text"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "AMP By Example",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.ampbyexample.com/img/favicon.png",
+                "width": "512",
+                "height": "512"
+              }
+            },
+            "image": {
+              "@type": "ImageObject",
+              "url": "https://www.ampbyexample.com/img/landscape_canyon_1280x1700.jpg",
+              "width": "853",
+              "height": "1280"
+            }
+          },
+          {
+            "@type": "BlogPosting",
+            "headline": "Desert",
+            "url": "https://www.ampbyexample.com/samples_templates/live_blog/#post7",
+            "datePublished": "2017-05-02T20:30:00.68182+00:00",
+            "author": {
+              "@type": "Person",
+              "sameAs": "https://github.com/kul3r4",
+              "name": "Chiara Chiappini"
+            },
+            "articleBody": {
+              "@type": "Text"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "AMP By Example",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.ampbyexample.com/img/favicon.png",
+                "width": "512",
+                "height": "512"
+              }
+            },
+            "image": {
+              "@type": "ImageObject",
+              "url": "https://www.ampbyexample.com/img/landscape_desert_1280x853.jpg",
+              "width": "853",
+              "height": "1280"
+            }
+          },
+          {
+            "@type": "BlogPosting",
+            "headline": "Houses",
+            "url": "https://www.ampbyexample.com/samples_templates/live_blog/#post8",
+            "datePublished": "2017-05-02T20:30:00.681822+00:00",
+            "author": {
+              "@type": "Person",
+              "sameAs": "https://github.com/kul3r4",
+              "name": "Chiara Chiappini"
+            },
+            "articleBody": {
+              "@type": "Text"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "AMP By Example",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.ampbyexample.com/img/favicon.png",
+                "width": "512",
+                "height": "512"
+              }
+            },
+            "image": {
+              "@type": "ImageObject",
+              "url": "https://www.ampbyexample.com/img/landscape_houses_1280x803.jpg",
+              "width": "853",
+              "height": "1280"
+            }
+          },
+          {
+            "@type": "BlogPosting",
+            "headline": "Blue sea",
+            "url": "https://www.ampbyexample.com/samples_templates/live_blog/#post9",
+            "datePublished": "2017-05-02T20:30:00.681824+00:00",
+            "author": {
+              "@type": "Person",
+              "sameAs": "https://github.com/kul3r4",
+              "name": "Chiara Chiappini"
+            },
+            "articleBody": {
+              "@type": "Text"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "AMP By Example",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.ampbyexample.com/img/favicon.png",
+                "width": "512",
+                "height": "512"
+              }
+            },
+            "image": {
+              "@type": "ImageObject",
+              "url": "https://www.ampbyexample.com/img/landscape_sea_1280x848.jpg",
+              "width": "853",
+              "height": "1280"
+            }
+          },
+          {
+            "@type": "BlogPosting",
+            "headline": "Sailing ship",
+            "url": "https://www.ampbyexample.com/samples_templates/live_blog/#post10",
+            "datePublished": "2017-05-02T20:30:00.681827+00:00",
+            "author": {
+              "@type": "Person",
+              "sameAs": "https://github.com/kul3r4",
+              "name": "Chiara Chiappini"
+            },
+            "articleBody": {
+              "@type": "Text"
+            },
+            "publisher": {
+              "@type": "Organization",
+              "name": "AMP By Example",
+              "logo": {
+                "@type": "ImageObject",
+                "url": "https://www.ampbyexample.com/img/favicon.png",
+                "width": "512",
+                "height": "512"
+              }
+            },
+            "image": {
+              "@type": "ImageObject",
+              "url": "https://www.ampbyexample.com/img/landscape_ship_1280x853.jpg",
+              "width": "853",
+              "height": "1280"
+            }
+          }
+        ]
+  }
+</script>

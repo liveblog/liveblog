@@ -1,0 +1,51 @@
+<article id="{{ item._id }}" data-sort-time="{{ item._updated | date('x') }}"
+  class="lb-post list-group-item show-author-avatar">
+
+  {% if item.sticky %}
+  <div class="lb-type"></div>
+  {% else %}
+  <div class="lb-type lb-type--text"></div>
+  {% endif %}
+
+  {% if item.highlight %}
+  <div class="lb-post-highlighted"></div>
+  {% endif %}
+
+  <div class="lb-post-date">{{ item._updated | date('')  }}</div>
+
+  <!-- author plus avatar -->
+  <div class="lb-author">
+    {% if settings.showAuthor %}
+      <div class="lb-author__name">{{ item.publisher.display_name }}</div>
+      {% if settings.showAuthorAvatar and item.publisher.picture_url %}
+        <amp-img class="lb-author__avatar" src="{{ item.publisher.picture_url }}"
+          layout="fixed"
+          width="45"
+          height="45" 
+          alt="{{ item.publisher.display_name }}" 
+          >
+        </amp-img>
+      {% endif %}
+    {% endif %}
+  </div>
+  <!-- end author -->
+
+  <!-- item start -->
+  {% for ref in item.groups[1].refs %}
+    <div class="lb-item">
+      {% if ref.item.item_type == "embed" %}
+        {% include "template-item-embed.html" %}
+      {% elif ref.item.item_type == "image" %}
+        {% include "template-item-image.html" %}
+      {% elif ref.item.item_type == "text" or ref.item.item_type == "comment" %}
+        <article>{{ ref.item.text | safe }}</article>
+      {% else %}
+      <article>
+        <i class="lb-item--info">This content is not currently available.</i>
+      </article>
+      {% endif %}
+    </div>
+  {% endfor %}
+  <!-- item end -->
+
+</article>
