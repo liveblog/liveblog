@@ -15,6 +15,7 @@ import json
 import logging
 import os
 import pymongo
+import arrow
 
 import superdesk
 from bson import ObjectId
@@ -50,6 +51,20 @@ class ThemeTemplateLoader(jinja2.BaseLoader):
         with open(path) as f:
             source = f.read()
         return source, path, lambda: mtime == os.path.getmtime(path)
+
+
+def moment_date_filter(date, format='dddd, MMMM Do, YYYY, h:MM:ss A'):
+    """
+    Jinja2 filter for moment.js compatible dates.
+    :param date:
+    :param format:
+    :return: str
+    """
+    parsed = arrow.get(date)
+    # Workaround for "x" unsupported format
+    if format == 'x':
+        return parsed.timestamp
+    return parsed.format(format)
 
 
 class Blog:
@@ -248,7 +263,9 @@ def embed(blog_id, api_host=None, theme=None):
         page_limit = theme_settings.get('postsPerPage', 10)
         ordering = theme_settings.get('postOrder', blog_instance.default_ordering)
         api_response = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering)
-        embed_template = jinja2.Environment(loader=ThemeTemplateLoader(theme)).from_string(template_content)
+        embed_env = jinja2.Environment(loader=ThemeTemplateLoader(theme))
+        embed_env.filters['date'] = moment_date_filter
+        embed_template = embed_env.from_string(template_content)
         template_content = embed_template.render(
             blog=blog,
             theme=theme,

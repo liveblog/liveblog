@@ -114,6 +114,13 @@ class ThemesResource(Resource):
             'type': 'boolean',
             'default': False
         },
+        'ampTheme': {
+            'type': 'boolean',
+            'default': False
+        },
+        'ampThemeInlineCss': {
+            'type': 'string'
+        },
         'l10n': {
             'type': 'dict',
             'default': {}
