@@ -1,1 +1,4 @@
-<div class="item--embed"><div>{{ ref.item.meta.html | safe or ref.item.meta.meta.html | safe }}</div>
+<div class="lb-type lb-type--{{ ref.item.meta.provider_name | lower }}"></div>
+<div class="item--embed">
+  <div>{{ ref.item.meta.html | safe or ref.item.meta.meta.html | safe }}</div>
+</div>
