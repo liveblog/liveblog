@@ -228,9 +228,20 @@ vm.getQuery = function(opts) {
 
   if (opts.sort === "ascending") {
     query.sort[0]._updated.order = "asc";
+  } else if (opts.sort === "editorial") {
+    query.sort = [
+      {
+        order: {
+          order: "desc",
+          missing: "_last",
+          unmapped_type: "long"
+        }
+      }
+    ];
   }
 
-  if (opts.sort === "ascending" || opts.sort === "descending") {
+  // Remove the range, we want all the results
+  if (["ascending", "descending", "editorial"].indexOf(opts.sort)) {
     query.query.filtered.filter.and.forEach((rule, index) => {
       if (rule.hasOwnProperty('range')) {
         query.query.filtered.filter.and.splice(index, 1);
