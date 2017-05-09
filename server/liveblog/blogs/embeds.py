@@ -268,6 +268,16 @@ def embed(blog_id, api_host=None, theme=None):
         'assets_root': assets_root,
         'l10n': l10n
     }
+    if is_amp:
+        # Add AMP compatible css to template context
+        amp_inline_css = theme.get('ampThemeInlineCss')
+        if amp_inline_css:
+            theme_dirname = os.path.dirname(get_template_file_name(theme))
+            amp_inline_css_filename = os.path.join(theme_dirname, amp_inline_css)
+            if os.path.exists(amp_inline_css_filename):
+                with open(amp_inline_css_filename, 'r') as f:
+                    scope['amp_style'] = f.read()
+
     embed_template = 'embed.html'
     if is_amp:
         embed_template = 'embed_amp.html'
