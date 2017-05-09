@@ -1,9 +1,9 @@
 <div class="form-group">
     <div class="form-input form-image">
         <figure class="ads-media" ng-show="image.picture_url"><img ng-src="{{image.picture_url}}" />
-            <div class="ads-image-actions"><button class="btn btn-info pull-right" ng-click="ft.openUploadModal()" translate>Change</button><button class="btn btn-default pull-right" ng-click="ft.removeImage()" translate>Remove</button></div>
+            <div class="ads-image-actions"><button class="btn btn--primary pull-right" ng-click="ft.openUploadModal()" translate>Change</button><button class="btn btn-default pull-right" ng-click="ft.removeImage()" translate>Remove</button></div>
         </figure>
-        <div ng-hide="image.picture_url"><button class="btn btn-info" ng-click="ft.openUploadModal()" translate>Upload Image</button>
+        <div ng-hide="image.picture_url"><button class="btn btn--primary" ng-click="ft.openUploadModal()" translate>Upload Image</button>
             <div class="image-text" translate>Image has not been set so far</div>
         </div>
         <span

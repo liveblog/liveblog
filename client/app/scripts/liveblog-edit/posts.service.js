@@ -18,6 +18,7 @@ postsService.$inject = [
 ];
 
 export default function postsService(api, $q, userList) {
+    let producersList = [];
     /**
      * Fetch a page of posts
      * @param {string} blog_id - The id of the blog
@@ -41,6 +42,7 @@ export default function postsService(api, $q, userList) {
             page: page,
             max_results: max_results
         };
+
         // filters.excludeDeleted
         if (filters.excludeDeleted) {
             posts_criteria.source.query.filtered.filter.and.push({not: {term: {deleted: true}}});
@@ -49,11 +51,13 @@ export default function postsService(api, $q, userList) {
         if (angular.isDefined(filters.sort)) {
             // this converts the format '-_created' to the elasticsearch one
             var order = 'asc';
+
             if (filters.sort.charAt(0) === '-') {
                 filters.sort = filters.sort.slice(1);
                 order = 'desc';
             }
             var sort = {};
+
             sort[filters.sort] = {order: order, missing: '_last', unmapped_type: 'long'};
             posts_criteria.source.sort = [sort];
         }
@@ -103,7 +107,7 @@ export default function postsService(api, $q, userList) {
 
         if (angular.isDefined(filters.noSyndication)) {
             posts_criteria.source.query.filtered.filter.and.push({
-                missing: { field: 'syndication_in' }
+                missing: {field: 'syndication_in'}
             });
         }
 
@@ -114,7 +118,10 @@ export default function postsService(api, $q, userList) {
         if (obj.commenter) {
             obj.user = {display_name: obj.commenter};
         } else {
-            userList.getUser(obj.original_creator).then(function(user) {
+            // TODO: way too many requests in there
+            // This getUser func is returning a list of users,
+            // who would have thought?
+            userList.getUser(obj.original_creator).then((user) => {
                 obj.user = user;
             });
         }
@@ -151,16 +158,7 @@ export default function postsService(api, $q, userList) {
             });
             _completeUser(post.mainItem.item);
 
-            if (post.syndication_in && api.hasOwnProperty('syndicationIn')) {
-                api.syndicationIn.getById(post.syndication_in).then(function(synd) {
-                    post.producer_blog_title = synd.producer_blog_title;
-                    resolve(post);
-                }, function() {
-                    resolve(post);
-                });
-            } else {
-                resolve(post)
-            }
+            resolve(post);
         });
     }
 
@@ -172,9 +170,39 @@ export default function postsService(api, $q, userList) {
             });
     }
 
+    function retrieveSyndications(posts) {
+        let syndIds = [];
+
+        // This means the syndication module is not enabled
+        if (!api.hasOwnProperty('syndicationIn')) {
+            return posts;
+        }
+
+        posts._items.forEach((post) => {
+            if (post.syndication_in && syndIds.indexOf(post.syndication_in) === -1) {
+                syndIds.push(post.syndication_in);
+            }
+        });
+
+        return $q
+            .all(syndIds.map((syndId) => api.syndicationIn.getById(syndId)))
+            .then((syndList) => angular.extend(posts, {
+                _items: posts._items.map((post) => {
+                    syndList.forEach((synd) => {
+                        if (post.syndication_in === synd._id) {
+                            post.producer_blog_title = synd.producer_blog_title;
+                        }
+                    });
+
+                    return post;
+                })
+            }));
+    }
+
     function retrievePosts(blog_id, posts_criteria) {
         return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
             .query(posts_criteria)
+            .then(retrieveSyndications)
             .then(function(data) {
                 return $q.all(data._items.map(_completePost))
                     .then(function(result) {
@@ -188,7 +216,8 @@ export default function postsService(api, $q, userList) {
             return;
         }
         var latest_date, date;
-        posts.forEach(function (post) {
+
+        posts.forEach((post) => {
             date = moment(post._updated);
             if (angular.isDefined(latest_date)) {
                 if (latest_date.diff(date) < 0) {
@@ -269,6 +298,7 @@ export default function postsService(api, $q, userList) {
 
     function removePost(post) {
         var deleted = {deleted: true};
+
         return savePost(post.blog, post, [], deleted);
     }
 
