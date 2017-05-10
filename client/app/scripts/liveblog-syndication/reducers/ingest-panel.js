@@ -107,7 +107,7 @@ export default function ingestPanelReducers(moment) {
                     if (state.syndicationIn._items.length > 0) {
                         state.syndicationIn._items.forEach((synd) => {
                             if (synd._id === post.syndication_in) {
-                                isAutoPublished = synd.auto_publish;
+                                isAutoPublished = post.auto_publish;
                             }
                         });
                     }

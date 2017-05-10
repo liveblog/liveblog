@@ -6,7 +6,7 @@
             method="post"
             enctype="multipart/form-data"
             ng-if="!vm.hasReachedThemesLimit() && !vm.isSolo()">
-            <label class="navbtn navbtn-info" for="uploadAThemeFile" title="{{ 'New Theme' | translate }}">
+            <label class="navbtn navbtn-info navbtn-auto" for="uploadAThemeFile" title="{{ 'New Theme' | translate }}">
                 <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
             </label>
             <input
@@ -32,7 +32,7 @@
             ng-if="!vm.isSolo()"
             class="alert alert-info alert--margin-left" 
             role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="icon-close-small"></i></button>Customize your themes to the specific needs of your organisation. All you need is someone in your team with frontend development skills and a download of the classic theme as a good starting point to create your own. You find all required code and some info on Github: <a href="https://github.com/liveblog/liveblog/blob/e7945a48fcd19c1a959d8e83706114f13864871c/CUSTOM-THEME.MD" target="_blank">https://github.com/liveblog/liveblog/blob/e7945a48fcd19c1a959d8e83706114f13864871c/CUSTOM-THEME.MD</a>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="icon-close-small"></i></button>Customize your themes to the specific needs of your organisation. All you need is someone in your team with frontend development skills and a download of the classic theme as a good starting point to create your own. You find all required code and some info on <a href="https://github.com/liveblog/liveblog/blob/e7945a48fcd19c1a959d8e83706114f13864871c/CUSTOM-THEME.MD" target="_blank">Github</a>
         </div>
         <!-- LIST VIEW -->
         <script type="text/ng-template" id="themeTree">

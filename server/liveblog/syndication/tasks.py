@@ -38,7 +38,7 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=25, po
     posts_service = get_resource_service('posts')
     start_date = syndication_out.get('start_date')
     auto_retrieve = syndication_out.get('auto_retrieve')
-    lookup = {'blog': blog_id, ITEM_TYPE: CONTENT_TYPE.COMPOSITE}
+    lookup = {'blog': blog_id, ITEM_TYPE: CONTENT_TYPE.COMPOSITE, 'deleted': False, 'post_status': 'open'}
     if start_date and auto_retrieve:
         lookup['_updated'] = {'$gte': start_date}
 
@@ -51,6 +51,9 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=25, po
 
     try:
         for producer_post in posts:
+            # Don't forward syndicated posts
+            if 'syndication_in' in producer_post.keys():
+                continue
             items = extract_post_items_data(producer_post)
             post = extract_producer_post_data(producer_post)
             # Force post_status for old posts

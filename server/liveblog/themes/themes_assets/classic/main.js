@@ -1,7 +1,7 @@
 (function(angular) {
     'use strict';
-    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink', 'transformBlog', 'gettext'];
-    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, transformBlog, gettext) {
+    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink', 'transformBlog', 'gettext', 'outputs'];
+    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, transformBlog, gettext, outputsService) {
 
         var POSTS_PER_PAGE = config.settings.postsPerPage;
         var STICKY_POSTS_PER_PAGE = 100;
@@ -10,7 +10,7 @@
         var UPDATE_MANUALLY = config.settings.loadNewPostsManually;
         var UPDATE_STICKY_MANUALLY = typeof config.settings.loadNewStickyPostsManually === 
         'boolean' ? config.settings.loadNewStickyPostsManually : config.settings.loadNewPostsManually;
-        var UPDATE_EVERY = 10*1000; // retrieve update interval in millisecond
+        var UPDATE_EVERY = 1000; // retrieve update interval in millisecond
         var vm = this;
         var pagesManager = new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER, false),
             permalink = new Permalink(pagesManager, PERMALINK_DELIMITER);
@@ -33,7 +33,32 @@
                 }
                 angular.extend(vm.blog, blog);
             });
+
+            if (config.output && config.output._id) {
+                outputsService.get({id: config.output._id}, function(output) {
+                    if (!angular.equals(config.output, output)) {
+                        config.output = output;
+                        applyOutputStyle();
+                    }
+                })
+            }
         }
+
+        function fixBackgroundImage(style) {
+            if (style['background-image']) {
+                style['background-image'] = 'url(' + style['background-image'] + ')';
+            }
+        }
+
+        function applyOutputStyle() {
+            if (config.output && config.output.style) {
+                fixBackgroundImage(config.output.style);
+                $('body').css(config.output.style);
+            }
+            
+        }
+
+        applyOutputStyle();
 
         // define view model
         angular.extend(vm, {
@@ -166,7 +191,8 @@
         }
 
         vm.isAd = function(post) {
-            return (post.mainItem.item_type.indexOf('Advertisement') === -1)
+            return (post.mainItem.item_type.indexOf('Advertisement') !== -1) ||
+                    post.mainItem.item_type.indexOf('Advertisment') !== -1
         }
         vm.all_posts = all_posts;
     }
