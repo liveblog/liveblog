@@ -81,7 +81,7 @@ class Blog:
         'editorial': ('order', 'asc')
     }
     default_ordering = 'newest_first'
-    default_order_by = '_updated'
+    default_order_by = '_created'
     default_sort = 'desc'
 
     def __init__(self, blog):
@@ -111,7 +111,7 @@ class Blog:
             return self.default_order_by, self.default_sort
 
     def posts(self, sticky=None, highlight=None, ordering=None, page=1, limit=25, wrap=False):
-        sort, order_by = self.get_ordering(ordering or self.default_ordering)
+        order_by, sort = self.get_ordering(ordering or self.default_ordering)
 
         # Fetch total.
         results = self._posts.find(self._posts_lookup(sticky, highlight))
