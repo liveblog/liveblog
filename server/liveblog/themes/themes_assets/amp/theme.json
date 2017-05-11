@@ -75,6 +75,13 @@
         "help": "Show the author information on posts"
     },
     {
+      "name": "showLiveblogLogo",
+      "label": "Show Liveblog logo.",
+      "type": "checkbox",
+      "default": true,
+      "help": "Show the liveblog logo"
+    },
+    {
         "name": "authorNameFormat",
         "label": "Author name format",
         "type": "select",
