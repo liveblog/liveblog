@@ -11,7 +11,7 @@ from liveblog.common import check_comment_length
 from liveblog.blogs.blog import Blog
 from superdesk.resource import Resource
 from eve.utils import config
-from bson import json_util
+from eve.io.mongo import MongoJSONEncoder
 from flask import Blueprint, request, make_response
 from flask_cors import CORS
 
@@ -180,14 +180,55 @@ def get_blog_posts(blog_id):
     blog = Blog(blog_id)
     args = request.args
     posts = blog.posts(**args)
-
     response_data = []
 
     # Convert posts
     for post in posts:
         doc = {}
-        doc['_id'] = post['_id']
+
+        # copy selected fields
+        keys = ['_id', '_etag', '_created', '_updated', 'blog', 'lb_highlight', 'sticky', 'deleted', 'post_status', 'published_date', 'unpublished_date']
+        for key in keys:
+            if key in post.keys():
+                doc[key] = post[key]
+
+        # add items in post
+        doc['items'] = []
+        for g in post.get('groups', []):
+            if g['id'] != 'main':
+                continue
+
+            for item in g['refs']:
+                doc['items'].append(_get_converted_item(item['item']))
+
+        # add authorship
+        publisher = {}
+        publisher['display_name'] = post['publisher']['display_name']
+        publisher['picture_url'] = post['publisher']['picture_url']
+        doc['publisher'] = publisher
+
         response_data.append(doc)
 
-    data = json.dumps(response_data, default=json_util.default)
+    data = json.dumps({'posts': response_data}, cls=MongoJSONEncoder)
     return make_response(data, 200)
+
+
+def _get_converted_item(item):
+    converted = {}
+    converted['_id'] = item['_id']
+    item_type = item['item_type']
+    converted['item_type'] = item_type
+    converted['text'] = item['text']
+
+    if item_type == 'embed':
+        converted['meta'] = item['meta']
+    elif item_type == 'quote':
+        converted['meta'] = item['meta']
+    elif item_type == 'image':
+        meta = {}
+        meta['caption'] = item['meta']['caption']
+        meta['credit'] = item['meta']['credit']
+        converted['meta'] = meta
+        converted['renditions'] = item['meta']['media']['renditions']
+
+    return converted

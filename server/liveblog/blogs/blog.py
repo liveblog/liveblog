@@ -27,12 +27,13 @@ class Blog:
         if sort not in self.sort:
             raise ValueError(sort)
 
-    def _posts_lookup(self, sticky=None, highlight=None):
+    def _posts_lookup(self, sticky=None, highlight=None, all=False):
         filters = [
-            {'blog': {'$eq': self._blog['_id']}},
-            {'post_status': {'$eq': 'open'}},
-            {'deleted': {'$eq': False}}
+            {'blog': {'$eq': self._blog['_id']}}
         ]
+        if not all:
+            filters.append({'post_status': {'$eq': 'open'}})
+            filters.append({'deleted': {'$eq': False}})
         if sticky:
             filters.append({'sticky': {'$eq': sticky}})
         if highlight:
@@ -41,13 +42,13 @@ class Blog:
 
 
     def posts(self, sticky=None, highlight=None, order_by=default_order_by, sort=default_sort, page=1, limit=25,
-              wrap=False):
+              wrap=False, all=False):
         # Validate parameters.
         self._validate_sort(sort)
         self._validate_order_by(order_by)
 
         # Fetch total.
-        results = self._posts.find(self._posts_lookup(sticky, highlight))
+        results = self._posts.find(self._posts_lookup(sticky, highlight, all))
         total = results.count()
 
         # Get sorting direction.
