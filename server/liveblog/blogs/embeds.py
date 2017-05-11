@@ -40,17 +40,26 @@ class ThemeTemplateLoader(jinja2.BaseLoader):
     Theme template loader for SEO themes.
     """
     def __init__(self, theme):
-        dirname = os.path.dirname(get_template_file_name(theme))
-        self.path = os.path.join(dirname, 'templates')
+        theme_dirname = os.path.dirname(get_template_file_name(theme['name']))
+        self.paths = [os.path.join(theme_dirname, 'templates')]
+        parent_theme = theme.get('extends')
+        if parent_theme:
+            parent_dirname = os.path.dirname(get_template_file_name(parent_theme))
+            self.paths.append(os.path.join(parent_dirname, 'templates'))
 
     def get_source(self, environment, template):
-        path = os.path.join(self.path, template)
-        if not os.path.exists(path):
-            raise jinja2.TemplateNotFound(template)
-        mtime = os.path.getmtime(path)
-        with open(path) as f:
-            source = f.read()
-        return source, path, lambda: mtime == os.path.getmtime(path)
+        for path in self.paths:
+            template_path = os.path.join(path, template)
+            if not os.path.exists(template_path):
+                continue
+
+            mtime = os.path.getmtime(template_path)
+            with open(template_path) as f:
+                source = f.read()
+
+            return source, path, lambda: mtime == os.path.getmtime(template_path)
+
+        raise jinja2.TemplateNotFound(template_path)
 
 
 def moment_date_filter(date, format=None):
@@ -274,6 +283,7 @@ def embed(blog_id, api_host=None, theme=None):
             theme_json=bson_dumps(theme),
             settings=theme_settings,
             api_response=api_response,
+            assets_root=assets_root,
             l10n=l10n
         )
 
@@ -291,7 +301,7 @@ def embed(blog_id, api_host=None, theme=None):
         # Add AMP compatible css to template context
         amp_inline_css = theme.get('ampThemeInlineCss')
         if amp_inline_css:
-            theme_dirname = os.path.dirname(get_template_file_name(theme))
+            theme_dirname = os.path.dirname(get_template_file_name(theme['name']))
             amp_inline_css_filename = os.path.join(theme_dirname, amp_inline_css)
             if os.path.exists(amp_inline_css_filename):
                 with open(amp_inline_css_filename, 'r') as f:
