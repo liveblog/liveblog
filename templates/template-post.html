@@ -4,7 +4,7 @@
   {% else %}
     <div class="lb-type lb-type--text"></div>
   {% endif %}
-  
+
   {% if item.highlight %}
     <div class="lb-post-highlighted"></div>
   {% endif %}
@@ -15,7 +15,7 @@
   <div class="lb-author">
     {% if settings.showAuthor %}
       <div class="lb-author__name">{{ item.publisher.display_name }}</div>
-      {% if settings.showAuthorAvatar %}
+      {% if settings.showAuthorAvatar and item.publisher.picture_url %}
         <img class="lb-author__avatar" src="{{ item.publisher.picture_url }}" />
       {% endif %}
     {% endif %}
