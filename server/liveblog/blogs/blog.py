@@ -7,9 +7,15 @@ class Blog:
     """
     Utility class to fetch blog data directly from mongo collections.
     """
-    order_by = ('_updated', '_created')
-    default_order_by = '_updated'
+    order_by = ('_updated', '_created', 'order')
     sort = ('asc', 'desc')
+    ordering = {
+        'newest_first': ('_created', 'desc'),
+        'oldest_first': ('_created', 'asc'),
+        'editorial': ('order', 'asc')
+    }
+    default_ordering = 'newest_first'
+    default_order_by = '_created'
     default_sort = 'desc'
 
     def __init__(self, blog):
@@ -31,6 +37,14 @@ class Blog:
         if highlight:
             filters.append({'highlight': {'$eq': highlight}})
         return {'$and': filters}
+
+
+    def get_ordering(self, label):
+        try:
+            order_by, sort = self.ordering[label]
+            return order_by, sort
+        except KeyError:
+            return self.default_order_by, self.default_sort
 
 
     def posts(self, sticky=None, highlight=None, ordering=None, page=1, limit=25, wrap=False, all=False):
