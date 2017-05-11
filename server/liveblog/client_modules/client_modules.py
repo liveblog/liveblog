@@ -19,6 +19,7 @@ from flask_cors import CORS
 blog_posts_blueprint = Blueprint('blog_posts', __name__)
 CORS(blog_posts_blueprint)
 
+
 class ClientUsersResource(Resource):
     datasource = {
         'source': 'users',
@@ -187,7 +188,8 @@ def get_blog_posts(blog_id):
         doc = {}
 
         # copy selected fields
-        keys = ['_id', '_etag', '_created', '_updated', 'blog', 'lb_highlight', 'sticky', 'deleted', 'post_status', 'published_date', 'unpublished_date']
+        keys = ['_id', '_etag', '_created', '_updated', 'blog', 'lb_highlight', 'sticky', 'deleted', 'post_status',
+                'published_date', 'unpublished_date']
         for key in keys:
             if key in post.keys():
                 doc[key] = post[key]

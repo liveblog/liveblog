@@ -38,14 +38,12 @@ class Blog:
             filters.append({'highlight': {'$eq': highlight}})
         return {'$and': filters}
 
-
     def get_ordering(self, label):
         try:
             order_by, sort = self.ordering[label]
             return order_by, sort
         except KeyError:
             return self.default_order_by, self.default_sort
-
 
     def posts(self, sticky=None, highlight=None, ordering=None, page=1, limit=25, wrap=False, all=False):
         order_by, sort = self.get_ordering(ordering or self.default_ordering)
