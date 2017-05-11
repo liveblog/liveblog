@@ -105,6 +105,6 @@
     "rangy": "^1.3.0",
     "raven-js": "^3.9.1",
     "sir-trevor": "m0g/sir-trevor-js#liveblog",
-    "superdesk-core": "liveblog/superdesk-client-core#6e5904f06531a9c951e327d69018731f36957f3b"
+    "superdesk-core": "liveblog/superdesk-client-core#a9a6bb73a73ddb00c7eb56a8cf90e717ea1cb521"
   }
 }
