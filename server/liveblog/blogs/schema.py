@@ -57,5 +57,25 @@ blogs_schema = {
     'start_date': {
         'type': 'datetime',
         'default': None
+    },
+    'last_created_post': {
+        'type': 'dict',
+        'schema': {
+            '_id': {'type': 'string'},
+            '_updated': {'type': 'datetime'},
+        },
+        'default': {}
+    },
+    'last_updated_post': {
+        'type': 'dict',
+        'schema': {
+            '_id': {'type': 'string'},
+            '_updated': {'type': 'datetime'},
+        },
+        'default': {}
+    },
+    'total_posts': {
+        'type': 'integer',
+        'default': 0
     }
 }

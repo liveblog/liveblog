@@ -4,17 +4,66 @@
 
 'use strict';
 
-var templates = require('./templates')
-  , helpers = require('./helpers')
+var helpers = require('./helpers')
   , view = require('./view');
 
-var endpoint = LB.api_host + "api/client_blogs/" + LB.blog._id + "/posts"
-  , settings = LB.settings;
+const commentItemEndpoint = `${LB.api_host}api/client_items`;
+const commentPostEndpoint = `${LB.api_host}api/client_comments`;
 
-var vm = {
-  _items: [],
-  currentPage: 1,
-  totalPosts: 0
+var endpoint = LB.api_host + "/api/client_blogs/" + LB.blog._id + "/posts"
+  , settings = LB.settings
+  , vm = {};
+
+/**
+ * Get initial or reset viewmodel.
+ * @returns {object} empty viewmodel store.
+ */
+function getEmptyVm(items) {
+  return {
+    _items: new Array(items) || 0,
+    currentPage: 1,
+    totalPosts: 0
+  };
+}
+
+vm.sendComment = (name, comment) => {
+  let errors = [];
+
+  if (!name) {
+    errors.push({id: '#comment-name', msg: 'Missing name'});
+  }
+
+  if (!comment) {
+    errors.push({id: '#comment-content', msg: 'Missing content'});
+  }
+
+  if (errors.length > 0) {
+    return new Promise((resolve, reject) => reject(errors));
+  }
+
+  return helpers
+    .post(commentItemEndpoint, {
+      item_type: "comment",
+      client_blog: LB.blog._id,
+      commenter: name,
+      text: comment
+    })
+    .then((item) => helpers.post(commentPostEndpoint, {
+      post_status: "comment",
+      client_blog: LB.blog._id,
+      groups: [{
+        id: "root",
+        refs: [{idRef: "main"}],
+        role: "grpRole:NEP"
+      },{
+        id: "main",
+        refs: [{residRef: item._id}],
+        role: "grpRole:Main"}
+      ]
+    }));
+    //.catch((err) => {
+    //  console.error(err);
+    //});
 };
 
 /**
@@ -24,24 +73,30 @@ var vm = {
  * @param {number} opts.fromDate - needed for polling.
  * @returns {object} Liveblog 3 API response
  */
-function getPosts(opts) {
-  var dbQuery = getQuery({
-    sort: settings.postOrder || opts.sort,
+vm.getPosts = function(opts) {
+  var self = this;
+
+  var dbQuery = self.getQuery({
+    sort: opts.sort || self.settings.postOrder,
     highlightsOnly: false || opts.highlightsOnly,
     fromDate: opts.fromDate
       ? opts.fromDate
       : false
-  })
+  });
 
   var page = opts.fromDate ? 1 : opts.page;
-  var qs = "?max_results=" + LB.settings.postsPerPage + "&page=" + page + "&source="
+  var qs = "?max_results=" + settings.postsPerPage + "&page=" + page + "&source="
     , fullPath = endpoint + qs + dbQuery;
 
   return helpers.getJSON(fullPath)
-    .then(function(api_response) {
-      updateViewModel(api_response, opts);
-      renderPosts(api_response, opts);
+    .then((posts) => {
+      self.updateViewModel(posts, opts);
+      posts.requestOpts = opts;
+      return posts;
     })
+    .catch((err) => {
+      console.error(err);
+    });
 };
 
 /**
@@ -49,13 +104,11 @@ function getPosts(opts) {
  * @param {object} opts - query builder options.
  * @returns {promise} resolves to posts array.
  */
-function loadPostsPage(opts) {
-  var opts = opts || {}
-  opts.page = ++vm.currentPage;
-
-  return getPosts(opts).catch(function(err) {
-    // catch all errors here
-  })
+vm.loadPostsPage = function(opts) {
+  opts = opts || {};
+  opts.page = ++this.vm.currentPage;
+  opts.sort = this.settings.postOrder;
+  return this.getPosts(opts);
 };
 
 /**
@@ -63,65 +116,39 @@ function loadPostsPage(opts) {
  * @param {object} opts - query builder options.
  * @returns {promise} resolves to posts array.
  */
-function loadPosts(opts) {
-  var opts = opts || {};
-  opts.fromDate = vm.latestUpdate;
-
-  return getPosts(opts).catch(function(err) {
-    // catch all errors here
-  })
-};
-
-/**
- * Render posts currently in pipeline to template, store results in viewmodel
- * To reduce DOM calls/paints we hand off add operations to view in bulk.
- * @param {object} api_response - liveblog API response JSON.
- */
-function renderPosts(api_response, opts) {
-  var renderedPosts = [] // temporary store
-    , posts = api_response._items;
-
-  for (var i = 0; i < posts.length; i++) {
-    var post = posts[i];
-
-    if ("delete" === posts.operation) {
-      view.deletePost(post._id);
-      return; // early
-    };
-
-    var renderedPost = templates.post({
-      item: post
-    });
-
-    if ("update" === posts.operation) {
-      view.updatePost(renderedPost)
-      return; // early
-    }
-
-    renderedPosts.push(renderedPost) // create operation
-  };
-
-  if (!renderedPosts.length) return // early
-  if (settings.postOrder === "descending") renderedPosts.reverse()
-
-  view.addPosts(renderedPosts, { // if creates
-    position: opts.fromDate ? "top" : "bottom"
-  })
+vm.loadPosts = function(opts) {
+  opts = opts || {};
+  opts.fromDate = this.vm.latestUpdate;
+  return this.getPosts(opts);
 };
 
 /**
  * Add items in api response & latest update timestamp to viewmodel.
  * @param {object} api_response - liveblog API response JSON.
  */
-function updateViewModel(api_response, opts) {
-  vm._items.push.apply(vm._items, api_response._items);
+vm.updateViewModel = function(api_response, opts) {
+  var self = this;
 
-  if (!opts.fromDate) { // Means we're not polling
-    view.toggleLoadMore(isTimelineEnd(api_response)) // the end?
+  if (!opts.fromDate || opts.sort !== self.settings.postOrder) { // Means we're not polling
+    view.hideLoadMore(self.isTimelineEnd(api_response)); // the end?
   } else { // Means we're polling for new posts
-    if (!api_response._items.length) return;
-    vm.latestUpdate = getLatestUpdate(api_response);
+    if (!api_response._items.length) {
+      return;
+    }
+
+    self.vm.latestUpdate = self.getLatestUpdate(api_response);
   }
+
+  if (opts.sort !== self.settings.postOrder) {
+    self.vm = getEmptyVm();
+    view.hideLoadMore(false);
+    Object.assign(self.vm, api_response);
+  } else {
+    self.vm._items.push.apply(self.vm._items, api_response._items);
+  }
+
+  self.settings.postOrder = opts.sort;
+  return api_response;
 };
 
 /**
@@ -129,13 +156,11 @@ function updateViewModel(api_response, opts) {
  * @param {object} api_response - liveblog API response JSON.
  * @returns {string} - ISO 8601 encoded date
  */
-function getLatestUpdate(api_response) {
-  var timestamps = api_response._items.map(function(post) {
-    return new Date(post._updated)
-  });
+vm.getLatestUpdate = function(api_response) {
+  var timestamps = api_response._items.map((post) => new Date(post._updated));
 
   var latest = new Date(Math.max.apply(null, timestamps));
-  return latest.toISOString() // convert timestamp to ISO
+  return latest.toISOString(); // convert timestamp to ISO
 };
 
 /**
@@ -143,30 +168,32 @@ function getLatestUpdate(api_response) {
  * @param {object} api_response - liveblog API response JSON.
  * @returns {bool}
  */
-function isTimelineEnd(api_response) {
-  var itemsInView = vm._items.length + settings.postsPerPage;
+vm.isTimelineEnd = function(api_response) {
+  var itemsInView = this.vm._items.length + settings.postsPerPage;
   return api_response._meta.total <= itemsInView;
 };
 
 /**
  * Set up viewmodel.
  */
-function init() {
-  vm.latestUpdate = new Date().toISOString();
-  vm.timeInitialized = new Date().toISOString();
-  return vm.latestUpdate;
+vm.init = function() {
+  this.settings = settings;
+  this.vm = getEmptyVm(settings.postsPerPage);
+  this.vm.latestUpdate = new Date().toISOString();
+  this.vm.timeInitialized = new Date().toISOString();
+  return this.vm.latestUpdate;
 };
 
 /**
  * Build urlencoded ElasticSearch Querystring
  * TODO: abstract away, we only need sticky flag and order
  * @param {Object} opts - arguments object
- * @param {string} opts.sort - if "oldest_first", get items in ascending order
+ * @param {string} opts.sort - if "ascending", get items in ascending order
  * @param {string} opts.fromDate - results with a ISO 8601 timestamp gt this only
  * @param {bool} opts.highlightsOnly - get editorial/highlighted items only
  * @returns {string} Querystring
  */
-function getQuery(opts) {
+vm.getQuery = function(opts) {
   var query = {
     "query": {
       "filtered": {
@@ -175,39 +202,54 @@ function getQuery(opts) {
             {"term": {"sticky": false}},
             {"term": {"post_status": "open"}},
             {"not": {"term": {"deleted": true}}},
-            {"range": {"_updated": {"lt": vm.timeInitialized}}}
+            {"range": {"_updated": {"lt": this.vm.timeInitialized}}}
           ]
         }
       }
     },
-    "sort":[{
-      "_updated": {"order": "desc"}
-    }]
+    "sort": [
+      {
+        "_updated": {"order": "desc"}
+      }
+    ]
   };
 
   if (opts.fromDate) {
     query.query.filtered.filter.and[3].range._updated = {
       "gt": opts.fromDate
-    }
-  };
+    };
+  }
 
   if (opts.highlightsOnly === true) {
     query.query.filtered.filter.and.push({
-        term: {highlight: true}
-    })
-  };
+      term: {highlight: true}
+    });
+  }
 
-  if (opts.sort === "oldest_first") {
-    query.sort[0].order.order = "asc"
+  if (opts.sort === "ascending") {
+    query.sort[0]._updated.order = "asc";
+  } else if (opts.sort === "editorial") {
+    query.sort = [
+      {
+        order: {
+          order: "desc",
+          missing: "_last",
+          unmapped_type: "long"
+        }
+      }
+    ];
+  }
+
+  // Remove the range, we want all the results
+  if (["ascending", "descending", "editorial"].indexOf(opts.sort)) {
+    query.query.filtered.filter.and.forEach((rule, index) => {
+      if (rule.hasOwnProperty('range')) {
+        query.query.filtered.filter.and.splice(index, 1);
+      }
+    });
   }
 
   return encodeURI(JSON.stringify(query));
-}
+};
 
-module.exports = {
-  getLatestUpdate: getLatestUpdate,
-  loadPosts: loadPosts,
-  loadPostsPage: loadPostsPage,
-  renderPosts: renderPosts,
-  init: init
-}
+module.exports = vm;

@@ -3,8 +3,6 @@
  */
 
 'use strict';
-var moment;
-
 /**
  * Convert ISO timestamps to relative moment timestamps
  * @param {Node} elem - a DOM element with ISO timestamp in data-js-timestamp attr
@@ -26,47 +24,74 @@ function convertTimestamp(timestamp) {
   }
 
   function timeAgo(timestamp) {
-    if (timestamp < units.h) return getTimeAgoString(timestamp, "m");
-    if (timestamp < units.d) return getTimeAgoString(timestamp, "h");
+    if (timestamp < units.h) {
+      return getTimeAgoString(timestamp, "m");
+    }
+
+    if (timestamp < units.d) {
+      return getTimeAgoString(timestamp, "h");
+    }
 
     return getTimeAgoString(timestamp, "d"); // default
-  };
+  }
 
   return timeAgo(diff);
-};
+}
 
 /**
  * Wrap element selector api
  * @param {string} query - a jQuery syntax DOM query (with dots)
  */
 function getElems(query) {
-  var isDataAttr = -1 < query.indexOf("data-");
+  var isDataAttr = query.indexOf("data-") > -1;
   return isDataAttr
     ? document.querySelectorAll(query)
     : document.getElementsByClassName(query);
-};
+}
 
 /**
  * jQuery's $.getJSON in a nutshell
  * @param {string} url - a request URL
  */
 function getJSON(url) {
-  return new Promise(function(resolve, reject) {
-    var promise = Promise;
+  return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest();
 
     xhr.open('GET', url);
     xhr.onload = function() {
-      if (xhr.status === 200) resolve(JSON.parse(xhr.responseText));
-      else reject(xhr.responseText);
+      if (xhr.status === 200) {
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        reject(xhr.responseText);
+      }
     };
 
     xhr.send();
   });
 }
 
+function post(url, data) {
+  return new Promise((resolve, reject) => {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('POST', url);
+    xhr.setRequestHeader("Content-type", "application/json");
+    xhr.onload = function() {
+      if (xhr.status === 201) {
+        resolve(JSON.parse(xhr.responseText));
+      } else {
+        reject(xhr.responseText);
+      }
+    };
+
+    xhr.send(JSON.stringify(data));
+  });
+
+}
+
 module.exports = {
   getElems: getElems,
   getJSON: getJSON,
+  post: post,
   convertTimestamp: convertTimestamp
-}
+};

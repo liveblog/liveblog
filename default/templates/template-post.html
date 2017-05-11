@@ -15,9 +15,9 @@
   {% for ref in item.groups[1].refs %}
     <div class="lb-item">
       {% if ref.item.item_type == "embed" %}
-        {% include "item-embed.html" %}
+        {% include "template-item-embed.html" %}
       {% elif ref.item.item_type == "image" %}
-        {% include "item-image.html" %}
+        {% include "template-item-image.html" %}
       {% else %}
         <article>{{ ref.item.text | safe }}</article>
       {% endif %}
@@ -27,8 +27,8 @@
 
   <!-- author plus avatar -->
   <div class="lb-author">
-    {% if options.showAuthor %}
-      {% if options.showAuthorAvatar %}
+    {% if settings.showAuthor %}
+      {% if settings.showAuthorAvatar %}
         <img class="lb-author__avatar" src="{{ item.publisher.picture_url }}" />
       {% endif %}
       <div class="lb-author__name">{{ item.publisher.display_name }}</div>

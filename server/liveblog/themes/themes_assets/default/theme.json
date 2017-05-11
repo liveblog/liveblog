@@ -3,20 +3,22 @@
     "name": "default",
     "version": "0.1.42",
     "seoTheme": true,
-    "author": "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>",
-    "authors": [
+    "author": "Sourcefabric <contact@sourcefabric.org>",
+    "contributors": [
         "Paul Solbach <psolbach@dpa-newslab.com>",
-        "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>"
+        "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>",
+        "Löic Nogues <loic.nogues@sourcefabric.org>",
+        "Aleksandar Backo Jelicic <aleksandar.jelicic@sourcefabric.org>"
     ],
     "repository": {
         "type" : "git",
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/liveblog-0f4b11e354.css"],
-    "devScripts": ["dist/liveblog-ffc2f158eb.js"],
-    "styles": ["dist/liveblog-0f4b11e354.css"],
-    "scripts": ["dist/liveblog-ffc2f158eb.js"],
+    "devStyles": ["dist/liveblog-d1d4c61067.css"],
+    "devScripts": ["dist/liveblog-c4d9fec8d4.js"],
+    "styles": ["dist/liveblog-d1d4c61067.css"],
+    "scripts": ["dist/liveblog-c4d9fec8d4.js"],
     "options": [
         {
             "name": "postsPerPage",
@@ -44,11 +46,25 @@
             "help": "Turn off to prompt user to load updates"
         },
         {
+            "name": "showLiveblogLogo",
+            "label": "Show Liveblog logo.",
+            "type": "checkbox",
+            "default": true,
+            "help": "Show the liveblog logo"
+        },
+        {
             "name": "autoApplyEdits",
             "label": "Edits, deletes are applied without prompt",
             "type": "checkbox",
             "default": false,
             "help": "Otherwise they will pop up as new posts."
+        },
+        {
+            "name": "canComment",
+            "label": "Users can comment",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users can comment on the blog"
         },
         {
             "name": "showImage",
@@ -117,8 +133,9 @@
     ],
     "l10n": {
         "loadMore": "Load More",
-        "oldestFirst": "Oldest first",
-        "newestFirst": "Newest first",
+        "ascending": "Oldest first",
+        "descending": "Newest first",
+        "editorial": "Editorial",
         "loadNewPosts": "Load new posts",
         "timeAgo": {
             "d": {"s": "A day ago", "p": "{} days ago"},

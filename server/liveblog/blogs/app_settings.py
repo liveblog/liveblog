@@ -25,3 +25,4 @@ CONTENT_TYPES = {
     '.js': 'application/javascript',
     '.json': 'application/json'
 }
+DEFAULT_THEME_DATE_FORMAT = 'dddd, MMMM Do, YYYY, h:MM:ss A'

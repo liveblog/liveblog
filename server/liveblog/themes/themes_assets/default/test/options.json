@@ -153,17 +153,18 @@
     "original_creator":"58bfe91915720af1a27e11d2"
   },
   "settings": {
+    "showLiveblogLogo": true,
+    "canComment": true,
     "showAuthorAvatar":true,
     "authorNameFormat":"display_name",
     "showTitle":true,
     "blockSearchEngines":false,
     "hasHighlights":true,
     "loadNewPostsManually":true,
-    "canComment":true,
     "showGallery":true,
     "postsPerPage":10,
     "language":"en",
-    "postOrder":"editorial",
+    "postOrder":"oldest_first",
     "showDescription":true,
     "permalinkDelimiter":"?",
     "showImage":false,
@@ -173,9 +174,10 @@
     "infinitScroll":false
   },
   "l10n": {
+    "ascending": "Oldest first",
+    "descending": "Newest first",
+    "editorial": "Editorial",
     "loadMore": "Load More",
-    "oldestFirst": "Oldest first",
-    "newestFirst": "Newest first",
     "loadNewPosts": "Load new posts",
     "timeAgo": {
         "d": {"s": "A day ago", "p": "{} days ago"},
