@@ -279,8 +279,8 @@ def embed(blog_id, api_host=None, theme=None):
         embed_template = embed_env.from_string(template_content)
         template_content = embed_template.render(
             blog=blog,
-            theme=theme,
-            theme_json=bson_dumps(theme),
+            options=theme,
+            json_options=bson_dumps(theme),
             settings=theme_settings,
             api_response=api_response,
             assets_root=assets_root,
