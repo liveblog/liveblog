@@ -31,7 +31,7 @@
                 <li ng-class="{active: (settings.tab === 'team')}" data="blog-settings-team">
                     <a ng-href="" ng-click="settings.changeTab('team')" translate>Team</a>
                 </li>
-                <li ng-class="{active: (settings.tab === 'outputs')}" ">
+                <li ng-class="{active: (settings.tab === 'outputs')}" data="blog-settings-outputs">
                     <a ng-href="" ng-click="settings.changeTab('outputs')" translate>Output Channels</a>
                 </li>
             </ul>
@@ -364,7 +364,7 @@
                                     <ul class="pills-list">
                                         <li ng-repeat="output in settings.outputs">
                                             <h6 class="pull-left">
-                                                <span class="cursor-pointer" ng-click="settings.openOutputDialog(output);">{{ output.name }}</span>
+                                                <span class="cursor-pointer" ng-click="settings.openOutputDialog(output);" id="output-name">{{ output.name }}</span>
                                             </h6>
                                             
                                             <div class="actions">
