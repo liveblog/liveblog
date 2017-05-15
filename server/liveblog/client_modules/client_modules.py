@@ -1,5 +1,3 @@
-import json
-
 from liveblog.blogs.blogs import BlogsResource
 from superdesk.services import BaseService
 from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, BlogPostsResource
@@ -9,12 +7,12 @@ from flask import current_app as app
 from liveblog.items.items import ItemsResource, ItemsService
 from liveblog.common import check_comment_length
 from liveblog.blogs.blog import Blog
+from liveblog.utils.api import api_error, api_response
 from superdesk.resource import Resource
 from eve.utils import config
-from eve.io.mongo import MongoJSONEncoder
-from flask import Blueprint, request, make_response
+from flask import Blueprint, request
 from flask_cors import CORS
-
+from distutils.util import strtobool
 
 blog_posts_blueprint = Blueprint('blog_posts', __name__)
 CORS(blog_posts_blueprint)
@@ -179,20 +177,43 @@ class ClientBlogPostsService(BlogPostsService):
 @blog_posts_blueprint.route('/api/v2/client_blogs/<blog_id>/posts', methods=['GET'])
 def get_blog_posts(blog_id):
     blog = Blog(blog_id)
-    args = request.args
-    posts = blog.posts(**args)
-    response_data = []
+    kwargs = {}
+
+    # Get boolean arguments and cast string values to bool.
+    try:
+        kwargs['sticky'] = strtobool(request.args.get('sticky', '0'))
+        kwargs['highlight'] = strtobool(request.args.get('highlight', '0'))
+    except ValueError as e:
+        return api_error(str(e), 403)
+
+    # Get default ordering.
+    ordering = request.args.get('ordering', Blog.default_ordering)
+    if ordering not in Blog.ordering:
+        return api_error('"{}" is not valid'.format(ordering), 403)
+    kwargs['ordering'] = ordering
+
+    # Get page & limit.
+    try:
+        kwargs['page'] = int(request.args.get('page', Blog.default_page))
+        kwargs['limit'] = int(request.args.get('limit', Blog.default_page_limit))
+    except ValueError as e:
+        return api_error(str(e), 403)
+
+    # Check page value.
+    if kwargs['page'] < 1:
+        return api_error('"page" value is not valid.', 403)
+
+    # Check max page limit.
+    if kwargs['limit'] > Blog.max_page_limit:
+        return api_error('"limit" value is not valid.', 403)
+
+    response_data = blog.posts(wrap=True, **kwargs)
+    fields = ['_id', '_etag', '_created', '_updated', 'blog', 'lb_highlight', 'sticky', 'deleted', 'post_status',
+              'published_date', 'unpublished_date']
 
     # Convert posts
-    for post in posts:
-        doc = {}
-
-        # copy selected fields
-        keys = ['_id', '_etag', '_created', '_updated', 'blog', 'lb_highlight', 'sticky', 'deleted', 'post_status',
-                'published_date', 'unpublished_date']
-        for key in keys:
-            if key in post.keys():
-                doc[key] = post[key]
+    for i, post in enumerate(response_data['_items']):
+        doc = {k: post.get(k) for k in fields}
 
         # add items in post
         doc['items'] = []
@@ -206,13 +227,15 @@ def get_blog_posts(blog_id):
         # add authorship
         publisher = {}
         publisher['display_name'] = post['publisher']['display_name']
-        publisher['picture_url'] = post['publisher']['picture_url']
+        publisher['picture_url'] = post['publisher'].get('picture_url', '')
         doc['publisher'] = publisher
 
-        response_data.append(doc)
+        response_data['_items'][i] = doc
 
-    data = json.dumps({'posts': response_data}, cls=MongoJSONEncoder)
-    return make_response(data, 200)
+    # Add additional blog metadata to response _meta.
+    response_data['_meta']['last_updated_post'] = blog._blog.get('last_updated_post')
+    response_data['_meta']['last_created_post'] = blog._blog.get('last_created_post')
+    return api_response(response_data, 200)
 
 
 def _get_converted_item(item):

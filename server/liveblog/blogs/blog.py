@@ -17,6 +17,9 @@ class Blog:
     default_ordering = 'newest_first'
     default_order_by = '_created'
     default_sort = 'desc'
+    default_page = 1
+    default_page_limit = 25
+    max_page_limit = 100
 
     def __init__(self, blog):
         if isinstance(blog, (str, ObjectId)):
@@ -45,7 +48,8 @@ class Blog:
         except KeyError:
             return self.default_order_by, self.default_sort
 
-    def posts(self, sticky=None, highlight=None, ordering=None, page=1, limit=25, wrap=False, all=False):
+    def posts(self, sticky=None, highlight=None, ordering=None, page=default_page, limit=default_page_limit, wrap=False,
+              all=False):
         order_by, sort = self.get_ordering(ordering or self.default_ordering)
 
         # Fetch total.
