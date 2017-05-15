@@ -1,3 +1,5 @@
+import json
+
 from liveblog.blogs.blogs import BlogsResource
 from superdesk.services import BaseService
 from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, BlogPostsResource
@@ -5,10 +7,17 @@ from superdesk.users.users import UsersResource
 from superdesk.metadata.utils import item_url
 from flask import current_app as app
 from liveblog.items.items import ItemsResource, ItemsService
-from flask import request
 from liveblog.common import check_comment_length
+from liveblog.blogs.blog import Blog
 from superdesk.resource import Resource
 from eve.utils import config
+from eve.io.mongo import MongoJSONEncoder
+from flask import Blueprint, request, make_response
+from flask_cors import CORS
+
+
+blog_posts_blueprint = Blueprint('blog_posts', __name__)
+CORS(blog_posts_blueprint)
 
 
 class ClientUsersResource(Resource):
@@ -165,3 +174,63 @@ class ClientBlogPostsService(BlogPostsService):
             docs = super().get(req, lookup)
             app.blog_cache.set(blog_id, cache_key, docs)
         return docs
+
+
+@blog_posts_blueprint.route('/api/v2/client_blogs/<blog_id>/posts', methods=['GET'])
+def get_blog_posts(blog_id):
+    blog = Blog(blog_id)
+    args = request.args
+    posts = blog.posts(**args)
+    response_data = []
+
+    # Convert posts
+    for post in posts:
+        doc = {}
+
+        # copy selected fields
+        keys = ['_id', '_etag', '_created', '_updated', 'blog', 'lb_highlight', 'sticky', 'deleted', 'post_status',
+                'published_date', 'unpublished_date']
+        for key in keys:
+            if key in post.keys():
+                doc[key] = post[key]
+
+        # add items in post
+        doc['items'] = []
+        for g in post.get('groups', []):
+            if g['id'] != 'main':
+                continue
+
+            for item in g['refs']:
+                doc['items'].append(_get_converted_item(item['item']))
+
+        # add authorship
+        publisher = {}
+        publisher['display_name'] = post['publisher']['display_name']
+        publisher['picture_url'] = post['publisher']['picture_url']
+        doc['publisher'] = publisher
+
+        response_data.append(doc)
+
+    data = json.dumps({'posts': response_data}, cls=MongoJSONEncoder)
+    return make_response(data, 200)
+
+
+def _get_converted_item(item):
+    converted = {}
+    converted['_id'] = item['_id']
+    item_type = item['item_type']
+    converted['item_type'] = item_type
+    converted['text'] = item['text']
+
+    if item_type == 'embed':
+        converted['meta'] = item['meta']
+    elif item_type == 'quote':
+        converted['meta'] = item['meta']
+    elif item_type == 'image':
+        meta = {}
+        meta['caption'] = item['meta']['caption']
+        meta['credit'] = item['meta']['credit']
+        converted['meta'] = meta
+        converted['renditions'] = item['meta']['media']['renditions']
+
+    return converted
