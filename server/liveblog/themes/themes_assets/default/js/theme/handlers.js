@@ -82,15 +82,15 @@ var buttons = {
   },
 
   attach: function() {
-    for (var handler in buttons.handlers) {
-      var el = helpers.getElems(handler)[0];
+    Object.keys(buttons.handlers).forEach((handler) => {
+      let el = helpers.getElems(handler)[0];
 
       if (!el) {
         return false;
       }
 
       el.addEventListener('click', buttons.handlers[handler], false);
-    }
+    });
   }
 };
 
