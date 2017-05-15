@@ -22,17 +22,17 @@
         <div
           class="sorting-bar__order {%if settings.postOrder == 'editorial' %}sorting-bar__order--active{% endif %}"
           data-js-orderby_editorial>
-          {{ theme.l10n.editorial }}
+          {{ options.l10n.editorial }}
         </div>
         <div
           class="sorting-bar__order {%if settings.postOrder == 'newest_first' %}sorting-bar__order--active{% endif %}"
           data-js-orderby_descending>
-          {{ theme.l10n.descending }}
+          {{ options.l10n.descending }}
         </div>
         <div
           class="sorting-bar__order {%if settings.postOrder == 'oldest_first'%}sorting-bar__order--active{% endif %}"
           data-js-orderby_ascending>
-          {{ theme.l10n.ascending }}
+          {{ options.l10n.ascending }}
         </div>
       </div>
     </div>
@@ -71,7 +71,7 @@
         {% endfor %}
       </section>
       {% if api_response._meta.max_results <= api_response._meta.total %}
-        <button class="lb-button load-more-posts" data-js-loadmore>{{ theme.l10n.loadNewPosts }}</button>
+        <button class="lb-button load-more-posts" data-js-loadmore>{{ options.l10n.loadNewPosts }}</button>
       {% endif %}
     {% endif %}
   </div>
@@ -83,7 +83,7 @@
 
 {% if include_js_options %}
   <script type="text/javascript">
-    window.LB = {{ theme_json|safe }};
+    window.LB = {{ json_options|safe }};
   </script>
 {% endif %}
 

@@ -167,8 +167,10 @@ function toggleSortBtn(name) {
  * @param {bool} shouldToggle - true => hide
  */
 function hideLoadMore(shouldHide) {
-  loadMorePostsButton[0].classList.toggle(
-    "mod--hide", shouldHide);
+  if (loadMorePostsButton.length > 0) {
+    loadMorePostsButton[0].classList.toggle(
+      "mod--hide", shouldHide);
+  }
 }
 
 /**
