@@ -185,7 +185,7 @@ describe('Blog settings', function() {
         });
     });
 
-    fit('should do CRUD operations on output channels', function() {
+    it('should do CRUD operations on output channels', function() {
 
         blogs.openBlog(0).openSettings().then(function(sp) {
             sp.openOutputs();
