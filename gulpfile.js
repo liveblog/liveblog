@@ -106,8 +106,8 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
   return gulp.src('./templates/template-index.html')
     .pipe(plugins.inject(sources))
     .pipe(plugins.nunjucks.compile({
-      theme: testdata.options,
-      theme_json: JSON.stringify(testdata.options, null, 4),
+      options: testdata.options,
+      json_options: JSON.stringify(testdata.options, null, 4),
       settings: testdata.options.settings,
       api_response: testdata.api_response,
       include_js_options: true,

@@ -24,6 +24,7 @@
     "gulp-connect": "^5.0.0",
     "gulp-eslint": "^3.0.1",
     "gulp-html-replace": "^1.6.1",
+    "gulp-hub": "^0.8.0",
     "gulp-if": "^2.0.0",
     "gulp-inject": "^4.0.0",
     "gulp-less": "^3.0.5",
