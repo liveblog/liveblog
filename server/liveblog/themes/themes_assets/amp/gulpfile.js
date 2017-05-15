@@ -64,7 +64,7 @@ gulp.task('index-inject', [], () => {
   var task = gulp.src('./templates/template-index.html')
     .pipe(plugins.nunjucks.compile({
       theme: testdata.options,
-      theme_json: JSON.stringify(testdata.options, null, 4),
+      json_options: JSON.stringify(testdata.options, null, 4),
       settings: testdata.options.settings,
       api_response: testdata.api_response,
       include_js_options: true,
@@ -76,13 +76,14 @@ gulp.task('index-inject', [], () => {
       }))
       .pipe(purify([BUILD_HTML]))
       .pipe(cleanCSS())
-      .pipe(gulp.dest('./dist/'))
-      .pipe(plugins.inject(gulp.src(['./dist/*.css']), {
+      .pipe(gulp.dest('./build/amp/'))
+      .pipe(plugins.inject(gulp.src(['./build/amp/*.css']), {
         starttag: '<!-- inject:amp-styles -->',
         transform: function(filepath, file) {
           return file.contents.toString();
         },
         removeTags: true
+
       })
     )
   )
@@ -98,8 +99,8 @@ gulp.task('template-inject', [], () => {
 
   return gulp.src('./templates/template.html')
     .pipe(plugins.nunjucks.compile({
-      theme: theme,
-      theme_json: JSON.stringify(theme, null, 4),
+      options: theme,
+      json_options: JSON.stringify(theme, null, 4),
       settings: themeSettings,
       include_js_options: false,
       debug: DEBUG
@@ -140,7 +141,7 @@ gulp.task('amp-validate', [], () => {
 });
 
 // Serve index.html for local testing.
-gulp.task('serve', ['index-inject', 'template-inject'], () => {
+gulp.task('serve', ['index-inject'], () => {
   plugins.connect.server({
     port: 8008,
     root: '.',

@@ -12,8 +12,8 @@
         "instgrm": false,
         "twttr": false,
         "settings": false,
-        "theme": false,
-        "theme_json": false
+        "options": false,
+        "theme_options": false
     },
 
     "parserOptions": {
