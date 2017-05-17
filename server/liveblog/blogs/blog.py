@@ -36,9 +36,9 @@ class Blog:
             filters.append({'post_status': {'$eq': 'open'}})
             filters.append({'deleted': {'$eq': False}})
         if sticky:
-            filters.append({'sticky': {'$eq': sticky}})
+            filters.append({'sticky': {'$eq': True}})
         if highlight:
-            filters.append({'highlight': {'$eq': highlight}})
+            filters.append({'lb_highlight': {'$eq': True}})
         return {'$and': filters}
 
     def get_ordering(self, label):

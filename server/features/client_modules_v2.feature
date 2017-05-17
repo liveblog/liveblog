@@ -270,6 +270,7 @@ Feature: Blog v2 operations
             "headline": "Post #09",
             "blog": "#blogs._id#",
             "post_status": "open",
+            "lb_highlight": true,
             "groups": [
               {
                 "id": "root",
@@ -291,6 +292,7 @@ Feature: Blog v2 operations
             "headline": "Post #10",
             "blog": "#blogs._id#",
             "post_status": "open",
+            "sticky": true,
             "groups": [
               {
                 "id": "root",
@@ -312,3 +314,8 @@ Feature: Blog v2 operations
         """
         And we get "/v2/client_blogs/#blogs._id#/posts"
         Then we get list with 10 items
+        When we get "/v2/client_blogs/#blogs._id#/posts?sticky=1"
+        Then we get list with 1 items
+        When we get "/v2/client_blogs/#blogs._id#/posts?highlight=1"
+        Then we get list with 1 items
+
