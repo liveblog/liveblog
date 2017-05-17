@@ -60,6 +60,10 @@ def update_post_blog_embed(self, post):
 
     # Check if theme is SEO-enabled.
     theme = themes.find_one(req=None, name=theme_name)
+    if not theme:
+        # Theme is not loaded yet.
+        return
+
     if not theme.get('seoTheme'):
         logger.warning('Skipping embed update: blog "{}" theme "{}" is not SEO-enabled.'.format(blog_id, theme_name))
         return
