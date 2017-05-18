@@ -68,7 +68,7 @@ upload, $templateCache, freetypeService, modal, adsUtilSevice) {
 
     function loadAdverts(silent) {
         silent = silent || false;
-        !silent ? $scope.advertsLoading = true : $scope.advertsLoading = false;
+        $scope.advertsLoading = !silent;
         return api('advertisements').query({where: {deleted: false}})
         .then(function(data) {
             $scope.adverts = data._items;

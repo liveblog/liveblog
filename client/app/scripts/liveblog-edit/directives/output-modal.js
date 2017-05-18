@@ -56,6 +56,7 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
         return api('collections').query({where: {deleted: false}})
         .then(function(data) {
             vm.collections = data._items;
+            return data._items;
         })
         .catch(function(data) {
             notify.error(gettext('There was an error getting the collections'));
