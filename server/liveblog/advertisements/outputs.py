@@ -24,6 +24,7 @@ class OutputsResource(Resource):
             'type': 'string',
             'nullable': True
         },
+        'picture': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
         'style': {
             'type': 'dict',
             'schema': {

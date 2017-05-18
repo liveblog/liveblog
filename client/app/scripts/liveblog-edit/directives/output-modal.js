@@ -119,9 +119,10 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
             if (response.data._status === 'ERR') {
                 return;
             }
-            var pictureUrl = response.data.renditions.viewImage.href;
+            var pictureUrl = response.data.renditions.original.href;
 
-            vm.output.style['background-image'] = pictureUrl;                
+            vm.output.style['background-image'] = pictureUrl;
+            vm.output.picture = response.data._id;
             vm.imageSaved = true;
         }, (error) => {
             notify.error(
