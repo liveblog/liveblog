@@ -1,5 +1,7 @@
 body {
     background-color: #EAEAEA;
+    background-repeat: no-repeat;
+    background-position-x: center;
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
     color: #333333;
