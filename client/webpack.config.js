@@ -4,6 +4,7 @@ var lodash = require('lodash');
 
 // makeConfig creates a new configuration file based on the passed options.
 module.exports = function makeConfig(grunt) {
+    'use strict';
     var appConfigPath = path.join(process.cwd(), 'superdesk.config.js');
 
     if (process.env.SUPERDESK_CONFIG) {
