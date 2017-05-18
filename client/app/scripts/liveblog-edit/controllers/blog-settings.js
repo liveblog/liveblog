@@ -145,7 +145,7 @@ function BlogSettingsController(
             vm.outputModalActive = true;
         },
         removeOutput: function (output, $index) {
-            modal.confirm(gettext('Are you sure you want to remove this output chanell?'))
+            modal.confirm(gettext('Are you sure you want to remove this output channel?'))
             .then(function() {
                 api('outputs').save(output, {deleted: true})
                 .then(function(data) {
