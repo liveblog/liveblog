@@ -2,6 +2,10 @@
 	z-index: auto;
 }
 
+.navbtn-auto {
+    width: auto !important;
+}
+
 .navbtn.hover {
 	background: #e0e0e0;
 }
@@ -211,8 +215,8 @@
 }
 // icons
 .icon-publish {
-    background-image: url("#{$iconSpritePath}"); 
-    width: 15px; 
+    background-image: url("#{$iconSpritePath}");
+    width: 15px;
     background-position: -217px -187px;
 }
 .icon-unpublish {background-image: url("#{$iconSpritePath}"); width: 15px; background-position: -217px -187px; transform: rotate(180deg);}

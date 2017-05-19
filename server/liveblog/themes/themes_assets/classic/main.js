@@ -63,6 +63,15 @@
                 angular.extend(vm.blog, blog);
             });
             retriveOutput();
+
+            if (config.output && config.output._id) {
+                outputsService.get({id: config.output._id}, function(output) {
+                    if (!angular.equals(config.output, output)) {
+                        config.output = output;
+                        applyOutputStyle();
+                    }
+                })
+            }
         }
 
         function fixBackgroundImage(style) {
@@ -211,7 +220,8 @@
         }
 
         vm.isAd = function(post) {
-            return (post.mainItem.item_type.indexOf('Advertisement') === -1)
+            return (post.mainItem.item_type.indexOf('Advertisement') !== -1) ||
+                    post.mainItem.item_type.indexOf('Advertisment') !== -1
         }
 
         vm.allPosts = function() {

@@ -32,7 +32,7 @@ div.subnav.pan-right {
 .producers-list, .syndicated-blogs-list {
    > li.post-item, > li.blog-item {
         background: #fff;
-        border-radius: 2px;        
+        border-radius: 2px;
         padding: 12px 15px;
         margin: 10px 0;
         display: block;
@@ -128,7 +128,7 @@ div.subnav.pan-right {
 .panel-definition-list {
     margin: 0;
 }
-.panel-definition-list__term, 
+.panel-definition-list__term,
 .panel-definition-list__definition {
     display: inline-block;
     font-weight: 400;
@@ -171,7 +171,7 @@ div.select-producer {
     }
 }
 
-form[name="consumerForm"] div.error, 
+form[name="consumerForm"] div.error,
 form[name="producerForm"] div.error {
     color: #fe0201;
 }
@@ -196,8 +196,8 @@ ul.dropdown__menu.more-activity-menu {
     div.datepicker-input {
         margin: auto 16px;
 
-        button { 
-            width: 24px; 
+        button {
+            width: 24px;
         }
     }
 }

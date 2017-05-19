@@ -215,7 +215,8 @@ export default function BlogEditController(
 
         var scorecards = {
             name: 'Scorecard',
-            template: $templateCache.get(scorecardsTpl)
+            template: $templateCache.get(scorecardsTpl),
+            separator: true
         };
 
         var adLocal = {
@@ -228,7 +229,7 @@ export default function BlogEditController(
             template: $templateCache.get(adsRemoteTpl)
         };
 
-        $q.all([userFt, adLocal, adRemote, scorecards]).then(function(freetypes) {
+        $q.all([adLocal, adRemote, scorecards, userFt]).then(function(freetypes) {
             angular.forEach(freetypes, function(freetype) {
                 if (angular.isArray(freetype)) {
                     $scope.freetypes = $scope.freetypes.concat(freetype);
