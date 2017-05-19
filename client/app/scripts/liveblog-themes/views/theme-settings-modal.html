@@ -10,10 +10,26 @@
                 <div class="form-group">                    
                     <div ng-switch="option.type">
                         <div ng-switch-when="checkbox" class="pull-left">
-                            <input type="{{ option.type }}" name="{{ option.name }}" ng-model="vm.settings[option.name]" />
+                            <input
+                                type="{{ option.type }}"
+                                name="{{ option.name }}"
+                                ng-model="vm.settings[option.name]" />
                         </div>
-                        <div ng-switch-when="number" class="pull-right">
-                            <input type="{{ option.type }}" name="{{ option.name }}" ng-model="vm.settings[option.name]" />
+                        <div
+                            ng-switch-when="number"
+                            class="pull-right">
+                            <input
+                                type="{{ option.type }}"
+                                name="{{ option.name }}"
+                                ng-model="vm.settings[option.name]" />
+                        </div>
+                        <div
+                            ng-switch-when="text"
+                            class="pull-right">
+                            <input
+                                type="{{ option.type }}"
+                                name="{{ option.name }}"
+                                ng-model="vm.settings[option.name]" />
                         </div>
                         <label ng-bind="option.label"></label>
                         <div ng-switch-when="select">
