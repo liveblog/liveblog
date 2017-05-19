@@ -214,9 +214,6 @@ function BlogSettingsController(
                 vm.blog = blog;
                 vm.newBlog = angular.copy(blog);
                 vm.blogPreferences = angular.copy(blog.blog_preferences);
-                var datetime = vm.splitDateTime(blog.start_date);
-                vm.start_date = datetime.date;
-                vm.start_time = datetime.time;
                 //remove accepted users from the queue
                 if (vm.acceptedMembers.length) {
                     _.each(vm.acceptedMembers, function(member) {
@@ -281,13 +278,6 @@ function BlogSettingsController(
                         details.push(data);
                     });
             });
-        },
-        splitDateTime: function(datetime) {
-            var splitDate = moment.tz(datetime, config.defaultTimezone);
-            return {
-                date: splitDate.format(),
-                time: splitDate.format(config.model.timeformat)
-            }
         }
     });
     // retieve the blog's public url
@@ -395,20 +385,13 @@ function BlogSettingsController(
         }
     }
 
-    if (vm.newBlog.start_date) {
-        var splitDate = datetimeHelper.splitDateTime(
-            vm.newBlog.start_date, 
-            config.defaultTimezone
-        );
+    let splitDate = datetimeHelper.splitDateTime(
+        vm.newBlog.start_date, 
+        config.defaultTimezone
+    );
 
-        vm.start_date = splitDate.date;
-        vm.start_time = splitDate.time;
-
-    } else {
-        var datetime = vm.splitDateTime(vm.newBlog.start_date);
-        vm.start_date = datetime.date;
-        vm.start_time = datetime.time;
-    }
+    vm.start_date = splitDate.date;
+    vm.start_time = splitDate.time;
 
     vm.changeTab('general');
     vm.blog_switch = vm.newBlog.blog_status === 'open';

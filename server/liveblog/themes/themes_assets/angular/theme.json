@@ -2,7 +2,7 @@
     "label": "Angular Liveblog Toolkit",
     "name": "angular",
     "abstract": true,
-    "version": "3.0.1",
+    "version": "3.2.1",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",

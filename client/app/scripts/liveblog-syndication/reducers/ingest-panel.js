@@ -101,7 +101,19 @@ export default function ingestPanelReducers(moment) {
 
         case 'ON_SET_UNREAD_QUEUE':
             return angular.extend(state, {
-                unreadQueue: action.unreadQueue
+                unreadQueue: action.unreadQueue.filter((post) => {
+                    let isAutoPublished = false;
+
+                    if (state.syndicationIn._items.length > 0) {
+                        state.syndicationIn._items.forEach((synd) => {
+                            if (synd._id === post.syndication_in) {
+                                isAutoPublished = post.auto_publish;
+                            }
+                        });
+                    }
+
+                    return !isAutoPublished;
+                })
             });
         }
     };

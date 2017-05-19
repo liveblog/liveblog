@@ -166,12 +166,18 @@
         return $resource(config.api_host + 'api/client_items/');
     }
 
+    Outputs.$inject = ['$resource', 'config'];
+    function Outputs($resource, config) {
+        return $resource(config.api_host + 'api/client_advertisement_outputs/:id')
+    }
+
     angular.module('liveblog-embed')
         .service('users', Users)
         .service('posts', Posts)
         .service('blogs', Blogs)
         .service('comments', Comments)
         .service('items', Items)
+        .service('outputs', Outputs)
         .factory('transformBlog',transformBlog)
         .factory('srcSet', srcSet)
         .factory('thumbnailRendition', thumbnailRendition);
