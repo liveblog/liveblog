@@ -12,7 +12,27 @@
 
     <div class="row-wrapper four-col" sd-col-width>
         <div class="name">{{ producer.name }}</div>
-        <div class="email">{{ producer.api_url }}</div>
+        <div class="email">
+            <i
+                class="icon-close-small webhook-status off"
+                title="Webhook URL unreachable"
+                ng-if="producer.api_status === 'invalid_url'"></i>
+            <i
+                class="icon-warning-sign webhook-status warn"
+                title="Invalid webhook URL key"
+                ng-if="producer.api_status === 'invalid_key'"></i>
+            <i
+                class="icon-ok webhook-status on"
+                title="Webhook URL up & running"
+                ng-if="producer.api_status === 'enabled'"></i>
+            <a
+                title="Check API status"
+                ng-href=""
+                ng-click="checkOnlineStatus($event, producer)">
+                <i class="icon-refresh true"></i>
+            </a>
+            <span>{{ producer.api_url }} {{producer.api_status}}</span>
+        </div>
         <div class="username">{{ producer.consumer_api_key }}</div>
         <div lb-first-contact prosumer="producer"></div>
     </div>

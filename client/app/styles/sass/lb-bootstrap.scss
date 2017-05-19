@@ -83,7 +83,6 @@
 // fix button line height
 .btn {
     line-height: 12px;
-    padding: 8px 20px;
 }
 
 a[disabled] {
@@ -122,6 +121,19 @@ a[disabled] {
         }
         form {
             width: 100%;
+        }
+    }
+}
+
+// alert fix 
+.alert { 
+    padding: 8px 25px 8px 14px;
+    .close {
+        background: transparent;
+        border: none;
+        opacity: 0.4;
+        &:hover {
+            opacity: 0.8;
         }
     }
 }

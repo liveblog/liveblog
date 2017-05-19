@@ -1,6 +1,5 @@
 <div class="form-group">
     <div class="form-input form-image">
-
         <div class="upload-form">
             <section
                 class="main"
@@ -41,7 +40,9 @@
                 </div>
             </section>
         </div>     
-        
+        <div ng-hide="image.picture_url"><button class="btn btn--primary" ng-click="ft.openUploadModal()" translate>Upload Image</button>
+            <div class="image-text" translate>Image has not been set so far</div>
+        </div>
         <span
             class="freetype--error freetype--error-text"
             ng-show="compulsoryFlag"

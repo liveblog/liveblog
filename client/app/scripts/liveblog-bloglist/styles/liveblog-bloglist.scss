@@ -29,11 +29,13 @@
                 font-size: 1.25em;
             }
             button {
+                height: 40px;
                 margin: 20px 0;
                 .title {
                     top: -4px;
                     position: relative;
                     left: 4px;
+                    color: #fff;
                 }
             }
         }
@@ -42,7 +44,6 @@
                 &.can-access {
                     opacity: 1;
                 }
-                cursor: default;
                 opacity: .5;
                 .content {
                     .time {
@@ -237,4 +238,6 @@
         opacity: .6;
         filter: alpha(opacity=60);
     }
+
+
 }

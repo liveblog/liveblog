@@ -9,5 +9,5 @@ export default function lbConsumers() {
 
             angular.extend(this, $controller('BaseController', {$scope: $scope}));
         }]
-    }
+    };
 }

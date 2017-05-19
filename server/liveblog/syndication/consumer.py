@@ -6,14 +6,17 @@ from superdesk.services import BaseService
 from superdesk.errors import SuperdeskApiError
 from superdesk import get_resource_service
 from flask import current_app as app
+from flask import Blueprint
+from flask_cors import CORS
 
 from .exceptions import APIConnectionError, ConsumerAPIError
 from .syndication import WEBHOOK_METHODS
-from .utils import generate_api_key, send_api_request, trailing_slash
+from .utils import generate_api_key, send_api_request, trailing_slash, api_response, blueprint_superdesk_token_auth
 from .tasks import check_webhook_status
 
 logger = logging.getLogger('superdesk')
-
+consumers_blueprint = Blueprint('consumers', __name__)
+CORS(consumers_blueprint)
 
 consumers_schema = {
     'name': {
@@ -76,7 +79,7 @@ class ConsumerService(BaseService):
             consumer = self.find_one(_id=consumer, req=None)
         return consumer
 
-    def _send_webhook_request(self, consumer_id, consumer_blog_token, method='GET', data=None, json_loads=True,
+    def _send_webhook_request(self, consumer_id, consumer_blog_token=None, method='GET', data=None, json_loads=True,
                               timeout=5):
         consumer = self._get_consumer(consumer_id)
         if not consumer:
@@ -97,8 +100,7 @@ class ConsumerService(BaseService):
         if action not in WEBHOOK_METHODS:
             raise NotImplementedError('send_syndication_post "{}" not implemented yet.'.format(action))
         else:
-            return self._send_webhook_request(consumer_id, blog_token, method=WEBHOOK_METHODS[action],
-                                              data=new_post)
+            return self._send_webhook_request(consumer_id, blog_token, method=WEBHOOK_METHODS[action], data=new_post)
 
     def on_create(self, docs):
         for doc in docs:
@@ -143,3 +145,16 @@ class ConsumerResource(Resource):
     item_methods = ['GET', 'PATCH', 'PUT', 'DELETE']
     privileges = {'POST': 'consumers', 'PATCH': 'consumers', 'PUT': 'consumers', 'DELETE': 'consumers'}
     schema = consumers_schema
+
+
+@consumers_blueprint.route('/api/consumers/<consumer_id>/check_connection', methods=['GET'])
+def consumer_check_connection(consumer_id):
+    consumers = get_resource_service('consumers')
+    consumer = consumers.find_one(_id=consumer_id, req=None)
+    if not consumer:
+        return api_response('invalid consumer id', 404)
+    check_webhook_status(consumer_id)
+    return api_response('OK', 200)
+
+
+consumers_blueprint.before_request(blueprint_superdesk_token_auth)

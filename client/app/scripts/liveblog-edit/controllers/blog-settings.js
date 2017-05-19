@@ -12,7 +12,7 @@ import angular from 'angular';
 import _ from 'lodash';
 
 import './../../ng-sir-trevor';
-import './../../ng-sir-trevor-blocks';
+import './../../sir-trevor-blocks';
 import './../unread.posts.service';
 
 import outputEmbedCodeTpl from 'scripts/liveblog-edit/views/output-embed-code-modal.html'

@@ -22,7 +22,9 @@
 }
 
 [class^="icon-"],
-[class*=" icon-"] {
+[class*=" icon-"],
+[class^="glyphicon "]
+ {
   display: inline-block;
   width: 16px;
   height: 16px;
@@ -281,10 +283,12 @@
 .icon-forward-thin:before {
   content: "\e641";
 }
-.icon-chevron-left-thin:before {
+.icon-chevron-left-thin:before,
+.glyphicon-chevron-left:before {
   content: "\e642";
 }
-.icon-chevron-right-thin:before {
+.icon-chevron-right-thin:before,
+.glyphicon-chevron-right:before {
   content: "\e643";
 }
 .icon-switches:before {

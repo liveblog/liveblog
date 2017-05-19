@@ -15,6 +15,7 @@ $PADDING: 20px;
         > .subnav {
             top: 1 - $SUBNAV_HEIGHT;
             background-color: #eaeaea;
+            padding: 0 20px;
         }
         .tab-content {
             > .header {

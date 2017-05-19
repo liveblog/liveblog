@@ -15,8 +15,7 @@ from superdesk import get_resource_service
 from superdesk.metadata.item import ITEM_TYPE, CONTENT_TYPE
 from apps.auth import SuperdeskTokenAuth
 from .exceptions import APIConnectionError, DownloadError
-from .tasks import fetch_image
-
+from werkzeug.datastructures import FileStorage
 
 logger = logging.getLogger('superdesk')
 
@@ -181,7 +180,7 @@ def _fetch_and_create_image_item(renditions, **meta):
 
     item_data = dict()
     item_data['type'] = 'picture'
-    item_data['media'] = fetch_image(image_url, mimetype)
+    item_data['media'] = FileStorage(stream=fetch_url(image_url), content_type=mimetype)
     archive_service = get_resource_service('archive')
     item_id = archive_service.post([item_data])[0]
     archive = archive_service.find_one(req=None, _id=item_id)
@@ -233,13 +232,14 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
     """Create syndicted blog post data using producer post, fetched items and incoming syndication."""
     post_items = []
     for item in items:
-        meta = item.pop('meta')
-        if item['item_type'] == 'image':
-            item = _fetch_and_create_image_item(
-                renditions=meta['media']['renditions'],
-                caption=meta['caption'],
-                credit=meta['credit']
-            )
+        if item['item_type'] != 'embed':
+            meta = item.pop('meta')
+            if item['item_type'] == 'image':
+                item = _fetch_and_create_image_item(
+                    renditions=meta['media']['renditions'],
+                    caption=meta['caption'],
+                    credit=meta['credit']
+                )
         item['blog'] = in_syndication['blog_id']
         post_items.append(item)
 
@@ -274,8 +274,8 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
                 'refs': item_refs
             }
         ],
-        'lb_highlight': False,
-        'sticky': False,
+        'lb_highlight': producer_post['lb_highlight'] if 'lb_highlight' in producer_post.keys() else False,
+        'sticky': producer_post['sticky'] if 'sticky' in producer_post.keys() else False,
         'syndication_in': in_syndication['_id'],
         'particular_type': 'post',
         'post_status': post_status,
