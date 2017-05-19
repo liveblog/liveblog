@@ -37,7 +37,7 @@ export default function ingestPanel(
             scope.store = new Store(IngestPanelReducers, {
                 error: null,
                 consumerBlogId: $routeParams._id,
-                syndicationIn: {},
+                syndicationIn: {_items: []},
                 producers: {_items: []},
                 producerBlogs: {_items: []},
                 modalActive: false,
@@ -79,16 +79,17 @@ export default function ingestPanel(
                 }
             });
 
-            // Small inconsistency in the code. This function takes
-            // the consumer blog id as a parameter.
-            // Whereas IncomingSyndication.getSyndiction takes the
-            // actual syndication id as a parameter.
-            IngestPanelActions.getSyndication($routeParams._id);
 
             // This watches for incoming posts when ingest is not in focus
             if (scope.ingestQueue.length > 0) {
-                IngestPanelActions.setUnreadQueue(scope.ingestQueue);
+                IngestPanelActions.getSyndication($routeParams._id, scope.ingestQueue);
                 scope.ingestQueue = [];
+            } else {
+                // Small inconsistency in the code. This function takes
+                // the consumer blog id as a parameter.
+                // Whereas IncomingSyndication.getSyndiction takes the
+                // actual syndication id as a parameter.
+                IngestPanelActions.getSyndication($routeParams._id);
             }
 
             // This watches for incoming posts when ingest is in focus
