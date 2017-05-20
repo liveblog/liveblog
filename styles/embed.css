@@ -740,3 +740,24 @@ article blockquote li:before {
 .justified-gallery>a>.caption {
     max-height: 45%;
 }
+
+/* Social sharing */
+.share-box {
+    background: #F8F8F8;
+    padding: 10px;
+    border: 1px solid #D0D0D0;
+    position: absolute;
+    top: 18px;
+    right: 45px;
+    z-index: 5;
+    width: 140px;
+    height: 24px;
+}
+.share-icon {
+    color: #5ea9c8;
+    cursor: pointer;
+}
+.social-icon {
+    font-size: x-large!important;
+    margin-left: 4px!important;
+}
