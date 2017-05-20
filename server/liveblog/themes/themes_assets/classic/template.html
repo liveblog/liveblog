@@ -1,3 +1,9 @@
+<script type="text/javascript">
+    function openSocialShareWindow(location, width, height) {
+        window.open(location,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=' + width +',height=' + height);
+        return false;
+    }
+</script>
 <div class="lb-timeline {{timeline.settings.language}}" ng-app="theme" ng-controller="TimelineCtrl as timeline">
     <div class="lb-timeline__header">
         <h1 ng-if="timeline.settings.showTitle" ng-bind="timeline.blog.title"></h1>

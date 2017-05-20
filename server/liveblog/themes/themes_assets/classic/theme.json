@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "3.2.1",
+    "version": "3.2.3",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -235,6 +235,13 @@
             "type": "checkbox",
             "default": false,
             "help": "If the users will see the slideshow gallery for multiple images posts"
+        },
+        {
+            "name": "showSocialShare",
+            "label": "Show social sharing options",
+            "type": "checkbox",
+            "default": true,
+            "help": "If the users will see the social sharing options"
         }
     ]
 }
