@@ -3,7 +3,6 @@ from bson.objectid import ObjectId
 from eve.utils import ParsedRequest
 from superdesk.notification import push_notification
 from superdesk.resource import Resource, build_custom_hateoas
-from superdesk import get_resource_service
 from apps.archive import ArchiveVersionsResource
 from apps.archive.archive import ArchiveResource, ArchiveService
 from superdesk.services import BaseService
@@ -185,7 +184,16 @@ class PostsService(ArchiveService):
         for doc in docs:
             post = {}
             post['id'] = doc.get('_id')
+
+            # Check if post has syndication_in entry.
             post['syndication_in'] = doc.get('syndication_in')
+            synd_in_id = doc.get('syndication_in')
+            if synd_in_id:
+                # Set post auto_publish to syndication_in auto_publish value.
+                synd_in = get_resource_service('syndication_in').find_one(_id=synd_in_id, req=None)
+                if synd_in:
+                    post['auto_publish'] = synd_in.get('auto_publish')
+
             posts.append(post)
             app.blog_cache.invalidate(doc.get('blog'))
             # send post to consumer webhook
@@ -254,6 +262,7 @@ class PostsService(ArchiveService):
         out_service = get_resource_service('syndication_out')
         # invalidate cache for updated blog
         app.blog_cache.invalidate(original.get('blog'))
+        posts = []
         # send notifications
         if updates.get('deleted', False):
             out_service.send_syndication_post(original, action='deleted')
@@ -267,15 +276,20 @@ class PostsService(ArchiveService):
             doc = original.copy()
             doc.update(updates)
             logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
+            posts.append(doc)
 
-            if original['post_status'] in ('submitted', 'draft') and updates.get('post_status') == 'open':
-                # Post has been published as contribution, then published.
-                # Syndication will be sent with 'created' action.
-                out_service.send_syndication_post(doc, action='created')
-            else:
-                out_service.send_syndication_post(doc, action='updated')
+            if updates.get('post_status') == 'open':
+                if original['post_status'] in ('submitted', 'draft', 'comment'):
+                    # Post has been published as contribution, then published.
+                    # Syndication will be sent with 'created' action.
+                    out_service.send_syndication_post(doc, action='created')
+                else:
+                    out_service.send_syndication_post(doc, action='updated')
+            # as far as the consumer is concerned, if a post is unpublished, it is effectively deleted
+            elif original['post_status'] == 'open':
+                out_service.send_syndication_post(doc, action='deleted')
 
-            push_notification('posts', updated=True)
+            push_notification('posts', updated=True, posts=posts)
 
     def get_item_update_data(self, item, links, delete=True):
         doc = {LINKED_IN_PACKAGES: links}
@@ -310,7 +324,7 @@ class BlogPostsService(ArchiveService):
     def get(self, req, lookup):
         imd = req.args.items()
         for key in imd:
-            if key[1][97:104] == 'comment':
+            if key[1][97:104] == 'comment':  # TODO: fix
                 if lookup.get('blog_id'):
                     lookup['client_blog'] = ObjectId(lookup['blog_id'])
                     del lookup['blog_id']

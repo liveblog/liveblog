@@ -1,11 +1,17 @@
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     randomString = require('./helpers/pages').randomString,
     blogs = require('./helpers/pages').blogs;
 
 describe('Blog settings', function() {
     'use strict';
 
-    beforeEach(function(done) {login('editor', 'editor').then(done);});
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login('editor', 'editor')
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
+
 
     it('should modify title and description for blog', function() {
         var blog = blogs.cloneBlog(0);
@@ -154,11 +160,14 @@ describe('Blog settings', function() {
                 browser.waitForAngular();
                 browser.sleep(1000); // it reloads page
                 element(by.buttonText('SIGN OUT')).click();
+                browser.ignoreSynchronization = true;
                 browser.sleep(2000); // it reloads page
                 browser.waitForAngular();
                 browser.sleep(2000); // it reloads page
+
                 login('contributor', 'contributor').then(function() {
                     browser.waitForAngular();
+                    browser.ignoreSynchronization = false;
                     expect(element(by.css('.settings-link')).isPresent()).toBeFalsy();
                 });
             });

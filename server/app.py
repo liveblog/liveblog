@@ -10,20 +10,23 @@
 # at https://www.sourcefabric.org/superdesk/license
 
 
+import os
 import jinja2
-from liveblog.embed import embed_blueprint
-from flask.ext.cache import Cache
-from liveblog.common import BlogCache
 import flask_s3
+import settings
+from flask_cache import Cache
+from liveblog.blogs import bloglist_assets_blueprint, bloglist_blueprint
+from liveblog.blogs.embeds import embed_blueprint
+from liveblog.common import BlogCache
 from liveblog.syndication.producer import producers_blueprint
+from liveblog.syndication.consumer import consumers_blueprint
 from liveblog.syndication.syndication import syndication_blueprint
 from liveblog.syndication.blogs import blogs_blueprint as syndication_blogs_blueprint
 from liveblog.marketplace.marketer import marketers_blueprint
 
 from liveblog.analytics.analytics import analytics_blueprint
 
-import os
-import settings
+
 from superdesk.factory import get_app as superdesk_app
 
 
@@ -49,30 +52,41 @@ def get_app(config=None):
 
     config['DOMAIN'] = {}
 
-    app = superdesk_app(config, media_storage)
+    # Create superdesk app instance.
+    app = superdesk_app(config, media_storage, init_elastic=True)
 
+    # Add custom jinja2 template loader.
     custom_loader = jinja2.ChoiceLoader([
         jinja2.FileSystemLoader('superdesk/templates'),
         app.jinja_loader
     ])
     app.jinja_loader = custom_loader
 
-    # cache
+    # Caching.
     app.cache = Cache(app, config={'CACHE_TYPE': 'simple'})
     app.blog_cache = BlogCache(cache=app.cache)
-    # s3
+
+    # Amazon S3 support.
     s3 = flask_s3.FlaskS3()
     s3.init_app(app)
-    # embed feature
+
+    # Embed feature.
     app.register_blueprint(embed_blueprint)
+
+    # Embed bloglist.
+    app.register_blueprint(bloglist_assets_blueprint)
+    app.register_blueprint(bloglist_blueprint)
+
+    # Analytics.
     app.register_blueprint(analytics_blueprint)
 
-    # Syndication features:
+    # Syndication feature.
     app.register_blueprint(producers_blueprint)
+    app.register_blueprint(consumers_blueprint)
     app.register_blueprint(syndication_blueprint)
     app.register_blueprint(syndication_blogs_blueprint)
 
-    # Market place
+    # Marketplace.
     app.register_blueprint(marketers_blueprint)
 
     return app

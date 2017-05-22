@@ -1,7 +1,7 @@
 'use strict';
 
 // var Webhook = require('./helpers/webhook');
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login;
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login;
     //assertToastMsg = require('./helpers/assert-toast-msg');
 
 // var webhook = new Webhook(browser.params);
@@ -22,7 +22,12 @@ var navigateToIngestPanel = function() {
 };
 
 describe('Syndication', function() {
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+        browser.ignoreSynchronization = true;
+        login()
+            .then(() => browser.ignoreSynchronization = false)
+            .then(done);
+    });
 
     describe('Ingest Panel', function() {
         it('should list available syndications', function() {
@@ -40,6 +45,9 @@ describe('Syndication', function() {
                 });
         });
 
+        // TODO: I'm deactivating this for now because of the avant-garde of the approach, 
+        // should be fixed in the future.
+        //it('should display an incoming syndication and delete it', function() {
         // TODO: Update the webhook query in order to avoid error 400
         //fit('should display an incoming syndication and delete it', function() {
         //    navigateToIngestPanel()

@@ -7,9 +7,9 @@
  * AUTHORS and LICENSE files distributed with this source code, or
  * at https://www.sourcefabric.org/superdesk/license
  */
-(function() {
-    'use strict';
+import dateFormTpl from 'scripts/liveblog-themes/views/date-format.html';
 
+(function() {
     angular.module('liveblog.themes')
         .directive('lbDateFormat', [function() {
             return {
@@ -17,7 +17,7 @@
                     options: '=',
                     value: '=ngModel'
                 },
-                templateUrl: 'scripts/liveblog-themes/views/date-format.html',
+                templateUrl: dateFormTpl,
                 link: function(scope) {
                     if (scope.options.indexOf(scope.value) !== -1) {
                         scope.radio = scope.value;

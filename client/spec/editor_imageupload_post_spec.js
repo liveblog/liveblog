@@ -1,12 +1,15 @@
 var path = require('path'),
-    login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login,
+    login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     blogs = require('./helpers/pages').blogs,
     rootDir = path.resolve(__dirname, '..');
 
 describe('editor image upload:', function() {
-    'use strict';
-
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+        browser.ignoreSynchronization = true;
+        login()
+            .then(() => browser.ignoreSynchronization = false)
+            .then(done);
+    });
 
     it('upload an image and show it in the editor', function() {
         var editor = blogs.openBlog(0).editor

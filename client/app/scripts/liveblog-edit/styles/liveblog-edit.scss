@@ -1,0 +1,827 @@
+// Styling for the liveblog edit page
+// ----------------------------------------------------------------------------------------
+@import '~lb-mixins.scss';
+@import '~lb-bootstrap.scss';
+@import '~variables.scss';
+
+.blogedit {
+    //left menu
+    .side-menu {
+        position: absolute;
+        left: 0; top:0; bottom: 0;
+        width: 48px;
+        background: #a1a1a1;
+        button {
+            width: 48px;
+            border:0;
+            border-bottom:1px solid $grayLight;
+            padding: 0;
+            line-height: 0;
+            &.active,
+            &:hover {
+                background: #b8b8b8;
+            }
+        }
+    }
+    .notification-counter {
+        position: absolute;
+        margin-top: 5px;
+        right: 5px;
+        z-index: 2;
+    }
+    .columns-holder {
+        position: absolute;
+        left: 48px; right: 0;
+        top:0; bottom: 0;
+    }
+
+    .column {
+        position: absolute;
+        top: 0; bottom: 0;
+        @include border-box();
+        header {
+            height: $nav-height;
+            @include border-box();
+            box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            background-color: white;            
+            h4 {
+                color: $gray;
+                font-size: 1.4em;
+                line-height: 1.6em;
+                font-weight: 400;
+                display: inline-block;
+            }
+        }
+        .content {
+            position: absolute;
+            top: $nav-height; left: 0; right: 0; bottom: 0;
+            overflow: auto;
+            .inner-padding {
+                padding: 20px;
+            }
+        }
+        .content--timeline {
+            top: 48px !important;
+            //padding-top: $nav-height - 10px;
+        }
+        &--first {
+            left: 0;
+            width: 540px;
+            // tablet
+            @media only screen and (max-width: 1024px) {
+                width: 50%;
+            }
+            @include box-shadow(3px 0 0 $grayLight);
+            z-index: 1;
+        }
+        &--timeline {
+            right: 0;
+            left: 540px;
+            // tablet
+            @media only screen and (max-width: 1024px) {
+                left: 50%;
+            }
+            background: #f0f0f0;
+            header {
+                background: #fff;                
+                color: $gray;
+                font-size: 1.4em;
+                line-height: 1.6em;
+                font-weight: 400;
+            }
+        }
+    }
+    .panel {
+        &--contribution {
+            .content {
+                // special rules for contributions because we don't know the filter
+                // height, then we can't use absolute. See fullHeight directive
+                position: relative;
+                top: 0;
+            }
+            &__filters {
+                @include border-box();
+                //background-color: $sd-background;
+                border-bottom: 1px solid #e0e0e0;
+                padding: 10px 20px;
+                position: relative;
+                &__title {
+                    color: $grayLight;
+                    text-transform: uppercase;
+                    font-size: 11px;
+                }
+
+                .btn {
+                    padding: 6px 8px 6px 8px;
+                    height: auto;
+                    margin: 2px 5px 2px 0;
+                    position: relative;
+                    overflow: hidden;
+                    &--plus {
+                        padding: 7px 2px 4px 4px;
+                        height: auto;
+                        background-color: #afd5e4;
+                        margin: 2px 8px;
+                        &:hover {
+                            background-color: $sd-blue;
+                        }
+                    }
+                    > .title {white-space: nowrap; text-transform: none;}
+                    &:hover {> .overlay {top:0;}}
+                    > .overlay {
+                        transition-property: top;
+                        transition-duration: .25s;
+                        position: absolute;
+                        top: 24px;
+                        bottom: 0;
+                        left: 0;
+                        right: 0;
+                        background-color: rgba(0, 0, 0, 0.6);
+                        color: white;
+                        padding: 10px 0 0;
+                        font-size: 1.8em;
+                        line-height: 0 !important;
+                        @include box-sizing(border-box);
+                    }
+                }
+                .dropdown-content {
+                    background-color: #fff;
+                    border: 1px solid #c6c6c6;
+                    border-radius: 3px;
+                    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+                    padding: 10px 10px 0;
+                    width: 290px;
+                    z-index: 2;
+                    position: absolute;
+                    left: 150px;
+                    top: 2px;
+                    ul {
+                        margin: 10px 0;
+                        li {
+                            margin: 0;
+                        }
+                    }
+                    &::before {
+                        width: 15px;
+                        height: 22px;
+                        display: block;
+                        z-index: 100;
+                        position: absolute;
+                        left: -15px;
+                        top: 10px;
+                        background: url('~images/dropdown-arrow-side.png') no-repeat;
+                        content: " ";
+                    }
+                    .footer {
+                        overflow: hidden;
+                        background-color: #f8f8f8;
+                        margin: 0 -10px;
+                        border-top: 1px solid #e8e8e8;
+                        padding: 10px;
+                        @include border-radius(0 0 2px 2px);
+                    }
+                }
+            }
+        }
+        // editor
+        &--editor .content {
+            overflow: none;
+            .option-not-activated {
+                opacity: 0.3;
+            }
+            .editor-holder {
+                position: absolute;
+                bottom: 88px; left: 0; right: 0; top:0;
+                padding: 20px;
+                overflow: auto;
+                .ads-media {
+                    img {
+                        width: 100%;
+                        margin-bottom: 8px;
+                    }
+                }
+                .freetype-btn {                       
+                    border: none;
+                    background: $sd-blue;
+                    color: $white;
+                    font-size: 18px;
+                    line-height: 140%;
+                    min-width: 28px;
+                    margin-bottom: 4px;
+                    @include border-radius(2px);
+                }                
+                .image-text {
+                    margin-top: 5px;
+                }
+                .freetype--error {
+                    color: #8b0000;
+                }
+                .scorecard {                                      
+                    margin: 0 !important;
+                    width: 100%;
+                    background: #f8f8f8 !important;
+                    .scorecard__column {                                         
+                        text-align: left !important;
+                        padding: 0px 10px 0 0 !important;
+                        &:last-child {
+                            padding: 0 0 0 10px !important;
+                        }                                               
+                    }
+                    .scorecard__scorers {
+                        display: block !important;
+                        li {
+                            background: transparent !important;
+                            box-shadow: none !important;
+                            border-radius: 0 !important;
+                            margin: 0 !important;
+                            padding: 0 !important;
+                            > div {
+                                float: none !important;
+                                &.time {
+                                    float: none !important;
+                                    font-weight: initial !important;
+                                    padding: 0 !important;
+                                    margin: 0 !important;
+                                    &:after {
+                                        content: '' !important;
+                                    }
+                                }
+                            }
+                        }
+                    }                    
+                }
+                legend {
+                    font-size: 13px !important;
+                    color: $grayDark !important;
+                    margin-bottom: 0 !important;
+                    &.legend--big {
+                        font-size: 18px!important;
+                        margin-bottom: 10px!important;
+                        text-transform: inherit;
+                        font-weight: 400;
+                    }
+                    &.legend--padding-top {
+                        padding-top: 20px !important;
+                    }
+                }
+                label {
+                    font-size: 11px;
+                    font-weight: 500;
+                    color: #999;
+                    text-transform: uppercase;
+                    height: 18px;
+                }
+                .editor {
+                    textarea {
+                        border: 1px solid #dfdfdf !important;
+                        resize:vertical;
+                        height: 180px;
+                        padding: 10px;
+                        font-size: 14px;
+                        line-height: 24px;
+                        @include border-radius(5px !important);
+                        margin-bottom: 20px;
+                        &:focus {
+                            @include box-shadow(inset 0 3px 0 0 #f0f0f0 !important);
+                        }
+                    }
+                    // Sir-trevor elements ---------------------------
+                    .st-outer {
+                        // ["+" bars]
+                        .st-block-controls__top:before, .st-icon--add:after {
+                            background-color: transparent;
+                            color: $blue;
+                            padding: 0;
+                            line-height: 40px;
+                            height: 40px;
+                            font-family: 'Roboto';
+                            font-size: 13px;
+                        }
+                        .st-block-controls__top:hover:before, .st-block--with-plus:after {
+                            cursor: pointer;
+                            background-color: #d9d9d9;
+                            color: #333;
+                        }
+                        .st-block-controls {
+                            a[data-type='comment'] {
+                                display: none;
+                            }
+                            padding: 0;
+                            // [block types bar]
+                            &--active {
+                                display: -webkit-box;
+                                display: -moz-box;
+                                display: -ms-flexbox;
+                                display: -webkit-flex;
+                                display: flex; // for easy adding additional button
+                                flex-direction: row;
+                                flex-wrap: wrap;
+                                padding-left: 0;
+                                .st-block-control {
+                                    //.btn;
+                                    position: relative;
+                                    margin: 0 10px 0 0;
+                                    padding: 0 10px 0 36px;
+                                    font-size: 14px;
+                                    -webkit-box-flex: 1 auto;
+                                    -moz-box-flex: 1 auto;
+                                    -webkit-flex: 1 auto;
+                                    -ms-flex: 1 auto;
+                                    flex: 1 auto;
+                                    height: 40px;
+                                    line-height: 40px;
+                                    &:hover {
+                                        color: inherit;
+                                        font-family: inherit;
+                                        @include box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5) !important);
+                                    } // prevent style from sir-trevor
+                                    .st-icon {
+                                        font-size: 20px;
+                                        display: inline;
+                                        vertical-align: top;
+                                        position: absolute;
+                                        left: 16px;
+                                        top: 9px;
+                                        color: $gray;
+                                    }
+                                    &:last-child {
+                                        margin: 0;
+                                    }
+                                }
+                            }
+                        }
+                        // [remove and reorder buttons]
+                        .st-block-ui-btn {
+                            &:hover { text-decoration: inherit;} // prevent style from sir-trevor
+                        }
+                        // error messages
+                        .st-block__messages {
+                            top: -20px;
+                            left: -20px;
+                        }
+                        // [border on error or delete states]
+                        .st-block--with-errors .st-block__inner .st-text-block,
+                        .st-block--delete-active .st-block__inner .st-text-block {
+                            border-color: #d70014 !important;
+                        }
+                        .st-block {
+                            &__inputs, &__editor {
+                                padding: 1.6em 0px 1em;
+                                background-color: transparent; // prevent style from sir-trevor.css
+                            }
+                            &__ui { // [reorder and close buttons]
+                                // set it at the top right corner
+                                bottom: auto;
+                                top: 6px;
+                                right: 6px;
+                                .st-block-ui-btn {
+                                    color: lighten($grayLight, 20%);
+                                    border: none;
+                                    // background-color: transparent;
+                                    width: 1.6em;
+                                    height: 1.6em;
+                                    line-height: 1.7em;
+                                    font-size: 1.2em;
+                                    background-color: transparent;
+                                    vertical-align: middle;
+                                    &:hover {
+                                        background-color: $grayLighter;
+                                        color: $gray;
+                                    }
+                                    // hide the reorder button
+                                    &--reorder { display: none; }
+                                }
+                            }
+                            &__ui-delete-controls { // [delete confirmation buttons]
+                                // set it at the top right corner
+                                bottom: auto;
+                                top: 0;
+                                .st-block__delete-label { // hide the label
+                                    display: none;
+                                    border-style: none;
+                                }
+                                .st-block-ui-btn {
+                                    border-width: 0;
+                                    border-style: none;
+                                    width: auto;
+                                    height: auto;
+                                    line-height: normal;
+                                    margin-top: 10px;
+                                    margin-right: 10px;
+                                    &:hover {
+                                        background-color: inherit;
+                                    }
+                                }
+                                .st-block-ui-btn--confirm-delete, .st-block-ui-btn--deny-delete {
+                                        //.btn;
+                                        padding: 9px 20px;
+                                        font-size: 12px !important;
+                                        &:hover {
+                                            @include box-shadow(0px 2px 0px 0px rgba(0, 0, 0, 0.5) !important);
+                                        }
+                                    &:before {
+                                        text-transform: uppercase;
+                                        font-family: $baseFontFamily; // remove the sir-trevor icon behavior
+                                    }
+                                }
+                                .st-block-ui-btn--confirm-delete {
+                                    //@include btn-danger;
+                                    &:before {
+                                        content: "delete";
+                                    }
+                                    &:active {
+                                        @include box-shadow(inset 0 2px 0px multiply($btnDefaultColor,rgba(0,0,0,12%)));
+                                    }
+                                }
+                                .st-block-ui-btn--deny-delete {
+                                    @include buttonStates(#CDCDCD, $black); // needed to give a no transparent background in order to hide the cross
+                                    &:active {
+                                        @include box-shadow(inset 0 2px 0px multiply($btnDangerColor,rgba(0,0,0,12%)));
+                                    }
+                                    &:before {content: "cancel"; }
+                                }
+                            }
+                            &__dropzone {
+                                background-color: transparent; // prevent style from sir-trevor.css
+                                border: 1px dashed $grayLight;
+                                padding: $main-content-padding * 2;
+                                p, .st-icon {
+                                    color: $grayLight;
+                                }
+                            }
+                            &__upload-container {
+                                text-align: left; // prevent style from sir-trevor.css
+                                margin: 1em 0 0 0;
+
+                                // custom input type file
+                                input[type="file"] {
+                                    display: none;
+                                }
+
+                                .st-upload-btn {
+                                    // NOTE: responsive layout from bootstrap is currently disabled.
+                                    // To be removed when grid system is activated
+                                    min-width: 50%; white-space: nowrap;
+                                }
+                            }
+                            // padding
+                            &__inner {padding: 0;}
+                            &[data-type='quote'], &[data-type='image'], &[data-type='embed'] {
+                                .st-block__inner {
+                                    padding: 20px;
+                                    background: $white;
+                                    border: 1px solid lighten($grayLight, 25%);
+                                    @include border-radius(3px);
+                                    &:focus, &:hover {
+                                        border: 1px solid $sd-blue;
+                                    }
+                                }
+                            }
+                            &__inner {
+                                border: 0;
+                                margin: 8px 0;
+                                ::selection {
+                                    background: $sd-blue;
+                                    color: $white;
+                                }
+
+                                label { margin-bottom: auto; } // prevent style from bootstrap
+                                //@include transition(box-shadow .25s ease);
+                                &:hover {
+                                    @include box-shadow(0px 2px 10px rgba(0, 0, 0, 0.15));
+                                }
+                                // for text input field (div[content-editable] looking like a textarea)
+                                .st-text-block {
+                                    padding: 20px;
+                                    font-size: 1em;
+                                    border: 1px solid lighten($grayLight, 25%);
+                                    word-wrap: break-word;
+                                    background-color: white;
+                                    @include border-radius(3px);
+                                    &:focus, &:hover {
+                                        border: 1px solid $sd-blue;
+                                    }
+                                }
+                                .st-placeholder {
+                                    &:empty:before {
+                                        content: none;
+                                    }
+                                    &:empty:after {
+                                        content: attr(placeholder);
+                                        color: gray;
+                                    }
+                                }
+                                // make a contenteditable div looking like a custom input
+                                @mixin inline-field()
+{
+                                    @include box-sizing(border-box); // width and height doesn't include the margin
+                                    width: 100%;
+                                    min-height: 1em;
+                                    padding: 3px 5px;
+                                    margin: $main-content-padding 0;
+                                    border-bottom: 1px solid $grayLight;
+                                    opacity: .7;
+                                    @include transition(opacity .25s ease);
+                                    &:focus {
+                                        opacity: 1;
+                                    }
+                                    &:empty:before {
+                                        content: none;
+                                    }
+                                    &:empty:after {
+                                        content: attr(placeholder);
+                                    }
+                                }
+                                .st-image-block[contenteditable="true"]{
+                                    @include inline-field();
+                                }
+                                .st-quote-block {
+                                    &.quote-input {
+                                        @include inline-field();
+                                        position: relative;
+                                        &:before {
+                                            content: "\201C"; // “
+                                            font-size: 2em;
+                                            position: absolute;
+                                            left: -0.5em;
+                                        }
+                                    }
+                                    &.js-cite-input {
+                                        @include inline-field();
+                                        &:before {
+                                            content: "\2014"; // —
+                                            margin-left: -20px;
+                                            padding-right: 5px;
+                                        }
+                                    }
+                                }
+                                .st-embed-block {
+                                    font-size: .9em;
+                                    &.embed-input {@include inline-field();}
+                                    word-wrap: break-word;
+
+                                    &.embed-preview
+                                        .noembed-embed {
+                                            // responsive embed
+                                            position: relative;
+                                            padding-bottom: 67.5%;
+                                            height: 0;
+                                            margin: 10px 0;
+                                            overflow: hidden;
+                                            iframe, embed, object {
+                                                position: absolute;
+                                                top: 0;
+                                                left: 0;
+                                                width: 100%;
+                                                height: 100%;
+                                            }
+                                        }
+                                        iframe {
+                                            max-width: 100%;
+                                        }
+                                    &.remove-cover-preview {
+                                        position: absolute;
+                                        &:after {
+                                            content: "x";
+                                        }
+                                    }
+                                    &.cover-preview {
+                                        background-size: cover;
+                                    }
+                                    &.title-preview {
+                                        @include inline-field();
+                                        font-weight: bold;
+                                    }
+                                    &.description-preview {
+                                        @include inline-field();
+                                    }
+                                    &.credit-preview {
+                                        @include inline-field();
+                                        text-transform: uppercase;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            > .actions {
+                position: absolute;
+                bottom: 0; left: 0px; right: 0px; height: 88px;
+                @include border-box();
+                bottom: 0; left: 0px; right: 0px;
+                display:table;
+                table-layout: fixed;
+                border-spacing:10px;
+                width: 100%;
+                .btn {
+                    width: 100%;
+                    float: left;
+                    height: 48px;
+                    padding: 0;
+                    line-height: 48px;
+                    font-size: 14px;
+                }
+            }
+        }
+    }
+    .close-preview {
+        font-size: 2em;
+        color: #8e8e8e;
+        text-decoration:none;
+    }
+    .margin15px {
+        margin: 15px;
+    }
+    .selector-size-limit {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 200px;
+    }
+
+// Icons LB custom
+    .big-icon-ingest {
+        background-image: url('~images/ingest.svg');
+    }
+    .active .big-icon-ingest {
+        background-image: url('~images/ingest_active.svg');
+    }
+    .big-icon-contributions {
+        background-image: url('~images/contributions.svg');
+    }
+    .active .big-icon-contributions {
+        background-image: url('~images/contributions_active.svg');
+    }
+    .big-icon-editor {
+        background-image: url('~images/editor.svg');
+    }
+    .active .big-icon-editor {
+        background-image: url('~images/editor_active.svg');
+    }
+    .big-icon-archive {
+        height: 28px;
+        background-position: 0 0;
+    }
+    .big-icon-comments {
+        background-image: url('~images/comments-sidetab.svg');
+    }
+    .active .big-icon-comments {
+        background-image: url('~images/comments-sidetab_active.svg');
+    }    
+    .icon-archive {
+        background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCIgdmlld0JveD0iMCAwIDE2IDE2IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxNiAxNiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPHBhdGggZD0iTTIgMXYxM2gydjFoM3YtMWgzdjFoM3YtMWgyVjFIMnogTTEzIDEySDRWM2g5VjEyeiIvPgoJPHBhdGggZD0iTTEyIDRINXYzaDdWNHogTTExIDZINlY1aDVWNnoiLz4KCTxwYXRoIGQ9Ik0xMiA4SDV2M2g3Vjh6IE0xMSAxMEg2VjloNVYxMHoiLz4KPC9nPgo8L3N2Zz4K);
+        width: 16px;
+        background-size: 100%;
+        background-position: 0 0;
+        height: 16px;
+    }
+    .big-icon-archive {
+        background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMjhweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjggMjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI4IDI0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxyZWN0IHg9Ii0xNzAiIHk9Ii0yMCIgZGlzcGxheT0ibm9uZSIgZmlsbD0iI0ZGMDAwMCIgd2lkdGg9IjIyMyIgaGVpZ2h0PSIyMDAiLz4NCjxnPg0KCTxwYXRoIGQ9Ik0yMSw0SDd2N2gxNFY0eiBNMTcsOGgtNlY3aDZWOHoiLz4NCgk8cGF0aCBkPSJNMjEsMTJIN3Y3aDE0VjEyeiBNMTcsMTZoLTZ2LTFoNlYxNnoiLz4NCgk8cGF0aCBkPSJNMjMsMUg1QzQuNDQ3LDEsNCwxLjQ0Nyw0LDJ2MTljMCwwLjU1MywwLjQ0NywxLDEsMWgxOGMwLjU1MywwLDEtMC40NDcsMS0xVjJDMjQsMS40NDcsMjMuNTUzLDEsMjMsMXogTTIyLDR2MTZoLTFIN0g2VjQNCgkJVjNoMTZWNHoiLz4NCjwvZz4NCjxyZWN0IHg9IjciIHk9IjIyIiB3aWR0aD0iNCIgaGVpZ2h0PSIxIi8+DQo8cmVjdCB4PSIxNyIgeT0iMjIiIHdpZHRoPSI0IiBoZWlnaHQ9IjEiLz4NCjwvc3ZnPg0K);
+    }
+    .active .big-icon-archive, .active.icon-archive {
+        background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNi4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMjhweCIgaGVpZ2h0PSIyNHB4IiB2aWV3Qm94PSIwIDAgMjggMjQiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDI4IDI0IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxyZWN0IHg9Ii0xNzAiIHk9Ii0yMCIgZGlzcGxheT0ibm9uZSIgZmlsbD0iI0ZGMDAwMCIgd2lkdGg9IjIyMyIgaGVpZ2h0PSIyMDAiLz4NCjxnPg0KCTxwYXRoIGZpbGw9IiMwMDdGQjMiIGQ9Ik0yMSw0SDd2N2gxNFY0eiBNMTcsOGgtNlY3aDZWOHoiLz4NCgk8cGF0aCBmaWxsPSIjMDA3RkIzIiBkPSJNMjEsMTJIN3Y3aDE0VjEyeiBNMTcsMTZoLTZ2LTFoNlYxNnoiLz4NCgk8cGF0aCBmaWxsPSIjMDA3RkIzIiBkPSJNMjMsMUg1QzQuNDQ3LDEsNCwxLjQ0Nyw0LDJ2MTljMCwwLjU1MywwLjQ0NywxLDEsMWgxOGMwLjU1MywwLDEtMC40NDcsMS0xVjJDMjQsMS40NDcsMjMuNTUzLDEsMjMsMXoNCgkJIE0yMiw0djE2aC0xSDdINlY0VjNoMTZWNHoiLz4NCjwvZz4NCjxyZWN0IHg9IjciIHk9IjIyIiBmaWxsPSIjMDA3RkIzIiB3aWR0aD0iNCIgaGVpZ2h0PSIxIi8+DQo8cmVjdCB4PSIxNyIgeT0iMjIiIGZpbGw9IiMwMDdGQjMiIHdpZHRoPSI0IiBoZWlnaHQ9IjEiLz4NCjwvc3ZnPg0K);
+    }
+}
+
+// fix for the btns in editor
+.st-format-bar {
+    padding: 0.6em 1em 0.7em 0.7em !important;
+    @include border-radius(3px !important);
+    &:before {
+        top:2.7em !important;
+    }
+    .st-format-btn {
+        padding: 0 0.3em 0 0;
+        margin: 0 0.3em 0 0;
+        &--Italic {
+            font-style: normal;
+        }
+        &:hover, &:active, &--is-active {
+            color: #5ea9c8;
+        }
+    }
+}
+.st-block__upload-container label {
+    min-height: 25px;
+}
+
+// fix for the btns in editor
+.medium-editor-toolbar {
+    background: #4d5358;
+    @include border-radius(3px !important);
+    li button {
+        border-right: 1px solid #3e4245;
+    }
+    li button:hover {
+        color: #34E0C2;
+        background-color: #4d5358!important;
+        border-radius: 3px;
+    }
+    li .medium-editor-button-active {
+        color: #34E0C2;
+        background: #4d5358;
+        border-radius: 3px;
+    }
+}
+
+// preview changes
+.preview {
+    background-color: white!important;
+    .st-block-controls__top {
+        display: none!important;
+    }
+    .st-text-block {
+        padding: 0px!important;
+        border: 0px!important;
+        min-height: 0em!important;
+    }
+    .st-icon, .st-icon--add:after {
+        display: none!important;
+    }
+    .st-block__inner {
+        margin: 0px!important;
+        padding: 0px!important;
+        border: 0px!important;
+    }
+    .st-block__inner:hover {
+        box-shadow: 0px 0px 0px 0px rgba(0,0,0,0)!important;
+    }
+    .st-image-block {
+        border: 0px!important;
+        display: inline;
+    }
+    .st-embed-block {
+        border: 0px!important;
+        margin: 0px!important;
+        font-size: 13px!important;
+        padding: 0px!important;
+        text-transform: none!important;
+        font-weight: normal!important;
+    }
+    .title-preview, .description-preview, .credit-preview {
+        color: black!important;
+    }
+    .quote-input::before, .st-quote-block::before {
+        content:""!important;
+        margin: 0px!important;
+        padding-right: 0px!important;
+    }
+    .quote-input {
+        font-size: 16px;
+        font-weight: 300;
+        line-height: 22.5px;
+        margin: 0px!important;
+
+    }
+    .st-quote-block {
+        margin: 0px!important;
+        border: 0px!important;
+        color: black!important;
+    }
+    .js-cite-input.st-quote-block {
+        font-size:13px!important;
+    }
+    input {
+        border: 0px!important;
+        box-shadow: none;
+    }
+    .local-ad-image {
+        max-height: 60vh;
+    }
+}
+
+.freetype-selector {
+    background-color: #fff;
+    border: 1px solid #c6c6c6;
+    border-radius: 3px;
+    box-shadow: 0 3px 5px rgba(0,0,0,.2);
+    padding: 10px 10px 5px 10px;
+    min-width: 100px;
+    width: auto;
+    z-index: 2;
+    position: absolute;
+    right: 40px;
+    top: 2px;
+    li {
+        padding: 0px 5px;
+        border-radius: 2px;
+        margin-right: 0px;
+        margin-bottom: 1px;
+    }
+}
+.freetype-selector::before {
+    width: 15px;
+    height: 22px;
+    display: block;
+    z-index: 100;
+    position: absolute;
+    left: -15px;
+    top: 10px;
+    background: url(/images/dropdown-arrow-side.png) no-repeat;
+    content: " ";
+}
+.freetype-selector .separator {
+    border-bottom: 1px solid #ebebeb;
+}

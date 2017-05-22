@@ -1,10 +1,16 @@
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils.js').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
+    logout = require('./helpers/utils').logout,
     blogs = require('./helpers/pages').blogs;
 
 describe('Contributions Posts', function() {
     'use strict';
 
-    beforeEach(function(done) {login('editor', 'editor').then(done);});
+    beforeEach(function(done) {
+        browser.ignoreSynchronization = true;
+        login('editor', 'editor')
+            .then(() => browser.ignoreSynchronization = false)
+            .then(done);
+    });
 
     it('can open contributions panel from url', function() {
         var contributions = blogs.openBlog(0).contributions;
@@ -90,19 +96,24 @@ describe('Contributions Posts', function() {
             contributions.expectPost(0, contrib.quote);
             browser.driver.manage().window().setSize(1280, 1024);
             browser.get('/');
-            element(by.css('button.current-user')).click();
-            // wait for sidebar animation to finish
-            browser.wait(function() {
-                return element(by.buttonText('SIGN OUT')).isDisplayed();
-            }, 1000);
-            element(by.buttonText('SIGN OUT')).click();
-            browser.wait(function() {
-                return browser.driver.isElementPresent(by.id('login-btn'));
-            }, 5000);
-            browser.executeScript('window.sessionStorage.clear();');
-            browser.executeScript('window.localStorage.clear();');
-            browser.sleep(2000); // it reloads page
+            //element(by.css('button.current-user')).click();
+            //// wait for sidebar animation to finish
+            //browser.wait(function() {
+            //    return element(by.buttonText('SIGN OUT')).isDisplayed();
+            //}, 1000);
+            //element(by.buttonText('SIGN OUT')).click();
+            ////browser.wait(function() {
+            ////    return browser.driver.isElementPresent(by.id('login-btn'));
+            ////}, 5000);
+            //browser.sleep(5000); // it reloads page
+            //browser.executeScript('window.sessionStorage.clear();');
+            //browser.executeScript('window.localStorage.clear();');
+            //browser.sleep(2000); // it reloads page
+            logout();
+            browser.ignoreSynchronization = true;
+
             login('contributor', 'contributor').then(function() {
+                browser.ignoreSynchronization = false;
                 var contributions = blogs.openBlog(3).openContributions();
                 browser.wait(function() {
                     return element(contributions.byPosts).isPresent();

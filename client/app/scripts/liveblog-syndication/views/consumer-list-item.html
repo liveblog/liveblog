@@ -1,5 +1,5 @@
 <li 
-    ng-repeat="consumer in consumers" 
+    ng-repeat="consumer in consumers track by $index" 
     ng-click="select(consumer)" 
     ng-class="{selected: consumer === selected}">
 
@@ -12,23 +12,40 @@
 
     <div class="row-wrapper four-col">
         <div class="name">{{ consumer.name }}</div>
-        <div class="email">{{ consumer.webhook_url }}</div>
+        <div class="email">
+            <i
+                class="icon-close-small webhook-status off"
+                title="Webhook URL unreachable"
+                ng-hide="consumer.webhook_enabled"></i>
+            <i
+                class="icon-ok webhook-status on"
+                title="Webhook URL up & running"
+                ng-show="consumer.webhook_enabled"></i>
+            <a
+                title="Check API status"
+                ng-href=""
+                ng-click="checkOnlineStatus($event, consumer)">
+                <i class="icon-refresh true"></i>
+            </a>
+            <span>{{ consumer.webhook_url }}</span>
+        </div>
         <div class="name api-key">
-            <span id="api-key">{{ consumer.api_key }}</span>
+            <span id="api-key-{{$index}}">{{ consumer.api_key }}</span>
             <span>
-                <a title="Refresh api key"
-                   ng-href=""
-                   ng-click="updateApiKey($event, consumer)"
-                   class="ng-scope refresh-api-key">
+                <a
+                    title="Refresh api key"
+                    ng-href=""
+                    ng-click="updateApiKey($event, consumer)"
+                    class="ng-scope refresh-api-key">
                     <i class="icon-refresh true"></i>
                 </a>
             </span>
-            <span lb-copy-to-clipboard for="api-key"></span>
+            <span lb-copy-to-clipboard for="api-key-{{$index}}"></span>
         </div>
         <div lb-first-contact prosumer="consumer" class="name"></div>
     </div>
 
-    <div class="action">
+    <div class="action" ng-show="!selected">
         <ul class="item-functions">
             <li class="item-field">
                 <a 
