@@ -43,6 +43,25 @@
                     </li>
                 </ul>
             </div>
+
+            <div
+                sd-toggle-box
+                class="filter-title"
+                data-title="{{:: 'Languages' | translate }}"
+                data-open="true">
+                <ul class="filter-box">
+                    <li
+                        ng-repeat="language in languages track by language.code"
+                        ng-click="toggleFilter('language', language.code)">
+                        <span
+                            class="sd-checkbox"
+                            ng-checked="hasFilter('language', language.code)"></span>
+                        <span>{{ key | translate}} <i>{{ language.name }}</i></span>
+                    </li>
+                </ul>
+            </div>
+
+
         </div>
     </div>
 
