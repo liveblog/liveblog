@@ -237,7 +237,7 @@ class PostsService(ArchiveService):
             if not updates.get('content_updated_date', False):
                 updates['content_updated_date'] = updates['published_date']
             # assure that the item info is keept if is needed.
-            if original.get('post_status') == 'submitted' and updates.get('groups', False):
+            if original.get('post_status') == 'submitted' and original.get('original_creator', False) and updates.get('groups', False):
                 item_resource = get_resource_service('items')
                 for container in updates['groups'][1]['refs']:
                     item_id = container.get('residRef')
