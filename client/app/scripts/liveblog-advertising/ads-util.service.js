@@ -11,12 +11,11 @@ export default function adsUtil() {
             invalid = gettext('required');
         }
         if (!invalid) {
-            angular.forEach(existingItems, function(existingItem) {
-                // make sure name is unique but don't compare with itself
-                if (item.name === existingItem.name && (!item._id || item._id !== existingItem._id)) {
-                    invalid = gettext('must be unique');
-                }
-            });
+            let found = existingItems.find(existingItem => (item.name === existingItem.name && 
+                                                (!item._id || item._id !== existingItem._id)))
+            if (found) {
+                invalid = gettext('must be unique');
+            }
         }
         return invalid;
     }
