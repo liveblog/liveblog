@@ -11,6 +11,45 @@
         <div class="lb-post-highlighted" ng-if="post.lb_highlight">
             <i class="icon-star icon--orange"></i>
         </div>
+
+        <div class="lb-post-permalink" style="right:30px" ng-click="showSocialBox = !showSocialBox" ng-if="ctrl.timeline.settings.showSocialShare">
+           
+            <i class="fa fa-share share-icon" title="{{ 'Social Share' | translate }}"></i>
+
+            <div ng-if="showSocialBox" class="share-box">
+
+                <a href="//www.facebook.com/sharer.php?s=100&p[title]=&p[url]={{ ctrl.timeline.permalink.get(post._id) }}" class='social facebook' target='_blank'
+                title="{{ 'Share this post on Facebook' | translate }}"
+                onclick="openSocialShareWindow(this.href, 570, 400)">
+                    <span class="fa fa-facebook social-icon"></span>
+                </a>
+
+                <a href="//twitter.com/home?status={{ ctrl.timeline.permalink.get(post._id) }}'" class='social twitter' target='_blank'
+                title="{{ 'Share this post on Twitter' | translate }}"
+                onclick="openSocialShareWindow(this.href, 570, 400)">
+                    <span class="fa fa-twitter social-icon"></span>
+                </a>
+
+                <a href="//www.linkedin.com/shareArticle?mini=true&url={{ ctrl.timeline.permalink.get(post._id) }}" class='social linkedin' target='_blank'
+                title="{{ 'Share this post on Linkedin' | translate }}"
+                onclick="openSocialShareWindow(this.href, 570, 400)">
+                    <span class="fa fa-linkedin social-icon"></span>
+                </a>
+
+                <a href="//plus.google.com/share?url={{ ctrl.timeline.permalink.get(post._id) }}" class='social google' target='_blank'
+                title="{{ 'Share this post on Google+' | translate }}"
+                onclick="openSocialShareWindow(this.href, 570, 400)">
+                    <span class="fa fa-google-plus social-icon"></span>
+                </a>
+
+                <a href="mailto:?to=&subject=Liveblog&body={{ ctrl.timeline.permalink.get(post._id) }}" class='social email' target='_blank'
+                title="{{ 'Share this post on Email' | translate }}"
+                onclick="openSocialShareWindow(this.href, 1024, 768)">
+                    <span class="fa fa-envelope social-icon"></span>
+                </a>
+
+            </div>
+        </div>
         <div class="lb-post-permalink">
             <a href="{{ ctrl.timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
                 <i class="icon-link icon--blue"></i>
