@@ -9,6 +9,7 @@ from settings import MARKETPLACE_APP_URL
 from requests.exceptions import RequestException
 from requests.packages.urllib3.exceptions import MaxRetryError
 from urllib.parse import urljoin
+from settings import SUPPORTED_LANGUAGES
 
 
 logger = logging.getLogger('superdesk')
@@ -99,7 +100,14 @@ def marketer_languages():
         return api_response(str(e), 500)
 
     if response.status_code == 200:
-        return api_response(response.content, 200, json_dumps=False)
+        content = json.loads(response.content.decode('utf-8'))
+        response = []
+        for language_code in content:
+            if language_code not in SUPPORTED_LANGUAGES['languages'].keys():
+                logger.warning('Language code {} not in SUPPORTED_LANGUAGES'.format(language_code))
+                continue
+            response.append({'code': language_code, 'name': SUPPORTED_LANGUAGES['languages'][language_code]})
+        return api_response(response, 200)
     else:
         return api_error('Unable to get languages from marketplace.', response.status_code)
 
