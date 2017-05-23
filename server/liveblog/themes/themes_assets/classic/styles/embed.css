@@ -1,5 +1,7 @@
 body {
     background-color: #EAEAEA;
+    background-repeat: no-repeat;
+    background-position-x: center;
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
     color: #333333;
@@ -543,6 +545,13 @@ article blockquote li:before {
     background-color: rgba(94, 169, 200, 0.11);
     box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.25);
 }
+
+.livestream .pin-posts .lb-post {
+    background-color: initial!important;
+    border-bottom: none!important;
+    border-top: 1px solid #eee!important;
+}
+
 
 @-webkit-keyframes fadeIt {
   0%   { background-color: #FFFFFF; }

@@ -10,20 +10,19 @@
 	background: #e0e0e0;
 }
 
+// .subnav {
+//     display: block;
+// }
+
+.page-nav-title {
+    padding: 10px 0;
+}
+.navbtn i+.title {
+    margin-left: 10px;
+}
+
 .navbtn .title {
-  text-transform: uppercase;
-}
-
-.navbtn i + .title {
-  margin-left: 10px;
-}
-
-.navbtn.navbtn-hover .title {
-  display: none;
-}
-
-.navbtn.navbtn-hover:hover .title {
-  display: inline;
+    text-transform: uppercase;
 }
 
 .button-stack > .btn {
@@ -40,6 +39,9 @@
   border-left: 1px solid rgba(0, 0, 0, 0.1) !important;
   //border-right: 0 !important;
   line-height: 46px;
+  width: auto;
+  min-width: 48px;
+  padding: 0 14px;
 }
 
 .button-stack.right-stack .navbtn .dropdown-toggle {
@@ -213,8 +215,8 @@
 }
 // icons
 .icon-publish {
-    background-image: url("#{$iconSpritePath}"); 
-    width: 15px; 
+    background-image: url("#{$iconSpritePath}");
+    width: 15px;
     background-position: -217px -187px;
 }
 .icon-unpublish {background-image: url("#{$iconSpritePath}"); width: 15px; background-position: -217px -187px; transform: rotate(180deg);}
@@ -311,7 +313,7 @@
 div.subnav div.button-stack.left-stack a.homebtn {
     border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
-div.settings-page button {
+div.settings-page .subnav .btn {
     margin-top: 10px;
 }
 div.settings-page button.last-right {
@@ -323,6 +325,7 @@ div.settings-page div.datepicker-input button, div.settings-page div.timepicker-
 }
 button.btn-info {
     background-color: #5ea9c8;
+    color: white;
 }
 #main-menu .footer .icon-superdesk {
     background-size: 156px 48px;

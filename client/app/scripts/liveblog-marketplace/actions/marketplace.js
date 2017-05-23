@@ -25,6 +25,7 @@ export default function marketplaceActions(Dispatcher, api, $http, _) {
                 });
             });
         },
+
         toggleFilter: function(filters, type, value) {
             if (filters && filters[type] === value)
                 filters = _.omit(filters, type);

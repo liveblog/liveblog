@@ -16,7 +16,7 @@ import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.html';
 import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html';
 
 import './../../ng-sir-trevor';
-import './../../ng-sir-trevor-blocks';
+import './../../sir-trevor-blocks';
 import './../unread.posts.service';
 
 BlogEditController.$inject = [
@@ -488,6 +488,30 @@ export default function BlogEditController(
                         // media will be added latter in the `meta` if this item in this callback
                         success_callback({media: media_meta});
                     }, handleError);
+                });
+            },
+            gogoGadgetoRemoteImage: function(imgURL) {
+                return $http({
+                    url: `${config.server.url}/archive/draganddrop`,
+                    method: 'POST',
+                    data: {
+                        image_url: imgURL,
+                        mimetype: 'image/jpeg'
+                    },
+                    headers: {
+                        "Content-Type": "application/json;charset=utf-8"
+                    }
+                })
+                .then((response) => {
+                    if (response.data._issues) {
+                        throw response.data._issues;
+                    }
+
+                    return {media: {
+                        _id: response.data._id,
+                        _url: response.data.renditions.thumbnail.href,
+                        renditions: response.data.renditions
+                    }};
                 });
             }
         },

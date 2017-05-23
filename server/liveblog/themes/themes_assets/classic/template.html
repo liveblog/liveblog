@@ -12,6 +12,14 @@
         </div>
         <p class="description" ng-if="timeline.settings.showDescription" ng-bind-html="timeline.blog.descriptionHtml"></p>
     </div>
+    <div ng-if="timeline.settings.livestream" class="livestream">
+        <lb-posts
+            ng-if='!timeline.stickyPagesManager.hideSticky'
+            timeline="timeline"
+            hide-info="true"
+            posts="timeline.stickyPagesManager.allPosts"
+            class="pin-posts" ng-cloak></lb-posts>
+    </div>
     <div class="header-bar">
         <div class="sorting-bar">
             <div class="sorting-bar__title" translate>Sort by:</div>
@@ -77,28 +85,31 @@
                  translate-plural="See {{$count}} new updates" ng-cloak>
                 See one new update
             </div>
-            <lb-posts
-                ng-if='!timeline.stickyPagesManager.hideSticky'
-                timeline="timeline"
-                posts="timeline.stickyPagesManager.allPosts"
-                class="pin-posts" ng-cloak></lb-posts>
+            <div ng-if="!timeline.settings.livestream">
+                <lb-posts
+                    ng-if='!timeline.stickyPagesManager.hideSticky'
+                    timeline="timeline"
+                    posts="timeline.stickyPagesManager.allPosts"
+                    class="pin-posts" ng-cloak></lb-posts>
 
-            <div ng-if="timeline.stickyPagesManager.allPosts().length && !timeline.loading"
-                class="pin-drawer" ng-cloak>
-                
-                <div class="pin-drawer-info"
-                     ng-if="timeline.stickyPagesManager.hideSticky"
-                     translate translate-n="timeline.stickyPagesManager.allPosts().length"
-                     translate-plural="{{$count}} pinned posts">
-                    One pinned post
+                <div ng-if="timeline.stickyPagesManager.allPosts().length && !timeline.loading"
+                    class="pin-drawer" ng-cloak>
+                    
+                    <div class="pin-drawer-info"
+                         ng-if="timeline.stickyPagesManager.hideSticky"
+                         translate translate-n="timeline.stickyPagesManager.allPosts().length"
+                         translate-plural="{{$count}} pinned posts">
+                        One pinned post
+                    </div>
+                    <button class="pin-drawer-button" ng-class="{'chevron-active': timeline.stickyPagesManager.hideSticky}"
+                    ng-click="timeline.stickyPagesManager.hideSticky = !timeline.stickyPagesManager.hideSticky">
+                        <i class="icon-chevron-up"></i>
+                    </button>
                 </div>
-                <button class="pin-drawer-button" ng-class="{'chevron-active': timeline.stickyPagesManager.hideSticky}"
-                ng-click="timeline.stickyPagesManager.hideSticky = !timeline.stickyPagesManager.hideSticky">
-                    <i class="icon-chevron-up"></i>
-                </button>
             </div>
             <lb-posts
                 timeline="timeline"
+                enhance="timeline.enhance"
                 posts="timeline.pagesManager.allPosts"></lb-posts>
         </section>
         <button ng-click="timeline.fetchNewPage()"
