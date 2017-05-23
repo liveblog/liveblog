@@ -218,12 +218,12 @@ upload, $templateCache, freetypeService, modal, adsUtilSevice) {
     }
 
     $scope.collectionHasAdvert = function (collection, advert) {
-        return !!collection.advertisements.find(ad => ad.advertisement_id === advert._id);
+        return !!collection.advertisements.find((ad) => ad.advertisement_id === advert._id);
     }
 
     $scope.notValidName = adsUtilSevice.uniqueNameInItems;
 
     $scope.freetypeValid = function() {
-        return !Object.keys($scope.validation).find(key => !$scope.validation[key]);
+        return !Object.keys($scope.validation).find((key) => !$scope.validation[key]);
     }
 }

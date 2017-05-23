@@ -11,7 +11,7 @@ export default function adsUtil() {
             invalid = gettext('required');
         }
         if (!invalid) {
-            let found = existingItems.find(existingItem => (item.name === existingItem.name && 
+            let found = existingItems.find((existingItem) => (item.name === existingItem.name && 
                                                 (!item._id || item._id !== existingItem._id)))
             if (found) {
                 invalid = gettext('must be unique');
