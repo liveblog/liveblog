@@ -1,5 +1,11 @@
 import os
 
+__all__ = (
+    'THEMES_ASSETS_DIR', 'BLOGSLIST_DIRECTORY', 'BLOGSLIST_ASSETS_DIR', 'BLOGLIST_ASSETS', 'CONTENT_TYPES',
+)
+
+THEMES_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'themes'))
+THEMES_ASSETS_DIR = 'themes_assets'
 BLOGSLIST_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'blogs'))
 BLOGSLIST_ASSETS_DIR = 'blogslist_assets'
 BLOGLIST_ASSETS = {

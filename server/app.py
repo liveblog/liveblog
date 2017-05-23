@@ -55,7 +55,6 @@ def get_app(config=None):
     # Create superdesk app instance.
     app = superdesk_app(config, media_storage, init_elastic=True)
 
-    # Add custom jinja2 template loader.
     custom_loader = jinja2.ChoiceLoader([
         jinja2.FileSystemLoader('superdesk/templates'),
         app.jinja_loader
@@ -95,9 +94,11 @@ def get_app(config=None):
     return app
 
 
-if __name__ == '__main__':
-    debug = True
-    host = '0.0.0.0'
+def run_app():
+    debug = bool(os.environ.get('DEBUG', True))
     port = int(os.environ.get('PORT', '5000'))
-    app = get_app()
-    app.run(host=host, port=port, debug=debug, use_reloader=debug)
+    get_app().run(host='0.0.0.0', port=port, debug=debug, use_reloader=debug)
+
+
+if __name__ == '__main__':
+    run_app()

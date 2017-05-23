@@ -18,17 +18,15 @@ import superdesk
 from eve.io.mongo import MongoJSONEncoder
 from flask import current_app as app
 from flask import json, render_template, request, url_for
-from liveblog.themes import ASSETS_DIR as THEMES_ASSETS_DIR
 from liveblog.themes import UnknownTheme
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 
-from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
+from .app_settings import THEMES_ASSETS_DIR, THEMES_DIRECTORY, BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
 
 logger = logging.getLogger('superdesk')
 embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
-THEMES_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'themes'))
 
 
 def collect_theme_assets(theme, assets=None, template=None):
@@ -127,14 +125,32 @@ def embed(blog_id, api_host=None, theme=None):
         assets_root = theme.get('public_url')
     else:
         assets_root = [THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme')]
-        assets_root = '/%s/' % ('/'.join(assets_root))
+        assets_root = '/{}/'.format('/'.join(assets_root))
+
+    theme_service = get_resource_service('themes')
+    theme_settings = theme_service.get_default_settings(theme)
+
+    if theme.get('seoTheme', False):
+        # Fetch initial blog posts for SEO theme
+        blog_instance = Blog(blog)
+        api_response = blog_instance.posts(wrap=True)
+        embed_template = jinja2.Environment(loader=ThemeTemplateLoader(theme)).from_string(template_content)
+        template_content = embed_template.render(
+            blog=blog,
+            theme=theme,
+            api_response=api_response,
+            theme_settings=theme_settings,
+            theme_options=theme_json,
+            options=bson_dumps(theme_json)
+        )
 
     scope = {
         'blog': blog,
-        'settings': get_resource_service('themes').get_default_settings(theme),
+        'theme': theme,
+        'settings': theme_settings,
         'assets': assets,
         'api_host': api_host,
-        'template': template_file,
+        'template_content': template_content,
         'debug': app.config.get('LIVEBLOG_DEBUG'),
         'assets_root': assets_root
     }

@@ -1,0 +1,46 @@
+<div class="lb-timeline" data-js-target="timeline">
+    {% block timeline %}
+    <div class="lb-timeline {{ options.language }}">
+        <!-- Header -->
+        <div class="header-bar">
+            <div class="sorting-bar">
+                <div class="sorting-bar__orders">
+                    <div class="sorting-bar__order sorting-bar__order--active" onClick="timeline.orderBy('newest_first')">{{ theme_options.l10n.newestFirst }}</div>
+                    <div class="sorting-bar__order" onClick="timeline.orderBy('oldest_first')">{{ theme_options.l10n.oldestFirst }}</div>
+                </div>
+            </div>
+            <div class="header-bar__actions"></div>
+        </div>
+        <!-- Header End -->
+
+        <!-- Timeline -->
+        <div class="timeline-body timeline-body--loaded">
+            {% if api_response._items|length == 0 %}
+            <div class="lb-post empty-message">
+                <div>Blog posts are not currently available.</div>
+            </div>
+            {% else %}
+            <section class="lb-posts list-group">
+                {% for item in api_response._items %}
+                {% if not item.deleted %}
+                {% include "post.html" %}
+                {% endif %}
+                {% endfor %}
+            </section>
+            {% if api_response._meta.max_results <= api_response._meta.total %}
+                <button class="lb-button load-more-posts" data-js-loadmore>{{ theme_options.l10n.loadNewPosts }}</button>
+            {% endif %}
+            {% endif %}
+        </div>
+        <!-- Timeline End -->
+    </div>
+    {% endblock %}
+</div>
+
+{% include "embed-providers.html" %}
+
+{% if options and include_js_options %}
+<script type="text/javascript">
+window.LB = {{ options|safe }};
+</script>
+{% endif %}

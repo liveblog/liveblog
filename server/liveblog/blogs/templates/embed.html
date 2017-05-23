@@ -20,13 +20,13 @@
     </head>
 
     <body>
-
-        {{ template | safe }}
+        {{ template_content | safe }}
 
         <script type="text/javascript">
             window.LB = {
                 blog: {{ blog | tojson | safe }},
                 settings: {{ settings | tojson | safe }},
+                api_response: {{ api_response | tojson | safe }},
                 api_host: '{{ api_host }}',
                 assets_root: '{{ assets_root }}',
                 debug: {{ debug | tojson | safe }}

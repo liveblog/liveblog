@@ -99,6 +99,7 @@ def publish_bloglist_assets(asset_type):
     # Save the file in the media storage if needed
     for name in (assets[asset_type]):
         asset_file = os.path.join(BLOGSLIST_DIRECTORY, BLOGSLIST_ASSETS_DIR, name)
+        logger.warning('Publish {} asset file "{}"'.format(asset_type, name))
         with open(asset_file, 'rb') as file:
             # Set the content type.
             mime = magic.Magic(mime=True)
