@@ -10,38 +10,49 @@
 
     <div class="content">
         <div class="filter-content">
-            <div
-                sd-toggle-box
-                class="filter-title"
-                data-title="{{:: 'Categories' | translate }}"
-                data-open="true">
-                <ul class="filter-box">
-                    <li
-                        ng-repeat="category in categories"
-                        ng-click="toggleFilter('category', category)">
-                        <span
-                            class="sd-checkbox"
-                            ng-checked="hasFilter('category', category)"></span>
-                        <span>{{ key | translate}} <i>{{ category }}</i></span>
-                    </li>
-                </ul>
+            <div class="filter-title">
+                <div class="toggle-box">
+                    <div class="toggle-box__header">
+                        <div class="toggle-box__chevron">
+                            <i class="icon-chevron-right-thin"></i>
+                        </div>
+                        <div class="toggle-box__label">{{:: 'Categories' | translate}}</div>
+                    </div>
+                    <div class="toggle-box__content">
+                        <ul class="filter-box">
+                            <li
+                                ng-repeat="category in categories"
+                                ng-click="toggleFilter('category', category)">
+                                <span
+                                    class="sd-checkbox"
+                                    ng-checked="hasFilter('category', category)"></span>
+                                <span>{{ key | translate}} <i>{{ category }}</i></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-
-            <div
-                sd-toggle-box
-                class="filter-title"
-                data-title="{{:: 'Marketers' | translate }}"
-                data-open="true">
-                <ul class="filter-box">
-                    <li
-                        ng-repeat="marketer in marketers._items track by marketer._id"
-                        ng-click="toggleFilter('marketer._id', marketer._id)">
-                        <span
-                            class="sd-checkbox"
-                            ng-checked="hasFilter('marketer._id', marketer._id)"></span>
-                        <span>{{ key | translate}} <i>{{ marketer.name }}</i></span>
-                    </li>
-                </ul>
+            <div class="filter-title">
+                <div class="toggle-box">
+                    <div class="toggle-box__header">
+                        <div class="toggle-box__chevron">
+                            <i class="icon-chevron-right-thin"></i>
+                        </div>
+                        <div class="toggle-box__label">{{:: 'Marketers' | translate}}</div>
+                    </div>
+                    <div class="toggle-box__content">
+                        <ul class="filter-box">
+                            <li
+                                ng-repeat="marketer in marketers._items track by marketer._id"
+                                ng-click="toggleFilter('marketer._id', marketer._id)">
+                                <span
+                                    class="sd-checkbox"
+                                    ng-checked="hasFilter('marketer._id', marketer._id)"></span>
+                                <span>{{ key | translate}} <i>{{ marketer.name }}</i></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
