@@ -4,12 +4,51 @@
          ng-class="['lb-mainitem-{{ post.mainItem.item_type | varname }}', {'show-author-avatar': 
                         ctrl.timeline.settings.showAuthor &&
                         ctrl.timeline.settings.showAuthorAvatar &&
-                        !ctrl.isAd(post),
+                        !ctrl.isAd(post) &&
+                        !ctrl.hideInfo,
                     'lb-post-permalink-selected': post._id === timeline.permalink._id}]">
-    <span ng-if="!ctrl.isAd(post)">
+    <span ng-if="!ctrl.isAd(post) && !ctrl.hideInfo">
         <lb-author item="post.mainItem" timeline="timeline"></lb-author>
         <div class="lb-post-highlighted" ng-if="post.lb_highlight">
             <i class="icon-star icon--orange"></i>
+        </div>
+        <div class="lb-post-permalink" style="right:30px" ng-click="showSocialBox = !showSocialBox" ng-if="ctrl.timeline.settings.showSocialShare">
+           
+            <i class="fa fa-share share-icon" title="{{ 'Social Share' | translate }}"></i>
+
+            <div ng-if="showSocialBox" class="share-box">
+
+                <a href="//www.facebook.com/sharer.php?s=100&p[title]=&p[url]={{ ctrl.timeline.permalink.get(post._id) }}" class='social facebook' target='_blank'
+                title="{{ 'Share this post on Facebook' | translate }}"
+                onclick="openSocialShareWindow(this.href, 570, 400)">
+                    <span class="fa fa-facebook social-icon"></span>
+                </a>
+
+                <a href="//twitter.com/home?status={{ ctrl.timeline.permalink.get(post._id) }}'" class='social twitter' target='_blank'
+                title="{{ 'Share this post on Twitter' | translate }}"
+                onclick="openSocialShareWindow(this.href, 570, 400)">
+                    <span class="fa fa-twitter social-icon"></span>
+                </a>
+
+                <a href="//www.linkedin.com/shareArticle?mini=true&url={{ ctrl.timeline.permalink.get(post._id) }}" class='social linkedin' target='_blank'
+                title="{{ 'Share this post on Linkedin' | translate }}"
+                onclick="openSocialShareWindow(this.href, 570, 400)">
+                    <span class="fa fa-linkedin social-icon"></span>
+                </a>
+
+                <a href="//plus.google.com/share?url={{ ctrl.timeline.permalink.get(post._id) }}" class='social google' target='_blank'
+                title="{{ 'Share this post on Google+' | translate }}"
+                onclick="openSocialShareWindow(this.href, 570, 400)">
+                    <span class="fa fa-google-plus social-icon"></span>
+                </a>
+
+                <a href="mailto:?to=&subject=Liveblog&body={{ ctrl.timeline.permalink.get(post._id) }}" class='social email' target='_blank'
+                title="{{ 'Share this post on Email' | translate }}"
+                onclick="openSocialShareWindow(this.href, 1024, 768)">
+                    <span class="fa fa-envelope social-icon"></span>
+                </a>
+
+            </div>
         </div>
         <div class="lb-post-permalink">
             <a href="{{ ctrl.timeline.permalink.get(post._id) }}" id="{{ post._id }}" target="_blank">
@@ -28,14 +67,21 @@
         <div ng-if="post.fullDetails && !$first" class="list-group-item">
             <div class="lb-timeline__header">
                 <lb-author item="item" timeline="ctrl.timeline"></lb-author>
-                <lb-item item="item" ident="true" gallery="ctrl.showGallery(post)"></lb-item>
+                <lb-item 
+                    ident="true" 
+                    item="item"
+                    gallery="ctrl.showGallery(post)"></lb-item>
             </div>
         </div>                
         <div ng-if="!post.fullDetails || $first">
             <lb-item item="item" gallery="ctrl.showGallery(post)"></lb-item>
         </div>
     </div>
-    <div class="lb-updated-date ng-cloak" ng-show="post.showUpdate" translate>
-        Updated {{post.content_updated_date | prettifyIsoDate}}
+    <div
+        class="lb-updated-date ng-cloak" 
+        ng-if="!ctrl.isAd(post) || ctrl.hideInfo" 
+        ng-show="post.showUpdate"
+        translate>
+            Updated {{post.content_updated_date | prettifyIsoDate}}
     </div>
 </article>
