@@ -1,0 +1,222 @@
+//@import 'mixins';
+//@import 'variables';
+@import '~lb-mixins.scss';
+@import '~lb-variables.scss';
+
+/*Force 4 columns layout in consumers view*/
+.users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div,
+.users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div.email,
+.users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div.username,
+.users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div.name,
+.users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div,
+.users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.email,
+.users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.username,
+.users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.name {
+    width: 20%;
+}
+
+.users-table .table-header > li > div:not(.tooltip).row-wrapper.four-col > div.api-key,
+.users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.api-key {
+    width: 40%;
+}
+
+div.subnav.pan-right {
+    float: right;
+    left: auto;
+}
+
+.producers-list, .syndicated-blogs-list {
+   > li.post-item, > li.blog-item {
+        background: #fff;
+        border-radius: 2px;        
+        padding: 12px 15px;
+        margin: 10px 0;
+        display: block;
+        clear: both;
+        min-height: 31px;
+        box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1), 0px 0px 1px rgba(0, 0, 0, 0.08);
+
+        h4 {
+            font-weight: 400;
+        }
+        &:hover {
+            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.3), 0px 0px 1px rgba(0, 0, 0, 0.2);
+            .blog-actions-menu {
+                &:hover {
+                    button.btn-dots-vertical {
+                        opacity: 1;
+                    }
+                }
+            }
+        }
+    }
+
+    > li.blog-item.checked {
+        background: #d2e5ed;
+        padding-top: 12px;
+        box-shadow: inset 0 2px 0 0 rgba(94,169,200,.4)
+    }
+
+    .blog-actions-menu {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        button.btn-dots-vertical {
+            background: transparent;
+            border: none;
+            font-size: 18px;
+            padding: 15px 10px;
+            color: #666;
+            opacity: 0.4;
+        }
+    }
+
+    h4, i {
+        color: #666;
+    }
+}
+
+.syndicated-blogs-list li.post-item,
+.syndicated-blogs-list li.blog-item {
+    margin: 10px 15px;
+    height: auto;
+    position: relative;
+}
+
+.panel__incoming-syndication {
+    .sub-header {
+        background: #fff;
+        color: #444;
+        border-bottom: 1px solid #e0e0e0;
+        font-weight: 400;
+        overflow: hidden;
+        margin-top: 1px;
+
+        button {
+            float: left;
+            background: transparent url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNiIgaGVpZ2h0PSIyNiIgdmlld0JveD0iMCAwIDI2IDI2IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAyNiAyNiI+PHBhdGggZmlsbD0iIzdjN2M3YyIgZD0ibTUuMjkyIDEyLjI5NGw2LTZjLjM4OS0uMzg5IDEuMDI1LS4zODkgMS40MTQgMCAuMzg5LjM4OS4zODkgMS4wMjUgMCAxLjQxNGwtNC4yOTMgNC4yOTNoMTIuNTg2Yy41NTIgMCAxIC40NDggMSAxIDAgLjU1Mi0uNDQ4IDEtMSAxaC0xMi41ODZsNC4yOTIgNC4yOTJjLjM4OS4zODkuMzg5IDEuMDI1IDAgMS40MTRzLTEuMDI1LjM4OS0xLjQxNCAwYzAgMC01Ljk5OS01Ljk5Ni02LTUuOTk4LS4zODgtLjM4OS0uMzg4LTEuMDI1LjAwMDEtMS40MTQiLz48L3N2Zz4=) no-repeat center center;
+            padding-left: 30px;
+            @include transition(all ease 0.2s);
+            vertical-align: middle;
+            height: 64px;
+            line-height: 64px;
+            outline: none;
+            border: none;
+            border-right: 1px solid #e0e0e0;
+            padding: 0 25px;
+            &:hover {
+                background-position: 8px center;
+            }
+        }
+
+        .block {
+            display: inline-block;
+            padding: 8px 15px;
+
+            h3 {
+                font-weight: 400;
+            }
+        }
+    }
+}
+
+.panel-definition-list {
+    margin: 0;
+}
+.panel-definition-list__term, 
+.panel-definition-list__definition {
+    display: inline-block;
+    font-weight: 400;
+}
+.panel-definition-list__term {
+    text-transform: uppercase;
+    font-size: 10px;
+    color: #808080;
+}
+.panel-definition-list__definition {
+    margin-right: 15px;
+    font-size: 11px;
+    font-weight: 400;
+    margin-left: 6px;
+}
+.panel-definition-list__definition.datepicker {
+    margin-right: 0;
+    position: relative;
+    width: 102px;
+
+    div.datepicker-input {
+        min-width: 102px;
+    }
+}
+
+div.select-producer {
+    select {
+        width: 85%;
+        float: left;
+    }
+
+    select.full {
+        width: 100%;
+    }
+
+    button {
+        width: 14%;
+        float: right;
+    }
+}
+
+form[name="consumerForm"] div.error, 
+form[name="producerForm"] div.error {
+    color: #fe0201;
+}
+
+div.profile-info.syndication div.details-info {
+    top: 15px;
+}
+
+ul.dropdown__menu.more-activity-menu {
+    li button {
+        border: none;
+    }
+
+    li.auto-publish {
+        padding: 6px 16px;
+    }
+
+    label[for="start_date"] {
+        margin: auto 16px;
+    }
+
+    div.datepicker-input {
+        margin: auto 16px;
+
+        button { 
+            width: 24px; 
+        }
+    }
+}
+
+div.panel--contribution span.notification-counter {
+    top: -9px;
+    left: -7px;
+    right: auto;
+    background-color: $sd-blue;
+}
+
+div.subnav.pan-right div.button-stack.right-stack.new-producer,
+div.subnav.pan-right div.button-stack.right-stack.new-consumer {
+    margin: 0;
+}
+
+i.webhook-status.off {
+    color: $red;
+}
+
+i.webhook-status.warn {
+    color: $orange;
+}
+
+i.webhook-status.on {
+    color: $green;
+}

@@ -5,7 +5,7 @@ from bson import ObjectId
 from eve.utils import str_to_date
 from flask import Blueprint, abort, request
 from flask_cors import CORS
-from liveblog.blogs.blogs import blogs_schema
+from liveblog.blogs.schema import blogs_schema
 from liveblog.posts.posts import PostsResource
 from superdesk import get_resource_service
 from superdesk.services import BaseService

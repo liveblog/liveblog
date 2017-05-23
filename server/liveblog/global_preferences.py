@@ -10,11 +10,10 @@
 
 
 import superdesk
+from liveblog.validator import LiveblogValidator
 from superdesk import get_backend, get_resource_service
 from superdesk.resource import Resource
 from superdesk.services import BaseService
-from liveblog.validator import LiveblogValidator
-
 
 _preferences_key = 'global_preferences'
 

@@ -79,7 +79,7 @@
                         </ul>
                     </div>
                 </div>
-                <div ng-if="post.multiple_items" class="lb-post__list">
+                <div ng-if="post.multipleItems" class="lb-post__list">
                     <div ng-if="!show_all" title="Click to show all items" ng-click="toggleMultipleItems()" class="multiple-item lb-post__item">
                         <lb-item item="post.mainItem.item"></lb-item>
                     </div>
@@ -111,19 +111,29 @@
                          </div>
                 </div>
             </div>
-                <div ng-if="!post.multiple_items" class="lb-post__list">
+                <div ng-if="!post.multipleItems" class="lb-post__list">
                         <lb-item item="post.mainItem.item"></lb-item>
                 </div>
         </div>
-        <a class="lb-post__expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && !show_all">
+        <a
+            class="lb-post__expander-holder"
+            ng-click="toggleMultipleItems()"
+            ng-if="post.multipleItems && !show_all">
             <div class="lb-post__expander-multiple-items">
                 <div class="lb-post__expander-multiple-items-roundel">
-                    <div class="lb-post__expander-multiple-items-roundel-text">{{ post.multiple_items }}</div>
+                    <div class="lb-post__expander-multiple-items-roundel-text">
+                        {{ post.multipleItems }}
+                    </div>
                 </div>
-                <div translate class="lb-post__expander-multiple-items-roundel-label">ITEMS</div>
+                <div translate class="lb-post__expander-multiple-items-roundel-label">
+                    MORE ITEMS
+                </div>
             </div>
         </a>
-        <a class="lb-post__expander-holder" ng-click="toggleMultipleItems()" ng-if="post.multiple_items && show_all">
+        <a
+            class="lb-post__expander-holder"
+            ng-click="toggleMultipleItems()"
+            ng-if="post.multipleItems && show_all">
             <div class="lb-post__collapser-multiple-items"></div>
         </a>
     </div>

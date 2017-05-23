@@ -1,5 +1,4 @@
 define([], function() {
-    'use strict';
 
     /**
      * Noop for registering string for translation in js files.

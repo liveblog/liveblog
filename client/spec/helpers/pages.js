@@ -54,7 +54,7 @@ function BlogsPage() {
     self.waitForModal = waitForModal.bind(self);
 
     self.title = element(by.model('newBlog.title'));
-    self.description = element(by.css('[ng-model="newBlog.description"] [contenteditable="true"]'));
+    self.description = element(by.css('[ng-model="newBlog.description"]'));
     self.file = element(by.css('input[type="file"]'));
 
     self.gridElement = element(by.css('.list-container table'));
@@ -138,7 +138,7 @@ function BlogsPage() {
             state = stateMap[state];
         }
         browser.waitForAngular();
-        element.all(by.repeater('state in states').row(state).column('state.text')).click();
+        element.all(by.repeater('state in states').row(state)).get(0).click();
         return self;
     };
 }
@@ -209,16 +209,23 @@ function ThemesManagerPage() {
     };
 
     self.openSettingsForTheme = function(themeIndex) {
-        self.themes.get(themeIndex).element(self.bySettings).click();
-        browser.wait(function() {
-            return element(by.css('[name="vm.themeSettingsForm"]')).isDisplayed();
-        });
-        return self;
+        //self.themes.get(themeIndex).element(self.bySettings).click();
+        //browser.wait(function() {
+        //    return element(by.css('[name="vm.themeSettingsForm"]')).isDisplayed();
+        //});
+        //return self;
+        return self.themes.get(themeIndex).element(self.bySettings).click()
+            //.then(() => {
+            //    return browser.wait();
+            //})
+            .then(() => {
+                return element(by.css('[name="vm.themeSettingsForm"]')).isDisplayed();
+            });
     };
 
     self.saveSettings = function() {
-        element(by.css('[ng-click="vm.submitSettings(true)"]')).click();
-        return self;
+        return element(by.css('[ng-click="vm.submitSettings(true)"]'))
+            .click();
     };
 
     self.remove = function(theme_index) {
@@ -646,7 +653,7 @@ function BlogSettingsPage(blog) {
     self.team = new TeamPage();
     self.blog = blog;
     self.title = element(by.model('settings.newBlog.title'));
-    self.description = element(by.css('[ng-model="settings.newBlog.description"] [contenteditable="true"]'));
+    self.description = element(by.css('[ng-model="settings.newBlog.description"]'));
     self.file = element(by.css('input[type="file"]'));
     self.saveAndClose = element(by.css('[ng-click="settings.saveAndClose()"]'));
 
@@ -674,7 +681,7 @@ function BlogSettingsPage(blog) {
         return self;
     };
     self.openTeam = function() {
-        return element(by.css('[data="blog-settings-team"]')).click().then(function() {
+        return element(by.css('[data="blog-settings-team"] a')).click().then(function() {
             browser.waitForAngular();
             return self;
         });
@@ -691,7 +698,7 @@ function BlogSettingsPage(blog) {
     };
 
     self.upload = function() {
-        element(by.buttonText('Upload')).click();
+        element(by.css('button[ng-click="save()"]')).click();
         return self;
     };
 
@@ -723,13 +730,13 @@ function BlogSettingsPage(blog) {
     };
 
     self.doneTeamEdit = function() {
-        element(by.css('[ng-click="settings.doneTeamEdit()"')).click();
+        element(by.css('[ng-click="settings.doneTeamEdit()"]')).click();
         return self;
     };
 
     self.removeBlog = function() {
         element(by.buttonText('Remove blog')).click().then(function() {
-            element(by.css('.btn-primary')).click();
+            element(by.css('button[ng-click="ok()"]')).click();
         });
     };
 }
@@ -841,7 +848,7 @@ function ConsumersManagementPage() {
         waitAndClick(by.css('[href="#/syndication/"][title]'));
 
         browser.waitForAngular();
-        element.all(by.repeater('state in states').row(1).column('state.text')).click();
+        element.all(by.repeater('state in states').row(1)).click();
 
         return self;
     };
@@ -858,8 +865,7 @@ function ProducersManagementPage() {
         });
         waitAndClick(by.css('[href="#/syndication/"][title]'));
 
-        browser.waitForAngular();
-        element.all(by.repeater('state in states').row(0).column('state.text')).click();
+        //browser.waitForAngular();
 
         return self;
     };

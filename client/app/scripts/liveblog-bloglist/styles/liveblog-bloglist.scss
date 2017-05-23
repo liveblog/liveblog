@@ -1,0 +1,249 @@
+// planning.scss
+// Styling for the superdesk content planing modules
+// ----------------------------------------------------------------------------------------
+@import '~lb-mixins.scss';
+@import '~lb-variables.scss';
+
+.bloglist {
+    header {
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: $nav-height;
+        border-bottom: 1px solid #e0e0e0;
+        .view-select {
+            button {
+                border: 0;
+                background: none;
+                padding: 10px;
+            }
+        }
+    }
+    .list-container {
+        position: absolute;
+        top: $nav-height;
+        left: 0; right: 0; bottom: 0;
+        padding: 30px;
+        overflow-y: auto;
+        .empty-state {
+            > div {
+                font-size: 1.25em;
+            }
+            button {
+                height: 40px;
+                margin: 20px 0;
+                .title {
+                    top: -4px;
+                    position: relative;
+                    left: 4px;
+                    color: #fff;
+                }
+            }
+        }
+        .row-list {
+            tr {
+                &.can-access {
+                    opacity: 1;
+                }
+                cursor: default;
+                opacity: .5;
+                .content {
+                    .time {
+                        font-size: 13px;
+                        font-style: italic;
+                        color: #bcbcbc;
+                    }
+                }
+            }
+        }
+        .card-list {
+            display: flex;
+            flex-wrap: wrap;
+            > li {
+                &:not(.can-access):hover {
+                  @include box-shadow(none);
+                }
+                &.can-access {
+                    cursor: pointer;
+                    opacity: 1;
+                }
+                cursor: default;
+                opacity: .5;
+                border: 1px solid #d4d4d4;
+                background-color: white;
+                margin: 0 0 20px 20px;
+                padding: 10px;
+                max-width: 260px;
+                flex: 0 1 260px;
+                @include border-box();
+                cursor: pointer;
+                .close {
+                    position: absolute;
+                    right: 10px;
+                    top: 10px;
+                }
+                .media {
+                    max-width: 100%;
+                    height: 140px;
+                    @include border-box();
+                    background: #f8f8f8 url('~images/blog-default-img.png') no-repeat center center;
+                    div {
+                        width: 238px;
+                        height: 140px;
+                        background-position: center center;
+                        background-size: cover;
+                    }
+                }
+                .content {
+                    min-height: 60px;
+                    @include border-box();
+                    padding: 0;
+                    overflow: hidden;
+                    margin: 10px 0;
+                    .time {
+                        font-size: 13px;
+                        font-style: italic;
+                        color: #bcbcbc;
+                    }
+                    h3 {
+                        color: $sd-blue;
+                        padding: 0 0 5px 0;
+                        max-height: 54px;
+                        font-size: 16px;
+                        line-height: 20px;
+                        white-space: nowrap;
+                          overflow: hidden;
+                          text-overflow: ellipsis;
+                    }
+                    .description {
+                        min-height: 30px;
+                        font-size: 12px;
+                        line-height: 15px;
+                        color: $gray;
+                        overflow: hidden;
+                    }
+                }
+                .footer {
+                    height: 65px;
+                    border-top: 1px solid #ebebeb;
+                    padding: 10px 10px 5px 10px;
+                    margin: 0 -10px;
+                    @include border-box();
+                    dl {
+                        margin: 0;
+                        font-size: 11px;
+                        dt {
+                            @include text-light();
+                            clear: both;
+                            float: left;
+                            color: #b4b4b4;
+                            font-weight: 400;
+                            line-height: 12px;
+                            min-width: 82px;
+                            text-transform: uppercase;
+                            margin: 2px 0;
+                        }
+                        dd {
+                            @include text-light();
+                            float: left;
+                            width: 145px;
+                            font-weight: 400;
+                            line-height: 12px;
+                            word-wrap: break-word;
+                            margin: 2px 0 2px 9px;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+.creation-steps {
+    margin-top: 50px;
+    .form-box {
+        min-height: 95px;
+    }
+    .text-editor {
+        min-height: 95px;
+    }
+}
+
+.item-creation{
+    .form-box {
+        min-height: 145px;
+    }
+    .text-editor {
+        min-height: 145px;
+    }
+}
+
+.settings-page {
+    .form-box {
+        min-height: 95px;
+    }
+    .text-editor {
+        min-height: 95px;
+    }
+}
+.default-cursor {
+    cursor: default;
+}
+.team_settings {
+    .search-result {
+        background: #fff none repeat scroll 0 0;
+        border: 1px solid #ddd;
+        bottom: 20px;
+        left: 40px;
+        overflow: auto;
+        padding: 10px;
+        position: absolute;
+        right: 40px;
+        top: 101px;
+        z-index: 1;
+    }
+    .member-list ul > li {
+        border: 1px solid transparent;
+        border-radius: 3px;
+        float: left;
+        margin: 5px;
+        padding: 15px 10px;
+        position: relative;
+        width: 115px;
+    }
+    .member-list ul > li .name {
+        text-align: center;
+        width: 115px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .member-list ul>li:hover {
+        border-color: rgba(0,0,0,.12);
+        box-shadow: 0 1px 3px 0 rgba(0,0,0,.3);
+        .icon-close-small {
+            display: inline-block;
+        }
+    }
+    .member-list ul > li .avatar {
+        display: block;
+        width: 84px;
+        height: 84px;
+        float: none;
+        margin: 0 auto 10px;
+    }
+    .member-list ul > li i {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        display: none;
+        opacity: .6;
+        filter: alpha(opacity=60);
+    }
+
+
+}
+
+div.button-stack.right-stack.create-blog {
+    position: absolute;
+    right: 0;
+}

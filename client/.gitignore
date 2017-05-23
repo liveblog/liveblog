@@ -6,7 +6,6 @@ dist
 *.swp
 .tmp
 .sass-cache
-app/scripts/bower_components
 app/styles/css/bootstrap.css
 po/
 report/

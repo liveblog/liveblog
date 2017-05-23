@@ -1,4 +1,4 @@
-var login = require('../app/scripts/bower_components/superdesk/client/spec/helpers/utils').login,
+var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     logout = require('./helpers/utils').logout,
     waitAndClick = require('./helpers/utils').waitAndClick,
     blogs = require('./helpers/pages').blogs;
@@ -13,14 +13,20 @@ describe('Blogs list', function() {
         title: 'new blog title',
         description: 'new blog description',
         username: 'Edwin the admin'
-    }, newBlogImage = {
+    }, 
+    newBlogImage = {
         title: 'new blog title',
         description: 'new blog description',
         username: 'Edwin the admin',
         picture_url: './upload/-busstop-jpg-1600-900.jpg'
     };
 
-    beforeEach(function(done) {login().then(done);});
+    beforeEach(function(done) {
+      browser.ignoreSynchronization = true;
+      login()
+        .then(() => browser.ignoreSynchronization = false)
+        .then(done);
+    });
 
     describe('list', function() {
 
@@ -72,7 +78,10 @@ describe('Blogs list', function() {
 
         it('can request access to a blog by a non member', function() {
             logout();
+            browser.ignoreSynchronization = true;
+
             login('contributor', 'contributor').then(function() {
+                browser.ignoreSynchronization = false;
                 //request for blog dialog opens instead of the the blog
                 blogs.openBlog(1);
                 browser.wait(function() {
@@ -80,7 +89,10 @@ describe('Blogs list', function() {
                 });
                 element(by.css('button[ng-click="requestAccess(accessRequestedTo)"]')).click();
                 logout();
+                browser.ignoreSynchronization = true;
+
                 login('admin', 'admin').then(function() {
+                    browser.ignoreSynchronization = false;
                     blogs.openBlog(1).openSettings().then(function(settingsPage) {
                         return settingsPage.openTeam();
                     })

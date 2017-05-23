@@ -76,9 +76,11 @@
                 method:'GET',
                 transformResponse: function(user) {
                     user = angular.fromJson(user);
-                    var thumbnail = thumbnailRendition(user.avatar_renditions);
-                    user.picture_url =thumbnail? thumbnail : user.picture_url;
-                    user.picture_srcset = srcSet(user.avatar_renditions);
+                    if(user.picture_url !== null) {
+                        var thumbnail = thumbnailRendition(user.avatar_renditions);
+                        user.picture_url =thumbnail? thumbnail : user.picture_url;
+                        user.picture_srcset = srcSet(user.avatar_renditions);
+                    }
                     return user;
                 },
                 cache: CacheFactory.get('usersCache')}
@@ -89,7 +91,14 @@
     Posts.$inject = ['$resource', 'config', 'users', 'srcSet', 'fixProtocol'];
     function Posts($resource, config, users, srcSet, fixProtocol) {
         function _completeUser(obj) {
-            if (obj.commenter) {
+            if (obj.syndication_in && obj.mainItem) {
+                // lb-author looks for original creator name only in mainItem
+                obj.mainItem.original_creator = {
+                    display_name: obj.syndication_in.producer_blog_title,
+                    byline: obj.syndication_in.producer_blog_title,
+                    sign_off: obj.syndication_in.producer_blog_title
+                };
+            } else if (obj.commenter) {
                 obj.original_creator = {display_name: obj.commenter};
             } else if(obj.original_creator !== "" && obj.original_creator !== 'None'){
                 users.get({userId: obj.original_creator}, function(user) {
@@ -105,7 +114,7 @@
             }
             return obj;
         }
-        return $resource(config.api_host + 'api/client_blogs/:blogId/posts', {blogId: config.blog._id}, {
+        return $resource(config.api_host + 'api/client_blogs/:blogId/posts?embedded={"syndication_in":1}', {blogId: config.blog._id}, {
             get: {
                 transformResponse: function(posts) {
                     // decode json
@@ -146,7 +155,7 @@
                             });
                         }
                         // replace the creator id by the user object
-                        _completeUser(post);
+                        post = _completeUser(post);
                     });
                     return posts;
                 }
@@ -164,12 +173,18 @@
         return $resource(config.api_host + 'api/client_items/');
     }
 
+    Outputs.$inject = ['$resource', 'config'];
+    function Outputs($resource, config) {
+        return $resource(config.api_host + 'api/client_advertisement_outputs/:id')
+    }
+
     angular.module('liveblog-embed')
         .service('users', Users)
         .service('posts', Posts)
         .service('blogs', Blogs)
         .service('comments', Comments)
         .service('items', Items)
+        .service('outputs', Outputs)
         .factory('transformBlog',transformBlog)
         .factory('srcSet', srcSet)
         .factory('thumbnailRendition', thumbnailRendition);
