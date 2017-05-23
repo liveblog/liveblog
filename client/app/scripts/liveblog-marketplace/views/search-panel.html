@@ -54,6 +54,30 @@
                     </div>
                 </div>
             </div>
+
+            <div class="filter-title">
+                <div class="toggle-box">
+                    <div class="toggle-box__header">
+                        <div class="toggle-box__chevron">
+                            <i class="icon-chevron-right-thin"></i>
+                        </div>
+                        <div class="toggle-box__label">{{:: 'Languages' | translate}}</div>
+                    </div>
+                    <div class="toggle-box__content">
+                        <ul class="filter-box">
+                            <li
+                                ng-repeat="language in languages track by language.code"
+                                ng-click="toggleFilter('language', language.code)">
+                                <span
+                                    class="sd-checkbox"
+                                    ng-checked="hasFilter('language', language.code)"></span>
+                                <span>{{ key | translate}} <i>{{ language.name }}</i></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 

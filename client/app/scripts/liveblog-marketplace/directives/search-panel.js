@@ -17,6 +17,11 @@ export default function lbSearchPanel(MarketplaceActions) {
                 "Technology"
             ];
 
+            scope.languages = [
+                {code: 'en', name: 'English'},
+                {code: 'de', name: 'Deutsch'}
+            ];
+
             scope.store.connect(function(state) {
                 scope.marketers = state.marketers;
                 scope.filters = state.filters;
