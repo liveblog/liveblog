@@ -17,20 +17,23 @@ export default function lbSearchPanel(MarketplaceActions) {
                 "Technology"
             ];
 
-            scope.store.connect(function(state) {
+            scope.languages = [
+                {code: 'en', name: 'English'},
+                {code: 'de', name: 'Deutsch'}
+            ];
+
+            scope.store.connect((state) => {
                 scope.marketers = state.marketers;
                 scope.filters = state.filters;
             });
 
-            scope.toggleFilter = function(type, value) {
+            scope.toggleFilter = (type, value) => {
                 MarketplaceActions.toggleFilter(scope.filters, type, value);
             };
 
-            scope.hasFilter = function(type, value) {
-                return (scope.filters
-                    && scope.filters.hasOwnProperty(type)
-                    && scope.filters[type] === value);
-            };
+            scope.hasFilter = (type, value) => scope.filters
+                && scope.filters.hasOwnProperty(type)
+                && scope.filters[type] === value;
 
             scope.close = function() {
                 MarketplaceActions.togglePanel(false);
