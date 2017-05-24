@@ -8,11 +8,12 @@ lbPost.$inject = [
     'modal',
     'blogSecurityService',
     '$document',
-    'instagramService'
+    'instagramService',
+    '$rootScope'
 ];
 
 export default function lbPost(notify, gettext, asset, postsService, modal,
-    blogSecurityService, $document, instagramService) {
+    blogSecurityService, $document, instagramService, $rootScope) {
     return {
         scope: {
             post: '=',
@@ -74,6 +75,7 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                     postsService.remove(angular.copy(post)).then(function(message) {
                         notify.pop();
                         notify.info(gettext('Removing post...'));
+                        $rootScope.$broadcast('removing_timeline_post', {post:post});
                     }, function() {
                         notify.pop();
                         notify.error(gettext('Something went wrong'));

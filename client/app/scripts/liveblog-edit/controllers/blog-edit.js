@@ -180,6 +180,13 @@ export default function BlogEditController(
 
     $scope.enableEditor = true;
 
+    $scope.$on('removing_timeline_post', function(event, data) {
+        // if we try to remove a post that is currentry being edited, reset the editor
+        if ($scope.currentPost && $scope.currentPost._id === data.post._id) {
+            cleanEditor();
+        }
+    })  
+
     // remove and clean every items from the editor
     function cleanEditor(actionDisabled) {
         $scope.enableEditor = false;
