@@ -46,7 +46,8 @@ export default function marketplaceController($scope, Store, MarketplaceActions,
         marketers: { _items: [] },
         filters: filters,
         searchPanel: true,
-        embedModal: false
+        embedModal: false,
+        languages: []
     });
 
     $scope.store.connect(function(state) {
@@ -73,4 +74,5 @@ export default function marketplaceController($scope, Store, MarketplaceActions,
 
     MarketplaceActions.getBlogs(filters);
     MarketplaceActions.getMarketers();
+    MarketplaceActions.getLanguages();
 }
