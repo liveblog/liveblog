@@ -188,14 +188,14 @@ USE_S3 = FLASK_ASSETS_USE_S3
 
 SUPPORTED_LANGUAGES = {
     'languages': {
-        'en': 'English',
-        'fr': 'French',
-        'de': 'Deutsch',
-        'fi': 'Finnish',
-        'nl': 'Nederlands',
-        'no': 'Norsk',
-        'cs': 'Čeština',
-        'ro': 'Romania'
+        'en': 'english',
+        'fr': 'french',
+        'de': 'deutsch',
+        'fi': 'finnish',
+        'nl': 'nederlands',
+        'no': 'norsk',
+        'cs': 'čeština',
+        'ro': 'română'
     }
 }
 
