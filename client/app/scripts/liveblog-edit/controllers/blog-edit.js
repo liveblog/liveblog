@@ -457,8 +457,8 @@ export default function BlogEditController(
                     $scope.$digest();
                 }
             },
-            notPending: function() {
-                $scope.actionPending = false;
+            setPending: function(value) {
+                $scope.actionPending = value;
             },
             coverMaxWidth: 350,
             embedService: embedService,

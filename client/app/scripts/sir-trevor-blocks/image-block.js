@@ -114,7 +114,9 @@ export default function imageBlock(SirTrevor, config) {
             }, this));
 
             this.$('[data-icon="close"]').on('click', function() {
-                that.getOptions().notPending();
+                that.getOptions().setPending(false);
+                let addContentBtns = new AddContentBtns();
+                addContentBtns.show();
             });
 
             this.$inputs.find('.st-block__dropzone')[0].addEventListener('drop', _.bind(function(ev) {
