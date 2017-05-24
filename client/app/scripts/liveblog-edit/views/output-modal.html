@@ -99,9 +99,15 @@
                             <div class="preview" ng-if="vm.output.preview_logo.url">
                                 <div class="crop-area">
                                     <div class="preview">
-                                        <div class="preview-large">
-                                            <img ng-src="{{vm.output.preview_logo.url}}" class="preview-target-1">
-                                        </div>
+                                        <div sd-plain-image
+                                            data-src="vm.output.preview_logo.url"
+                                            data-progress-width="vm.output.progress_logo.width"
+                                            data-file="vm.output.preview_logo.img"
+                                            data-min-width="20"
+                                            data-min-height="20"
+                                            data-max-height="50"
+                                            data-max-width="250"
+                                        ></div>
                                     </div>
                                 </div>
                                 <figure class="ads-media-buttons">
