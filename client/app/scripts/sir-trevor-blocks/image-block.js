@@ -113,6 +113,10 @@ export default function imageBlock(SirTrevor, config) {
                 this.onDrop(ev.currentTarget);
             }, this));
 
+            this.$('[data-icon="close"]').on('click', function() {
+                that.getOptions().notPending();
+            });
+
             this.$inputs.find('.st-block__dropzone')[0].addEventListener('drop', _.bind(function(ev) {
                 this.onRemoteDrop(ev.dataTransfer);
             }, this));
