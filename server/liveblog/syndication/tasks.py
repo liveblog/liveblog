@@ -30,7 +30,7 @@ def send_post_to_consumer(self, syndication_out, producer_post, action='created'
 
 
 @celery.task(bind=True)
-def send_posts_to_consumer(self, syndication_out, action='created', limit=25, post_status='submitted'):
+def send_posts_to_consumer(self, syndication_out, action='created', limit=100, post_status='submitted'):
     """Send latest blog post updates to consumers webhook."""
     from .utils import extract_post_items_data, extract_producer_post_data
     consumers = get_resource_service('consumers')
@@ -46,8 +46,8 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=25, po
     if not start_date and limit:
         posts = posts.limit(limit)
 
-    # Sort posts by _updated ASC
-    posts = posts.sort('_updated', 1)
+    # Sort posts by order ASC so that posts are added in order in the consumer instance
+    posts = posts.sort('order', 1)
 
     try:
         for producer_post in posts:
