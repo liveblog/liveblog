@@ -25,6 +25,11 @@ class OutputsResource(Resource):
             'nullable': True
         },
         'picture': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
+        'logo': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
+        'logo_url': {
+            'type': 'string',
+            'nullable': True            
+        },
         'style': {
             'type': 'dict',
             'schema': {
