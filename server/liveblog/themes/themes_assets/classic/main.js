@@ -10,7 +10,7 @@
         var UPDATE_MANUALLY = config.settings.loadNewPostsManually;
         var UPDATE_STICKY_MANUALLY = !config.settings.livestream &&
                                         config.settings.loadNewPostsManually;
-        var UPDATE_EVERY = 1000; // retrieve update interval in millisecond
+        var UPDATE_EVERY = 10000; // retrieve update interval in millisecond
         var vm = this;
         var pagesManager = new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER, false),
             permalink = new Permalink(pagesManager, PERMALINK_DELIMITER);
@@ -27,17 +27,22 @@
 
         vm.enhance = function(all) {
             if(config.output && config.output.collection) {
-                // @TODO: add the settings on output.
-                var settings = config.output.settings || {frequency: 4, order: -1};
-                angular.forEach(config.output.collection.advertisements, function(ad, index){
-                    if(all.length > index * (settings.frequency+1) ) {
-                        if(settings.order === 1) {
-                            all.splice(index * (settings.frequency+1), 0, ad);
-                        } else {
-                            all.splice(all.length - index * (settings.frequency+1), 0, ad);
-                        }
-                    }
-                });
+                var settings = config.output.settings || {frequency: 4, order: -1},
+                    ads = config.output.collection.advertisements;
+                // console.log(ads);
+                var index;
+                if(settings.order === 1) {
+                    all.splice(0, 0, ads[0]);
+                    // for(let i=0; i < all.length; i+=settings.frequency) {
+                    //     index = i/settings.frequency % ads.length;
+                    //     console.log(i, index);
+                    //     // all.splice(i, 0, ads[index]);
+                    // }
+                } else {
+                    for(let i=all.length; i > 0; i-=settings.frequency) {
+
+                    }                    
+                }
             }
             return all;
         };
@@ -220,6 +225,10 @@
         }
 
         vm.isAd = function(post) {
+            if(!post.mainItem || !post.mainItem.item_type) {
+                console.log(JSON.stringify(post));
+                return;
+            }
             return (post.mainItem.item_type.indexOf('Advertisement') !== -1) ||
                     post.mainItem.item_type.indexOf('Advertisment') !== -1
         }

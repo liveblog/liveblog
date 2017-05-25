@@ -198,7 +198,16 @@
         {'id':'@id'}, {
             'get': {
                 method:'GET',
-                transformResponse: function(output) {
+                interceptor: {
+                    response: function(response) {      
+                        var result = response.resource;        
+                        // result.$status = response.status;
+                        console.log(response.status);
+                        return result;
+                    }
+                },
+                transformResponse: function(output, headers, statusCode) {
+                    console.log(statusCode);
                     output = angular.fromJson(output);
                     return transformOutput(output);
                 }
