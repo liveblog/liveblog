@@ -23,11 +23,7 @@
                         <span class="name">{{ ::post.mainItem.item.user.display_name }}</span> | <time>{{ post._created | reldate }}</time>
                     </div>
                     <div class="inline" ng-if="post.post_status == 'open'">
-                        <span
-                                class="name"
-                                lb-bind-html
-                                html-content="{{ post.mainItem.item.user.display_name || post.producer_blog_title }}">
-                        </span>
+                        <span class="name">{{ post.mainItem.item.user.display_name || post.producer_blog_title }}</span>
                         &nbsp;|
                         <time>{{ post.published_date | reldate }}</time>
                     </div>
