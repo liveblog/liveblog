@@ -50,6 +50,9 @@ class AdvertisementsService(BaseService):
         super().on_updated(updates, original)
         collections_service = get_resource_service('collections')
 
-        # deletes blog
+        # deletes advertisement from collection
         if updates.get('deleted', False):
             collections_service.delete_advertisement(original)
+        # updates the collections, (caching issues)
+        else:
+            collections_service.update_advertisement(original)
