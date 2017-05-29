@@ -1,4 +1,7 @@
 from liveblog.blogs.blogs import BlogsResource
+from liveblog.advertisements.collections import CollectionsService, CollectionsResource
+from liveblog.advertisements.outputs import OutputsService, OutputsResource
+from liveblog.advertisements.advertisements import AdvertisementsService, AdvertisementsResource
 from superdesk.services import BaseService
 from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, BlogPostsResource
 from superdesk.users.users import UsersResource
@@ -83,6 +86,57 @@ class ClientPostsResource(PostsResource):
 
 
 class ClientPostsService(PostsService):
+    pass
+
+
+class ClientCollectionsResource(CollectionsResource):
+    datasource = {
+        'source': 'collections',
+        'default_sort': [('name', 1)]
+    }
+    public_methods = ['GET']
+    public_item_methods = ['GET']
+    item_methods = ['GET']
+    resource_methods = ['GET']
+    schema = {}
+    schema.update(CollectionsResource.schema)
+
+
+class ClientCollectionsService(CollectionsService):
+    pass
+
+
+class ClientOutputsResource(OutputsResource):
+    datasource = {
+        'source': 'outputs',
+        'default_sort': [('name', 1)]
+    }
+    public_methods = ['GET']
+    public_item_methods = ['GET']
+    item_methods = ['GET']
+    resource_methods = ['GET']
+    schema = {}
+    schema.update(OutputsResource.schema)
+
+
+class ClientOutputsService(OutputsService):
+    pass
+
+
+class ClientAdvertisementsResource(AdvertisementsResource):
+    datasource = {
+        'source': 'advertisements',
+        'default_sort': [('name', 1)]
+    }
+    public_methods = ['GET']
+    public_item_methods = ['GET']
+    item_methods = ['GET']
+    resource_methods = ['GET']
+    schema = {}
+    schema.update(AdvertisementsResource.schema)
+
+
+class ClientAdvertisementsService(AdvertisementsService):
     pass
 
 
