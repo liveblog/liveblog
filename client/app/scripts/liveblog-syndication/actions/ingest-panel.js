@@ -38,7 +38,7 @@ export default function ingestPanelActions(Dispatcher, api, $http, config, momen
                 });
         },
         getProducers: function() {
-            api.producers.query()
+            api.producers.query({max_results: 1000}) // Bad hard coded number!
                 .then((producers) => {
                     Dispatcher.dispatch({
                         type: 'ON_GET_PRODUCERS',
