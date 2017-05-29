@@ -23,7 +23,7 @@ def is_relative_to_current_folder(url):
     return not (url.startswith('/') or url.startswith('http://') or url.startswith('https://'))
 
 
-def get_template_file_name(theme_name):
+def get_template_filename(theme_name):
     return os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme_name, 'template.html')
 
 

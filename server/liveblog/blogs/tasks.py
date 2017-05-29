@@ -45,6 +45,10 @@ def delete_embed(blog_id):
 
 def _publish_blog_embed_on_s3(blog_id, safe=True):
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    if not blog:
+        logger.warning('Unable to find blog "{}" for publishing!'.format(blog_id))
+        return
+
     if blog['blog_preferences'].get('theme', False):
         try:
             public_url = publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
