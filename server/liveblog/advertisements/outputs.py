@@ -28,7 +28,7 @@ class OutputsResource(Resource):
         'logo': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
         'logo_url': {
             'type': 'string',
-            'nullable': True            
+            'nullable': True
         },
         'style': {
             'type': 'dict',
