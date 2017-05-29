@@ -60,7 +60,8 @@
                 ng-click="timeline.comment = !timeline.comment"><i class="icon-comment"></i>{{ :: "Comment" | translate }}</button>
         </div>
         <div class="header-bar__logo">
-            <a href="https://www.liveblog.pro" target="_blank">
+            <img ng-if="timeline.output.logo_url" ng-src="{{ timeline.output.logo_url }}"/>
+            <a ng-if="!timeline.output.logo_url" href="https://www.liveblog.pro" target="_blank">  
                 <img ng-src="{{ timeline.templateDir}}images/lb-logo.svg"/>
             </a>
         </div>
