@@ -539,18 +539,23 @@ export default function BlogEditController(
     var panel = angular.isDefined($routeParams.panel)? $routeParams.panel : 'editor',
         syndId = angular.isDefined($routeParams.syndId) ? $routeParams.syndId : null;
 
-    $scope.ingestQueue = [];
+    // Here we define an object instead of simple array.
+    // because this variable needs to be update in the ingest-panel directive
+    // and the two way data binding will only work with an object!
+    $scope.ingestQueue = {queue: []};
 
     $scope.openPanel(panel, syndId);
 
     // This function is responsible for updating the ingest panel
     // unread count when this one isn't currently selected/displayed
     $scope.$on('posts', (e, data) => {
-        if ($scope.panelState !== 'ingest' && data.hasOwnProperty('posts')) {
+        if ($scope.panelState !== 'ingest'
+        && data.hasOwnProperty('posts')
+        && data.hasOwnProperty('created')) {
             let syndPosts = data.posts
                 .filter((post) => post.hasOwnProperty('syndication_in'));
 
-            $scope.ingestQueue = $scope.ingestQueue.concat(syndPosts);
+            $scope.ingestQueue.queue = $scope.ingestQueue.queue.concat(syndPosts);
         }
     });
 };

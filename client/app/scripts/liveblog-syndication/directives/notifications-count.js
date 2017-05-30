@@ -13,7 +13,7 @@ export default function notificationsCount() {
                 if (data.posts
                 && data.posts[0].syndication_in
                 && data.posts[0].auto_publish !== true
-                && data.updated === false
+                && data.hasOwnProperty('created')
                 && ingestPanels.indexOf(scope.panelState) === -1) {
                     scope.$apply(() => {
                         scope.count++;

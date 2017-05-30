@@ -7,6 +7,7 @@ export default function syndicationSwitch(api, $routeParams) {
         templateUrl: syndicationSwitchTpl,
         link: function(scope) {
             scope.enableSyndSwitch = true;
+            scope.consumers = [];
 
             var params = {
                 where: {
@@ -15,8 +16,17 @@ export default function syndicationSwitch(api, $routeParams) {
             };
 
             api.syndicationOut.query(params).then(function(syndOuts) {
-                if (syndOuts._items.length > 0)
+                if (syndOuts._items.length > 0) {
                     scope.enableSyndSwitch = false;
+
+                    syndOuts._items.forEach((syndOut) => {
+                        api.consumers.getById(syndOut.consumer_id).then((consumer) => {
+                            console.log('consumer', consumer);
+                            consumer.contact = `${consumer.contacts[0].first_name}`;
+                            scope.consumers.push(consumer);
+                        });
+                    })
+                }
             });
         }
     };
