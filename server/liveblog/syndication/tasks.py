@@ -47,7 +47,7 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=100, p
         posts = posts.limit(limit)
 
     # Sort posts by order ASC so that posts are added in order in the consumer instance
-    posts = posts.sort('order', 1)
+    posts = posts.sort('order', -1)
 
     try:
         for producer_post in posts:
