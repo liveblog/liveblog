@@ -94,7 +94,7 @@ export default function ingestPanel(
 
             // This watches for incoming posts when ingest is in focus
             scope.$on('posts', (e, data) => {
-                if (data.posts) {
+                if (data.posts && data.hasOwnProperty('created')) {
                     let syndPosts = data.posts
                         .filter((post) => post.hasOwnProperty('syndication_in'));
 
@@ -112,7 +112,10 @@ export default function ingestPanel(
                 scope.openPanel('incoming-syndication', synd._id);
             };
 
-            scope.$on('$destroy', scope.store.destroy);
+            scope.$on('$destroy', () => {
+                scope.ingestQueue = [];
+                scope.store.destroy();
+            });
         }
     };
 }

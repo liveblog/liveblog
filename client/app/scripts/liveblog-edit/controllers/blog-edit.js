@@ -546,7 +546,9 @@ export default function BlogEditController(
     // This function is responsible for updating the ingest panel
     // unread count when this one isn't currently selected/displayed
     $scope.$on('posts', (e, data) => {
-        if ($scope.panelState !== 'ingest' && data.hasOwnProperty('posts')) {
+        if ($scope.panelState !== 'ingest'
+        && data.hasOwnProperty('posts')
+        && data.hasOwnProperty('created')) {
             let syndPosts = data.posts
                 .filter((post) => post.hasOwnProperty('syndication_in'));
 
