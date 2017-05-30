@@ -112,9 +112,7 @@ export default function ingestPanel(
                 scope.openPanel('incoming-syndication', synd._id);
             };
 
-            scope.$on('$destroy', () => {
-                scope.store.destroy();
-            });
+            scope.$on('$destroy', scope.store.destroy);
         }
     };
 }
