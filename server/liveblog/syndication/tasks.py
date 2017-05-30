@@ -48,9 +48,14 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=100, p
 
     # Sort posts by order ASC so that posts are added in order in the consumer instance
     posts = posts.sort('order', -1)
+    array = []
 
     try:
-        for producer_post in posts:
+        for element in posts:
+            array.append(element)
+
+        array.reverse()
+        for producer_post in array:
             # Don't forward syndicated posts
             if 'syndication_in' in producer_post.keys():
                 continue
