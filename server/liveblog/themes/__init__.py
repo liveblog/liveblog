@@ -1,12 +1,11 @@
 import superdesk
 from .themes import ThemesService, ThemesResource
 from .themes import upload_theme_blueprint, themes_assets_blueprint
-from .themes import ASSETS_DIR
 from .themes import UnknownTheme
 from .commands import RegisterLocalThemesCommand
 from .utils import send_uploaded_static_file
 
-__all__ = ['upload_theme_blueprint', 'ThemesService', 'ThemesResource', 'ASSETS_DIR', 'UnknownTheme']
+__all__ = ['upload_theme_blueprint', 'ThemesService', 'ThemesResource', 'UnknownTheme']
 
 
 def init_app(app):

@@ -12,6 +12,7 @@ import json
 import logging
 import os
 import zipfile
+import tempfile
 from io import BytesIO
 
 import magic
@@ -22,7 +23,7 @@ from eve.io.mongo import MongoJSONEncoder
 from flask import current_app as app
 from flask import make_response, request
 from flask_cors import cross_origin
-from liveblog.blogs.app_settings import THEMES_ASSETS_DIR as ASSETS_DIR
+from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
 from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES, UPLOAD_THEMES_DIRECTORY, COMPILED_TEMPLATES_PATH
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError, SuperdeskError
@@ -34,7 +35,7 @@ from .template.loaders import ThemeTemplateLoader
 
 logger = logging.getLogger('superdesk')
 CURRENT_DIRECTORY = os.path.dirname(os.path.realpath(__file__))
-LOCAL_THEMES_DIRECTORY = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR)
+LOCAL_THEMES_DIRECTORY = os.path.join(CURRENT_DIRECTORY, THEMES_ASSETS_DIR)
 CONTENT_TYPES = {
     '.css': 'text/css',
     '.js': 'application/javascript',
@@ -44,7 +45,7 @@ CONTENT_TYPES = {
 }
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
 download_theme_blueprint = superdesk.Blueprint('download_theme', __name__)
-themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=ASSETS_DIR)
+themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=THEMES_ASSETS_DIR)
 
 
 class ThemesResource(Resource):
@@ -258,6 +259,20 @@ class ThemesService(BaseService):
             os.makedirs(compiled_templates_path)
 
         return os.path.join(compiled_templates_path, theme_name)
+
+    def get_theme_assets_url(self, theme_name):
+        """
+        Get assets url for theme.
+
+        :param theme_name:
+        :return:
+        """
+
+        if self.is_local_theme(theme_name):
+            base_assets_dir = THEMES_ASSETS_DIR
+        else:
+            base_assets_dir = THEMES_UPLOADS_DIR
+        return '/{}/'.format('/'.join([base_assets_dir, theme_name]))
 
     @property
     def is_s3_storage_enabled(self):
@@ -524,34 +539,35 @@ def download_a_theme(theme_name):
         logger.info(error_message)
         raise UnknownTheme(error_message)
 
-    if themes.is_local_theme(theme_name):
-        theme_filepath = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR, theme_name)
-    else:
+    is_local = themes.is_local_theme(theme_name) or themes.is_uploaded_theme(theme_name)
+    if themes.is_s3_storage_enabled and not is_local:
         # TODO: download uploaded from upload dir if development, otherwise production.
         raise NotImplementedError
+    else:
+        theme_filepath = themes.get_theme_path(theme_name)
 
-    theme_zip = BytesIO()
-    themes_folder = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR)
+    with tempfile.TemporaryDirectory() as themes_folder:
+        theme_zip = BytesIO()
 
-    # keep the same nameing convention as we have in github.
-    zip_folder = 'lb-theme-{}-{}'.format(theme_name, theme.get('version', 'master'))
-    with zipfile.ZipFile(theme_zip, 'w') as tz:
-        # add all the files from the theme folder
-        for root, dirs, files in os.walk(theme_filepath):
-            # compile the root for zip.
-            zip_root = root.replace(os.path.join(themes_folder, theme_name), zip_folder)
-            # add dir itself (needed for empty dirs)
-            tz.write(os.path.join(root, "."), os.path.join(zip_root, "."))
-            for file in files:
-                # compile the path in the zip for the file.
-                tz.write(os.path.join(root, file), os.path.join(zip_root, file))
+        # keep the same nameing convention as we have in github.
+        zip_folder = 'lb-theme-{}-{}'.format(theme_name, theme.get('version', 'master'))
+        with zipfile.ZipFile(theme_zip, 'w') as tz:
+            # add all the files from the theme folder
+            for root, dirs, files in os.walk(theme_filepath):
+                # compile the root for zip.
+                zip_root = root.replace(os.path.join(themes_folder, theme_name), zip_folder)
+                # add dir itself (needed for empty dirs)
+                tz.write(os.path.join(root, "."), os.path.join(zip_root, "."))
+                for file in files:
+                    # compile the path in the zip for the file.
+                    tz.write(os.path.join(root, file), os.path.join(zip_root, file))
 
-    response = make_response(theme_zip.getvalue(), 200)
-    response.headers['Cache-Control'] = 'no-cache'
-    response.headers['Content-Type'] = 'application/zip'
-    response.headers['Content-Disposition'] = 'attachment; filename={}.zip'.format(zip_folder)
-    # response.headers['X-Accel-Redirect'] = '{}.zip'.format(zip_folder)
-    return response
+        response = make_response(theme_zip.getvalue(), 200)
+        response.headers['Cache-Control'] = 'no-cache'
+        response.headers['Content-Type'] = 'application/zip'
+        response.headers['Content-Disposition'] = 'attachment; filename={}.zip'.format(zip_folder)
+        # response.headers['X-Accel-Redirect'] = '{}.zip'.format(zip_folder)
+        return response
 
 
 @upload_theme_blueprint.route('/theme-upload', methods=['POST'])

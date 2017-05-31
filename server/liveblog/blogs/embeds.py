@@ -25,8 +25,8 @@ from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
 from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
 
-from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR, THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
-from .utils import is_relative_to_current_folder, get_template_filename
+from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
+from .utils import is_relative_to_current_folder
 
 logger = logging.getLogger('superdesk')
 embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
@@ -70,7 +70,6 @@ def collect_theme_assets(theme, assets=None, template=None):
                 if theme.get('public_url', False):
                     url = '%s%s' % (theme.get('public_url'), url)
                 else:
-                    # TODO: add uploaded static
                     url = url_for(static_endpoint, filename=os.path.join(theme_folder, url), _external=False)
             assets[asset_type].append(url)
 
@@ -140,16 +139,10 @@ def embed(blog_id, api_host=None, theme=None):
     theme_service = get_resource_service('themes')
 
     # Compute the assets root.
-    # TODO: remove from embed view.
     if theme.get('public_url', False):
         assets_root = theme.get('public_url')
     else:
-        if theme_service.is_local_theme(theme_name):
-            base_assets_dir = THEMES_ASSETS_DIR
-        else:
-            base_assets_dir = THEMES_UPLOADS_DIR
-        assets_root = [base_assets_dir, blog_theme_name]
-        assets_root = '/%s/' % ('/'.join(assets_root))
+        assets_root = theme_service.get_theme_assets_url(theme)
 
     theme_settings = theme_service.get_default_settings(theme)
     l10n = theme.get('l10n', {})
@@ -191,7 +184,7 @@ def embed(blog_id, api_host=None, theme=None):
         # TODO: save amp inline css to the database
         amp_inline_css = theme.get('ampThemeInlineCss')
         if amp_inline_css:
-            theme_dirname = os.path.dirname(get_template_filename(theme['name']))
+            theme_dirname = theme_service.get_theme_path(theme_name)
             amp_inline_css_filename = os.path.join(theme_dirname, amp_inline_css)
             if os.path.exists(amp_inline_css_filename):
                 with open(amp_inline_css_filename, 'r') as f:
