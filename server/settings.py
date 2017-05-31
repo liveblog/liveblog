@@ -190,7 +190,12 @@ SUPPORTED_LANGUAGES = {
     'languages': {
         'en': 'english',
         'fr': 'french',
-        'de': 'deutsch'
+        'de': 'deutsch',
+        'fi': 'finnish',
+        'nl': 'nederlands',
+        'no': 'norsk',
+        'cs': 'čeština',
+        'ro': 'română'
     }
 }
 
