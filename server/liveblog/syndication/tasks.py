@@ -36,8 +36,6 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=50, po
     consumers = get_resource_service('consumers')
     blog_id = syndication_out['blog_id']
     posts_service = get_resource_service('posts')
-    #start_date = syndication_out.get('start_date')
-    #auto_retrieve = syndication_out.get('auto_retrieve')
     lookup = {'blog': blog_id, ITEM_TYPE: CONTENT_TYPE.COMPOSITE, 'deleted': False, 'post_status': 'open'}
 
     posts = posts_service.find(lookup)
