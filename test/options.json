@@ -164,7 +164,7 @@
     "showGallery":true,
     "postsPerPage":10,
     "language":"en",
-    "postOrder":"oldest_first",
+    "postOrder":"editorial",
     "showDescription":true,
     "permalinkDelimiter":"?",
     "showImage":false,
