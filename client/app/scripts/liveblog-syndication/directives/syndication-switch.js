@@ -21,7 +21,6 @@ export default function syndicationSwitch(api, $routeParams) {
 
                     syndOuts._items.forEach((syndOut) => {
                         api.consumers.getById(syndOut.consumer_id).then((consumer) => {
-                            console.log('consumer', consumer);
                             consumer.contact = `${consumer.contacts[0].first_name}`;
                             scope.consumers.push(consumer);
                         });
