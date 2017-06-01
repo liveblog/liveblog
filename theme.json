@@ -129,6 +129,13 @@
             "type": "checkbox",
             "default": true,
             "help": "Block search engines from indexing my blogs"
+        },
+        {
+            "name": "showGallery",
+            "label": "Show slideshow gallery",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users will see the slideshow gallery for multiple images posts"
         }
     ],
     "l10n": {
