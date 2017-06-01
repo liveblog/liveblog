@@ -38,7 +38,10 @@
         <!-- empty state -->
         <div ng-if="blogs._meta.total === 0" class="empty-state">
             <div translate>No blogs found.</div>
-            <button ng-if="activeState.code === 'open'" class="btn btn--primary btn-large" ng-click="openNewBlog();">
+            <button
+                ng-if="activeState.code === 'open' && isUserAllowedToCreateABlog();"
+                class="btn btn--primary btn-large"
+                ng-click="openNewBlog();">
                 <i class="svg-icon-add inverse"></i>
                 <span class="title" translate>Create a Blog</span>
             </button>
@@ -187,7 +190,6 @@
                                                 <div class="input-holder">
                                                     <input type="file" accept="image/*;capture=camera" ngf-select="preview.img = $files[0]" label="{{ 'or Select from computer' | translate }}">
                                                 </div>
-                                                <div class="info" translate>The minimum image resolution is 200x200 pixels.</div>
                                                 </div>
                                             </div>
 
@@ -202,15 +204,6 @@
                                             </div>
                                         </div>
                                     </section>
-
-
-
-                                    <!--<div sd-item-association-->
-                                    <!--    data-item="item"-->
-                                    <!--    data-rel="'featureimage'"-->
-                                    <!--    data-editable="_editable"-->
-                                    <!--    data-onchange="autosave(item)"-->
-                                    <!--    data-save="save()"></div>-->
                                 </div>
                             </div>
                         </fieldset>
@@ -227,7 +220,7 @@
                               <p>To unassign a team member from this blog, simply move your mouse above the below users and click on the X.</p>
                               <p>Want to upgrade to a plan more suitable to your needs? Email us at <a href="{{settings.mailto}}">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
                             </div>
- 
+
                             <div
                                 lb-user-select-list
                                 data-members="blogMembers"
@@ -266,11 +259,11 @@
                         class="btn btn-default pull-left"
                         translate
                         ng-click="switchTab('Details')">Back</button>
-                    <button 
-                        type="button" 
-                        class="btn btn--primary" 
+                    <button
+                        type="button"
+                        class="btn btn--primary"
                         ng-hide="creationInProcess"
-                        translate 
+                        translate
                         ng-click="createBlog()">Create</button>
                 </div>
             </div>

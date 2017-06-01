@@ -196,17 +196,21 @@ class ThemesService(BaseService):
                     if content_type == 'text/plain' and name.endswith(tuple(CONTENT_TYPES.keys())):
                         content_type = CONTENT_TYPES[os.path.splitext(name)[1]]
                     final_file_name = os.path.relpath(name, CURRENT_DIRECTORY)
+                    version = theme.get('version', True)
+                    # don't use version for the `parent-iframe.js` script
+                    # requering the version for this will be done from the client.
+                    if name.endswith('parent-iframe.js'):
+                        version = False
                     # remove existing first
-                    # TO DO: add version parameter to media_id() after merging related core-changes in
-                    # amazon_media_storage and desk_media storage
-                    # version = theme.get('version', True)
                     app.media.delete(app.media.media_id(final_file_name,
-                                                        content_type=content_type
+                                                        content_type=content_type,
+                                                        version=version
                                                         ))
                     # upload
                     file_id = app.media.put(file.read(),
                                             filename=final_file_name,
-                                            content_type=content_type
+                                            content_type=content_type,
+                                            version=version
                                             )
                     # save the screenshot url
                     if name.endswith('screenshot.png'):
@@ -286,17 +290,24 @@ class ThemesService(BaseService):
         # for t in self.get_children(theme['name']) + [theme['name']]:
         #     terms.append({'term': {'blog_preferences.theme': t}})
         blogs = get_resource_service('blogs').get(req=None, lookup={})
+        outputs = get_resource_service('outputs').get(req=None, lookup={})
         # get all the children for the theme that we modify the settings for
         theme_children = self.get_children(theme.get('name'))
         for blog in blogs:
             blog_pref = blog.get('blog_preferences')
-            if blog_pref['theme'] == theme['name']:
+            if blog_pref.get('theme') == theme['name']:
+                for output in outputs:
+                    if output.get('blog') == blog.get('_id'):
+                        publish_blog_embed_on_s3.delay(str(blog['_id']), output=output)
                 publish_blog_embed_on_s3.delay(str(blog['_id']))
             if theme_children:
                 # if a blog has associated the theme that is a  child of the one
                 # for which we modify the settings, we redeploy the blog on s3
                 for child in theme_children:
-                    if blog_pref['theme'] == child:
+                    if blog_pref.get('theme') == child:
+                        for output in outputs:
+                            if output.get('blog') == blog.get('_id'):
+                                publish_blog_embed_on_s3.delay(str(blog['_id']), output=output)
                         publish_blog_embed_on_s3.delay(str(blog['_id']))
                         break
         return blogs

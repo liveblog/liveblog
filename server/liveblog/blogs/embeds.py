@@ -248,6 +248,13 @@ def tojson(obj):
     return json.dumps(obj, cls=MongoJSONEncoder)
 
 
+@embed_blueprint.app_template_filter('tostyle')
+def tostyle(obj):
+    if obj:
+        return ','.join(["{}: {}".format(key, value) for (key, value) in obj.items()])
+    return ''
+
+
 @embed_blueprint.app_template_filter('is_relative_to_current_folder')
 def is_relative_to_current_folder_filter(s):
     return is_relative_to_current_folder(s)

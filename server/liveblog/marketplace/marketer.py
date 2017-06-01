@@ -44,12 +44,16 @@ def marketers():
         url = MARKETPLACE_APP_URL
         if not url.endswith('/'):
             url = '{}/'.format(url)
-        content = json.loads(response.content.decode('utf-8'))
-        for item in content['_items']:
-            picture_url = item['picture_url']
-            picture_url = picture_url.replace("/api/", "")
-            item['picture_url'] = url + picture_url
-        response_content = json.dumps(content)
+        response_content = ''
+        try:
+            content = json.loads(response.content.decode('utf-8'))
+            for item in content['_items']:
+                picture_url = item['picture_url']
+                picture_url = picture_url.replace("/api/", "")
+                item['picture_url'] = url + picture_url
+            response_content = json.dumps(content)
+        except Exception as e:
+            logger.warning('Exception on attempt to parse response from marketplace app: {}'.format(str(e)))
         return api_response(response_content, response.status_code, json_dumps=False)
     else:
         return api_error('Unable to get marketers.', response.status_code)

@@ -355,7 +355,9 @@ export default function BlogListController(
                     source: {
                         query: {
                             filtered: {filter: {and: [
-                                {term: {post_status: 'open'}}, {term: {blog: blog._id}}
+                                {term: {post_status: 'open'}},
+                                {term: {deleted: false}},
+                                {term: {blog: blog._id}}
                             ]}}
                         }, sort: [{published_date: 'asc'}]}
                 };

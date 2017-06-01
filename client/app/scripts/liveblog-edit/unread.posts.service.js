@@ -70,6 +70,14 @@ export default function unreadPostsService($rootScope) {
         if (event_params.post_status === 'submitted') {
             contributions = contributions.concat(event_params.posts);
         }
+
+        if (event_params.updated) {
+            // Update unread comment array
+            event_params.posts.forEach((post) => {
+                comments = comments
+                    .filter((comment) => comment.id !== post._id);
+            });
+        }
     }
     return {
         isContribution: isContribution,

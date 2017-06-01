@@ -215,20 +215,21 @@ export default function BlogEditController(
 
         var scorecards = {
             name: 'Scorecard',
-            template: $templateCache.get(scorecardsTpl)
+            template: $templateCache.get(scorecardsTpl),
+            separator: true
         };
 
         var adLocal = {
-            name: 'Advertisment Local',
+            name: 'Advertisement Local',
             template: $templateCache.get(adsLocalTpl)
         };
 
         var adRemote = {
-            name: 'Advertisment Remote',
+            name: 'Advertisement Remote',
             template: $templateCache.get(adsRemoteTpl)
         };
 
-        $q.all([userFt, adLocal, adRemote, scorecards]).then(function(freetypes) {
+        $q.all([adLocal, adRemote, scorecards, userFt]).then(function(freetypes) {
             angular.forEach(freetypes, function(freetype) {
                 if (angular.isArray(freetype)) {
                     $scope.freetypes = $scope.freetypes.concat(freetype);
@@ -456,6 +457,9 @@ export default function BlogEditController(
                     $scope.$digest();
                 }
             },
+            setPending: function(value) {
+                $scope.actionPending = value;
+            },
             coverMaxWidth: 350,
             embedService: embedService,
             // provide an uploader to the editor for media (custom sir-trevor image block uses it)
@@ -464,6 +468,7 @@ export default function BlogEditController(
                 var handleError = function(response) {
                     // call the uploader callback with the error message as parameter
                     error_callback(response.data? response.data._message : undefined);
+                    $scope.actionPending = true;
                 };
                 // return a promise of upload which will call the success/error callback
                 return api.archive.getUrl().then(function(url) {

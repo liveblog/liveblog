@@ -70,6 +70,21 @@ $PADDING: 20px;
             position: relative;
         }
     }
+    .outputs {
+        .add-new-div {
+            float: right!important;
+            top: -11px;
+            right: -22px;
+            button {
+                top: -8px;
+            }
+        }
+        .header {
+            h2 {
+                display: inline;
+            }
+        }
+    }
     .dropdown-content {
         background-color: #fff;
         border: 1px solid #c6c6c6;
