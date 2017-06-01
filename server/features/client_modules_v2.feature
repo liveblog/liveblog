@@ -25,10 +25,22 @@ Feature: Blog v2 operations
         [
           {
             "original_creator": "#CONTEXT_USER_ID#",
-            "item_type": "text",
+            "item_type": "embed",
             "particular_type": "item",
-            "text": "Item #01",
-            "blog": "#blogs._id#"
+            "text": "Item #01 (embed)",
+            "blog": "#blogs._id#",
+            "meta": {
+              "author_name": "Google Chrome Developers",
+              "author_url": "https://www.youtube.com/user/ChromeDevelopers",
+              "credit": "YouTube | by Google Chrome Developers",
+              "description": "...",
+              "provider_name": "YouTube",
+              "provider_url": "https://www.youtube.com/",
+              "original_url": "https://www.youtube.com/watch?v=lBTCB7yLs8Y",
+              "type": "video",
+              "width": "350",
+              "height": "197"
+            }
           },
           {
             "original_creator": "#CONTEXT_USER_ID#",
@@ -314,8 +326,16 @@ Feature: Blog v2 operations
         """
         And we get "/v2/client_blogs/#blogs._id#/posts"
         Then we get list with 10 items
+        When we get "/v2/client_blogs/#blogs._id#/posts?ordering=newest_first"
+        Then we get list with 10 items
+        When we get "/v2/client_blogs/#blogs._id#/posts?ordering=oldest_first"
+        Then we get list with 10 items
+        When we get "/v2/client_blogs/#blogs._id#/posts?ordering=editorial"
+        Then we get list with 10 items
         When we get "/v2/client_blogs/#blogs._id#/posts?sticky=1"
         Then we get list with 1 items
-        When we get "/v2/client_blogs/#blogs._id#/posts?highlight=1"
-        Then we get list with 1 items
+        When we get "/v2/client_blogs/#blogs._id#/posts?sticky=0"
+        Then we get list with 10 items
+        When we get "/v2/client_blogs/#blogs._id#/posts?highlight=false"
+        Then we get list with 10 items
 
