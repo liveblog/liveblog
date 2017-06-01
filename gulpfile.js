@@ -22,10 +22,9 @@ if (argvKey !== 0) {
     .match(/^(http:\/\/|https:\/\/|\/\/)([^/]+)\/(api\/client_blogs|embed)\/(\w+)/i);
 }
 
-if (match) {
+if (Object.keys(match) > 0) {
   [,protocol, apiHost,, blogId] = match;
 
-  console.log(`${protocol}${apiHost}/api/client_blogs/${blogId}/posts`);
   http.get(`${protocol}${apiHost}/api/client_blogs/${blogId}/posts`, (response) => {
     let body = '';
 
