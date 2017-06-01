@@ -142,7 +142,7 @@ def embed(blog_id, api_host=None, theme=None):
     if theme.get('public_url', False):
         assets_root = theme.get('public_url')
     else:
-        assets_root = theme_service.get_theme_assets_url(theme)
+        assets_root = theme_service.get_theme_assets_url(theme_name)
 
     theme_settings = theme_service.get_default_settings(theme)
     l10n = theme.get('l10n', {})
