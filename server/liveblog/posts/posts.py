@@ -171,7 +171,9 @@ class PostsService(ArchiveService):
             doc['order'] = self.get_next_order_sequence(doc.get('blog'))
             # if you publish a post directly which is not a draft it will have a published_date assigned
             if doc['post_status'] == 'open':
-                doc['published_date'] = utcnow()
+                # published date will be set in a syndicated post
+                if 'published_date' not in doc.keys():
+                    doc['published_date'] = utcnow()
                 doc['content_updated_date'] = doc['published_date']
                 doc['publisher'] = getattr(flask.g, 'user', None)
         super().on_create(docs)
@@ -245,7 +247,8 @@ class PostsService(ArchiveService):
             if not updates.get('content_updated_date', False):
                 updates['content_updated_date'] = updates['published_date']
             # assure that the item info is keept if is needed.
-            if original.get('post_status') == 'submitted' and updates.get('groups', False):
+            if original.get('post_status') == 'submitted' and original.get('original_creator', False) \
+                    and updates.get('groups', False):
                 item_resource = get_resource_service('items')
                 for container in updates['groups'][1]['refs']:
                     item_id = container.get('residRef')

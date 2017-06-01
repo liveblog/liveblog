@@ -43,7 +43,7 @@ cache:
     - $HOME/.npm
 
 before_install:
-    - nvm install node
+    - nvm install --lts node
     - nvm use node
     - node --version
     - npm config set loglevel warn
