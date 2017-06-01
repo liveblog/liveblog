@@ -91,6 +91,14 @@ var buttons = {
 
       el.addEventListener('click', buttons.handlers[handler], false);
     });
+
+    let slideshowImages = document.querySelectorAll('article.slideshow img');
+
+    if (slideshowImages) {
+      slideshowImages.forEach((image) => {
+        image.addEventListener('click', view.startSlideshow);
+      });
+    }
   }
 };
 

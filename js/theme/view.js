@@ -220,6 +220,41 @@ function displayCommentFormErrors(errors) {
   }
 }
 
+function startSlideshow(e) {
+  let items = [];
+
+  e.target
+    .closest('article.slideshow')
+    .querySelectorAll('.lb-item img')
+    .forEach((img) => {
+      let matches = [];
+
+      img.getAttribute('srcset').replace(/(\S+)\s\d+w/g, (s, match) => {
+        matches.push(match);
+      });
+
+      let [baseImage, thumbnail, viewImage] = matches;
+      items.push({
+        item: { meta: { media: { renditions: {
+          baseImage: { href: baseImage },
+          thumbnail: { href: thumbnail },
+          viewImage: { href: viewImage }
+        }}}}
+      });
+    });
+
+  let slideshow = templates.slideshow({
+    refs: items
+  });
+
+  document.querySelector('div.lb-timeline')
+    .insertAdjacentHTML('afterend', slideshow);
+}
+
+function getPostId(e) {
+  return e.target.closest('article.slideshow').getAttribute('data-js-post-id');
+}
+
 module.exports = {
   addPosts: addPosts,
   deletePost: deletePost,
@@ -233,5 +268,7 @@ module.exports = {
   toggleCommentDialog: toggleCommentDialog,
   showSuccessCommentMsg: showSuccessCommentMsg,
   displayCommentFormErrors: displayCommentFormErrors,
-  clearCommentFormErrors: clearCommentFormErrors
+  clearCommentFormErrors: clearCommentFormErrors,
+  startSlideshow: startSlideshow,
+  getPostId: getPostId
 };
