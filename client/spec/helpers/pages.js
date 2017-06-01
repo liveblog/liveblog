@@ -185,6 +185,85 @@ function FreetypesManagerPage() {
     };
 }
 
+function AdvertisingManagerPage() {
+    'use strict';
+    var self = this;
+    self.advertTitle = element(by.css('[ng-model="advert.name"]'));
+    self.collectionTitle = element(by.css('[ng-model="collection.name"]'));
+    self.advertEmbed = element(by.css('[ng-model="embed"]'));
+
+    self.getAdverts = function() {
+        return element.all(by.repeater('advert in adverts'));
+    };
+
+    self.getCollections = function() {
+        return element.all(by.repeater('collection in collections'));
+    };
+    self.openAdvertisingManager = function() {
+        element(by.css('[ng-click="toggleMenu()"]')).click();
+        browser.wait(function() {
+            return element(by.css('[href="#/advertising/"][title]')).isDisplayed();
+        });
+        waitAndClick(by.css('[href="#/advertising/"][title]'));
+        return self;
+    };
+    self.openAdvertsTab = function() {
+        waitAndClick(by.css('[ng-click="changeState(\'adverts\')"]'));
+        return self;
+    };
+    self.openCollectionsTab = function() {
+        waitAndClick(by.css('[ng-click="changeState(\'collections\')"]'));
+        return self;
+    };
+    self.saveAdvert = function() {
+        return element(by.css('[ng-click="saveAdvert()"]')).click();
+    };
+    self.saveCollection = function() {
+        return element(by.css('[ng-click="saveCollection()"]')).click();
+    };
+    self.openNewAdvertDialog = function() {
+        element(by.css('[dropdown__toggle]')).click();
+        browser.wait(function() {
+            return element(by.buttonText("Advertisement Remote")).isDisplayed();
+        });
+        element(by.buttonText("Advertisement Remote")).click();
+        return self;
+    };
+    self.openNewCollectionDialog = function() {
+        element(by.css('[ng-click="openCollectionDialog();"]')).click();
+    }
+    self.createAdvertData = function() {
+        return {
+            title: randomString(5),
+            embed: randomString(10)
+        };
+    };
+    self.editFreetype = function() {
+        var freeData = self.createAdvertData();
+        self.advertTitle.sendKeys(freeData.title);
+        self.advertEmbed.sendKeys(freeData.embed);
+        return self.saveAdvert().then(function() {return freeData;});
+    };
+    self.editCollection = function() {
+        var freeData = self.createAdvertData();
+        self.collectionTitle.sendKeys(freeData.title);
+        return self.saveCollection().then(function() {return freeData;});
+    }
+    self.removeAdvert = function(index) {
+        index = index || 0;
+        self.getAdverts().get(index).click().all(by.css('[ng-click="removeAdvert(advert, $index);"]')).click();
+        waitForModal();
+        okModal();
+    };
+    self.removeCollection = function(index) {
+        index = index || 0;
+        // self.getCollections().get(index).click().all(by.css('[ng-click="removeCollection(collection, $index)"]')).click();
+        self.getCollections().get(index).all(by.id('toggle-collection-menu')).click();
+        element(by.css('[ng-click="removeCollection(collection, $index)"]')).click();
+        okModal();
+    };
+}
+
 function ThemesManagerPage() {
     'use strict';
     var self = this;
@@ -497,7 +576,8 @@ function TimelinePage(blog) {
         var post = self.get(index);
         expect(self.getText(index)).toBe(data.text);
         if (data.username) {
-            expect(post.element(by.binding('post.mainItem.item.user.display_name')).getText()).toBe(data.username);
+            //expect(post.element(by.binding('post.mainItem.item.user.display_name')).getText()).toBe(data.username);
+            expect(post.element(by.css('.lb-post__header span.name')).getText()).toBe(data.username);
         }
         return self;
     };
@@ -685,6 +765,44 @@ function BlogSettingsPage(blog) {
             browser.waitForAngular();
             return self;
         });
+    };
+
+    self.openOutputs = function() {
+        return element(by.css('[data="blog-settings-outputs"] a')).click().then(function() {
+            browser.waitForAngular();
+            return self;
+        });
+    };
+
+    self.getOutputs = function() {
+        return element.all(by.repeater('output in settings.outputs'));
+    };
+
+    self.openOutputDialog = function() {
+        element(by.css('[ng-click="settings.openOutputDialog();"]')).click();
+    };
+
+    self.createOutputData = function() {
+        return {
+            title: randomString(5)
+        }
+    }
+
+    self.saveOutput = function() {
+        return element(by.css('[ng-click="vm.saveOutput()"]')).click();
+    }
+
+    self.editOutput = function() {
+        var outputData = self.createOutputData();
+        element(by.css('[ng-model="vm.output.name"]')).sendKeys(outputData.title);
+        return self.saveOutput().then(function() {return outputData;});
+    }
+
+    self.removeOutput = function(index) {
+        index = index || 0;
+        self.getOutputs().get(index).click();
+        element(by.css('[ng-click="settings.removeOutput(output, $index);"]')).click();
+        okModal();
     };
 
     self.switchStatus = function() {
@@ -878,3 +996,4 @@ exports.themeManager = new ThemesManagerPage();
 exports.consumersManagement = new ConsumersManagementPage();
 exports.producersManagement = new ProducersManagementPage();
 exports.freetypesManager = new FreetypesManagerPage();
+exports.advertisingManager = new AdvertisingManagerPage();

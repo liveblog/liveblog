@@ -191,7 +191,8 @@ def get_producer_post_id(in_syndication, post_id):
     )
 
 
-def extract_producer_post_data(post, fields=('_id', '_updated', 'lb_highlight', 'sticky', 'post_status')):
+def extract_producer_post_data(post, fields=('_id', '_updated', 'lb_highlight', 'sticky', 'post_status',
+                                             'published_date')):
     """Extract only useful data from original producer blog post."""
     return {key: post.get(key) for key in fields}
 
@@ -214,14 +215,13 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
     """Create syndicted blog post data using producer post, fetched items and incoming syndication."""
     post_items = []
     for item in items:
-        if item['item_type'] != 'embed':
+        if item['item_type'] == 'image':
             meta = item.pop('meta')
-            if item['item_type'] == 'image':
-                item = _fetch_and_create_image_item(
-                    renditions=meta['media']['renditions'],
-                    caption=meta['caption'],
-                    credit=meta['credit']
-                )
+            item = _fetch_and_create_image_item(
+                renditions=meta['media']['renditions'],
+                caption=meta['caption'],
+                credit=meta['credit']
+            )
         item['blog'] = in_syndication['blog_id']
         post_items.append(item)
 
@@ -264,6 +264,10 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
         'producer_post_id': producer_post_id,
         'deleted': False
     }
+
+    if 'published_date' in producer_post.keys():
+        new_post['published_date'] = producer_post['published_date']
+
     return new_post
 
 

@@ -91,7 +91,14 @@
     Posts.$inject = ['$resource', 'config', 'users', 'srcSet', 'fixProtocol'];
     function Posts($resource, config, users, srcSet, fixProtocol) {
         function _completeUser(obj) {
-            if (obj.commenter) {
+            if (obj.syndication_in && obj.mainItem) {
+                // lb-author looks for original creator name only in mainItem
+                obj.mainItem.original_creator = {
+                    display_name: obj.syndication_in.producer_blog_title,
+                    byline: obj.syndication_in.producer_blog_title,
+                    sign_off: obj.syndication_in.producer_blog_title
+                };
+            } else if (obj.commenter) {
                 obj.original_creator = {display_name: obj.commenter};
             } else if(obj.original_creator !== "" && obj.original_creator !== 'None'){
                 users.get({userId: obj.original_creator}, function(user) {
@@ -107,7 +114,7 @@
             }
             return obj;
         }
-        return $resource(config.api_host + 'api/client_blogs/:blogId/posts', {blogId: config.blog._id}, {
+        return $resource(config.api_host + 'api/client_blogs/:blogId/posts?embedded={"syndication_in":1}', {blogId: config.blog._id}, {
             get: {
                 transformResponse: function(posts) {
                     // decode json
@@ -148,7 +155,7 @@
                             });
                         }
                         // replace the creator id by the user object
-                        _completeUser(post);
+                        post = _completeUser(post);
                     });
                     return posts;
                 }
@@ -166,12 +173,94 @@
         return $resource(config.api_host + 'api/client_items/');
     }
 
+    transformOutput.$inject = ['advertisements'];
+    function transformOutput(advertisements) {
+        return function(output) {
+            if (output.collection) {
+                // pull the advertisements from the collections.
+                angular.forEach(output.collection.advertisements, function(ad){
+                    advertisements.get({advertisementId: ad.advertisement_id},
+                        function(advertisement){
+                            // for the update to take place.
+                            angular.extend(ad, advertisement);
+                        }
+                    );
+                });
+            }
+            return output;
+        }
+    }
+
+    Outputs.$inject = ['$resource', 'config', 'transformOutput'];
+    function Outputs($resource, config, transformOutput) {
+        // get `collection` embbeded into the `output`.
+        return $resource(config.api_host + 'api/client_advertisement_outputs/:id?embedded={"collection":1}',
+        {'id':'@id'}, {
+            'get': {
+                method:'GET',
+                transformResponse: function(output) {
+                    output = angular.fromJson(output);
+                    return transformOutput(output);
+                }
+            }
+        });
+    }
+
+    Collections.$inject = ['$resource', 'config', 'advertisements'];
+    function Collections($resource, config, advertisements) {
+        return $resource(config.api_host + 'api/client_advertisement_collections/:collectionId',
+            {'collectionId':'@id'}, {
+                'get': {
+                    method:'GET',
+                    transformResponse: function(collection) {
+                        collection = angular.fromJson(collection);
+                        angular.forEach(collection.advertisements, function(ad){
+                            advertisements.get({advertisementId: ad.advertisement_id}, 
+                                function(advertisement){
+                                    angular.extend(ad, advertisement);
+                                }
+                            );
+                        });
+                        return collection;
+                    }
+                }
+            });
+    }
+
+    Advertisements.$inject = ['$resource', 'config'];
+    function Advertisements($resource, config) {
+        return $resource(config.api_host + 'api/client_advertisements/:advertisementId',
+            {'advertisementId':'@id'}, {
+                'get': {
+                    method:'GET',
+                    transformResponse: function(ad) {
+                        ad = angular.fromJson(ad);
+                        // transform the advertisement, into a post with freetype item.
+                        // keep the `item_type` from the advertisement.
+                        ad.item_type = ad.type;
+                        // `group_type` need to be a freetype string.
+                        ad.group_type = 'freetype';
+                        var post = {
+                            _id: ad._id,
+                            mainItem: ad,
+                            items: [ad]
+                        };
+                        return post;
+                    }
+                }
+            });
+    }
+
     angular.module('liveblog-embed')
         .service('users', Users)
         .service('posts', Posts)
         .service('blogs', Blogs)
         .service('comments', Comments)
         .service('items', Items)
+        .service('outputs', Outputs)
+        .service('collections', Collections)
+        .service('advertisements', Advertisements)
+        .factory('transformOutput',transformOutput)
         .factory('transformBlog',transformBlog)
         .factory('srcSet', srcSet)
         .factory('thumbnailRendition', thumbnailRendition);

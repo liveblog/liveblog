@@ -3,7 +3,7 @@
 [Fork](https://github.com/liveblog/liveblog) •
 [License](https://github.com/liveblog/liveblog/blob/master/LICENSE) •
 [Documentation](http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/) •
-*Version 3.2.0*
+*Version 3.2.2*
 
 [![Build Status](https://travis-ci.org/liveblog/liveblog.svg?branch=master)](https://travis-ci.org/liveblog/liveblog)
 
@@ -200,8 +200,15 @@ Once the provisioning done whil still in the virtual machine:
 
 **Run liveblog front end in production mode**
 
-```javascript
+```shell
 cd client
 grunt build --force
 grunt connect:build
+```
+
+**Update classic and angular theme**
+
+```
+git subtree pull --prefix server/liveblog/themes/themes_assets/classic https://github.com/liveblog/lb-theme-classic.git master --squash
+git subtree pull --prefix server/liveblog/themes/themes_assets/angular https://github.com/liveblog/lb-theme-angular.git master --squash
 ```

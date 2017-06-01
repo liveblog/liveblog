@@ -124,7 +124,12 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                     vm.isLoading = false;
                 });
             },
+            isEditable: function(post) {
+                // A syndicated post of type free type is not editable
+                return !(post.syndication_in && post.groups[1].refs[0].item.group_type === 'freetype');
+            },
             isBlogClosed: $scope.$parent.blog.blog_status === 'closed'
+
         });
         $scope.lbPostsInstance = vm;
         // retrieve first page
@@ -136,6 +141,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
             // new post as well unpublished posts
             const onNotification = (e, event_params) => {
                 if (!$element.hasClass('timeline-posts-list')
+                && $scope.lbPostsStatus !== 'comment'
                 && event_params.posts
                 && event_params.posts[0].hasOwnProperty('syndication_in')) {
                     return false;

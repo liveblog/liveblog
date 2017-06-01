@@ -161,7 +161,8 @@ INSTALLED_APPS = [
     'liveblog.syndication',
     'liveblog.freetypes',
     'liveblog.marketplace',
-    'liveblog.analytics'
+    'liveblog.analytics',
+    'liveblog.advertisements',
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
@@ -190,7 +191,12 @@ SUPPORTED_LANGUAGES = {
     'languages': {
         'en': 'english',
         'fr': 'french',
-        'de': 'deutsch'
+        'de': 'deutsch',
+        'fi': 'finnish',
+        'nl': 'nederlands',
+        'no': 'norsk',
+        'cs': 'čeština',
+        'ro': 'română'
     }
 }
 

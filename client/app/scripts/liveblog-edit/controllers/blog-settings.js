@@ -15,6 +15,8 @@ import './../../ng-sir-trevor';
 import './../../sir-trevor-blocks';
 import './../unread.posts.service';
 
+import outputEmbedCodeTpl from 'scripts/liveblog-edit/views/output-embed-code-modal.html'
+
 BlogSettingsController.$inject = [
     '$scope',
     'blog',
@@ -30,7 +32,10 @@ BlogSettingsController.$inject = [
     'config',
     'blogSecurityService',
     'moment',
-    'superdesk'
+    'superdesk',
+    'urls',
+    '$rootScope'
+
 ];
 
 function BlogSettingsController(
@@ -48,11 +53,20 @@ function BlogSettingsController(
     config,
     blogSecurityService,
     moment,
-    superdesk
+    superdesk,
+    urls,
+    $rootScope
 ) {
 
     // set view's model
     var vm = this;
+
+    var notif_listener = $rootScope.$on('blog', (e, data) => {
+        if (data.blog_id === vm.blog._id && data.published === 1) {
+            // update the blog property
+            vm.blog.public_urls = data.public_urls;
+        }
+    });
 
     angular.extend(vm, {
         mailto: 'mail:upgrade@liveblog.pro?subject='+
@@ -89,6 +103,58 @@ function BlogSettingsController(
         tab: false,
         // by default themes are not accepting embed multi height and code.
         embedMultiHight: false,
+        outputs: [],
+        outputEmbedCodeTpl: outputEmbedCodeTpl,
+        loadOutputs: function(silent) {
+            silent = silent || false;
+            if (!silent) {
+                vm.outputsLoading = true;
+            }
+            var criteria = {where: JSON.stringify({
+                '$and': [
+                    {deleted: false},
+                    {blog: vm.blog._id}
+                ]
+            })}
+            api('outputs').query(criteria)
+            .then(function(data) {
+                vm.outputs = data._items;
+                if (!silent) {
+                    notify.info('Output channels loaded');
+                }
+                vm.outputsLoading = false;
+            }, function(data) {
+                notify.error(gettext('There was an error getting the output channels'));
+                vm.outputsLoading = false;
+            })
+        },
+        showOutputEmbedCode: function(output) {
+            vm.outputEmbedModal = true;
+            vm.output = output;
+        },
+        openOutputDialog: function(output) {
+            output = output || {};
+            vm.output = angular.copy(output);
+            if (vm.output.style) {
+                vm.output.preview = {
+                    url: vm.output.style['background-image']
+                }
+            } else {
+                vm.output.style = {};
+            }  
+            vm.outputModalActive = true;
+        },
+        removeOutput: function (output, $index) {
+            modal.confirm(gettext('Are you sure you want to remove this output channel?'))
+            .then(function() {
+                api('outputs').save(output, {deleted: true})
+                .then(function(data) {
+                    vm.outputs.splice($index, 1);
+                }, function(data) {
+                    notify.error(gettext('Can\'t remove output'));
+                });
+            });
+        },
         userNotInMembers: function(user) {
             for (var i = 0; i < vm.members.length; i ++) {
                 if (user._id === vm.members[i]._id) {
@@ -105,9 +171,6 @@ function BlogSettingsController(
 
                 let firstPicture = pictures[0];
 
-                //$scope.image.picture_url = firstPicture.renditions.original.href;
-                //$scope.image.picture = firstPicture._id;
-
                 vm.newBlog.picture_url = firstPicture.renditions.viewImage.href;
                 vm.newBlog.picture = firstPicture._id;
                 vm.uploadModal = false;
@@ -117,7 +180,8 @@ function BlogSettingsController(
             });
         },
         changeTab: function(tab) {
-            if (vm.tab) {
+            // outputs does not dirty the blog settings
+            if (vm.tab && vm.tab !== 'outputs') {
                 vm.forms.dirty = vm.forms.dirty || vm.forms[vm.tab].$dirty;
             }
             vm.tab = tab;
@@ -209,14 +273,12 @@ function BlogSettingsController(
             delete vm.newBlog._current_version;
             delete vm.newBlog._version;
             delete vm.newBlog.marked_for_not_publication;
+            delete vm.newBlog._type;
             blogService.update(vm.blog, vm.newBlog).then(function(blog) {
                 vm.isSaved = true;
                 vm.blog = blog;
                 vm.newBlog = angular.copy(blog);
                 vm.blogPreferences = angular.copy(blog.blog_preferences);
-                var datetime = vm.splitDateTime(blog.start_date);
-                vm.start_date = datetime.date;
-                vm.start_time = datetime.time;
                 //remove accepted users from the queue
                 if (vm.acceptedMembers.length) {
                     _.each(vm.acceptedMembers, function(member) {
@@ -281,13 +343,6 @@ function BlogSettingsController(
                         details.push(data);
                     });
             });
-        },
-        splitDateTime: function(datetime) {
-            var splitDate = moment.tz(datetime, config.defaultTimezone);
-            return {
-                date: splitDate.format(),
-                time: splitDate.format(config.model.timeformat)
-            }
         }
     });
     // retieve the blog's public url
@@ -368,6 +423,14 @@ function BlogSettingsController(
     //get team members details
     vm.members = [];
     vm.getUsers(vm.members, blog.members);
+    vm.loadOutputs();
+
+    //when an output is saved in the modal directive, reload outputs
+    $scope.$on('output.saved', function() {
+        // load outputs silently
+        vm.loadOutputs(true);
+    })
+
 
     //check if form is dirty before leaving the page
     var deregisterPreventer = $scope.$on('$locationChangeStart', routeChange);
@@ -395,20 +458,13 @@ function BlogSettingsController(
         }
     }
 
-    if (vm.newBlog.start_date) {
-        var splitDate = datetimeHelper.splitDateTime(
-            vm.newBlog.start_date, 
-            config.defaultTimezone
-        );
+    let splitDate = datetimeHelper.splitDateTime(
+        vm.newBlog.start_date, 
+        config.defaultTimezone
+    );
 
-        vm.start_date = splitDate.date;
-        vm.start_time = splitDate.time;
-
-    } else {
-        var datetime = vm.splitDateTime(vm.newBlog.start_date);
-        vm.start_date = datetime.date;
-        vm.start_time = datetime.time;
-    }
+    vm.start_date = splitDate.date;
+    vm.start_time = splitDate.time;
 
     vm.changeTab('general');
     vm.blog_switch = vm.newBlog.blog_status === 'open';

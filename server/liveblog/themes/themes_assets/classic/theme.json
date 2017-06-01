@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "2.3.50",
+    "version": "3.2.5",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -235,6 +235,27 @@
             "type": "checkbox",
             "default": false,
             "help": "If the users will see the slideshow gallery for multiple images posts"
+        },
+        {
+            "name": "showSocialShare",
+            "label": "Show social sharing options",
+            "type": "checkbox",
+            "default": true,
+            "help": "If the users will see the social sharing options"
+        },
+        {
+            "name": "livestream",
+            "label": "Show embed in livestream format",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users will see the sticky posts in livestream format"
+        },
+        {
+            "name": "livestreamAutoplay",
+            "label": "Autoplay for livestream videos",
+            "type": "checkbox",
+            "default": false,
+            "help": "if the users will see the video autoplay for livestream"
         }
     ]
 }

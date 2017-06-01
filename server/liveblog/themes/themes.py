@@ -11,24 +11,26 @@ import glob
 import json
 import logging
 import os
-import zipfile
 import tempfile
+import zipfile
 from io import BytesIO
 
-import magic
 import jinja2
+import magic
 import superdesk
 from bson.objectid import ObjectId
 from eve.io.mongo import MongoJSONEncoder
 from flask import current_app as app
 from flask import make_response, request
 from flask_cors import cross_origin
-from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
-from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES, UPLOAD_THEMES_DIRECTORY, COMPILED_TEMPLATES_PATH
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError, SuperdeskError
 from superdesk.resource import Resource
 from superdesk.services import BaseService
+
+from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
+from settings import (COMPILED_TEMPLATES_PATH, SUBSCRIPTION_LEVEL,
+                      SUBSCRIPTION_MAX_THEMES, UPLOAD_THEMES_DIRECTORY)
 
 from .template.filters import moment_date_filter
 from .template.loaders import ThemeTemplateLoader
@@ -443,26 +445,30 @@ class ThemesService(BaseService):
 
     def publish_related_blogs(self, theme):
         from liveblog.blogs.tasks import publish_blog_embed_on_s3
-
-        theme_name = theme['name']
-        # TODO: retrieve only the blogs who use a specified theme
-        # terms = [t['name'] for t in self.get_children(theme_name) + [theme_name]]
+        # FIXME: retrieve only the blogs who use a specified theme
+        # terms = []
+        # for t in self.get_children(theme['name']) + [theme['name']]:
+        #     terms.append({'term': {'blog_preferences.theme': t}})
         blogs = get_resource_service('blogs').get(req=None, lookup={})
-
-        # Get all the children for the theme that we modify the settings for
-        theme_children = self.get_children(theme_name)
+        outputs = get_resource_service('outputs').get(req=None, lookup={})
+        # get all the children for the theme that we modify the settings for
+        theme_children = self.get_children(theme.get('name'))
         for blog in blogs:
-            blog_id = str(blog['_id'])
             blog_pref = blog.get('blog_preferences')
-            if blog_pref['theme'] == theme_name:
-                publish_blog_embed_on_s3.delay(blog_id)
-
+            if blog_pref.get('theme') == theme['name']:
+                for output in outputs:
+                    if output.get('blog') == blog.get('_id'):
+                        publish_blog_embed_on_s3.delay(str(blog['_id']), output=output)
+                publish_blog_embed_on_s3.delay(str(blog['_id']))
             if theme_children:
                 # if a blog has associated the theme that is a  child of the one
                 # for which we modify the settings, we redeploy the blog on s3
                 for child in theme_children:
-                    if blog_pref['theme'] == child:
-                        publish_blog_embed_on_s3.delay(blog_id)
+                    if blog_pref.get('theme') == child:
+                        for output in outputs:
+                            if output.get('blog') == blog.get('_id'):
+                                publish_blog_embed_on_s3.delay(str(blog['_id']), output=output)
+                        publish_blog_embed_on_s3.delay(str(blog['_id']))
                         break
 
         return blogs
