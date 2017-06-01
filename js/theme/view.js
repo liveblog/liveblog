@@ -234,11 +234,12 @@ function startSlideshow(e) {
       });
 
       let [baseImage, thumbnail, viewImage] = matches;
+
       items.push({
-        item: { meta: { media: { renditions: {
-          baseImage: { href: baseImage },
-          thumbnail: { href: thumbnail },
-          viewImage: { href: viewImage }
+        item: { meta: {media: {renditions: {
+          baseImage: {href: baseImage},
+          thumbnail: {href: thumbnail},
+          viewImage: {href: viewImage}
         }}}}
       });
     });
@@ -249,6 +250,23 @@ function startSlideshow(e) {
 
   document.querySelector('div.lb-timeline')
     .insertAdjacentHTML('afterend', slideshow);
+
+  window.addEventListener('keydown', (e) => {
+    let container = document.querySelector('#slideshow .container');
+    let picturesCount = container.querySelectorAll('img').length;
+    console.log('picture count', picturesCount);
+    let iteration = container.offsetHeight / picturesCount;
+
+    switch(e.keyCode) {
+      case 39: // right
+        //container.attributes.offset = 
+        container.style.marginTop = `-${container.offsetHeight}px`;
+        break;
+      case 37: // left
+      case 27: // esc
+        document.querySelector('#slideshow').remove();
+    }
+  });
 }
 
 function getPostId(e) {
