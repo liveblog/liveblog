@@ -2,7 +2,7 @@ import ingestPanelDropdownTpl from 'scripts/liveblog-syndication/views/ingest-pa
 
 ingestPanelDropdown.$inject = ['IngestPanelActions', 'datetimeHelper'];
 
-export default function ingestPanelDropdown(IngestPanelActions, datetimeHelper) {
+export default function ingestPanelDropdown(IngestPanelActions) {
     return {
         templateUrl: ingestPanelDropdownTpl,
         scope: {
@@ -21,15 +21,12 @@ export default function ingestPanelDropdown(IngestPanelActions, datetimeHelper) 
                 blog.isOpen = !blog.isOpen;
             };
 
-            scope.blog.start_date = datetimeHelper.splitDateTime(scope.blog.start_date).date;
-
             scope.updateSyndication = function() {
                 IngestPanelActions.updateSyndication(
                     scope.blog._id,
                     {
                         auto_publish: scope.blog.auto_publish,
-                        auto_retrieve: scope.blog.auto_retrieve,
-                        start_date: scope.blog.start_date
+                        auto_retrieve: scope.blog.auto_retrieve
                     },
                     scope.blog._etag
                 );
@@ -44,19 +41,12 @@ export default function ingestPanelDropdown(IngestPanelActions, datetimeHelper) 
                     producerBlogId: scope.blog.producer_blog_id,
                     consumerBlogId: scope.consumerBlogId,
                     autoPublish: scope.blog.auto_publish,
-                    startDate: scope.startDate,
                     autoRetrieve: scope.blog.auto_retrieve,
                     method: 'DELETE'
                 });
             };
 
             scope.open = false;
-
-            scope.$watch('blog.start_date', (newVal, oldVal) => {
-                if (newVal !== oldVal) {
-                    scope.updateSyndication();
-                }
-            });
         }
     };
 }

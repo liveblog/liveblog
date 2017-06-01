@@ -49,7 +49,7 @@ module.exports = {
             dot: true,
             cwd: 'node_modules/sir-trevor/',
             dest: '<%= distDir %>',
-            src: ['sir-trevor.js', 'sir-trevor.css']
+            src: ['sir-trevor.js']
         }]
     },
     tmp: {

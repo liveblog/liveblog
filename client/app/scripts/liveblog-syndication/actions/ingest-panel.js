@@ -1,13 +1,6 @@
-ingestPanelActions.$inject = ['Dispatcher', 'api', '$http', 'config', 'moment'];
+ingestPanelActions.$inject = ['Dispatcher', 'api', '$http', 'config'];
 
-export default function ingestPanelActions(Dispatcher, api, $http, config, moment) {
-    const denormalizeDate = function(dateString) {
-        return moment
-            .tz(dateString, config.model.dateformat, config.defaultTimezone)
-            .utc() // Date needs to be converted to UTC because of daylight savings
-            .format(config.system.dateTimeTZ);
-    };
-
+export default function ingestPanelActions(Dispatcher, api, $http, config) {
     return {
         getSyndication: function(consumerBlogId, unreadQueue) {
             var params = {
@@ -38,7 +31,7 @@ export default function ingestPanelActions(Dispatcher, api, $http, config, momen
                 });
         },
         getProducers: function() {
-            api.producers.query()
+            api.producers.query({max_results: 1000}) // Bad hard coded number!
                 .then((producers) => {
                     Dispatcher.dispatch({
                         type: 'ON_GET_PRODUCERS',
@@ -62,10 +55,6 @@ export default function ingestPanelActions(Dispatcher, api, $http, config, momen
                 auto_publish: params.autoPublish,
                 auto_retrieve: params.autoRetrieve
             };
-
-            if (params.method !== 'DELETE') {
-                data.start_date = denormalizeDate(params.startDate);
-            }
 
             return $http({
                 url: uri,
@@ -111,8 +100,6 @@ export default function ingestPanelActions(Dispatcher, api, $http, config, momen
             });
         },
         updateSyndication: function(syndId, data, etag) {
-            data.start_date = denormalizeDate(data.start_date);
-
             return $http({
                 url: config.server.url + '/syndication_in/' + syndId,
                 method: 'PATCH',
