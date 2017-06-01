@@ -2,28 +2,40 @@
 
 var DEBUG = process.env.NODE_ENV !== "production";
 
-let embedUrl = '', apiHost = '', blogId = '', protocol = '', apiResponse = {};
+let argvKey = 0,
+  apiHost = '',
+  blogId = '',
+  protocol = '',
+  apiResponse = {},
+  match = {};
 
 const http = require('http');
 
-if (process.argv.indexOf('--embedUrl') !== -1) {
-  embedUrl = process.argv[process.argv.indexOf('--embedUrl')+1];
-  let match = embedUrl.match(/^(http:\/\/|https:\/\/|\/\/)([^/]+)\/embed\/(\w+)/i);
-
-  if (match) {
-    [,protocol, apiHost, blogId] = match;
-
-    http.get(`${protocol}${apiHost}/api/client_blogs/${blogId}/posts`, (response) => {
-      let body = '';
-
-      response.on('data', (d) => {
-        body += d;
-      });
-      response.on('end', () => {
-        apiResponse = JSON.parse(body);
-      });
-    });
+['--embedUrl', '--apiUrl'].forEach((argName) => {
+  if (process.argv.indexOf(argName) !== -1) {
+    argvKey = process.argv.indexOf(argName)+1;
   }
+});
+
+if (argvKey !== 0) {
+  match = process.argv[argvKey]
+    .match(/^(http:\/\/|https:\/\/|\/\/)([^/]+)\/(api\/client_blogs|embed)\/(\w+)/i);
+}
+
+if (match) {
+  [,protocol, apiHost,, blogId] = match;
+
+  console.log(`${protocol}${apiHost}/api/client_blogs/${blogId}/posts`);
+  http.get(`${protocol}${apiHost}/api/client_blogs/${blogId}/posts`, (response) => {
+    let body = '';
+
+    response.on('data', (d) => {
+      body += d;
+    });
+    response.on('end', () => {
+      apiResponse = JSON.parse(body);
+    });
+  });
 }
 
 var gulp = require('gulp')
