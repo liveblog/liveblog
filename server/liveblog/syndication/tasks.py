@@ -30,27 +30,28 @@ def send_post_to_consumer(self, syndication_out, producer_post, action='created'
 
 
 @celery.task(bind=True)
-def send_posts_to_consumer(self, syndication_out, action='created', limit=25, post_status='submitted'):
+def send_posts_to_consumer(self, syndication_out, action='created', limit=50, post_status='submitted'):
     """Send latest blog post updates to consumers webhook."""
     from .utils import extract_post_items_data, extract_producer_post_data
     consumers = get_resource_service('consumers')
     blog_id = syndication_out['blog_id']
     posts_service = get_resource_service('posts')
-    start_date = syndication_out.get('start_date')
-    auto_retrieve = syndication_out.get('auto_retrieve')
     lookup = {'blog': blog_id, ITEM_TYPE: CONTENT_TYPE.COMPOSITE, 'deleted': False, 'post_status': 'open'}
-    if start_date and auto_retrieve:
-        lookup['_updated'] = {'$gte': start_date}
 
     posts = posts_service.find(lookup)
-    if not start_date and limit:
-        posts = posts.limit(limit)
 
-    # Sort posts by _updated ASC
-    posts = posts.sort('_updated', 1)
+    # sort by order to get the latest first
+    posts = posts.sort('order', -1)
 
     try:
-        for producer_post in posts:
+        array = []
+        for element in posts:
+            array.append(element)
+            if len(array) >= limit:
+                break
+
+        array.reverse()
+        for producer_post in array:
             # Don't forward syndicated posts
             if 'syndication_in' in producer_post.keys():
                 continue
