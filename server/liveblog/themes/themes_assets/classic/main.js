@@ -25,15 +25,24 @@
             });
         }
 
-        function retrieveBlogSettings() {
-            blogsService.get({}, function(blog) {
-                if(blog.blog_status === 'closed') {
-                    $interval.cancel(vm.interval.posts);
-                    $interval.cancel(vm.interval.blog);
-                }
-                angular.extend(vm.blog, blog);
-            });
+        vm.enhance = function(all) {
+            if(config.output && config.output.collection) {
+                // @TODO: add the settings on output.
+                var settings = config.output.settings || {frequency: 4, order: -1};
+                angular.forEach(config.output.collection.advertisements, function(ad, index){
+                    if(all.length > index * (settings.frequency+1) ) {
+                        if(settings.order === 1) {
+                            all.splice(index * (settings.frequency+1), 0, ad);
+                        } else {
+                            all.splice(all.length - index * (settings.frequency+1), 0, ad);
+                        }
+                    }
+                });
+            }
+            return all;
+        };
 
+        function retriveOutput() {
             if (config.output && config.output._id) {
                 outputsService.get({id: config.output._id}, function(output) {
                     if (!angular.equals(config.output, output)) {
@@ -42,6 +51,18 @@
                     }
                 })
             }
+        }
+        retriveOutput();
+
+        function retrieveBlogSettings() {
+            blogsService.get({}, function(blog) {
+                if(blog.blog_status === 'closed') {
+                    $interval.cancel(vm.interval.posts);
+                    $interval.cancel(vm.interval.blog);
+                }
+                angular.extend(vm.blog, blog);
+            });
+            retriveOutput();
         }
 
         function fixBackgroundImage(style) {
@@ -179,7 +200,6 @@
     function PostsCtrl(config) {
 
         var vm = this;
-        var all_posts = vm.posts();
         vm.showGallery = function(post) {
             var no = 0;
             angular.forEach(post.items, function(item) {
@@ -194,7 +214,14 @@
             return (post.mainItem.item_type.indexOf('Advertisement') !== -1) ||
                     post.mainItem.item_type.indexOf('Advertisment') !== -1
         }
-        vm.all_posts = all_posts;
+
+        vm.allPosts = function() {
+            if(vm.enhance) {
+                return vm.enhance(vm.posts())
+            } else {
+                return vm.posts();
+            }
+        }
     }
 
     angular.module('theme', ['liveblog-embed', 'ngAnimate', 'infinite-scroll', 'gettext'])
@@ -247,6 +274,7 @@
                 scope: true,
                 bindToController: {
                     posts: '=',
+                    enhance: '=',
                     timeline: '=',
                     hideInfo: '@'
                 },

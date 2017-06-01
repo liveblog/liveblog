@@ -497,7 +497,8 @@ function TimelinePage(blog) {
         var post = self.get(index);
         expect(self.getText(index)).toBe(data.text);
         if (data.username) {
-            expect(post.element(by.binding('post.mainItem.item.user.display_name')).getText()).toBe(data.username);
+            //expect(post.element(by.binding('post.mainItem.item.user.display_name')).getText()).toBe(data.username);
+            expect(post.element(by.css('.lb-post__header span.name')).getText()).toBe(data.username);
         }
         return self;
     };
