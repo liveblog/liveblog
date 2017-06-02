@@ -63,15 +63,6 @@
                 angular.extend(vm.blog, blog);
             });
             retriveOutput();
-
-            if (config.output && config.output._id) {
-                outputsService.get({id: config.output._id}, function(output) {
-                    if (!angular.equals(config.output, output)) {
-                        config.output = output;
-                        applyOutputStyle();
-                    }
-                })
-            }
         }
 
         function fixBackgroundImage(style) {
@@ -94,6 +85,7 @@
         angular.extend(vm, {
             templateDir: config.assets_root,
             blog: transformBlog(config.blog),
+            output: config.output,
             loading: true,
             finished: false,
             highlightsOnly: false,

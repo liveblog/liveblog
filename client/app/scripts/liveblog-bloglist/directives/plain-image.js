@@ -7,7 +7,9 @@ export default function sdPlainImage(gettext, notify, config) {
             file: '=',
             progressWidth: '=',
             minWidth: '@',
-            minHeight: '@'
+            minHeight: '@',
+            maxWidth: '@',
+            maxHeight: '@'
         },
         link: function(scope, elem) {
             scope.$watch('src', (src) => {
@@ -29,13 +31,28 @@ export default function sdPlainImage(gettext, notify, config) {
                             scope.progressWidth = 80;
 
                             var minWidth = scope.minWidth || 320,
-                                minHeight = scope.minHeight || 240;
+                                minHeight = scope.minHeight || 240,
+                                maxWidth = scope.maxWidth || 3840,
+                                maxHeight = scope.maxHeight || 2160;
 
                             if (this.width < minWidth || this.height < minHeight) {
                                 scope.$apply(() => {
                                     notify.error(gettext(
                                         'Sorry, but blog image must be at least ' + minWidth + 'x' +
                                         minHeight + ' pixels big!'
+                                    ));
+                                    scope.file = null;
+                                    scope.src = null;
+                                    scope.progressWidth = 0;
+                                });
+
+                                return;
+                            }
+                            if (this.width > maxWidth || this.height > maxHeight) {
+                                scope.$apply(() => {
+                                    notify.error(gettext(
+                                        'Sorry, but blog image must smaller then ' + maxWidth + 'x' +
+                                        maxHeight + ' pixels!'
                                     ));
                                     scope.file = null;
                                     scope.src = null;

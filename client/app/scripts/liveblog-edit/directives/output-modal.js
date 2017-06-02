@@ -64,27 +64,41 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
     }
 
     function saveOutput() {
-        var newOutput = {
-            name: vm.output.name,
-            blog: vm.blog._id,
-            collection: vm.output.collection,
-            style: vm.output.style,
-            settings: vm.output.settings
-        };
+        var promises = [],
+            newOutput = {
+                name: vm.output.name,
+                blog: vm.blog._id,
+                collection: vm.output.collection,
+                style: vm.output.style,
+                settings: vm.output.settings
+            };
         // disable save button
         vm.disableSave = true;
-        // if there is a new image uploaded
+        // if there is a new background image uploaded
         if (vm.output.preview && vm.output.preview.img) {
-            saveOutputImage()
-            .then(function() {
-                newOutput.style['background-image'] = vm.output.style['background-image'];
-                return api('outputs').save(vm.output, newOutput)
-                .then(handleSuccessSave, handleErrorSave);
-            })
-        } else {
-            return api('outputs').save(vm.output, newOutput)
-            .then(handleSuccessSave, handleErrorSave);
+            promises.push(saveOutputImage('preview', 'progress')
+                .then(function(data) {
+                    let pictureUrl = data.renditions.original.href;
+                    newOutput.style['background-image'] = pictureUrl;
+                    newOutput.picture = data._id;
+                })
+            );
         }
+        // if there is a new logo image uploaded
+        if (vm.output.preview_logo && vm.output.preview_logo.img) {
+            promises.push(saveOutputImage('preview_logo', 'progress_logo')
+                .then(function(data) {
+                    let logoUrl = data.renditions.original.href;
+                    newOutput.logo_url = logoUrl;
+                    newOutput.logo = data._id;
+                })
+            );
+        }
+
+        $q.all(promises).then(function(){
+            return api('outputs').save(vm.output, newOutput)
+            .then(handleSuccessSave, handleErrorSave);            
+        });
     }
 
     function handleSuccessSave() {
@@ -99,50 +113,61 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
         notify.error(gettext('Something went wrong, please try again later!'), 5000)
     }
 
-    function saveOutputImage() {
-        var form = {};
-        var config = vm.output.preview;
+    function saveOutputImage(preview, progress) {
+        var deferred = $q.defer(),
+            form = {},
+            config = vm.output[preview];
         if (config.img) {
             form.media = config.img;
         } else if (config.url) {
             form.URL = config.url;
         } else {
-            return;
+            deferred.reject();
         }
         
         // return a promise of upload which will call the success/error callback
-        return urls.resource('archive').then((uploadUrl) => upload.start({
+        urls.resource('archive').then((uploadUrl) => upload.start({
             method: 'POST',
             url: uploadUrl,
             data: form
         })
         .then((response) => {
             if (response.data._status === 'ERR') {
+                deferred.reject();
                 return;
             }
-            var pictureUrl = response.data.renditions.original.href;
-
-            vm.output.style['background-image'] = pictureUrl;
-            vm.output.picture = response.data._id;
+            deferred.resolve(response.data);
             vm.imageSaved = true;
         }, (error) => {
             notify.error(
                 error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
             );
+            deferred.reject();
         }, (progress) => {
-            vm.output.progress = {
+            vm.output[progress] = {
                 width: Math.round(progress.loaded / progress.total * 100.0)
             }
         }));
+        return deferred.promise;
     }
 
     function removeOutputImage() {
-        modal.confirm(gettext('Are you sure you want to remove the image?'))
+        modal.confirm(gettext('Are you sure you want to remove the background image?'))
         .then(() => {
             vm.output.preview = {};
             vm.output.progress = {width: 0};
-            vm.imageSaved = false;
             vm.output.style['background-image'] = '';
+            vm.imageSaved = false;
         });
+    }
+
+    function removeLogoImage() {
+        modal.confirm(gettext('Are you sure you want to remove the logo image?'))
+        .then(() => {
+            vm.output.preview_logo = {};
+            vm.output.progress_logo = {width: 0};
+            vm.output.output_url = '';
+            vm.imageSaved = false;
+        });        
     }
 }
