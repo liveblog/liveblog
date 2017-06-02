@@ -86,18 +86,16 @@ def _publish_blog_embed_on_s3(blog_id, theme=None, output=None, safe=True):
                                        output,
                                        api_host='//{}/'.format(app.config['SERVER_NAME']))
             public_urls = blog.get('public_urls', {'output': {}, 'theme': {}})
-
             if output_id:
                 public_urls['output'][output_id] = public_url
-                get_resource_service('blogs').system_update(blog_id, {'public_urls': public_urls}, blog)
-                push_notification('blog', published=1, blog_id=blog_id, public_urls=public_urls)
             elif theme:
                 public_urls['theme'][theme] = public_url
-                get_resource_service('blogs').system_update(blog_id, {'public_urls': public_urls}, blog)
-                push_notification('blog', published=1, blog_id=blog_id, public_urls=public_urls)
-            else:
-                get_resource_service('blogs').system_update(blog_id, {'public_url': public_url}, blog)
-                push_notification('blog', published=1, blog_id=blog_id, public_url=public_url)
+
+            get_resource_service('blogs').system_update(blog_id, {
+                'public_url': public_url,
+                'public_urls': public_urls
+            }, blog)
+            push_notification('blog', published=1, blog_id=blog_id, public_url=public_url, public_urls=public_urls)
 
             return public_url
         except MediaStorageUnsupportedForBlogPublishing as e:
@@ -115,8 +113,11 @@ def _publish_blog_embed_on_s3(blog_id, theme=None, output=None, safe=True):
                 public_urls['output'][output_id] = public_url
             elif theme:
                 public_urls['theme'][theme] = public_url
-            get_resource_service('blogs').system_update(blog_id, {'public_urls': public_urls}, blog)
-            push_notification('blog', published=1, blog_id=blog_id, public_urls=public_urls)
+            get_resource_service('blogs').system_update(blog_id, {
+                'public_url': public_url,
+                'public_urls': public_urls
+            }, blog)
+            push_notification('blog', published=1, blog_id=blog_id, public_url=public_url, public_urls=public_urls)
             return public_url
 
 
