@@ -75,7 +75,7 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                     postsService.remove(angular.copy(post)).then(function(message) {
                         notify.pop();
                         notify.info(gettext('Removing post...'));
-                        $rootScope.$broadcast('removing_timeline_post', {post:post});
+                        $rootScope.$broadcast('removing_timeline_post', {post: post});
                     }, function() {
                         notify.pop();
                         notify.error(gettext('Something went wrong'));
