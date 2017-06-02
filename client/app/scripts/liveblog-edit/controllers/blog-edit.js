@@ -457,6 +457,9 @@ export default function BlogEditController(
                     $scope.$digest();
                 }
             },
+            setPending: function(value) {
+                $scope.actionPending = value;
+            },
             coverMaxWidth: 350,
             embedService: embedService,
             // provide an uploader to the editor for media (custom sir-trevor image block uses it)
@@ -465,6 +468,7 @@ export default function BlogEditController(
                 var handleError = function(response) {
                     // call the uploader callback with the error message as parameter
                     error_callback(response.data? response.data._message : undefined);
+                    $scope.actionPending = true;
                 };
                 // return a promise of upload which will call the success/error callback
                 return api.archive.getUrl().then(function(url) {
