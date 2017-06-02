@@ -293,7 +293,7 @@ export default function BlogEditController(
             });
         },
         onEditorChanges: function() {
-            var input = $(this)
+            var input = $(this).find('.st-text-block')
                 .text()
                 .trim();
 
