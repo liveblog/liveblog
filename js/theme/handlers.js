@@ -6,7 +6,8 @@
 
 var view = require('./view')
   , viewmodel = require('./viewmodel')
-  , helpers = require('./helpers');
+  , helpers = require('./helpers')
+  , Slideshow = require('./slideshow');
 
 /**
  * Contains a mapping of element data-selectors and click handlers
@@ -82,6 +83,8 @@ var buttons = {
   },
 
   attach: function() {
+    const slideshow = new Slideshow();
+
     Object.keys(buttons.handlers).forEach((handler) => {
       let el = helpers.getElems(handler)[0];
 
@@ -96,7 +99,7 @@ var buttons = {
 
     if (slideshowImages) {
       slideshowImages.forEach((image) => {
-        image.addEventListener('click', view.startSlideshow);
+        image.addEventListener('click', slideshow.start);
       });
     }
   }

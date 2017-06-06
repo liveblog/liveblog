@@ -220,55 +220,6 @@ function displayCommentFormErrors(errors) {
   }
 }
 
-function startSlideshow(e) {
-  let items = [];
-
-  e.target
-    .closest('article.slideshow')
-    .querySelectorAll('.lb-item img')
-    .forEach((img) => {
-      let matches = [];
-
-      img.getAttribute('srcset').replace(/(\S+)\s\d+w/g, (s, match) => {
-        matches.push(match);
-      });
-
-      let [baseImage, thumbnail, viewImage] = matches;
-
-      items.push({
-        item: { meta: {media: {renditions: {
-          baseImage: {href: baseImage},
-          thumbnail: {href: thumbnail},
-          viewImage: {href: viewImage}
-        }}}}
-      });
-    });
-
-  let slideshow = templates.slideshow({
-    refs: items
-  });
-
-  document.querySelector('div.lb-timeline')
-    .insertAdjacentHTML('afterend', slideshow);
-
-  window.addEventListener('keydown', (e) => {
-    let container = document.querySelector('#slideshow .container');
-    let picturesCount = container.querySelectorAll('img').length;
-    console.log('picture count', picturesCount);
-    let iteration = container.offsetHeight / picturesCount;
-
-    switch(e.keyCode) {
-      case 39: // right
-        //container.attributes.offset = 
-        container.style.marginTop = `-${container.offsetHeight}px`;
-        break;
-      case 37: // left
-      case 27: // esc
-        document.querySelector('#slideshow').remove();
-    }
-  });
-}
-
 function getPostId(e) {
   return e.target.closest('article.slideshow').getAttribute('data-js-post-id');
 }
@@ -287,6 +238,5 @@ module.exports = {
   showSuccessCommentMsg: showSuccessCommentMsg,
   displayCommentFormErrors: displayCommentFormErrors,
   clearCommentFormErrors: clearCommentFormErrors,
-  startSlideshow: startSlideshow,
   getPostId: getPostId
 };
