@@ -583,6 +583,8 @@ def download_a_theme(theme_name):
 def upload_a_theme():
     themes_service = get_resource_service('themes')
 
+    # TODO: add validation of zipfile, save zipfile to s3 in order to allow download.
+
     with zipfile.ZipFile(request.files['media']) as zip_file:
         # Keep only actual files (not folders)
         files = [file for file in zip_file.namelist() if not file.endswith('/')]
