@@ -4,6 +4,7 @@ class Slideshow {
   constructor() {
     this.start = this.start.bind(this);
     this.keyboardListener = this.keyboardListener.bind(this);
+    this.setFocus = this.setFocus.bind(this);
   }
 
   start(e) {
@@ -24,11 +25,14 @@ class Slideshow {
         let [baseImage, thumbnail, viewImage] = matches;
 
         items.push({
-          item: {meta: {media: {renditions: {
-            baseImage: {href: baseImage},
-            thumbnail: {href: thumbnail},
-            viewImage: {href: viewImage}
-          }}}}
+          item: {
+            meta: {media: {renditions: {
+              baseImage: {href: baseImage},
+              thumbnail: {href: thumbnail},
+              viewImage: {href: viewImage}
+            }}},
+            active: thumbnail === e.target.getAttribute('src')
+          }
         });
       });
 
@@ -40,6 +44,24 @@ class Slideshow {
       .insertAdjacentHTML('afterend', slideshow);
 
     window.addEventListener('keydown', this.keyboardListener);
+
+
+    this.setFocus();
+  }
+
+  setFocus() {
+    const container = document.querySelector('#slideshow .container');
+    let activeIndex = -1;
+
+    container.querySelectorAll('img').forEach((img, i) => {
+      if (img.classList.contains('active')) {
+        activeIndex = i;
+      }
+    });
+
+    if (activeIndex !== -1) {
+      container.style.marginTop = `-${container.offsetHeight * activeIndex}px`;
+    }
   }
 
   keyboardListener(e) {
