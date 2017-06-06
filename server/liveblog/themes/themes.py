@@ -561,7 +561,7 @@ def download_a_theme(theme_name):
             # add all the files from the theme folder
             for root, dirs, files in os.walk(theme_filepath):
                 # compile the root for zip.
-                zip_root = root.replace(os.path.join(themes_folder, theme_name), zip_folder)
+                zip_root = root.replace(theme_filepath, zip_folder)
                 # add dir itself (needed for empty dirs)
                 tz.write(os.path.join(root, "."), os.path.join(zip_root, "."))
                 for file in files:
