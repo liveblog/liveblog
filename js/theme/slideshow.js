@@ -51,16 +51,15 @@ class Slideshow {
 
   setFocus() {
     const container = document.querySelector('#slideshow .container');
-    let activeIndex = -1;
 
     container.querySelectorAll('img').forEach((img, i) => {
       if (img.classList.contains('active')) {
-        activeIndex = i;
+        this.iterations = i;
       }
     });
 
-    if (activeIndex !== -1) {
-      container.style.marginTop = `-${container.offsetHeight * activeIndex}px`;
+    if (this.iterations > 0) {
+      container.style.marginTop = `-${container.offsetHeight * this.iterations}px`;
     }
   }
 
