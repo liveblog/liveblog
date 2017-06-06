@@ -11,7 +11,6 @@ import glob
 import json
 import logging
 import os
-import tempfile
 import zipfile
 from io import BytesIO
 
@@ -317,7 +316,10 @@ class ThemesService(BaseService):
 
         return results.get('created'), results.get('updated')
 
-    def _save_theme_file(self, name, theme):
+    def _save_theme_file(self, name, theme, upload_path=None):
+        if not upload_path:
+            upload_path = self.get_theme_path(theme['name'])
+
         with open(name, 'rb') as file:
             # Set the content type
             mime = magic.Magic(mime=True)
@@ -325,7 +327,7 @@ class ThemesService(BaseService):
             if content_type == 'text/plain' and name.endswith(tuple(CONTENT_TYPES.keys())):
                 content_type = CONTENT_TYPES[os.path.splitext(name)[1]]
 
-            final_file_name = os.path.relpath(name, CURRENT_DIRECTORY)
+            final_file_name = os.path.relpath(name, upload_path)
 
             # TODO: Add version parameter to media_id() after merging related core-changes in amazon_media_storage
             # and desk_media storage.
@@ -411,12 +413,12 @@ class ThemesService(BaseService):
                 # Save the blog with the new settings
                 blogs_service.system_update(ObjectId(blog['_id']), {'theme_settings': new_theme_settings}, blog)
 
-    def save_or_update_theme(self, theme, files=[], force_update=False, keep_files=True):
+    def save_or_update_theme(self, theme, files=[], force_update=False, keep_files=True, upload_path=None):
         theme_name = theme['name']
         # Save the file in the media storage if needed
         if self.is_s3_storage_enabled:
             for name in files:
-                self._save_theme_file(name, theme)
+                self._save_theme_file(name, theme, upload_path=upload_path)
 
         # Save theme template and jinja2 compiled templates for SEO themes.
         self._save_theme_template(theme)
@@ -545,18 +547,11 @@ def download_a_theme(theme_name):
         logger.info(error_message)
         raise UnknownTheme(error_message)
 
-    is_local = themes.is_local_theme(theme_name) or themes.is_uploaded_theme(theme_name)
-    if themes.is_s3_storage_enabled and not is_local:
-        # TODO: download uploaded from upload dir if development, otherwise production.
-        raise NotImplementedError
-    else:
-        theme_filepath = themes.get_theme_path(theme_name)
+    zip_folder = 'lb-theme-{}-{}'.format(theme_name, theme.get('version', 'master'))
 
-    with tempfile.TemporaryDirectory() as themes_folder:
+    def _response(theme_filepath):
         theme_zip = BytesIO()
-
         # keep the same nameing convention as we have in github.
-        zip_folder = 'lb-theme-{}-{}'.format(theme_name, theme.get('version', 'master'))
         with zipfile.ZipFile(theme_zip, 'w') as tz:
             # add all the files from the theme folder
             for root, dirs, files in os.walk(theme_filepath):
@@ -574,6 +569,13 @@ def download_a_theme(theme_name):
         response.headers['Content-Disposition'] = 'attachment; filename={}.zip'.format(zip_folder)
         # response.headers['X-Accel-Redirect'] = '{}.zip'.format(zip_folder)
         return response
+
+    is_local = themes.is_local_theme(theme_name) or themes.is_uploaded_theme(theme_name)
+    if themes.is_s3_storage_enabled and not is_local:
+        raise NotImplementedError('Download of a S3 uploaded theme is not available yet!')
+    else:
+        theme_filepath = themes.get_theme_path(theme_name)
+        return _response(theme_filepath)
 
 
 @upload_theme_blueprint.route('/theme-upload', methods=['POST'])
@@ -605,12 +607,13 @@ def upload_a_theme():
                 return json.dumps(dict(error=e.desc)), 400
 
         # Extract and save files
+        upload_path = os.path.join(UPLOAD_THEMES_DIRECTORY, json_file.get('name'))
         extracted_files = []
         for name in files:
             # 1. remove the root folder
             local_filepath = name.replace(root_folder, '', 1)
             # 2. prepend in a root folder called as the theme's name
-            local_filepath = os.path.join(UPLOAD_THEMES_DIRECTORY, json_file.get('name'), local_filepath)
+            local_filepath = os.path.join(upload_path, local_filepath)
             # 1. create folder if doesn't exist
             os.makedirs(os.path.dirname(local_filepath), exist_ok=True)
             # 2. write the file
@@ -620,7 +623,8 @@ def upload_a_theme():
 
         # Save or update the theme in the database
         result = themes_service.save_or_update_theme(json_file, extracted_files, force_update=True,
-                                                     keep_files=not themes_service.is_s3_storage_enabled)
+                                                     keep_files=not themes_service.is_s3_storage_enabled,
+                                                     upload_path=upload_path)
 
         return json.dumps(dict(
             _status='OK',
