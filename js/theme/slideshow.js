@@ -40,6 +40,8 @@ class Slideshow {
       refs: items
     });
 
+    window.parent.postMessage('fullscreen', window.document.referrer);
+
     document.querySelector('div.lb-timeline')
       .insertAdjacentHTML('afterend', slideshow);
 
@@ -84,6 +86,7 @@ class Slideshow {
 
       break;
     case 27: // esc
+      window.parent.postMessage('quitfullscreen', window.document.referrer);
       document.querySelector('#slideshow').remove();
     }
   }
