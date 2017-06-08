@@ -1,5 +1,5 @@
 <article
-  class="lb-post list-group-item show-author-avatar {% if settings.showGallery and item.groups[1].refs[0].item.item_type == 'image' and item.groups[1].refs.length > 1 %}slideshow{% endif %}"
+  class="lb-post list-group-item show-author-avatar {% if settings.showGallery and item.groups[1].refs[0].item.item_type == 'image' and item.groups[1].refs|length > 1 %}slideshow{% endif %}"
   data-js-post-id="{{ item._id }}">
   {% if item.sticky %}
     <div class="lb-type"></div>
