@@ -87,6 +87,8 @@
                         <dt>{{ ::'No. of Posts' | translate }}:</dt>
                         <dd>{{ ::blog.posts_count }}</dd>
                         <dl>
+                        <dt> {{ :: 'Last updated' | translate }}:</dt>
+                        <dd ng-if="blog.lastUpdated" sd-reldate ng-model="blog.lastUpdated"></dd>
                         <dt> {{ :: 'Last posted' | translate }}:</dt>
                         <dd ng-if="blog.last_posted" sd-reldate ng-model="blog.last_posted"></dd>
                         <dd ng-if="blog.posts_count == 0"> No posts yet</dd>
