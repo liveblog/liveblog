@@ -15,10 +15,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/liveblog-d1d4c61067.css"],
-    "devScripts": ["dist/liveblog-368aee48f6.js"],
-    "styles": ["dist/liveblog-d1d4c61067.css"],
-    "scripts": ["dist/liveblog-368aee48f6.js"],
+    "devStyles": ["dist/liveblog-c1da72094a.css"],
+    "devScripts": ["dist/liveblog-02c88fe9b6.js"],
+    "styles": ["dist/liveblog-c1da72094a.css"],
+    "scripts": ["dist/liveblog-02c88fe9b6.js"],
     "options": [
         {
             "name": "postsPerPage",
