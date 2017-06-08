@@ -40,15 +40,38 @@ class Slideshow {
       refs: items
     });
 
-    window.parent.postMessage('fullscreen', window.document.referrer);
+    //window.parent.postMessage('fullscreen', window.document.referrer);
 
     document.querySelector('div.lb-timeline')
       .insertAdjacentHTML('afterend', slideshow);
 
+    this.launchIntoFullscreen(document.getElementById('slideshow'));
     window.addEventListener('keydown', this.keyboardListener);
 
 
     this.setFocus();
+  }
+
+  launchIntoFullscreen(element) {
+    if(element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if(element.mozRequestFullScreen) {
+      element.mozRequestFullScreen();
+    } else if(element.webkitRequestFullscreen) {
+      element.webkitRequestFullscreen();
+    } else if(element.msRequestFullscreen) {
+      element.msRequestFullscreen();
+    }
+  }
+
+  exitFullscreen() {
+    if(document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if(document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if(document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
   }
 
   setFocus() {
@@ -86,7 +109,7 @@ class Slideshow {
 
       break;
     case 27: // esc
-      window.parent.postMessage('quitfullscreen', window.document.referrer);
+      this.exitFullscreen();
       document.querySelector('#slideshow').remove();
     }
   }
