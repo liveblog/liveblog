@@ -3,13 +3,9 @@
 var DEBUG = process.env.NODE_ENV !== "production";
 var defaultThemePath = './node_modules/liveblog-default-theme/';
 var testdata = require(defaultThemePath + 'test');
-
-// Requires.
 var gulp = require('gulp')
-  , gulpLoadPlugins = require('gulp-load-plugins')
-  , plugins = gulpLoadPlugins()
+  , plugins = require('gulp-load-plugins')()
   , path = require('path')
-  , eslint = require('gulp-eslint')
   , fs = require('fs')
   , nunjucks = require('nunjucks')
   , dateFilter = require('nunjucks-date-filter')
@@ -54,9 +50,9 @@ function getThemeSettings(options) {
 
 // JS linter.
 gulp.task('lint', () => gulp.src(['gulpfile.js'])
-  .pipe(eslint({ quiet: true }))
-  .pipe(eslint.format())
-  .pipe(eslint.failAfterError())
+  .pipe(plugins.eslint({ quiet: true }))
+  .pipe(plugins.eslint.format())
+  .pipe(plugins.eslint.failAfterError())
 );
 
 // Inject API response into template for dev/test purposes.
