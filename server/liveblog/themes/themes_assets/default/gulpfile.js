@@ -2,6 +2,41 @@
 
 var DEBUG = process.env.NODE_ENV !== "production";
 
+let argvKey = 0,
+  apiHost = '',
+  blogId = '',
+  protocol = '',
+  apiResponse = {},
+  match = {};
+
+const http = require('http');
+
+['--embedUrl', '--apiUrl'].forEach((argName) => {
+  if (process.argv.indexOf(argName) !== -1) {
+    argvKey = process.argv.indexOf(argName)+1;
+  }
+});
+
+if (argvKey !== 0) {
+  match = process.argv[argvKey]
+    .match(/^(http:\/\/|https:\/\/|\/\/)([^/]+)\/(api\/client_blogs|embed)\/(\w+)/i);
+}
+
+if (Object.keys(match) > 0) {
+  [,protocol, apiHost,, blogId] = match;
+
+  http.get(`${protocol}${apiHost}/api/client_blogs/${blogId}/posts`, (response) => {
+    let body = '';
+
+    response.on('data', (d) => {
+      body += d;
+    });
+    response.on('end', () => {
+      apiResponse = JSON.parse(body);
+    });
+  });
+}
+
 var gulp = require('gulp')
   , browserify = require('browserify')
   , nunjucksify = require('nunjucksify')
@@ -103,13 +138,18 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
     read: false // We're only after the file paths
   });
 
+  if (apiResponse) {
+    testdata.options.api_host = `${protocol}${apiHost}`;
+    testdata.options.blog._id = blogId;
+  }
+
   return gulp.src('./templates/template-index.html')
     .pipe(plugins.inject(sources))
     .pipe(plugins.nunjucks.compile({
       options: testdata.options,
       json_options: JSON.stringify(testdata.options, null, 4),
       settings: testdata.options.settings,
-      api_response: testdata.api_response,
+      api_response: apiResponse ? apiResponse : testdata.api_response,
       include_js_options: true,
       debug: DEBUG
     }, nunjucksOptions))
@@ -122,11 +162,6 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
 // Inject jinja/nunjucks template for production use.
 gulp.task('template-inject', ['less', 'browserify'], () => {
   var themeSettings = getThemeSettings(theme.options);
-
-  //var _api_response = {};
-  //var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
-  //  read: false // We're only after the file paths
-  //});
 
   return gulp.src('./templates/template.html')
     .pipe(plugins.nunjucks.compile({
