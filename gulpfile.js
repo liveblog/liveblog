@@ -7,7 +7,7 @@ let argvKey = 0,
   blogId = '',
   protocol = '',
   apiResponse = {},
-  match = {};
+  match = [];
 
 const http = require('http');
 
@@ -22,7 +22,7 @@ if (argvKey !== 0) {
     .match(/^(http:\/\/|https:\/\/|\/\/)([^/]+)\/(api\/client_blogs|embed)\/(\w+)/i);
 }
 
-if (Object.keys(match) > 0) {
+if (match.length > 0) {
   [,protocol, apiHost,, blogId] = match;
 
   http.get(`${protocol}${apiHost}/api/client_blogs/${blogId}/posts`, (response) => {
