@@ -220,6 +220,10 @@ function displayCommentFormErrors(errors) {
   }
 }
 
+function getPostId(e) {
+  return e.target.closest('article.slideshow').getAttribute('data-js-post-id');
+}
+
 module.exports = {
   addPosts: addPosts,
   deletePost: deletePost,
@@ -233,5 +237,6 @@ module.exports = {
   toggleCommentDialog: toggleCommentDialog,
   showSuccessCommentMsg: showSuccessCommentMsg,
   displayCommentFormErrors: displayCommentFormErrors,
-  clearCommentFormErrors: clearCommentFormErrors
+  clearCommentFormErrors: clearCommentFormErrors,
+  getPostId: getPostId
 };
