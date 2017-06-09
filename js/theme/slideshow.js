@@ -59,7 +59,6 @@ class Slideshow {
   }
 
   toggleFullscreen() {
-    console.log('toggle', this.isFullscreen);
     if (!this.isFullscreen) {
       this.launchIntoFullscreen(document.getElementById('slideshow'));
     } else {
