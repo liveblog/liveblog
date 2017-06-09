@@ -84,8 +84,6 @@
                         <dd ng-if="isAdmin()">{{ ::blog.blog_preferences.theme }}</dd>
                         <dt>{{ ::'Created' | translate}}:</dt>
                         <dd sd-reldate ng-model="blog._created"></dd>
-                        <dt>{{ ::'Last udpated' | translate }}:</dt>
-                        <dd><time>{{ ::blog._updated | reldate }}</time></dd>
                         <dt>{{ ::'No. of Posts' | translate }}:</dt>
                         <dd>{{ ::blog.posts_count }}</dd>
                         <dl>
