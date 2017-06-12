@@ -1112,3 +1112,8 @@ article.slideshow div.lb-item img {
 #slideshow div.container figure img {
   height: 100%;
 }
+#slideshow button.fullscreen {
+  position: absolute;
+  right: 0;
+  bottom: 10px;
+}
