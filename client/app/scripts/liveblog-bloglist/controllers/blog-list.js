@@ -10,7 +10,8 @@ BlogListController.$inject = [
     'blogSecurityService',
     'notify',
     'config',
-    'urls'
+    'urls',
+    'moment'
 ];
 
 export default function BlogListController(
@@ -25,7 +26,8 @@ export default function BlogListController(
     blogSecurityService,
     notify,
     config,
-    urls
+    urls,
+    moment
 ) {
     $scope.maxResults = 25;
     $scope.states = [
@@ -359,15 +361,22 @@ export default function BlogListController(
                                 {term: {deleted: false}},
                                 {term: {blog: blog._id}}
                             ]}}
-                        }, sort: [{published_date: 'asc'}]}
+                        }, sort: [{published_date: 'desc'}]}
                 };
+                let lastUpdatedBlogTS = moment(blog._updated).format('X');
+
+                blog.lastUpdated = blog._updated;
 
                 api.posts.query(criteria).then((data) => {
-                    blog.posts_count = data._meta.total;
                     var posts = data._items;
 
+                    blog.posts_count = data._meta.total;
+                    blog.last_posted = posts[0].published_date;
+
                     posts.forEach((post) => {
-                        blog.last_posted = post.published_date;
+                        if (moment(post._updated).format('X') > lastUpdatedBlogTS) {
+                            blog.lastUpdated = post._updated;
+                        }
                     });
                 });
             });
