@@ -6,7 +6,7 @@ let argvKey = 0,
   apiHost = '',
   blogId = '',
   protocol = '',
-  apiResponse = {},
+  apiResponse = {posts: {}, stickyPosts: {}},
   match = [];
 
 const http = require('http');
@@ -25,14 +25,47 @@ if (argvKey !== 0) {
 if (match.length > 0) {
   [,protocol, apiHost,, blogId] = match;
 
-  http.get(`${protocol}${apiHost}/api/client_blogs/${blogId}/posts`, (response) => {
+  const postsEndpoint = `${protocol}${apiHost}/api/client_blogs/${blogId}/posts`;
+  let query = {
+    "query": {
+      "filtered": {
+        "filter": {
+          "and": [
+            {"term": {"sticky": true}},
+            {"term": {"post_status": "open"}},
+            {"not": {"term": {"deleted": true}}}
+          ]
+        }
+      }
+    },
+    "sort": [
+      {
+        "_updated": {"order": "desc"}
+      }
+    ]
+  };
+
+  http.get(`${postsEndpoint}?source=${JSON.stringify(query)}`, (response) => {
     let body = '';
 
     response.on('data', (d) => {
       body += d;
     });
     response.on('end', () => {
-      apiResponse = JSON.parse(body);
+      apiResponse.stickyPosts = JSON.parse(body);
+    });
+  });
+
+  query.query.filtered.filter.and[0].term.sticky = false;
+
+  http.get(`${postsEndpoint}?source=${JSON.stringify(query)}`, (response) => {
+    let body = '';
+
+    response.on('data', (d) => {
+      body += d;
+    });
+    response.on('end', () => {
+      apiResponse.posts = JSON.parse(body);
     });
   });
 }
