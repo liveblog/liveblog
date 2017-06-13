@@ -44,7 +44,6 @@ class Slideshow {
       refs: items
     });
 
-
     document.querySelector('div.lb-timeline')
       .insertAdjacentHTML('afterend', slideshow);
 
