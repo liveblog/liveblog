@@ -15,10 +15,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/liveblog-d1d4c61067.css"],
-    "devScripts": ["dist/liveblog-368aee48f6.js"],
-    "styles": ["dist/liveblog-d1d4c61067.css"],
-    "scripts": ["dist/liveblog-368aee48f6.js"],
+    "devStyles": ["dist/liveblog-47bbc9057d.css"],
+    "devScripts": ["dist/liveblog-4d28aef845.js"],
+    "styles": ["dist/liveblog-47bbc9057d.css"],
+    "scripts": ["dist/liveblog-4d28aef845.js"],
     "options": [
         {
             "name": "postsPerPage",
@@ -129,6 +129,13 @@
             "type": "checkbox",
             "default": true,
             "help": "Block search engines from indexing my blogs"
+        },
+        {
+            "name": "showGallery",
+            "label": "Show slideshow gallery",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users will see the slideshow gallery for multiple images posts"
         }
     ],
     "l10n": {

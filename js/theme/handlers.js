@@ -91,6 +91,8 @@ var buttons = {
 
       el.addEventListener('click', buttons.handlers[handler], false);
     });
+
+    view.attachSlideshow();
   }
 };
 
