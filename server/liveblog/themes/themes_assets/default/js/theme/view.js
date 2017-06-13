@@ -6,6 +6,7 @@
 
 var helpers = require('./helpers');
 var templates = require('./templates');
+var Slideshow = require('./slideshow');
 
 var timelineElem = helpers.getElems("lb-posts")
   , loadMorePostsButton = helpers.getElems("load-more-posts");
@@ -20,12 +21,14 @@ function renderTimeline(api_response) {
 
   api_response._items.forEach((post) => {
     renderedPosts.push(templates.post({
-      item: post
+      item: post,
+      settings: window.LB.settings
     }));
   });
 
   timelineElem[0].innerHTML = renderedPosts.join("");
   loadEmbeds();
+  attachSlideshow();
 }
 
 /**
@@ -47,7 +50,8 @@ function renderPosts(api_response) {
     }
 
     var renderedPost = templates.post({
-      item: post
+      item: post,
+      settings: window.LB.settings
     });
 
     if (posts.operation === "update") {
@@ -93,6 +97,7 @@ function addPosts(posts, opts) {
   }
 
   timelineElem[0].insertAdjacentHTML(position, postsHTML);
+  attachSlideshow();
 }
 
 /**
@@ -220,8 +225,15 @@ function displayCommentFormErrors(errors) {
   }
 }
 
-function getPostId(e) {
-  return e.target.closest('article.slideshow').getAttribute('data-js-post-id');
+function attachSlideshow() {
+  const slideshow = new Slideshow();
+  const slideshowImages = document.querySelectorAll('article.slideshow img');
+
+  if (slideshowImages) {
+    slideshowImages.forEach((image) => {
+      image.addEventListener('click', slideshow.start);
+    });
+  }
 }
 
 module.exports = {
@@ -238,5 +250,5 @@ module.exports = {
   showSuccessCommentMsg: showSuccessCommentMsg,
   displayCommentFormErrors: displayCommentFormErrors,
   clearCommentFormErrors: clearCommentFormErrors,
-  getPostId: getPostId
+  attachSlideshow: attachSlideshow
 };
