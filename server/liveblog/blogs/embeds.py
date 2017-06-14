@@ -206,6 +206,20 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     return render_template(embed_template, **scope)
 
 
+@embed_blueprint.route('/embed/iframe/<blog_id>')
+def embed_iframe(blog_id):
+    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    if not blog:
+        return 'blog not found', 404
+    theme_name = blog['blog_preferences'].get('theme')
+    theme_service = get_resource_service('themes')
+    theme = theme_service.find_one(req=None, name=theme_name)
+    if not theme:
+        return 'theme not found', 404
+    settings = theme_service.get_default_settings(theme)
+    return render_template('embed_iframe.html', blog=blog, theme=theme, settings=settings)
+
+
 @embed_blueprint.route('/embed/<blog_id>/overview')
 def embed_overview(blog_id, api_host=None):
     ''' Show a theme with all the available themes in different iframes '''
