@@ -15,7 +15,7 @@
 
   <!-- author plus avatar -->
   <div class="lb-author">
-    {% if settings.showAuthor %}
+    {% if settings.showAuthor and item.publisher %}
       <div class="lb-author__name">{{ item.publisher.display_name }}</div>
       {% if settings.showAuthorAvatar and item.publisher.picture_url %}
         <img class="lb-author__avatar" src="{{ item.publisher.picture_url }}" />

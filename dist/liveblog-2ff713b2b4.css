@@ -710,6 +710,16 @@ article.lb-post:after {
   margin-left: -18px;
   margin-top: -10px;
 }
+.lb-type--item {
+  top: 60px;
+  left: 0px;
+}
+@media screen and (max-width: 680px) {
+  .lb-type--item {
+    top: 40px;
+    left: 15px;
+  }
+}
 .lb-type--twitter {
   background-color: #6bacdf;
   background-image: url("../images/twitter_logo_white.png");
@@ -1111,4 +1121,9 @@ article.slideshow div.lb-item img {
 }
 #slideshow div.container figure img {
   height: 100%;
+}
+#slideshow button.fullscreen {
+  position: absolute;
+  right: 0;
+  bottom: 10px;
 }

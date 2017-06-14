@@ -5,12 +5,16 @@ class Slideshow {
     this.start = this.start.bind(this);
     this.keyboardListener = this.keyboardListener.bind(this);
     this.setFocus = this.setFocus.bind(this);
+    this.launchIntoFullscreen = this.launchIntoFullscreen.bind(this);
+    this.exitFullscreen = this.exitFullscreen.bind(this);
+    this.toggleFullscreen = this.toggleFullscreen.bind(this);
   }
 
   start(e) {
     let items = [];
 
     this.iterations = 0;
+    this.isFullscreen = false;
 
     e.target
       .closest('article.slideshow')
@@ -40,15 +44,51 @@ class Slideshow {
       refs: items
     });
 
-    window.parent.postMessage('fullscreen', window.document.referrer);
-
     document.querySelector('div.lb-timeline')
       .insertAdjacentHTML('afterend', slideshow);
 
     window.addEventListener('keydown', this.keyboardListener);
-
+    window.parent.postMessage('fullscreen', window.document.referrer);
 
     this.setFocus();
+
+    document
+      .querySelector('#slideshow button.fullscreen')
+      .addEventListener('click', this.toggleFullscreen);
+  }
+
+  toggleFullscreen() {
+    if (!this.isFullscreen) {
+      this.launchIntoFullscreen(document.getElementById('slideshow'));
+    } else {
+      this.exitFullscreen();
+    }
+  }
+
+  launchIntoFullscreen(element) {
+    if (element.requestFullscreen) {
+      element.requestFullscreen();
+    } else if (element.mozRequestFullScreen) {
+      element.mozRequestFullScreen();
+    } else if (element.webkitRequestFullscreen) {
+      element.webkitRequestFullscreen();
+    } else if (element.msRequestFullscreen) {
+      element.msRequestFullscreen();
+    }
+
+    this.isFullscreen = true;
+  }
+
+  exitFullscreen() {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+
+    this.isFullscreen = false;
   }
 
   setFocus() {
@@ -86,7 +126,7 @@ class Slideshow {
 
       break;
     case 27: // esc
-      window.parent.postMessage('quitfullscreen', window.document.referrer);
+      this.exitFullscreen();
       document.querySelector('#slideshow').remove();
     }
   }
