@@ -1,6 +1,5 @@
 import os
 import jinja2
-import datetime
 import unittest
 import json
 
