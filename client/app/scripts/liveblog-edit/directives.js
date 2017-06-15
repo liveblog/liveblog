@@ -26,6 +26,7 @@ import outputModal from './directives/output-modal.js';
 import freetypeRender from './directives/freetype-render';
 import freetypeEmbed from './directives/freetype-embed';
 import freetypeText from './directives/freetype-text';
+import freetypeSelect from './directives/freetype-select';
 import freetypeLink from './directives/freetype-link';
 import freetypeCollectionAdd from './directives/freetype-collection-add';
 import freetypeCollectionRemove from './directives/freetype-collection-remove';
@@ -45,6 +46,7 @@ angular.module('liveblog.edit')
     .directive('freetypeRender', freetypeRender)
     .directive('freetypeEmbed', freetypeEmbed)
     .directive('freetypeText', freetypeText)
+    .directive('freetypeSelect',freetypeSelect)
     .directive('freetypeLink', freetypeLink)
     .directive('freetypeCollectionAdd', freetypeCollectionAdd)
     .directive('freetypeCollectionRemove', freetypeCollectionRemove)
