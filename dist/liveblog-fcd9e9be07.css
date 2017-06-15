@@ -705,17 +705,15 @@ article.lb-post:after {
   margin-top: 4px;
 }
 .lb-type--embed {
+  top: 60px;
+  left: 0px;
   width: 40px;
   height: 40px;
   margin-left: -18px;
   margin-top: -10px;
 }
-.lb-type--item {
-  top: 60px;
-  left: 0px;
-}
 @media screen and (max-width: 680px) {
-  .lb-type--item {
+  .lb-type--embed {
     top: 40px;
     left: 15px;
   }
