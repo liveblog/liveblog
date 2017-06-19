@@ -56,8 +56,9 @@ def delete_embed(blog_id, theme=None, output=None):
         public_url = blog.get('public_url')
         public_urls = {}
 
-    # Remove existing file.
-    app.media.delete(public_url)
+    if public_url:
+        app.media.delete(public_url)
+
     get_resource_service('blogs').system_update(blog_id, {'public_urls': public_urls}, blog)
 
 
@@ -100,6 +101,7 @@ def _publish_blog_embed_on_s3(blog_id, theme=None, output=None, safe=True):
         except MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:
                 raise e
+
             logger.warning('Media storage not supported for blog "{}"'.format(blog_id))
             public_url = '{}://{}/embed/{}/{}{}'.format(app.config['URL_PROTOCOL'],
                                                         app.config['SERVER_NAME'],
@@ -134,10 +136,10 @@ def publish_blog_embed_on_s3(self, blog_id, theme=None, output=None, safe=True):
 @celery.task(bind=True, soft_time_limit=1800)
 def publish_blog_embeds_on_s3(self, blog_id, safe=True):
     logger.warning('publish_blog_embeds_on_s3 for blog "{}" started.'.format(blog_id))
-    publish_blog_embed_on_s3.delay(self, blog_id, safe=safe)
+    publish_blog_embed_on_s3(blog_id, safe=safe)
     outputs_service = get_resource_service('outputs')
     for output in outputs_service.get(req=None, lookup=dict(blog=blog_id)):
-        publish_blog_embed_on_s3.delay(self, blog_id, output=output, safe=safe)
+        publish_blog_embed_on_s3(blog_id, output=output, safe=safe)
     logger.warning('publish_blog_embeds_on_s3 for blog "{}" finished.'.format(blog_id))
 
 

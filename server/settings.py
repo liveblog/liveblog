@@ -324,3 +324,9 @@ S3_PUBLISH_BLOGSLIST = env('S3_PUBLISH_BLOGSLIST', True)
 
 # Superdesk-core related settings.
 CONTENTAPI_URL = None
+
+# Temp uploaded themes directory.
+UPLOAD_THEMES_DIRECTORY = env('UPLOAD_THEMES_DIRECTORY', os.path.join(ABS_PATH, 'themes'))
+
+# Compiled jinja2 templates path for SEO themes.
+COMPILED_TEMPLATES_PATH = env('COMPILED_TEMPLATES_PATH', os.path.join(ABS_PATH, '.jinja2'))
