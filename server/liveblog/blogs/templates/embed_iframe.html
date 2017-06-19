@@ -15,7 +15,9 @@
   <body>
     <h1>{{ blog.title }}</h1>
     <p>Iframe blog embed content:</p>
-    <iframe id="liveblog" width="100%" height="715" src="{{ blog.public_url }}" frameborder="0" allowfullscreen></iframe>
+    <div style="overflow:auto;-webkit-overflow-scrolling:touch">
+      <iframe id="liveblog" width="100%" height="715" src="{{ blog.public_url }}" frameborder="0" allowfullscreen></iframe>
+    </div>
     <script type="text/javascript">
 var l=document.getElementById("liveblog");l.addEventListener("load",function(){var t=l.contentWindow,e=l.getAttribute("src");t.postMessage(window.location.href,e),window.addEventListener("message",function(t){"fullscreen"===t.data?l.style.cssText="position:fixed;top:0;bottom:0;left:0;right:0;width:100%;height: 100%":l.style.cssText=""})});
     </script>
