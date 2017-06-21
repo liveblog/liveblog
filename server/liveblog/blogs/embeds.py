@@ -196,8 +196,14 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         # Fetch initial blog posts for SEO theme
         blog_instance = Blog(blog)
         page_limit = theme_settings.get('postsPerPage', 10)
+        sticky_limit = theme_settings.get('stickyPostsPerPage', 10)
         ordering = theme_settings.get('postOrder', blog_instance.default_ordering)
-        api_response = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering)
+        posts = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering)
+        sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True)
+        api_response = {
+            'posts': posts,
+            'stickyPosts': sticky_posts
+        }
         embed_env = jinja2.Environment(loader=ThemeTemplateLoader(theme))
         embed_env.filters['date'] = moment_date_filter
         embed_template = embed_env.from_string(template_content)
