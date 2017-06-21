@@ -37,6 +37,8 @@ class Blog:
             filters.append({'deleted': {'$eq': False}})
         if sticky:
             filters.append({'sticky': {'$eq': True}})
+        else:
+            filters.append({'sticky': {'$eq': False}})
         if highlight:
             filters.append({'lb_highlight': {'$eq': True}})
         return {'$and': filters}
