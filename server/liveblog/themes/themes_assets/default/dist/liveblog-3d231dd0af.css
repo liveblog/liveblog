@@ -604,6 +604,9 @@ div.comment-sent.hide .comment__wrap {
   background: url('data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=') repeat-x;
   background-size: 50px;
 }
+.lb-posts.sticky {
+  background: #c0ffee;
+}
 .lb-post {
   position: relative;
   padding: 60px 0px 20px;

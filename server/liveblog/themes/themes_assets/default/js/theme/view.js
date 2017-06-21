@@ -8,7 +8,7 @@ var helpers = require('./helpers');
 var templates = require('./templates');
 var Slideshow = require('./slideshow');
 
-var timelineElem = helpers.getElems("lb-posts")
+var timelineElem = document.querySelectorAll(".lb-posts.normal")
   , loadMorePostsButton = helpers.getElems("load-more-posts");
 
 /**

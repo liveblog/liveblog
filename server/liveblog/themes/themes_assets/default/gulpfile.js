@@ -6,7 +6,10 @@ let argvKey = 0,
   apiHost = '',
   blogId = '',
   protocol = '',
-  apiResponse = {},
+  apiResponse = {
+    posts: {_items: []},
+    stickyPosts: {_items: []}
+  },
   match = [];
 
 const http = require('http');
@@ -25,14 +28,47 @@ if (argvKey !== 0) {
 if (match.length > 0) {
   [,protocol, apiHost,, blogId] = match;
 
-  http.get(`${protocol}${apiHost}/api/client_blogs/${blogId}/posts`, (response) => {
+  const postsEndpoint = `${protocol}${apiHost}/api/client_blogs/${blogId}/posts`;
+  let query = {
+    "query": {
+      "filtered": {
+        "filter": {
+          "and": [
+            {"term": {"sticky": true}},
+            {"term": {"post_status": "open"}},
+            {"not": {"term": {"deleted": true}}}
+          ]
+        }
+      }
+    },
+    "sort": [
+      {
+        "_updated": {"order": "desc"}
+      }
+    ]
+  };
+
+  http.get(`${postsEndpoint}?source=${JSON.stringify(query)}`, (response) => {
     let body = '';
 
     response.on('data', (d) => {
       body += d;
     });
     response.on('end', () => {
-      apiResponse = JSON.parse(body);
+      apiResponse.stickyPosts = JSON.parse(body);
+    });
+  });
+
+  query.query.filtered.filter.and[0].term.sticky = false;
+
+  http.get(`${postsEndpoint}?source=${JSON.stringify(query)}`, (response) => {
+    let body = '';
+
+    response.on('data', (d) => {
+      body += d;
+    });
+    response.on('end', () => {
+      apiResponse.posts = JSON.parse(body);
     });
   });
 }
@@ -138,7 +174,7 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
     read: false // We're only after the file paths
   });
 
-  if (Object.keys(apiResponse).length > 0) {
+  if (apiResponse.posts._items.length > 0) {
     testdata.options.api_host = `${protocol}${apiHost}`;
     testdata.options.blog._id = blogId;
   }
@@ -149,7 +185,7 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
       options: testdata.options,
       json_options: JSON.stringify(testdata.options, null, 4),
       settings: testdata.options.settings,
-      api_response: Object.keys(apiResponse).length > 0 ? apiResponse : testdata.api_response,
+      api_response: apiResponse.posts._items.length > 0 ? apiResponse : testdata.api_response,
       include_js_options: true,
       debug: DEBUG
     }, nunjucksOptions))
