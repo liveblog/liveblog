@@ -62,7 +62,7 @@ gulp.task('index-inject', [], () => {
       theme: testdata.options,
       json_options: JSON.stringify(testdata.options, null, 4),
       settings: testdata.options.settings,
-      api_response: testdata.api_response,
+      api_response: {posts: testdata.api_response},
       include_js_options: true,
       debug: DEBUG
     }, nunjucksOptions))
