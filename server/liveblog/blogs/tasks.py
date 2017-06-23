@@ -44,12 +44,12 @@ def delete_embed(blog_id):
 
 
 def _publish_blog_embed_on_s3(blog_id, safe=True):
-    blog = get_resource_service('blogs').find_one(req=None, _id=blog_id)
+    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     blog_preferences = blog.get('blog_preferences', {})
     if blog_preferences.get('theme', False):
         try:
             public_url = publish_embed(blog_id, '//%s/' % (app.config['SERVER_NAME']))
-            get_resource_service('blogs').system_update(blog_id, {'public_url': public_url}, blog)
+            get_resource_service('client_blogs').system_update(blog_id, {'public_url': public_url}, blog)
             push_notification('blog', published=1, blog_id=blog_id, public_url=public_url)
             return public_url
         except MediaStorageUnsupportedForBlogPublishing as e:
@@ -58,7 +58,7 @@ def _publish_blog_embed_on_s3(blog_id, safe=True):
 
             logger.warning('Media storage not supported for blog "{}"'.format(blog_id))
             public_url = '{}://{}/embed/{}'.format(app.config['URL_PROTOCOL'], app.config['SERVER_NAME'], blog_id)
-            get_resource_service('blogs').system_update(blog_id, {'public_url': public_url}, blog)
+            get_resource_service('client_blogs').system_update(blog_id, {'public_url': public_url}, blog)
             push_notification('blog', published=1, blog_id=blog_id, public_url=public_url)
             return public_url
     else:
