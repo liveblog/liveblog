@@ -53,7 +53,7 @@
     <button id="live-list-update-button" update on="tap:amp-live-list-insert-blog.update" class="ampstart-btn caps">You have updates</button>
 
     <div items class="lb-posts">
-      {% for item in api_response._items %}
+      {% for item in api_response.posts._items %}
         {% if not item.deleted %}
           {% include "template-post.html" %}
         {% endif %}
