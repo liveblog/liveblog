@@ -335,7 +335,7 @@ Feature: Blog v2 operations
         When we get "/v2/client_blogs/#blogs._id#/posts?sticky=1"
         Then we get list with 1 items
         When we get "/v2/client_blogs/#blogs._id#/posts?sticky=0"
-        Then we get list with 10 items
+        Then we get list with 9 items
         When we get "/v2/client_blogs/#blogs._id#/posts?highlight=false"
         Then we get list with 10 items
 
