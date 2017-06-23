@@ -14,7 +14,6 @@ env:
 
 services:
     - mongodb
-    - elasticsearch
     - redis-server
 
 addons:
@@ -43,6 +42,9 @@ cache:
     - $HOME/.npm
 
 before_install:
+    - sudo apt-get -qq update
+    - sudo apt-get purge elasticsearch
+    - sudo apt-get install -t stable elasticsearch
     - nvm install --lts node
     - nvm use node
     - node --version
