@@ -325,13 +325,13 @@ Feature: Blog v2 operations
         ]
         """
         And we get "/v2/client_blogs/#blogs._id#/posts"
-        Then we get list with 10 items
+        Then we get list with 9 items
         When we get "/v2/client_blogs/#blogs._id#/posts?ordering=newest_first"
-        Then we get list with 10 items
+        Then we get list with 9 items
         When we get "/v2/client_blogs/#blogs._id#/posts?ordering=oldest_first"
-        Then we get list with 10 items
+        Then we get list with 9 items
         When we get "/v2/client_blogs/#blogs._id#/posts?ordering=editorial"
-        Then we get list with 10 items
+        Then we get list with 9 items
         When we get "/v2/client_blogs/#blogs._id#/posts?sticky=1"
         Then we get list with 1 items
         When we get "/v2/client_blogs/#blogs._id#/posts?sticky=0"
