@@ -16,9 +16,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/liveblog-3d231dd0af.css"],
-    "devScripts": ["dist/liveblog-70f54f4c6d.js"],
+    "devScripts": ["dist/liveblog-74ec80c18e.js"],
     "styles": ["dist/liveblog-3d231dd0af.css"],
-    "scripts": ["dist/liveblog-70f54f4c6d.js"],
+    "scripts": ["dist/liveblog-74ec80c18e.js"],
     "options": [
         {
             "name": "postsPerPage",
