@@ -30,12 +30,16 @@ class TestTemplate(unittest.TestCase):
             api_response = json.load(f)
 
         # TODO: options is bad and confusing as name for test data, change it.
+        data = {
+            'posts': api_response,
+            'stickyPosts': {}
+        }
         self.context = {
             'blog': options['blog'],
             'options': options,
             'json_options': json.dumps(options),
             'settings': options['settings'],
-            'api_response': api_response,
+            'api_response': data,
             'include_js_options': True,
             'debug': False
         }
