@@ -86,8 +86,9 @@ def render_bloglist_embed(api_host=None, assets_root=None):
 
 
 @embed_blueprint.route('/embed/<blog_id>', defaults={'theme': None, 'output': None})
-@embed_blueprint.route('/embed/<blog_id>/<theme>', defaults={'output': None})
-@embed_blueprint.route('/embed/<blog_id>/<theme>/<output>')
+@embed_blueprint.route('/embed/<blog_id>/<output>', defaults={'theme': None})
+@embed_blueprint.route('/embed/<blog_id>/theme/<theme>', defaults={'output': None})
+@embed_blueprint.route('/embed/<blog_id>/<output>/theme/<theme>/')
 def embed(blog_id, theme=None, output=None, api_host=None):
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
@@ -131,7 +132,6 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     else:
         assets_root = [THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme')]
         assets_root = '/%s/' % ('/'.join(assets_root))
-
     scope = {
         'blog': blog,
         'settings': get_resource_service('themes').get_default_settings(theme),
