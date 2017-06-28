@@ -98,9 +98,12 @@ def check_webhook_status(self, consumer_id):
 
 
 @celery.task(bind=True)
-def check_api_status(self, producer_id):
+def check_api_status(self, producer_or_id):
     producers = get_resource_service('producers')
-    producer = producers._get_producer(producer_id) or {}
+    producer = producers._get_producer(producer_or_id) or {}
+    if not producer:
+        return
+
     if 'api_url' not in producer:
         api_status = 'invalid_url'
     elif 'consumer_api_key' not in producer:
