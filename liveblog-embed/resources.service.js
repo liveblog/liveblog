@@ -175,7 +175,33 @@
 
     Outputs.$inject = ['$resource', 'config'];
     function Outputs($resource, config) {
-        return $resource(config.api_host + 'api/client_advertisement_outputs/:id')
+        // get `collection` embbeded into the `output`.
+        return $resource(config.api_host + 'api/client_advertisement_outputs/:id?embedded={"collection":1}',
+        {'id':'@id'});
+    }
+
+    Advertisements.$inject = ['$resource', 'config'];
+    function Advertisements($resource, config) {
+        return $resource(config.api_host + 'api/client_advertisements/:advertisementId',
+            {'advertisementId':'@id'}, {
+                'get': {
+                    method:'GET',
+                    transformResponse: function(ad) {
+                        ad = angular.fromJson(ad);
+                        // transform the advertisement, into a post with freetype item.
+                        // keep the `item_type` from the advertisement.
+                        ad.item_type = ad.type;
+                        // `group_type` need to be a freetype string.
+                        ad.group_type = 'freetype';
+                        var post = {
+                            _id: ad._id,
+                            mainItem: ad,
+                            items: [ad]
+                        };
+                        return post;
+                    }
+                }
+            });
     }
 
     angular.module('liveblog-embed')
@@ -185,6 +211,7 @@
         .service('comments', Comments)
         .service('items', Items)
         .service('outputs', Outputs)
+        .service('advertisements', Advertisements)
         .factory('transformBlog',transformBlog)
         .factory('srcSet', srcSet)
         .factory('thumbnailRendition', thumbnailRendition);
