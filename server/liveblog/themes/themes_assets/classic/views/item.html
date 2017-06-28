@@ -15,13 +15,14 @@
             <div ng-switch-when="image" ng-if="!gallery">
                 <figure>
                     <img ng-src="{{ item.picture_url }}" ng-srcset="{{ item.picture_srcset }}" alt="{{ item.meta.caption }}" sizes="80vw"/>
-                    <figcaption translate>{{ item.meta.caption }} credit: {{ item.meta.credit }}</figcaption>
+                    <figcaption translate ng-if="item.meta.credit">{{ item.meta.caption }} credit: {{ item.meta.credit }}</figcaption>
+                    <figcaption ng-if="!item.meta.credit">{{ item.meta.caption }}</figcaption>
                 </figure>
             </div>
             <div ng-switch-when="quote">
                 <blockquote>
-                    <p>{{ item.meta.quote }}</p>
-                    <h4>{{ item.meta.credit }}</h4>
+                    <p ng-if="item.meta.quote">{{ item.meta.quote }}</p>
+                    <h4 ng-if="item.meta.credit">{{ item.meta.credit }}</h4>
                 </blockquote>
             </div>
             <article ng-switch-default lb-bind-html html-content="{{ item.text | outboundAnchors | fixMarkup }}"></article>
