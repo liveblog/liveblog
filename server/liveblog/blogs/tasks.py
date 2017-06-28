@@ -69,7 +69,7 @@ def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True):
     else:
         blog = blog_or_id
         blog_id = blog['_id']
-    
+
     blog_preferences = blog.get('blog_preferences', {})
     blog_theme = blog_preferences.get('theme')
 
@@ -117,8 +117,11 @@ def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True):
         return public_url
 
 
-
-_blog_id = lambda b: b['_id'] if isinstance(b, dict) else b
+def _blog_id(b):
+    if isinstance(b, dict):
+        return b['_id']
+    else:
+        return str(b)
 
 
 @celery.task(bind=True, soft_time_limit=1800)
@@ -234,4 +237,3 @@ def publish_bloglist_embed_on_s3():
 
         publish_bloglist_assets('scripts')
         publish_bloglist_assets('styles')
-
