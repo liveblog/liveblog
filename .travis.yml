@@ -41,7 +41,7 @@ cache:
     - $HOME/.npm
 
 before_install:
-    - sudo apt-get -qq update
+    - sudo apt-get -qq update --allow-unauthenticated
     - sudo apt-get purge elasticsearch
     - sudo apt-get install -t stable elasticsearch
     - nvm install --lts node
