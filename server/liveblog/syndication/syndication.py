@@ -133,11 +133,9 @@ class SyndicationOutService(BaseService):
 
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
-        start_date = updates.get('start_date')
-        if start_date and start_date != original['start_date']:
-            doc = original.copy()
-            doc.update(updates)
-            send_posts_to_consumer.delay(doc)
+        doc = original.copy()
+        doc.update(updates)
+        send_posts_to_consumer.delay(doc)
 
     def on_deleted(self, doc):
         super().on_deleted(doc)

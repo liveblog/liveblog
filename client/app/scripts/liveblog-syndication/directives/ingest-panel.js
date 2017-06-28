@@ -81,9 +81,9 @@ export default function ingestPanel(
 
 
             // This watches for incoming posts when ingest is not in focus
-            if (scope.ingestQueue.length > 0) {
-                IngestPanelActions.getSyndication($routeParams._id, scope.ingestQueue);
-                scope.ingestQueue = [];
+            if (scope.ingestQueue.queue.length > 0) {
+                IngestPanelActions.getSyndication($routeParams._id, scope.ingestQueue.queue);
+                scope.ingestQueue.queue = [];
             } else {
                 // Small inconsistency in the code. This function takes
                 // the consumer blog id as a parameter.
@@ -94,7 +94,7 @@ export default function ingestPanel(
 
             // This watches for incoming posts when ingest is in focus
             scope.$on('posts', (e, data) => {
-                if (data.posts) {
+                if (data.posts && data.hasOwnProperty('created')) {
                     let syndPosts = data.posts
                         .filter((post) => post.hasOwnProperty('syndication_in'));
 
