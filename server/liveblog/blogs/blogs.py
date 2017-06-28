@@ -111,7 +111,7 @@ class BlogService(BaseService):
         for blog in docs:
             blog_id = str(blog['_id'])
             # Publish on s3 if possible and save the public_url in the blog.
-            publish_blog_embed_on_s3.delay(blog_id)
+            publish_blog_embed_on_s3.apply_async(args=[blog], countdown=2)
             # Notify client with websocket.
             push_notification(self.notification_key, created=1, blog_id=blog_id)
             # And with member emails
@@ -167,8 +167,6 @@ class BlogService(BaseService):
 
     def on_updated(self, updates, original):
         original_id = str(original['_id'])
-        publish_blog_embeds_on_s3.delay(original_id)
-        publish_blog_embeds_on_s3.delay(blog_id=original_id)
         # Invalidate cache for updated blog.
         app.blog_cache.invalidate(original_id)
         # Send notifications,
@@ -176,6 +174,7 @@ class BlogService(BaseService):
         # Notify newly added members.
         blog = original.copy()
         blog.update(updates)
+        publish_blog_embeds_on_s3.apply_async(args=[blog], countdown=2)
         members = updates.get('members', {})
         recipients = []
         for user in members:

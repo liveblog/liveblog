@@ -3,6 +3,8 @@ import './styles/post.scss';
 import './styles/posts-in-panel.scss';
 import './styles/settings.scss';
 import './styles/timeline.scss';
+import './styles/sir-trevor.scss';
+import './styles/sir-trevor-icons.scss';
 
 import postsService from './posts.service';
 import unreadPostsService from './unread.posts.service';

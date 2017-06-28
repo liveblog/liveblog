@@ -3,12 +3,13 @@ import requests
 import json
 from flask import Blueprint, request
 from flask_cors import CORS
-from liveblog.syndication.utils import api_response, api_error
+from liveblog.syndication.utils import api_response, api_error, blueprint_superdesk_token_auth
 from liveblog.syndication.exceptions import APIConnectionError
 from settings import MARKETPLACE_APP_URL
 from requests.exceptions import RequestException
 from requests.packages.urllib3.exceptions import MaxRetryError
 from urllib.parse import urljoin
+from settings import SUPPORTED_LANGUAGES
 
 
 logger = logging.getLogger('superdesk')
@@ -92,14 +93,32 @@ def marketer_blogs(marketer_id):
         return api_error('Unable to get blogs of marketers.', response.status_code)
 
 
+@marketers_blueprint.route('/api/marketplace/languages', methods=['GET'])
+def marketer_languages():
+    try:
+        response = _send_marketplace_api_request(MARKETPLACE_APP_URL, 'languages', request.args)
+    except APIConnectionError as e:
+        return api_response(str(e), 500)
+
+    if response.status_code == 200:
+        content = json.loads(response.content.decode('utf-8'))
+        response = []
+        for language_code in content:
+            if language_code not in SUPPORTED_LANGUAGES['languages'].keys():
+                logger.warning('Language code {} not in SUPPORTED_LANGUAGES'.format(language_code))
+                continue
+            response.append({'code': language_code, 'name': SUPPORTED_LANGUAGES['languages'][language_code]})
+        return api_response(response, 200)
+    else:
+        return api_error('Unable to get languages from marketplace.', response.status_code)
+
+
 def _send_marketplace_api_request(url, uri, params=None, timeout=5):
     method = 'GET'
     if not url.endswith('/'):
         url = '{}/'.format(url)
 
     url = urljoin(url, uri)
-
-    logger.info('API {} request to {}'.format(method, url))
     try:
         response = requests.request(method, url, headers={
             'Content-Type': 'application/json'
@@ -107,11 +126,7 @@ def _send_marketplace_api_request(url, uri, params=None, timeout=5):
     except (ConnectionError, RequestException, MaxRetryError):
         raise APIConnectionError('Unable to connect to api_url "{}".'.format(url))
 
-    logger.warning('API {} request to {} - response: {} {}'.format(
-        'GET', url, response.status_code, response.content
-    ))
-
     return response
 
 
-# marketers_blueprint.before_request(blueprint_superdesk_token_auth)
+marketers_blueprint.before_request(blueprint_superdesk_token_auth)
