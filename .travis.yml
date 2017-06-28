@@ -22,7 +22,6 @@ addons:
     - mongodb-3.0-precise
     - elasticsearch-1.7
     - ubuntu-toolchain-r-test
-    - google-chrome
     packages:
     - mongodb-org-server
     - elasticsearch
