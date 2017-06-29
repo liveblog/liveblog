@@ -206,7 +206,6 @@ class BlogService(BaseService):
 
         self._on_deactivate(blog_id)
 
-        # send notifications
         # Send notifications.
         push_notification('blogs', deleted=1)
 

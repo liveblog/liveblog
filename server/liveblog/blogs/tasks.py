@@ -94,7 +94,6 @@ def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True):
         except MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:
                 raise e
-
             logger.warning('Media storage not supported for blog "{}"'.format(blog_id))
             public_url = '{}://{}/embed/{}/{}{}'.format(app.config['URL_PROTOCOL'],
                                                         app.config['SERVER_NAME'],
