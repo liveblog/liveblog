@@ -1,0 +1,22 @@
+<div class="filter-title">
+    <div class="toggle-box">
+        <div class="toggle-box__header">
+            <div class="toggle-box__chevron">
+                <i class="icon-chevron-right-thin"></i>
+            </div>
+            <div class="toggle-box__label">{{title}}</div>
+        </div>
+        <div class="toggle-box__content">
+            <ul class="filter-box">
+                <li
+                    ng-repeat="term in terms"
+                    ng-click="toggleFilter(key, term[id])">
+                    <span
+                        class="sd-checkbox"
+                        ng-checked="hasFilter(key, term[id])"></span>
+                    <span><i>{{ term.name }}</i></span>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

@@ -10,25 +10,71 @@
 # at https://www.sourcefabric.org/superdesk/license
 
 import copy
+import jinja2
 import json
 import logging
 import os
+import arrow
 
 import superdesk
+from bson.json_util import dumps as bson_dumps
 from eve.io.mongo import MongoJSONEncoder
 from flask import current_app as app
 from flask import json, render_template, request, url_for
-from liveblog.themes import ASSETS_DIR as THEMES_ASSETS_DIR
 from liveblog.themes import UnknownTheme
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
+from liveblog.blogs.blog import Blog
 
-from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
-from .utils import is_relative_to_current_folder
+from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR, THEMES_ASSETS_DIR, DEFAULT_THEME_DATE_FORMAT
+from .utils import is_relative_to_current_folder, get_template_file_name, get_theme_json
 
 logger = logging.getLogger('superdesk')
 embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
 THEMES_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'themes'))
+
+
+class ThemeTemplateLoader(jinja2.BaseLoader):
+    """
+    Theme template loader for SEO themes.
+    """
+    def __init__(self, theme):
+        theme_dirname = os.path.dirname(get_template_file_name(theme['name']))
+        self.paths = [os.path.join(theme_dirname, 'templates')]
+        parent_theme = theme.get('extends')
+        if parent_theme:
+            parent_dirname = os.path.dirname(get_template_file_name(parent_theme))
+            self.paths.append(os.path.join(parent_dirname, 'templates'))
+
+    def get_source(self, environment, template):
+        for path in self.paths:
+            template_path = os.path.join(path, template)
+            if not os.path.exists(template_path):
+                continue
+
+            mtime = os.path.getmtime(template_path)
+            with open(template_path) as f:
+                source = f.read()
+
+            return source, path, lambda: mtime == os.path.getmtime(template_path)
+
+        raise jinja2.TemplateNotFound(template_path)
+
+
+def moment_date_filter(date, format=None):
+    """
+    Jinja2 filter for moment.js compatible dates.
+    :param date:
+    :param format:
+    :return: str
+    """
+    parsed = arrow.get(date)
+    # Workaround for "x" unsupported format
+    if format == 'x':
+        return parsed.timestamp
+    if not format:
+        format = DEFAULT_THEME_DATE_FORMAT
+    return parsed.format(format)
 
 
 def collect_theme_assets(theme, assets=None, template=None):
@@ -86,8 +132,9 @@ def render_bloglist_embed(api_host=None, assets_root=None):
 
 
 @embed_blueprint.route('/embed/<blog_id>', defaults={'theme': None, 'output': None})
-@embed_blueprint.route('/embed/<blog_id>/<theme>', defaults={'output': None})
-@embed_blueprint.route('/embed/<blog_id>/<theme>/<output>')
+@embed_blueprint.route('/embed/<blog_id>/<output>', defaults={'theme': None})
+@embed_blueprint.route('/embed/<blog_id>/theme/<theme>', defaults={'output': None})
+@embed_blueprint.route('/embed/<blog_id>/<output>/theme/<theme>/')
 def embed(blog_id, theme=None, output=None, api_host=None):
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
@@ -119,13 +166,19 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         raise SuperdeskApiError.badRequestError(
             message='You will be able to access the embed after you register the themes')
 
+    # If a theme is provided, overwrite the default theme.
+    if theme_name:
+        theme = get_theme_json(theme_name)
+    else:
+        theme_name = theme['name']
+
     try:
-        assets, template_file = collect_theme_assets(theme)
+        assets, template_content = collect_theme_assets(theme)
     except UnknownTheme as e:
         return str(e), 500
 
-    if not template_file:
-        logger.error('Template file not found for theme "%s". Theme: %s' % (theme.get('name'), theme))
+    if not template_content:
+        logger.error('Template file not found for theme "%s". Theme: %s' % (theme_name, theme))
         return 'Template file not found', 500
 
     # Compute the assets root.
@@ -135,17 +188,80 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         assets_root = [THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme')]
         assets_root = '/%s/' % ('/'.join(assets_root))
 
+    theme_service = get_resource_service('themes')
+    theme_settings = theme_service.get_default_settings(theme)
+    l10n = theme.get('l10n', {})
+
+    # Check if theme is SEO and/or AMP compatible.
+    is_amp = theme.get('ampTheme', False)
+    is_seo = theme.get('seoTheme', False)
+
+    if is_seo:
+        # Fetch initial blog posts for SEO theme
+        blog_instance = Blog(blog)
+        page_limit = theme_settings.get('postsPerPage', 10)
+        sticky_limit = theme_settings.get('stickyPostsPerPage', 10)
+        ordering = theme_settings.get('postOrder', blog_instance.default_ordering)
+        posts = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering)
+        sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True,
+                                           ordering='newest_first')
+        api_response = {
+            'posts': posts,
+            'stickyPosts': sticky_posts
+        }
+        embed_env = jinja2.Environment(loader=ThemeTemplateLoader(theme))
+        embed_env.filters['date'] = moment_date_filter
+        embed_template = embed_env.from_string(template_content)
+        template_content = embed_template.render(
+            blog=blog,
+            options=theme,
+            json_options=bson_dumps(theme),
+            settings=theme_settings,
+            api_response=api_response,
+            assets_root=assets_root,
+            l10n=l10n
+        )
+
     scope = {
         'blog': blog,
-        'settings': get_resource_service('themes').get_default_settings(theme),
+        'settings': theme_settings,
         'assets': assets,
-        'output': output,
         'api_host': api_host,
-        'template': template_file,
+        'output': output,
+        'template': template_content,
         'debug': app.config.get('LIVEBLOG_DEBUG'),
-        'assets_root': assets_root
+        'assets_root': assets_root,
+        'l10n': l10n
     }
-    return render_template('embed.html', **scope)
+    if is_amp:
+        # Add AMP compatible css to template context
+        amp_inline_css = theme.get('ampThemeInlineCss')
+        if amp_inline_css:
+            theme_dirname = os.path.dirname(get_template_file_name(theme['name']))
+            amp_inline_css_filename = os.path.join(theme_dirname, amp_inline_css)
+            if os.path.exists(amp_inline_css_filename):
+                with open(amp_inline_css_filename, 'r') as f:
+                    scope['amp_style'] = f.read()
+
+    embed_template = 'embed.html'
+    if is_amp:
+        embed_template = 'embed_amp.html'
+
+    return render_template(embed_template, **scope)
+
+
+@embed_blueprint.route('/embed/iframe/<blog_id>')
+def embed_iframe(blog_id):
+    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    if not blog:
+        return 'blog not found', 404
+    theme_name = blog['blog_preferences'].get('theme')
+    theme_service = get_resource_service('themes')
+    theme = theme_service.find_one(req=None, name=theme_name)
+    if not theme:
+        return 'theme not found', 404
+    settings = theme_service.get_default_settings(theme)
+    return render_template('embed_iframe.html', blog=blog, theme=theme, settings=settings)
 
 
 @embed_blueprint.route('/embed/<blog_id>/overview')

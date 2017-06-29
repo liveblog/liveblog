@@ -321,6 +321,7 @@
                 restrict: 'AE',
                 scope: {
                     item: '=',
+                    post: '=',
                     timeline: '='
                 },
                 templateUrl: asset.templateUrl('views/author.html'),

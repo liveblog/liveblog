@@ -63,7 +63,7 @@
     </span>
     <span></span>    
 
-    <div ng-repeat="item in post.items track by item._id" class="lb-item">
+    <div ng-repeat="item in post.items track by item._id" class="lb-item lb-article-{{ item.item_type | varname }}">
         <div ng-if="post.fullDetails && !$first" class="list-group-item">
             <div class="lb-timeline__header">
                 <lb-author item="item" timeline="ctrl.timeline"></lb-author>

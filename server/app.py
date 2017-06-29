@@ -25,6 +25,7 @@ from liveblog.syndication.blogs import blogs_blueprint as syndication_blogs_blue
 from liveblog.marketplace.marketer import marketers_blueprint
 from liveblog.analytics.analytics import analytics_blueprint
 from liveblog.items.items import drag_and_drop_blueprint
+from liveblog.client_modules.client_modules import blog_posts_blueprint
 
 
 from superdesk.factory import get_app as superdesk_app
@@ -91,6 +92,9 @@ def get_app(config=None):
 
     # Drag and drop
     app.register_blueprint(drag_and_drop_blueprint)
+
+    # New posts endpoint
+    app.register_blueprint(blog_posts_blueprint)
 
     return app
 
