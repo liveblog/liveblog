@@ -19,17 +19,19 @@
         {% endif %}
     </head>
 
-    <body>
+    <body style="{{ (output and output.get('style')) | tostyle | safe }}">
 
         {{ template | safe }}
 
         <script type="text/javascript">
             window.LB = {
                 blog: {{ blog | tojson | safe }},
+                output: {{ output | tojson | safe }},
                 settings: {{ settings | tojson | safe }},
                 api_host: '{{ api_host }}',
                 assets_root: '{{ assets_root }}',
-                debug: {{ debug | tojson | safe }}
+                debug: {{ debug | tojson | safe }},
+                l10n: {{ l10n | tojson | safe }}
             };
         </script>
         {% if debug %}

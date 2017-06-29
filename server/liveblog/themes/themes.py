@@ -10,7 +10,6 @@
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
-import os
 import glob
 import json
 from io import BytesIO
@@ -27,6 +26,7 @@ import magic
 import logging
 from flask import make_response
 from settings import (SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
+from liveblog.blogs.app_settings import THEMES_ASSETS_DIR as ASSETS_DIR
 
 logger = logging.getLogger('superdesk')
 ASSETS_DIR = 'themes_assets'
@@ -109,6 +109,21 @@ class ThemesResource(Resource):
         },
         'public_url': {
             'type': 'string'
+        },
+        'seoTheme': {
+            'type': 'boolean',
+            'default': False
+        },
+        'ampTheme': {
+            'type': 'boolean',
+            'default': False
+        },
+        'ampThemeInlineCss': {
+            'type': 'string'
+        },
+        'l10n': {
+            'type': 'dict',
+            'default': {}
         }
     }
     datasource = {
@@ -275,17 +290,24 @@ class ThemesService(BaseService):
         # for t in self.get_children(theme['name']) + [theme['name']]:
         #     terms.append({'term': {'blog_preferences.theme': t}})
         blogs = get_resource_service('blogs').get(req=None, lookup={})
+        outputs = get_resource_service('outputs').get(req=None, lookup={})
         # get all the children for the theme that we modify the settings for
         theme_children = self.get_children(theme.get('name'))
         for blog in blogs:
             blog_pref = blog.get('blog_preferences')
-            if blog_pref['theme'] == theme['name']:
+            if blog_pref.get('theme') == theme['name']:
+                for output in outputs:
+                    if output.get('blog') == blog.get('_id'):
+                        publish_blog_embed_on_s3.delay(str(blog['_id']), output=output)
                 publish_blog_embed_on_s3.delay(str(blog['_id']))
             if theme_children:
                 # if a blog has associated the theme that is a  child of the one
                 # for which we modify the settings, we redeploy the blog on s3
                 for child in theme_children:
-                    if blog_pref['theme'] == child:
+                    if blog_pref.get('theme') == child:
+                        for output in outputs:
+                            if output.get('blog') == blog.get('_id'):
+                                publish_blog_embed_on_s3.delay(str(blog['_id']), output=output)
                         publish_blog_embed_on_s3.delay(str(blog['_id']))
                         break
         return blogs

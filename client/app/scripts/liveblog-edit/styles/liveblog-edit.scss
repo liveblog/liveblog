@@ -183,6 +183,13 @@
                     }
                 }
             }
+            .button-stack {
+                &.right-stack {
+                    .navbtn {
+                    width: 48px;
+                    }
+                }
+            }
         }
         // editor
         &--editor .content {
@@ -432,6 +439,9 @@
                                     }
                                     &:active {
                                         @include box-shadow(inset 0 2px 0px multiply($btnDefaultColor,rgba(0,0,0,12%)));
+                                    }
+                                    &:hover {
+                                        color: #d70014;
                                     }
                                 }
                                 .st-block-ui-btn--deny-delete {
@@ -802,7 +812,10 @@
     width: auto;
     z-index: 2;
     position: absolute;
-    right: 40px;
+    right: -60px;
+    &.default {
+        right: 40px;
+    }
     top: 2px;
     li {
         padding: 0px 5px;
@@ -824,4 +837,8 @@
 }
 .freetype-selector .separator {
     border-bottom: 1px solid #ebebeb;
+}
+
+.cursor-pointer {
+    cursor: pointer;
 }

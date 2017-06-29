@@ -57,23 +57,23 @@
                             ng-hide="isAlreadySyndicated(blog)"
                             class="sd-toggle--vertical-middle"></span>
                     </dd>
-                    <dt class="panel-definition-list__term">Start date</dt>
-                    <dd class="panel-definition-list__definition datepicker">
-                        <span
-                            ng-hide="isAlreadySyndicated(blog)"
-                            sd-datepicker
-                            ng-model="blog.start_date"></span>
-                    </dd>
                 </dl>
             </li>
         </ul>
     </div>
-    <div class="modal-footer" ng-if="producers._items.length > 0">
+    <div class="modal-footer">
         <button
-            class="btn btn-primary btn-info" 
+            ng-if="producers._items.length > 0"
+            class="btn btn--primary" 
             type="button"
             ng-click="attach()"
             ng-disabled="hasChanged"
             translate>{{actionName}}</button>
+        <button
+            ng-if="producers._items.length === 0"
+            class="btn btn-default" 
+            type="button"
+            ng-click="cancel()"
+            translate>Close</button>
     </div>
 </div>

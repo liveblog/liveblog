@@ -36,6 +36,7 @@
             input {
                 &[type="radio"] {
                     margin-right: 8px;
+                    clear: both;
                 }
             }
         }
@@ -138,7 +139,7 @@
         position: absolute;
         top: 0px;
         left: 0; right: 0; bottom: 0;
-        padding: 30px 30px 30px 0;
+        padding: 20px;
         overflow-y: auto;
         ul {
             li {

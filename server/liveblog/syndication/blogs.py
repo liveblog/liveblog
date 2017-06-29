@@ -11,7 +11,7 @@ from superdesk import get_resource_service
 from superdesk.services import BaseService
 
 from .auth import ConsumerApiKeyAuth, CustomAuthResource
-from .utils import api_error, api_response
+from liveblog.utils.api import api_error, api_response
 
 logger = logging.getLogger('superdesk')
 blogs_blueprint = Blueprint('syndication_blogs', __name__)

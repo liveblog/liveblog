@@ -8,6 +8,21 @@ from liveblog.common import get_user, update_dates_for
 from apps.archive.archive import ArchiveResource, ArchiveService, ArchiveVersionsResource
 from superdesk.services import BaseService
 from superdesk.filemeta import set_filemeta, get_filemeta
+from werkzeug.datastructures import FileStorage
+from flask import Blueprint, request, make_response
+from flask_cors import CORS
+from superdesk import get_resource_service
+from bson.json_util import dumps
+from requests.exceptions import RequestException
+
+import logging
+import re
+import requests
+import tempfile
+
+logger = logging.getLogger('superdesk')
+drag_and_drop_blueprint = Blueprint('drag_and_drop', __name__)
+CORS(drag_and_drop_blueprint)
 
 
 class ItemsVersionsResource(ArchiveVersionsResource):
@@ -72,6 +87,28 @@ class ItemsResource(ArchiveResource):
 
 
 class ItemsService(ArchiveService):
+    embed_providers = {
+        'twitter': re.compile('https?://twitter\.com/(?:\#!/)?(\w+)/status(es)?/(?P<original_id>\d+)'),
+        'youtube': re.compile('(watch\?.*?(?=v=)v=|embed/|v/|.+\?v=)?(?P<original_id>[^&=%\?]{11})')
+    }
+
+    def set_embed_metadata(self, doc):
+        """
+        Set additional embed metadata.
+        :param doc:
+        :return: None
+        """
+        original_url = doc['meta']['original_url']
+        provider_name = doc['meta']['provider_name'].lower()
+        if provider_name in self.embed_providers:
+            original_id_re = self.embed_providers[provider_name]
+            match = original_id_re.match(original_url)
+            if match:
+                original_id = match.group('original_id')
+                doc['meta']['original_id'] = original_id
+            else:
+                logger.warning('Unable to get orginal_id for url: {}'.format(original_url))
+
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
@@ -93,6 +130,7 @@ class ItemsService(ArchiveService):
                         metadata['width'] = str(metadata.get('width'))
                     if get_filemeta(doc, 'height'):
                         metadata['height'] = str(metadata.get('height'))
+                    self.set_embed_metadata(doc)
 
     def on_created(self, docs):
         super().on_created(docs)
@@ -131,3 +169,32 @@ class BlogItemsService(ArchiveService):
             lookup['blog'] = ObjectId(lookup['blog_id'])
             del lookup['blog_id']
         return super().get(req, lookup)
+
+
+@drag_and_drop_blueprint.route('/api/archive/draganddrop/', methods=['POST'])
+def drag_and_drop():
+    data = request.get_json()
+    url = data['image_url']
+
+    try:
+        response = requests.get(url, timeout=5)
+    except (ConnectionError, RequestException):
+        return make_response('Unable to get url: "{}"'.format(url), 406)
+    fd = tempfile.NamedTemporaryFile()
+    for chunk in response.iter_content(chunk_size=1024):
+        if chunk:
+            fd.write(chunk)
+    fd.seek(0)
+
+    content_type = response.headers.get('content-type')
+    if 'image' not in content_type:
+        return make_response('Invalid content_type {}'.format(content_type), 406)
+
+    item_data = dict()
+    item_data['type'] = 'picture'
+    item_data['media'] = FileStorage(stream=fd, content_type=content_type)
+    archive_service = get_resource_service('archive')
+    archive_id = archive_service.post([item_data])[0]
+    archive = archive_service.find_one(req=None, _id=archive_id)
+
+    return make_response(dumps(archive), 201)

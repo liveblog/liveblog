@@ -14,7 +14,6 @@ env:
 
 services:
     - mongodb
-    - elasticsearch
     - redis-server
 
 addons:
@@ -23,7 +22,6 @@ addons:
     - mongodb-3.0-precise
     - elasticsearch-1.7
     - ubuntu-toolchain-r-test
-    - google-chrome
     packages:
     - mongodb-org-server
     - elasticsearch
@@ -43,7 +41,10 @@ cache:
     - $HOME/.npm
 
 before_install:
-    - nvm install node
+    - sudo apt-get -qq update --allow-unauthenticated
+    - sudo apt-get purge elasticsearch
+    - sudo apt-get install -t stable elasticsearch
+    - nvm install --lts node
     - nvm use node
     - node --version
     - npm config set loglevel warn

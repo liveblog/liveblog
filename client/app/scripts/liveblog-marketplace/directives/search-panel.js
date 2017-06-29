@@ -10,29 +10,20 @@ export default function lbSearchPanel(MarketplaceActions) {
         },
         link: function(scope) {
             scope.categories = [
-                "Breaking News",
-                "Entertainment",
-                "Business and Finance",
-                "Sport",
-                "Technology"
+                {code: 'Breaking News', name: 'Breaking News'},
+                {code: 'Entertainment', name: 'Entertainment'},
+                {code: 'Business and Finance', name: 'Business and Finance'},
+                {code: 'Sport', name: 'Sport'},
+                {code: 'Technology', name: 'Technology'}
             ];
 
-            scope.store.connect(function(state) {
+            scope.store.connect((state) => {
                 scope.marketers = state.marketers;
                 scope.filters = state.filters;
+                scope.languages = state.languages;
             });
 
-            scope.toggleFilter = function(type, value) {
-                MarketplaceActions.toggleFilter(scope.filters, type, value);
-            };
-
-            scope.hasFilter = function(type, value) {
-                return (scope.filters
-                    && scope.filters.hasOwnProperty(type)
-                    && scope.filters[type] === value);
-            };
-
-            scope.close = function() {
+            scope.close = () => {
                 MarketplaceActions.togglePanel(false);
             };
         }
