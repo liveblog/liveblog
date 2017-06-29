@@ -171,8 +171,8 @@ var app = angular.module('liveblog.edit', [
     insta.postHasEmbed = function(post) {
         var hasInstagram = false;
         angular.forEach(post, function(item) {
-            if (item.item.item_type === 'embed') {
-                if (item.item.text.indexOf('platform.instagram.com') !== -1) {
+            if (item.item && item.item.item_type === 'embed') {
+                if (item.item.text && item.item.text.indexOf('platform.instagram.com') !== -1) {
                     hasInstagram = true;
                 }
             }

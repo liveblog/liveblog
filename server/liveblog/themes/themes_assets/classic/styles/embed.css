@@ -19,6 +19,10 @@ img {
     width: auto;
     height: auto;
 }
+td, th {
+    display: table-cell;
+    vertical-align: inherit;
+}
 img.pswp__img {
     max-width: none;
     max-height: none;

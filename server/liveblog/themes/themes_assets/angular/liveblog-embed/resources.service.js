@@ -166,58 +166,11 @@
         return $resource(config.api_host + 'api/client_items/');
     }
 
-    transformOutput.$inject = ['advertisements'];
-    function transformOutput(advertisements) {
-        return function(output) {
-            if (output.collection) {
-                // pull the advertisements from the collections.
-                angular.forEach(output.collection.advertisements, function(ad){
-                    advertisements.get({advertisementId: ad.advertisement_id},
-                        function(advertisement){
-                            // for the update to take place.
-                            angular.extend(ad, advertisement);
-                        }
-                    );
-                });
-            }
-            return output;
-        }
-    }
-
-    Outputs.$inject = ['$resource', 'config', 'transformOutput'];
-    function Outputs($resource, config, transformOutput) {
+    Outputs.$inject = ['$resource', 'config'];
+    function Outputs($resource, config) {
         // get `collection` embbeded into the `output`.
         return $resource(config.api_host + 'api/client_advertisement_outputs/:id?embedded={"collection":1}',
-        {'id':'@id'}, {
-            'get': {
-                method:'GET',
-                transformResponse: function(output) {
-                    output = angular.fromJson(output);
-                    return transformOutput(output);
-                }
-            }
-        });
-    }
-
-    Collections.$inject = ['$resource', 'config', 'advertisements'];
-    function Collections($resource, config, advertisements) {
-        return $resource(config.api_host + 'api/client_advertisement_collections/:collectionId',
-            {'collectionId':'@id'}, {
-                'get': {
-                    method:'GET',
-                    transformResponse: function(collection) {
-                        collection = angular.fromJson(collection);
-                        angular.forEach(collection.advertisements, function(ad){
-                            advertisements.get({advertisementId: ad.advertisement_id}, 
-                                function(advertisement){
-                                    angular.extend(ad, advertisement);
-                                }
-                            );
-                        });
-                        return collection;
-                    }
-                }
-            });
+        {'id':'@id'});
     }
 
     Advertisements.$inject = ['$resource', 'config'];
@@ -251,9 +204,7 @@
         .service('comments', Comments)
         .service('items', Items)
         .service('outputs', Outputs)
-        .service('collections', Collections)
         .service('advertisements', Advertisements)
-        .factory('transformOutput',transformOutput)
         .factory('transformBlog',transformBlog)
         .factory('srcSet', srcSet)
         .factory('thumbnailRendition', thumbnailRendition);
