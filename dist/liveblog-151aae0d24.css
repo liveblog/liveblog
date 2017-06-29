@@ -1108,8 +1108,14 @@ article.slideshow div.lb-item img {
   bottom: 0;
   left: 0;
   right: 0;
-  background: pink;
+  background: rgba(0, 0, 0, 0.4);
   overflow: hidden;
+}
+#slideshow :focus {
+  outline: none;
+}
+#slideshow ::-moz-focus-inner {
+  border: 0;
 }
 #slideshow div.container {
   height: 100%;
@@ -1120,12 +1126,38 @@ article.slideshow div.lb-item img {
   float: left;
   text-align: center;
   margin: 0;
+  position: relative;
 }
 #slideshow div.container figure img {
   height: 100%;
 }
-#slideshow button.fullscreen {
+#slideshow div.container figure figcaption {
   position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  color: white;
+  font-size: 20px;
+  text-shadow: 0px 0px 3px #000;
+  background: rgba(0, 0, 0, 0.4);
+}
+#slideshow button {
+  position: absolute;
+  outline: none;
+  color: black;
+  font-size: 22px;
+}
+#slideshow button.fullscreen {
   right: 0;
   bottom: 10px;
+}
+#slideshow button.arrows {
+  top: 0;
+  height: 100%;
+}
+#slideshow button.arrows.prev {
+  left: 0;
+}
+#slideshow button.arrows.next {
+  right: 0;
 }
