@@ -67,12 +67,14 @@ function BlogSettingsController(
         original_creator: {},
         availableThemes: [],
         availableCategories: [
-            '', 
-            'Breaking News', 
-            'Entertainment', 
-            'Business and Finance', 
-            'Sport', 
-            'Technology'
+            '',
+            'Breaking News',
+            'Entertainment',
+            'Business and Finance',
+            'Sport',
+            'Technology',
+            'Politics',
+            'Others'
         ],
         //used as an aux var to be able to change members and safely cancel the changes
         blogMembers: [],
