@@ -1,0 +1,163 @@
+{
+    "label": "Liveblog 3 Default SEO Theme",
+    "name": "default",
+    "version": "0.1.42",
+    "seoTheme": true,
+    "author": "Sourcefabric <contact@sourcefabric.org>",
+    "contributors": [
+        "Paul Solbach <psolbach@dpa-newslab.com>",
+        "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>",
+        "Löic Nogues <loic.nogues@sourcefabric.org>",
+        "Aleksandar Backo Jelicic <aleksandar.jelicic@sourcefabric.org>"
+    ],
+    "repository": {
+        "type" : "git",
+        "url" : "git@github.com:liveblog/liveblog-default-theme"
+    },
+    "license": "AGPL-3.0",
+    "devStyles": ["dist/liveblog-151aae0d24.css"],
+    "devScripts": ["dist/liveblog-a25f5e5e97.js"],
+    "styles": ["dist/liveblog-151aae0d24.css"],
+    "scripts": ["dist/liveblog-a25f5e5e97.js"],
+    "options": [
+        {
+            "name": "postsPerPage",
+            "label": "Number of posts per page",
+            "type": "number",
+            "default": 10,
+            "help": "Set the number of posts you want to see at the initialization"
+        },
+        {
+            "name": "postOrder",
+            "label": "Default posts order of the timeline",
+            "type": "select",
+            "options": [
+                {"value": "editorial", "label": "Editorial"},
+                {"value": "newest_first", "label": "Newest first"},
+                {"value": "oldest_first", "label": "Oldest first"}
+            ],
+            "default": "editorial"
+        },
+        {
+            "name": "autoApplyUpdates",
+            "label": "All updates including creates are auto-applied periodically.",
+            "type": "checkbox",
+            "default": true,
+            "help": "Turn off to prompt user to load updates"
+        },
+        {
+            "name": "showLiveblogLogo",
+            "label": "Show Liveblog logo.",
+            "type": "checkbox",
+            "default": true,
+            "help": "Show the liveblog logo"
+        },
+        {
+            "name": "autoApplyEdits",
+            "label": "Edits, deletes are applied without prompt",
+            "type": "checkbox",
+            "default": false,
+            "help": "Otherwise they will pop up as new posts."
+        },
+        {
+            "name": "canComment",
+            "label": "Users can comment",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users can comment on the blog"
+        },
+        {
+            "name": "showImage",
+            "label": "Show the blog image",
+            "type": "checkbox",
+            "default": false
+        },
+        {
+            "name": "showTitle",
+            "label": "Show the blog title",
+            "type": "checkbox",
+            "default": false
+        },
+        {
+            "name": "showDescription",
+            "label": "Show the blog description",
+            "type": "checkbox",
+            "default": false
+        },
+        {
+            "name": "showAuthor",
+            "label": "Show author",
+            "type": "checkbox",
+            "default": true,
+            "help": "Show the author information on posts"
+        },
+        {
+            "name": "showAuthorAvatar",
+            "label": "Show author avatar",
+            "type": "checkbox",
+            "default": true,
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "help": "Show the author avatar on posts"
+        },
+        {
+            "name": "authorNameFormat",
+            "label": "Author name format",
+            "type": "select",
+            "default": "display_name",
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "options": [
+                {"value": "display_name", "label": "Full name"},
+                {"value": "byline", "label": "Byline"},
+                {"value": "sign_off", "label": "Sign off"}
+            ],
+            "help": "How to show the author name"
+        },
+        {
+            "name": "hasHighlights",
+            "label": "Has highlights",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users see the highlight button in embed"
+        },
+        {
+            "name": "blockSearchEngines",
+            "label": "Block search engines",
+            "type": "checkbox",
+            "default": true,
+            "help": "Block search engines from indexing my blogs"
+        },
+        {
+            "name": "showGallery",
+            "label": "Show slideshow gallery",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users will see the slideshow gallery for multiple images posts"
+        },
+        {
+            "name": "stickyPosition",
+            "label": "Position of sticky posts",
+            "type": "select",
+            "options": [
+                {"value": "top", "label": "Top"},
+                {"value": "bottom", "label": "Bottom"}
+            ],
+            "default": "top"
+        }
+    ],
+    "l10n": {
+        "loadMore": "Load More",
+        "ascending": "Oldest first",
+        "descending": "Newest first",
+        "editorial": "Editorial",
+        "loadNewPosts": "Load new posts",
+        "timeAgo": {
+            "d": {"s": "A day ago", "p": "{} days ago"},
+            "h": {"s": "An hour ago", "p": "{} hours ago"},
+            "m": {"s": "A minute ago", "p": "{} minutes ago"}
+        }
+    }
+}

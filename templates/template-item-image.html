@@ -1,0 +1,18 @@
+<figure>
+  <img 
+    {% if ref.item.active %}class="active"{% endif %}
+    src="{{ ref.item.meta.media.renditions.thumbnail.href }}"
+    srcset="{{ ref.item.meta.media.renditions.baseImage.href }} 810w, 
+    {{ ref.item.meta.media.renditions.thumbnail.href }} 240w, 
+    {{ ref.item.meta.media.renditions.viewImage.href }} 540w" 
+    alt="{{ ref.item.meta.caption }}">
+  <figcaption>
+    <span ng-if="ref.item.meta.caption" class="caption">
+      {{ ref.item.meta.caption }}
+    </span>&nbsp;
+    <span ng-if="ref.item.meta.credit" class="credit">
+      {{ ref.item.meta.credit }}
+    </span>
+  </figcaption>
+</figure>
+
