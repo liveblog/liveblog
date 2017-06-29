@@ -136,6 +136,16 @@
             "type": "checkbox",
             "default": false,
             "help": "If the users will see the slideshow gallery for multiple images posts"
+        },
+        {
+            "name": "stickyPosition",
+            "label": "Position of sticky posts",
+            "type": "select",
+            "options": [
+                {"value": "top", "label": "Top"},
+                {"value": "bottom", "label": "Bottom"}
+            ],
+            "default": "top"
         }
     ],
     "l10n": {

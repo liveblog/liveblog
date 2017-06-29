@@ -24,7 +24,8 @@
       "showAuthorAvatar":true,
       "showTitle":true,
       "authorNameFormat":"display_name",
-      "showGallery":true
+      "showGallery":true,
+      "stickyPosition": "bottom"
     },
     "start_date":"2017-03-08T12:30:20+00:00",
     "picture":{
@@ -171,7 +172,8 @@
     "authorNameLinksToEmail":false,
     "showAuthor":true,
     "datetimeFormat":"lll",
-    "infinitScroll":false
+    "infinitScroll":false,
+    "stickyPosition": "bottom"
   },
   "l10n": {
     "ascending": "Oldest first",
