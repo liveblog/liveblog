@@ -275,6 +275,8 @@ button.active {
     position: absolute;
     right: 10px;
     top: 5px;
+    max-height: 50px;
+    max-width: 250px;
 }
 .load-new-posts {
     font-size: 1.2em;

@@ -22,7 +22,6 @@ addons:
     - mongodb-3.0-precise
     - elasticsearch-1.7
     - ubuntu-toolchain-r-test
-    - google-chrome
     packages:
     - mongodb-org-server
     - elasticsearch
@@ -42,7 +41,7 @@ cache:
     - $HOME/.npm
 
 before_install:
-    - sudo apt-get -qq update
+    - sudo apt-get -qq update --allow-unauthenticated
     - sudo apt-get purge elasticsearch
     - sudo apt-get install -t stable elasticsearch
     - nvm install --lts node

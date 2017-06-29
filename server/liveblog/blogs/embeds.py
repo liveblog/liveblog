@@ -26,8 +26,8 @@ from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
 
-from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR, THEMES_ASSETS_DIR, DEFAULT_THEME_DATE_FORMAT
-from .utils import is_relative_to_current_folder, get_template_file_name, get_theme_json
+from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
+from .utils import is_relative_to_current_folder
 
 logger = logging.getLogger('superdesk')
 embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
@@ -132,8 +132,9 @@ def render_bloglist_embed(api_host=None, assets_root=None):
 
 
 @embed_blueprint.route('/embed/<blog_id>', defaults={'theme': None, 'output': None})
-@embed_blueprint.route('/embed/<blog_id>/<theme>', defaults={'output': None})
-@embed_blueprint.route('/embed/<blog_id>')
+@embed_blueprint.route('/embed/<blog_id>/<output>', defaults={'theme': None})
+@embed_blueprint.route('/embed/<blog_id>/theme/<theme>', defaults={'output': None})
+@embed_blueprint.route('/embed/<blog_id>/<output>/theme/<theme>/')
 def embed(blog_id, theme=None, output=None, api_host=None):
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)

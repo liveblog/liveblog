@@ -1,7 +1,26 @@
 (function(angular) {
     'use strict';
-    TimelineCtrl.$inject = ['$interval', 'PagesManager', 'blogs', 'config', '$anchorScroll', '$timeout', 'Permalink', 'transformBlog', 'gettext', 'outputs'];
-    function TimelineCtrl($interval, PagesManager, blogsService, config, $anchorScroll, $timeout, Permalink, transformBlog, gettext, outputsService) {
+    TimelineCtrl.$inject = ['$interval', 
+                            'PagesManager',
+                            'blogs',
+                            'config',
+                            '$anchorScroll',
+                            '$timeout', 'Permalink',
+                            'transformBlog',
+                            'gettext',
+                            'outputs',
+                            'advertisements'];
+    function TimelineCtrl($interval,
+                          PagesManager,
+                          blogsService,
+                          config,
+                          $anchorScroll,
+                          $timeout,
+                          Permalink,
+                          transformBlog,
+                          gettext,
+                          outputsService,
+                          advertisementsService) {
 
         var POSTS_PER_PAGE = config.settings.postsPerPage;
         var STICKY_POSTS_PER_PAGE = 100;
@@ -26,26 +45,61 @@
         }
 
         vm.enhance = function(all) {
+            if(!all.length) {
+                return;
+            }
             if(config.output && config.output.collection) {
-                // @TODO: add the settings on output.
-                var settings = config.output.settings || {frequency: 4, order: -1};
-                angular.forEach(config.output.collection.advertisements, function(ad, index){
-                    if(all.length > index * (settings.frequency+1) ) {
-                        if(settings.order === 1) {
-                            all.splice(index * (settings.frequency+1), 0, ad);
-                        } else {
-                            all.splice(all.length - index * (settings.frequency+1), 0, ad);
-                        }
+                var settings = config.output.settings || {frequency: 4, order: -1},
+                    ads = config.output.collection.advertisements;
+                if(settings.order === 1) {
+                    for(var index, i=0, count=all.length; i < count; i+=(settings.frequency+1)) {
+                        index = i/(settings.frequency+1) % ads.length;
+                        all.splice(i, 0, ads[index]);
                     }
-                });
+                } else {
+                    for(var index, i=all.length; i > 0; i-=(settings.frequency+1)) {
+                        index = i/(settings.frequency+1) % ads.length;
+                        all.splice(i, 0, ads[index]);
+                    }
+                }
             }
             return all;
         };
 
+        function fetchAdvertisements(output) {
+            angular.forEach(output.collection.advertisements, function(ad){
+                advertisementsService.get({advertisementId: ad.advertisement_id},
+                    function(advertisement){
+                        var old = _.find(config.output.collection.advertisements, function(o){
+                            return (o.advertisement_id === advertisement._id);
+                        });
+                        angular.extend(old, advertisement);
+                    }
+                );
+            });
+        }
+
         function retriveOutput() {
             if (config.output && config.output._id) {
+                // if collections advertiments weren't fetched, `_id` property isn't set.
+                if (config.output.collection &&
+                    config.output.collection.advertisements.length &&
+                    !config.output.collection.advertisements[0]._id) {
+                        fetchAdvertisements(config.output);
+                }
                 outputsService.get({id: config.output._id}, function(output) {
-                    if (!angular.equals(config.output, output)) {
+                    // if collections are diffrent identify by _etags fetch ads.
+                    if (config.output.collection &&
+                        output.collection &&
+                        config.output.collection._etag !== output.collection._etag) {
+                            fetchAdvertisements(output);
+                    }
+                    // if the new fetch output has a collection fetch ads.
+                    if (!config.output.collection && output.collection) {
+                            fetchAdvertisements(output);
+                    }
+
+                    if (config.output._etag !== output._etag) {
                         config.output = output;
                         applyOutputStyle();
                     }
@@ -63,15 +117,6 @@
                 angular.extend(vm.blog, blog);
             });
             retriveOutput();
-
-            if (config.output && config.output._id) {
-                outputsService.get({id: config.output._id}, function(output) {
-                    if (!angular.equals(config.output, output)) {
-                        config.output = output;
-                        applyOutputStyle();
-                    }
-                })
-            }
         }
 
         function fixBackgroundImage(style) {
@@ -94,6 +139,7 @@
         angular.extend(vm, {
             templateDir: config.assets_root,
             blog: transformBlog(config.blog),
+            output: config.output,
             loading: true,
             finished: false,
             highlightsOnly: false,
@@ -220,6 +266,9 @@
         }
 
         vm.isAd = function(post) {
+            if(!post.mainItem || !post.mainItem.item_type) {
+                return;
+            }
             return (post.mainItem.item_type.indexOf('Advertisement') !== -1) ||
                     post.mainItem.item_type.indexOf('Advertisment') !== -1
         }
@@ -272,6 +321,7 @@
                 restrict: 'AE',
                 scope: {
                     item: '=',
+                    post: '=',
                     timeline: '='
                 },
                 templateUrl: asset.templateUrl('views/author.html'),
