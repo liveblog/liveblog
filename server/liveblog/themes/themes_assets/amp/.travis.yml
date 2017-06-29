@@ -1,0 +1,9 @@
+dist: trusty
+language: node_js
+nodejs: 6
+
+install:
+  - npm install gulp
+  - npm install
+
+script: gulp lint && gulp && gulp amp-validate

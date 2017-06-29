@@ -8,10 +8,11 @@ from superdesk import get_resource_service
 from flask import current_app as app
 from flask import Blueprint
 from flask_cors import CORS
+from liveblog.utils.api import api_response
 
 from .exceptions import APIConnectionError, ConsumerAPIError
 from .syndication import WEBHOOK_METHODS
-from .utils import generate_api_key, send_api_request, trailing_slash, api_response, blueprint_superdesk_token_auth
+from .utils import generate_api_key, send_api_request, trailing_slash, blueprint_superdesk_token_auth
 from .tasks import check_webhook_status
 
 logger = logging.getLogger('superdesk')

@@ -207,6 +207,29 @@ import './module';
                     }
                     return all;
                 });
+                // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
+                template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
+                    var name, options;
+                    attr = attr.replace(/(select|dropdown)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                        function(match, tag, quote, rname) {
+                        name = rname;
+                        // remove the dollar variable from the attributes.
+                        return '';
+                    });
+                    attr = attr.replace(/(options)\w*=\w*("|')?([^"']+)("|')?/gi,
+                        function(match, tag, quote, roptions) {
+                        options = roptions;
+                        // remove the dollar variable from the attributes.
+                        return '';
+                    });
+                    if (name) {
+                        path2obj(scope[SCOPE_FREETYPEDATA], name);
+                        return '<freetype-select options="' + options + '" select='
+                                + makeAngularAttr(name, attr)
+                                + ' validation="validation"></freetype-select>';
+                    }
+                    return all;
+                });
                 // transform dollar variables in content of any start to end tag.
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>(.*?)<\/\1>?/gi,
                     function(all, tag, attr, content) {
@@ -271,6 +294,11 @@ import './module';
                         return '<freetype-embed embed=' + makeAngularAttr(name, attr) + '></freetype-embed>';
                     }
                     return all;
+                });
+
+                // replace variables
+                template = template.replace(/@([a-z0-9_.\[\]]+)/gi, function(all, name) {
+                    return '{{' + SCOPE_FREETYPEDATA + '.' + name + '}}';
                 });
                 return template;
 
@@ -356,9 +384,28 @@ import './module';
                             return '';
                         });
 
+                    attr = attr.replace(/(select|dropdown)w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                        function(match, tag, quote, rname) {
+                            name = rname;
+                            type = 'select';
+                            // remove the dollar variable from the attributes.
+                            return '';
+                        });
+
                     if (name || type) {
                         switch (type) {
                             case 'text':
+                                if (paths[name]) {
+                                    return '<span '
+                                                + injectClass(attr, 'freetype--element')
+                                                + '>'
+                                                + _.escape(paths[name])
+                                                + '</span>';
+                                }
+
+                                return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
+
+                            case 'select':
                                 if (paths[name]) {
                                     return '<span '
                                                 + injectClass(attr, 'freetype--element')
@@ -398,7 +445,13 @@ import './module';
                     }
                     return all;
                 });
-
+                // replace variables
+                template = template.replace(/@([a-z0-9_.\[\]]+)/gi, function(all, name) {
+                    if (paths[name]) {
+                        return paths[name];
+                    }
+                    return '';
+                });
                 // remove elements with the hide-render attribute
                 template = (function recursiveContent(template) {
                     template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>((.|\n)*?)<\/\1>?/gi,

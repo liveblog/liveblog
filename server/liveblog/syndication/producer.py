@@ -8,8 +8,9 @@ from flask_cors import CORS
 from eve.utils import str_to_date
 from superdesk import get_resource_service
 from flask import current_app as app
+from liveblog.utils.api import api_response, api_error
 from .exceptions import APIConnectionError, ProducerAPIError
-from .utils import trailing_slash, api_response, api_error, send_api_request, blueprint_superdesk_token_auth
+from .utils import trailing_slash, send_api_request, blueprint_superdesk_token_auth
 from .tasks import check_api_status
 
 logger = logging.getLogger('superdesk')
@@ -138,13 +139,18 @@ class ProducerService(BaseService):
 
     def on_created(self, docs):
         for doc in docs:
-            check_api_status.delay(doc['_id'])
+            check_api_status.delay(doc)
 
     def on_update(self, updates, original):
         if 'api_url' in updates:
             updates['api_url'] = trailing_slash(updates['api_url'])
         super().on_update(updates, original)
-        check_api_status.delay(original['_id'])
+
+    def on_updated(self, updates, original):
+        original = original.copy()
+        original.update(updates)
+        check_api_status.delay(original)
+        super().on_updated(updates, original)
 
 
 class ProducerResource(Resource):
@@ -323,7 +329,7 @@ def producer_check_connection(producer_id):
     producer = producers.find_one(_id=producer_id, req=None)
     if not producer:
         return api_response('invalid_producer_id', 404)
-    check_api_status(producer_id)
+    check_api_status(producer)
     return api_response('OK', 200)
 
 
