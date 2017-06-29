@@ -51,7 +51,8 @@ blogs_schema = {
     },
     'category': {
         'type': 'string',
-        'allowed': ["", "Breaking News", "Entertainment", "Business and Finance", "Sport", "Technology"],
+        'allowed': ["", "Breaking News", "Entertainment", "Business and Finance",
+                    "Sport", "Technology", "Politics", "Others"],
         'default': ""
     },
     'start_date': {
