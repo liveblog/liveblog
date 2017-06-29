@@ -37,6 +37,15 @@ var placeCaretAtStart = createCaretPlacer(true);
 var placeCaretAtEnd = createCaretPlacer(false);
 var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
 
+function fixDataEmbed(data) {
+    if (data.html) {
+        var tmp = document.createElement("DIV");
+            tmp.innerHTML = data.html;
+        data.html = tmp.innerHTML;
+    }
+    return data;
+}
+
 function fixSecureEmbed(string) {
     var ret;
 
@@ -250,7 +259,7 @@ angular
                     var credit_text = data.provider_name;
 
                     if (_.has(data, 'author_name')) {
-                        credit_text += ' | by <a href="' + data.author_url + '" target="_blank">' +
+                        credit_text += ' | <a href="' + data.author_url + '" target="_blank">' +
                             data.author_name + '</a>';
                     }
                     html.find('.credit-preview').html(credit_text);
@@ -281,7 +290,7 @@ angular
             // render a card from data, and make it editable
             loadData: function(data) {
                 var that = this;
-                that.data = data;
+                that.data = fixDataEmbed(data);
                 // hide the embed input field, render the card and add it to the DOM
                 that.$('.embed-input')
                     .addClass('hidden')
