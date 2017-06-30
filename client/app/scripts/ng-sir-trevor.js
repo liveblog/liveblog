@@ -83,7 +83,7 @@ export default angular
                     scope.editor.dataStore.data = [];
                 };
 
-                $('.st-text-block').on('keyup', scope.onChange);
+                element.on('keyup', scope.onChange);
 
                 // @TODO: investigate how to better `digest` out of $scope  variables.
                 //scope.$watchCollection('editor.blocks', function(blocks) {
