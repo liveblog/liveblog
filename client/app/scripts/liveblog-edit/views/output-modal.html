@@ -68,6 +68,56 @@
                         </section>
                     </div>
                 </div>
+
+                <div class="field">
+                    <label translate>Logo Image</label>
+                    <div class="upload-form">
+                        <section
+                            class="main"
+                            sd-image-preview="vm.output.preview_logo.url"
+                            data-file="vm.output.preview_logo.img"
+                            data-progress-width="vm.output.preview_logo.width">
+
+                            <div
+                                class="upload-progress"
+                                ng-show="vm.output.progress_logo.width">
+                                <div
+                                    class="bar"
+                                    style="width: {{ vm.output.progress_logo.width }}%;"></div>
+                            </div>
+
+
+                            <div class="computer" ng-if="!vm.output.preview_logo.url" ng-hide="vm.output.progress_logo.width">
+                                <div class="dropzone" ngf-drop="vm.output.preview_logo.img = $files[0]">
+                                    <div class="text" translate>Drop it here</div>
+                                    <div class="input-holder">
+                                        <input type="file" accept="image/*;capture=camera" ngf-select="vm.output.preview_logo.img = $files[0]" label="{{ 'or Select from computer' | translate }}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="preview" ng-if="vm.output.preview_logo.url">
+                                <div class="crop-area">
+                                    <div class="preview">
+                                        <div sd-plain-image
+                                            data-src="vm.output.preview_logo.url"
+                                            data-progress-width="vm.output.progress_logo.width"
+                                            data-file="vm.output.preview_logo.img"
+                                            data-min-width="20"
+                                            data-min-height="20"
+                                            data-max-height="50"
+                                            data-max-width="250"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <figure class="ads-media-buttons">
+                                    <button class="btn btn-warning pull-right" ng-click="vm.removeLogoImage()" translate>Remove</button>
+                                </figure>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
                 <div class="field" ng-if="vm.output._id">
                     <label for="inputEmbedCode" class="control-label" translate>Embed code</label>
                     <div class="form-input">

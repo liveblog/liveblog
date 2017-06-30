@@ -8,10 +8,11 @@ marketplaceController.$inject = [
 ];
 
 export default function marketplaceController($scope, Store, MarketplaceActions, MarketplaceReducers, $route, moment) {
-    var filters = {}
+    var filters = {};
 
-    if ($route.current.params.hasOwnProperty('filters'))
+    if ($route.current.params.hasOwnProperty('filters')) {
         filters = JSON.parse($route.current.params.filters);
+    }
 
     $scope.states = [
         'Marketers',
@@ -42,15 +43,15 @@ export default function marketplaceController($scope, Store, MarketplaceActions,
     $scope.store = new Store(MarketplaceReducers, {
         currentBlog: {},
         currentMarketer: {},
-        blogs: { _items: [] },
-        marketers: { _items: [] },
+        blogs: {_items: []},
+        marketers: {_items: []},
         filters: filters,
         searchPanel: true,
-        embedModal: false
+        embedModal: false,
+        languages: []
     });
 
-    $scope.store.connect(function(state) {
-        //$scope.blogs = state.blogs;
+    $scope.store.connect((state) => {
         $scope.searchPanel = state.searchPanel;
         $scope.embedModal = state.embedModal;
         $scope.filters = state.filters;
@@ -60,17 +61,21 @@ export default function marketplaceController($scope, Store, MarketplaceActions,
             filters: JSON.stringify(state.filters)
         });
 
-        $scope.blogs = { _items: [] };
-        $scope.forthcomingBlogs = { _items: [] };
+        $scope.blogs = {_items: []};
+        $scope.forthcomingBlogs = {_items: []};
 
-        state.blogs._items.forEach(function(blog) {
-            if (moment().diff(blog.start_date) < 0)
+        state.blogs._items.forEach((blog) => {
+            if (moment().diff(blog.start_date) < 0) {
                 $scope.forthcomingBlogs._items.push(blog);
-            else
+            } else {
                 $scope.blogs._items.push(blog);
+            }
         });
+
+        $scope.forthcomingBlogs._items = $scope.forthcomingBlogs._items.reverse();
     });
 
     MarketplaceActions.getBlogs(filters);
     MarketplaceActions.getMarketers();
+    MarketplaceActions.getLanguages();
 }

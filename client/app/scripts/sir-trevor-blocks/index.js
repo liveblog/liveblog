@@ -615,6 +615,28 @@ angular
         });
         SirTrevor.Formatters.Unlink = new UnLink();
 
+        const HeaderFour = SirTrevor.Formatter.extend({
+            title: 'h4',
+            iconName: 'h4',
+            cmd: 'headerFour',
+            text: 'H4',
+            onClick: () => {
+                document.execCommand('formatBlock', false, '<h4>');
+            }
+        });
+        SirTrevor.Formatters.HeaderFour = new HeaderFour();
+
+        const HeaderFive = SirTrevor.Formatter.extend({
+            title: 'h5',
+            iconName: 'h5',
+            cmd: 'headerFive',
+            text: 'H5',
+            onClick: () => {
+                document.execCommand('formatBlock', false, '<h5>');
+            }
+        });
+        SirTrevor.Formatters.HeaderFive = new HeaderFive();
+
         var Link = SirTrevor.Formatter.extend({
             title: 'link',
             iconName: 'link',

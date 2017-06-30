@@ -9,7 +9,7 @@ export default function marketplaceActions(Dispatcher, api, $http, _) {
             };
 
             api.get('/marketplace/blogs', params)
-                .then(function(blogs) {
+                .then((blogs) => {
                     Dispatcher.dispatch({
                         type: 'ON_GET_BLOGS',
                         blogs: blogs,
@@ -18,19 +18,27 @@ export default function marketplaceActions(Dispatcher, api, $http, _) {
                 });
         },
         getMarketers: function() {
-            api.get('/marketplace/marketers').then(function(marketers) {
+            api.get('/marketplace/marketers').then((marketers) => {
                 Dispatcher.dispatch({
                     type: 'ON_GET_MARKETERS',
                     marketers: marketers
                 });
             });
         },
-
+        getLanguages: function() {
+            api.get('/marketplace/languages').then((languages) => {
+                Dispatcher.dispatch({
+                    type: 'ON_GET_LANGUAGES',
+                    languages: languages
+                });
+            });
+        },
         toggleFilter: function(filters, type, value) {
-            if (filters && filters[type] === value)
+            if (filters && filters[type] === value) {
                 filters = _.omit(filters, type);
-            else
+            } else {
                 filters[type] = value;
+            }
 
             var params = {
                 where: filters,
@@ -39,20 +47,20 @@ export default function marketplaceActions(Dispatcher, api, $http, _) {
 
             api
                 .get('/marketplace/blogs', params)
-                .then(function(blogs) {
+                .then((blogs) => {
                     Dispatcher.dispatch({
                         type: 'ON_GET_BLOGS',
                         blogs: blogs,
                         filters: filters
                     });
                 })
-                .catch(function(error) {
+                .catch((error) => {
                     Dispatcher.dispatch({
                         type: 'ON_GET_BLOGS',
-                        blogs: { _items: {} },
+                        blogs: {_items: {}},
                         filters: filters
                     });
-                })
+                });
         },
         togglePanel: function(value) {
             Dispatcher.dispatch({
@@ -74,5 +82,5 @@ export default function marketplaceActions(Dispatcher, api, $http, _) {
                 currentBlog: {}
             });
         }
-    }
+    };
 }

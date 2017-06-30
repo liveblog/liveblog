@@ -19,7 +19,7 @@ export default function producerList(api, $http, modal, config, notify) {
             scope.disable = function(e, producerToRemove) {
                 e.stopPropagation();
 
-                modal.confirm(gettext('Are you sure you want to remove this consumer?'))
+                modal.confirm(gettext('Are you sure you want to remove this producer?'))
                     .then(() => api.producers.remove(producerToRemove))
                     .then((result) => {
                         angular.forEach(scope.producers, (producer, i) => {
