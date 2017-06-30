@@ -15,7 +15,7 @@ $PADDING: 20px;
         > .subnav {
             top: 1 - $SUBNAV_HEIGHT;
             background-color: #eaeaea;
-            padding: 0 20px;
+            padding: 0 0 0 20px;
         }
         .tab-content {
             > .header {
@@ -76,7 +76,7 @@ $PADDING: 20px;
             top: -11px;
             right: -22px;
             button {
-                top: -8px;
+                top: 1px;
             }
         }
         .header {
