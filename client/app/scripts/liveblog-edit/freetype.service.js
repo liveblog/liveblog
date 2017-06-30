@@ -38,7 +38,7 @@ import './module';
         attr = attr || '';
         // remove any trailing `/` character from attr.
         // the trailing character is composed.
-        attr = attr.replace(/compulsory\w*=\w*("|')?([^\"\']+)("|')/g, 'compulsory="' + SCOPE_FREETYPEDATA + '.$2"');
+        attr = attr.replace(/compulsory\s*=\s*("|')?([^\"\']+)("|')/g, 'compulsory="' + SCOPE_FREETYPEDATA + '.$2"');
         attr = attr.replace(/\$\$/g, '');
         if (attr.substr(attr.length - 1, 1) === '/') {
             attr = attr.substr(0, attr.length - 1);
@@ -123,7 +123,7 @@ import './module';
      */
     function injectClass(attr, cls) {
         if (attr.indexOf('class') > -1) {
-            return attr.replace(/class\w*=\w*("|')?([^\"\']+)("|')/, 'class="' + cls + ' $2"');
+            return attr.replace(/class\s*=\s*("|')?([^\"\']+)("|')/, 'class="' + cls + ' $2"');
         }
 
         attr += 'class="' + cls + '" ';
@@ -178,7 +178,7 @@ import './module';
                 // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(checkbox|radio)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, 
+                    attr = attr.replace(/(checkbox|radio)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, 
                         function(match, tag, quote, rname) {
                         name = rname;
                         // remove the dollar variable from the attributes.
@@ -193,7 +193,7 @@ import './module';
                 // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                    attr = attr.replace(/(name|text)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
                         function(match, tag, quote, rname) {
                         name = rname;
                         // remove the dollar variable from the attributes.
@@ -210,13 +210,13 @@ import './module';
                 // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name, options;
-                    attr = attr.replace(/(select|dropdown)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                    attr = attr.replace(/(select|dropdown)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
                         function(match, tag, quote, rname) {
                         name = rname;
                         // remove the dollar variable from the attributes.
                         return '';
                     });
-                    attr = attr.replace(/(options)\w*=\w*("|')?([^"']+)("|')?/gi,
+                    attr = attr.replace(/(options)\s*=\s*("|')?([^"']+)("|')?/gi,
                         function(match, tag, quote, roptions) {
                         options = roptions;
                         // remove the dollar variable from the attributes.
@@ -249,7 +249,7 @@ import './module';
                 // transform dollar variables in the attributes of `image` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                    attr = attr.replace(/(image|graphic|rendition)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
                         function(match, tag, quote, rname) {
                             name = rname;
                             // remove the dollar variable from the attributes.
@@ -266,7 +266,7 @@ import './module';
                 // transform dollar variables in the attributes of `link` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(link|url)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                    attr = attr.replace(/(link|url)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
                         function(match, tag, quote, rname) {
                             name = rname;
                             // remove the dollar variable from the attributes.
@@ -283,7 +283,7 @@ import './module';
                 // transform dollar variables in the attributes of `embed` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(embed|html)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                    attr = attr.replace(/(embed|html)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
                         function(match, tag, quote, rname) {
                             name = rname;
                             // remove the dollar variable from the avem o problema, attributes.
@@ -296,8 +296,25 @@ import './module';
                     return all;
                 });
 
+                // replace if not empty string variables.
+                template = template.replace(/@([a-z0-9_.\[\]\-]+)\?\s*([a-z0-9_.\[\]]+)/gi, function(all, str, name) {
+                    if (str.indexOf('media') !== -1) {
+                        return all;
+                    }
+                    return '';
+                });
+                // replace conditional string variables.
+                template = template.replace(/@([a-z0-9_.\[\]\-]+):\s*([a-z0-9_.\[\]]+)/gi, function(all, str, name) {
+                    if (str.indexOf('media') !== -1) {
+                        return all;
+                    }
+                    return '';
+                });
                 // replace variables
-                template = template.replace(/@([a-z0-9_.\[\]]+)/gi, function(all, name) {
+                template = template.replace(/@([a-z0-9_.\[\]\-]+)/gi, function(all, name) {
+                    if (all.indexOf('media') !== -1) {
+                        return all;
+                    }
                     return '{{' + SCOPE_FREETYPEDATA + '.' + name + '}}';
                 });
                 return template;
@@ -352,7 +369,7 @@ import './module';
                         attr = attr.substr(0, attr.length - 1);
                     }
                     // transform `name` and `text` variables.
-                    attr = attr.replace(/(name|text)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                    attr = attr.replace(/(name|text)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
                         function(match, tag, quote, rname) {
                             name = rname;
                             type = 'text';
@@ -360,7 +377,7 @@ import './module';
                             return '';
                         });
 
-                    attr = attr.replace(/(image|graphic|rendition)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                    attr = attr.replace(/(image|graphic|rendition)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
                         function(match, tag, quote, rname) {
                             name = rname + '.picture_url';
                             type = 'image';
@@ -368,7 +385,7 @@ import './module';
                             return '';
                         });
 
-                    attr = attr.replace(/(wrap-link)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                    attr = attr.replace(/(wrap-link)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
                         function(match, tag, quote, rname) {
                             name = rname;
                             type = 'wrap-link';
@@ -376,7 +393,7 @@ import './module';
                             return '';
                         });
 
-                    attr = attr.replace(/(embed)\w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                    attr = attr.replace(/(embed)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
                         function(match, tag, quote, rname) {
                             name = rname;
                             type = 'embed';
@@ -384,7 +401,7 @@ import './module';
                             return '';
                         });
 
-                    attr = attr.replace(/(select|dropdown)w*=\w*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                    attr = attr.replace(/(select|dropdown)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
                         function(match, tag, quote, rname) {
                             name = rname;
                             type = 'select';
@@ -445,8 +462,37 @@ import './module';
                     }
                     return all;
                 });
+                // replace if not empty string variables.
+                template = template.replace(/@([a-z0-9_.\[\]\-]+)\?\s*([a-z0-9_.\[\]]+)/gi, function(all, str, name) {
+                    if (str.indexOf('media') !== -1) {
+                        return all;
+                    }
+                    if (paths[name] || paths[name + '.picture_url']) {
+                        return str;
+                    }
+                    return '';
+                });
+                // replace conditional string variables.
+                template = template.replace(/@([a-z0-9_.\[\]\-]+):\s*([a-z0-9_.\[\]]+)/gi, function(all, str, name) {
+                    if (str.indexOf('media') !== -1) {
+                        return all;
+                    }
+                    var prefix = '', sufix = '';
+                    if (['background-image'].indexOf(str)!== -1) {
+                        name = name  + '.picture_url';
+                        prefix = 'url(';
+                        sufix = ')';
+                    }
+                    if (paths[name]) {
+                        return str + ':' + prefix + paths[name] + sufix;
+                    }
+                    return '';
+                });
                 // replace variables
-                template = template.replace(/@([a-z0-9_.\[\]]+)/gi, function(all, name) {
+                template = template.replace(/@([a-z0-9_.\[\]\-]+)/gi, function(all, name) {
+                    if (all.indexOf('media') !== -1) {
+                        return all;
+                    }
                     if (paths[name]) {
                         return paths[name];
                     }
