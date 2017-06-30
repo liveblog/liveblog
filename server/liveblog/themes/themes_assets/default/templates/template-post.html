@@ -35,6 +35,8 @@
         {% include "template-item-embed.html" %}
       {% elif ref.item.item_type == "image" %}
         {% include "template-item-image.html" %}
+      {% elif ref.item.item_type == "quote" %}
+        {% include "template-item-quote.html" %}
       {% else %}
         <article>{{ ref.item.text | safe }}</article>
       {% endif %}

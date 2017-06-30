@@ -15,8 +15,8 @@
     <img src="{{ blog.picture_url }}" />
   {% endif %}
 
-  <div class="timeline-body timeline-body--loaded">
-    {% if api_response.stickyPosts._items|length > 0 %}
+  {% if settings.stickyPosition == 'top' and api_response.stickyPosts._items|length > 0 %}
+    <div class="timeline-body timeline-body--loaded">
       <section class="lb-posts list-group sticky">
         {% for item in api_response.stickyPosts._items %}
           {% if not item.deleted %}
@@ -24,8 +24,8 @@
           {% endif %}
         {% endfor %}
       </section>
-    {% endif %}
-  </div>
+    </div>
+  {% endif %}
 
   <!-- Header -->
   <div class="header-bar">
@@ -70,6 +70,15 @@
 
   <!-- Timeline -->
   <div class="timeline-body timeline-body--loaded">
+    {% if settings.stickyPosition == 'bottom' and api_response.stickyPosts._items|length > 0 %}
+      <section class="lb-posts list-group sticky">
+        {% for item in api_response.stickyPosts._items %}
+          {% if not item.deleted %}
+            {% include "template-post.html" %}
+          {% endif %}
+        {% endfor %}
+      </section>
+    {% endif %}
     {% if api_response.posts._items|length == 0 %}
       <div class="lb-post empty-message">
         <div>Blog posts are not currently available.</div>

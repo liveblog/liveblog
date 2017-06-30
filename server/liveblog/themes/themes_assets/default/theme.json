@@ -15,10 +15,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/liveblog-3d231dd0af.css"],
-    "devScripts": ["dist/liveblog-74ec80c18e.js"],
-    "styles": ["dist/liveblog-3d231dd0af.css"],
-    "scripts": ["dist/liveblog-74ec80c18e.js"],
+    "devStyles": ["dist/liveblog-151aae0d24.css"],
+    "devScripts": ["dist/liveblog-a25f5e5e97.js"],
+    "styles": ["dist/liveblog-151aae0d24.css"],
+    "scripts": ["dist/liveblog-a25f5e5e97.js"],
     "options": [
         {
             "name": "postsPerPage",
@@ -136,6 +136,16 @@
             "type": "checkbox",
             "default": false,
             "help": "If the users will see the slideshow gallery for multiple images posts"
+        },
+        {
+            "name": "stickyPosition",
+            "label": "Position of sticky posts",
+            "type": "select",
+            "options": [
+                {"value": "top", "label": "Top"},
+                {"value": "bottom", "label": "Bottom"}
+            ],
+            "default": "top"
         }
     ],
     "l10n": {

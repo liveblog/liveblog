@@ -166,7 +166,6 @@
         return $resource(config.api_host + 'api/client_items/');
     }
 
-
     Outputs.$inject = ['$resource', 'config'];
     function Outputs($resource, config) {
         // get `collection` embbeded into the `output`.

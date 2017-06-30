@@ -604,6 +604,9 @@ div.comment-sent.hide .comment__wrap {
   background: url('data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=') repeat-x;
   background-size: 50px;
 }
+.lb-posts.sticky {
+  background: #c0ffee;
+}
 .lb-post {
   position: relative;
   padding: 60px 0px 20px;
@@ -705,10 +708,18 @@ article.lb-post:after {
   margin-top: 4px;
 }
 .lb-type--embed {
+  top: 60px;
+  left: 0px;
   width: 40px;
   height: 40px;
   margin-left: -18px;
   margin-top: -10px;
+}
+@media screen and (max-width: 680px) {
+  .lb-type--embed {
+    top: 40px;
+    left: 15px;
+  }
 }
 .lb-type--twitter {
   background-color: #6bacdf;
@@ -775,6 +786,7 @@ article.lb-post:after {
   border-radius: 50%;
   overflow: hidden;
   background: #B9B9B9 url("../images/avatar_64.png") no-repeat;
+  background-size: 45px 45px;
   border: 1px solid #f4f4f4;
   float: left;
   margin-left: 20px;
@@ -1096,8 +1108,14 @@ article.slideshow div.lb-item img {
   bottom: 0;
   left: 0;
   right: 0;
-  background: pink;
+  background: rgba(0, 0, 0, 0.4);
   overflow: hidden;
+}
+#slideshow :focus {
+  outline: none;
+}
+#slideshow ::-moz-focus-inner {
+  border: 0;
 }
 #slideshow div.container {
   height: 100%;
@@ -1108,12 +1126,38 @@ article.slideshow div.lb-item img {
   float: left;
   text-align: center;
   margin: 0;
+  position: relative;
 }
 #slideshow div.container figure img {
   height: 100%;
 }
-#slideshow button.fullscreen {
+#slideshow div.container figure figcaption {
   position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  color: white;
+  font-size: 20px;
+  text-shadow: 0px 0px 3px #000;
+  background: rgba(0, 0, 0, 0.4);
+}
+#slideshow button {
+  position: absolute;
+  outline: none;
+  color: black;
+  font-size: 22px;
+}
+#slideshow button.fullscreen {
   right: 0;
   bottom: 10px;
+}
+#slideshow button.arrows {
+  top: 0;
+  height: 100%;
+}
+#slideshow button.arrows.prev {
+  left: 0;
+}
+#slideshow button.arrows.next {
+  right: 0;
 }
