@@ -8,7 +8,6 @@ import superdesk
 from bson import ObjectId
 from celery.exceptions import SoftTimeLimitExceeded
 from flask import current_app as app
-from settings import S3_CELERY_COUNTDOWN, S3_CELERY_MAX_RETRIES
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
 from superdesk.notification import push_notification

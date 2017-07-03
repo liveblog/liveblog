@@ -4,7 +4,6 @@ from superdesk import get_resource_service
 from superdesk.celery_app import celery
 from liveblog.blogs.tasks import _publish_blog_embed_on_s3
 from celery.exceptions import SoftTimeLimitExceeded
-from settings import S3_CELERY_COUNTDOWN, S3_CELERY_MAX_RETRIES
 
 logger = logging.getLogger('superdesk')
 
