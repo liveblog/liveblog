@@ -123,7 +123,7 @@ def _blog_id(b):
 
 
 @celery.task(soft_time_limit=1800)
-def publish_blog_embed_on_s3(self, blog_or_id, theme=None, output=None, safe=True):
+def publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True):
     blog_id = _blog_id(blog_or_id)
 
     logger.warning('publish_blog_on_s3 for blog "{}" started.'.format(blog_id))
