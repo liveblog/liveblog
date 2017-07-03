@@ -12,7 +12,7 @@ class Blog:
     ordering = {
         'newest_first': ('_created', 'desc'),
         'oldest_first': ('_created', 'asc'),
-        'editorial': ('order', 'asc')
+        'editorial': ('order', 'desc')
     }
     default_ordering = 'newest_first'
     default_order_by = '_created'
