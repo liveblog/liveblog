@@ -14,7 +14,7 @@
             <div class="lb-post__figure">
                 <figure ng-class="{'avatar': (post.mainItem.item.item_type !== 'comment'),
                                    'avatar-comment': (post.mainItem.item.item_type === 'comment')}">
-                    <img class="ng-isolate-scope" src="{{post.mainItem.item.user.picture_url}}">
+                    <img class="ng-isolate-scope" src="{{ post.mainItem.item.user.picture_url }}">
                 </figure>
             </div>
             <div class="lb-post__content">

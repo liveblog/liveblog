@@ -44,8 +44,8 @@ def update_post_blog_data(post, action='created'):
     logger.info('Blog "{}" post data has been updated.'.format(blog_id))
 
 
-@celery.task(bind=True)
-def update_post_blog_embed(self, post):
+@celery.task()
+def update_post_blog_embed(post):
     """
     Update post blog embed.
 
@@ -75,6 +75,5 @@ def update_post_blog_embed(self, post):
         _publish_blog_embed_on_s3(blog_id, safe=True)
     except (Exception, SoftTimeLimitExceeded) as e:
         logger.exception('update_post_blog_embed for blog "{}" failed.'.format(blog_id))
-        raise self.retry(exc=e, max_retries=S3_CELERY_MAX_RETRIES, countdown=S3_CELERY_COUNTDOWN)
     finally:
         logger.warning('update_post_blog_embed for blog "{}" finished.'.format(blog_id))

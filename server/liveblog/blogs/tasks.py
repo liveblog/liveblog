@@ -123,7 +123,7 @@ def _blog_id(b):
         return str(b)
 
 
-@celery.task(bind=True, soft_time_limit=1800)
+@celery.task(soft_time_limit=1800)
 def publish_blog_embed_on_s3(self, blog_or_id, theme=None, output=None, safe=True):
     blog_id = _blog_id(blog_or_id)
 
@@ -132,13 +132,12 @@ def publish_blog_embed_on_s3(self, blog_or_id, theme=None, output=None, safe=Tru
         _publish_blog_embed_on_s3(blog_or_id, theme, output, safe)
     except (Exception, SoftTimeLimitExceeded) as e:
         logger.exception('publish_blog_on_s3 for blog "{}" failed.'.format(blog_id))
-        raise self.retry(exc=e, max_retries=S3_CELERY_MAX_RETRIES, countdown=S3_CELERY_COUNTDOWN)
     finally:
         logger.warning('publish_blog_on_s3 for blog "{}" finished.'.format(blog_id))
 
 
-@celery.task(bind=True, soft_time_limit=1800)
-def publish_blog_embeds_on_s3(self, blog_or_id, safe=True):
+@celery.task(soft_time_limit=1800)
+def publish_blog_embeds_on_s3(blog_or_id, safe=True):
     blog_id = _blog_id(blog_or_id)
     logger.warning('publish_blog_embeds_on_s3 for blog "{}" started.'.format(blog_id))
     publish_blog_embed_on_s3(blog_or_id, safe=safe)
@@ -148,7 +147,7 @@ def publish_blog_embeds_on_s3(self, blog_or_id, safe=True):
     logger.warning('publish_blog_embeds_on_s3 for blog "{}" finished.'.format(blog_id))
 
 
-@celery.task(bind=True, soft_time_limit=1800)
+@celery.task(soft_time_limit=1800)
 def delete_blog_embeds_on_s3(self, blog_id, theme=None, output=None, safe=True):
     logger.warning('delete_blog_embed_on_s3 for blog "{}" started.'.format(blog_id))
     try:
@@ -158,7 +157,6 @@ def delete_blog_embeds_on_s3(self, blog_id, theme=None, output=None, safe=True):
             raise e
     except (Exception, SoftTimeLimitExceeded) as e:
         logger.exception('delete_blog_on_s3 for blog "{}" failed.'.format(blog_id))
-        raise self.retry(exc=e, max_retries=S3_CELERY_MAX_RETRIES, countdown=S3_CELERY_COUNTDOWN)
     finally:
         logger.warning('delete_blog_embed_on_s3 for blog "{}" finished.'.format(blog_id))
 
