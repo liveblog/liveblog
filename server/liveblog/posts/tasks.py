@@ -20,6 +20,7 @@ def update_post_blog_data(post, action='created'):
     blogs = get_resource_service('client_blogs')
     posts = get_resource_service('posts')
     blog_id = post['blog']
+    blog = blogs.find_one(req=None, _id=blog_id)
 
     # Fetch total posts.
     total_posts = posts.find({'$and': [
@@ -39,7 +40,7 @@ def update_post_blog_data(post, action='created'):
             '_updated': post['_updated']
         }
 
-    blogs.patch(blog_id, updates)
+    blogs.patch(blog_id, updates, blog)
     logger.info('Blog "{}" post data has been updated.'.format(blog_id))
 
 

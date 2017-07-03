@@ -301,7 +301,7 @@ export default function BlogEditController(
         },
         onEditorChanges: function() {
             var el = $(this).find('.st-text-block');
-            if (el.length == 0)
+            if (el.length === 0)
                 return;
 
             var input = el.text().trim();

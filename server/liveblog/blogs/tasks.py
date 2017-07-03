@@ -162,7 +162,6 @@ def delete_blog_embeds_on_s3(self, blog_id, theme=None, output=None, safe=True):
 
 @celery.task(soft_time_limit=1800)
 def publish_bloglist_assets(asset_type):
-    # TODO: add retry
     assets = copy.deepcopy(BLOGLIST_ASSETS)
     # version_path = os.path.join(BLOGSLIST_DIRECTORY, BLOGSLIST_ASSETS_DIR, assets['version'])
     # # loads version json from file
@@ -186,7 +185,6 @@ def publish_bloglist_assets(asset_type):
 
 @celery.task(soft_time_limit=1800)
 def publish_bloglist_embed_on_s3():
-    # TODO: add retry, cleanup code.
     if not app.config['S3_PUBLISH_BLOGSLIST']:
         logger.warning('Blog list embed publishing is disabled.')
         return
@@ -215,7 +213,7 @@ def publish_bloglist_embed_on_s3():
         html = render_bloglist_embed(assets_root=assets_public_url)
         file_path = get_bloglist_path()
 
-        # Eemove existing.
+        # Remove existing.
         app.media.delete(app.media.media_id(file_path, version=False))
         # upload
         file_id = app.media.put(io.BytesIO(bytes(html, 'utf-8')),
