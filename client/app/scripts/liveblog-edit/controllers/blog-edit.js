@@ -300,9 +300,11 @@ export default function BlogEditController(
             });
         },
         onEditorChanges: function() {
-            var input = $(this).find('.st-text-block')
-                .text()
-                .trim();
+            var el = $(this).find('.st-text-block');
+            if (el.length == 0)
+                return;
+
+            var input = el.text().trim();
 
             $scope.$apply(function() {
                 $scope.actionDisabled = _.isEmpty(input);
@@ -318,7 +320,6 @@ export default function BlogEditController(
 
                 return $scope.freetypeControl.isValid() || $scope.freetypeControl.isClean();
             }
-
             return $scope.actionDisabled || $scope.actionPending;
         },
         askAndResetEditor: function() {
