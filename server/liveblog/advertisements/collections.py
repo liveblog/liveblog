@@ -51,3 +51,9 @@ class CollectionsService(BaseService):
             # remove advertisement from `advertisements`
             advertisements.remove({'advertisement_id': advertisement.get('_id')})
             self.system_update(collection['_id'], {'advertisements': advertisements}, collection)
+
+    def update_advertisement(self, advertisement):
+        # find all collections that contains ` advertisement`
+        collections = self.find({'advertisements': {'$elemMatch': {'advertisement_id': advertisement.get('_id')}}})
+        for collection in collections:
+            self.system_update(collection['_id'], {}, collection)

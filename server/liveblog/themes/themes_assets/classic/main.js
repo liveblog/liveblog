@@ -29,7 +29,7 @@
         var UPDATE_MANUALLY = config.settings.loadNewPostsManually;
         var UPDATE_STICKY_MANUALLY = !config.settings.livestream &&
                                         config.settings.loadNewPostsManually;
-        var UPDATE_EVERY = 1000; // retrieve update interval in millisecond
+        var UPDATE_EVERY = 10000; // retrieve update interval in millisecond
         var vm = this;
         var pagesManager = new PagesManager(POSTS_PER_PAGE, DEFAULT_ORDER, false),
             permalink = new Permalink(pagesManager, PERMALINK_DELIMITER);
