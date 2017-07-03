@@ -479,7 +479,7 @@ import './module';
                     }
                     var prefix = '', sufix = '';
                     if (['background-image'].indexOf(str)!== -1) {
-                        name = name  + '.picture_url';
+                        name = name + '.picture_url';
                         prefix = 'url(';
                         sufix = ')';
                     }
