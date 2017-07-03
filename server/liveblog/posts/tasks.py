@@ -39,8 +39,7 @@ def update_post_blog_data(post, action='created'):
             '_id': post['_id'],
             '_updated': post['_updated']
         }
-
-    blogs.patch(blog_id, updates, blog)
+    blogs.system_update(blog['_id'], updates, blog)
     logger.info('Blog "{}" post data has been updated.'.format(blog_id))
 
 
