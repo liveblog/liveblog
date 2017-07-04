@@ -3,12 +3,10 @@
   data-js-post-id="{{ item._id }}">
   {% if item.sticky %}
     <div class="lb-type"></div>
+  {% elif item.lb_highlight %}
+    <div class="lb-type lb-post-highlighted"></div>
   {% else %}
     <div class="lb-type lb-type--text"></div>
-  {% endif %}
-
-  {% if item.highlight %}
-    <div class="lb-post-highlighted"></div>
   {% endif %}
 
   <div class="lb-post-date" data-js-timestamp="{{ item._updated }}">{{ item._updated  }}</div>
