@@ -1,8 +1,50 @@
-article.slideshow div.lb-item {
-  width: 33%;
+article.slideshow div.items-container {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  margin: 0px 30px;
 
-  img {
-    cursor: pointer;
+  div.lb-item {
+    width: 200px;
+    margin: 0;
+      display: inline-block;
+
+    figure {
+      margin: 0;
+      /*padding-right: 1px;*/
+      position: relative;
+      overflow: hidden;
+      width: 200px;
+      height: 200px;
+
+      figcaption {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        text-align: center;
+        color: #fff;
+        background: rgba(0,0,0,0.4);
+        margin: 0;
+      }
+
+      img {
+        cursor: pointer;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        height: 100%;
+        width: auto;
+        -webkit-transform: translate(-50%,-50%);
+            -ms-transform: translate(-50%,-50%);
+                transform: translate(-50%,-50%);
+      }
+    }
+  }
+  div.lb-item.portrait img {
+    width: 18%;
+    width: 100%;
+    height: auto;
   }
 }
 
