@@ -40,6 +40,9 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
 def delete_embed(blog_id, theme=None, output=None):
     check_media_storage()
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
+    if not blog:
+        return
+
     public_urls = blog.get('public_urls', {'output': {}, 'theme': {}})
     if output:
         output_id = str(output.get('_id'))
@@ -65,6 +68,8 @@ def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True):
     if isinstance(blog_or_id, (str, ObjectId)):
         blog_id = blog_or_id
         blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_or_id)
+        if not blog:
+            return
     else:
         blog = blog_or_id
         blog_id = blog['_id']
