@@ -58,7 +58,7 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
     session.mount('http://', adapter)
     session.mount('https://', adapter)
 
-    logger.info('API {} request to {} with params={} and data={}'.format(method, api_url, args, data))
+    logger.debug('API {} request to {} with params={} and data={}'.format(method, api_url, args, data))
     headers = {
         'Content-Type': 'application/json'
     }
@@ -70,7 +70,7 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
     except (ConnectionError, ConnectTimeout, RequestException, MaxRetryError):
         raise APIConnectionError('Unable to connect to api_url "{}".'.format(api_url))
 
-    logger.warning('API {} request to {} - response: {} {}'.format(
+    logger.debug('API {} request to {} - response: {} {}'.format(
         method, api_url, response.status_code, response.content
     ))
 
