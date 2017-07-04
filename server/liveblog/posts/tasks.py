@@ -55,14 +55,16 @@ def update_post_blog_embed(post):
     themes = get_resource_service('themes')
     blog_id = post['blog']
     blog = blogs.find_one(req=None, _id=blog_id)
-    theme_name = blog['blog_preferences']['theme']
+    theme_name = blog['blog_preferences'].get('theme')
+    if not theme_name:
+        return
 
-    # Check if theme is SEO-enabled.
     theme = themes.find_one(req=None, name=theme_name)
     if not theme:
         # Theme is not loaded yet.
         return
 
+    # Check if theme is SEO-enabled.
     if not theme.get('seoTheme'):
         logger.warning('Skipping embed update: blog "{}" theme "{}" is not SEO-enabled.'.format(blog_id, theme_name))
         return
@@ -72,7 +74,7 @@ def update_post_blog_embed(post):
     logger.warning('update_post_blog_embed for blog "{}" started.'.format(blog_id))
     try:
         _publish_blog_embed_on_s3(blog_id, safe=True)
-    except (Exception, SoftTimeLimitExceeded) as e:
+    except (Exception, SoftTimeLimitExceeded):
         logger.exception('update_post_blog_embed for blog "{}" failed.'.format(blog_id))
     finally:
         logger.warning('update_post_blog_embed for blog "{}" finished.'.format(blog_id))

@@ -154,7 +154,7 @@ def delete_blog_embeds_on_s3(blog_id, theme=None, output=None, safe=True):
     except MediaStorageUnsupportedForBlogPublishing as e:
         if not safe:
             raise e
-    except (Exception, SoftTimeLimitExceeded) as e:
+    except (Exception, SoftTimeLimitExceeded):
         logger.exception('delete_blog_on_s3 for blog "{}" failed.'.format(blog_id))
     finally:
         logger.warning('delete_blog_embed_on_s3 for blog "{}" finished.'.format(blog_id))
