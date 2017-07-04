@@ -40,7 +40,7 @@ def update_post_blog_data(post, action='created'):
             '_updated': post['_updated']
         }
     blogs.system_update(blog['_id'], updates, blog)
-    logger.info('Blog "{}" post data has been updated.'.format(blog_id))
+    logger.warning('Blog "{}" post data has been updated.'.format(blog_id))
 
 
 @celery.task()

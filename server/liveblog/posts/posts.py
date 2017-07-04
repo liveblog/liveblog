@@ -279,7 +279,7 @@ class PostsService(ArchiveService):
         # send notifications
         if updates.get('deleted', False):
             # Update blog post data and embed for SEO-enabled blogs.
-            update_post_blog_data.delay(doc, action='updated')
+            update_post_blog_data.delay(doc, action='deleted')
             update_post_blog_embed.delay(doc)
             # Syndication.
             out_service.send_syndication_post(original, action='deleted')

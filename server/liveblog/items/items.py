@@ -98,7 +98,10 @@ class ItemsService(ArchiveService):
         :param doc:
         :return: None
         """
-        original_url = doc['meta']['original_url']
+        original_url = doc['meta'].get('original_url')
+        if not original_url:
+            logger.warning('Unable to find original_url in item "{}" meta.'.format(doc['_id']))
+            return
         provider_name = doc['meta']['provider_name'].lower()
         if provider_name in self.embed_providers:
             original_id_re = self.embed_providers[provider_name]

@@ -147,7 +147,7 @@ def publish_blog_embeds_on_s3(blog_or_id, safe=True):
 
 
 @celery.task(soft_time_limit=1800)
-def delete_blog_embeds_on_s3(self, blog_id, theme=None, output=None, safe=True):
+def delete_blog_embeds_on_s3(blog_id, theme=None, output=None, safe=True):
     logger.warning('delete_blog_embed_on_s3 for blog "{}" started.'.format(blog_id))
     try:
         delete_embed(blog_id, theme=theme, output=output)
