@@ -129,7 +129,7 @@ def publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True):
     logger.warning('publish_blog_on_s3 for blog "{}" started.'.format(blog_id))
     try:
         _publish_blog_embed_on_s3(blog_or_id, theme, output, safe)
-    except (Exception, SoftTimeLimitExceeded) as e:
+    except (Exception, SoftTimeLimitExceeded):
         logger.exception('publish_blog_on_s3 for blog "{}" failed.'.format(blog_id))
     finally:
         logger.warning('publish_blog_on_s3 for blog "{}" finished.'.format(blog_id))
