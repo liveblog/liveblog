@@ -5,13 +5,11 @@ article.slideshow div.items-container {
   margin: 0px 30px;
 
   div.lb-item {
-    width: 200px;
     margin: 0;
-      display: inline-block;
+    display: inline-block;
 
     figure {
       margin: 0;
-      /*padding-right: 1px;*/
       position: relative;
       overflow: hidden;
       width: 200px;
@@ -35,6 +33,7 @@ article.slideshow div.items-container {
         top: 50%;
         height: 100%;
         width: auto;
+        max-width: none;
         -webkit-transform: translate(-50%,-50%);
             -ms-transform: translate(-50%,-50%);
                 transform: translate(-50%,-50%);
@@ -42,7 +41,6 @@ article.slideshow div.items-container {
     }
   }
   div.lb-item.portrait img {
-    width: 18%;
     width: 100%;
     height: auto;
   }
