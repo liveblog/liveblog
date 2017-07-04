@@ -174,7 +174,15 @@ class BlogService(BaseService):
         # Notify newly added members.
         blog = original.copy()
         blog.update(updates)
-        publish_blog_embeds_on_s3.apply_async(args=[blog], countdown=2)
+
+        # Embed publish
+        if 'deleted' in updates:
+            # Delete blog embed
+            delete_blog_embeds_on_s3.delay(blog['_id'])
+        else:
+            # Update blog embed
+            publish_blog_embeds_on_s3.apply_async(args=[blog], countdown=2)
+
         members = updates.get('members', {})
         recipients = []
         for user in members:
