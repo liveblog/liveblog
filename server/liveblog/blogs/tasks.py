@@ -10,6 +10,7 @@ from celery.exceptions import SoftTimeLimitExceeded
 from flask import current_app as app
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
+from superdesk.errors import SuperdeskApiError
 from superdesk.notification import push_notification
 
 from .app_settings import (BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR,
@@ -23,7 +24,13 @@ logger = logging.getLogger('superdesk')
 
 def publish_embed(blog_id, theme=None, output=None, api_host=None):
     # Get html using embed() blueprint.
-    html = embed(blog_id, theme, output, api_host)
+    try:
+        html = embed(blog_id, theme, output, api_host)
+    except SuperdeskApiError.badRequestError as e:
+        # Themes are not registered yet.
+        logger.warning(e.message)
+        return
+
     check_media_storage()
     output_id = output['_id'] if output else None
     file_path = get_blog_path(blog_id, theme, output_id)
