@@ -2,8 +2,8 @@ import logging
 
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
-from liveblog.blogs.tasks import _publish_blog_embed_on_s3
-from celery.exceptions import SoftTimeLimitExceeded
+from liveblog.blogs.tasks import publish_blog_embeds_on_s3
+from liveblog.blogs.utils import is_seo_enabled
 
 logger = logging.getLogger('superdesk')
 
@@ -19,7 +19,10 @@ def update_post_blog_data(post, action='created'):
     """
     blogs = get_resource_service('client_blogs')
     posts = get_resource_service('posts')
-    blog_id = post['blog']
+    blog_id = post.get('blog')
+    if not blog_id:
+        return
+
     blog = blogs.find_one(req=None, _id=blog_id)
 
     # Fetch total posts.
@@ -51,30 +54,17 @@ def update_post_blog_embed(post):
     :param post:
     :return:
     """
-    blogs = get_resource_service('client_blogs')
-    themes = get_resource_service('themes')
-    blog_id = post['blog']
-    blog = blogs.find_one(req=None, _id=blog_id)
-    theme_name = blog['blog_preferences'].get('theme')
-    if not theme_name:
+    blog_id = post.get('blog')
+    if not blog_id:
         return
 
-    theme = themes.find_one(req=None, name=theme_name)
-    if not theme:
-        # Theme is not loaded yet.
+    if not is_seo_enabled(blog_id):
         return
-
-    # Check if theme is SEO-enabled.
-    if not theme.get('seoTheme'):
-        logger.warning('Skipping embed update: blog "{}" theme "{}" is not SEO-enabled.'.format(blog_id, theme_name))
-        return
-
-    # TODO: add locking or check last_updated_post_date or last_created_post_date.
 
     logger.warning('update_post_blog_embed for blog "{}" started.'.format(blog_id))
     try:
-        _publish_blog_embed_on_s3(blog_id, safe=True)
-    except (Exception, SoftTimeLimitExceeded):
+        publish_blog_embeds_on_s3(blog_id, safe=True)
+    except:
         logger.exception('update_post_blog_embed for blog "{}" failed.'.format(blog_id))
     finally:
         logger.warning('update_post_blog_embed for blog "{}" finished.'.format(blog_id))
