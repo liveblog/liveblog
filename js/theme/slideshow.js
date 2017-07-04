@@ -3,12 +3,15 @@ const templates = require('./templates');
 class Slideshow {
   constructor() {
     this.start = this.start.bind(this);
+    this.stop = this.stop.bind(this);
     this.keyboardListener = this.keyboardListener.bind(this);
     this.setFocus = this.setFocus.bind(this);
     this.launchIntoFullscreen = this.launchIntoFullscreen.bind(this);
+    this.onResize = this.onResize.bind(this);
     this.exitFullscreen = this.exitFullscreen.bind(this);
     this.toggleFullscreen = this.toggleFullscreen.bind(this);
     this.addEventListeners = this.addEventListeners.bind(this);
+    this.removeEventListeners = this.removeEventListeners.bind(this);
   }
 
   start(e) {
@@ -60,6 +63,18 @@ class Slideshow {
     this.addEventListeners();
   }
 
+  stop() {
+    this.removeEventListeners();
+    document.querySelector('#slideshow').remove();
+  }
+
+  onResize() {
+    const container = document.querySelector('#slideshow .container');
+    let offset = container.offsetHeight * this.iterations;
+
+    container.style.marginTop = `-${offset}px`;
+  }
+
   addEventListeners() {
     window.addEventListener('keydown', this.keyboardListener);
 
@@ -74,6 +89,26 @@ class Slideshow {
     document
       .querySelector('#slideshow button.arrows.prev')
       .addEventListener('click', () => this.keyboardListener({keyCode: 37}));
+
+    window.addEventListener('resize', this.onResize);
+  }
+
+  removeEventListeners() {
+    window.removeEventListener('keydown', this.keyboardListener);
+
+    document
+      .querySelector('#slideshow button.fullscreen')
+      .removeEventListener('click', this.toggleFullscreen);
+
+    document
+      .querySelector('#slideshow button.arrows.next')
+      .removeEventListener('click', () => this.keyboardListener({keyCode: 39}));
+
+    document
+      .querySelector('#slideshow button.arrows.prev')
+      .removeEventListener('click', () => this.keyboardListener({keyCode: 37}));
+
+    window.removeEventListener('resize', this.onResize);
   }
 
   toggleFullscreen() {
@@ -146,7 +181,7 @@ class Slideshow {
       break;
     case 27: // esc
       this.exitFullscreen();
-      document.querySelector('#slideshow').remove();
+      this.stop();
     }
   }
 }
