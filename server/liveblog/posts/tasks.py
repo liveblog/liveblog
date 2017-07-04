@@ -24,6 +24,8 @@ def update_post_blog_data(post, action='created'):
         return
 
     blog = blogs.find_one(req=None, _id=blog_id)
+    if not blog:
+        return
 
     # Fetch total posts.
     total_posts = posts.find({'$and': [
