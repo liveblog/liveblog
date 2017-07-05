@@ -895,7 +895,8 @@ article.lb-post:after {
   background-color: #C6C6C6;
   margin-top: -2px;
 }
-.lb-post:hover .lb-post-permalink {
+.lb-post:hover .lb-post-permalink,
+.lb-sticky-top-post:hover .lb-post-permalink {
   visibility: visible;
 }
 /* pinned posts */
@@ -963,7 +964,8 @@ article.lb-post:after {
     margin-left: 0;
     margin-top: 18px;
   }
-  .lb-post {
+  .lb-post,
+  .lb-sticky-top-post {
     margin: 0;
   }
   .lb-post-date {
@@ -1102,7 +1104,6 @@ article.slideshow div.items-container {
   margin: 0px 30px;
 }
 article.slideshow div.items-container div.lb-item {
-  /*width: 200px;*/
   margin: 0;
   display: inline-block;
 }
