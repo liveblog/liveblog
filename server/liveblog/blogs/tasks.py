@@ -26,7 +26,7 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
     # Get html using embed() blueprint.
     try:
         html = embed(blog_id, theme, output, api_host)
-    except SuperdeskApiError.badRequestError as e:
+    except SuperdeskApiError as e:
         # Themes are not registered yet.
         logger.warning(e.message)
         return
