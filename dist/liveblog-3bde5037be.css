@@ -1166,9 +1166,12 @@ article.slideshow div.items-container div.lb-item.portrait img {
   text-align: center;
   margin: 0;
   position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 #slideshow div.container figure img {
-  height: 100%;
+  max-height: 100%;
 }
 #slideshow div.container figure figcaption {
   position: absolute;
@@ -1189,6 +1192,11 @@ article.slideshow div.items-container div.lb-item.portrait img {
 #slideshow button.fullscreen {
   right: 0;
   bottom: 10px;
+}
+#slideshow button.close {
+  top: 0;
+  right: 0;
+  z-index: 2;
 }
 #slideshow button.arrows {
   top: 0;
