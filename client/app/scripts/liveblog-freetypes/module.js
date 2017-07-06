@@ -137,7 +137,9 @@ $q, $sce, config, _, upload, blogService, modal) {
                     resolve();
                 }
                 else if (freetype.isUsed) {
-                    modal.confirm(gettext('This free type template is currently used in an active live blog.<br/>If you change or alter it, you may not be able to edit this kind of free types anymore.<br/>Are you sure you want to rename, change or remove it?')).then(function() {
+                    modal.confirm(gettext(`This free type template is currently used in an active live blog.<br/>
+                        If you change or alter it, you may not be able to edit this kind of free types anymore.<br/>
+                        Are you sure you want to rename, change or remove it?`)).then(function() {
                         resolve();
                     }, function() {
                         reject();
