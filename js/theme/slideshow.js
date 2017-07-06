@@ -12,6 +12,8 @@ class Slideshow {
     this.toggleFullscreen = this.toggleFullscreen.bind(this);
     this.addEventListeners = this.addEventListeners.bind(this);
     this.removeEventListeners = this.removeEventListeners.bind(this);
+    this.touchStart = this.touchStart.bind(this);
+    this.touchMove = this.touchMove.bind(this);
   }
 
   start(e) {
@@ -19,6 +21,8 @@ class Slideshow {
 
     this.iterations = 0;
     this.isFullscreen = false;
+    this.xDown = null;
+    this.yDown = null;
 
     e.target
       .closest('article.slideshow')
@@ -64,6 +68,7 @@ class Slideshow {
   }
 
   stop() {
+    this.exitFullscreen();
     this.removeEventListeners();
     document.querySelector('#slideshow').remove();
   }
@@ -90,6 +95,18 @@ class Slideshow {
       .querySelector('#slideshow button.arrows.prev')
       .addEventListener('click', () => this.keyboardListener({keyCode: 37}));
 
+    document
+      .querySelector('#slideshow button.close')
+      .addEventListener('click', this.stop);
+
+    document
+      .querySelector('#slideshow')
+      .addEventListener('touchstart', this.touchStart);
+
+    document
+      .querySelector('#slideshow')
+      .addEventListener('touchmove', this.touchMove);
+
     window.addEventListener('resize', this.onResize);
   }
 
@@ -108,7 +125,47 @@ class Slideshow {
       .querySelector('#slideshow button.arrows.prev')
       .removeEventListener('click', () => this.keyboardListener({keyCode: 37}));
 
+    document
+      .querySelector('#slideshow button.close')
+      .removeEventListener('click', this.stop);
+
+    document
+      .querySelector('#slideshow')
+      .removeEventListener('touchstart', this.touchStart);
+
+    document
+      .querySelector('#slideshow')
+      .removeEventListener('touchmove', this.touchMove);
+
     window.removeEventListener('resize', this.onResize);
+  }
+
+  touchStart(e) {
+    this.xDown = e.touches[0].clientX;
+    this.yDown = e.touches[0].clientY;
+  }
+
+  touchMove(e) {
+    if (!this.xDown || !this.yDown) {
+      return;
+    }
+
+    var xUp = e.touches[0].clientX;
+    var yUp = e.touches[0].clientY;
+
+    var xDiff = this.xDown - xUp;
+    var yDiff = this.yDown - yUp;
+
+    if (Math.abs(xDiff) > Math.abs(yDiff) && xDiff > 0) {
+      // Left swipe
+      this.keyboardListener({keyCode: 39});
+    } else {
+      // Right swipe
+      this.keyboardListener({keyCode: 37});
+    }
+
+    this.xDown = null;
+    this.yDown = null;
   }
 
   toggleFullscreen() {
