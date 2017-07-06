@@ -1,0 +1,7 @@
+version: 1
+disable_existing_loggers: false
+loggers:
+ "":
+  level: WARNING
+ superdesk:
+  level: WARNING
