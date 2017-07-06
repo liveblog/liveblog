@@ -74,9 +74,12 @@ article.slideshow div.items-container {
       text-align: center;
       margin: 0;
       position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
 
       img {
-        height: 100%;
+        max-height: 100%;
       }
 
       figcaption {
@@ -102,6 +105,12 @@ article.slideshow div.items-container {
   button.fullscreen {
     right: 0;
     bottom: 10px;
+  }
+
+  button.close {
+    top: 0;
+    right: 0;
+    z-index: 2;
   }
 
   button.arrows {
