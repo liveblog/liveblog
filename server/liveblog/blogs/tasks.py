@@ -115,9 +115,9 @@ def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True):
         public_urls = blog.get('public_urls', {'output': {}, 'theme': {}})
         updates = {'public_urls': public_urls}
 
-        if output_id:
+        if (output_id and theme) or output_id:
             public_urls['output'][output_id] = public_url
-        if theme:
+        elif theme:
             public_urls['theme'][theme] = public_url
         else:
             updates['public_url'] = public_url

@@ -56,11 +56,16 @@ def update_post_blog_embed(post):
     :param post:
     :return:
     """
+    blogs = get_resource_service('client_blogs')
     blog_id = post.get('blog')
     if not blog_id:
         return
 
-    if not is_seo_enabled(blog_id):
+    blog = blogs.find_one(req=None, _id=blog_id)
+    if not blog:
+        return
+
+    if not is_seo_enabled(blog):
         return
 
     logger.warning('update_post_blog_embed for blog "{}" started.'.format(blog_id))
