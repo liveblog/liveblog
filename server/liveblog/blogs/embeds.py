@@ -171,7 +171,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         theme_name = blog_theme_name
 
     theme = get_resource_service('themes').find_one(req=None, name=theme_name)
-    if theme is None and theme_name is None:
+    if theme is None:
         raise SuperdeskApiError.badRequestError(
             message='You will be able to access the embed after you register the themes')
 
