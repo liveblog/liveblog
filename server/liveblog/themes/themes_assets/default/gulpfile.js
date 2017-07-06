@@ -13,6 +13,7 @@ let argvKey = 0,
   match = [];
 
 const http = require('http');
+const https = require('https');
 
 ['--embedUrl', '--apiUrl'].forEach((argName) => {
   if (process.argv.indexOf(argName) !== -1) {
@@ -22,13 +23,16 @@ const http = require('http');
 
 if (argvKey !== 0) {
   match = process.argv[argvKey]
-    .match(/^(http:\/\/|https:\/\/|\/\/)([^/]+)\/(api\/client_blogs|embed)\/(\w+)/i);
+    //.match(/^(http:\/\/|https:\/\/|\/\/)([^/]+)\/(api\/client_blogs|embed)\/(\w+)/i);
+    .match(/^(http:\/\/|https:\/\/|\/\/)([^\/]+)\/(api\/client_blogs|embed|[^\/]+\/blogs)\/(\w+)/i);
 }
 
 if (match.length > 0) {
   [,protocol, apiHost,, blogId] = match;
 
   const postsEndpoint = `${protocol}${apiHost}/api/client_blogs/${blogId}/posts`;
+  const request = protocol === 'http://' ? http : https;
+
   let query = {
     "query": {
       "filtered": {
@@ -48,7 +52,7 @@ if (match.length > 0) {
     ]
   };
 
-  http.get(`${postsEndpoint}?source=${JSON.stringify(query)}`, (response) => {
+  request.get(`${postsEndpoint}?source=${JSON.stringify(query)}`, (response) => {
     let body = '';
 
     response.on('data', (d) => {
@@ -61,7 +65,7 @@ if (match.length > 0) {
 
   query.query.filtered.filter.and[0].term.sticky = false;
 
-  http.get(`${postsEndpoint}?source=${JSON.stringify(query)}`, (response) => {
+  request.get(`${postsEndpoint}?source=${JSON.stringify(query)}`, (response) => {
     let body = '';
 
     response.on('data', (d) => {
