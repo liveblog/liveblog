@@ -15,8 +15,8 @@
   {% endif %}
 
   {% if settings.stickyPosition == 'top' and api_response.stickyPosts._items|length > 0 %}
-    <div class="timeline-body timeline-body--loaded">
-      <section class="lb-posts list-group sticky">
+    <div class="timeline-top timeline-top--loaded">
+      <section class="lb-posts list-group">
         {% for item in api_response.stickyPosts._items %}
           {% if not item.deleted %}
             {% include "template-post.html" %}
