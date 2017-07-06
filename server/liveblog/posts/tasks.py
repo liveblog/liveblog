@@ -4,6 +4,7 @@ from superdesk import get_resource_service
 from superdesk.celery_app import celery
 from liveblog.blogs.tasks import publish_blog_embeds_on_s3
 from liveblog.blogs.utils import is_seo_enabled
+from eve.io.base import DataLayer
 
 logger = logging.getLogger('superdesk')
 
@@ -44,7 +45,12 @@ def update_post_blog_data(post, action='created'):
             '_id': post['_id'],
             '_updated': post['_updated']
         }
-    blogs.system_update(blog['_id'], updates, blog)
+    try:
+        blogs.system_update(blog_id, updates, blog)
+    except DataLayer.OriginalChangedError:
+        blog = blogs.find_one(req=None, _id=blog_id)
+        blogs.system_update(blog_id, updates, blog)
+
     logger.warning('Blog "{}" post data has been updated.'.format(blog_id))
 
 

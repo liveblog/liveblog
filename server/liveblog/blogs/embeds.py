@@ -27,7 +27,7 @@ from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR, THEMES_ASSETS_DIR, DEFAULT_THEME_DATE_FORMAT
-from .utils import is_relative_to_current_folder, get_template_file_name, get_theme_json
+from .utils import is_relative_to_current_folder, get_template_file_name
 
 logger = logging.getLogger('superdesk')
 embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')

@@ -2,9 +2,10 @@ import copy
 import io
 import logging
 import os
-
 import magic
 import superdesk
+
+from eve.io.base import DataLayer
 from bson import ObjectId
 from celery.exceptions import SoftTimeLimitExceeded
 from flask import current_app as app
@@ -72,9 +73,10 @@ def delete_embed(blog_id, theme=None, output=None):
 
 
 def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True):
+    blogs = get_resource_service('client_blogs')
     if isinstance(blog_or_id, (str, ObjectId)):
         blog_id = blog_or_id
-        blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_or_id)
+        blog = blogs.find_one(req=None, _id=blog_or_id)
         if not blog:
             return
     else:
@@ -114,15 +116,18 @@ def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True):
 
         public_urls = blog.get('public_urls', {'output': {}, 'theme': {}})
         updates = {'public_urls': public_urls}
-
         if (output_id and theme) or output_id:
             public_urls['output'][output_id] = public_url
         elif theme:
             public_urls['theme'][theme] = public_url
         else:
             updates['public_url'] = public_url
+        try:
+            blogs.system_update(blog_id, updates, blog)
+        except DataLayer.OriginalChangedError:
+            blog = blogs.find_one(req=None, _id=blog_id)
+            blogs.system_update(blog_id, updates, blog)
 
-        get_resource_service('blogs').system_update(blog_id, updates, blog)
         push_notification('blog', published=1, blog_id=blog_id, **updates)
         return public_url
 
