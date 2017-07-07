@@ -11,8 +11,13 @@ env:
         # https://github.com/travis-ci/travis-ci/issues/5246#issuecomment-166460882
         - BOTO_CONFIG=/doesnotexist
         - SYNDICATION_VALIDATE_AUTH=0
-        - MAIL_HOST=localhost
+        - MAIL_SERVER='localhost'
         - MAIL_PORT=2225
+        - MAIL_USERNAME=
+        - MAIL_PASSWORD=
+        - MAIL_USE_TLS=
+        - MAIL_USE_SSL=
+        - MAIL_DEBUG=1
 
 services:
     - mongodb

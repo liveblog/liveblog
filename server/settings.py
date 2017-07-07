@@ -224,9 +224,9 @@ ACTIVATE_ACCOUNT_TOKEN_TIME_TO_LIVE = int(env('ACTIVATE_TTL', 7))
 
 # email server
 MAIL_SERVER = env('MAIL_SERVER', 'smtp.googlemail.com')
-MAIL_PORT = int(env('MAIL_PORT', 465))
-MAIL_USE_TLS = json.loads(env('MAIL_USE_TLS', 'False').lower())
-MAIL_USE_SSL = json.loads(env('MAIL_USE_SSL', 'False').lower())
+MAIL_PORT = env('MAIL_PORT', 465)
+MAIL_USE_TLS = env('MAIL_USE_TLS', False)
+MAIL_USE_SSL = env('MAIL_USE_SSL', False)
 MAIL_USERNAME = env('MAIL_USERNAME', 'liveblogsf@gmail.com')
 MAIL_PASSWORD = env('MAIL_PASSWORD', 'fabric2010')
 MAIL_FROM = env('MAIL_FROM', 'liveblogsf@gmail.com')
