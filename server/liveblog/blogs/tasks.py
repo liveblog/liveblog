@@ -124,10 +124,13 @@ def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sa
             updates['public_url'] = public_url
         if save:
             try:
-                blogs.system_update(blog_id, updates, blog)
-            except DataLayer.OriginalChangedError:
-                blog = blogs.find_one(req=None, _id=blog_id)
-                blogs.system_update(blog_id, updates, blog)
+                try:
+                    blogs.system_update(blog_id, updates, blog)
+                except DataLayer.OriginalChangedError:
+                    blog = blogs.find_one(req=None, _id=blog_id)
+                    blogs.system_update(blog_id, updates, blog)
+            except SuperdeskApiError as e:
+                logger.exception(e.message)
 
         push_notification('blog', published=1, blog_id=blog_id, **updates)
         return public_url, public_urls
