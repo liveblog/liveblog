@@ -175,13 +175,10 @@ class BlogService(BaseService):
         blog = original.copy()
         blog.update(updates)
 
-        # Embed publish
-        if 'deleted' in updates:
-            # Delete blog embed
-            delete_blog_embeds_on_s3.apply_async(args=[blog['_id']], countdown=2)
-        else:
+        if 'blog_preferences' in updates:
             # Update blog embed
-            publish_blog_embeds_on_s3.apply_async(args=[blog], countdown=2)
+            publish_blog_embeds_on_s3.apply_async(args=[blog], kwargs={'save': False}, countdown=2)
+
 
         members = updates.get('members', {})
         recipients = []
