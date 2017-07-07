@@ -9,6 +9,29 @@ $q, $sce, config, _, upload, blogService, modal) {
         function getFreetypes(silent) {
             silent = silent || false;
             api.freetypes.query().then(function(data) {
+                angular.forEach(data._items, function(item){
+                    item.isUsed = false;
+                    api.items.query({
+                        "max_results": 1,
+                        "source": {
+                            "query": {
+                                "filtered": {
+                                    "filter": {
+                                        "and": [{
+                                            "term": {
+                                                "item_type": item.name
+                                            }
+                                        }]
+                                    }
+                                }
+                            }
+                        }
+                    }).then(function(items){
+                        if (items._items.length) {
+                            item.isUsed = true;
+                        }
+                    });
+                });
                 vm.freetypes = data._items;
                 if (!silent) {
                     notify.info('Free types loaded');
@@ -29,18 +52,20 @@ $q, $sce, config, _, upload, blogService, modal) {
             },
             //open dialog for adding editing an item type
             openFreetypeDialog: function(freetype) {
-                //refresh freetypes to make sure we use a fresh title
-                getFreetypes();
-                vm.editFreetype = freetype || false;
+                vm.checkItemIsUsed(freetype).then(function() {
+                    //refresh freetypes to make sure we use a fresh title
+                    getFreetypes();
+                    vm.editFreetype = freetype || false;
 
-                if (vm.editFreetype) {
-                    vm.dialogFreetype.name = vm.editFreetype.name;
-                    vm.dialogFreetype.template = vm.editFreetype.template;
-                } else {
-                    vm.dialogFreetype.name = '';
-                    vm.dialogFreetype.template = '';
-                }
-                vm.freetypeModalActive = true;
+                    if (vm.editFreetype) {
+                        vm.dialogFreetype.name = vm.editFreetype.name;
+                        vm.dialogFreetype.template = vm.editFreetype.template;
+                    } else {
+                        vm.dialogFreetype.name = '';
+                        vm.dialogFreetype.template = '';
+                    }
+                    vm.freetypeModalActive = true;
+                });
             },
             handleSaveError: function(data) {
                 var errorMsg = gettext('Saving did not work, please try again later!');
@@ -106,12 +131,32 @@ $q, $sce, config, _, upload, blogService, modal) {
                     }
                 }
         },
+        checkItemIsUsed: function(freetype) {
+            return $q(function(resolve, reject) {
+                if (!freetype) {
+                    resolve();
+                }
+                else if (freetype.isUsed) {
+                    modal.confirm(gettext(`This free type template is currently used in an active live blog.<br/>
+                        If you change or alter it, you may not be able to edit this kind of free types anymore.<br/>
+                        Are you sure you want to rename, change or remove it?`)).then(function() {
+                        resolve();
+                    }, function() {
+                        reject();
+                    });
+                } else {
+                    resolve();
+                }
+            });
+        },
         removeFreetype: function(freetype, $index) {
-            modal.confirm(gettext('Are you sure you want to remove this free type?')).then(function() {
-                api.freetypes.remove(freetype).then(function(data) {
-                    vm.freetypes.splice($index, 1);
-                }, function(data) {
-                    notify.error(gettext('Can\'t remove free type'));
+            vm.checkItemIsUsed(freetype).then(function() {
+                modal.confirm(gettext('Are you sure you want to remove this free type?')).then(function() {
+                    api.freetypes.remove(freetype).then(function(data) {
+                        vm.freetypes.splice($index, 1);
+                    }, function(data) {
+                        notify.error(gettext('Can\'t remove free type'));
+                    });
                 });
             });
         },
