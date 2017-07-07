@@ -229,6 +229,7 @@ MAIL_USE_SSL = env('MAIL_USE_SSL', False)
 MAIL_USERNAME = env('MAIL_USERNAME', 'liveblogsf@gmail.com')
 MAIL_PASSWORD = env('MAIL_PASSWORD', 'fabric2010')
 MAIL_FROM = env('MAIL_FROM', 'liveblogsf@gmail.com')
+MAIL_SUPPRESS_SEND = env('MAIL_SUPPRESS_SEND', False)
 ADMINS = [MAIL_FROM]
 
 # LDAP settings

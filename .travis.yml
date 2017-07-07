@@ -18,6 +18,7 @@ env:
         - MAIL_USE_TLS=
         - MAIL_USE_SSL=
         - MAIL_DEBUG=1
+        - MAIL_SUPPRESS_SEND=True
 
 services:
     - mongodb
