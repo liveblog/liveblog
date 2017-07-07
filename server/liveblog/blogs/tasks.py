@@ -107,7 +107,9 @@ def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sa
         except MediaStorageUnsupportedForBlogPublishing as e:
             if not safe:
                 raise e
+
             logger.warning('Media storage not supported for blog "{}"'.format(blog_id))
+            # TODO: Add reverse url function.
             public_url = '{}://{}/embed/{}/{}{}'.format(app.config['URL_PROTOCOL'],
                                                         app.config['SERVER_NAME'],
                                                         blog_id,
@@ -116,12 +118,14 @@ def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sa
 
         public_urls = blog.get('public_urls', {'output': {}, 'theme': {}})
         updates = {'public_urls': public_urls}
+
         if (output_id and theme) or output_id:
             public_urls['output'][output_id] = public_url
         elif theme:
             public_urls['theme'][theme] = public_url
         else:
             updates['public_url'] = public_url
+
         if save:
             try:
                 try:
@@ -129,8 +133,8 @@ def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sa
                 except DataLayer.OriginalChangedError:
                     blog = blogs.find_one(req=None, _id=blog_id)
                     blogs.system_update(blog_id, updates, blog)
-            except SuperdeskApiError as e:
-                logger.warning(e.message)
+            except SuperdeskApiError:
+                logger.warning('api error: unable to update blog "{}"'.format(blog_id))
 
         push_notification('blog', published=1, blog_id=blog_id, **updates)
         return public_url, public_urls

@@ -73,8 +73,9 @@ def send_email_to_added_members(blog, recipients, origin):
         subject = render_template("invited_members_subject.txt", app_name=app_name)
         text_body = render_template("invited_members.txt", app_name=app_name, link=url, title=title)
         html_body = render_template("invited_members.html", app_name=app_name, link=url, title=title)
-        send_email.delay(subject=subject, sender=admins[0], recipients=recipients_email,
-                         text_body=text_body, html_body=html_body)
+        if not app.config.get('SUPERDESK_TESTING', False):
+            send_email.delay(subject=subject, sender=admins[0], recipients=recipients_email,
+                             text_body=text_body, html_body=html_body)
 
 
 class BlogService(BaseService):
