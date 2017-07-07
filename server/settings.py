@@ -11,7 +11,6 @@
 
 
 import os
-import json
 
 from celery.schedules import crontab
 
