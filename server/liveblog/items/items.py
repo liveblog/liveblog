@@ -81,6 +81,9 @@ class ItemsResource(ArchiveResource):
             'type': 'string',
             'minlength': 1,
             'maxlength': 30
+        },
+        'freetype_template': {
+            'type': 'string'
         }
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
