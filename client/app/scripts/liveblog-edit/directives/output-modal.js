@@ -25,6 +25,7 @@ outputModalController.$inject = ['$rootScope', '$q', 'api', 'urls', 'notify', 'm
 
 function outputModalController($rootScope, $q, api, urls, notify, modal, upload, adsUtilSevice) {
     var vm = this;
+    vm.themes = [];
     vm.collections = [];
     vm.readyToSave = false;
     vm.disableSave = false;
@@ -46,6 +47,7 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
     initialize().then(function() {
         vm.readyToSave = true;
     });
+    loadThemes();
 
     function cancelModal() {
         vm.modalActive = false;
@@ -63,11 +65,24 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
         });
     }
 
+    function loadThemes() {
+        vm.themesLoading = true;
+        return api('themes').query({})
+        .then(function(data) {
+            vm.themes = data._items;
+            vm.themesLoading = false;
+        }, function(data) {
+            vm.themesLoading = false;
+            notify.error(gettext('There was an error getting the themes'));
+        });
+    }
+
     function saveOutput() {
         var promises = [],
             newOutput = {
                 name: vm.output.name,
                 blog: vm.blog._id,
+                theme: vm.output.theme,
                 collection: vm.output.collection,
                 style: vm.output.style,
                 settings: vm.output.settings

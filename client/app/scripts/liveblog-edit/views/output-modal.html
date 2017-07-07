@@ -125,6 +125,16 @@
                         <a href="{{ vm.blog.public_urls.output[vm.output._id] }}" target="_blank"><span ng-bind="vm.blog.public_urls.output[vm.output._id]"></span> <i class="icon-external"></i></a>
                     </div>
                 </div>
+
+                <div class="field">
+                    <label for="inputTheme" class="control-label" translate>Theme</label>
+                        <div class="form-input">
+                            <select ng-model="vm.output.theme"
+                                    ng-options="theme.name as theme.label for theme in vm.themes"></select>
+                            </select>
+                        </div>
+                </div>
+
             </fieldset>
         </div>
     </div>

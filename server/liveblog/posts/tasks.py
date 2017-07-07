@@ -76,7 +76,7 @@ def update_post_blog_embed(post):
 
     logger.warning('update_post_blog_embed for blog "{}" started.'.format(blog_id))
     try:
-        publish_blog_embeds_on_s3(blog_id, safe=True)
+        publish_blog_embeds_on_s3(blog_id, save=False, safe=True)
     except:
         logger.exception('update_post_blog_embed for blog "{}" failed.'.format(blog_id))
     finally:
