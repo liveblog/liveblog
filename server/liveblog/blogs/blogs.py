@@ -178,7 +178,7 @@ class BlogService(BaseService):
         # Embed publish
         if 'deleted' in updates:
             # Delete blog embed
-            delete_blog_embeds_on_s3.delay(blog['_id'])
+            delete_blog_embeds_on_s3.apply_async(args=[blog['_id']], countdown=2)
         else:
             # Update blog embed
             publish_blog_embeds_on_s3.apply_async(args=[blog], countdown=2)
@@ -199,13 +199,13 @@ class BlogService(BaseService):
         if doc.get('syndication_enabled', False) and out.count():
             raise SuperdeskApiError.forbiddenError(message='Cannot delete syndication: blog has active consumers.')
 
-        delete_blog_embeds_on_s3.delay(doc.get('_id'))
+        delete_blog_embeds_on_s3.apply_async(args=[doc['_id']], countdown=2)
 
     def on_deleted(self, doc):
         # Invalidate cache for updated blog.
         blog_id = str(doc['_id'])
         app.blog_cache.invalidate(blog_id)
-        delete_blog_embeds_on_s3.delay(blog_id)
+        delete_blog_embeds_on_s3.apply_async(args=[blog_id], countdown=2)
 
         # Remove syndication on blog post delete.
         syndication_out = get_resource_service('syndication_out')
