@@ -3,12 +3,16 @@ import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html';
 import advertModalTpl from 'scripts/liveblog-advertising/views/advert-modal.html';
 import collectionModalTpl from 'scripts/liveblog-advertising/views/collection-modal.html';
 import _ from 'lodash';
+import adblockDetect from 'adblock-detect';
 
 LiveblogAdvertisingController.$inject = ['$scope', 'api', 'notify', 'gettext',
 'upload','$templateCache', 'freetypeService', 'modal', 'adsUtilSevice'];
 
 export default function LiveblogAdvertisingController($scope, api, notify, gettext,
 upload, $templateCache, freetypeService, modal, adsUtilSevice) {
+    adblockDetect(function(adblockDetected) {
+        $scope.adblockDetected = adblockDetected;
+    });
     $scope.activeState = 'adverts';
     $scope.advertType = '';
     $scope.advert = {};
