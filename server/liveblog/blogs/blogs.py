@@ -179,7 +179,6 @@ class BlogService(BaseService):
             # Update blog embed
             publish_blog_embeds_on_s3.apply_async(args=[blog], kwargs={'save': False}, countdown=2)
 
-
         members = updates.get('members', {})
         recipients = []
         for user in members:
