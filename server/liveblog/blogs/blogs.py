@@ -177,7 +177,9 @@ class BlogService(BaseService):
 
         if 'blog_preferences' in updates:
             # Update blog embed
-            publish_blog_embeds_on_s3.apply_async(args=[blog], kwargs={'save': False}, countdown=2)
+            theme_name = updates['blog_preferences'].get('theme')
+            if theme_name:
+                publish_blog_embeds_on_s3.apply_async(args=[blog], kwargs={'save': False}, countdown=2)
 
         members = updates.get('members', {})
         recipients = []
@@ -201,7 +203,6 @@ class BlogService(BaseService):
         # Invalidate cache for updated blog.
         blog_id = str(doc['_id'])
         app.blog_cache.invalidate(blog_id)
-        delete_blog_embeds_on_s3.apply_async(args=[blog_id], countdown=2)
 
         # Remove syndication on blog post delete.
         syndication_out = get_resource_service('syndication_out')
