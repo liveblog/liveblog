@@ -11,6 +11,8 @@ env:
         # https://github.com/travis-ci/travis-ci/issues/5246#issuecomment-166460882
         - BOTO_CONFIG=/doesnotexist
         - SYNDICATION_VALIDATE_AUTH=0
+        - MAIL_HOST=localhost
+        - MAIL_PORT=2225
 
 services:
     - mongodb
@@ -66,7 +68,7 @@ before_script:
     - ./scripts/elastic.sh
     - sudo service elasticsearch restart && sleep 10
     - cd $TRAVIS_BUILD_DIR/server
-    - (nohup env LOG_CONFIG_FILE='../logging_travis_config.yml' MAIL_HOST='localhost' MAIL_PORT=2225 SUPERDESK_URL='http://localhost:5000/api' SUPERDESK_CLIENT_URL='http://localhost:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &)
+    - (nohup env LOG_CONFIG_FILE='../logging_travis_config.yml' SUPERDESK_URL='http://localhost:5000/api' SUPERDESK_CLIENT_URL='http://localhost:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &)
     - cd $TRAVIS_BUILD_DIR/client
     - MARKETPLACE=true SYNDICATION=true grunt build --server='http://localhost:5000/api' --ws='ws://localhost:5100'
     - cd dist
