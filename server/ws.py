@@ -10,11 +10,14 @@
 # at https://www.sourcefabric.org/superdesk/license
 
 
+import os
 from settings import WS_HOST, WS_PORT, LOG_SERVER_ADDRESS, LOG_SERVER_PORT, BROKER_URL
 from superdesk.ws import create_server
+from superdesk.logging import configure_logging
+
+LOG_CONFIG_FILE = os.environ.get('LOG_CONFIG_FILE')
 
 beat_delay = 30
-
 
 if __name__ == '__main__':
     config = {
@@ -24,4 +27,7 @@ if __name__ == '__main__':
         'LOG_SERVER_ADDRESS': LOG_SERVER_ADDRESS,
         'LOG_SERVER_PORT': LOG_SERVER_PORT
     }
+    if os.path.exists(LOG_CONFIG_FILE):
+        configure_logging(LOG_CONFIG_FILE)
+
     create_server(config)
