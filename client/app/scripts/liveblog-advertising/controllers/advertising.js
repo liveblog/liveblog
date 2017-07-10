@@ -124,7 +124,6 @@ upload, $templateCache, freetypeService, modal, adsUtilSevice) {
 
     loadAdverts();
 
-
     //COLLECTIONS
     function loadCollections(silent) {
         silent = silent || false;

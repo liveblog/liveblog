@@ -1,5 +1,6 @@
 import logging
 
+from flask import current_app as app
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
 from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
@@ -72,6 +73,9 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=50, po
 def check_webhook_status(self, consumer_id):
     """Check if consumer webhook is enabled by sending a fake http api request."""
     from .utils import send_api_request
+    if app.config.get('SUPERDESK_TESTING'):
+        return
+
     consumers = get_resource_service('consumers')
     consumer = consumers._get_consumer(consumer_id) or {}
     if 'webhook_url' in consumer:

@@ -73,8 +73,9 @@ def send_email_to_added_members(blog, recipients, origin):
         subject = render_template("invited_members_subject.txt", app_name=app_name)
         text_body = render_template("invited_members.txt", app_name=app_name, link=url, title=title)
         html_body = render_template("invited_members.html", app_name=app_name, link=url, title=title)
-        send_email.delay(subject=subject, sender=admins[0], recipients=recipients_email,
-                         text_body=text_body, html_body=html_body)
+        if not app.config.get('SUPERDESK_TESTING', False):
+            send_email.delay(subject=subject, sender=admins[0], recipients=recipients_email,
+                             text_body=text_body, html_body=html_body)
 
 
 class BlogService(BaseService):
@@ -174,7 +175,13 @@ class BlogService(BaseService):
         # Notify newly added members.
         blog = original.copy()
         blog.update(updates)
-        publish_blog_embeds_on_s3.apply_async(args=[blog], countdown=2)
+
+        if 'blog_preferences' in updates:
+            # Update blog embed
+            theme_name = updates['blog_preferences'].get('theme')
+            if theme_name:
+                publish_blog_embeds_on_s3.apply_async(args=[blog], kwargs={'save': False}, countdown=2)
+
         members = updates.get('members', {})
         recipients = []
         for user in members:
@@ -191,13 +198,12 @@ class BlogService(BaseService):
         if doc.get('syndication_enabled', False) and out.count():
             raise SuperdeskApiError.forbiddenError(message='Cannot delete syndication: blog has active consumers.')
 
-        delete_blog_embeds_on_s3.delay(doc.get('_id'))
+        delete_blog_embeds_on_s3.apply_async(args=[doc['_id']], countdown=2)
 
     def on_deleted(self, doc):
         # Invalidate cache for updated blog.
         blog_id = str(doc['_id'])
         app.blog_cache.invalidate(blog_id)
-        delete_blog_embeds_on_s3.delay(blog_id)
 
         # Remove syndication on blog post delete.
         syndication_out = get_resource_service('syndication_out')

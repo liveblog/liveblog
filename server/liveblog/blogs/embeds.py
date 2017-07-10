@@ -27,7 +27,7 @@ from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR, THEMES_ASSETS_DIR, DEFAULT_THEME_DATE_FORMAT
-from .utils import is_relative_to_current_folder, get_template_file_name, get_theme_json
+from .utils import is_relative_to_current_folder, get_template_file_name
 
 logger = logging.getLogger('superdesk')
 embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
@@ -161,16 +161,19 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         # This method can be called outside from a request context.
         theme_name = theme
 
-    theme = get_resource_service('themes').find_one(req=None, name=blog['blog_preferences'].get('theme'))
-    if theme is None and theme_name is None:
+    blog_preferences = blog.get('blog_preferences')
+    if blog_preferences is None:
+        return 'blog preferences are not available', 404
+
+    blog_theme_name = blog_preferences.get('theme')
+    if not theme_name:
+        # No theme specified. Fallback to theme in blog_preferences.
+        theme_name = blog_theme_name
+
+    theme = get_resource_service('themes').find_one(req=None, name=theme_name)
+    if theme is None:
         raise SuperdeskApiError.badRequestError(
             message='You will be able to access the embed after you register the themes')
-
-    # If a theme is provided, overwrite the default theme.
-    if theme_name:
-        theme = get_theme_json(theme_name)
-    else:
-        theme_name = theme['name']
 
     try:
         assets, template_content = collect_theme_assets(theme)
@@ -185,7 +188,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     if theme.get('public_url', False):
         assets_root = theme.get('public_url')
     else:
-        assets_root = [THEMES_ASSETS_DIR, blog['blog_preferences'].get('theme')]
+        assets_root = [THEMES_ASSETS_DIR, theme_name]
         assets_root = '/%s/' % ('/'.join(assets_root))
 
     theme_service = get_resource_service('themes')
