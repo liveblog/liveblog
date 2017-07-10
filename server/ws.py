@@ -27,7 +27,8 @@ if __name__ == '__main__':
         'LOG_SERVER_ADDRESS': LOG_SERVER_ADDRESS,
         'LOG_SERVER_PORT': LOG_SERVER_PORT
     }
-    if os.path.exists(LOG_CONFIG_FILE):
-        configure_logging(LOG_CONFIG_FILE)
+    if LOG_CONFIG_FILE:
+        if os.path.exists(LOG_CONFIG_FILE):
+            configure_logging(LOG_CONFIG_FILE)
 
     create_server(config)
