@@ -288,7 +288,7 @@ def tojson(obj):
 @embed_blueprint.app_template_filter('tostyle')
 def tostyle(obj):
     if obj:
-        return ','.join(["{}: {}".format(key, value) for (key, value) in obj.items()])
+        return ';'.join(["{}: {}".format(key, value) for (key, value) in obj.items()])
     return ''
 
 
