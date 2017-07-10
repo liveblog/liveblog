@@ -1093,6 +1093,12 @@ article.lb-post:after {
     margin: -10px 8px 0 6px;
   }
 }
+.lb-post-pin {
+  width: 10px;
+  position: absolute;
+  top: 55px;
+  left: 36px;
+}
 iframe {
   width: 100% !important;
   max-width: 100% !important;
