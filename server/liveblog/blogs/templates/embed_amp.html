@@ -18,6 +18,7 @@
     {% if amp_style %}
     <style amp-custom>
       {{ amp_style | safe }}
+      {{ (output and output.get('style')) | tostyle | safe }}
     </style>
     {% endif %}
     {% endblock %}

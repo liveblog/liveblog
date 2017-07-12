@@ -16,6 +16,8 @@ from eve.utils import config
 from flask import Blueprint, request
 from flask_cors import CORS
 from distutils.util import strtobool
+from superdesk import get_resource_service
+
 
 blog_posts_blueprint = Blueprint('blog_posts', __name__)
 CORS(blog_posts_blueprint)
@@ -217,6 +219,43 @@ class ClientBlogPostsResource(BlogPostsResource):
 
 
 class ClientBlogPostsService(BlogPostsService):
+    def add_post_type(self, doc, items=None):
+        items = items or []
+        if not items:
+            # Get from groups
+            for group in doc.get('groups'):
+                for ref in group.get('refs'):
+                    item = ref.get('items')
+                    if item:
+                        items.append(item)
+
+        if not items:
+            # Not available in groups. Fetch from packageService.
+            for assoc in self.packageService._get_associations(doc):
+                if 'residRef' in assoc:
+                    item = get_resource_service('archive').find_one(req=None, _id=assoc['residRef'])
+                    items.append(item)
+
+        items_length = len(items)
+        post_items_type = None
+        if items_length:
+            if items_length == 1:
+                if items[0]['item_type'] == 'embed':
+                    post_items_type = 'embed'
+                    if 'provider_name' in items[0]['meta']:
+                        post_items_type = "{}-{}".format(post_items_type, items[0]['provider_name'])
+                else:
+                    post_items_type = items[0]['item_type']
+            elif items_length > 1:
+                if all([i['item_type'] == 'image' for i in items]):
+                    post_items_type = 'slideshow'
+
+        doc['post_items_type'] = post_items_type
+
+    def on_fetched(self, docs):
+        super().on_fetched(docs)
+        for doc in docs['_items']:
+            self.add_post_type(doc)
 
     def get(self, req, lookup):
         cache_key = 'lb_ClientBlogPostsService_get_%s' % (hash(frozenset(req.__dict__.items())))
