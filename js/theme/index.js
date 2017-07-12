@@ -7,6 +7,7 @@
 const handlers = require('./handlers'),
   viewmodel = require('./viewmodel'),
   view = require('./view'),
+  pageview = require('./pageview'),
   localAnalytics = require('./local-analytics');
 
 module.exports = {
@@ -18,6 +19,7 @@ module.exports = {
     handlers.events.attach(); // Register Event, Message Handlers
     viewmodel.init();
     localAnalytics.hit();
+    pageview.init();
 
     setInterval(() => {
       view.updateTimestamps(); // Convert ISO dates to timeago
