@@ -225,7 +225,7 @@ class ClientBlogPostsService(BlogPostsService):
             # Get from groups
             for group in doc.get('groups'):
                 for ref in group.get('refs'):
-                    item = ref.get('items')
+                    item = ref.get('item')
                     if item:
                         items.append(item)
 
