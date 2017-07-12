@@ -243,7 +243,7 @@ class ClientBlogPostsService(BlogPostsService):
                 if items[0]['item_type'] == 'embed':
                     post_items_type = 'embed'
                     if 'provider_name' in items[0]['meta']:
-                        post_items_type = "{}-{}".format(post_items_type, items[0]['provider_name'])
+                        post_items_type = "{}-{}".format(post_items_type, items[0]['meta']['provider_name'])
                 else:
                     post_items_type = items[0]['item_type']
             elif items_length > 1:
