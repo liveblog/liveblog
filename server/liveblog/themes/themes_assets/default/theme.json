@@ -16,9 +16,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/liveblog-8c707d6a53.css"],
-    "devScripts": ["dist/liveblog-efbfb3aef9.js"],
+    "devScripts": ["dist/liveblog-1a0ca2e10b.js"],
     "styles": ["dist/liveblog-8c707d6a53.css"],
-    "scripts": ["dist/liveblog-efbfb3aef9.js"],
+    "scripts": ["dist/liveblog-1a0ca2e10b.js"],
     "options": [
         {
             "name": "postsPerPage",
@@ -146,6 +146,13 @@
                 {"value": "bottom", "label": "Bottom"}
             ],
             "default": "top"
+        },
+        {
+            "name": "gaCode",
+            "label": "Google analytics code",
+            "type": "text",
+            "default": "",
+            "help": "Please type in your google analytics code"
         }
     ],
     "l10n": {
