@@ -1,3 +1,4 @@
+from itertools import groupby
 from liveblog.blogs.blogs import BlogsResource
 from liveblog.advertisements.collections import CollectionsService, CollectionsResource
 from liveblog.advertisements.outputs import OutputsService, OutputsResource
@@ -225,7 +226,7 @@ class ClientBlogPostsService(BlogPostsService):
             # Get from groups
             for group in doc.get('groups'):
                 for ref in group.get('refs'):
-                    item = ref.get('items')
+                    item = ref.get('item')
                     if item:
                         items.append(item)
 
@@ -243,12 +244,14 @@ class ClientBlogPostsService(BlogPostsService):
                 if items[0]['item_type'] == 'embed':
                     post_items_type = 'embed'
                     if 'provider_name' in items[0]['meta']:
-                        post_items_type = "{}-{}".format(post_items_type, items[0]['provider_name'])
+                        post_items_type = "{}-{}".format(post_items_type, items[0]['meta']['provider_name'].lower())
                 else:
                     post_items_type = items[0]['item_type']
             elif items_length > 1:
-                if all([i['item_type'] == 'image' for i in items]):
-                    post_items_type = 'slideshow'
+                for k, g in groupby(items, key=lambda i: i['item_type']):
+                    if k == 'image' and sum(1 for _ in g) > 1:
+                        post_items_type = 'slideshow'
+                        break
 
         doc['post_items_type'] = post_items_type
 
