@@ -414,7 +414,7 @@ def upload_a_theme():
             return json.dumps({'error': 'No name specified in theme.json file.'}), 400
 
         # Check if uploaded theme with the given name already exists.
-        if themes_service.fetch_one(req=None, name=theme_name):
+        if themes_service.find_one(req=None, name=theme_name):
             return json.dumps({'error': 'A theme with the given name ({}) already exists!'.format(theme_name)}), 400
 
         # Check dependencies.
@@ -423,7 +423,7 @@ def upload_a_theme():
             if extends == theme_name:
                 return json.dumps({'error': 'Uploaded theme {} cannot extend itself!'.format(theme_name)}), 400
 
-            if not themes_service.fetch_one(req=None, name=extends):
+            if not themes_service.find_one(req=None, name=extends):
                 return json.dumps({'error': 'Parent theme ({}) does not exists!'.format(extends)}), 400
 
             try:
