@@ -58,6 +58,7 @@ class Blog:
         results = self._posts.find(self._posts_lookup(sticky, highlight, all))
         total = results.count()
 
+
         # Get sorting direction.
         if sort == 'asc':
             sort = pymongo.ASCENDING
@@ -77,6 +78,11 @@ class Blog:
                     for ref in group['refs']:
                         ref['item'] = get_resource_service('archive').find_one(req=None, _id=ref['residRef'])
             posts.append(doc)
+
+        # Enrich documents
+        client_blog_posts = get_resource_service('client_blog_posts')
+        for doc in posts:
+            client_blog_posts.add_post_type(doc)
 
         if wrap:
             # Wrap in python-eve style data structure
