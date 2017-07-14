@@ -78,6 +78,11 @@ class Blog:
                         ref['item'] = get_resource_service('archive').find_one(req=None, _id=ref['residRef'])
             posts.append(doc)
 
+        # Enrich documents
+        client_blog_posts = get_resource_service('client_blog_posts')
+        for doc in posts:
+            client_blog_posts.add_post_type(doc)
+
         if wrap:
             # Wrap in python-eve style data structure
             return {
