@@ -396,35 +396,55 @@ def upload_a_theme():
     with zipfile.ZipFile(request.files['media']) as zip_file:
         # Keep only actual files (not folders)
         files = [file for file in zip_file.namelist() if not file.endswith('/')]
+
         # Determine if there is a root folder
         roots = set(file.split('/')[0] for file in files)
         root_folder = len(roots) == 1 and '%s/' % roots.pop() or ''
+
         # Check if it has a theme.json in the root folder.
         description_file = next((
             file for file in files if file.lower() == ('%stheme.json' % root_folder)), None)
         if description_file is None:
             return json.dumps(dict(error='A theme needs a theme.json file')), 400
+
         # decode and load as a json file
         description_file = json.loads(zip_file.read(description_file).decode('utf-8'))
-        # check dependencies
-        if description_file.get('extends', False):
+        theme_name = description_file.get('name')
+        if not theme_name:
+            return json.dumps({'error': 'No name specified in theme.json file.'}), 400
+
+        # Check if uploaded theme with the given name already exists.
+        if themes_service.find_one(req=None, name=theme_name):
+            return json.dumps({'error': 'A theme with the given name ({}) already exists!'.format(theme_name)}), 400
+
+        # Check dependencies.
+        extends = description_file.get('extends')
+        if extends:
+            if extends == theme_name:
+                return json.dumps({'error': 'Uploaded theme {} cannot extend itself!'.format(theme_name)}), 400
+
+            if not themes_service.find_one(req=None, name=extends):
+                return json.dumps({'error': 'Parent theme ({}) does not exists!'.format(extends)}), 400
+
             try:
-                themes_service.get_dependencies(description_file.get('extends'))
+                themes_service.get_dependencies(extends)
             except SuperdeskError as e:
                 return json.dumps(dict(error=e.desc)), 400
-        # Extract and save files
+
+        # Extract and save filesF
         extracted_files = []
         for name in files:
             # 1. remove the root folder
             local_filepath = name.replace(root_folder, '', 1)
             # 2. prepend in a root folder called as the theme's name
-            local_filepath = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR, description_file.get('name'), local_filepath)
+            local_filepath = os.path.join(CURRENT_DIRECTORY, ASSETS_DIR, theme_name, local_filepath)
             # 1. create folder if doesn't exist
             os.makedirs(os.path.dirname(local_filepath), exist_ok=True)
             # 2. write the file
             with open(local_filepath, 'wb') as file_in_local_storage:
                 file_in_local_storage.write(zip_file.read(name))
                 extracted_files.append(local_filepath)
+
         # Save or update the theme in the database
         result = themes_service.save_or_update_theme(description_file, extracted_files, force_update=True)
         return json.dumps(
