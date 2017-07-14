@@ -58,7 +58,6 @@ class Blog:
         results = self._posts.find(self._posts_lookup(sticky, highlight, all))
         total = results.count()
 
-
         # Get sorting direction.
         if sort == 'asc':
             sort = pymongo.ASCENDING
