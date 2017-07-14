@@ -15,6 +15,7 @@ import json
 import logging
 import os
 import arrow
+import math
 
 import superdesk
 from bson.json_util import dumps as bson_dumps
@@ -131,6 +132,14 @@ def render_bloglist_embed(api_host=None, assets_root=None):
     return render_template('blog-list-embed.html', **scope)
 
 
+def ad_to_post(ad):
+    ad["item_type"] = ad["type"]
+    post = {"_id": ad["_id"]}
+    post["groups"] = [{"role": "grpRole:NEP", "id": "root", "refs": [{"idRef": "main"}]}]
+    post["groups"].append({"role": "grpRole:Main", "id": "main", "refs": [{"item": ad}]})
+    return post
+
+
 @embed_blueprint.route('/embed/<blog_id>', defaults={'theme': None, 'output': None})
 @embed_blueprint.route('/embed/<blog_id>/<output>', defaults={'theme': None})
 @embed_blueprint.route('/embed/<blog_id>/theme/<theme>', defaults={'output': None})
@@ -208,6 +217,28 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         posts = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering)
         sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True,
                                            ordering='newest_first')
+
+        if output and output['collection']:
+            ads = []
+            for ad in output['collection']['advertisements']:
+                ads.append(get_resource_service('advertisements').find_one(req=None, _id=ad['advertisement_id']))
+
+            pcount = len(posts['_items'])
+            acount = len(ads)
+            frequency = output["settings"].get("frequency", 4)
+            order = output["settings"].get("order", 1)
+            if order == 1:
+                for i in range(0, pcount, (frequency + 1)):
+                    index = math.ceil(i / (frequency + 1)) % acount
+                    print('index: {}, pcount: {}, acount: {}'.format(index, pcount, acount))
+                    # transform ad into a valid post.
+                    posts['_items'].insert(i, ad_to_post(ads[index]))
+            else:
+                for i in range(pcount, 0, (frequency + 1)):
+                    index = math.floor(i / (frequency + 1)) % acount
+                    # transform ad into a valid post.
+                    posts['_items'].insert(i, ad_to_post(ads[index]))
+
         api_response = {
             'posts': posts,
             'stickyPosts': sticky_posts
