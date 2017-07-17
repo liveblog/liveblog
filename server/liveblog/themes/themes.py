@@ -311,8 +311,9 @@ class ThemesService(BaseService):
         return results.get('created'), results.get('updated')
 
     def _save_theme_file(self, name, theme, upload_path=None):
+        theme_name = theme['name']
         if not upload_path:
-            upload_path = self.get_theme_path(theme['name'])
+            upload_path = self.get_theme_path(theme_name)
 
         with open(name, 'rb') as file:
             # Set the content type
@@ -321,7 +322,7 @@ class ThemesService(BaseService):
             if content_type == 'text/plain' and name.endswith(tuple(CONTENT_TYPES.keys())):
                 content_type = CONTENT_TYPES[os.path.splitext(name)[1]]
 
-            final_file_name = os.path.relpath(name, upload_path)
+            final_file_name = os.path.join(theme_name, os.path.relpath(name, upload_path))
 
             # TODO: Add version parameter to media_id() after merging related core-changes in amazon_media_storage
             # and desk_media storage.
