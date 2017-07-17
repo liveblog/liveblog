@@ -20,14 +20,25 @@
             };
         }).filter('convertLinksWithRelativeProtocol', ['fixProtocol', function (fixProtocol) {
             return fixProtocol;
-        }]).filter('fixEmbed', function() {
+        }]).filter('fixEmbed', [ 'config', function(config) {
             return function(embed) {
+                if (config.settings.livestream && config.settings.livestreamAutoplay) {
+                    embed =  embed.replace(/src\w*=\w*("|')?([^\"\']+)("|')/, function(match, quote, url){
+                        // if the url already has an query mark don't add it.
+                        var mark = '?';
+                        if (url.indexOf('?') !== -1) {
+                            mark = '&';
+                        }
+                        // add the autoplay query.
+                        return 'src="' + url + mark + 'rel=0&autoplay=1"';
+                    });
+                }
                 // fix intragram height by removing max-height from blockquote
                 return embed.replace(/<blockquote class="instagram-media"[^>]*/g, function(tag) {
                     return tag.replace(/ max-width:[^;]*;/, '').replace(/ width:[^;]*;/, ' width: 96%;');
                 });
             }
-        }).filter('fixMarkup', function() {
+        }]).filter('fixMarkup', function() {
             var regx = [
                 /<\/?span>/g,
                 /<(\/?)div([^>]+)>/g,
