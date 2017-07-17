@@ -47,8 +47,8 @@ def collect_theme_assets(theme, assets=None, template=None):
                 template = open(template_file_name, encoding='utf-8').read()
             else:
                 template = theme.get('template')
-    else:
-        template = theme.get('template')
+        else:
+            template = theme.get('template')
 
     # Add assets from parent theme.
     extends = theme.get('extends')
