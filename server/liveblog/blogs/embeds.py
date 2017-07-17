@@ -47,15 +47,18 @@ def collect_theme_assets(theme, assets=None, template=None):
                 template = open(template_file_name, encoding='utf-8').read()
             else:
                 template = theme.get('template')
+    else:
+        template = theme.get('template')
 
     # Add assets from parent theme.
-    if theme.get('extends', None):
-        parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
+    extends = theme.get('extends')
+    if extends:
+        parent_theme = get_resource_service('themes').find_one(req=None, name=extends)
         if parent_theme:
             assets, template = collect_theme_assets(parent_theme, assets=assets, template=template)
         else:
             error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
-                % (theme.get('name'), theme.get('extends'))
+                % (theme_name, extends)
             logger.info(error_message)
             raise UnknownTheme(error_message)
 
