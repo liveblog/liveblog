@@ -2,8 +2,9 @@
     'use strict';
     var CACHE_OPTIONS = {
         deleteOnExpire: 'aggressive',
-        recycleFreq: 600000, // 10mins
-        storageMode: 'memory'
+        recycleFreq: 15 * 60 * 1000, // 15 mins
+        maxAge: 30 * 60 * 1000, // 30 mins
+        storageMode: 'memory',
     };
     srcSet.$inject = ['fixProtocol'];
     function srcSet(fixProtocol) {
@@ -18,6 +19,7 @@
             return srcset.substring(2);
         }
     }
+
     thumbnailRendition.$inject = ['fixProtocol'];
     function thumbnailRendition(fixProtocol) {
         return function(renditions) {
@@ -66,11 +68,8 @@
         });
     }
 
-    Users.$inject = ['$resource', 'config', 'CacheFactory', 'srcSet', 'thumbnailRendition'];
-    function Users($resource, config, CacheFactory, srcSet, thumbnailRendition) {
-        if (!CacheFactory.get('usersCache')) {
-            CacheFactory.createCache('usersCache', CACHE_OPTIONS);
-        }
+    Users.$inject = ['$resource', 'config', 'srcSet', 'thumbnailRendition'];
+    function Users($resource, config, srcSet, thumbnailRendition) {
         return $resource(config.api_host + 'api/client_users/:userId', {'userId':'@id'}, {
             'get': { 
                 method:'GET',
@@ -82,32 +81,76 @@
                         user.picture_srcset = srcSet(user.avatar_renditions);
                     }
                     return user;
-                },
-                cache: CacheFactory.get('usersCache')}
-
+                }
+            }
         });
     }
 
-    Posts.$inject = ['$resource', 'config', 'users', 'srcSet', 'fixProtocol'];
-    function Posts($resource, config, users, srcSet, fixProtocol) {
+    function _completePost(obj, user) {
+        obj.original_creator = user._items? user._items[0] : user;
+        //at times we don't get the byline and sign_off fields from the user request
+        if (!obj.original_creator.byline && obj.byline) {
+            obj.original_creator.byline = obj.byline;
+        }
+        if (!obj.original_creator.sign_off && obj.sign_off) {
+            obj.original_creator.sign_off = obj.sign_off;
+        }
+        return obj.original_creator;
+    }
+
+    Posts.$inject = ['$resource', 'config', 'CacheFactory', '$rootScope', 'users', 'srcSet', 'fixProtocol'];
+    function Posts($resource, config, CacheFactory, $rootScope, users, srcSet, fixProtocol) {
         function _completeUser(obj) {
+            var usersCache, refreshCache;
+            if (!CacheFactory.get('usersCache')) {
+                var REFRESH_CACHE = angular.copy(CACHE_OPTIONS);
+                // if it is expired get it again.
+                REFRESH_CACHE.onExpire = function (key, value) {
+                    $rootScope.$apply(function(){
+                        users.get({userId: key}).$promise.then(function(user) {
+                            // throught and all set the user on the `obj` post object.
+                            var newUser = _completePost(obj, user),
+                                oldUser = usersCache.get(key);
+                                angular.extend(oldUser, newUser);
+                            usersCache.put(key, oldUser);
+                            refreshCache.put(key, {});
+                        });
+                    });
+                }
+                usersCache = CacheFactory.createCache('usersCache', {storageMode: 'memory'});
+                refreshCache = CacheFactory.createCache('refreshCache', REFRESH_CACHE);
+            } else {
+                 usersCache = CacheFactory.get('usersCache');
+                 refreshCache = CacheFactory.get('refreshCache')
+            }
             if (obj.commenter) {
                 obj.original_creator = {display_name: obj.commenter};
             } else if(obj.original_creator !== "" && obj.original_creator !== 'None'){
-                users.get({userId: obj.original_creator}, function(user) {
-                    obj.original_creator = user._items? user._items[0] : user;
-                    //at times we don't get the byline and sign_off fields from the user request
-                    if (!obj.original_creator.byline && obj.byline) {
-                        obj.original_creator.byline = obj.byline;
+                var userId = obj.original_creator;
+                // check if the `userId` is cached.
+                if (!usersCache.get(userId)) {
+                    // cache `promise` for batch request purposes.
+                    usersCache.put(userId, users.get({userId: obj.original_creator}).$promise.then(function(user) {
+                        // throught and all set the user on the `obj` post object.
+                        usersCache.put(userId, _completePost(obj, user));
+                        refreshCache.put(userId, {});
+                        return user;
+                    }));
+                } else {
+                    if(typeof usersCache.get(userId).then === 'function') {
+                        usersCache.get(userId).then(function(user){
+                            // all and all set the user on the `obj` post object.
+                            usersCache.put(userId, _completePost(obj, user));
+                        });
+                    } else {
+                        // use the cache user to set the user on the `obj` post object.
+                        _completePost(obj, usersCache.get(userId));
                     }
-                    if (!obj.original_creator.sign_off && obj.sign_off) {
-                        obj.original_creator.sign_off = obj.sign_off;
-                    }
-                });
+                }
             }
             return obj;
         }
-        return $resource(config.api_host + 'api/client_blogs/:blogId/posts', {blogId: config.blog._id}, {
+        return $resource(config.api_host + 'api/client_blogs/:blogId/posts?embedded={"syndication_in":1}', {blogId: config.blog._id}, {
             get: {
                 transformResponse: function(posts) {
                     // decode json
@@ -148,7 +191,7 @@
                             });
                         }
                         // replace the creator id by the user object
-                        _completeUser(post);
+                        post = _completeUser(post);
                     });
                     return posts;
                 }
