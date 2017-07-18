@@ -1,0 +1,11 @@
+<div id="slideshow">
+  <div class="container">
+    {% for ref in refs %}
+      {% include "template-item-image.html" %}
+    {% endfor %}
+  </div>
+  <button class="close">X</button>
+  <button class="fullscreen">Fullscreen</button>
+  <button class="arrows prev">&lt;</button>
+  <button class="arrows next">&gt;</button>
+</div>
