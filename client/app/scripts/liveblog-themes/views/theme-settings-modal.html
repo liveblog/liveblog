@@ -23,15 +23,15 @@
                                 name="{{ option.name }}"
                                 ng-model="vm.settings[option.name]" />
                         </div>
+                        <label ng-bind="option.label"></label>
                         <div
                             ng-switch-when="text"
-                            class="pull-right">
+                            class="pull-right text-input">
                             <input
                                 type="{{ option.type }}"
                                 name="{{ option.name }}"
                                 ng-model="vm.settings[option.name]" />
                         </div>
-                        <label ng-bind="option.label"></label>
                         <div ng-switch-when="select">
                             <select class="form-control"
                                     name="{{ option.name }}"
