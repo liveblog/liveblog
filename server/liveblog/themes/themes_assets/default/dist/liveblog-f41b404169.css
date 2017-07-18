@@ -895,6 +895,13 @@ article.lb-post:after {
   background-color: #C6C6C6;
   margin-top: -2px;
 }
+.lb-advertisement {
+  position: absolute;
+  margin-top: -45px;
+  padding-left: 20px;
+  color: #767676;
+  font-size: 0.75rem;
+}
 .lb-post:hover .lb-post-permalink,
 .lb-sticky-top-post:hover .lb-post-permalink {
   visibility: visible;

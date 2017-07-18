@@ -24,9 +24,10 @@ function renderTimeline(api_response) {
       item: post,
       settings: window.LB.settings
     }));
-  });
 
+  });
   timelineElem[0].innerHTML = renderedPosts.join("");
+  updateTimestamps();
   loadEmbeds();
   attachSlideshow();
 }
