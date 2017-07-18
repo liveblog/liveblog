@@ -2,14 +2,14 @@ import superdesk
 from .blogs import BlogService, BlogsResource, UserBlogsResource, UserBlogsService
 from .blogslist import BlogsListService, BlogsListResource, bloglist_assets_blueprint, bloglist_blueprint
 from .request_membership import MembershipService, MembershipResource, MemberListService, MemberListResource
-from .tasks import publish_blog_embed_on_s3, delete_blog_embed_on_s3
+from .tasks import publish_blog_embed_on_s3, delete_blog_embeds_on_s3
 from .commands import PublishBlogsCommand, PublishBloglistCommand
 
 __all__ = [
     'BlogService', 'BlogsResource', 'UserBlogsResource', 'UserBlogsService',
     'BlogsListService', 'BlogsListResource', 'bloglist_blueprint', 'bloglist_assets_blueprint',
     'MembershipService', 'MembershipResource', 'MemberListService', 'MemberListResource',
-    'publish_blog_embed_on_s3', 'delete_blog_embed_on_s3',
+    'publish_blog_embed_on_s3', 'delete_blog_embeds_on_s3',
     'PublishBlogsCommand', 'PublishBloglistCommand',
 ]
 

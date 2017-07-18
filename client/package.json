@@ -72,6 +72,7 @@
     "test": "grunt ci:travis"
   },
   "dependencies": {
+    "adblock-detect": "^1.0.5",
     "angular": "^1.5.8",
     "angular-animate": "^1.6.1",
     "angular-bootstrap-npm": "jusopi/angular-bootstrap-npm#0.13.1",

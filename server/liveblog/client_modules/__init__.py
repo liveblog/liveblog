@@ -1,7 +1,9 @@
 import superdesk
 from liveblog.client_modules.client_modules import ClientBlogsResource, ClientBlogsService,\
     ClientPostsService, ClientPostsResource, ClientUsersResource, ClientUsersService, ClientBlogPostsService,\
-    ClientBlogPostsResource, ClientCommentsService, ClientCommentsResource, ClientItemsService, ClientItemsResource
+    ClientBlogPostsResource, ClientCommentsService, ClientCommentsResource, ClientItemsService, ClientItemsResource,\
+    ClientAdvertisementsResource, ClientAdvertisementsService, ClientCollectionsResource, ClientCollectionsService,\
+    ClientOutputsResource, ClientOutputsService
 
 
 def init_app(app):
@@ -12,6 +14,18 @@ def init_app(app):
     endpoint_name = 'client_posts'
     service = ClientPostsService(endpoint_name, backend=superdesk.get_backend())
     ClientPostsResource(endpoint_name, app=app, service=service)
+
+    endpoint_name = 'client_advertisement_collections'
+    service = ClientCollectionsService(endpoint_name, backend=superdesk.get_backend())
+    ClientCollectionsResource(endpoint_name, app=app, service=service)
+
+    endpoint_name = 'client_advertisement_outputs'
+    service = ClientOutputsService(endpoint_name, backend=superdesk.get_backend())
+    ClientOutputsResource(endpoint_name, app=app, service=service)
+
+    endpoint_name = 'client_advertisements'
+    service = ClientAdvertisementsService(endpoint_name, backend=superdesk.get_backend())
+    ClientAdvertisementsResource(endpoint_name, app=app, service=service)
 
     endpoint_name = 'client_blog_posts'
     service = ClientBlogPostsService(endpoint_name, backend=superdesk.get_backend())

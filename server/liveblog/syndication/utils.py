@@ -4,7 +4,7 @@ import logging
 import tempfile
 import urllib.parse
 import uuid
-from flask import make_response, abort
+from flask import abort
 import requests
 from bson import ObjectId
 from hashlib import sha1
@@ -33,24 +33,6 @@ def trailing_slash(url):
     return url
 
 
-def api_response(data, status_code, json_dumps=True):
-    """Make json response for blueprints."""
-    if json_dumps:
-        data = json.dumps(data)
-    response = make_response(data)
-    response.status_code = status_code
-    response.mimetype = 'application/json'
-    return response
-
-
-def api_error(error_message, status_code):
-    """Make error for blueprints."""
-    return api_response({
-        '_status': 'ERR',
-        '_error': error_message
-    }, status_code)
-
-
 def cast_to_object_id(doc, fields):
     """Cast provided document fields to ObjectId."""
     for field in fields:
@@ -76,7 +58,7 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
     session.mount('http://', adapter)
     session.mount('https://', adapter)
 
-    logger.info('API {} request to {} with params={} and data={}'.format(method, api_url, args, data))
+    logger.debug('API {} request to {} with params={} and data={}'.format(method, api_url, args, data))
     headers = {
         'Content-Type': 'application/json'
     }
@@ -88,7 +70,7 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
     except (ConnectionError, ConnectTimeout, RequestException, MaxRetryError):
         raise APIConnectionError('Unable to connect to api_url "{}".'.format(api_url))
 
-    logger.warning('API {} request to {} - response: {} {}'.format(
+    logger.debug('API {} request to {} - response: {} {}'.format(
         method, api_url, response.status_code, response.content
     ))
 

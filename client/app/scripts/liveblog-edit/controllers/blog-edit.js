@@ -180,6 +180,13 @@ export default function BlogEditController(
 
     $scope.enableEditor = true;
 
+    $scope.$on('removing_timeline_post', function(event, data) {
+        // if we try to remove a post that is currentry being edited, reset the editor
+        if ($scope.currentPost && $scope.currentPost._id === data.post._id) {
+            cleanEditor();
+        }
+    })  
+
     // remove and clean every items from the editor
     function cleanEditor(actionDisabled) {
         $scope.enableEditor = false;
@@ -293,9 +300,11 @@ export default function BlogEditController(
             });
         },
         onEditorChanges: function() {
-            var input = $(this)
-                .text()
-                .trim();
+            var el = $(this).find('.st-text-block');
+            if (el.length === 0)
+                return;
+
+            var input = el.text().trim();
 
             $scope.$apply(function() {
                 $scope.actionDisabled = _.isEmpty(input);
@@ -311,7 +320,6 @@ export default function BlogEditController(
 
                 return $scope.freetypeControl.isValid() || $scope.freetypeControl.isClean();
             }
-
             return $scope.actionDisabled || $scope.actionPending;
         },
         askAndResetEditor: function() {
@@ -457,6 +465,9 @@ export default function BlogEditController(
                     $scope.$digest();
                 }
             },
+            setPending: function(value) {
+                $scope.actionPending = value;
+            },
             coverMaxWidth: 350,
             embedService: embedService,
             // provide an uploader to the editor for media (custom sir-trevor image block uses it)
@@ -465,6 +476,7 @@ export default function BlogEditController(
                 var handleError = function(response) {
                     // call the uploader callback with the error message as parameter
                     error_callback(response.data? response.data._message : undefined);
+                    $scope.actionPending = true;
                 };
                 // return a promise of upload which will call the success/error callback
                 return api.archive.getUrl().then(function(url) {

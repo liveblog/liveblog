@@ -20,6 +20,7 @@ import lbBindHtml from './directives/bind-html';
 import lbFilterByMember from './directives/filter-by-member';
 import autofocus from './directives/autofocus';
 import fullHeight from './directives/full-height';
+import outputModal from './directives/output-modal.js';
 
 // Freetype related directives
 import freetypeRender from './directives/freetype-render';
@@ -41,6 +42,7 @@ angular.module('liveblog.edit')
     .directive('lbFilterByMember', lbFilterByMember)
     .directive('autofocus', autofocus)
     .directive('fullHeight', fullHeight)
+    .directive('outputModal', outputModal)
     .directive('freetypeRender', freetypeRender)
     .directive('freetypeEmbed', freetypeEmbed)
     .directive('freetypeText', freetypeText)

@@ -3,7 +3,8 @@ import requests
 import json
 from flask import Blueprint, request
 from flask_cors import CORS
-from liveblog.syndication.utils import api_response, api_error, blueprint_superdesk_token_auth
+from liveblog.utils.api import api_response, api_error
+from liveblog.syndication.utils import blueprint_superdesk_token_auth
 from liveblog.syndication.exceptions import APIConnectionError
 from settings import MARKETPLACE_APP_URL
 from requests.exceptions import RequestException

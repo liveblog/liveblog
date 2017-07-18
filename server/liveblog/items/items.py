@@ -15,9 +15,12 @@ from superdesk import get_resource_service
 from bson.json_util import dumps
 from requests.exceptions import RequestException
 
+import logging
+import re
 import requests
 import tempfile
 
+logger = logging.getLogger('superdesk')
 drag_and_drop_blueprint = Blueprint('drag_and_drop', __name__)
 CORS(drag_and_drop_blueprint)
 
@@ -78,12 +81,40 @@ class ItemsResource(ArchiveResource):
             'type': 'string',
             'minlength': 1,
             'maxlength': 30
+        },
+        'freetype_template': {
+            'type': 'string'
         }
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
 
 
 class ItemsService(ArchiveService):
+    embed_providers = {
+        'twitter': re.compile('https?://twitter\.com/(?:\#!/)?(\w+)/status(es)?/(?P<original_id>\d+)'),
+        'youtube': re.compile('(watch\?.*?(?=v=)v=|embed/|v/|.+\?v=)?(?P<original_id>[^&=%\?]{11})')
+    }
+
+    def set_embed_metadata(self, doc):
+        """
+        Set additional embed metadata.
+        :param doc:
+        :return: None
+        """
+        original_url = doc['meta'].get('original_url')
+        if not original_url:
+            logger.warning('Unable to find original_url in item "{}" meta.'.format(doc['_id']))
+            return
+        provider_name = doc['meta']['provider_name'].lower()
+        if provider_name in self.embed_providers:
+            original_id_re = self.embed_providers[provider_name]
+            match = original_id_re.match(original_url)
+            if match:
+                original_id = match.group('original_id')
+                doc['meta']['original_id'] = original_id
+            else:
+                logger.warning('Unable to get orginal_id for url: {}'.format(original_url))
+
     def get(self, req, lookup):
         if req is None:
             req = ParsedRequest()
@@ -105,6 +136,7 @@ class ItemsService(ArchiveService):
                         metadata['width'] = str(metadata.get('width'))
                     if get_filemeta(doc, 'height'):
                         metadata['height'] = str(metadata.get('height'))
+                    self.set_embed_metadata(doc)
 
     def on_created(self, docs):
         super().on_created(docs)

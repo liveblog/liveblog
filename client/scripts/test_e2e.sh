@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-baseUrl="http://localhost:9090"
+baseUrl="http://localhost:9000"
 backendUrl="http://localhost:5000/api"
 specs="spec/setup.js,spec/matchers.js,spec/**/*[Ss]pec.js"
 build=false
@@ -11,14 +11,6 @@ for arg; do
     if [ "${arg:0:23}" == "--params.baseBackendUrl" ]; then backendUrl="${arg:24}"; fi
     if [ "${arg:0:8}" == "-b" ]; then build=true; fi
 done
-
-# prepare server
-if [ "$build" = true ] ; then
-    grunt build --server=${backendUrl}
-fi
-
-grunt connect:build &
-sleep 1
 
 # run tests
 ./node_modules/protractor/bin/webdriver-manager update

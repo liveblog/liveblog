@@ -1,0 +1,123 @@
+<div class="subnav">
+    <div class="button-stack left-stack" >
+        <ul class="nav nav-tabs pull-left" >
+            <li ng-class="{active: activeState === 'adverts'}"><button ng-click="changeState('adverts')" translate>Adverts</button></li>
+            <li ng-class="{active: activeState === 'collections'}"><button ng-click="changeState('collections')" translate>Collections</button></li>
+        </ul>
+    </div>
+</div>
+<div class="alert alert-info alert--margin-left alert-advert" ng-if="adblockDetected" translate>
+Please disable your adblocker in order to work with the advertising manager and refresh the page.
+</div>
+<section class="main-section bloglist advertising">
+    <!-- ADVERTS SECTION -->
+	<div class="ad-section" ng-if="activeState === 'adverts'">
+		<header>
+	        <div class="section-title"><h2 translate>Adverts</h2></div>
+	        <div class="dropdown navbtn strict right-important" title="{{ :: 'Create' | translate }}" dropdown>
+                <button class="dropdown__toggle sd-create-btn" dropdown__toggle></button>
+                <ul class="dropdown__menu dropdown__menu--scrollable pull-right">
+                	<li>
+                		<div class="dropdown__menu-label" translate>Create new</div>
+                	</li>
+                	<li ng-repeat="ad in adTypes">
+                		<button ng-click="openAdvertDialog(ad);">{{ ad.name | translate }}</button>
+                	</li>
+                </ul>
+            </div>
+	    </header>
+
+	    <!-- ADVERT LIST VIEW -->
+	    <div class="advert-list-holder">
+	    	<div class="shadow-list-holder" sd-shadow>
+	            <ul class="pills-list">
+	                <li ng-repeat="advert in adverts">
+	                    <h6 class="pull-left">
+	                        {{ advert.name }}
+	                    </h6>
+	                    <span class="state-label" ng-class="{ 'green-state': advert.type === 'Advertisement Local', 'yellow-state': advert.type === 'Advertisement Remote' }"}
+	                    >
+	                    	{{ advert.type | translate }}
+	                    </span>
+	                    <div class="actions">
+	                        <button ng-click="openAdvertDialog(advert);" title="Edit">
+	                            <i class="icon-pencil"></i>
+	                        </button>&nbsp;
+	                        <button ng-click="removeAdvert(advert, $index);" title="Delete">
+	                            <i class="icon-trash"></i>
+	                        </button>    
+	                    </div>
+	             
+	                </li>
+	                <li ng-if="adverts.length === 0">
+	                    {{ 'No Adverts for now' | translate }}
+	                </li>
+	            </ul>    
+	        </div>
+	    </div>
+	</div>
+
+    <!-- COLLECTION SECTION -->
+	<div class="ad-section" ng-if="activeState === 'collections'">
+		<header>
+	        <div class="section-title"><h2 translate>Collections</h2></div>
+	        
+	        <div class="dropdown navbtn strict right-important" title="{{ :: 'Create' | translate }}" dropdown>
+                <button class="dropdown__toggle sd-create-btn" ng-click="openCollectionDialog();"></button>
+            </div>
+	    </header>
+
+        <!-- LIST OF COLLECTIONS -->
+        <div class="advert-list-holder">
+            <div class="shadow-list-holder" sd-shadow>
+                <div class="flex-grid box wrap-items small-1 medium-3 large-4 xlarge-6">
+                    <div class="flex-item card-box" ng-repeat="collection in collections">
+                        <div class="card-box__header">
+                            <div class="dropdown" dropdown>
+                                <button class="dropdown__toggle" dropdown__toggle id="toggle-collection-menu">
+                                    <i class="icon-dots-vertical"></i>
+                                </button>
+                                <ul class="dropdown__menu more-activity-menu pull-right">
+                                    <li><div class="dropdown__menu-label" translate>Actions</div></li>
+                                    <li class="divider"></li>
+                                    <li><button ng-click="openCollectionDialog(collection)" title="{{:: 'Edit Collection' | translate }}"><i class="icon-pencil"></i>{{:: 'Edit'| translate}}</button></li>
+                                
+                                    <li><button ng-click="removeCollection(collection, $index)" title="{{:: 'Remove collection'| translate }}"><i class="icon-trash"></i>{{:: 'Remove'| translate}}</button></li>
+                                </ul>
+                            </div>
+                            <div class="card-box__heading" id="collection-name">{{ collection.name }}</div>
+                        </div>
+                        <div class="card-box__content">
+                            <ul class="card-box__content-list">
+                                <li ng-repeat="advert in adverts" ng-if="collectionHasAdvert(collection, advert)">
+                                    <h6 class="pull-left">
+                                        {{ advert.name }}
+                                    </h6>
+                                    <span class="state-label" ng-class="{ 'green-state': advert.type === 'Advertisement Local', 'yellow-state': advert.type === 'Advertisement Remote' }"}
+                                    >
+                                        {{ advert.type | translate }}
+                                    </span>
+                                </li>
+                                <li ng-if="collection.advertisements.length === 0" translate>No ads in this collection</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div ng-if="collections.length === 0">
+	                    {{ 'No Collections for now' | translate }}
+	                </div>
+                </div>
+            </div>
+        </div>
+
+	</div>
+</section>
+
+<!-- MODAL FOR ADDING EDITING ADVERTS -->
+<div ng-include="advertModalTpl"></div>
+
+<!-- MODAL FOR ADDING EDITING COLLECTIONS -->
+<div ng-include="collectionModalTpl"></div>
+
+<!-- LIST OF LOADING INDICATORS -->
+<div ng-if="advertsLoading" class="loading-indicator" style="margin-top: 170px;"><span translate>Loading adverts...</span></div>
+<div ng-if="collectionsLoading" class="loading-indicator" style="margin-top: 170px;"><span translate>Loading collections...</span></div>

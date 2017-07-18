@@ -213,7 +213,8 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
             },
             uploadThemeFile: function(e) {
                 notify.pop();
-                notify.info('Uploading the theme...');
+                // show longer lasting message when uploading the theme, as on some situations it may take some time
+                notify.info(gettext('Uploading the theme, please wait...'), 120000);
                 api.themes.getUrl().then(function(url) {
                     upload.start({
                         method: 'POST',
@@ -223,7 +224,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
                     .then(function(response) {
                         loadThemes().then(function() {
                             notify.pop();
-                            notify.info('Theme uploaded and added');
+                            notify.info(gettext('Theme uploaded and added'));
                         });
                     }, function(error) {
                         notify.pop();
