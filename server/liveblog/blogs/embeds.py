@@ -10,11 +10,9 @@
 # at https://www.sourcefabric.org/superdesk/license
 
 import copy
-import jinja2
 import json
 import logging
 import os
-import arrow
 
 import superdesk
 from bson.json_util import dumps as bson_dumps
@@ -25,78 +23,50 @@ from liveblog.themes import UnknownTheme
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
+from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
 
-from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR, THEMES_ASSETS_DIR, DEFAULT_THEME_DATE_FORMAT
-from .utils import is_relative_to_current_folder, get_template_file_name
+from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
+from .utils import is_relative_to_current_folder
 
 logger = logging.getLogger('superdesk')
 embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folder='templates')
 THEMES_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'themes'))
 
 
-class ThemeTemplateLoader(jinja2.BaseLoader):
-    """
-    Theme template loader for SEO themes.
-    """
-    def __init__(self, theme):
-        theme_dirname = os.path.dirname(get_template_file_name(theme['name']))
-        self.paths = [os.path.join(theme_dirname, 'templates')]
-        parent_theme = theme.get('extends')
-        if parent_theme:
-            parent_dirname = os.path.dirname(get_template_file_name(parent_theme))
-            self.paths.append(os.path.join(parent_dirname, 'templates'))
-
-    def get_source(self, environment, template):
-        for path in self.paths:
-            template_path = os.path.join(path, template)
-            if not os.path.exists(template_path):
-                continue
-
-            mtime = os.path.getmtime(template_path)
-            with open(template_path) as f:
-                source = f.read()
-
-            return source, path, lambda: mtime == os.path.getmtime(template_path)
-
-        raise jinja2.TemplateNotFound(template_path)
-
-
-def moment_date_filter(date, format=None):
-    """
-    Jinja2 filter for moment.js compatible dates.
-    :param date:
-    :param format:
-    :return: str
-    """
-    parsed = arrow.get(date)
-    # Workaround for "x" unsupported format
-    if format == 'x':
-        return parsed.timestamp
-    if not format:
-        format = DEFAULT_THEME_DATE_FORMAT
-    return parsed.format(format)
-
-
 def collect_theme_assets(theme, assets=None, template=None):
+    theme_name = theme['name']
+    themes = get_resource_service('themes')
+    is_local_upload = themes.is_uploaded_theme(theme_name) and not themes.is_s3_storage_enabled
+
     assets = assets or {'scripts': [], 'styles': [], 'devScripts': [], 'devStyles': []}
     # Load the template.
     if not template:
-        template_file_name = os.path.join(THEMES_DIRECTORY, THEMES_ASSETS_DIR, theme['name'], 'template.html')
-        if os.path.isfile(template_file_name):
-            template = open(template_file_name, encoding='utf-8').read()
+        if themes.is_local_theme(theme_name) or is_local_upload:
+            template_file_name = themes.get_theme_template_filename(theme_name)
+            if os.path.exists(template_file_name):
+                template = open(template_file_name, encoding='utf-8').read()
+            else:
+                template = theme.get('template')
+        else:
+            template = theme.get('template')
 
     # Add assets from parent theme.
-    if theme.get('extends', None):
-        parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
+    extends = theme.get('extends')
+    if extends:
+        parent_theme = get_resource_service('themes').find_one(req=None, name=extends)
         if parent_theme:
             assets, template = collect_theme_assets(parent_theme, assets=assets, template=template)
         else:
             error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
-                % (theme.get('name'), theme.get('extends'))
+                % (theme_name, extends)
             logger.info(error_message)
             raise UnknownTheme(error_message)
 
     # Add assets from theme.
+    static_endpoint = 'themes_assets.static'
+    if themes.is_uploaded_theme(theme_name):
+        static_endpoint = 'themes_uploads.static'
+
     for asset_type in ('scripts', 'styles', 'devScripts', 'devStyles'):
         theme_folder = theme['name']
         for url in theme.get(asset_type, []):
@@ -104,7 +74,7 @@ def collect_theme_assets(theme, assets=None, template=None):
                 if theme.get('public_url', False):
                     url = '%s%s' % (theme.get('public_url'), url)
                 else:
-                    url = url_for('themes_assets.static', filename=os.path.join(theme_folder, url), _external=False)
+                    url = url_for(static_endpoint, filename=os.path.join(theme_folder, url), _external=False)
             assets[asset_type].append(url)
 
     return assets, template
@@ -184,14 +154,14 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         logger.error('Template file not found for theme "%s". Theme: %s' % (theme_name, theme))
         return 'Template file not found', 500
 
+    theme_service = get_resource_service('themes')
+
     # Compute the assets root.
     if theme.get('public_url', False):
         assets_root = theme.get('public_url')
     else:
-        assets_root = [THEMES_ASSETS_DIR, theme_name]
-        assets_root = '/%s/' % ('/'.join(assets_root))
+        assets_root = theme_service.get_theme_assets_url(theme_name)
 
-    theme_service = get_resource_service('themes')
     theme_settings = theme_service.get_default_settings(theme)
     l10n = theme.get('l10n', {})
 
@@ -212,8 +182,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             'posts': posts,
             'stickyPosts': sticky_posts
         }
-        embed_env = jinja2.Environment(loader=ThemeTemplateLoader(theme))
-        embed_env.filters['date'] = moment_date_filter
+        embed_env = theme_service.get_theme_template_env(theme, loader=CompiledThemeTemplateLoader)
         embed_template = embed_env.from_string(template_content)
         template_content = embed_template.render(
             blog=blog,
@@ -240,7 +209,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         # Add AMP compatible css to template context
         amp_inline_css = theme.get('ampThemeInlineCss')
         if amp_inline_css:
-            theme_dirname = os.path.dirname(get_template_file_name(theme['name']))
+            theme_dirname = theme_service.get_theme_path(theme_name)
             amp_inline_css_filename = os.path.join(theme_dirname, amp_inline_css)
             if os.path.exists(amp_inline_css_filename):
                 with open(amp_inline_css_filename, 'r') as f:
