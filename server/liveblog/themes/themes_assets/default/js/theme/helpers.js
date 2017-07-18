@@ -3,39 +3,15 @@
  */
 
 'use strict';
-/**
- * Convert ISO timestamps to relative moment timestamps
- * @param {Node} elem - a DOM element with ISO timestamp in data-js-timestamp attr
- */
+
+var moment = require('moment'),
+  settings = window.LB.settings;
+
 function convertTimestamp(timestamp) {
-  var l10n = LB.l10n.timeAgo
-    , now = new Date() // Now
-    , diff = now - new Date(timestamp)
-    , units = {
-      d: 1000 * 3600 * 24,
-      h: 1000 * 3600,
-      m: 1000 * 60
-    };
-
-  function getTimeAgoString(timestamp, unit) {
-    return !(timestamp <= units[unit] * 2)
-      ? l10n[unit].p.replace("{}", Math.floor(timestamp / units[unit]))
-      : l10n[unit].s;
+  if (!settings.datetimeFormat || settings.datetimeFormat === 'timeAgo') {
+    return moment(timestamp).fromNow();
   }
-
-  function timeAgo(timestamp) {
-    if (timestamp < units.h) {
-      return getTimeAgoString(timestamp, "m");
-    }
-
-    if (timestamp < units.d) {
-      return getTimeAgoString(timestamp, "h");
-    }
-
-    return getTimeAgoString(timestamp, "d"); // default
-  }
-
-  return timeAgo(diff);
+  return moment(timestamp).format(settings.datetimeFormat);
 }
 
 /**
