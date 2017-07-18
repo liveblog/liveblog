@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "browserify": "^13.0.0",
+    "moment": "^2.18.1",
     "nunjucks": "^3.0.0",
     "nunjucksify": "^2.2.0",
     "promise-polyfill": "^6.0.2"
