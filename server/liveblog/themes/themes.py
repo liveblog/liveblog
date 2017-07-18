@@ -607,7 +607,7 @@ def upload_a_theme():
             return json.dumps({'error': 'No name specified in theme.json file.'}), 400
 
         # Check if uploaded theme with the given name already exists.
-        if themes_service.find_one(req=None, name=theme_name):
+        if theme_name in ('angular', 'classic', 'default', 'amp'):
             return json.dumps({'error': 'A theme with the given name ({}) already exists!'.format(theme_name)}), 400
 
         # Check dependencies.
