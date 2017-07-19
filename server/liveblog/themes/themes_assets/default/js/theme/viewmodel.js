@@ -10,7 +10,7 @@ var helpers = require('./helpers')
 const commentItemEndpoint = `${LB.api_host}api/client_items`;
 const commentPostEndpoint = `${LB.api_host}api/client_comments`;
 
-var endpoint = LB.api_host + "/api/client_blogs/" + LB.blog._id + "/posts"
+var endpoint = LB.api_host + "api/client_blogs/" + LB.blog._id + "/posts"
   , settings = LB.settings
   , vm = {};
 
