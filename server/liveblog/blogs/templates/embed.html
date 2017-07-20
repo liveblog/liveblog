@@ -1,3 +1,4 @@
+{% if not settings.renderBlock %}
 <!doctype html>
 <html>
     <head>
@@ -18,31 +19,43 @@
             {% endfor %}
         {% endif %}
     </head>
-
     <body style="{{ (output and output.get('style')) | tostyle | safe }}">
-
-        {{ template | safe }}
-
-        <script type="text/javascript">
-            window.LB = {
-                blog: {{ blog | tojson | safe }},
-                output: {{ output | tojson | safe }},
-                settings: {{ settings | tojson | safe }},
-                api_host: '{{ api_host }}',
-                assets_root: '{{ assets_root }}',
-                debug: {{ debug | tojson | safe }},
-                l10n: {{ l10n | tojson | safe }}
-            };
-        </script>
-        {% if debug %}
-            {% for script in assets.devScripts %}
-                <script type="text/javascript" src="{{ script }}"></script>
-            {% endfor %}
-        {% else %}        
-            {% for script in assets.scripts %}
-                <script type="text/javascript" src="{{ script }}"></script>
-            {% endfor %}
-        {% endif %}
-
+{% else %}
+    {% if debug %}
+        {% for style in assets.devStyles %}
+            <link rel="stylesheet" href="{{ style }}">
+        {% endfor %}
+    {% else %}
+        {% for style in assets.styles %}
+            <link rel="stylesheet" href="{{ style }}">
+        {% endfor %}
+    {% endif %}
+    <div style="{{ (output and output.get('style')) | tostyle | safe }}">
+{% endif %}
+    {{ template | safe }}
+    <script type="text/javascript">
+        window.LB = {
+            blog: {{ blog | tojson | safe }},
+            output: {{ output | tojson | safe }},
+            settings: {{ settings | tojson | safe }},
+            api_host: '{{ api_host }}',
+            assets_root: '{{ assets_root }}',
+            debug: {{ debug | tojson | safe }},
+            l10n: {{ l10n | tojson | safe }}
+        };
+    </script>
+    {% if debug %}
+        {% for script in assets.devScripts %}
+            <script type="text/javascript" src="{{ script }}"></script>
+        {% endfor %}
+    {% else %}
+        {% for script in assets.scripts %}
+            <script type="text/javascript" src="{{ script }}"></script>
+        {% endfor %}
+    {% endif %}
+{% if not settings.renderBlock %}
     </body>
 </html>
+{% else %}
+    </div>
+{% endif %}
