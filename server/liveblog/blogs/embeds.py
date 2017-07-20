@@ -230,7 +230,6 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             if order == 1:
                 for i in range(0, pcount, (frequency + 1)):
                     index = math.ceil(i / (frequency + 1)) % acount
-                    print('index: {}, pcount: {}, acount: {}'.format(index, pcount, acount))
                     # transform ad into a valid post.
                     posts['_items'].insert(i, ad_to_post(ads[index]))
             else:
