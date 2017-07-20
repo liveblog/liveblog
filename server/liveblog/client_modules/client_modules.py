@@ -241,7 +241,9 @@ class ClientBlogPostsService(BlogPostsService):
         post_items_type = None
         if items_length:
             if items_length == 1:
-                if items[0]['item_type'] == 'embed':
+                if items[0].get('item_type','').lower().startswith('advertisement'):
+                    post_items_type = 'advertisement'
+                elif items[0].get('item_type','').lower() == 'embed':
                     post_items_type = 'embed'
                     if 'provider_name' in items[0]['meta']:
                         post_items_type = "{}-{}".format(post_items_type, items[0]['meta']['provider_name'].lower())
