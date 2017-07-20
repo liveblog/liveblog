@@ -9,7 +9,9 @@ export default function sdPlainImage(gettext, notify, config) {
             minWidth: '@',
             minHeight: '@',
             maxWidth: '@',
-            maxHeight: '@'
+            maxHeight: '@',
+            msgErrorMax: '@',
+            msgErrorMin: '@'
         },
         link: function(scope, elem) {
             scope.$watch('src', (src) => {
@@ -37,7 +39,7 @@ export default function sdPlainImage(gettext, notify, config) {
 
                             if (this.width < minWidth || this.height < minHeight) {
                                 scope.$apply(() => {
-                                    notify.error(gettext(
+                                    notify.error(scope.msgErrorMin ? gettext(scope.msgErrorMin) : gettext(
                                         'Sorry, but blog image must be at least ' + minWidth + 'x' +
                                         minHeight + ' pixels big!'
                                     ));
@@ -50,7 +52,7 @@ export default function sdPlainImage(gettext, notify, config) {
                             }
                             if (this.width > maxWidth || this.height > maxHeight) {
                                 scope.$apply(() => {
-                                    notify.error(gettext(
+                                    notify.error(scope.msgErrorMax ? gettext(scope.msgErrorMax) : gettext(
                                         'Sorry, but blog image must smaller then ' + maxWidth + 'x' +
                                         maxHeight + ' pixels!'
                                     ));
