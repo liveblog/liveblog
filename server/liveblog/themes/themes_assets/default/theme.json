@@ -15,11 +15,18 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/liveblog-8c707d6a53.css"],
-    "devScripts": ["dist/liveblog-1a0ca2e10b.js"],
-    "styles": ["dist/liveblog-8c707d6a53.css"],
-    "scripts": ["dist/liveblog-1a0ca2e10b.js"],
+    "devStyles": ["dist/liveblog-20212183dd.css"],
+    "devScripts": ["dist/liveblog-1657a1e6ca.js"],
+    "styles": ["dist/liveblog-20212183dd.css"],
+    "scripts": ["dist/liveblog-1657a1e6ca.js"],
     "options": [
+        {
+            "name": "datetimeFormat",
+            "label": "Date time Format",
+            "type": "datetimeformat",
+            "default": "lll",
+            "help": "Sets the date time format to be used in the embed. Please enter a custom format in valid moment.js format http://momentjs.com/docs/#/parsing/string-format"
+        },
         {
             "name": "postsPerPage",
             "label": "Number of posts per page",
@@ -139,13 +146,13 @@
         },
         {
             "name": "stickyPosition",
-            "label": "Position of sticky posts",
+            "label": "Pinned post behaviour",
             "type": "select",
             "options": [
-                {"value": "top", "label": "Top"},
-                {"value": "bottom", "label": "Bottom"}
+                {"value": "bottom", "label": "Show below menu bar"},
+                {"value": "top", "label": "Show above menu bar"}
             ],
-            "default": "top"
+            "default": "bottom"
         },
         {
             "name": "gaCode",
