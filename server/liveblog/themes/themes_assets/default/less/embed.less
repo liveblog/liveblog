@@ -6,7 +6,7 @@
 .lb-timeline {
     clear: both;
     background-color: white;
-    max-width: 680px;
+    max-width: 720px;
     margin: 0 auto;
     margin-top: 30px;
     overflow-x: hidden;
@@ -254,7 +254,6 @@ form.comment.hide .comment__wrap, div.comment-sent.hide .comment__wrap {
     display: flex;
     align-items: center;
     font-weight: 500;
-    margin-right: 15px;
     margin-bottom: 15px;
     height: 40px;
 }
@@ -353,19 +352,34 @@ form.comment.hide .comment__wrap, div.comment-sent.hide .comment__wrap {
 
 .lb-post {
     position: relative;
-    padding: 60px 0px 20px;
-    margin: 0px 30px;
+    padding: 60px 30px 50px 0px;
+    margin: 0px 0px 0px 30px;
 }
 
 article.lb-post:after {
     content: "";
     position: absolute;
     width: 100%;
-    margin-left: 40px;
+    margin-left: 60px;
     margin-right: 40px;
     bottom: 0px;
     height: 2px;
     background-color: #F1F1F1;
+}
+
+article.lb-post--highlighted:before {
+  content: "";
+  position: absolute;
+  width: 100%;
+  margin-left: 60px;
+  margin-right: 40px;
+  top: -2px;
+  height: 2px;
+  background-color: #fff;
+}
+
+article.lb-post--highlighted:after {
+  display: none;
 }
 
 .lb-postlist > .lb-post:last-of-type:after {
@@ -375,7 +389,6 @@ article.lb-post:after {
 @media @small {
     article.lb-post:after {
         display: inline-block;
-        position: relative;
         margin: 0;
     }
 }
@@ -383,15 +396,15 @@ article.lb-post:after {
 .lb-post-date,
 .lb-post-date__fulldate {
     font-weight: 500;
-    font-size: .85em;
+    font-size: .9em;
     color: #ACACAC;
 }
 
 .lb-post-date {
     float: left;
     padding-right: 20px;
-    margin: -10px 0 12px 60px;
-    font-size: .95em;
+    margin: -10px 0 28px 60px;
+    font-size: .9em;
     color: #ACACAC;
 }
 
@@ -405,7 +418,7 @@ article.lb-post:after {
     z-index: 3;
 }
 
-.lb-post-pin + .lb-post-date {
+.pin-icon + .lb-post-date, .pin-icon + .highlight-icon {
   margin-left: 10px;
 }
 
@@ -444,10 +457,15 @@ article.lb-post:after {
 }
 
 .lb-item {
-    font-size: 1.3em;
+    font-size: 1em;
     line-height: 1.4em;
     margin-left: 60px;
+    margin-bottom: 25px;
     clear: both;
+}
+
+.lb-item:last-child {
+  margin-bottom: 0px;
 }
 
 .lb-item figure img {
@@ -565,10 +583,18 @@ article.lb-post:after {
   position: relative;
   margin: -22px 0px 15px;
   max-width: 220px;
+  height: 47px;
   float: right;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+@media @medium {
+  .show-author-avatar .lb-author {
+    height: 32px;
+    margin-left: 10px;
+  }
 }
 
 .lb-author:after {
@@ -581,8 +607,8 @@ article.lb-post:after {
   display: inline-block;
   border-radius: 50%;
   overflow: hidden;
-  background: #B9B9B9 url("../images/avatar_64.png") no-repeat;
-  background-size: 45px 45px;
+  background: #B9B9B9;
+  background-size: cover;
   border: 1px solid #f4f4f4;
   float: left;
   margin-left: 20px;
@@ -590,12 +616,15 @@ article.lb-post:after {
   height: 45px;
 }
 
+div.lb-author__avatar {
+  display: none;
+}
+
 .lb-author__name,
 .lb-author__date {
   float: left;
   font-weight: 500;
-  font-size: .95em;
-  height: 22px;
+  font-size: .9em;
 }
 
 .lb-author__name {
@@ -754,11 +783,17 @@ article.lb-post:after {
   box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.25);
 }
 
-.lb-post-pin {
+.pin-icon {
   float: left;
   width: 10px;
-  margin-top: -6px;
+  margin-top: -5px;
   margin-left: 60px;
+}
+
+@media @medium {
+  .pin-icon {
+    margin-left: 25px;
+  }
 }
 
 .mod--hide {
@@ -772,6 +807,61 @@ article.lb-post:after {
 
 .mod--nobackground {
   background: none;
+}
+
+/* highlighted posts */
+
+.highlight-icon {
+  float: left;
+  width: 14px;
+  margin-top: -6px;
+  margin-left: 60px;
+}
+
+@media @medium {
+  .highlight-icon {
+    margin-left: 25px;
+  }
+}
+
+.highlight-icon + .lb-post-date {
+  margin-left: 10px;
+}
+
+.lb-post--highlighted {
+  background: #f2f5f8 url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAABAQMAAADO7O3JAAABS2lUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPD94cGFja2V0IGJlZ2luPSLvu78iIGlkPSJXNU0wTXBDZWhpSHpyZVN6TlRjemtjOWQiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iQWRvYmUgWE1QIENvcmUgNS42LWMxMzggNzkuMTU5ODI0LCAyMDE2LzA5LzE0LTAxOjA5OjAxICAgICAgICAiPgogPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4KICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIi8+CiA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgo8P3hwYWNrZXQgZW5kPSJyIj8+IEmuOgAAAARnQU1BAACxjwv8YQUAAAABc1JHQgCuzhzpAAAAA1BMVEXp6elXI8SMAAAACklEQVQI12NgAAAAAgAB4iG8MwAAAABJRU5ErkJggg==') 1px repeat-y;
+}
+
+/* Freetypes */
+
+/* Scorecard */
+
+body .scorecard-top {
+  background-color: #f2f5f8;
+  padding: 30px;
+}
+
+body .scorecard-top span.team-score {
+  font-size: 60px;
+  font-weight: bold;
+}
+
+body .scorecard-top span.team-name {
+  font-size: 30px;
+  font-weight: bold;
+}
+
+body .scorecard-top .scorecard-top__scorers {
+  font-size: 16px;
+  line-height: 125%;
+}
+
+body .scorecard-top .scorecard-top__scorers li {
+  margin-bottom: 10px;
+}
+
+body .scorecard-top__info {
+  font-size: 14px;
 }
 
 
@@ -795,9 +885,7 @@ article.lb-post:after {
         margin-top: 0;
     }
     .show-author-avatar .lb-author {
-        margin-left: 50px;
         margin-top: -15px;
-        margin-top: 0px;
     }
     .show-author-avatar .lb-item {
         margin-left: 0;
@@ -810,7 +898,6 @@ article.lb-post:after {
 
     .lb-post-date {
         margin-left: 25px;
-        font-size: .8em;
     }
 
     .lb-updated-date {
@@ -819,7 +906,7 @@ article.lb-post:after {
     }
 
     .lb-post {
-        padding: 40px 15px 70px;
+        padding: 40px 15px 40px;
     }
 
     .header-bar {
@@ -876,11 +963,19 @@ article.lb-post:after {
       margin: -8px 4px 0 6px;
     }
 
-    article.lb-post:after {
+    .lb-post--highlighted {
+      background: #f2f5f8;
+    }
+
+    article.lb-post:after, article.lb-post--highlighted:before {
         margin-left: auto;
         margin-right: auto;
         left: 0;
         right: 0;
+    }
+
+    article.lb-post--highlighted:after {
+      display: none;
     }
 
     .lb-button {
@@ -936,12 +1031,11 @@ article.lb-post:after {
     }
 
     .lb-post {
-        padding: 35px 15px 0px;
+        padding: 35px 15px 30px;
     }
 
     .lb-post-date {
         margin-left: 18px;
-        font-size: .8em;
     }
 
     .lb-author__avatar {
@@ -955,7 +1049,17 @@ article.lb-post:after {
         margin-top: 1px;
     }
 
-    .lb-post-highlighted {
-        margin: -10px 8px 0 6px;
+    .pin-icon {
+      margin-top: -7px;
     }
+
+    .highlight-icon {
+      margin-top: -8px;
+    }
+
+    .show-author-avatar .lb-author {
+      height: 18px;
+      margin-top: -10px;
+    }
+
 }

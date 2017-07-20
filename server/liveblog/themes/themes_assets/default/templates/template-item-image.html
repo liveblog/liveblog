@@ -7,12 +7,16 @@
     {{ ref.item.meta.media.renditions.viewImage.href }} 540w" 
     alt="{{ ref.item.meta.caption }}">
   <figcaption>
-    <span ng-if="ref.item.meta.caption" class="caption">
-      {{ ref.item.meta.caption }}
-    </span>&nbsp;
-    <span ng-if="ref.item.meta.credit" class="credit">
-      {{ ref.item.meta.credit }}
-    </span>
+    {% if ref.item.meta.caption %}
+      <span ng-if="ref.item.meta.caption" class="caption">
+        {{ ref.item.meta.caption }}
+      </span>&nbsp;
+    {% endif %}
+    {% if ref.item.meta.credit %}
+      <span ng-if="ref.item.meta.credit" class="credit">
+        <b>Credit:</b> {{ ref.item.meta.credit }}
+      </span>
+    {% endif %}
   </figcaption>
 </figure>
 
