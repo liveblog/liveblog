@@ -15,10 +15,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/liveblog-f41b404169.css"],
-    "devScripts": ["dist/liveblog-9a8865542e.js"],
-    "styles": ["dist/liveblog-f41b404169.css"],
-    "scripts": ["dist/liveblog-9a8865542e.js"],
+    "devStyles": ["dist/liveblog-871cb75c57.css"],
+    "devScripts": ["dist/liveblog-687ceb7c17.js"],
+    "styles": ["dist/liveblog-871cb75c57.css"],
+    "scripts": ["dist/liveblog-687ceb7c17.js"],
     "options": [
         {
             "name": "datetimeFormat",
@@ -160,6 +160,20 @@
             "type": "text",
             "default": "",
             "help": "Please type in your google analytics code"
+        },
+        {
+            "name": "renderForESI",
+            "label": "Render embed for ESI",
+            "type": "checkbox",
+            "default": false,
+            "help": "Active this switch will strip the embed head and body markup for Edge Sites Includes"
+        },
+        {
+            "name": "removeStylesESI",
+            "label": "Remove styles from embed ESI",
+            "type": "checkbox",
+            "default": false,
+            "help": "Active this switch will remove the link markup for Edge Sites Includes"
         }
     ],
     "l10n": {
