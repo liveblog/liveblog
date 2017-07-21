@@ -1,3 +1,4 @@
+{% if not settings.renderForESI %}
 <!doctype html>
 <html amp lang="en">
   <head>
@@ -24,6 +25,16 @@
     {% endblock %}
   </head>
   <body>
-    {{ template | safe }}
+{% elif not settings.removeStylesESI %}
+    {% if amp_style %}
+    <style amp-custom>
+      {{ amp_style | safe }}
+      {{ (output and output.get('style')) | tostyle | safe }}
+    </style>
+    {% endif %}
+{% endif %}
+{{ template | safe }}
+{% if not settings.renderForESI %}
   </body>
 </html>
+{% endif %}
