@@ -11,7 +11,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
     font-weight: 400;
     color: @black;
-    font-size: 16px;
+    font-size: 17px;
     line-height: 1.3em;
     border-top: 2px solid #ececec;
 }
@@ -72,10 +72,6 @@ button.active {
     color: #27496d;
 }
 
-article {
-    margin-bottom: 1.4em;
-}
-
 article b,
 article strong {
     font-weight: bold;
@@ -94,19 +90,21 @@ article .liveblog--card {
 /* quote */
 blockquote {
     position: relative;
-    margin: 30px 0 0 16px;
+    margin: 0px;
 }
 
 blockquote p {
     font-family: "Georgia", "Times New Roman", serif;
     color: #444;
-    font-size: 1.2em;
-    margin-left: 1em;
-    line-height: 1.4em;
-    // font-style: italic;
+    font-size: 1.5em;
+    line-height: 1.5em;
+    font-style: italic;
 }
 
 blockquote > h4 {
+    font-family: "Georgia", "Times New Roman", serif;
+    font-size: 1.2em;
+    font-style: italic;
     display: inline-block;
     position: relative;
     right: 0px;
@@ -121,8 +119,8 @@ blockquote > h4 {
     }
 }
 
-blockquote > h4 > i:before {
-    content: "\2014 ";
+blockquote > h4:before {
+    content: "\2014  ";
     margin-right: 4px;
 }
 
@@ -134,12 +132,13 @@ blockquote > h4 > i:before {
 
 article blockquote p:before {
     content: "\201E";
-    font-family: "Georgia", serif;
+    font-family: "Times New Roman", "Georgia", serif;
     font-size: 4em;
-    position: absolute;
-    margin-left: -0.5em;
+    font-style: normal;
+    float: right;
     margin-top: -0.3em;
-    color: #ccc;
+    padding-left: 20px;
+    padding-bottom: 30px;
 }
 
 article blockquote ul {
@@ -159,10 +158,6 @@ article blockquote li:before {
 }
 
 /* Figure */
-figure {
-    margin-bottom: 30px;
-    margin-top: 30px;
-}
 
 figure figcaption {
     font-size: .75em;
