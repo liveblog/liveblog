@@ -16,9 +16,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/liveblog-871cb75c57.css"],
-    "devScripts": ["dist/liveblog-15983ee3ec.js"],
+    "devScripts": ["dist/liveblog-a4bef3980b.js"],
     "styles": ["dist/liveblog-871cb75c57.css"],
-    "scripts": ["dist/liveblog-15983ee3ec.js"],
+    "scripts": ["dist/liveblog-a4bef3980b.js"],
     "options": [
         {
             "name": "datetimeFormat",
