@@ -21,10 +21,6 @@ module.exports = {
     localAnalytics.hit();
     pageview.init();
 
-    setInterval(() => {
-      viewmodel.loadPosts().then(view.renderPosts); // Start polling
-    }, 10*1000);
-
     view.updateTimestamps();
     setInterval(() => {
       view.updateTimestamps(); // Convert ISO dates to timeago

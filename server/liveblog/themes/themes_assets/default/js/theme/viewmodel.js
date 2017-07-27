@@ -15,6 +15,7 @@ var endpoint = apiHost + "api/client_blogs/" + LB.blog._id + "/posts"
   , settings = LB.settings
   , vm = {};
 
+let latestUpdate;
 /**
  * Get initial or reset viewmodel.
  * @returns {object} empty viewmodel store.
@@ -119,7 +120,8 @@ vm.loadPostsPage = function(opts) {
  */
 vm.loadPosts = function(opts) {
   opts = opts || {};
-  opts.fromDate = this.vm.latestUpdate || new Date().toISOString();
+  //opts.fromDate = this.vm.latestUpdate || new Date().toISOString();
+  opts.fromDate = latestUpdate;
   return this.getPosts(opts);
 };
 
@@ -137,7 +139,7 @@ vm.updateViewModel = function(api_response, opts) {
       return;
     }
 
-    self.vm.latestUpdate = self.getLatestUpdate(api_response);
+    latestUpdate = self.getLatestUpdate(api_response);
   }
 
   if (opts.sort !== self.settings.postOrder) {
@@ -180,9 +182,18 @@ vm.isTimelineEnd = function(api_response) {
 vm.init = function() {
   this.settings = settings;
   this.vm = getEmptyVm(settings.postsPerPage);
-  this.vm.latestUpdate = new Date().toISOString();
+  latestUpdate = new Date().toISOString();
   this.vm.timeInitialized = new Date().toISOString();
-  return this.vm.latestUpdate;
+
+  setInterval(() => {
+    vm.loadPosts()
+      .then(view.renderPosts) // Start polling
+      .then(() => {
+        latestUpdate = new Date().toISOString();
+      })
+  }, 10*1000);
+
+  //return this.vm.latestUpdate;
 };
 
 /**
