@@ -372,7 +372,7 @@ function BlogSettingsController(
             vm.selectedTheme = _.find(vm.availableThemes, function(theme) {
                 return theme.name === vm.blogPreferences.theme;
             });
-            if(vm.selectedTheme.styles) {
+            if (vm.selectedTheme.styles) {
                 vm.styleUrl = vm.selectedTheme.styles[vm.selectedTheme.styles.length - 1];
             }
         });
