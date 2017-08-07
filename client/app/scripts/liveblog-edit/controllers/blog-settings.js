@@ -372,6 +372,9 @@ function BlogSettingsController(
             vm.selectedTheme = _.find(vm.availableThemes, function(theme) {
                 return theme.name === vm.blogPreferences.theme;
             });
+            if (vm.selectedTheme.styles) {
+                vm.styleUrl = vm.selectedTheme.styles[vm.selectedTheme.styles.length - 1];
+            }
         });
 
     // after publicUrl and theme is on `vm` object we can compute embeds code.

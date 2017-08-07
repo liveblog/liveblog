@@ -116,7 +116,8 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="form-group" ng-if="settings.embedMultiHight">
+
+                            <div class="form-group" ng-if="settings.embedMultiHight && !settings.selectedTheme.settings.renderForESI">
                                 <label for="inputTitle" class="control-label" translate>Embed height</label>
                                 <div class="form-input relative">
                                     <span class="blog-status">{{ settings.blogPreferences.embed_switch ? 'Responsive' : 'Normal' | translate }}</span>
@@ -129,9 +130,19 @@
                             <div class="form-group">
                                 <label for="inputEmbedCode" class="control-label" translate>Embed code</label>
                                 <div class="form-input">
-                                    <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click>{{ settings.blogPreferences.embed_switch ? settings.embeds.resizeing : settings.embeds.normal }}</textarea>
+                                    <textarea ng-if="!settings.selectedTheme.settings.renderForESI"
+                                              class="form-control"
+                                              rows="6"
+                                              readonly="readonly"
+                                              select-text-on-click>{{ settings.blogPreferences.embed_switch ? settings.embeds.resizeing : settings.embeds.normal }}</textarea>
                                     <a href="{{ settings.publicUrl }}" target="_blank"><span ng-bind="settings.publicUrl"></span> <i class="icon-external"></i></a>
-                                </div>
+<!-- @TODO: compile the `styleUrl` before.
+                                    <a ng-if="settings.selectedTheme.settings.removeStylesESI"
+                                       href="{{ settings.styleUrl }}"
+                                       target="_blank">
+                                          <span ng-bind="settings.styleUrl"></span><i class="icon-external"></i>
+                                    </a>
+ -->                                </div>
                             </div>
 
                             <div lb-syndication-switch></div>
