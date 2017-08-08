@@ -551,16 +551,19 @@
                                         @include inline-field();
                                         position: relative;
                                         &:before {
-                                            content: "\201C"; // “
+                                            font-family: Georgia, "Times New Roman", Serif;
+                                            content: "\201C";
                                             font-size: 2em;
                                             position: absolute;
-                                            left: -0.5em;
+                                            top: 0.3em;
+                                            left: -0.4em;
                                         }
                                     }
                                     &.js-cite-input {
                                         @include inline-field();
                                         &:before {
-                                            content: "\2014"; // —
+                                            content: "\2014";
+                                            float: left;
                                             margin-left: -20px;
                                             padding-right: 5px;
                                         }
