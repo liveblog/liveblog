@@ -45,12 +45,16 @@
         }
 
         vm.enhance = function(all) {
-            if(!all.length) {
+            if(!all.length ) {
                 return;
             }
-            if(config.output && config.output.collection) {
+            if(config.output && 
+                config.output.collection &&
+                config.output.collection.advertisements &&
+                config.output.collection.advertisements.length
+                ) {
                 var settings = config.output.settings || {frequency: 4, order: -1},
-                    ads = config.output.collection.advertisements;
+                    ads = config.output.collection.advertisementsService;
                 if(settings.order === 1) {
                     for(var index, i=0, count=all.length; i < count; i+=(settings.frequency+1)) {
                         index = i/(settings.frequency+1) % ads.length;
@@ -83,6 +87,7 @@
             if (config.output && config.output._id) {
                 // if collections advertiments weren't fetched, `_id` property isn't set.
                 if (config.output.collection &&
+                    config.output.collection.advertisements &&
                     config.output.collection.advertisements.length &&
                     !config.output.collection.advertisements[0]._id) {
                         fetchAdvertisements(config.output);
@@ -198,7 +203,9 @@
                 vm.highlightsOnly = !vm.highlightsOnly;
                 vm.loading = true;
                 vm.finished = false;
-                stickyPagesManager.changeHighlight(vm.highlightsOnly);
+                if (!config.settings.livestream) {
+                    stickyPagesManager.changeHighlight(vm.highlightsOnly);
+                }
                 pagesManager.changeHighlight(vm.highlightsOnly).then(function(data) {
                     vm.loading = false;
                     vm.finished = data._meta.total <= data._meta.max_results * data._meta.page;
