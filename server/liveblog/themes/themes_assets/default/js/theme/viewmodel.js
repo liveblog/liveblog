@@ -190,7 +190,7 @@ vm.init = function() {
       .then(view.renderPosts) // Start polling
       .then(() => {
         latestUpdate = new Date().toISOString();
-      })
+      });
   }, 10*1000);
 
   //return this.vm.latestUpdate;

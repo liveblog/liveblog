@@ -70,7 +70,7 @@
         <div lb-comments data-comment="timeline.comment"></div>
         <div
             class="lb-post emtpy-message" ng-cloak
-            ng-show="timeline.pagesManager.allPosts().length + timeline.stickyPagesManager.allPosts().length< 1 && !timeline.loading">
+            ng-show="timeline.pagesManager.allPosts().length + (timeline.settings.livestream? 0 :timeline.stickyPagesManager.allPosts().length)< 1 && !timeline.loading">
             <div translate>No posts for now.</div>
         </div>
         <section
