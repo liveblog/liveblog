@@ -186,6 +186,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         embed_template = embed_env.from_string(template_content)
         template_content = embed_template.render(
             blog=blog,
+            output=output,
             options=theme,
             json_options=bson_dumps(theme),
             settings=theme_settings,
@@ -257,7 +258,12 @@ def tojson(obj):
 @embed_blueprint.app_template_filter('tostyle')
 def tostyle(obj):
     if obj:
-        return ';'.join(["{}: {}".format(key, value) for (key, value) in obj.items()])
+        styles = []
+        for (key, value) in obj.items():
+            if key.lower() == 'background-image':
+                value = "url({})".format(value)
+            styles.append("{}: {}".format(key, value))
+        return ';'.join(styles)
     return ''
 
 
