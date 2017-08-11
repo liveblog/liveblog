@@ -326,12 +326,12 @@ class ThemesService(BaseService):
 
             # TODO: Add version parameter to media_id() after merging related core-changes in amazon_media_storage
             # and desk_media storage.
-            # version = theme.get('version', True)
+            version = theme.get('version', True)
 
             # Remove existing file first.
             app.media.delete(app.media.media_id(final_file_name, content_type=content_type))
             # Upload new file.
-            file_id = app.media.put(file.read(), filename=final_file_name, content_type=content_type)
+            file_id = app.media.put(file.read(), filename=final_file_name, content_type=content_type, version=version)
 
             # Add screenshot_url to theme.
             if name.endswith('screenshot.png'):
