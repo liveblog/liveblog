@@ -96,6 +96,13 @@
                                 class="btn btn--primary pull-right"
                                 type="button"
                                 translate>Download</button>
+                            <button
+                                ng-if="!vm.isSolo()"
+                                ng-click="vm.redeploy(theme)"
+                                class="btn btn--primary pull-right"
+                                type="button"
+                                translate>ReDeploy</button>
+
                         </div>
                         <div class="default-theme" ng-show="vm.isDefaultTheme(theme)"></div>
                     </div>

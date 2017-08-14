@@ -2,9 +2,11 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
 
 (function() {
     LiveblogThemesController.$inject = ['api', '$location', 'notify', 'gettext',
-    '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', '$window', 'modal'];
+    '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', '$window', 'modal',
+    '$http', 'session'];
     function LiveblogThemesController(api, $location, notify, gettext,
-    $q, $sce, config, _, upload, blogService, $window, modal) {
+    $q, $sce, config, _, upload, blogService, $window, modal,
+    $http, session) {
         var vm = this;
         /**
          * Return a collection that represent the hierachy of the themes
@@ -165,6 +167,19 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
                     $window.location = url.replace('/themes', '/theme-download/' + theme.name);
                 });
             },
+            redeploy: function(theme) {
+                $http.defaults.headers.common.Authorization = session.token;
+                api.themes.getUrl().then(function(url) {
+                    $http({
+                        url: url.replace('/themes', '/theme-redeploy/' + theme.name),
+                        method: 'GET'
+                    }).then(function(){
+                        notify.pop();
+                        notify.info(gettext('Theme redeployed.'));
+                    });
+                });
+            },
+
             makeDefault: function(theme) {
                 if (vm.globalTheme) {
                     api
