@@ -168,7 +168,6 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
                 });
             },
             redeploy: function(theme) {
-                console.log(theme.name);
                 $http.defaults.headers.common.Authorization = session.token;
                 api.themes.getUrl().then(function(url) {
                     $http({
