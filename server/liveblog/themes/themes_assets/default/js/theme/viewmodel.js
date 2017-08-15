@@ -121,7 +121,7 @@ vm.loadPostsPage = function(opts) {
 vm.loadPosts = function(opts) {
   opts = opts || {};
   //opts.fromDate = this.vm.latestUpdate || new Date().toISOString();
-  opts.fromDate = latestUpdate;
+
   return this.getPosts(opts);
 };
 
@@ -186,7 +186,7 @@ vm.init = function() {
   this.vm.timeInitialized = new Date().toISOString();
 
   setInterval(() => {
-    vm.loadPosts()
+    vm.loadPosts({fromDate: latestUpdate})
       .then(view.renderPosts) // Start polling
       .then(() => {
         latestUpdate = new Date().toISOString();
