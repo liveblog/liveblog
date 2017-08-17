@@ -1,0 +1,10 @@
+npm-debug.log
+.settings
+.project
+.idea
+node_modules
+*.swp
+.tmp
+Thumbs.db
+!*.pot
+index.html

@@ -15,6 +15,7 @@ $PADDING: 20px;
         > .subnav {
             top: 1 - $SUBNAV_HEIGHT;
             background-color: #eaeaea;
+            padding: 0 0 0 20px;
         }
         .tab-content {
             > .header {
@@ -67,6 +68,21 @@ $PADDING: 20px;
         }
         .relative {
             position: relative;
+        }
+    }
+    .outputs {
+        .add-new-div {
+            float: right!important;
+            top: -11px;
+            right: -22px;
+            button {
+                top: 1px;
+            }
+        }
+        .header {
+            h2 {
+                display: inline;
+            }
         }
     }
     .dropdown-content {

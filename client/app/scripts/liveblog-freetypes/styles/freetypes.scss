@@ -3,7 +3,7 @@
         position: absolute;
         top: 0px;
         left: 0; right: 0; bottom: 0;
-        padding: 30px 30px 30px 0;
+        padding: 20px;
         overflow-y: auto;
         ul {
             li {
@@ -55,6 +55,9 @@
         }
     }
         
+}
+.alert-advert {
+    margin: 60px 10px 0px 10px;
 }
 .ft-alert {
     color: #b94a48;

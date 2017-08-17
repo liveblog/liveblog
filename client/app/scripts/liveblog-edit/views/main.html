@@ -153,7 +153,7 @@
                         <div ng-if="!preview">
                         <header>
                             <h4>{{'Editor' | translate}}</h4>
-                            <button class="btn btn-info pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate  ng-if="selectedPostType=='Default'">Preview
+                            <button class="btn btn--primary pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate  ng-if="selectedPostType=='Default'">Preview
                             </button>
                             <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
                             <button class="btn pull-right btn--with-icon-right btn--with-label" ng-click="toggleTypePostDialog()">
@@ -192,22 +192,22 @@
                                     control="freetypeControl"></freetype-render>
                         </div>
                         <div class="actions">
-                            <div style="display:table-row">
+                            <div class="actions__options" style="display:table-row">
                                 <div style="display:table-cell"></div>
                                 <div style="display:table-cell">
                                     <div ng-click="toggleSticky();" tooltip-placement="bottom" tooltip="{{ sticky ? 'Unpin': 'Pin' | translate }}" ng-class="{'option-not-activated': !sticky}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
-                                        <span translate>PIN POST</span><span><i class="icon-pin rotate" ng-class="{'blue': sticky}"></i></span>
+                                        <span class="actions__label" translate>PIN POST</span><span class="actions__icon"><i class="icon-pin rotate" ng-class="{'blue': sticky}"></i></span>
                                     </div>
                                 </div>
                                 <div style="display:table-cell">
                                     <div ng-click="toggleHighlight();" tooltip-placement="bottom" tooltip="{{ highlight ? 'Un-highlight': 'Highlight' | translate }}" ng-class="{'option-not-activated': !highlight}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
-                                        <span translate>HIGHTLIGHT POST</span><span><i class="icon-star" ng-class="{'orange': highlight}" style="margin-top: -4px;"></i></span>
+                                        <span class="actions__label" translate>HIGHTLIGHT POST</span><span class="actions__icon"><i class="icon-star" ng-class="{'orange': highlight}" style="margin-top: -4px;"></i></span>
                                     </div>
                                 </div>
                             </div>
-                            <div style="display:table-row">
+                            <div class="actions__buttons" style="display:table-row">
                                 <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell">
-                                    <button class="btn btn-info" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
+                                    <button class="btn btn--primary" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
                                         <span ng-switch-when="true"  translate>Update</span>
                                         <span ng-switch-when="false" translate>Publish</span>
                                     </button>
@@ -217,7 +217,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="freetype-selector" ng-click="$event.stopPropagation();" ng-if="selectPostTypeDialog">
+                    <div class="freetype-selector" ng-click="$event.stopPropagation();" ng-if="selectPostTypeDialog" ng-class="{'default': selectedPostType === 'Default'}">
                         <ul class="users-list-embed">
                             <li translate ng-click="selectPostType('Default')"
                             ng-class="{'active': selectedPostType === 'Default'}">Default</li>

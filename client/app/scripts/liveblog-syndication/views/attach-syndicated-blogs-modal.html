@@ -61,12 +61,19 @@
             </li>
         </ul>
     </div>
-    <div class="modal-footer" ng-if="producers._items.length > 0">
+    <div class="modal-footer">
         <button
-            class="btn btn-primary btn-info" 
+            ng-if="producers._items.length > 0"
+            class="btn btn--primary" 
             type="button"
             ng-click="attach()"
             ng-disabled="hasChanged"
             translate>{{actionName}}</button>
+        <button
+            ng-if="producers._items.length === 0"
+            class="btn btn-default" 
+            type="button"
+            ng-click="cancel()"
+            translate>Close</button>
     </div>
 </div>

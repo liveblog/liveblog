@@ -1,5 +1,7 @@
 body {
     background-color: #EAEAEA;
+    background-repeat: no-repeat;
+    background-position-x: center;
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
     color: #333333;
@@ -16,6 +18,10 @@ img {
     max-height: 500px;
     width: auto;
     height: auto;
+}
+td, th {
+    display: table-cell;
+    vertical-align: inherit;
 }
 img.pswp__img {
     max-width: none;
@@ -273,6 +279,8 @@ button.active {
     position: absolute;
     right: 10px;
     top: 5px;
+    max-height: 50px;
+    max-width: 250px;
 }
 .load-new-posts {
     font-size: 1.2em;
@@ -408,17 +416,19 @@ article .liveblog--card {
 /* quote */
 article blockquote {
     position: relative;
-    margin: 30px 0 0 16px;
+    margin: 30px 0 0 30px;
 }
 article blockquote p {
     font-size: 1.25em;
     line-height: 1.25em;
 }
 article blockquote p:before {
-    content: "“";
+    font-family: Georgia,"Times New Roman", Serif;
     font-size: 3em;
+    content: '\201C';
     position: absolute;
-    left: -0.3em;
+    top: 0.3em;
+    left: -0.6em;
     color: #7C7C7C;
 }
 article blockquote li {
@@ -474,16 +484,22 @@ article blockquote li:before {
 .loading.ng-hide {
     opacity: 0;
 }
+.lb-post-social {
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    visibility: visible;
+}
 .lb-post-permalink {
     position: absolute;
     top: 10px;
-    right: 10px;
+    right: 30px;
     visibility: visible;
 }
 .lb-post-highlighted {
     position: absolute;
     top: 10px;
-    right: 30px;
+    right: 10px;
     color: #f89406;
 }
 .toggleHighlights {
@@ -543,6 +559,13 @@ article blockquote li:before {
     background-color: rgba(94, 169, 200, 0.11);
     box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.25);
 }
+
+.livestream .pin-posts .lb-post {
+    background-color: initial!important;
+    border-bottom: none!important;
+    border-top: 1px solid #eee!important;
+}
+
 
 @-webkit-keyframes fadeIt {
   0%   { background-color: #FFFFFF; }
@@ -667,10 +690,10 @@ article blockquote li:before {
 /* Media queries */ 
 /* hide permalink on larger screens, show only on hover */
 @media (min-width: 1025px) {
-    .lb-post-permalink {
+    .lb-post-permalink, .lb-post-social {
         visibility: hidden;
     }
-    .lb-post:hover .lb-post-permalink {
+    .lb-post:hover .lb-post-permalink, .lb-post:hover .lb-post-social {
         visibility: visible;
     }
 }
@@ -739,4 +762,30 @@ article blockquote li:before {
 
 .justified-gallery>a>.caption {
     max-height: 45%;
+}
+
+/* Social sharing */
+.share-box {
+    background: #F8F8F8;
+    padding: 10px;
+    border: 1px solid #D0D0D0;
+    position: absolute;
+    top: 18px;
+    right: 25px;
+    z-index: 5;
+    width: 140px;
+    height: 24px;
+}
+
+.share-box a {
+    text-decoration: none;
+}
+
+.share-icon {
+    color: #5ea9c8;
+    cursor: pointer;
+}
+.social-icon {
+    font-size: x-large!important;
+    margin-left: 4px!important;
 }

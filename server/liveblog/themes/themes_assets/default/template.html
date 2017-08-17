@@ -1,0 +1,118 @@
+<!-- inject:template-content -->
+{% block timeline %}
+<div class="lb-timeline {{ settings.language }}">
+  {% if settings.showTitle and blog.title %}
+    <h1>{{ blog.title }}</h1>
+  {% endif %}
+
+  {% if settings.showDescription and blog.description %}
+    <div class="description">
+      {{ blog.description | safe }}
+    </div>
+  {% endif %}
+
+  {% if settings.showImage and blog.picture_url %}
+    <img src="{{ blog.picture_url }}" />
+  {% endif %}
+
+  {% if settings.stickyPosition == 'top' and api_response.stickyPosts._items|length > 0 %}
+    <div class="timeline-top timeline-top--loaded">
+      <section class="lb-posts list-group">
+        {% for item in api_response.stickyPosts._items %}
+          {% if not item.deleted %}
+            {% include "template-post.html" %}
+          {% endif %}
+        {% endfor %}
+      </section>
+    </div>
+  {% endif %}
+
+  <!-- Header -->
+  <div class="header-bar">
+    <div class="sorting-bar">
+      <div class="sorting-bar__orders">
+        <div
+          class="sorting-bar__order {%if settings.postOrder == 'editorial' %}sorting-bar__order--active{% endif %}"
+          data-js-orderby_editorial>
+          {{ options.l10n.editorial }}
+        </div>
+        <div
+          class="sorting-bar__order {%if settings.postOrder == 'newest_first' %}sorting-bar__order--active{% endif %}"
+          data-js-orderby_descending>
+          {{ options.l10n.descending }}
+        </div>
+        <div
+          class="sorting-bar__order {%if settings.postOrder == 'oldest_first'%}sorting-bar__order--active{% endif %}"
+          data-js-orderby_ascending>
+          {{ options.l10n.ascending }}
+        </div>
+      </div>
+    </div>
+    <div class="header-bar__actions"></div>
+      {% if settings.canComment %}
+        <button class="header-bar__comment" data-js-show-comment-dialog>Comment</button>
+      {% endif %}
+
+      {% if settings.showLiveblogLogo %}
+        {% if output.logo_url %}
+        <img src="{{ output.logo_url }}"/>
+        {% else %}
+        <a class="header-bar__logo" href="https://www.liveblog.pro" target="_blank">
+          <span>Powered by</span>
+          <img src="{{ assets_root }}images/lb-logo.svg" />
+        </a>
+        {% endif %}
+      {% endif %}
+    </div>
+  <!-- Header End -->
+
+  <!-- Comment -->
+  {% if settings.canComment %}
+    {% include "template-comment.html" %}
+  {% endif %}
+  <!-- Comment End -->
+
+  <!-- Timeline -->
+  <div class="timeline-body timeline-body--loaded">
+    {% if settings.stickyPosition == 'bottom' and api_response.stickyPosts._items|length > 0 %}
+      <section class="lb-posts list-group sticky">
+        {% for item in api_response.stickyPosts._items %}
+          {% if not item.deleted %}
+            {% include "template-post.html" %}
+          {% endif %}
+        {% endfor %}
+      </section>
+    {% endif %}
+    {% if api_response.posts._items|length == 0 %}
+      <div class="lb-post empty-message">
+        <div>Blog posts are not currently available.</div>
+      </div>
+      {% else %}
+      <section class="lb-posts list-group normal">
+        {% for item in api_response.posts._items %}
+          {% if not item.deleted %}
+            {% include "template-post.html" %}
+          {% endif %}
+        {% endfor %}
+      </section>
+      {% if api_response.posts._meta.max_results <= api_response.posts._meta.total %}
+        <button class="lb-button load-more-posts" data-js-loadmore>{{ options.l10n.loadNewPosts }}</button>
+      {% endif %}
+    {% endif %}
+  </div>
+  <!-- Timeline End -->
+
+</div>
+{% endblock %}
+
+{% include "template-embed-providers.html" %}
+
+{% if include_js_options %}
+  <script type="text/javascript">
+    window.LB = {{ json_options|safe }};
+  </script>
+{% endif %}
+
+<!-- endinject -->
+<!-- inject:template-analytics -->
+<!-- endinject -->

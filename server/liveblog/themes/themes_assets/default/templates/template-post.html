@@ -1,0 +1,70 @@
+<!-- sticky position toggle -->
+{% if item.sticky and settings.stickyPosition == 'top' %}
+<article
+  class="lb-sticky-top-post list-group-item {{ item.post_items_type }}"
+  data-js-post-id="{{ item._id }}">
+  {% else %}
+<article
+  class="lb-post list-group-item show-author-avatar {{ item.post_items_type }} {% if item.lb_highlight %}lb-post--highlighted{% endif %}"
+  data-js-post-id="{{ item._id }}">
+    
+  <div class="lb-type lb-type--{{ item.post_items_type }}"></div>
+
+  {% if item.sticky and item.lb_highlight %}
+    <img src="{{ assets_root }}images/pinpost.svg" class="pin-icon" />
+    <img src="{{ assets_root }}images/highlighted.svg" class="highlight-icon" />
+  {% elif item.sticky %}
+    <img src="{{ assets_root }}images/pinpost.svg" class="pin-icon" />
+  {% elif item.lb_highlight %}
+    <img src="{{ assets_root }}images/highlighted.svg" class="highlight-icon" />
+  {% elif item.post_items_type == "advertisement" %}
+    <div class="lb-advertisement">Advertisement</div>
+  {% endif %}
+
+  <!-- remove advertisement stylization-->
+  {% if item.post_items_type != "advertisement" %}
+
+  <div class="lb-post-date" data-js-timestamp="{{ item._updated }}">{{ item._updated }}</div>
+
+  <!-- author plus avatar -->
+  <div class="lb-author">
+    {% if settings.showAuthor and item.publisher %}
+      <div class="lb-author__name">{{ item.publisher.display_name }}</div>
+      {% if settings.showAuthorAvatar %}
+        {% if item.publisher.picture_url %}
+        <img class="lb-author__avatar" src="{{ item.publisher.picture_url }}" />
+        {% else %}
+        <div class="lb-author__avatar"></div>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  </div>
+  <!-- end author -->
+  {% endif %}
+  <!-- end sticky position toggle -->
+  {% endif %}
+  <!-- end remove advertisement stylization-->
+
+  <!-- item start -->
+  <div class="items-container">
+    {% for ref in item.groups[1].refs %}
+      {% if ref.item.item_type == "image" %}
+      <div class="{% if not item.sticky or settings.stickyPosition == 'bottom' %}lb-item{% endif %} {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %} {{ref.item.item_type}}">
+      {% else %}
+      <div class="{% if not item.sticky or settings.stickyPosition == 'bottom' %}lb-item{% endif %} {{ref.item.item_type}}">
+      {% endif %}
+        {% if ref.item.item_type == "embed" %}
+          {% include "template-item-embed.html" %}
+        {% elif ref.item.item_type == "image" %}
+          {% include "template-item-image.html" %}
+        {% elif ref.item.item_type == "quote" %}
+          {% include "template-item-quote.html" %}
+        {% else %}
+          <article>{{ ref.item.text | safe }}</article>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+  <!-- item end -->
+
+</article>

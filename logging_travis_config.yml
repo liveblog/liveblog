@@ -1,0 +1,13 @@
+version: 1
+disable_existing_loggers: true
+loggers:
+ superdesk:
+  level: WARNING
+ superdesk.websockets_comms:
+  level: WARNING
+ flask.ext.cors:
+  level: WARNING
+ elasticsearch:
+  level: WARNING
+ ldap:
+  level: WARNING

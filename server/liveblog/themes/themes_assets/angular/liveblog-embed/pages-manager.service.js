@@ -317,8 +317,8 @@
                         page = undefined;
                     }
                     angular.forEach(post.groups[1].refs, function(item) {
-                        if (item.item.item_type === 'embed') {
-                            if (item.item.text.indexOf('platform.instagram.com') !== -1) {
+                        if (item.item && item.item.item_type === 'embed') {
+                            if (item.item.text && item.item.text.indexOf('platform.instagram.com') !== -1) {
                                 processInstagram = true;
                             }
                         }
