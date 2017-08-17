@@ -226,7 +226,7 @@ gulp.task('template-inject', ['less', 'browserify'], () => {
     .pipe(plugins.connect.reload());
 });
 
-// Replace assets paths in theme.json file and reload options.
+// Replace assets paths and version in theme.json file and reload options.
 gulp.task('theme-replace', ['browserify', 'less'], () => {
   var manifest = require("./dist/rev-manifest.json");
   var base = './';
@@ -234,6 +234,7 @@ gulp.task('theme-replace', ['browserify', 'less'], () => {
   gulp.src('theme.json', {base: base})
     .pipe(plugins.replace(/liveblog-.*\.css/g, manifest[paths.cssfile]))
     .pipe(plugins.replace(/liveblog-.*\.js/g, manifest[paths.jsfile]))
+    .pipe(plugins.replace(/"version":\s*"(\d+\.\d+\.)(\d+)"/,(a, p, r) => `"version": "${p}${++r}"`))
     .pipe(gulp.dest(base));
 
   // Reload theme options

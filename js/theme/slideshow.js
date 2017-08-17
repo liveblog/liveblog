@@ -62,7 +62,8 @@ class Slideshow {
       });
 
     let slideshow = templates.slideshow({
-      refs: items
+      refs: items,
+      assets_root: window.LB.assets_root
     });
 
     document.querySelector('div.lb-timeline')

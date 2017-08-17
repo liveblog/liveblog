@@ -94,7 +94,7 @@
           {% endif %}
         {% endfor %}
       </section>
-      {% if api_response.posts._meta.max_results <= api_response.posts._meta.total %}
+      {% if api_response.posts._meta.max_results < api_response.posts._meta.total %}
         <button class="lb-button load-more-posts" data-js-loadmore>{{ options.l10n.loadNewPosts }}</button>
       {% endif %}
     {% endif %}

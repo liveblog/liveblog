@@ -216,6 +216,14 @@ button.active {
   border-color: #27496d;
   color: #27496d;
 }
+article h4,
+article h5 {
+  font-size: 1.06em;
+  font-weight: bold;
+}
+article h5 {
+  font-size: 1em;
+}
 article b,
 article strong {
   font-weight: bold;
@@ -243,6 +251,7 @@ blockquote p {
 blockquote > h4 {
   font-family: "Georgia", "Times New Roman", serif;
   font-size: 1.2em;
+  font-weight: normal;
   font-style: italic;
   display: inline-block;
   position: relative;
@@ -594,7 +603,7 @@ div.comment-sent.hide .comment__wrap {
 }
 .lb-posts {
   clear: both;
-  margin-bottom: 20px;
+  margin-bottom: 0px;
   position: relative;
   background: url('data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=') repeat-x;
   background-size: 50px;
@@ -904,11 +913,45 @@ div.lb-author__avatar {
 .loading.ng-hide {
   opacity: 0;
 }
-.lb-post-permalink {
+.lb-post-actions {
+  position: relative;
+  text-align: right;
+  margin-top: 10px;
+  margin-bottom: -20px;
+  visibility: visible;
+}
+@media screen and (min-width: 1025px) {
+  .lb-post-actions {
+    visibility: hidden;
+  }
+}
+.lb-post:hover .lb-post-actions {
+  visibility: visible;
+}
+.lb-post-actions > * {
+  width: 18px;
+  display: inline-block;
+  cursor: pointer;
+}
+.lb-post-share:hover .lb-post-shareBox {
+  width: 180px;
+}
+.lb-post-shareBox {
   position: absolute;
-  top: 10px;
-  right: 10px;
-  visibility: hidden;
+  top: -3px;
+  right: 60px;
+  width: 0px;
+  height: 24px;
+  overflow: hidden;
+  transition: width 0.1s;
+}
+.lb-post-shareBox__item {
+  display: inline-block;
+  width: 18px;
+  margin-right: 8px;
+}
+.lb-post-shareBox__item img {
+  vertical-align: bottom;
 }
 .lb-post-sticky,
 .lb-post-highlighted {
