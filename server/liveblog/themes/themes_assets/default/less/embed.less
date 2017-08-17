@@ -345,7 +345,7 @@ form.comment.hide .comment__wrap, div.comment-sent.hide .comment__wrap {
 
 .lb-posts {
     clear: both;
-    margin-bottom: 20px;
+    margin-bottom: 0px;
     position: relative;
     background: url('data:image/gif;base64,R0lGODlhAQABAIAAAP///wAAACwAAAAAAQABAAACAkQBADs=') repeat-x;
     background-size: 50px;
@@ -725,11 +725,60 @@ div.lb-author__avatar {
     opacity: 0;
 }
 
-.lb-post-permalink {
-    position: absolute;
-    top: 10px;
-    right: 10px;
+.lb-post-actions {
+  position: relative;
+  text-align: right;
+  margin-top: 10px;
+  margin-bottom: -20px;
+  visibility: visible;
+}
+
+@media @xlarge {
+  .lb-post-actions {
     visibility: hidden;
+  }
+}
+
+.lb-post:hover .lb-post-actions {
+  visibility: visible;
+}
+
+.lb-post-actions > * {
+  width: 18px;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.lb-post-share {
+
+}
+
+.lb-post-share:hover .lb-post-shareBox {
+  width: 180px;
+}
+
+.lb-post-shareBox {
+  position: absolute;
+  top: -3px;
+  right: 60px;
+  width: 0px;
+  height: 24px;
+  overflow: hidden;
+  transition: width 0.1s;
+}
+
+.lb-post-shareBox__item {
+  display: inline-block;
+  width: 18px;
+  margin-right: 8px;
+}
+
+.lb-post-shareBox__item img {
+  vertical-align: bottom;
+}
+
+.lb-post-permalink {
+
 }
 
 .lb-post-sticky,
