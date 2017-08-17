@@ -192,20 +192,20 @@
                                     control="freetypeControl"></freetype-render>
                         </div>
                         <div class="actions">
-                            <div style="display:table-row">
+                            <div class="actions__options" style="display:table-row">
                                 <div style="display:table-cell"></div>
                                 <div style="display:table-cell">
                                     <div ng-click="toggleSticky();" tooltip-placement="bottom" tooltip="{{ sticky ? 'Unpin': 'Pin' | translate }}" ng-class="{'option-not-activated': !sticky}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
-                                        <span translate>PIN POST</span><span><i class="icon-pin rotate" ng-class="{'blue': sticky}"></i></span>
+                                        <span class="actions__label" translate>PIN POST</span><span class="actions__icon"><i class="icon-pin rotate" ng-class="{'blue': sticky}"></i></span>
                                     </div>
                                 </div>
                                 <div style="display:table-cell">
                                     <div ng-click="toggleHighlight();" tooltip-placement="bottom" tooltip="{{ highlight ? 'Un-highlight': 'Highlight' | translate }}" ng-class="{'option-not-activated': !highlight}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
-                                        <span translate>HIGHTLIGHT POST</span><span><i class="icon-star" ng-class="{'orange': highlight}" style="margin-top: -4px;"></i></span>
+                                        <span class="actions__label" translate>HIGHTLIGHT POST</span><span class="actions__icon"><i class="icon-star" ng-class="{'orange': highlight}" style="margin-top: -4px;"></i></span>
                                     </div>
                                 </div>
                             </div>
-                            <div style="display:table-row">
+                            <div class="actions__buttons" style="display:table-row">
                                 <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell">
                                     <button class="btn btn--primary" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
                                         <span ng-switch-when="true"  translate>Update</span>
