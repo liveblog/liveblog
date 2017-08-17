@@ -40,6 +40,7 @@
     {% endif %}
   </div>
   <!-- end author -->
+
   {% endif %}
   <!-- end sticky position toggle -->
   {% endif %}
@@ -66,5 +67,33 @@
     {% endfor %}
   </div>
   <!-- item end -->
+
+  <div class="lb-post-actions">
+
+    <!-- share 
+      Aco share buttons should be vissible on click, not on share
+    -->
+    <div class="lb-post-share">
+      <img src="{{ assets_root }}images/action_share.svg" class="lb-post-shareIcon" />
+      <div class="lb-post-shareBox">
+        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_facebook.svg"/></a>
+        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_google.svg"/></a>
+        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_linkedin.svg"/></a>
+        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_twitter.svg"/></a>
+        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_email.svg"/></a>
+        <span> | </span>
+      </div>
+    </div>
+    <!-- end share -->
+
+    <!-- permalink -->
+    <div class="lb-post-permalink">
+      <a href="google.com" id="{{ item._id }}" target="_blank">
+        <img src="{{ assets_root }}images/action_link.svg" class="lb-post-linkIcon" />
+      </a>
+    </div>
+    <!-- end permalink -->
+
+  </div>
 
 </article>

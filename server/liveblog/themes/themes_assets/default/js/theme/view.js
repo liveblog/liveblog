@@ -22,7 +22,8 @@ function renderTimeline(api_response) {
   api_response._items.forEach((post) => {
     renderedPosts.push(templates.post({
       item: post,
-      settings: window.LB.settings
+      settings: window.LB.settings,
+      assets_root: window.LB.assets_root
     }));
 
   });
@@ -52,7 +53,8 @@ function renderPosts(api_response) {
 
     var renderedPost = templates.post({
       item: post,
-      settings: window.LB.settings
+      settings: window.LB.settings,
+      assets_root: window.LB.assets_root
     });
 
     if (posts.operation === "update") {
