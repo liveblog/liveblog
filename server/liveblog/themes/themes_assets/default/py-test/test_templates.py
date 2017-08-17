@@ -36,6 +36,7 @@ class TestTemplate(unittest.TestCase):
         }
         self.context = {
             'blog': options['blog'],
+            'output': options['blog']['output'],
             'options': options,
             'json_options': json.dumps(options),
             'settings': options['settings'],
