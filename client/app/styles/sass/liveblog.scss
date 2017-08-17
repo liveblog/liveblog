@@ -213,6 +213,11 @@
 .profile-activity-container>.profile-activity {
     display: none;
 }
+.avatar.avatar-with-info .user-image img {
+    width: 30px;
+    height: 30px;
+    object-fit: cover;
+}
 // icons
 .icon-publish {
     background-image: url("#{$iconSpritePath}");

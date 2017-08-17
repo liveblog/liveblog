@@ -619,6 +619,15 @@
                     }
                 }
             }
+            .actions {
+                .actions__label {
+                    vertical-align: middle;
+                    margin-right: 5px;
+                }
+                .actions__icon i {
+                    vertical-align: middle;
+                }
+            }
             > .actions {
                 position: absolute;
                 bottom: 0; left: 0px; right: 0px; height: 88px;
