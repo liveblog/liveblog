@@ -7,13 +7,15 @@
 var helpers = require('./helpers')
   , view = require('./view');
 
-const commentItemEndpoint = `${LB.api_host}api/client_items`;
-const commentPostEndpoint = `${LB.api_host}api/client_comments`;
+const apiHost = LB.api_host.match(/\/$/i) ? LB.api_host : LB.api_host + '/';
+const commentItemEndpoint = `${apiHost}api/client_items`;
+const commentPostEndpoint = `${apiHost}api/client_comments`;
 
-var endpoint = LB.api_host + "api/client_blogs/" + LB.blog._id + "/posts"
+var endpoint = apiHost + "api/client_blogs/" + LB.blog._id + "/posts"
   , settings = LB.settings
   , vm = {};
 
+let latestUpdate;
 /**
  * Get initial or reset viewmodel.
  * @returns {object} empty viewmodel store.
@@ -118,7 +120,7 @@ vm.loadPostsPage = function(opts) {
  */
 vm.loadPosts = function(opts) {
   opts = opts || {};
-  opts.fromDate = this.vm.latestUpdate;
+  //opts.fromDate = this.vm.latestUpdate || new Date().toISOString();
   return this.getPosts(opts);
 };
 
@@ -136,7 +138,7 @@ vm.updateViewModel = function(api_response, opts) {
       return;
     }
 
-    self.vm.latestUpdate = self.getLatestUpdate(api_response);
+    latestUpdate = self.getLatestUpdate(api_response);
   }
 
   if (opts.sort !== self.settings.postOrder) {
@@ -179,9 +181,18 @@ vm.isTimelineEnd = function(api_response) {
 vm.init = function() {
   this.settings = settings;
   this.vm = getEmptyVm(settings.postsPerPage);
-  this.vm.latestUpdate = new Date().toISOString();
+  latestUpdate = new Date().toISOString();
   this.vm.timeInitialized = new Date().toISOString();
-  return this.vm.latestUpdate;
+
+  setInterval(() => {
+    vm.loadPosts({fromDate: latestUpdate})
+      .then(view.renderPosts) // Start polling
+      .then(() => {
+        latestUpdate = new Date().toISOString();
+      });
+  }, 10*1000);
+
+  //return this.vm.latestUpdate;
 };
 
 /**
@@ -241,7 +252,7 @@ vm.getQuery = function(opts) {
   }
 
   // Remove the range, we want all the results
-  if (["ascending", "descending", "editorial"].indexOf(opts.sort)) {
+  if (!opts.fromDate) {
     query.query.filtered.filter.and.forEach((rule, index) => {
       if (rule.hasOwnProperty('range')) {
         query.query.filtered.filter.and.splice(index, 1);

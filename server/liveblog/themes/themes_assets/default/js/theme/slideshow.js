@@ -35,6 +35,15 @@ class Slideshow {
         });
 
         let [baseImage, thumbnail, viewImage] = matches;
+        let caption = '', credit = '';
+
+        if (img.parentNode.querySelector('span.caption')) {
+          caption = img.parentNode.querySelector('span.caption').textContent;
+        }
+
+        if (img.parentNode.querySelector('span.credit')) {
+          credit = img.parentNode.querySelector('span.credit').textContent;
+        }
 
         items.push({
           item: {
@@ -44,8 +53,8 @@ class Slideshow {
                 thumbnail: {href: thumbnail},
                 viewImage: {href: viewImage}
               }},
-              caption: img.parentNode.querySelector('span.caption').textContent,
-              credit: img.parentNode.querySelector('span.credit').textContent,
+              caption: caption,
+              credit: credit
             },
             active: thumbnail === e.target.getAttribute('src')
           }
@@ -53,7 +62,8 @@ class Slideshow {
       });
 
     let slideshow = templates.slideshow({
-      refs: items
+      refs: items,
+      assets_root: window.LB.assets_root
     });
 
     document.querySelector('div.lb-timeline')

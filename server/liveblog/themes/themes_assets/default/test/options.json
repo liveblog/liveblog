@@ -6,6 +6,7 @@
     "posts_order_sequence":37.0,
     "_updated":"2017-03-23T10:43:42+00:00",
     "description":"<p>Keeping you up to date on the world of live blogging and Live Blog from Sourcefabric.</p>",
+    "output": {},
     "theme_settings":{
       "blockSearchEngines":false,
       "hasHighlights":true,

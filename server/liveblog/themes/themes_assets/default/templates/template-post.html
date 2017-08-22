@@ -5,19 +5,20 @@
   data-js-post-id="{{ item._id }}">
   {% else %}
 <article
-  class="lb-post list-group-item show-author-avatar {{ item.post_items_type }}"
+  class="lb-post list-group-item show-author-avatar {{ item.post_items_type }} {% if item.lb_highlight %}lb-post--highlighted{% endif %}"
   data-js-post-id="{{ item._id }}">
+    
+  <div class="lb-type lb-type--{{ item.post_items_type }}"></div>
 
-
-  {% if item.sticky %}
-    <div class="lb-type"></div>
-    <img src="{{ assets_root }}images/pinpost.svg" class="lb-post-pin" />
+  {% if item.sticky and item.lb_highlight %}
+    <img src="{{ assets_root }}images/pinpost.svg" class="pin-icon" />
+    <img src="{{ assets_root }}images/highlighted.svg" class="highlight-icon" />
+  {% elif item.sticky %}
+    <img src="{{ assets_root }}images/pinpost.svg" class="pin-icon" />
   {% elif item.lb_highlight %}
-    <div class="lb-type lb-post-highlighted"></div>
+    <img src="{{ assets_root }}images/highlighted.svg" class="highlight-icon" />
   {% elif item.post_items_type == "advertisement" %}
-  <div class="lb-advertisement">Advertisement</div>
-  {% else %}
-    <div class="lb-type lb-type--text"></div>
+    <div class="lb-advertisement">Advertisement</div>
   {% endif %}
 
   <!-- remove advertisement stylization-->
@@ -39,6 +40,7 @@
     {% endif %}
   </div>
   <!-- end author -->
+
   {% endif %}
   <!-- end sticky position toggle -->
   {% endif %}
@@ -65,5 +67,33 @@
     {% endfor %}
   </div>
   <!-- item end -->
+
+  <div class="lb-post-actions">
+
+    <!-- share 
+      Aco share buttons should be vissible on click, not on share
+    -->
+    <div class="lb-post-share">
+      <img src="{{ assets_root }}images/action_share.svg" class="lb-post-shareIcon" />
+      <div class="lb-post-shareBox">
+        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_facebook.svg"/></a>
+        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_google.svg"/></a>
+        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_linkedin.svg"/></a>
+        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_twitter.svg"/></a>
+        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_email.svg"/></a>
+        <span> | </span>
+      </div>
+    </div>
+    <!-- end share -->
+
+    <!-- permalink -->
+    <div class="lb-post-permalink">
+      <a href="google.com" id="{{ item._id }}" target="_blank">
+        <img src="{{ assets_root }}images/action_link.svg" class="lb-post-linkIcon" />
+      </a>
+    </div>
+    <!-- end permalink -->
+
+  </div>
 
 </article>

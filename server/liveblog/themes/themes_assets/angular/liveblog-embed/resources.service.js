@@ -127,6 +127,9 @@
                 obj.original_creator = {display_name: obj.commenter};
             } else if(obj.original_creator !== "" && obj.original_creator !== 'None'){
                 var userId = obj.original_creator;
+                if (typeof userId !== 'string') {
+                    return obj;
+                }
                 // check if the `userId` is cached.
                 if (!usersCache.get(userId)) {
                     // cache `promise` for batch request purposes.

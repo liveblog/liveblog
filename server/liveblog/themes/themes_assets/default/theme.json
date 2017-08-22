@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "0.1.43",
+    "version": "0.1.46",
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
     "contributors": [
@@ -15,10 +15,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/liveblog-f41b404169.css"],
-    "devScripts": ["dist/liveblog-9a8865542e.js"],
-    "styles": ["dist/liveblog-f41b404169.css"],
-    "scripts": ["dist/liveblog-9a8865542e.js"],
+    "devStyles": ["dist/liveblog-33aaa23dd9.css"],
+    "devScripts": ["dist/liveblog-f1c0014f02.js"],
+    "styles": ["dist/liveblog-33aaa23dd9.css"],
+    "scripts": ["dist/liveblog-f1c0014f02.js"],
     "options": [
         {
             "name": "datetimeFormat",
@@ -65,6 +65,23 @@
             "type": "checkbox",
             "default": false,
             "help": "Otherwise they will pop up as new posts."
+        },
+        {
+            "name": "permalinkDelimiter",
+            "label": "Permalink delimiter",
+            "type": "select",
+            "options": [
+                {
+                    "value": "?",
+                    "label": "Query delimiter (?)"
+                },
+                {
+                    "value": "#",
+                    "label": " Fragment identifier delimiter (#)"
+                }
+            ],
+            "default": "?",
+            "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
         },
         {
             "name": "canComment",
@@ -160,6 +177,20 @@
             "type": "text",
             "default": "",
             "help": "Please type in your google analytics code"
+        },
+        {
+            "name": "renderForESI",
+            "label": "Render embed for ESI",
+            "type": "checkbox",
+            "default": false,
+            "help": "Active this switch will strip the embed head and body markup for Edge Sites Includes"
+        },
+        {
+            "name": "removeStylesESI",
+            "label": "Remove styles from embed ESI",
+            "type": "checkbox",
+            "default": false,
+            "help": "Active this switch will remove the link markup for Edge Sites Includes"
         }
     ],
     "l10n": {

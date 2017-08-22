@@ -326,12 +326,12 @@ class ThemesService(BaseService):
 
             # TODO: Add version parameter to media_id() after merging related core-changes in amazon_media_storage
             # and desk_media storage.
-            # version = theme.get('version', True)
+            version = theme.get('version', True)
 
             # Remove existing file first.
             app.media.delete(app.media.media_id(final_file_name, content_type=content_type))
             # Upload new file.
-            file_id = app.media.put(file.read(), filename=final_file_name, content_type=content_type)
+            file_id = app.media.put(file.read(), filename=final_file_name, content_type=content_type, version=version)
 
             # Add screenshot_url to theme.
             if name.endswith('screenshot.png'):
@@ -538,6 +538,27 @@ class ThemesService(BaseService):
             self.get_children(theme.get('name'))
 
         return list(set(response))
+
+
+@upload_theme_blueprint.route('/theme-redeploy/<theme_name>', methods=['GET'])
+@cross_origin()
+def redeploy_a_theme(theme_name):
+    themes_service = get_resource_service('themes')
+    theme = themes_service.find_one(req=None, name=theme_name)
+    if not theme:
+        error_message = 'Themes: "{}" this theme is not registered.'.format(theme_name)
+        logger.info(error_message)
+        raise UnknownTheme(error_message)
+    assets = themes_service.get_local_themes_packages()
+    theme, files = next((theme, files) for theme, files in assets if theme['name'] == theme_name)
+    result = themes_service.save_or_update_theme(theme, files, force_update=True)
+    return json.dumps(
+        dict(
+            _status='OK',
+            _action=result.get('status'),
+            theme=theme_name
+        ), cls=MongoJSONEncoder
+    )
 
 
 @upload_theme_blueprint.route('/theme-download/<theme_name>', methods=['GET'])

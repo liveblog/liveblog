@@ -12,6 +12,7 @@ const defaultTemplates = {
   timeline: require("../../templates/template-timeline.html"),
   itemImage: require("../../templates/template-item-image.html"),
   itemEmbed: require("../../templates/template-item-embed.html"),
+  itemQuote: require("../../templates/template-item-quote.html"),
   slideshow: require("../../templates/template-slideshow.html")
 };
 
