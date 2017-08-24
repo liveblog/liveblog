@@ -12,6 +12,7 @@ export default function outputModal() {
             modalActive: '=',
             outputs: '=',
             output: '=',
+            oldOutput: '=',
             blog: '='
         },
         templateUrl: outputModalTpl,
@@ -34,6 +35,7 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
     vm.saveOutput = saveOutput;
     vm.saveOutputImage = saveOutputImage;
     vm.removeOutputImage = removeOutputImage;
+    vm.removeLogoImage = removeLogoImage;
     vm.notValidName = adsUtilSevice.uniqueNameInItems;
     vm.ordering = [{'title': 'Ascending', 'value': 1}, {'title': 'Descending', 'value': -1}];
 
@@ -108,6 +110,17 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
                     newOutput.logo = data._id;
                 })
             );
+        }
+
+        if (vm.oldOutput && vm.output.theme !== vm.oldOutput.theme) {
+            var newBlog = {
+                public_urls: angular.copy(vm.blog.public_urls)
+            };
+            delete newBlog.public_urls.output[vm.output._id];
+            api('blogs').save(vm.blog, newBlog)
+            .then(function(){
+                notify.info(gettext('Blog saved'));
+            })
         }
 
         $q.all(promises).then(function(){
