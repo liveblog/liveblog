@@ -137,13 +137,19 @@ function BlogSettingsController(
         openOutputDialog: function(output) {
             output = output || {};
             vm.output = angular.copy(output);
+            vm.oldOutput = angular.copy(output);
+
             if (vm.output.style) {
                 vm.output.preview = {
                     url: vm.output.style['background-image']
                 }
             } else {
                 vm.output.style = {};
-            }  
+            }
+            vm.output.preview_logo = {};
+            if (vm.output.logo_url) {
+                vm.output.preview_logo.url = vm.output.logo_url;
+            }
             vm.outputModalActive = true;
         },
         removeOutput: function (output, $index) {
