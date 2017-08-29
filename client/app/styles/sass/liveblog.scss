@@ -70,6 +70,7 @@
     height: 48px;
     border-right: 1px solid rgb(216, 216, 216) !important;
     margin-right: -1px;
+    box-shadow: 0 1px 0 rgb(234,234,234);
 }
 
 .button-stack .navbtn.navbtn-active,
@@ -320,9 +321,6 @@ div.subnav div.button-stack.left-stack a.homebtn {
 }
 div.settings-page .subnav .btn {
     margin-top: 10px;
-}
-div.settings-page button.last-right {
-    margin-right: 20px;
 }
 div.settings-page div.datepicker-input button, div.settings-page div.timepicker-input button {
     height: 22px!important;

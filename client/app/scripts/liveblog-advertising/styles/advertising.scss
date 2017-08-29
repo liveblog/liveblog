@@ -11,8 +11,17 @@
 	}
 
 	.advert-list-holder {
-		margin-top: 60px;
-		margin-left: 16px;
+		position: absolute;
+		top: 48px;
+		left: 0;
+		right: 0;
+		bottom: 0;		
+		overflow-y: auto;
+		& > .shadow-list-holder {
+			& > .pills-list {
+				padding: 20px;
+			}
+		}
 	}
 	.green-state {
 		border-color: #5e8d32!important;
@@ -52,5 +61,11 @@
 
     .preview .preview-large {
         text-align: center;
-    }
+	}
+	.collection-list li {
+		padding: 5px 0;
+		.state-label {
+			vertical-align: top;
+		}
+	}
 }

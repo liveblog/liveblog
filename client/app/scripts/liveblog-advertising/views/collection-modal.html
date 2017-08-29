@@ -10,9 +10,9 @@
                     <label translate>Collection Name<span class="ft-alert" ng-if="notValidName(collection, collections)">{{ notValidName(collection, collections) }}</span></label>
                     <input type="text" ng-model="collection.name" maxlength="24" required>
                 </div>
-                <div class="field">
+                <div class="field" style="margin-top:10px;">
                     <label translate>Assign adverts to collection</label>
-                    <ul>
+                    <ul class="collection-list">
                         <li ng-repeat="advert in adverts">
                             <input type="checkbox" ng-model="collection.checkAdverts[advert._id]" class="pull-left">
                             <h6 class="pull-left adverts-in-collection">
