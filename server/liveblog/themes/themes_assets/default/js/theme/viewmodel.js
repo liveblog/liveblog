@@ -102,6 +102,21 @@ vm.getPosts = function(opts) {
 };
 
 /**
+ * Private API request method
+ * @returns {object} Liveblog 3 API response
+ */
+vm.getAllPosts = function() {
+  var self = this;
+
+  var dbQuery = self.getQuery({});
+
+  var qs = "?source="
+    , fullPath = endpoint + qs + dbQuery;
+
+  return helpers.getJSON(fullPath);
+};
+
+/**
  * Get next page of posts from API.
  * @param {object} opts - query builder options.
  * @returns {promise} resolves to posts array.
@@ -131,7 +146,7 @@ vm.loadPosts = function(opts) {
 vm.updateViewModel = function(api_response, opts) {
   var self = this;
 
-  if (!opts.fromDate || opts.sort !== self.settings.postOrder) { // Means we're not polling
+  if (!opts.fromDate || opts.sort && opts.sort !== self.settings.postOrder) { // Means we're not polling
     view.hideLoadMore(self.isTimelineEnd(api_response)); // the end?
   } else { // Means we're polling for new posts
     if (!api_response._items.length) {
@@ -149,7 +164,10 @@ vm.updateViewModel = function(api_response, opts) {
     self.vm._items.push.apply(self.vm._items, api_response._items);
   }
 
-  self.settings.postOrder = opts.sort;
+  if (opts.sort) {
+    self.settings.postOrder = opts.sort;
+  }
+
   return api_response;
 };
 
@@ -213,7 +231,7 @@ vm.getQuery = function(opts) {
             {"term": {"sticky": false}},
             {"term": {"post_status": "open"}},
             {"not": {"term": {"deleted": true}}},
-            {"range": {"_updated": {"lt": this.vm.timeInitialized}}}
+            {"range": {"_updated": {"lt": this.vm ? this.vm.timeInitialized : new Date().toISOString()}}}
           ]
         }
       }

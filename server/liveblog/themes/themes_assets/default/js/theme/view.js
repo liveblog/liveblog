@@ -7,9 +7,12 @@
 var helpers = require('./helpers');
 var templates = require('./templates');
 var Slideshow = require('./slideshow');
+var Permalink = require('./permalink');
 
 var timelineElem = document.querySelectorAll(".lb-posts.normal")
   , loadMorePostsButton = helpers.getElems("load-more-posts");
+
+const permalink = new Permalink();
 
 /**
  * Replace the current timeline unconditionally.
@@ -31,6 +34,7 @@ function renderTimeline(api_response) {
   updateTimestamps();
   loadEmbeds();
   attachSlideshow();
+  attachPermalink();
 }
 
 /**
@@ -46,7 +50,7 @@ function renderPosts(api_response) {
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
 
-    if (posts.operation === "delete") {
+    if (!api_response.requestOpts.page && post.deleted) {
       deletePost(post._id);
       return; // early
     }
@@ -57,8 +61,8 @@ function renderPosts(api_response) {
       assets_root: window.LB.assets_root
     });
 
-    if (posts.operation === "update") {
-      updatePost(renderedPost);
+    if (!api_response.requestOpts.page && post.operation === "update") {
+      updatePost(post._id, renderedPost);
       return; // early
     }
 
@@ -101,6 +105,7 @@ function addPosts(posts, opts) {
 
   timelineElem[0].insertAdjacentHTML(position, postsHTML);
   attachSlideshow();
+  attachPermalink();
 }
 
 /**
@@ -108,8 +113,10 @@ function addPosts(posts, opts) {
  * @param {string} - a post URN
  */
 function deletePost(postId) {
-  var elem = helpers.getElems('data-js-post-id=\"' + postId + '\"');
-  elem[0].remove();
+  var elem = helpers.getElems('[data-js-post-id=\"' + postId + '\"]');
+  if (elem.length) {
+    elem[0].remove();
+  }
 }
 
 /**
@@ -117,8 +124,12 @@ function deletePost(postId) {
  * @param {string} - a post URN
  */
 function updatePost(postId, renderedPost) {
-  var elem = helpers.getElems('data-js-post-id=\"' + postId + '\"');
-  elem[0].innerHTML = renderedPost;
+  var elem = helpers.getElems('[data-js-post-id=\"' + postId + '\"]');
+  if (elem.length) {
+    elem[0].outerHTML = renderedPost;
+    attachSlideshow();
+    attachPermalink();
+  }
 }
 
 /**
@@ -239,6 +250,43 @@ function attachSlideshow() {
   }
 }
 
+function attachPermalink() {
+  const permalinks = document.querySelectorAll('.lb-post-permalink a');
+
+  permalinks.forEach((link) => {
+    link.href = permalink.getUrl(link.id);
+  });
+}
+
+function checkPermalink(posts) {
+  var found = false;
+
+  if (permalink._id) {
+    posts._items.forEach((post) => {
+      if (permalink._id === post._id) {
+        found = true;
+      }
+    });
+  }
+
+  return found;
+}
+
+function permalinkScroll() {
+  var scrollElem;
+  var found = false;
+  
+  scrollElem = helpers.getElems('[data-js-post-id=\"' + permalink._id + '\"]');
+
+  if (scrollElem.length > 0) {
+    scrollElem[0].classList.add('lb-post-permalink-selected');
+    scrollElem[0].scrollIntoView();
+    found = true;
+  } 
+
+  return found;
+}
+
 module.exports = {
   addPosts: addPosts,
   deletePost: deletePost,
@@ -253,5 +301,9 @@ module.exports = {
   showSuccessCommentMsg: showSuccessCommentMsg,
   displayCommentFormErrors: displayCommentFormErrors,
   clearCommentFormErrors: clearCommentFormErrors,
-  attachSlideshow: attachSlideshow
+  attachSlideshow: attachSlideshow,
+  attachPermalink: attachPermalink,
+  checkPermalink: checkPermalink,
+  permalinkScroll: permalinkScroll,
+  permalink: permalink
 };
