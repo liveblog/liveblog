@@ -113,13 +113,7 @@ vm.getAllPosts = function() {
   var qs = "?source="
     , fullPath = endpoint + qs + dbQuery;
 
-  return helpers.getJSON(fullPath)
-    .then((posts) => {
-      return posts;
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+  return helpers.getJSON(fullPath);
 };
 
 /**
@@ -152,7 +146,7 @@ vm.loadPosts = function(opts) {
 vm.updateViewModel = function(api_response, opts) {
   var self = this;
 
-  if (!opts.fromDate || (opts.sort && opts.sort !== self.settings.postOrder)) { // Means we're not polling
+  if (!opts.fromDate || opts.sort && opts.sort !== self.settings.postOrder) { // Means we're not polling
     view.hideLoadMore(self.isTimelineEnd(api_response)); // the end?
   } else { // Means we're polling for new posts
     if (!api_response._items.length) {

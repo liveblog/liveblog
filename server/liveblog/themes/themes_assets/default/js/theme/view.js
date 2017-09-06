@@ -256,8 +256,6 @@ function attachPermalink() {
   permalinks.forEach((link) => {
     link.href = permalink.getUrl(link.id);
   });
-
-  return permalink._changedSort;
 }
 
 function checkPermalink(posts) {

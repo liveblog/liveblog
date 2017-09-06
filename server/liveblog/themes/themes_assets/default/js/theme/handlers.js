@@ -81,7 +81,8 @@ var buttons = {
     });
 
     view.attachSlideshow();
-    if (view.attachPermalink()) {
+    view.attachPermalink();
+    if (view.permalink._changedSort) {
       loadSort(LB.settings.postOrder)
         .then(checkForScroll);
     } else {
@@ -94,16 +95,16 @@ function loadSort(sortBy) {
   // initialy on server sort params are set as newest_first, oldest_first
   // on client we dont use this, so this is temp fix
   switch (sortBy) {
-    case 'oldest_first':
-    case 'ascending':
-      sortBy = 'ascending';
-      break;
-    case 'newest_first':
-    case 'descending':
-      sortBy = 'descending';
-      break;
-    default:
-      sortBy = 'editorial';
+  case 'oldest_first':
+  case 'ascending':
+    sortBy = 'ascending';
+    break;
+  case 'newest_first':
+  case 'descending':
+    sortBy = 'descending';
+    break;
+  default:
+    sortBy = 'editorial';
   }
 
   return viewmodel.loadPosts({sort: sortBy})
@@ -115,7 +116,7 @@ function loadSort(sortBy) {
 
 function checkForScroll() {
   viewmodel.getAllPosts()
-    .then(function(posts) {
+    .then((posts) => {
       if (view.checkPermalink(posts)) {
         loadForScroll();
       }
