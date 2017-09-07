@@ -76,6 +76,7 @@ class Blog:
                 if group['id'] == 'main':
                     for ref in group['refs']:
                         ref['item'] = get_resource_service('archive').find_one(req=None, _id=ref['residRef'])
+                        ref['item']['original_creator'] = get_resource_service('users').find_one(req=None, _id=ref['item']['original_creator'])
             posts.append(doc)
 
         # Enrich documents

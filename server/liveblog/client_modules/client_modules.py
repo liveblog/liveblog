@@ -228,6 +228,7 @@ class ClientBlogPostsService(BlogPostsService):
                 for ref in group.get('refs'):
                     item = ref.get('item')
                     if item:
+                        item['original_creator'] = get_resource_service('users').find_one(req=None,_id=item['original_creator'])
                         items.append(item)
 
         if not items:
@@ -235,6 +236,7 @@ class ClientBlogPostsService(BlogPostsService):
             for assoc in self.packageService._get_associations(doc):
                 if 'residRef' in assoc:
                     item = get_resource_service('archive').find_one(req=None, _id=assoc['residRef'])
+                    item['original_creatored'] = get_resource_service('users').find_one(req=None, _id=item['original_creator'])
                     items.append(item)
 
         items_length = len(items)
