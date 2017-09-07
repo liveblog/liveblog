@@ -52,12 +52,9 @@ before_install:
     - sudo apt-get -qq update --allow-unauthenticated
     - sudo apt-get purge -f elasticsearch
     - sudo apt-get install -t stable elasticsearch
-    - nvm install --lts node
-    - nvm use node
     - node --version
     - npm config set loglevel warn
-    - npm install -g npm@latest grunt-cli
-    - npm install -g grunt-cli ;
+    - npm install -g grunt-cli
     - pip install requests
     - export DISPLAY=:99.0
     - /sbin/start-stop-daemon --start --quiet --pidfile /tmp/custom_xvfb_99.pid --make-pidfile --background --exec /usr/bin/Xvfb -- :99 -ac -screen 0 1920x1080x24
