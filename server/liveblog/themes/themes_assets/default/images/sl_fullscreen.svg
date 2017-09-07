@@ -5,14 +5,24 @@
 <style type="text/css">
 	.st0{fill:none;}
 	.st1{fill:#FFFFFF;}
-	.st2{fill:#555555;}
 </style>
 <path class="st0" d="M0,0h24v24H0V0z"/>
 <g>
-	<path class="st1" d="M13.5,19.5v-6h6v3h-3v3H13.5z M7.5,19.5v-3h-3v-3h6v6H7.5z M13.5,10.5v-6h3v3h3v3H13.5z M4.5,10.5v-3h3v-3h3v6
-		H4.5z"/>
-	<path class="st2" d="M16,5v3h3v2h-5V5H16 M10,5v5H5V8h3V5H10 M19,14v2h-3v3h-2v-5H19 M10,14v5H8v-3H5v-2H10 M17,4h-1h-2h-1v1v5v1h1
-		h5h1v-1V8V7h-1h-2V5V4L17,4z M11,4h-1H8H7v1v2H5H4v1v2v1h1h5h1v-1V5V4L11,4z M20,13h-1h-5h-1v1v5v1h1h2h1v-1v-2h2h1v-1v-2V13L20,13
-		z M11,13h-1H5H4v1v2v1h1h2v2v1h1h2h1v-1v-5V13L11,13z"/>
+	
+		<image style="overflow:visible;opacity:0.75;" width="26" height="26" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABoAAAAaCAYAAACpSkzOAAAACXBIWXMAAAsSAAALEgHS3X78AAAA
+GXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAc9JREFUeNrEVoFOwyAQhbbrNrdp
+Fk38/y/UtVlZWxAhebc8kXbGzEryQgPHPbh7B1VqoabvZBOb/60TnUCc+WSex/0UYXWDpAwo0Mf2
+kRAV+HaYc1On0xMk4nwVUAOxjXCoYLPC9wCMROrniIQknnQdsA14QB+bgTMFEh7v0PcBNiWrJsIV
+SQ4BTwGP+I4LTwEX2G8wHzfWBjSYT3Ppc0Ql7TQ6eQ44gmzEIsnXLuCF7CWMFuHz1F+JNIWtRrge
+QXKEU4OTDlizprCWlEMDGwlf9OtzJ6qx+ADssCGdKEucVLCxIGmQr55sJ+UtjmSHmhwYWttQHliR
+s3XkE+cnjDXozwFvIFOUsxYbGWBriNRPETHZBaHsMWYoJIok7pBbizVMciUqlrpUc3UkFb9BkmuS
+9Uj2UXF72EjoHNYW5C9bR0WmjnYkBk31EhX5ijKQHGqEtyOym6pjUrFrkQtFtbbH2DCXilQMDgsM
+nG6pTnxykxcYszhNCxgK41UMZSZHXLx86fYI3wWqklvEohSi9N9J4l8u1nLmlRSpW4jgnNSJPAcd
+kZxg9+1EVYbEUa3wtZJ7JrqJZ8KldfRvD989nnL/06f8T35OFvvdWqx9CjAA4x3QROPMmoEAAAAA
+SUVORK5CYII=" transform="matrix(1 0 0 1 -1 -1)">
+	</image>
+	<g>
+		<path class="st1" d="M5,16h3v3h2v-5H5V16z M8,8H5v2h5V5H8V8z M14,19h2v-3h3v-2h-5V19z M16,8V5h-2v5h5V8H16z"/>
+	</g>
 </g>
 </svg>

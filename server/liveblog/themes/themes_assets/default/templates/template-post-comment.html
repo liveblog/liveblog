@@ -1,0 +1,43 @@
+<div class="{% if not item.sticky or settings.stickyPosition == 'bottom' %}lb-item{% endif %} commentItem">
+    <article>{{ item.groups[1].refs[0].item.text | safe }}</article>
+</div>
+{% if item.groups[1].refs|length > 1 %}
+<div class="items-containerIndent">
+{% set secondary = item.groups[1].refs[1].item %}
+  <!-- author plus avatar -->
+  <div class="lb-author lb-author--indent">
+    {% if settings.showAuthor and secondary.original_creator %}
+      {% if settings.showAuthorAvatar %}
+        {% if secondary.original_creator.picture_url %}
+        <img class="lb-author__avatar" src="{{ secondary.original_creator.picture_url }}" />
+        {% else %}
+        <div class="lb-author__avatar"></div>
+        {% endif %}
+        <div class="lb-author__name">
+            {{ secondary.original_creator.display_name }}
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+  <!-- end author -->
+    {% for ref in item.groups[1].refs %}
+      {% if loop.index0 > 0 %}
+          {% if ref.item.item_type == "image" %}
+          <div class="{% if not item.sticky or settings.stickyPosition == 'bottom' %}lb-item{% endif %} {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %} {{ref.item.item_type}}">
+          {% else %}
+          <div class="{% if not item.sticky or settings.stickyPosition == 'bottom' %}lb-item{% endif %} {{ref.item.item_type}}">
+          {% endif %}
+            {% if ref.item.item_type == "embed" %}
+              {% include "template-item-embed.html" %}
+            {% elif ref.item.item_type == "image" %}
+              {% include "template-item-image.html" %}
+            {% elif ref.item.item_type == "quote" %}
+              {% include "template-item-quote.html" %}
+            {% else %}
+              <article>{{ ref.item.text | safe }}</article>
+            {% endif %}
+           </div>
+        {% endif %}
+    {% endfor %}
+</div>
+{% endif %}
