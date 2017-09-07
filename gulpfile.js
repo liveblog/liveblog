@@ -192,7 +192,7 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
       api_response: apiResponse.posts._items.length > 0 ? apiResponse : testdata.api_response,
       include_js_options: true,
       debug: DEBUG
-    }, nunjucksOptions))
+    }, apiResponse.posts._items.length > 0 ? {} : nunjucksOptions ))
 
     .pipe(plugins.rename("index.html"))
     .pipe(gulp.dest('.'))
