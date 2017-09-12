@@ -82,6 +82,7 @@ var buttons = {
 
     view.attachSlideshow();
     view.attachPermalink();
+    view.attachShareBox();
     if (view.permalink._changedSort) {
       loadSort(LB.settings.postOrder)
         .then(checkForScroll);
