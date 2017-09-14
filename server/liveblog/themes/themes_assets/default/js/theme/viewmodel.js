@@ -87,7 +87,7 @@ vm.getPosts = function(opts) {
   });
 
   var page = opts.fromDate ? 1 : opts.page;
-  var qs = "?max_results=" + settings.postsPerPage + "&page=" + page + "&source="
+  var qs = '?max_results=embedded={"syndication_in":1}' + settings.postsPerPage + '&page=' + page + '&source='
     , fullPath = endpoint + qs + dbQuery;
 
   return helpers.getJSON(fullPath)
@@ -230,7 +230,6 @@ vm.getQuery = function(opts) {
           "and": [
             {"term": {"sticky": false}},
             {"term": {"post_status": "open"}},
-            {"not": {"term": {"deleted": true}}},
             {"range": {"_updated": {"lt": this.vm ? this.vm.timeInitialized : new Date().toISOString()}}}
           ]
         }
@@ -244,7 +243,7 @@ vm.getQuery = function(opts) {
   };
 
   if (opts.fromDate) {
-    query.query.filtered.filter.and[3].range._updated = {
+    query.query.filtered.filter.and[2].range._updated = {
       "gt": opts.fromDate
     };
   }
