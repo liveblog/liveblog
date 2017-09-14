@@ -22,6 +22,7 @@ const sendComment = (e) => {
   view.clearCommentFormErrors();
 
   return viewmodel.sendComment(name, comment)
+    .then(view.clearCommentDialog)
     .then(view.toggleCommentDialog)
     .then(() => document
         .querySelector('form.comment')
@@ -82,6 +83,7 @@ var buttons = {
 
     view.attachSlideshow();
     view.attachPermalink();
+    view.attachShareBox();
     if (view.permalink._changedSort) {
       loadSort(LB.settings.postOrder)
         .then(checkForScroll);
