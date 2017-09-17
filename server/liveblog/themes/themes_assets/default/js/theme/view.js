@@ -159,6 +159,11 @@ function loadEmbeds() {
   }
 }
 
+function clearCommentDialog() {
+  document.querySelector('#comment-name').value = '';
+  document.querySelector('#comment-content').value = '';
+}
+
 function toggleCommentDialog() {
   let commentForm = document.querySelector('form.comment');
   let isHidden = false;
@@ -317,5 +322,6 @@ module.exports = {
   checkPermalink: checkPermalink,
   permalinkScroll: permalinkScroll,
   attachShareBox: attachShareBox,
-  permalink: permalink
+  permalink: permalink,
+  clearCommentDialog: clearCommentDialog
 };
