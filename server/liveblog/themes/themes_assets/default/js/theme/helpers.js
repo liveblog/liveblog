@@ -7,8 +7,10 @@
 var moment = require('moment'),
   settings = window.LB.settings;
 
+require("moment/min/locales.min");
+moment.locale(settings.language);
 function convertTimestamp(timestamp) {
-  if (!settings.datetimeFormat || settings.datetimeFormat === 'timeAgo') {
+  if (!settings.datetimeFormat || settings.datetimeFormat === 'ago') {
     return moment(timestamp).fromNow();
   }
   return moment(timestamp).format(settings.datetimeFormat);

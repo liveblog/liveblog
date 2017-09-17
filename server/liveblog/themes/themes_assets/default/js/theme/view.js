@@ -159,6 +159,11 @@ function loadEmbeds() {
   }
 }
 
+function clearCommentDialog() {
+  document.querySelector('#comment-name').value = '';
+  document.querySelector('#comment-content').value = '';
+}
+
 function toggleCommentDialog() {
   let commentForm = document.querySelector('form.comment');
   let isHidden = false;
@@ -265,7 +270,7 @@ function attachShareBox() {
   const shareLinks = document.querySelectorAll('.lb-post-shareBox__item');
 
   shareLinks.forEach((link) => {
-    link.href += permalink.getUrl(link.getAttribute('data-link-id'));
+    link.href = link.getAttribute('data-link-base') + permalink.getUrl(link.getAttribute('data-link-id'));
   });
 }
 
@@ -317,5 +322,6 @@ module.exports = {
   checkPermalink: checkPermalink,
   permalinkScroll: permalinkScroll,
   attachShareBox: attachShareBox,
-  permalink: permalink
+  permalink: permalink,
+  clearCommentDialog: clearCommentDialog
 };
