@@ -80,14 +80,14 @@ vm.getPosts = function(opts) {
 
   var dbQuery = self.getQuery({
     sort: opts.sort || self.settings.postOrder,
-    highlightsOnly: false || opts.highlightsOnly,
+    highlightsOnly: false || self.settings.onlyHighlighted,
     fromDate: opts.fromDate
       ? opts.fromDate
       : false
   });
 
   var page = opts.fromDate ? 1 : opts.page;
-  var qs = "?max_results=" + settings.postsPerPage + "&page=" + page + "&source="
+  var qs = '?max_results=embedded={"syndication_in":1}' + settings.postsPerPage + '&page=' + page + '&source='
     , fullPath = endpoint + qs + dbQuery;
 
   return helpers.getJSON(fullPath)
@@ -158,7 +158,7 @@ vm.updateViewModel = function(api_response, opts) {
 
   if (opts.sort !== self.settings.postOrder) {
     self.vm = getEmptyVm();
-    view.hideLoadMore(false);
+    view.hideLoadMore(self.isTimelineEnd(api_response));
     Object.assign(self.vm, api_response);
   } else {
     self.vm._items.push.apply(self.vm._items, api_response._items);
@@ -230,7 +230,6 @@ vm.getQuery = function(opts) {
           "and": [
             {"term": {"sticky": false}},
             {"term": {"post_status": "open"}},
-            {"not": {"term": {"deleted": true}}},
             {"range": {"_updated": {"lt": this.vm ? this.vm.timeInitialized : new Date().toISOString()}}}
           ]
         }
@@ -244,14 +243,14 @@ vm.getQuery = function(opts) {
   };
 
   if (opts.fromDate) {
-    query.query.filtered.filter.and[3].range._updated = {
+    query.query.filtered.filter.and[2].range._updated = {
       "gt": opts.fromDate
     };
   }
 
   if (opts.highlightsOnly === true) {
     query.query.filtered.filter.and.push({
-      term: {highlight: true}
+      term: {lb_highlight: true}
     });
   }
 

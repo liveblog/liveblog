@@ -1,3 +1,13 @@
+{% macro translate(text) %}
+{% if not options.i18n[options.settings.language] %}
+    {{ text }}
+{% elif not options.i18n[options.settings.language][text] %}
+    {{ text }}
+{% else %}
+    {{ options.i18n[options.settings.language][text] }}
+{% endif %}
+{% endmacro %}
+
 {% block timeline %}
 <div class="lb-timeline {{ settings.language }}">
   {% if settings.showTitle and blog.title %}
@@ -33,23 +43,29 @@
         <div
           class="sorting-bar__order {%if settings.postOrder == 'editorial' %}sorting-bar__order--active{% endif %}"
           data-js-orderby_editorial>
-          {{ options.l10n.editorial }}
+          {{  translate("Editorial") }}
         </div>
         <div
           class="sorting-bar__order {%if settings.postOrder == 'newest_first' %}sorting-bar__order--active{% endif %}"
           data-js-orderby_descending>
-          {{ options.l10n.descending }}
+          {{  translate("Oldest first") }}
         </div>
         <div
           class="sorting-bar__order {%if settings.postOrder == 'oldest_first'%}sorting-bar__order--active{% endif %}"
           data-js-orderby_ascending>
-          {{ options.l10n.ascending }}
+          {{ translate("Newest first") }}
         </div>
       </div>
     </div>
     <div class="header-bar__actions"></div>
       {% if settings.canComment %}
-        <button class="header-bar__comment" data-js-show-comment-dialog>Comment</button>
+        <button class="header-bar__comment" data-js-show-comment-dialog>
+            {{ translate("Comment") }}
+        </button>
+      {% endif %}
+
+      {% if settings.hasHighlights %}
+        <button class="header-bar__highlight" data-js-show-highlighted>{{ translate('Highlights') }}</button>
       {% endif %}
 
       {% if settings.showLiveblogLogo %}
@@ -57,7 +73,7 @@
         <img src="{{ output.logo_url }}"/>
         {% else %}
         <a class="header-bar__logo" href="https://www.liveblog.pro" target="_blank">
-          <span>Powered by</span>
+          <span>{{ translate("Powered by") }}</span>
           <img src="{{ assets_root }}images/lb-logo.svg" />
         </a>
         {% endif %}
@@ -84,7 +100,7 @@
     {% endif %}
     {% if api_response.posts._items|length == 0 %}
       <div class="lb-post empty-message">
-        <div>Blog posts are not currently available.</div>
+        <div>{{ translate("No posts for now") }}</div>
       </div>
       {% else %}
       <section class="lb-posts list-group normal">
@@ -95,7 +111,9 @@
         {% endfor %}
       </section>
       {% if api_response.posts._meta.max_results < api_response.posts._meta.total %}
-        <button class="lb-button load-more-posts" data-js-loadmore>{{ options.l10n.loadNewPosts }}</button>
+        <button class="lb-button load-more-posts" data-js-loadmore>
+            {{ translate("Load more posts") }}
+        </button>
       {% endif %}
     {% endif %}
   </div>

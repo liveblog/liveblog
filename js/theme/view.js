@@ -35,6 +35,7 @@ function renderTimeline(api_response) {
   loadEmbeds();
   attachSlideshow();
   attachPermalink();
+  attachShareBox();
 }
 
 /**
@@ -106,6 +107,7 @@ function addPosts(posts, opts) {
   timelineElem[0].insertAdjacentHTML(position, postsHTML);
   attachSlideshow();
   attachPermalink();
+  attachShareBox();
 }
 
 /**
@@ -129,6 +131,7 @@ function updatePost(postId, renderedPost) {
     elem[0].outerHTML = renderedPost;
     attachSlideshow();
     attachPermalink();
+    attachShareBox();
   }
 }
 
@@ -154,6 +157,11 @@ function loadEmbeds() {
   if (window.twttr) {
     twttr.widgets.load();
   }
+}
+
+function clearCommentDialog() {
+  document.querySelector('#comment-name').value = '';
+  document.querySelector('#comment-content').value = '';
 }
 
 function toggleCommentDialog() {
@@ -258,6 +266,14 @@ function attachPermalink() {
   });
 }
 
+function attachShareBox() {
+  const shareLinks = document.querySelectorAll('.lb-post-shareBox__item');
+
+  shareLinks.forEach((link) => {
+    link.href = link.getAttribute('data-link-base') + permalink.getUrl(link.getAttribute('data-link-id'));
+  });
+}
+
 function checkPermalink(posts) {
   var found = false;
 
@@ -305,5 +321,7 @@ module.exports = {
   attachPermalink: attachPermalink,
   checkPermalink: checkPermalink,
   permalinkScroll: permalinkScroll,
-  permalink: permalink
+  attachShareBox: attachShareBox,
+  permalink: permalink,
+  clearCommentDialog: clearCommentDialog
 };

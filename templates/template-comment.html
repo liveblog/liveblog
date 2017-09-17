@@ -1,17 +1,17 @@
 <form class="comment hide">
   <div class="comment__wrap">
-    <h2 class="comment__headline">Post a comment</h2>
+    <h2 class="comment__headline">{{ translate('Post a comment') }}</h2>
     <div>
-      <input type="name" placeholder="Name" id="comment-name" />
+      <input type="name" placeholder="{{ translate('Name *') }}" id="comment-name" />
     </div>
     <div>
-      <textarea placeholder="Comment" id="comment-content"></textarea>
+      <textarea placeholder="{{ translate('Comment *') }}" id="comment-content"></textarea>
     </div>
     <div>
-      <button class="comment__button">Send</button>
-      <button class="comment__button comment__button--grey" data-js-close-comment-dialog>Cancel</button>
+      <button class="comment__button">{{ translate('Send') }}</button>
+      <button class="comment__button comment__button--grey" data-js-close-comment-dialog>{{ translate('Cancel')  }}</button>
     </div>
   </div>
 </form>
 
-<div class="comment-sent hide">Your comment has been sent for approval</div>
+<div class="comment-sent hide">{{ translate('Your comment was sent for approval') }}.</div>

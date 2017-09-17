@@ -1,3 +1,13 @@
+{% macro translate(text) %}
+{% if not options.i18n[options.settings.language] %}
+    {{ text }}
+{% elif not options.i18n[options.settings.language][text] %}
+    {{ text }}
+{% else %}
+    {{ options.i18n[options.settings.language][text] }}
+{% endif %}
+{% endmacro %}
+
 {% set mainItem = item.groups[1].refs[0].item %}
 {% if mainItem.commenter %}
   {% set type = 'comment' %}
@@ -25,7 +35,7 @@
   {% elif item.lb_highlight %}
     <img src="{{ assets_root }}images/highlighted.svg" class="highlight-icon" />
   {% elif item.post_items_type == "advertisement" %}
-    <div class="lb-advertisement">Advertisement</div>
+    <div class="lb-advertisement">{{ translate('Advertisement') }}</div>
   {% endif %}
 
   <!-- remove advertisement stylization-->
@@ -38,7 +48,7 @@
     {% if settings.showAuthor %}
       <div class="lb-author__name">
       {% if mainItem.commenter %}
-        Comment by {{ mainItem.commenter }}
+        {{ translate('Comment by') }} {{ mainItem.commenter }}
       {% elif mainItem.original_creator %}
         {{ mainItem.original_creator.display_name }}
       {% endif %}
@@ -97,11 +107,31 @@
     <div class="lb-post-share">
       <img src="{{ assets_root }}images/action_share.svg" class="lb-post-shareIcon" />
       <div class="lb-post-shareBox">
-        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_facebook.svg"/></a>
-        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_google.svg"/></a>
-        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_linkedin.svg"/></a>
-        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_twitter.svg"/></a>
-        <a class="lb-post-shareBox__item" href="#"><img src="{{ assets_root }}images/share_email.svg"/></a>
+        <a class="lb-post-shareBox__item"
+          onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+          data-link-base="//www.facebook.com/sharer.php?s=100&p[title]=&p[url]="
+          data-link-id={{item._id}}><img src="{{ assets_root }}images/share_facebook.svg"/>
+        </a>
+        <a class="lb-post-shareBox__item"
+          onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+          data-link-base="//plus.google.com/share?url="
+          data-link-id={{item._id}}><img src="{{ assets_root }}images/share_google.svg"/>
+        </a>
+        <a class="lb-post-shareBox__item"
+          onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+          data-link-base="//www.linkedin.com/shareArticle?mini=true&url="
+          data-link-id={{item._id}}><img src="{{ assets_root }}images/share_linkedin.svg"/>
+        </a>
+        <a class="lb-post-shareBox__item"
+          onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+          data-link-base="//twitter.com/home?status="
+          data-link-id={{item._id}}><img src="{{ assets_root }}images/share_twitter.svg"/>
+        </a>
+        <a class="lb-post-shareBox__item"
+          onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1024,height=768');return false;"
+          data-link-base="mailto:?to=&subject=Liveblog&body="
+          data-link-id={{item._id}}><img src="{{ assets_root }}images/share_email.svg"/>
+        </a>
         <span> | </span>
       </div>
     </div>
