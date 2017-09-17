@@ -22,6 +22,7 @@ const sendComment = (e) => {
   view.clearCommentFormErrors();
 
   return viewmodel.sendComment(name, comment)
+    .then(view.clearCommentDialog)
     .then(view.toggleCommentDialog)
     .then(() => document
         .querySelector('form.comment')
