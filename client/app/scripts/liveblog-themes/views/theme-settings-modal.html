@@ -32,6 +32,15 @@
                                 name="{{ option.name }}"
                                 ng-model="vm.settings[option.name]" />
                         </div>
+                        <div
+                            ng-switch-when="textarea"
+                            class="pull-right text-input">
+                            <textarea
+                                rows="4"
+                                name="{{ option.name }}"
+                                ng-model="vm.settings[option.name]">
+                            </textarea>
+                        </div>
                         <div ng-switch-when="select">
                             <select class="form-control"
                                     name="{{ option.name }}"
