@@ -32,7 +32,7 @@ def env(variable, fallback_value=None):
         # Return None for __EMPTY__.
         return ''
 
-    if not fallback_value:
+    if fallback_value is None:
         # Return env value if fallback is not available
         return env_value
 
