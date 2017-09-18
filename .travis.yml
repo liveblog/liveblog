@@ -15,8 +15,8 @@ env:
         - MAIL_PORT=2225
         - MAIL_USERNAME=
         - MAIL_PASSWORD=
-        - MAIL_USE_TLS=
-        - MAIL_USE_SSL=
+        - MAIL_USE_TLS=0
+        - MAIL_USE_SSL=0
         - MAIL_DEBUG=1
         - MAIL_SUPPRESS_SEND=True
 
