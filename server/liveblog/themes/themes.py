@@ -125,7 +125,7 @@ class ThemesResource(Resource):
         'ampThemeInlineCss': {
             'type': 'string'
         },
-        'l10n': {
+        'i18n': {
             'type': 'dict',
             'default': {}
         },

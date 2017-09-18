@@ -67,6 +67,17 @@ var buttons = {
     '[data-js-close-comment-dialog]': (e) => {
       e.preventDefault();
       view.toggleCommentDialog();
+    },
+
+    '[data-js-show-highlighted': () => {
+      let highlightButton = document.querySelector('.header-bar__highlight');
+
+      highlightButton.classList.toggle('header-bar__highlight--active');
+      LB.settings.onlyHighlighted = !LB.settings.onlyHighlighted;
+      return viewmodel.loadPosts()
+        .then(view.renderTimeline)
+        .then(view.displayNewPosts)
+        .catch(catchError);
     }
   },
 
