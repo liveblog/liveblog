@@ -270,7 +270,7 @@ function attachShareBox() {
   const shareLinks = document.querySelectorAll('.lb-post-shareBox__item');
 
   shareLinks.forEach((link) => {
-    link.href += permalink.getUrl(link.getAttribute('data-link-id'));
+    link.href = link.getAttribute('data-link-base') + permalink.getUrl(link.getAttribute('data-link-id'));
   });
 }
 

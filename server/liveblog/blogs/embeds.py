@@ -172,7 +172,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         assets_root = theme_service.get_theme_assets_url(theme_name)
 
     theme_settings = theme_service.get_default_settings(theme)
-    l10n = theme.get('l10n', {})
+    i18n = theme.get('i18n', {})
 
     # Check if theme is SEO and/or AMP compatible.
     is_amp = theme.get('ampTheme', False)
@@ -222,7 +222,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             settings=theme_settings,
             api_response=api_response,
             assets_root=assets_root,
-            l10n=l10n
+            i18n=i18n
         )
 
     scope = {
@@ -234,7 +234,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         'template': template_content,
         'debug': app.config.get('LIVEBLOG_DEBUG'),
         'assets_root': assets_root,
-        'l10n': l10n
+        'i18n': i18n
     }
     if is_amp:
         # Add AMP compatible css to template context

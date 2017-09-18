@@ -80,7 +80,7 @@ vm.getPosts = function(opts) {
 
   var dbQuery = self.getQuery({
     sort: opts.sort || self.settings.postOrder,
-    highlightsOnly: false || opts.highlightsOnly,
+    highlightsOnly: false || self.settings.onlyHighlighted,
     fromDate: opts.fromDate
       ? opts.fromDate
       : false
@@ -158,7 +158,7 @@ vm.updateViewModel = function(api_response, opts) {
 
   if (opts.sort !== self.settings.postOrder) {
     self.vm = getEmptyVm();
-    view.hideLoadMore(false);
+    view.hideLoadMore(self.isTimelineEnd(api_response));
     Object.assign(self.vm, api_response);
   } else {
     self.vm._items.push.apply(self.vm._items, api_response._items);
@@ -250,7 +250,7 @@ vm.getQuery = function(opts) {
 
   if (opts.highlightsOnly === true) {
     query.query.filtered.filter.and.push({
-      term: {highlight: true}
+      term: {lb_highlight: true}
     });
   }
 

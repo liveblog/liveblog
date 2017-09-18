@@ -5,7 +5,7 @@
       {% if settings.showAuthorAvatar %}
         <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
         <div class="lb-author__name">
-            Comment by {{ ref.item.commenter }}
+            {{ translate('Comment by') }} {{ ref.item.commenter }}
         </div>
       {% endif %}
     {% endif %}
