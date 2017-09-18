@@ -2,8 +2,8 @@
     'use strict';
     var CACHE_OPTIONS = {
         deleteOnExpire: 'aggressive',
-        recycleFreq: 15 * 60 * 1000, // 15 mins
-        maxAge: 30 * 60 * 1000, // 30 mins
+        recycleFreq: 2 * 60 * 1000, // 2 mins
+        maxAge: 4 * 60 * 1000, // 4 mins
         storageMode: 'memory',
     };
     srcSet.$inject = ['fixProtocol'];
