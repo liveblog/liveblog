@@ -10,7 +10,8 @@ var Slideshow = require('./slideshow');
 var Permalink = require('./permalink');
 
 var timelineElem = document.querySelectorAll(".lb-posts.normal")
-  , loadMorePostsButton = helpers.getElems("load-more-posts");
+  , loadMorePostsButton = helpers.getElems("load-more-posts")
+  , emptyMessage = helpers.getElems("empty-message");
 
 const permalink = new Permalink();
 
@@ -30,7 +31,13 @@ function renderTimeline(api_response) {
     }));
 
   });
-  timelineElem[0].innerHTML = renderedPosts.join("");
+  if (renderedPosts.length) {
+    emptyMessage[0].classList.toggle("mod--displaynone", true);
+    timelineElem[0].innerHTML = renderedPosts.join("");
+  } else {
+    emptyMessage[0].classList.toggle("mod--displaynone", false);
+    timelineElem[0].innerHTML = '';
+  }
   updateTimestamps();
   loadEmbeds();
   attachSlideshow();

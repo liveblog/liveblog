@@ -1,13 +1,5 @@
 <!-- inject:template-content -->
-{% macro translate(text) %}
-{% if not options.i18n[settings.language] %}
-    {{ text }}
-{% elif not options.i18n[settings.language][text] %}
-    {{ text }}
-{% else %}
-    {{ options.i18n[settings.language][text] }}
-{% endif %}
-{% endmacro %}
+{% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
 
 {% block timeline %}
 <div class="lb-timeline {{ settings.language }}">
@@ -49,12 +41,12 @@
         <div
           class="sorting-bar__order {%if settings.postOrder == 'newest_first' %}sorting-bar__order--active{% endif %}"
           data-js-orderby_descending>
-          {{  translate("Oldest first") }}
+          {{  translate("Newest first") }}
         </div>
         <div
           class="sorting-bar__order {%if settings.postOrder == 'oldest_first'%}sorting-bar__order--active{% endif %}"
           data-js-orderby_ascending>
-          {{ translate("Newest first") }}
+          {{ translate("Oldest first") }}
         </div>
       </div>
     </div>
@@ -99,11 +91,9 @@
         {% endfor %}
       </section>
     {% endif %}
-    {% if api_response.posts._items|length == 0 %}
-      <div class="lb-post empty-message">
+      <div data-empty-message class="lb-post empty-message {% if api_response.posts._items|length %}mod--displaynone{% endif %}">
         <div>{{ translate("No posts for now") }}</div>
       </div>
-      {% else %}
       <section class="lb-posts list-group normal">
         {% for item in api_response.posts._items %}
           {% if not item.deleted %}
@@ -115,7 +105,6 @@
         <button class="lb-button load-more-posts" data-js-loadmore>
             {{ translate("Load more posts") }}
         </button>
-      {% endif %}
     {% endif %}
   </div>
   <!-- Timeline End -->
