@@ -395,6 +395,7 @@ form.comment.hide,
 div.comment-sent.hide {
   outline: 0px;
   max-height: 0px;
+  display: none;
 }
 .comment__wrap {
   -moz-transition: opacity 0.6s ease-in-out 0s;
