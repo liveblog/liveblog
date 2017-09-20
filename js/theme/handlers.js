@@ -32,6 +32,14 @@ const sendComment = (e) => {
     .catch(view.displayCommentFormErrors);
 };
 
+var showPendings = (e) => {
+  let pendings = document.querySelectorAll("[data-js-post-id].mod--displaynone");
+  pendings.forEach((pending) => {
+    pending.classList.toggle('mod--displaynone', false);
+  });
+  view.checkPending();
+};
+
 var buttons = {
   handlers: {
     "[data-js-loadmore]": () => {
@@ -69,7 +77,7 @@ var buttons = {
       view.toggleCommentDialog();
     },
 
-    '[data-js-show-highlighted': () => {
+    '[data-js-show-highlighted]': () => {
       let highlightButton = document.querySelector('.header-bar__highlight');
 
       highlightButton.classList.toggle('header-bar__highlight--active');
@@ -78,7 +86,9 @@ var buttons = {
         .then(view.renderTimeline)
         .then(view.displayNewPosts)
         .catch(catchError);
-    }
+    },
+    '[data-one-new-update]': showPendings,
+    '[data-new-updates]': showPendings
   },
 
   attach: function() {
@@ -120,7 +130,7 @@ function loadSort(sortBy) {
     sortBy = 'editorial';
   }
 
-  return viewmodel.loadPosts({sort: sortBy})
+  return viewmodel.loadPosts({sort: sortBy, notDeleted: true})
     .then(view.renderTimeline)
     .then(view.displayNewPosts)
     .then(view.toggleSortBtn(sortBy))

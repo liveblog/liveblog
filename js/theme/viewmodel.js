@@ -81,13 +81,14 @@ vm.getPosts = function(opts) {
   var dbQuery = self.getQuery({
     sort: opts.sort || self.settings.postOrder,
     highlightsOnly: false || self.settings.onlyHighlighted,
+    notDeleted: opts.notDeleted,
     fromDate: opts.fromDate
       ? opts.fromDate
       : false
   });
 
   var page = opts.fromDate ? 1 : opts.page;
-  var qs = '?max_results=embedded={"syndication_in":1}' + settings.postsPerPage + '&page=' + page + '&source='
+  var qs = '?embedded={"syndication_in":1}&max_results=' + settings.postsPerPage + '&page=' + page + '&source='
     , fullPath = endpoint + qs + dbQuery;
 
   return helpers.getJSON(fullPath)
@@ -123,6 +124,7 @@ vm.getAllPosts = function() {
  */
 vm.loadPostsPage = function(opts) {
   opts = opts || {};
+  opts.notDeleted = true;
   opts.page = ++this.vm.currentPage;
   opts.sort = this.settings.postOrder;
   return this.getPosts(opts);
@@ -251,6 +253,12 @@ vm.getQuery = function(opts) {
   if (opts.highlightsOnly === true) {
     query.query.filtered.filter.and.push({
       term: {lb_highlight: true}
+    });
+  }
+
+  if (opts.notDeleted === true) {
+    query.query.filtered.filter.and.push({
+      not: { term: {deleted: true} }
     });
   }
 
