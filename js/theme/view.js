@@ -67,6 +67,7 @@ function renderPosts(api_response) {
       item: post,
       settings: window.LB.settings,
       assets_root: window.LB.assets_root
+      , display: !!api_response.requestOpts.fromDate && window.LB.settings.autoApplyUpdates
     });
 
     if (!api_response.requestOpts.page && post.operation === "update") {
@@ -112,11 +113,27 @@ function addPosts(posts, opts) {
   }
 
   timelineElem[0].insertAdjacentHTML(position, postsHTML);
+  checkPending();
   attachSlideshow();
   attachPermalink();
   attachShareBox();
 }
 
+function checkPending() {
+  let pending = document.querySelectorAll("[data-js-post-id].mod--displaynone"),
+    one = document.querySelectorAll('[data-one-new-update]')[0].classList,
+    updates = document.querySelectorAll('[data-new-updates]')[0].classList;
+  if (pending.length === 1) {
+    one.toggle('mod--displaynone', false);
+    updates.toggle('mod--displaynone', true);
+  } else if (pending.length > 1) {
+    one.toggle('mod--displaynone', true);
+    updates.toggle('mod--displaynone', false);
+  } else {
+    one.toggle('mod--displaynone', true);
+    updates.toggle('mod--displaynone', true);
+  }
+}
 /**
  * Delete post <article> DOM node by data attribute.
  * @param {string} - a post URN
@@ -330,5 +347,6 @@ module.exports = {
   permalinkScroll: permalinkScroll,
   attachShareBox: attachShareBox,
   permalink: permalink,
-  clearCommentDialog: clearCommentDialog
+  clearCommentDialog: clearCommentDialog,
+  checkPending: checkPending
 };
