@@ -81,7 +81,7 @@ function renderPosts(api_response) {
   if (!renderedPosts.length) {
     return; // early
   }
-  
+
   renderedPosts.reverse();
 
   addPosts(renderedPosts, { // if creates
@@ -191,6 +191,8 @@ function clearCommentDialog() {
 function toggleCommentDialog() {
   let commentForm = document.querySelector('form.comment');
   let isHidden = false;
+
+  document.querySelector('.header-bar__comment').classList.toggle('header-bar__comment--active');
 
   if (commentForm) {
     isHidden = commentForm.classList.toggle('hide');
@@ -315,14 +317,14 @@ function checkPermalink(posts) {
 function permalinkScroll() {
   var scrollElem;
   var found = false;
-  
+
   scrollElem = helpers.getElems('[data-js-post-id=\"' + permalink._id + '\"]');
 
   if (scrollElem.length > 0) {
     scrollElem[0].classList.add('lb-post-permalink-selected');
     scrollElem[0].scrollIntoView();
     found = true;
-  } 
+  }
 
   return found;
 }

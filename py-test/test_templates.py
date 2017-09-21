@@ -31,7 +31,7 @@ class TestTemplate(unittest.TestCase):
 
         # TODO: options is bad and confusing as name for test data, change it.
         data = {
-            'posts': api_response,
+            'posts': api_response['posts'],
             'stickyPosts': {}
         }
         self.context = {
