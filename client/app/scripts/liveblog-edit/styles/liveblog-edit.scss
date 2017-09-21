@@ -222,7 +222,8 @@
                     margin-top: 5px;
                 }
                 .freetype--error {
-                    color: #8b0000;
+                  color: #8b0000 !important;
+                  font-size: 13px !important;
                 }
                 .scorecard {
                     margin: 0 !important;
