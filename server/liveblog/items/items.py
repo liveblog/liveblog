@@ -77,6 +77,9 @@ class ItemsResource(ArchiveResource):
         'deleted': {
             'type': 'string'
         },
+        'sydicated_creator': {
+            'type': 'dict'
+        },
         'commenter': {
             'type': 'string',
             'minlength': 1,

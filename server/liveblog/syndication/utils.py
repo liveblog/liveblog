@@ -104,6 +104,7 @@ def blueprint_superdesk_token_auth():
 def extract_post_items_data(original_doc):
     """Extract blog post items."""
     items_service = get_resource_service('items')
+    user_service = get_resource_service('users')
     item_type = original_doc.get(ITEM_TYPE, '')
     if item_type != CONTENT_TYPE.COMPOSITE:
         raise NotImplementedError('Post item_type "{}" not supported.'.format(item_type))
@@ -113,6 +114,7 @@ def extract_post_items_data(original_doc):
         if group['id'] == 'main':
             for ref in group['refs']:
                 item = items_service.find_one(req=None, guid=ref['guid'])
+                sydicated_creator = user_service.find_one(req=None, _id=item('original_creator'))
                 text = item.get('text')
                 item_type = item.get('item_type')
                 group_type = item.get('group_type')
@@ -121,6 +123,8 @@ def extract_post_items_data(original_doc):
                     'text': text,
                     'item_type': item_type,
                     'group_type': group_type,
+                    'commenter': item.get('commenter'),
+                    'sydicated_creator': sydicated_creator,
                     'meta': meta
                 }
                 items.append(data)
