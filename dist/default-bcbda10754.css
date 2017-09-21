@@ -572,6 +572,41 @@ div.comment-sent.hide .comment__wrap {
   margin-bottom: -2px;
   border-bottom: 2px solid #333333;
 }
+.sorting-bar__dropdownBtn {
+  display: none;
+  background: transparent url('../images/dropdown_arrow.svg') right 0.5em no-repeat;
+  padding-right: 20px;
+  cursor: pointer;
+  padding-left: .5rem;
+  position: relative;
+  z-index: 2;
+}
+@media screen and (max-width: 680px) {
+  .sorting-bar__dropdownBtn {
+    display: block;
+  }
+  .sorting-bar__dropdownContent {
+    display: none;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    background-color: #fff;
+    padding: 2.2em 25px .5rem .5rem;
+    box-shadow: 4px 6px 10px 0px rgba(0, 0, 0, 0.5);
+  }
+  .sorting-bar__dropdownContent--active {
+    display: block;
+  }
+  .sorting-bar__order {
+    float: none;
+    margin-right: 0px;
+  }
+  .sorting-bar__order--active,
+  .sorting-bar__order:hover {
+    border: none;
+    margin-bottom: 0px;
+  }
+}
 .header-bar__highlight {
   position: relative;
   text-indent: -9999px;
@@ -1265,14 +1300,6 @@ body .scorecard-top__info {
   }
   .header-bar {
     margin: 10px 0 0 0px;
-  }
-  .sorting-bar__order {
-    padding-bottom: 3px;
-  }
-  .sorting-bar__order--active,
-  .sorting-bar__order:hover {
-    border-bottom: 3px solid #1eb06c;
-    padding-bottom: 3px;
   }
   .lb-type {
     margin-top: -7px;
