@@ -340,7 +340,7 @@ figure figcaption {
 .header-bar__comment {
   position: relative;
   color: #999999;
-  margin-right: 30px;
+  margin-right: 10px;
   padding: 0px 0px 8px 0px;
   border: none;
   transition: color 0.1s ease-out;
@@ -571,6 +571,41 @@ div.comment-sent.hide .comment__wrap {
   color: #333333;
   margin-bottom: -2px;
   border-bottom: 2px solid #333333;
+}
+.sorting-bar__dropdownBtn {
+  display: none;
+  background: transparent url('../images/dropdown_arrow.svg') right 0.5em no-repeat;
+  padding-right: 20px;
+  cursor: pointer;
+  padding-left: .5rem;
+  position: relative;
+  z-index: 2;
+}
+@media screen and (max-width: 680px) {
+  .sorting-bar__dropdownBtn {
+    display: block;
+  }
+  .sorting-bar__dropdownContent {
+    display: none;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    background-color: #fff;
+    padding: 2.2em 25px .5rem .5rem;
+    box-shadow: 4px 6px 10px 0px rgba(0, 0, 0, 0.5);
+  }
+  .sorting-bar__dropdownContent--active {
+    display: block;
+  }
+  .sorting-bar__order {
+    float: none;
+    margin-right: 0px;
+  }
+  .sorting-bar__order--active,
+  .sorting-bar__order:hover {
+    border: none;
+    margin-bottom: 0px;
+  }
 }
 .header-bar__highlight {
   position: relative;
@@ -1258,6 +1293,35 @@ body .scorecard-top__info {
     margin: 0px auto;
     margin-top: 110px;
   }
+  body .scorecard-top {
+    padding: 20px;
+  }
+  body .scorecard-top__column {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  body .scorecard-top__column--result {
+    flex: 0 0 100%;
+    max-width: 100%;
+    order: 0;
+  }
+  body .scorecard-top__logoWrap {
+    height: 60px;
+  }
+  body .scorecard-top__logoWrap img,
+  body .scorecard-top__column--result {
+    max-height: 60px;
+  }
+  body .scorecard-top span.team-name {
+    font-size: 18px;
+  }
+  body .scorecard-top span.team-score {
+    font-size: 32px;
+    margin-bottom: 6px;
+  }
+  body .scorecard-top .scorecard-top__scorers {
+    display: none;
+  }
 }
 @media screen and (max-width: 450px) {
   body {
@@ -1265,14 +1329,6 @@ body .scorecard-top__info {
   }
   .header-bar {
     margin: 10px 0 0 0px;
-  }
-  .sorting-bar__order {
-    padding-bottom: 3px;
-  }
-  .sorting-bar__order--active,
-  .sorting-bar__order:hover {
-    border-bottom: 3px solid #1eb06c;
-    padding-bottom: 3px;
   }
   .lb-type {
     margin-top: -7px;
