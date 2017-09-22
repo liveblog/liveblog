@@ -48,6 +48,10 @@ var buttons = {
         .then(view.displayNewPosts)
         .catch(catchError);
     },
+    
+    "[data-js-sort_dropdown_button]": () => {
+      view.toggleSortDropdown();
+    },
 
     "[data-js-orderby_ascending]": () => {
       loadSort('ascending');
