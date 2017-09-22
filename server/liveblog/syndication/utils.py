@@ -110,6 +110,11 @@ def extract_post_items_data(original_doc):
         raise NotImplementedError('Post item_type "{}" not supported.'.format(item_type))
 
     items = []
+    creator_keep = ("avatar", "avatar_renditions", "byline",
+                    "display_name", "email", "first_name",
+                    "last_name", "picture_url", "sign_off",
+                    "username", "_id", "_created", "_updated")
+
     for group in original_doc['groups']:
         if group['id'] == 'main':
             for ref in group['refs']:
@@ -124,7 +129,7 @@ def extract_post_items_data(original_doc):
                     'item_type': item_type,
                     'group_type': group_type,
                     'commenter': item.get('commenter'),
-                    'sydicated_creator': sydicated_creator,
+                    'sydicated_creator': {k: v for k, v in sydicated_creator.items() if k in creator_keep},
                     'meta': meta
                 }
                 items.append(data)
