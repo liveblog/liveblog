@@ -123,18 +123,15 @@
                  usersCache = CacheFactory.get('usersCache');
                  refreshCache = CacheFactory.get('refreshCache')
             }
+            console.log(obj);
             if (obj.commenter) {
                 obj.original_creator = {
                     display_name: obj.commenter,
                     sign_off: obj.commenter,
                     byline: obj.commenter
                 };
-            } else if(obj.sydicated_creator && obj.sydicated_creator.display_name) {
-                obj.user = {
-                    display_name: obj.sydicated_creator.display_name,
-                    sign_off: obj.sydicated_creator.sign_off,
-                    byline: obj.sydicated_creator.byline
-                };
+            } else if(obj.sydicated_creator) {
+                obj.user = obj.sydicated_creator;
             } else if(obj.original_creator !== "" && obj.original_creator !== 'None'){
                 var userId = obj.original_creator;
                 if (typeof userId !== 'string') {

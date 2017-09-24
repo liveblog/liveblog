@@ -21,9 +21,9 @@
                ng-bind="item.original_creator[timeline.settings.authorNameFormat]"></a>
         </div>
     </div>
-    <div ng-if="post.producer_blog_title"
+    <div ng-if="post.syndication_in.producer_blog_title"
          class="lb-producer"
          ng-class="{'lb-producer__author': timeline.settings.showSyndicatedAuthor}"
-         ng-bind="post.producer_blog_title">
+         ng-bind="post.syndication_in.producer_blog_title">
     </div>
 </div>
