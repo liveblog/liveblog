@@ -27,7 +27,8 @@
       "authorNameFormat":"display_name",
       "showGallery":true,
       "stickyPosition": "bottom",
-      "gaCode": "UA-XXXXX-Y"
+      "gaCode": "UA-XXXXX-Y",
+      "showSyndicatedAuthor": false
     },
     "start_date":"2017-03-08T12:30:20+00:00",
     "picture":{
@@ -176,7 +177,8 @@
     "infinitScroll":false,
     "stickyPosition": "bottom",
     "gaCode": "UA-XXXXX-Y",
-    "language": "de"
+    "language": "de",
+    "showSyndicatedAuthor": true
   },
     "i18n": {
         "cs": {

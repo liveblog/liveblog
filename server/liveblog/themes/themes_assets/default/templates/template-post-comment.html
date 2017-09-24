@@ -6,15 +6,24 @@
 {% set secondary = item.groups[1].refs[1].item %}
   <!-- author plus avatar -->
   <div class="lb-author lb-author--indent">
-    {% if settings.showAuthor and secondary.original_creator %}
+    {% if settings.showAuthor and (secondary.original_creator or secondary.sydicated_creator) %}
       {% if settings.showAuthorAvatar %}
         {% if secondary.original_creator.picture_url %}
         <img class="lb-author__avatar" src="{{ secondary.original_creator.picture_url }}" />
+        {% elif secondary.sydicated_creator.picture_url  and settings.showSyndicatedAuthor %}
+        <img class="lb-author__avatar" src="{{ mainItem.sydicated_creator.picture_url }}" />
         {% else %}
         <div class="lb-author__avatar"></div>
         {% endif %}
         <div class="lb-author__name">
+        {% if secondary.sydicated_creator and settings.showSyndicatedAuthor %}
+            {{ secondary.sydicated_creator.display_name }}
+        {% else %}
             {{ secondary.original_creator.display_name }}
+        {% endif %}
+        {% if item.syndication_in %}
+            <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
+        {% endif %}
         </div>
       {% endif %}
     {% endif %}

@@ -70,7 +70,7 @@ if (match.length > 0) {
     ]
   };
 
-  request.get(`${postsEndpoint}?source=${JSON.stringify(query)}`, (response) => {
+  request.get(`${postsEndpoint}?embedded={"syndication_in":1}&source=${JSON.stringify(query)}`, (response) => {
     let body = '';
 
     response.on('data', (d) => {
@@ -83,7 +83,7 @@ if (match.length > 0) {
 
   query.query.filtered.filter.and[0].term.sticky = false;
 
-  request.get(`${postsEndpoint}?source=${JSON.stringify(query)}`, (response) => {
+  request.get(`${postsEndpoint}?embedded={"syndication_in":1}&source=${JSON.stringify(query)}`, (response) => {
     let body = '';
 
     response.on('data', (d) => {
