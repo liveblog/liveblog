@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "3.2.70",
+    "version": "3.2.73",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -255,7 +255,14 @@
             "label": "Autoplay for livestream videos",
             "type": "checkbox",
             "default": false,
-            "help": "if the users will see the video autoplay for livestream"
+            "help": "If the users will see the video autoplay for livestream"
+        },
+        {
+            "name": "showSyndicatedAuthor",
+            "label": "Show syndicated author",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users will see the syndicated author"
         }
     ]
 }
