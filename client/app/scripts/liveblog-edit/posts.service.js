@@ -118,10 +118,8 @@ export default function postsService(api, $q, userList) {
         if (obj.commenter) {
             obj.user = {display_name: obj.commenter};
         } else {
-            if(obj.sydicated_creator) {
-                if (obj.sydicated_creator.display_name) {
+            if(obj.sydicated_creator && obj.sydicated_creator.display_name) {
                     obj.user = {display_name: obj.sydicated_creator.display_name};
-                }
             } else {
                 // TODO: way too many requests in there
                 // This getUser func is returning a list of users,
