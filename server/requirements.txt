@@ -7,6 +7,4 @@ Flask-S3==0.1.7
 html5lib==0.999999999
 
 # Superdesk
--e git://github.com/superdesk/superdesk-core.git@750a78b#egg=Superdesk-Core-1.6
-#-e git://github.com/superdesk/superdesk-core.git@994045d6d#egg=Superdesk-Core
-#-e git+git://github.com/liveblog/superdesk-core.git@4656deb0fd9a336df663c2e4e90f66ec4d276716#egg=Superdesk-Core==1.2-fix-celery-issue
+-e git://github.com/superdesk/superdesk-core.git@v1.6.3#egg=Superdesk-Core
