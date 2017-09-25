@@ -220,7 +220,7 @@ class ClientBlogPostsResource(BlogPostsResource):
 
 
 class ClientBlogPostsService(BlogPostsService):
-    def add_post_type(self, doc, items=None):
+    def add_post_info(self, doc, items=None):
         items = items or []
         if not items:
             # Get from groups
@@ -258,13 +258,15 @@ class ClientBlogPostsService(BlogPostsService):
                     if k == 'image' and sum(1 for _ in g) > 1:
                         post_items_type = 'slideshow'
                         break
-
+        if doc.get('syndication_in', False):
+            doc['syndication_in'] = get_resource_service('syndication_in')\
+                        .find_one(req=None, _id=doc['syndication_in'])
         doc['post_items_type'] = post_items_type
 
     def on_fetched(self, docs):
         super().on_fetched(docs)
         for doc in docs['_items']:
-            self.add_post_type(doc)
+            self.add_post_info(doc)
 
     def get(self, req, lookup):
         cache_key = 'lb_ClientBlogPostsService_get_%s' % (hash(frozenset(req.__dict__.items())))
