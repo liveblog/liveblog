@@ -81,7 +81,7 @@ class Blog:
         # Enrich documents
         client_blog_posts = get_resource_service('client_blog_posts')
         for doc in posts:
-            client_blog_posts.add_post_type(doc)
+            client_blog_posts.add_post_info(doc)
 
         if wrap:
             # Wrap in python-eve style data structure
