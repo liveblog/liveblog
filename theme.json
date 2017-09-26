@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "0.1.89",
+    "version": "0.1.91",
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
     "contributors": [
@@ -15,10 +15,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-bcbda10754.css"],
-    "devScripts": ["dist/default-688bac3941.js"],
-    "styles": ["dist/default-bcbda10754.css"],
-    "scripts": ["dist/default-688bac3941.js"],
+    "devStyles": ["dist/default-5d69a2d6f5.css"],
+    "devScripts": ["dist/default-c9ba212d8a.js"],
+    "styles": ["dist/default-5d69a2d6f5.css"],
+    "scripts": ["dist/default-c9ba212d8a.js"],
     "options": [
         {
             "name": "datetimeFormat",
@@ -231,6 +231,13 @@
                 }
             ],
             "default": "en"
+        },
+        {
+            "name": "showSyndicatedAuthor",
+            "label": "Show syndicated author",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users will see the syndicated author"
         }
     ],
     "i18n": {
