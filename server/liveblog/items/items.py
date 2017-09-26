@@ -78,7 +78,7 @@ class ItemsResource(ArchiveResource):
             'type': 'string'
         },
         # SYNDCREATOR
-        'sydicated_creator': {
+        'syndicated_creator': {
             'type': 'dict'
         },
         'commenter': {

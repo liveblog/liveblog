@@ -9658,7 +9658,7 @@ var output = "";
 try {
 var parentTemplate = null;
 output += "<div class=\"items-containerIndent\">\n  <!-- author plus avatar -->\n  <div class=\"lb-author lb-author--indent\">\n    ";
-if(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "settings")),"showAuthor") && (runtime.memberLookup((runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "ref")),"item")),"original_creator") || runtime.memberLookup((runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "ref")),"item")),"sydicated_creator"))) {
+if(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "settings")),"showAuthor") && (runtime.memberLookup((runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "ref")),"item")),"original_creator") || runtime.memberLookup((runtime.memberLookup((runtime.contextOrFrameLookup(contessyndicated_creator),"item")),"sydicated_creator"))) {
 output += "\n      ";
 if(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "settings")),"showAuthorAvatar")) {
 output += "\n        <img class=\"lb-author__avatar lb-author__avatar--comment\" src=\"";
@@ -9918,7 +9918,7 @@ if(frame.topLevel) {
 context.addExport("secondary", t_1);
 }
 output += "\n  <!-- author plus avatar -->\n  <div class=\"lb-author lb-author--indent\">\n    ";
-if(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "settings")),"showAuthor") && (runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "secondary")),"original_creator") || runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "secondary")),"sydicated_creator"))) {
+if(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "settings")),"showAuthor") && (runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "secondary")),"original_creator") || runtime.memberLookup((runtime.contextOrFrameLookup(cossyndicated_creatorcondary")),"sydicated_creator"))) {
 output += "\n      ";
 if(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "settings")),"showAuthorAvatar")) {
 output += "\n        ";
@@ -9929,9 +9929,9 @@ output += "\" />\n        ";
 ;
 }
 else {
-if(runtime.memberLookup((runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "secondary")),"sydicated_creator")),"picture_url") && runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "settings")),"showSyndicatedAuthor")) {
+if(runtime.memberLookup((runtime.memberLookup((runtime.contextOrFrameLookup(cossyndicated_creatorcondary")),"sydicated_creator")),"picture_url") && runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "settings")),"showSyndicatedAuthor")) {
 output += "\n        <img class=\"lb-author__avatar\" src=\"";
-output += runtime.suppressValue(runtime.memberLookup((runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "mainItem")),"sydicated_creator")),"picture_url"), env.opts.autoescape);
+output += runtime.suppressValue(runtime.memberLookup((runtime.memberLookup((runtime.contextOrFrameLookup(cssyndicated_creatorainItem")),"sydicated_creator")),"picture_url"), env.opts.autoescape);
 output += "\" />\n        ";
 ;
 }
@@ -9942,9 +9942,9 @@ output += "\n        <div class=\"lb-author__avatar\"></div>\n        ";
 ;
 }
 output += "\n        <div class=\"lb-author__name\">\n        ";
-if(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "secondary")),"sydicated_creator") && runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "settings")),"showSyndicatedAuthor")) {
+if(runtime.memberLookup((runtime.contextOrFrameLookup(cossyndicated_creatorcondary")),"sydicated_creator") && runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "settings")),"showSyndicatedAuthor")) {
 output += "\n            ";
-output += runtime.suppressValue(runtime.memberLookup((runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "secondary")),"sydicated_creator")),"display_name"), env.opts.autoescape);
+output += runtime.suppressValue(runtime.memberLookup((runtime.memberLookup((runtime.contextOrFrameLookup(cossyndicated_creatorcondary")),"sydicated_creator")),"display_name"), env.opts.autoescape);
 output += "\n        ";
 ;
 }
@@ -10295,9 +10295,9 @@ output += "\n      ";
 ;
 }
 else {
-if(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "mainItem")),"sydicated_creator") && runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "settings")),"showSyndicatedAuthor")) {
+if(runtime.memberLookup((runtime.contextOrFrameLookup(cssyndicated_creatorainItem")),"sydicated_creator") && runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "settings")),"showSyndicatedAuthor")) {
 output += "\n        ";
-output += runtime.suppressValue(runtime.memberLookup((runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "mainItem")),"sydicated_creator")),"display_name"), env.opts.autoescape);
+output += runtime.suppressValue(runtime.memberLookup((runtime.memberLookup((runtime.contextOrFrameLookup(cssyndicated_creatorainItem")),"sydicated_creator")),"display_name"), env.opts.autoescape);
 output += "\n      ";
 ;
 }
@@ -10334,9 +10334,9 @@ output += "images/comment_icon.svg\">\n        ";
 ;
 }
 else {
-if(runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "mainItem")),"sydicated_creator") && runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "settings")),"showSyndicatedAuthor")) {
+if(runtime.memberLookup((runtime.contextOrFrameLookup(cssyndicated_creatorainItem")),"sydicated_creator") && runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "settings")),"showSyndicatedAuthor")) {
 output += "\n        <img class=\"lb-author__avatar\" src=\"";
-output += runtime.suppressValue(runtime.memberLookup((runtime.memberLookup((runtime.contextOrFrameLookup(context, frame, "mainItem")),"sydicated_creator")),"picture_url"), env.opts.autoescape);
+output += runtime.suppressValue(runtime.memberLookup((runtime.memberLookup((runtime.contextOrFrameLookup(cssyndicated_creatorainItem")),"sydicated_creator")),"picture_url"), env.opts.autoescape);
 output += "\" />\n        ";
 ;
 }
