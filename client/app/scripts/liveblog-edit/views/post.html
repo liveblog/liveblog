@@ -20,12 +20,14 @@
             <div class="lb-post__content">
                 <div class="lb-post__header">
                     <div class="inline" ng-if="post.post_status != 'open'">
-                        <span class="name">{{ ::post.mainItem.item.user.display_name }}</span> | <time>{{ post._created | reldate }}</time>
+                        <span class="name">{{ ::post.mainItem.item.user.display_name }}</span>
+                        <span ng-if="post.producer_blog_title" class="producer">{{ ::post.producer_blog_title }}</span>
+                        | <time>{{ post._created | reldate }}</time>
                     </div>
                     <div class="inline" ng-if="post.post_status == 'open'">
-                        <span class="name">{{ post.mainItem.item.user.display_name || post.producer_blog_title }}</span>
-                        &nbsp;|
-                        <time>{{ post.published_date | reldate }}</time>
+                        <span class="name">{{ ::post.mainItem.item.user.display_name }}</span>
+                        <span ng-if="post.producer_blog_title" class="producer">{{ ::post.producer_blog_title }}</span>
+                        | <time>{{ post.published_date | reldate }}</time>
                     </div>
                     <div class="inline" ng-if="post.showUpdate">
                         <span class="updated-label" translate>&nbsp;Updated</span> <time class="updated-time">{{ post.content_updated_date | reldate }}</time>
@@ -94,7 +96,9 @@
                                 <div class="lb-post__content">
                                     <div class="lb-post__header">
                                         <div class="inline">
-                                            <span class="name">{{ ::item.item.user.display_name }}</span> | <time>{{ ::(item.item.meta._created || item.item._created) | reldate }}</time>
+                                            <span class="name">{{ ::item.item.user.display_name }}</span> 
+                                            <span ng-if="post.producer_blog_title" class="producer">{{ ::post.producer_blog_title }}</span>
+                                            | <time>{{ ::(item.item.meta._created || item.item._created) | reldate }}</time>
                                         </div>
                                     </div>
                                     <lb-item item="item.item"></lb-item>
