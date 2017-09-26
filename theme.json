@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "3.2.70",
+    "version": "3.2.72",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -245,10 +245,19 @@
         },
         {
             "name": "livestream",
-            "label": "Show embed in livestream format",
-            "type": "checkbox",
-            "default": false,
-            "help": "If the users will see the sticky posts in livestream format"
+            "label": "Pinned post behaviour",
+            "type": "select",
+            "options": [
+                {
+                    "value": false,
+                    "label": "Show below menu bar"
+                },
+                {
+                    "value": true,
+                    "label": "Show above menu bar"
+                }
+            ],
+            "default": false
         },
         {
             "name": "livestreamAutoplay",
@@ -256,6 +265,13 @@
             "type": "checkbox",
             "default": false,
             "help": "if the users will see the video autoplay for livestream"
+        },
+        {
+            "name": "showSyndicatedAuthor",
+            "label": "Show syndicated author",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users will see the syndicated author"
         }
     ]
 }
