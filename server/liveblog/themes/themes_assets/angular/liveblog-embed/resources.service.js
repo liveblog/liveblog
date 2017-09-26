@@ -123,7 +123,6 @@
                  usersCache = CacheFactory.get('usersCache');
                  refreshCache = CacheFactory.get('refreshCache')
             }
-            console.log(obj);
             if (obj.commenter) {
                 obj.original_creator = {
                     display_name: obj.commenter,
