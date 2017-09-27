@@ -95,6 +95,7 @@
     .editor-holder .scorecard-top__logoWrap {
         display: flex;
         flex-direction: column;
+        align-items: stretch;
         height: 210px;
     }
     .scorecard-top__logoWrap {
@@ -102,6 +103,9 @@
         align-items: center;
         height: 150px;
         text-align: center;
+    }
+    .editor-holder .scorecard-top__logoWrap img {
+        height: 150px;
     }
     .scorecard-top__logoWrap img {
         width: auto !important;
@@ -153,6 +157,9 @@
         flex-direction: column;
         font-weight: 100;
         list-style-type: none;
+    }
+    .editor-holder .scorecard-top .scorecard-top__scorers {
+      display: flex;
     }
     .scorecard-top .scorecard-top__scorers li {
         margin-bottom: 5px;
@@ -236,7 +243,7 @@
         .scorecard-top__column--result {
             flex: 0 0 100%;
             max-width: 100%;
-            order: 0;   
+            order: 0;
         }
         .scorecard-top__logoWrap {
             height: 60px;
@@ -250,7 +257,7 @@
         .scorecard-top span.team-score {
             font-size: 32px;
         }
-        .scorecard-top__scorers {
+        .scorecard-top .scorecard-top__scorers {
             display: none;
         }
         .editor-holder .scorecard-top__scorers {
