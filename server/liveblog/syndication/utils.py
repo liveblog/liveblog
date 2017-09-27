@@ -120,6 +120,7 @@ def extract_post_items_data(original_doc):
             for ref in group['refs']:
                 item = items_service.find_one(req=None, guid=ref['guid'])
                 syndicated_creator = user_service.find_one(req=None, _id=item['original_creator'])
+                syndicated_obj = None
                 if syndicated_creator:
                     syndicated_obj = {k: v for k, v in syndicated_creator.items() if k in needed_fields}
                 text = item.get('text')
