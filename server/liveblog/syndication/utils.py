@@ -120,6 +120,8 @@ def extract_post_items_data(original_doc):
             for ref in group['refs']:
                 item = items_service.find_one(req=None, guid=ref['guid'])
                 syndicated_creator = user_service.find_one(req=None, _id=item['original_creator'])
+                if syndicated_creator:
+                    syndicated_obj = {k: v for k, v in syndicated_creator.items() if k in needed_fields}
                 text = item.get('text')
                 item_type = item.get('item_type')
                 group_type = item.get('group_type')
@@ -129,7 +131,7 @@ def extract_post_items_data(original_doc):
                     'item_type': item_type,
                     'group_type': group_type,
                     'commenter': item.get('commenter'),
-                    'syndicated_creator': {k: v for k, v in syndicated_creator.items() if k in needed_fields},
+                    'syndicated_creator': syndicated_obj,
                     'meta': meta
                 }
                 items.append(data)
