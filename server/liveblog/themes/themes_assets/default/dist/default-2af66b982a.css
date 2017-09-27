@@ -340,7 +340,7 @@ figure figcaption {
 .header-bar__comment {
   position: relative;
   color: #999999;
-  margin-right: 30px;
+  margin-right: 10px;
   padding: 0px 0px 8px 0px;
   border: none;
   transition: color 0.1s ease-out;
@@ -1292,6 +1292,35 @@ body .scorecard-top__info {
     width: 100px;
     margin: 0px auto;
     margin-top: 110px;
+  }
+  body .scorecard-top {
+    padding: 20px;
+  }
+  body .scorecard-top__column {
+    flex: 0 0 50%;
+    max-width: 50%;
+  }
+  body .scorecard-top__column--result {
+    flex: 0 0 100%;
+    max-width: 100%;
+    order: 0;
+  }
+  body .scorecard-top__logoWrap {
+    height: 60px;
+  }
+  body .scorecard-top__logoWrap img,
+  body .scorecard-top__column--result {
+    max-height: 60px;
+  }
+  body .scorecard-top span.team-name {
+    font-size: 18px;
+  }
+  body .scorecard-top span.team-score {
+    font-size: 32px;
+    margin-bottom: 6px;
+  }
+  body .scorecard-top .scorecard-top__scorers {
+    display: none;
   }
 }
 @media screen and (max-width: 450px) {
