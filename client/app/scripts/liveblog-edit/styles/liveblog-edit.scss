@@ -44,7 +44,7 @@
             @include border-box();
             box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
             padding: 10px 20px;
-            background-color: white;            
+            background-color: white;
             h4 {
                 color: $gray;
                 font-size: 1.4em;
@@ -84,7 +84,7 @@
             }
             background: #f0f0f0;
             header {
-                background: #fff;                
+                background: #fff;
                 color: $gray;
                 font-size: 1.4em;
                 line-height: 1.6em;
@@ -208,7 +208,7 @@
                         margin-bottom: 8px;
                     }
                 }
-                .freetype-btn {                       
+                .freetype-btn {
                     border: none;
                     background: $sd-blue;
                     color: $white;
@@ -217,23 +217,24 @@
                     min-width: 28px;
                     margin-bottom: 4px;
                     @include border-radius(2px);
-                }                
+                }
                 .image-text {
                     margin-top: 5px;
                 }
                 .freetype--error {
-                    color: #8b0000;
+                  color: #8b0000 !important;
+                  font-size: 13px !important;
                 }
-                .scorecard {                                      
+                .scorecard {
                     margin: 0 !important;
                     width: 100%;
                     background: #f8f8f8 !important;
-                    .scorecard__column {                                         
+                    .scorecard__column {
                         text-align: left !important;
                         padding: 0px 10px 0 0 !important;
                         &:last-child {
                             padding: 0 0 0 10px !important;
-                        }                                               
+                        }
                     }
                     .scorecard__scorers {
                         display: block !important;
@@ -256,7 +257,7 @@
                                 }
                             }
                         }
-                    }                    
+                    }
                 }
                 legend {
                     font-size: 13px !important;
@@ -691,7 +692,7 @@
     }
     .active .big-icon-comments {
         background-image: url('~images/comments-sidetab_active.svg');
-    }    
+    }
     .icon-archive {
         background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB2ZXJzaW9uPSIxLjEiIGlkPSJMYXllcl8xIiB4PSIwcHgiIHk9IjBweCIgd2lkdGg9IjE2cHgiIGhlaWdodD0iMTZweCIgdmlld0JveD0iMCAwIDE2IDE2IiBlbmFibGUtYmFja2dyb3VuZD0ibmV3IDAgMCAxNiAxNiIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+CjxnPgoJPHBhdGggZD0iTTIgMXYxM2gydjFoM3YtMWgzdjFoM3YtMWgyVjFIMnogTTEzIDEySDRWM2g5VjEyeiIvPgoJPHBhdGggZD0iTTEyIDRINXYzaDdWNHogTTExIDZINlY1aDVWNnoiLz4KCTxwYXRoIGQ9Ik0xMiA4SDV2M2g3Vjh6IE0xMSAxMEg2VjloNVYxMHoiLz4KPC9nPgo8L3N2Zz4K);
         width: 16px;

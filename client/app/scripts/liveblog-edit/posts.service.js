@@ -117,6 +117,8 @@ export default function postsService(api, $q, userList) {
     function _completeUser(obj) {
         if (obj.commenter) {
             obj.user = {display_name: obj.commenter};
+        } else if (obj.syndicated_creator) {
+                obj.user = obj.syndicated_creator;
         } else {
             // TODO: way too many requests in there
             // This getUser func is returning a list of users,
