@@ -62,14 +62,14 @@
       </div>
     </div>
     <div class="header-bar__actions"></div>
+      {% if settings.hasHighlights %}
+          <button class="header-bar__highlight" data-js-show-highlighted>{{ translate('Highlights') }}</button>
+      {% endif %}
+
       {% if settings.canComment %}
         <button class="header-bar__comment" data-js-show-comment-dialog>
             {{ translate("Comment") }}
         </button>
-      {% endif %}
-
-      {% if settings.hasHighlights %}
-        <button class="header-bar__highlight" data-js-show-highlighted>{{ translate('Highlights') }}</button>
       {% endif %}
 
       {% if settings.showLiveblogLogo %}
