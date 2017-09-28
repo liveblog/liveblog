@@ -188,7 +188,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True,
                                            ordering='newest_first')
 
-        if output and output['collection']:
+        if output and output.get('collection', False):
             ads = []
             for ad in output['collection']['advertisements']:
                 ads.append(get_resource_service('advertisements').find_one(req=None, _id=ad['advertisement_id']))
