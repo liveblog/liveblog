@@ -88,7 +88,7 @@ vm.getPosts = function(opts) {
   });
 
   var page = opts.fromDate ? 1 : opts.page;
-  var qs = '?embedded={"syndication_in":1}&max_results=' + settings.postsPerPage + '&page=' + page + '&source='
+  var qs = '?max_results=' + settings.postsPerPage + '&page=' + page + '&source='
     , fullPath = endpoint + qs + dbQuery;
 
   return helpers.getJSON(fullPath)
