@@ -945,6 +945,12 @@ div.lb-author__avatar {
 .lb-author__date {
   padding-right: 20px;
 }
+lb-producer__author:before {
+  content: '(';
+}
+.lb-producer__author:after {
+  content: ')';
+}
 .illustration {
   display: none;
   margin: 20px 0;
