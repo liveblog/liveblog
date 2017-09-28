@@ -54,9 +54,9 @@
                 config.output.collection.advertisements.length
                 ) {
                 var settings = config.output.settings || {frequency: 4, order: -1},
-                    ads = config.output.collection.advertisementsService;
+                    ads = config.output.collection.advertisements;
                 if(settings.order === 1) {
-                    for(var index, i=0, count=all.length; i < count; i+=(settings.frequency+1)) {
+                    for(var index, i=0; i < all.length; i+=(settings.frequency+1)) {
                         index = i/(settings.frequency+1) % ads.length;
                         all.splice(i, 0, ads[index]);
                     }
