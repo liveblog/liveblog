@@ -1,7 +1,7 @@
 <div class="items-containerIndent">
   <!-- author plus avatar -->
   <div class="lb-author lb-author--indent">
-    {% if settings.showAuthor and (ref.item.original_creator or ref.item.syndicated_creator )%}
+    {% if settings.showAuthor and ref.item and (ref.item.original_creator or ref.item.syndicated_creator )%}
       {% if settings.showAuthorAvatar %}
         <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
         <div class="lb-author__name">

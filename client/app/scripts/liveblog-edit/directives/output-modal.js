@@ -124,6 +124,9 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
         }
 
         $q.all(promises).then(function(){
+            if (newOutput.settings && newOutput.settings.frequency) {
+                newOutput.settings.frequency = parseInt(newOutput.settings.frequency, 10);
+            }
             return api('outputs').save(vm.output, newOutput)
             .then(handleSuccessSave, handleErrorSave);            
         });

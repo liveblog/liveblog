@@ -55,7 +55,7 @@
         <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
         {% elif mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
         <img class="lb-author__avatar" src="{{ mainItem.syndicated_creator.picture_url }}" />
-        {% elif mainItem.original_creator.picture_url %}
+        {% elif mainItem.original_creator and mainItem.original_creator.picture_url %}
         <img class="lb-author__avatar" src="{{ mainItem.original_creator.picture_url }}" />
         {% else %}
         <div class="lb-author__avatar"></div>

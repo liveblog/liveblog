@@ -75,7 +75,7 @@
                 method:'GET',
                 transformResponse: function(user) {
                     user = angular.fromJson(user);
-                    if(user.picture_url !== null) {
+                    if(user && user.picture_url !== null) {
                         var thumbnail = thumbnailRendition(user.avatar_renditions);
                         user.picture_url =thumbnail? thumbnail : user.picture_url;
                         user.picture_srcset = srcSet(user.avatar_renditions);
