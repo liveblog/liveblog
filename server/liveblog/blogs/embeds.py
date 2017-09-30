@@ -104,7 +104,7 @@ def render_bloglist_embed(api_host=None, assets_root=None):
 
 def ad_to_post(ad):
     ad["item_type"] = ad["type"]
-    post = {"_id": ad["_id"]}
+    post = {"_id": ad["_id"], "post_items_type": "advertisement"}
     post["groups"] = [{"role": "grpRole:NEP", "id": "root", "refs": [{"idRef": "main"}]}]
     post["groups"].append({"role": "grpRole:Main", "id": "main", "refs": [{"item": ad}]})
     return post
