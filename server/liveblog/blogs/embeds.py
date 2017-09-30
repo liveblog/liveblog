@@ -121,13 +121,14 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         return 'blog not found', 404
 
     # if the `output` is the `_id` get the data.
-    if output and isinstance(output, str):
-        output = get_resource_service('outputs').find_one(req=None, _id=output)
-    if not output:
-        return 'output not found', 404
-    else:
-        collection = get_resource_service('collections').find_one(req=None, _id=output.get('collection'))
-        output['collection'] = collection
+    if output:
+        if isinstance(output, str):
+            output = get_resource_service('outputs').find_one(req=None, _id=output)
+        if not output:
+            return 'output not found', 404
+        else:
+            collection = get_resource_service('collections').find_one(req=None, _id=output.get('collection'))
+            output['collection'] = collection
 
     # Retrieve picture url from relationship.
     if blog.get('picture', None):
