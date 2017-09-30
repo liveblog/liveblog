@@ -320,6 +320,12 @@ button.active {
     clear: both;
     display: block;
 }
+lb-producer__author:before {
+    content: '(';
+}
+.lb-producer__author:after {
+    content: ')';
+}
 .lb-author__avatar {
     display: block;
     position: absolute;

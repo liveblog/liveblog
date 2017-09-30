@@ -15,7 +15,7 @@
             width: 100%;
             height: auto;
             display: block;
-        }    
+        }
     }
     .reorder-disabled {
         opacity: 0.1;
@@ -28,7 +28,13 @@
     }
     &__content {margin-left: 45px;}
     &__header {
-        .name {font-weight: 600;}
+        .name, .producer {font-weight: 600;}
+        .producer::before {
+            content: "("
+        }
+        .producer::after {
+            content: ")"
+        }
         .updated-label {
             font-family: 'Roboto', sans-serif;
             font-weight: 400;

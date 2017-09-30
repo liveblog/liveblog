@@ -75,7 +75,7 @@
                 method:'GET',
                 transformResponse: function(user) {
                     user = angular.fromJson(user);
-                    if(user.picture_url !== null) {
+                    if(user && user.picture_url !== null) {
                         var thumbnail = thumbnailRendition(user.avatar_renditions);
                         user.picture_url =thumbnail? thumbnail : user.picture_url;
                         user.picture_srcset = srcSet(user.avatar_renditions);
@@ -124,7 +124,13 @@
                  refreshCache = CacheFactory.get('refreshCache')
             }
             if (obj.commenter) {
-                obj.original_creator = {display_name: obj.commenter};
+                obj.original_creator = {
+                    display_name: obj.commenter,
+                    sign_off: obj.commenter,
+                    byline: obj.commenter
+                };
+            } else if(obj.syndicated_creator) {
+                obj.user = obj.syndicated_creator;
             } else if(obj.original_creator !== "" && obj.original_creator !== 'None'){
                 var userId = obj.original_creator;
                 if (typeof userId !== 'string') {
@@ -153,7 +159,7 @@
             }
             return obj;
         }
-        return $resource(config.api_host + 'api/client_blogs/:blogId/posts?embedded={"syndication_in":1}', {blogId: config.blog._id}, {
+        return $resource(config.api_host + 'api/client_blogs/:blogId/posts', {blogId: config.blog._id}, {
             get: {
                 transformResponse: function(posts) {
                     // decode json

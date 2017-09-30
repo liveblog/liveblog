@@ -104,7 +104,7 @@ def render_bloglist_embed(api_host=None, assets_root=None):
 
 def ad_to_post(ad):
     ad["item_type"] = ad["type"]
-    post = {"_id": ad["_id"]}
+    post = {"_id": ad["_id"], "post_items_type": "advertisement"}
     post["groups"] = [{"role": "grpRole:NEP", "id": "root", "refs": [{"idRef": "main"}]}]
     post["groups"].append({"role": "grpRole:Main", "id": "main", "refs": [{"item": ad}]})
     return post
@@ -123,11 +123,11 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     # if the `output` is the `_id` get the data.
     if output and isinstance(output, str):
         output = get_resource_service('outputs').find_one(req=None, _id=output)
-        if not output:
-            return 'output not found', 404
-        else:
-            collection = get_resource_service('collections').find_one(req=None, _id=output.get('collection'))
-            output['collection'] = collection
+    if not output:
+        return 'output not found', 404
+    else:
+        collection = get_resource_service('collections').find_one(req=None, _id=output.get('collection'))
+        output['collection'] = collection
 
     # Retrieve picture url from relationship.
     if blog.get('picture', None):
@@ -188,10 +188,11 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True,
                                            ordering='newest_first')
 
-        if output and output['collection']:
+        if output and output.get('collection', False):
             ads = []
-            for ad in output['collection']['advertisements']:
-                ads.append(get_resource_service('advertisements').find_one(req=None, _id=ad['advertisement_id']))
+            if output['collection'].get('advertisements'):
+                for ad in output['collection']['advertisements']:
+                    ads.append(get_resource_service('advertisements').find_one(req=None, _id=ad['advertisement_id']))
 
             pcount = len(posts['_items'])
             acount = len(ads)

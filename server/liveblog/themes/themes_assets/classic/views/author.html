@@ -10,13 +10,21 @@
     </div> 
     <div class="lb-author__date" ng-bind="item.displayDate | prettifyIsoDate"></div>
     <!-- author name, with or without mailto link  -->
-    <div ng-if="!timeline.settings.authorNameLinksToEmail || item.item_type === 'comment'"
-         class="lb-author__name"
-         ng-bind="item.original_creator[item.item_type === 'comment'? 'display_name': timeline.settings.authorNameFormat]">
+    <div ng-if="!post.syndication_in || timeline.settings.showSyndicatedAuthor">   
+        <!-- author name, with or without mailto link  -->
+        <div ng-if="!timeline.settings.authorNameLinksToEmail || item.item_type === 'comment'"
+             class="lb-author__name"
+             ng-bind="item.original_creator[timeline.settings.authorNameFormat]">
+        </div>
+        <div ng-if="timeline.settings.authorNameLinksToEmail && item.item_type !== 'comment'"
+             class="lb-author__name">
+            <a href="mailto:{{post.mainItem.original_creator.email}}"
+               ng-bind="item.original_creator[timeline.settings.authorNameFormat]"></a>
+        </div>
     </div>
-    <div ng-if="timeline.settings.authorNameLinksToEmail && item.item_type !== 'comment'"
-         class="lb-author__name">
-        <a href="mailto:{{post.mainItem.original_creator.email}}"
-           ng-bind="item.original_creator[timeline.settings.authorNameFormat]"></a>
+    <div ng-if="post.syndication_in.producer_blog_title"
+         class="lb-producer"
+         ng-class="{'lb-producer__author': timeline.settings.showSyndicatedAuthor}"
+         ng-bind="post.syndication_in.producer_blog_title">
     </div>
 </div>

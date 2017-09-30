@@ -81,7 +81,7 @@ function renderPosts(api_response) {
   if (!renderedPosts.length) {
     return; // early
   }
-  
+
   renderedPosts.reverse();
 
   addPosts(renderedPosts, { // if creates
@@ -192,6 +192,8 @@ function toggleCommentDialog() {
   let commentForm = document.querySelector('form.comment');
   let isHidden = false;
 
+  document.querySelector('.header-bar__comment').classList.toggle('header-bar__comment--active');
+
   if (commentForm) {
     isHidden = commentForm.classList.toggle('hide');
   }
@@ -210,7 +212,25 @@ function toggleSortBtn(name) {
     var shouldBeActive = el.dataset.hasOwnProperty("jsOrderby_" + name);
 
     el.classList.toggle('sorting-bar__order--active', shouldBeActive);
+    if (shouldBeActive) {
+      document.querySelector('.sorting-bar__dropdownBtn').innerHTML = el.innerHTML;
+    }
   });
+  toggleSortDropdown(false);
+}
+
+/**
+ * Toggles sorting dropdown visibility
+ * @param {Boolean} open
+ */
+function toggleSortDropdown(open) {
+  if (open !== undefined) {
+    document.querySelector('.sorting-bar__dropdownContent')
+      .classList.toggle('sorting-bar__dropdownContent--active', open);
+  } else {
+    document.querySelector('.sorting-bar__dropdownContent')
+      .classList.toggle('sorting-bar__dropdownContent--active');
+  }
 }
 
 /**
@@ -315,14 +335,14 @@ function checkPermalink(posts) {
 function permalinkScroll() {
   var scrollElem;
   var found = false;
-  
+
   scrollElem = helpers.getElems('[data-js-post-id=\"' + permalink._id + '\"]');
 
   if (scrollElem.length > 0) {
     scrollElem[0].classList.add('lb-post-permalink-selected');
     scrollElem[0].scrollIntoView();
     found = true;
-  } 
+  }
 
   return found;
 }
@@ -337,6 +357,7 @@ module.exports = {
   updateTimestamps: updateTimestamps,
   hideLoadMore: hideLoadMore,
   toggleSortBtn: toggleSortBtn,
+  toggleSortDropdown: toggleSortDropdown,
   toggleCommentDialog: toggleCommentDialog,
   showSuccessCommentMsg: showSuccessCommentMsg,
   displayCommentFormErrors: displayCommentFormErrors,
