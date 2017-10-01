@@ -3,28 +3,12 @@
   "version": "0.1.0",
   "description": "Liveblog 3 AMP theme",
   "author": "Sourcefabric <contact@sourcefabric.org>",
-  "license": "UNLICENSED",
+  "license": "AGPL-3.0",
   "main": "js/liveblog.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "liveblog-default-theme": "git+https://github.com/liveblog/liveblog-default-theme.git"
-  },
-  "devDependencies": {
-    "amphtml-validator": "^1.0.20",
-    "gulp-clean-css": "^3.0.4",
-    "gulp-connect": "^5.0.0",
-    "gulp-eslint": "^3.0.1",
-    "gulp-inject": "^4.2.0",
-    "gulp-inline-source": "^3.1.0",
-    "gulp-less": "^3.3.0",
-    "gulp-load-plugins": "^1.5.0",
-    "gulp-nunjucks": "^3.0.0",
-    "gulp-purifycss": "^0.2.0",
-    "gulp-rename": "^1.2.2",
-    "gulp-watch": "^4.3.11",
-    "nunjucks": "^3.0.0",
-    "nunjucks-date-filter": "^0.1.1"
   }
 }
