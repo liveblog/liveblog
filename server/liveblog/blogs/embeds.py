@@ -25,6 +25,7 @@ from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
 from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
+from liveblog.mongo_util import encode as mongoencode
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
@@ -240,13 +241,9 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     }
     if is_amp:
         # Add AMP compatible css to template context
-        amp_inline_css = theme.get('ampThemeInlineCss')
-        if amp_inline_css:
-            theme_dirname = theme_service.get_theme_path(theme_name)
-            amp_inline_css_filename = os.path.join(theme_dirname, amp_inline_css)
-            if os.path.exists(amp_inline_css_filename):
-                with open(amp_inline_css_filename, 'r') as f:
-                    scope['amp_style'] = f.read()
+        styles = theme.get('files', {}).get('styles', {}).values()
+        if len(styles):
+            scope['amp_style'] = next(iter(styles))
 
     embed_template = 'embed.html'
     if is_amp:
