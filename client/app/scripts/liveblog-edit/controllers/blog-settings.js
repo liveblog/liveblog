@@ -262,7 +262,9 @@ function BlogSettingsController(
             // Set start_date to _created if date and time are empty
             var start_date = null;
             if (vm.start_date && vm.start_time)
-                start_date = datetimeHelper.mergeDateTime(vm.start_date, vm.start_time);
+                start_date = datetimeHelper.mergeDateTime(vm.start_date, vm.start_time) +
+                             moment.tz(config.defaultTimezone).format('Z');
+
             else
                 start_date = vm.blog._created;
 
