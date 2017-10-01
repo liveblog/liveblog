@@ -13,6 +13,8 @@ var gulp = require('gulp')
   , path = require('path')
   , nunjucks = require('nunjucks')
   , dateFilter = require('nunjucks-date-filter')
+  , purify = require('gulp-purifycss')
+  , cleanCSS = require('gulp-clean-css')
   , amphtmlValidator = require('amphtml-validator');
 
 const cwd = process.cwd();
@@ -254,8 +256,8 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
       .pipe(plugins.less({
         paths: [path.resolve(inputPath, 'less')]
       }))
-      .pipe(plugins.purify([BUILD_HTML]))
-      .pipe(plugins.cleanCSS())
+      .pipe(purify([BUILD_HTML]))
+      .pipe(cleanCSS())
       .pipe(gulp.dest('./build/amp/'))
       .pipe(plugins.inject(gulp.src(['./build/amp/*.css']), {
         starttag: '<!-- inject:amp-styles -->',
