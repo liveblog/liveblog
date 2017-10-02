@@ -381,7 +381,7 @@ function BlogSettingsController(
                 return theme.name === vm.blogPreferences.theme;
             });
             if (vm.selectedTheme.styles) {
-                vm.styleUrl = vm.selectedTheme.styles[vm.selectedTheme.styles.length - 1];
+                vm.styleUrl = vm.selectedTheme.public_url + vm.selectedTheme.styles[vm.selectedTheme.styles.length - 1];
             }
         });
 
