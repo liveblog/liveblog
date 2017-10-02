@@ -66,8 +66,8 @@ function renderPosts(api_response) {
     var renderedPost = templates.post({
       item: post,
       settings: window.LB.settings,
-      assets_root: window.LB.assets_root
-      , display: !!api_response.requestOpts.fromDate && window.LB.settings.autoApplyUpdates
+      assets_root: window.LB.assets_root,
+      display: !!api_response.requestOpts.fromDate && !window.LB.settings.autoApplyUpdates
     });
 
     if (!api_response.requestOpts.page && post.operation === "update") {
