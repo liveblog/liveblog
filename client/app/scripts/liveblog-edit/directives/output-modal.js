@@ -87,7 +87,8 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
                 theme: vm.output.theme,
                 collection: vm.output.collection,
                 style: vm.output.style,
-                settings: vm.output.settings
+                settings: vm.output.settings,
+                logo_url: vm.output.logo_url
             };
         // disable save button
         vm.disableSave = true;
@@ -197,7 +198,7 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
         .then(() => {
             vm.output.preview_logo = {};
             vm.output.progress_logo = {width: 0};
-            vm.output.output_url = '';
+            vm.output.logo_url = '';
             vm.imageSaved = false;
         });        
     }
