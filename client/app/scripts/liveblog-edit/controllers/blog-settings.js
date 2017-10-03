@@ -262,7 +262,9 @@ function BlogSettingsController(
             // Set start_date to _created if date and time are empty
             var start_date = null;
             if (vm.start_date && vm.start_time)
-                start_date = datetimeHelper.mergeDateTime(vm.start_date, vm.start_time);
+                start_date = datetimeHelper.mergeDateTime(vm.start_date, vm.start_time) +
+                             moment.tz(config.defaultTimezone).format('Z');
+
             else
                 start_date = vm.blog._created;
 
@@ -379,7 +381,7 @@ function BlogSettingsController(
                 return theme.name === vm.blogPreferences.theme;
             });
             if (vm.selectedTheme.styles) {
-                vm.styleUrl = vm.selectedTheme.styles[vm.selectedTheme.styles.length - 1];
+                vm.styleUrl = vm.selectedTheme.public_url + vm.selectedTheme.styles[vm.selectedTheme.styles.length - 1];
             }
         });
 

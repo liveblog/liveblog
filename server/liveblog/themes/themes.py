@@ -26,6 +26,7 @@ import os
 import magic
 import logging
 from flask import make_response
+from liveblog.mongo_util import encode as mongoencode
 
 from settings import (COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY, SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
@@ -122,9 +123,6 @@ class ThemesResource(Resource):
             'type': 'boolean',
             'default': False
         },
-        'ampThemeInlineCss': {
-            'type': 'string'
-        },
         'i18n': {
             'type': 'dict',
             'default': {}
@@ -132,6 +130,9 @@ class ThemesResource(Resource):
         'template': {
             'type': 'string',
             'default': ''
+        },
+        'files': {
+            'type': 'dict'
         }
     }
     datasource = {
@@ -341,7 +342,7 @@ class ThemesService(BaseService):
             if name.endswith('theme.json'):
                 theme['public_url'] = superdesk.upload.url_for_media(file_id).replace('theme.json', '')
 
-    def _save_theme_template(self, theme):
+    def _save_theme_files(self, theme):
         theme_name = theme['name']
         template_path = self.get_theme_template_filename(theme_name)
         if os.path.exists(template_path):
@@ -350,6 +351,12 @@ class ThemesService(BaseService):
         else:
             logger.warning("Template file not found for {} theme.".format(theme_name))
 
+        theme['files'] = {'styles': {}, 'scripts': {}}
+        for style in theme.get('styles', []):
+            style_path = self.get_theme_template_filename(theme_name, style)
+            if os.path.exists(style_path):
+                with open(style_path) as f:
+                    theme['files']['styles'][mongoencode(style)] = f.read()
         if theme.get('seoTheme') or theme.get('ampTheme'):
             template_env = self.get_theme_template_env(theme)
             target = self.get_theme_compiled_templates_path(theme_name)
@@ -416,7 +423,7 @@ class ThemesService(BaseService):
                 self._save_theme_file(name, theme, upload_path=upload_path)
 
         # Save theme template and jinja2 compiled templates for SEO themes.
-        self._save_theme_template(theme)
+        self._save_theme_files(theme)
 
         previous_theme = self.find_one(req=None, name=theme_name)
         if previous_theme:

@@ -11,14 +11,19 @@ var gulp = require('gulp')
   , eslint = require('gulp-eslint')
   , fs = require('fs')
   , path = require('path')
-  , nunjucks = require('nunjucks');
+  , nunjucks = require('nunjucks')
+  , dateFilter = require('nunjucks-date-filter')
+  , purify = require('gulp-purifycss')
+  , cleanCSS = require('gulp-clean-css')
+  , amphtmlValidator = require('amphtml-validator');
 
-var DEBUG = process.env.NODE_ENV !== "production";
-const inputPath = process.env.EXTENDED_MODE ? './node_modules/liveblog-default-theme/' : '';
 const cwd = process.cwd();
-
 // Command-line and default theme options from theme.json.
 var theme = require(path.resolve(cwd, './theme.json'));
+
+const DEBUG = process.env.NODE_ENV !== "production";
+const inputPath = theme.extends ? `./node_modules/liveblog-${theme.extends}-theme/` : '';
+
 
 let argvKey = 0,
   apiHost = '',
@@ -96,20 +101,30 @@ if (match.length > 0) {
 }
 
 const templatePath = [
-  path.resolve(__dirname, '../../templates'),
-  path.resolve(__dirname, 'templates')
-];
+    path.resolve(__dirname, '../../templates'),
+    path.resolve(__dirname, 'templates')
+  ],
+  nunjucksLoader = new nunjucks.FileSystemLoader(templatePath),
+  nunjucksEnv = new nunjucks.Environment(nunjucksLoader);
 
-const nunjucksLoader = new nunjucks.FileSystemLoader(templatePath);
-const nunjucksOptions = {env: new nunjucks.Environment(nunjucksLoader)};
+// Add nunjucks-date-filter and set default date format.
+// TODO: get date format from theme settings.
+dateFilter.setDefaultFormat('dddd, MMMM Do, YYYY, h:MM:ss A');
+nunjucksEnv.addFilter('date', dateFilter);
 
-var paths = {
+// nunjucks options.
+const nunjucksOptions = {
+  env: nunjucksEnv
+};
+
+const paths = {
   less: 'less/*.less',
   js: ['js/*.js', 'js/*/*.js'],
   jsfile: 'liveblog.js', // Browserify basedir
   cssfile: path.resolve(inputPath, 'liveblog.css'),
   templates: path.resolve(inputPath, 'templates/*.html')
 };
+const BUILD_HTML = './index.html';
 
 function getThemeSettings(options) {
   var _options = {};
@@ -147,6 +162,9 @@ let browserifyPreviousTasks = ['clean-js'];
 //}
 
 gulp.task('browserify', browserifyPreviousTasks, (cb) => {
+  if (theme.ampTheme) {
+    return gulp.src('.').pipe(plugins.util.noop());
+  }
   var b = browserify({
     basedir: inputPath,
     entries: 'js/liveblog.js',
@@ -182,13 +200,17 @@ gulp.task('browserify', browserifyPreviousTasks, (cb) => {
 
 // Compile LESS files.
 gulp.task('less', ['clean-css'], () => { 
-  var lessFiles = [path.resolve(inputPath, 'less/liveblog.less')];
-  if (process.env.EXTENDED_MODE) {
-    // Name of the less theme file.
-    let themeLess = `./less/${theme.name}.less`;
-    // Compile all the files under the less folder if no theme less file pressent.
-    lessFiles.push(fs.existsSync(themeLess) ? themeLess : './less/*.less');
+  var lessFiles = [];
+  // Name of the less theme file.
+  let themeLess = `./less/${theme.name}.less`;
+  // Compile all the files under the less folder if no theme less file pressent.
+  lessFiles.push(fs.existsSync(themeLess) ? themeLess : './less/*.less');
+
+  if ( !theme.onlyOwnCss && theme.extends ) {
+    let themeLess = path.resolve(inputPath,`./less/${theme.extends}.less`);
+    lessFiles.push(fs.existsSync(themeLess) ? themeLess : path.resolve(inputPath,'./less/*.less'));
   }
+
   return gulp.src(lessFiles)
     .pipe(plugins.less({
       paths: [path.resolve(inputPath, 'less')]
@@ -204,7 +226,7 @@ gulp.task('less', ['clean-css'], () => {
 
 // Inject API response into template for dev/test purposes.
 gulp.task('index-inject', ['less', 'browserify'], () => {
-  var testdata = require('./test');
+  var testdata = require(path.resolve(inputPath,'./test'));
   var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
     read: false // We're only after the file paths
   });
@@ -214,7 +236,7 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
     testdata.options.blog._id = blogId;
   }
 
-  return gulp.src(path.resolve(inputPath, 'templates/template-index.html'))
+  var indexTask = gulp.src(path.resolve(inputPath, 'templates/template-index.html'))
     .pipe(plugins.inject(sources))
     .pipe(plugins.nunjucks.compile({
       options: testdata.options,
@@ -223,18 +245,63 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
       api_response: apiResponse.posts._items.length > 0 ? apiResponse : testdata.api_response,
       include_js_options: true,
       debug: DEBUG
-    }, apiResponse.posts._items.length > 0 ? {} : nunjucksOptions))
+    }, apiResponse.posts._items.length > 0 ? {} : nunjucksOptions));
 
-    .pipe(plugins.rename("index.html"))
+  if (theme.ampTheme) {
+    let lessFiles = [],
+      themeLess = path.resolve(cwd, `./less/${theme.extends}.less`);
+    lessFiles.push(fs.existsSync(themeLess) ? themeLess : path.resolve(cwd,'./less/*.less'));
+
+    indexTask.pipe(gulp.src(lessFiles)
+      .pipe(plugins.less({
+        paths: [path.resolve(inputPath, 'less')]
+      }))
+      .pipe(purify([BUILD_HTML]))
+      .pipe(cleanCSS())
+      .pipe(gulp.dest('./build/amp/'))
+      .pipe(plugins.inject(gulp.src(['./build/amp/*.css']), {
+        starttag: '<!-- inject:amp-styles -->',
+        transform: function(filepath, file) {
+          return file.contents.toString();
+        },
+        removeTags: true
+      }))
+    );
+  }
+  return indexTask.pipe(plugins.rename("index.html"))
     .pipe(gulp.dest('.'))
     .pipe(plugins.connect.reload());
 });
+
+/*
+ * Validate if AMP markup is valid
+ * From: https://github.com/uncompiled/amp-bootstrap-example/
+ */
+gulp.task('amp-validate', [], () => {
+  amphtmlValidator.getInstance().then((validator) => {
+    var input = fs.readFileSync(BUILD_HTML, 'utf8');
+    var result = validator.validateString(input);
+    (result.status === 'PASS' ? console.info : console.error)(BUILD_HTML + ": " + result.status);
+    for (var ii = 0; ii < result.errors.length; ii++) {
+      var error = result.errors[ii];
+      var msg = 'line ' + error.line + ', col ' + error.col + ': ' + error.message;
+      if (error.specUrl !== null) {
+        msg += ' (see ' + error.specUrl + ')';
+      }
+      (error.severity === 'ERROR' ? console.error : console.warn)(msg);
+    }
+  });
+});
+
 
 // Inject jinja/nunjucks template for production use.
 gulp.task('template-inject', ['less', 'browserify'], () => {
   var themeSettings = getThemeSettings(theme.options);
 
-  return gulp.src('./templates/template.html')
+  let templates = [];
+  let timeline = `./templates/template-timeline.html`;
+  templates.push(fs.existsSync(timeline) ? timeline : path.resolve(inputPath,timeline));
+  return gulp.src(`./templates/template.html`)
     .pipe(plugins.nunjucks.compile({
       theme: theme,
       theme_json: JSON.stringify(theme, null, 4),
@@ -244,7 +311,7 @@ gulp.task('template-inject', ['less', 'browserify'], () => {
     }))
 
     // Add nunjucks/jinja2 template for server-side processing.
-    .pipe(plugins.inject(gulp.src([path.resolve(inputPath,'templates/template-timeline.html')]), {
+    .pipe(plugins.inject(gulp.src(templates), {
       starttag: '<!-- inject:template-content -->',
       transform: function(filepath, file) {
         return file.contents.toString();
