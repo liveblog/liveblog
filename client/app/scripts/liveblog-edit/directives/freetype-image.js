@@ -26,6 +26,12 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
 
                 $scope.$on('$destroy', sentinel);
             }
+            
+            let _self = this;
+
+            $scope.$watch('preview.img', function () {
+                _self.saveImage();
+            });
 
             this.saveImage = function() {
                 var form = {};
