@@ -1,6 +1,6 @@
 {% if not settings.renderForESI %}
 <!doctype html>
-<html>
+<html class="lb-wrapHtml">
     <head>
         <title>{{ blog.title }}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -19,7 +19,7 @@
             {% endfor %}
         {% endif %}
     </head>
-    <body style="{{ (output and output.get('style')) | tostyle | safe }}">
+    <body class="lb-wrapBody" style="{{ (output and output.get('style')) | tostyle | safe }}">
 {% elif not settings.removeStylesESI %}
     {% if debug %}
         {% for style in assets.devStyles %}<link rel="stylesheet" href="{{ style }}">{% endfor %}

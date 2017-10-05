@@ -1,6 +1,6 @@
 {% if not settings.renderForESI %}
 <!doctype html>
-<html amp lang="en">
+<html class="lb-wrapHtml" amp lang="en">
   <head>
     <meta charset="utf-8">
     <title>{{ blog.title }}</title>
@@ -24,7 +24,7 @@
     {% endif %}
     {% endblock %}
   </head>
-  <body>
+  <body class="lb-wrapBody">
 {% elif not settings.removeStylesESI %}
     {% if amp_style %}
     <style amp-custom>
