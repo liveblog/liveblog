@@ -133,6 +133,13 @@ function BlogSettingsController(
         showOutputEmbedCode: function(output) {
             vm.outputEmbedModal = true;
             vm.output = output;
+            let outputTheme  = _.find(vm.availableThemes, function(theme) {
+                return theme.name === vm.output.theme;
+            });
+            
+            if (outputTheme.styles && outputTheme.settings.removeStylesESI) {
+                vm.output.styleUrl = outputTheme.public_url + outputTheme.styles[outputTheme.styles.length - 1];
+            }
         },
         openOutputDialog: function(output) {
             output = output || {};
