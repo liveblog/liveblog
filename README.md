@@ -1,6 +1,9 @@
 # Liveblog 3 SEO Theme
 
-User-friendly, indexable and fast Liveblog theme.
+User-friendly, indexable and fast Liveblog theme. 
+
+## Compatibility
+This theme requires Live Blog version 3.3 or higher. 
 
 ## Develop
 

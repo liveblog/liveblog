@@ -301,7 +301,9 @@ gulp.task('template-inject', ['less', 'browserify'], () => {
   let templates = [];
   let timeline = `./templates/template-timeline.html`;
   templates.push(fs.existsSync(timeline) ? timeline : path.resolve(inputPath,timeline));
-  return gulp.src(`./templates/template.html`)
+  let main = `./templates/template.html`;
+  main = fs.existsSync(main) ? main : path.resolve(inputPath,main);
+  return gulp.src(main)
     .pipe(plugins.nunjucks.compile({
       theme: theme,
       theme_json: JSON.stringify(theme, null, 4),
