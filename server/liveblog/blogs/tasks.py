@@ -48,7 +48,6 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
 def delete_embed(blog, theme=None, output=None):
     check_media_storage()
     outputs = get_resource_service('outputs')
-    blog_theme = blog.get('theme')
     blog_id = blog.get('_id')
     public_urls = blog.get('public_urls', {'output': {}, 'theme': {}})
 
@@ -74,6 +73,7 @@ def delete_embed(blog, theme=None, output=None):
     app.media.delete(app.media.media_id(file_path, version=False))
     if output or theme:
         get_resource_service('blogs').system_update(blog_id, {'public_urls': public_urls}, blog)
+
 
 def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, save=True):
     blogs = get_resource_service('client_blogs')

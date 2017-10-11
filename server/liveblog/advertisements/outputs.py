@@ -12,6 +12,7 @@ from superdesk.services import BaseService
 from liveblog.blogs.tasks import delete_blog_embeds_on_s3, publish_blog_embed_on_s3
 from superdesk import get_resource_service
 
+
 class OutputsResource(Resource):
     schema = {
         'name': {
