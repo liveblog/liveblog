@@ -10,7 +10,7 @@
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from liveblog.blogs.tasks import delete_blog_embeds_on_s3, publish_blog_embed_on_s3
-
+from superdesk import get_resource_service
 
 class OutputsResource(Resource):
     schema = {
@@ -82,7 +82,9 @@ class OutputsService(BaseService):
 
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
+        blogs = get_resource_service('blogs')
         if updates.get('deleted', False):
-            delete_blog_embeds_on_s3(original.get('blog'), output=original)
+            blog = blogs.find_one(req=None, _id=original.get('blog'))
+            delete_blog_embeds_on_s3.apply_async(args=[blog], kwargs={'output': original}, countdown=2)
         else:
             publish_blog_embed_on_s3(original.get('blog'), output=original)
