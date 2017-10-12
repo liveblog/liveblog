@@ -45,31 +45,34 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
     return superdesk.upload.url_for_media(file_id)
 
 
-def delete_embed(blog_id, theme=None, output=None):
+def delete_embed(blog, theme=None, output=None):
     check_media_storage()
-    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
-    if not blog:
-        return
-
+    outputs = get_resource_service('outputs')
+    blog_id = blog.get('_id')
     public_urls = blog.get('public_urls', {'output': {}, 'theme': {}})
+
+    # TODO: handle all the output `public_url` logic in the output resource.
     if output:
         output_id = str(output.get('_id'))
-        public_url = public_urls['output'][output_id]
+        file_path = get_blog_path(blog_id, output.get('theme'), output_id)
         public_urls['output'].pop(output_id)
     elif theme:
-        public_url = public_urls['theme'][theme]
+        file_path = get_blog_path(blog_id, theme)
         public_urls['theme'].pop(theme)
     else:
-        for output_url in public_urls['outputs']:
-            app.media.delete(output_url)
-        for theme_url in public_urls['theme']:
-            app.media.delete(theme_url)
-        public_url = blog.get('public_url')
-        public_urls = {}
+        for output_id, output_url in public_urls['output'].items():
+            out = outputs.find_one(req=None, _id=output_id)
+            output_path = get_blog_path(blog_id, out.get('theme'), output_id)
+            app.media.delete(app.media.media_id(output_path, version=False))
+        for theme_name, theme_url in public_urls['theme'].items():
+            theme_path = get_blog_path(blog_id, theme_name)
+            app.media.delete(app.media.media_id(theme_path, version=False))
+        file_path = get_blog_path(blog_id)
 
     # Remove existing file.
-    app.media.delete(public_url)
-    get_resource_service('blogs').system_update(blog_id, {'public_urls': public_urls}, blog)
+    app.media.delete(app.media.media_id(file_path, version=False))
+    if output or theme:
+        get_resource_service('blogs').system_update(blog_id, {'public_urls': public_urls}, blog)
 
 
 def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, save=True):
@@ -191,17 +194,17 @@ def publish_blog_embeds_on_s3(blog_or_id, safe=True, save=True, subtask_save=Fal
 
 
 @celery.task(soft_time_limit=1800)
-def delete_blog_embeds_on_s3(blog_id, theme=None, output=None, safe=True):
-    logger.warning('delete_blog_embed_on_s3 for blog "{}" started.'.format(blog_id))
+def delete_blog_embeds_on_s3(blog, theme=None, output=None, safe=True):
+    logger.warning('delete_blog_embed_on_s3 for blog "{}" started.'.format(blog.get('_id')))
     try:
-        delete_embed(blog_id, theme=theme, output=output)
+        delete_embed(blog, theme=theme, output=output)
     except MediaStorageUnsupportedForBlogPublishing as e:
         if not safe:
             raise e
     except (Exception, SoftTimeLimitExceeded):
-        logger.exception('delete_blog_on_s3 for blog "{}" failed.'.format(blog_id))
+        logger.exception('delete_blog_on_s3 for blog "{}" failed.'.format(blog.get('_id')))
     finally:
-        logger.warning('delete_blog_embed_on_s3 for blog "{}" finished.'.format(blog_id))
+        logger.warning('delete_blog_embed_on_s3 for blog "{}" finished.'.format(blog.get('_id')))
 
 
 @celery.task(soft_time_limit=1800)

@@ -198,7 +198,8 @@ class BlogService(BaseService):
         if doc.get('syndication_enabled', False) and out.count():
             raise SuperdeskApiError.forbiddenError(message='Cannot delete syndication: blog has active consumers.')
 
-        delete_blog_embeds_on_s3.apply_async(args=[doc['_id']], countdown=2)
+        blog = get_resource_service('client_blogs').find_one(req=None, _id=doc['_id'])
+        delete_blog_embeds_on_s3.apply_async(args=[blog], countdown=2)
 
     def on_deleted(self, doc):
         # Invalidate cache for updated blog.
