@@ -10,6 +10,7 @@ if(typeof liveblog !== 'undefined') {
             }
         }
         function callbackJquery() {
+            liveblog.load("https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.14/iframeResizer.contentWindow.min.js");
             liveblog.load("https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.14/iframeResizer.min.js", function() {
                 var iframe = jQuery('#liveblog-iframe');
                 iFrameResize({
