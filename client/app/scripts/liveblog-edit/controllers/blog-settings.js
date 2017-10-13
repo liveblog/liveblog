@@ -399,7 +399,9 @@ function BlogSettingsController(
         var parentIframe = 'http://localhost:5000/themes_assets/angular/';
         if (vm.angularTheme.public_url) {
             // production link
-            parentIframe = vm.angularTheme.public_url.replace(/\/[0-9\.]+\/themes_assets\//, '/themes_assets/');
+            parentIframe = vm.angularTheme.public_url
+                                        .replace(/\/[0-9\.]+\/themes_assets\//, '/themes_assets/')
+                                        .replace('http://', 'https://');
         }
         // loading mechanism, and load parent-iframe.js with callback.
         var loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){'

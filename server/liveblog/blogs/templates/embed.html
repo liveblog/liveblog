@@ -43,9 +43,9 @@
     };
 </script>
     {% if debug %}
-        {% for script in assets.devScripts %}<script type="text/javascript" src="{{ script }}"></script>{% endfor %}
+        {% for script in assets.devScripts %}<script async type="text/javascript" src="{{ script }}"></script>{% endfor %}
     {% else %}
-        {% for script in assets.scripts %}<script type="text/javascript" src="{{ script }}"></script>{% endfor %}
+        {% for script in assets.scripts %}<script async type="text/javascript" src="{{ script }}"></script>{% endfor %}
     {% endif %}
 {% if not settings.renderForESI %}
     </body>
