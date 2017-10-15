@@ -30,9 +30,9 @@ Generate documentation via `jsdoc`.
 When embedding liveblog, you want to have to have the fullscreen mode the slideshow taking all the available space. For this you need to modify the embed code as follow:
 
 ```html
-<iframe id="liveblog" width="100%" height="715" src="http://localhost:8008/" frameborder="0" allowfullscreen></iframe>
+<iframe id="liveblog-iframe" width="100%" height="715" src="http://localhost:8008/" frameborder="0" allowfullscreen></iframe>
 <script type="text/javascript">
-  var liveblog = document.getElementById('liveblog')
+  var liveblog = document.getElementById('liveblog-iframe')
 
   liveblog.addEventListener('load', () => {
     var receiver = liveblog.contentWindow;
@@ -54,9 +54,9 @@ When embedding liveblog, you want to have to have the fullscreen mode the slides
 or the compressed version:
 
 ```html
-<iframe id="liveblog" width="100%" height="715" src="http://localhost:8008/" frameborder="0" allowfullscreen></iframe>
+<iframe id="liveblog-iframe" width="100%" height="715" src="http://localhost:8008/" frameborder="0" allowfullscreen></iframe>
 <script type="text/javascript">
-var l=document.getElementById("liveblog");l.addEventListener("load",function(){var t=l.contentWindow,e=l.getAttribute("src");t.postMessage(window.location.href,e),window.addEventListener("message",function(t){"fullscreen"===t.data?l.style.cssText="position:fixed;top:0;bottom:0;left:0;right:0;width:100%;height: 100%":l.style.cssText=""})});
+var l=document.getElementById("liveblog-iframe");l.addEventListener("load",function(){var t=l.contentWindow,e=l.getAttribute("src");t.postMessage(window.location.href,e),window.addEventListener("message",function(t){"fullscreen"===t.data?l.style.cssText="position:fixed;top:0;bottom:0;left:0;right:0;width:100%;height: 100%":l.style.cssText=""})});
 </script>
 ```
 
