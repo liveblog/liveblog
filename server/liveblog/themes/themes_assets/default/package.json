@@ -37,6 +37,7 @@
     "gulp-uglify": "^1.5.1",
     "gulp-util": "^3.0.8",
     "gulp-watch": "^4.3.5",
+    "iframe-resizer": "^3.5.14",
     "moment": "^2.18.1",
     "nunjucks": "^3.0.0",
     "nunjucks-date-filter": "^0.1.1",

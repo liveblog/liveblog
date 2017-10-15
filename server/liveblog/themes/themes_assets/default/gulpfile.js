@@ -235,8 +235,8 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
     testdata.options.api_host = `${protocol}${apiHost}`;
     testdata.options.blog._id = blogId;
   }
-
-  var indexTask = gulp.src(path.resolve(inputPath, 'templates/template-index.html'))
+  var index = `./templates/template-index.html`;
+  var indexTask = gulp.src(fs.existsSync(index) ? index : path.resolve(inputPath,index))
     .pipe(plugins.inject(sources))
     .pipe(plugins.nunjucks.compile({
       options: testdata.options,
@@ -252,7 +252,7 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
       themeLess = path.resolve(cwd, `./less/${theme.extends}.less`);
     lessFiles.push(fs.existsSync(themeLess) ? themeLess : path.resolve(cwd,'./less/*.less'));
 
-    indexTask.pipe(gulp.src(lessFiles)
+    indexTask = indexTask.pipe(gulp.src(lessFiles)
       .pipe(plugins.less({
         paths: [path.resolve(inputPath, 'less')]
       }))
