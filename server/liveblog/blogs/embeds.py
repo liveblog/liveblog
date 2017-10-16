@@ -227,6 +227,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             i18n=i18n
         )
 
+    async = theme.get('asyncTheme', False)
     scope = {
         'blog': blog,
         'settings': theme_settings,
@@ -236,6 +237,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         'template': template_content,
         'debug': app.config.get('LIVEBLOG_DEBUG'),
         'assets_root': assets_root,
+        'async': async,
         'i18n': i18n
     }
     if is_amp:
