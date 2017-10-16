@@ -44,11 +44,11 @@
 </script>
     {% if debug %}
         {% for script in assets.devScripts %}
-            <script {% if assets.devScripts | length == 1 %}async {% endif%}type="text/javascript" src="{{ script }}"></script>
+            <script {% if async %}async {% endif%}type="text/javascript" src="{{ script }}"></script>
         {% endfor %}
     {% else %}
         {% for script in assets.scripts %}
-            <script {% if assets.scripts | length == 1 %}async {% endif%}type="text/javascript" src="{{ script }}"></script>
+            <script {% if async %}async {% endif%}type="text/javascript" src="{{ script }}"></script>
         {% endfor %}
     {% endif %}
 {% if not settings.renderForESI %}
