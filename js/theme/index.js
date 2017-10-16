@@ -10,6 +10,7 @@ const handlers = require('./handlers'),
   pageview = require('./pageview'),
   localAnalytics = require('./local-analytics');
 
+require("iframe-resizer/js/iframeResizer.contentWindow.min.js");
 module.exports = {
   /**
    * On document loaded, do the following:
