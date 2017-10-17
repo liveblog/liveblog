@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
   theme.init();
 });
 if (/complete|loaded|interactive/.test(document.readyState)){
-    theme.init();
+  theme.init();
 }
 
 module.exports = {};

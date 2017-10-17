@@ -1,4 +1,4 @@
-<article id="{{ item._id }}" data-sort-time="{{ item._updated | date('x') }}"
+<article id="{{ item._id }}" data-sort-time="{{ item.published_date | date('x') }}"
   class="lb-post list-group-item show-author-avatar">
 
   {% if item.sticky %}
@@ -11,7 +11,7 @@
   <div class="lb-post-highlighted"></div>
   {% endif %}
 
-  <div class="lb-post-date">{{ item._updated | date('')  }}</div>
+  <div class="lb-post-date">{{ item.published_date | date('')  }}</div>
 
   <!-- author plus avatar -->
   <div class="lb-author">
