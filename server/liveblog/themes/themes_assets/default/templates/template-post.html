@@ -33,7 +33,7 @@
   <!-- remove advertisement stylization-->
   {% if item.post_items_type != "advertisement" %}
 
-  <div class="lb-post-date" data-js-timestamp="{{ item._updated }}">{{ item._updated }}</div>
+  <div class="lb-post-date" data-js-timestamp="{{ item.published_date }}">{{ item.published_date }}</div>
 
   <!-- author plus avatar -->
   <div class="lb-author">
