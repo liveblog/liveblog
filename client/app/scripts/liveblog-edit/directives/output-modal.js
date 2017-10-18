@@ -71,7 +71,7 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
         vm.themesLoading = true;
         return api('themes').query({})
         .then(function(data) {
-            vm.themes = data._items;
+            vm.themes = data._items.filter((theme)=>!theme.abstract);
             vm.themesLoading = false;
         }, function(data) {
             vm.themesLoading = false;
