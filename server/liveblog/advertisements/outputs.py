@@ -88,4 +88,4 @@ class OutputsService(BaseService):
             blog = blogs.find_one(req=None, _id=original.get('blog'))
             delete_blog_embeds_on_s3.apply_async(args=[blog], kwargs={'output': original}, countdown=2)
         else:
-            publish_blog_embed_on_s3.apply_async(args=[blog], kwargs={'output': updates}, countdown=2)
+            publish_blog_embed_on_s3(original.get('blog'), output=updates)
