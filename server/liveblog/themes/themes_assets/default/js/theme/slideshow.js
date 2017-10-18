@@ -80,11 +80,11 @@ class Slideshow {
   stop() {
     this.exitFullscreen();
     this.removeEventListeners();
-    document.querySelector('#slideshow').remove();
+    document.querySelector('#lb-slideshow').remove();
   }
 
   onResize() {
-    const container = document.querySelector('#slideshow .container');
+    const container = document.querySelector('#lb-slideshow .container');
     let offset = container.offsetHeight * this.iterations;
 
     container.style.marginTop = `-${offset}px`;
@@ -94,27 +94,27 @@ class Slideshow {
     window.addEventListener('keydown', this.keyboardListener);
 
     document
-      .querySelector('#slideshow button.fullscreen')
+      .querySelector('#lb-slideshow button.fullscreen')
       .addEventListener('click', this.toggleFullscreen);
 
     document
-      .querySelector('#slideshow button.arrows.next')
+      .querySelector('#lb-slideshow button.arrows.next')
       .addEventListener('click', () => this.keyboardListener({keyCode: 39}));
 
     document
-      .querySelector('#slideshow button.arrows.prev')
+      .querySelector('#lb-slideshow button.arrows.prev')
       .addEventListener('click', () => this.keyboardListener({keyCode: 37}));
 
     document
-      .querySelector('#slideshow button.close')
+      .querySelector('#lb-slideshow button.close')
       .addEventListener('click', this.stop);
 
     document
-      .querySelector('#slideshow')
+      .querySelector('#lb-slideshow')
       .addEventListener('touchstart', this.touchStart);
 
     document
-      .querySelector('#slideshow')
+      .querySelector('#lb-slideshow')
       .addEventListener('touchmove', this.touchMove);
 
     window.addEventListener('resize', this.onResize);
@@ -124,27 +124,27 @@ class Slideshow {
     window.removeEventListener('keydown', this.keyboardListener);
 
     document
-      .querySelector('#slideshow button.fullscreen')
+      .querySelector('#lb-slideshow button.fullscreen')
       .removeEventListener('click', this.toggleFullscreen);
 
     document
-      .querySelector('#slideshow button.arrows.next')
+      .querySelector('#lb-slideshow button.arrows.next')
       .removeEventListener('click', () => this.keyboardListener({keyCode: 39}));
 
     document
-      .querySelector('#slideshow button.arrows.prev')
+      .querySelector('#lb-slideshow button.arrows.prev')
       .removeEventListener('click', () => this.keyboardListener({keyCode: 37}));
 
     document
-      .querySelector('#slideshow button.close')
+      .querySelector('#lb-slideshow button.close')
       .removeEventListener('click', this.stop);
 
     document
-      .querySelector('#slideshow')
+      .querySelector('#lb-slideshow')
       .removeEventListener('touchstart', this.touchStart);
 
     document
-      .querySelector('#slideshow')
+      .querySelector('#lb-slideshow')
       .removeEventListener('touchmove', this.touchMove);
 
     window.removeEventListener('resize', this.onResize);
@@ -180,7 +180,7 @@ class Slideshow {
 
   toggleFullscreen() {
     if (!this.isFullscreen) {
-      this.launchIntoFullscreen(document.getElementById('slideshow'));
+      this.launchIntoFullscreen(document.getElementById('lb-slideshow'));
     } else {
       this.exitFullscreen();
     }
@@ -213,7 +213,7 @@ class Slideshow {
   }
 
   setFocus() {
-    const container = document.querySelector('#slideshow .container');
+    const container = document.querySelector('#lb-slideshow .container');
 
     container.querySelectorAll('img').forEach((img, i) => {
       if (img.classList.contains('active')) {
@@ -227,7 +227,7 @@ class Slideshow {
   }
 
   keyboardListener(e) {
-    const container = document.querySelector('#slideshow .container');
+    const container = document.querySelector('#lb-slideshow .container');
     const picturesCount = container.querySelectorAll('img').length;
     let offset = container.offsetHeight * this.iterations;
 

@@ -53,7 +53,7 @@ def collect_theme_assets(theme, assets=None, template=None):
 
     # Add assets from parent theme.
     extends = theme.get('extends')
-    if extends:
+    if extends and not theme.get('seoTheme', False):
         parent_theme = get_resource_service('themes').find_one(req=None, name=extends)
         if parent_theme:
             assets, template = collect_theme_assets(parent_theme, assets=assets, template=template)
@@ -227,6 +227,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             i18n=i18n
         )
 
+    async = theme.get('asyncTheme', False)
     scope = {
         'blog': blog,
         'settings': theme_settings,
@@ -236,6 +237,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         'template': template_content,
         'debug': app.config.get('LIVEBLOG_DEBUG'),
         'assets_root': assets_root,
+        'async': async,
         'i18n': i18n
     }
     if is_amp:

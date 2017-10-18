@@ -4,6 +4,9 @@
 
 AMP (Accelerated Mobile Pages) Live Blog Theme, based on Liveblog 3 SEO Theme.
 
+## Compatibility
+This theme requires Live Blog version 3.3 or higher.
+
 ## Develop
 
 Just issue a `npm i` followed by `gulp watch-static`.

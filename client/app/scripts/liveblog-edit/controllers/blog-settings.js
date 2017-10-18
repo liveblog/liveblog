@@ -133,6 +133,13 @@ function BlogSettingsController(
         showOutputEmbedCode: function(output) {
             vm.outputEmbedModal = true;
             vm.output = output;
+            let outputTheme = _.find(vm.availableThemes, function(theme) {
+                return theme.name === vm.output.theme;
+            });
+            
+            if (outputTheme.styles && outputTheme.settings.removeStylesESI) {
+                vm.output.styleUrl = outputTheme.public_url + outputTheme.styles[outputTheme.styles.length - 1];
+            }
         },
         openOutputDialog: function(output) {
             output = output || {};
@@ -392,7 +399,9 @@ function BlogSettingsController(
         var parentIframe = 'http://localhost:5000/themes_assets/angular/';
         if (vm.angularTheme.public_url) {
             // production link
-            parentIframe = vm.angularTheme.public_url.replace(/\/[0-9\.]+\/themes_assets\//, '/themes_assets/');
+            parentIframe = vm.angularTheme.public_url
+                                        .replace(/\/[0-9\.]+\/themes_assets\//, '/themes_assets/')
+                                        .replace('http://', 'https://');
         }
         // loading mechanism, and load parent-iframe.js with callback.
         var loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){'
@@ -404,7 +413,7 @@ function BlogSettingsController(
         + 'liveblog.loadCallback&&liveblog.loadCallback()});</script>';
         // compute embeds code with the injected publicUrl
         const slideshow = '<script type="text/javascript">'
-        + 'var l=document.getElementById("liveblog");'
+        + 'var l=document.getElementById("liveblog-iframe");'
         + 'l.addEventListener("load",function(){var t=l.contentWindow,e=l.getAttribute("src");'
         + 't.postMessage(window.location.href,e),window.addEventListener("message",function(t){'
         + '"fullscreen"===t.data?l.style.cssText="position:fixed;top:0;bottom:0;left:0;right:0;'
@@ -412,10 +421,10 @@ function BlogSettingsController(
         + '</script>';
 
         vm.embeds = {
-            normal: slideshow + '<iframe width="100%" height="715" src="' + 
-                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>',
-            resizeing: slideshow + loadingScript + '<iframe id="liveblog-iframe" width="100%" scrolling="no" src="' + 
-                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>'
+            normal: '<iframe id="liveblog-iframe" width="100%" height="715" src="' + 
+                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>' + slideshow,
+            resizeing: '<iframe id="liveblog-iframe" width="100%" scrolling="no" src="' + 
+                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>' + slideshow + loadingScript
         };
     });
 

@@ -123,6 +123,10 @@ class ThemesResource(Resource):
             'type': 'boolean',
             'default': False
         },
+        'asyncTheme': {
+            'type': 'boolean',
+            'default': False
+        },
         'i18n': {
             'type': 'dict',
             'default': {}
