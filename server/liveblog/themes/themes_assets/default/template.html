@@ -74,7 +74,9 @@
 
       {% if settings.showLiveblogLogo %}
         {% if output.logo_url %}
-        <img src="{{ output.logo_url }}"/>
+        <div class="header-bar__logo">
+          <img src="{{ output.logo_url }}"/>
+        </div>
         {% else %}
         <a class="header-bar__logo" href="https://www.liveblog.pro" target="_blank">
           <span>{{ translate("Powered by") }}</span>
