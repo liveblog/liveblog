@@ -61,8 +61,8 @@
                         all.splice(i, 0, ads[index]);
                     }
                 } else {
-                    for(var index, i=all.length; i > 0; i-=(settings.frequency+1)) {
-                        index = i/(settings.frequency+1) % ads.length;
+                    for(var index, i=all.length; i > 0; i-=(settings.frequency)) {
+                        index = Math.floor(i/(settings.frequency)) % ads.length;
                         all.splice(i, 0, ads[index]);
                     }
                 }

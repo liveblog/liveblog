@@ -71,7 +71,7 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
         vm.themesLoading = true;
         return api('themes').query({})
         .then(function(data) {
-            vm.themes = data._items;
+            vm.themes = data._items.filter((theme) => !theme.abstract);
             vm.themesLoading = false;
         }, function(data) {
             vm.themesLoading = false;
@@ -117,7 +117,7 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
             var newBlog = {
                 public_urls: angular.copy(vm.blog.public_urls)
             };
-            delete newBlog.public_urls.output[vm.output._id];
+            newBlog.public_urls.output[vm.output._id]='';
             api('blogs').save(vm.blog, newBlog)
             .then(function(){
                 notify.info(gettext('Blog saved'));

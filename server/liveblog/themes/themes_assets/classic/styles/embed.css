@@ -408,6 +408,20 @@ article {
     font-size: 14px;
     overflow: hidden;
 }
+article h4 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 26px;
+    margin-bottom: 10px;
+}
+article h5 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 24px;
+    margin-bottom: 10px;
+}
 article b {
     font-weight: bold;
 }
@@ -619,6 +633,13 @@ article blockquote li:before {
 .no .sorting-bar__orders {
     padding-left: 75px;
 }
+/* Scorecard styles */
+body .scorecard-top {
+	background: #f5f5f5;
+	padding: 20px;
+	border-radius: 0px;
+}
+
 /* Remove this is angular-gettext is updated */
 [translate]{visibility:hidden !important;}
 
@@ -713,6 +734,9 @@ article blockquote li:before {
     }
     .item--embed__illustration ~ * {
         margin-left: 0;
+    }
+    .scorecard-top span.team-score {
+    	margin-bottom: 10px;
     }
 }
 @media (max-width: 600px) {
