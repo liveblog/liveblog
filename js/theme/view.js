@@ -62,12 +62,15 @@ function renderPosts(api_response) {
       deletePost(post._id);
       return; // early
     }
-
+    const elem = helpers.getElems('[data-js-post-id=\"' + post._id + '\"]');
+    const displaynone = !!api_response.requestOpts.fromDate &&
+                    !window.LB.settings.autoApplyUpdates &&
+                    !elem.length;
     var renderedPost = templates.post({
       item: post,
       settings: window.LB.settings,
       assets_root: window.LB.assets_root,
-      display: !!api_response.requestOpts.fromDate && !window.LB.settings.autoApplyUpdates
+      displaynone: displaynone
     });
 
     if (!api_response.requestOpts.page && post.operation === "update") {
