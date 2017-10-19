@@ -16,10 +16,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-5ce275a92f.css"],
-    "devScripts": ["dist/default-8b67944a09.js"],
-    "styles": ["dist/default-5ce275a92f.css"],
-    "scripts": ["dist/default-8b67944a09.js"],
+    "devStyles": ["dist/default-9f6578df16.css"],
+    "devScripts": ["dist/default-ebf26006ce.js"],
+    "styles": ["dist/default-9f6578df16.css"],
+    "scripts": ["dist/default-ebf26006ce.js"],
     "options": [
         {
             "name": "datetimeFormat",
@@ -52,13 +52,6 @@
             "type": "checkbox",
             "default": true,
             "help": "Turn off to prompt user to load updates"
-        },
-        {
-            "name": "autoApplyEdits",
-            "label": "Edits and deletes are applied without prompt",
-            "type": "checkbox",
-            "default": false,
-            "help": "Turn off to prompt user to load new posts"
         },
         {
             "name": "canComment",
