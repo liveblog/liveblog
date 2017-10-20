@@ -60,7 +60,7 @@ function renderPosts(api_response) {
 
     if (!api_response.requestOpts.page && post.deleted) {
       deletePost(post._id);
-      return; // early
+      continue; // early
     }
     const elem = helpers.getElems('[data-js-post-id=\"' + post._id + '\"]');
     const displaynone = !!api_response.requestOpts.fromDate &&
@@ -72,10 +72,11 @@ function renderPosts(api_response) {
       assets_root: window.LB.assets_root,
       displaynone: displaynone
     });
-
-    if (!api_response.requestOpts.page && post.operation === "update") {
-      updatePost(post._id, renderedPost);
-      return; // early
+    if (!api_response.requestOpts.page) {
+      const updated = updatePost(post._id, renderedPost);
+      if ( updated ) {
+        continue; // early
+      }
     }
 
     renderedPosts.push(renderedPost); // create operation
@@ -159,7 +160,9 @@ function updatePost(postId, renderedPost) {
     attachSlideshow();
     attachPermalink();
     attachShareBox();
+    return true;
   }
+  return false;
 }
 
 /**
