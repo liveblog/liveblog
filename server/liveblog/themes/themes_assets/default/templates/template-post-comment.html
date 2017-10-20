@@ -10,7 +10,7 @@
       {% if settings.showAuthorAvatar %}
         {% if secondary.original_creator and secondary.original_creator.picture_url %}
         <img class="lb-author__avatar" src="{{ secondary.original_creator.picture_url }}" />
-        {% elif secondary.original_creator and secondary.syndicated_creator.picture_url  and settings.showSyndicatedAuthor %}
+        {% elif secondary.original_creator and secondary.syndicated_creator  and settings.showSyndicatedAuthor %}
         <img class="lb-author__avatar" src="{{ mainItem.syndicated_creator.picture_url }}" />
         {% else %}
         <div class="lb-author__avatar"></div>
