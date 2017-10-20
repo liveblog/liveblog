@@ -96,6 +96,23 @@ a[disabled] {
     flex-direction: column;
     justify-content: flex-start;
     box-sizing: border-box;
+    label {
+        display: inline-block;
+        max-width: 100%;
+        margin-bottom: 4px;
+        font-size: 1em;
+    }
+    .field {
+        margin-bottom: 20px;
+    }
+    .help-block {
+        display: block;
+        margin-top: 0px;
+        margin-bottom: 10px;
+        color: #737373 ;
+        font-size: 12px;
+        line-height: 120%;
+    }
     .modal-dialog {
         flex: 0 1 auto;
         margin: 0 auto;

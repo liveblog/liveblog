@@ -95,7 +95,7 @@ button.active {
 }
 .timeline-body {
     position: relative;
-}   
+}
 .header-bar {
     background-color: #FAFAFA;
     border-top: 2px solid #CBCBCB;
@@ -107,7 +107,7 @@ button.active {
 .header-bar__actions {
     position: absolute;
     right: 100px;
-    top: 5px; 
+    top: 5px;
 }
 .btn {
     background-color: rgba(0, 0, 0, 0.15);
@@ -159,7 +159,7 @@ button.active {
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.252);
 }
 .btn.comment i {
-    display: none; 
+    display: none;
 }
 .modal-backdrop {
     position: absolute;
@@ -168,7 +168,7 @@ button.active {
     left: 0;
     bottom: 0px;
     right: 0;
-    z-index: 2;    
+    z-index: 2;
 }
 .modal {
     z-index: 3;
@@ -280,7 +280,10 @@ button.active {
     right: 10px;
     top: 5px;
     max-height: 50px;
-    max-width: 250px;
+    max-width: 75px;
+    img {
+        max-height: 29px;
+    }
 }
 .load-new-posts {
     font-size: 1.2em;
@@ -714,7 +717,7 @@ body .scorecard-top {
   content: "\e907";
 }
 
-/* Media queries */ 
+/* Media queries */
 /* hide permalink on larger screens, show only on hover */
 @media (min-width: 1025px) {
     .lb-post-permalink, .lb-post-social {
@@ -780,7 +783,7 @@ body .scorecard-top {
         float: right;
     }
     .btn.comment i {
-        display: inline-block;        
+        display: inline-block;
         line-height: 12px;
     }
 }
