@@ -24,6 +24,10 @@
     margin: 0px 0px 20px 0px;
   }
 
+  .timeline-top {
+      margin-top: 20px;
+  }
+
   .lb-timeline__header {
       padding: 25px 10px 30px;
   }
@@ -98,7 +102,7 @@
     margin-left: 10px;
   }
 
-  .header-bar__logo span {
+  a.header-bar__logo span {
     font-size: 0.63em;
     display: block;
     color: @grey;
@@ -108,8 +112,16 @@
     right: 25px;
   }
 
-  .header-bar__logo img {
+  a.header-bar__logo img {
     width: 100px;
+    margin-top: -10px;
+  }
+
+  // Logo for output channel
+
+  div.header-bar__logo img {
+    width: auto;
+    max-height: 40px;
     margin-top: -10px;
   }
 
@@ -272,7 +284,7 @@
   // Sorting Bar
 
   .sorting-bar {
-      margin-right: 20px;
+      margin-right: 10px;
   }
 
   .header-bar {
@@ -996,6 +1008,39 @@ body .scorecard-top__info {
   }
 }
 
+@media @large {
+    .lb-timeline {
+        .sorting-bar__order {
+            margin-right: 15px;
+        }
+        .header-bar__comment {
+          position: relative;
+          text-indent: -9999px;
+          color: #999999;
+          width: 32px;
+          background-image: url(../images/comment_icon--dark.svg);
+          background-repeat: no-repeat;
+          background-size: 14px;
+          background-position: center;
+          border: 1px solid @lightgrey;
+          border-radius: 2px;
+          padding: 6px 15px;
+          margin-top: 0px;
+          margin-left: 10px;
+          margin-right: 0px;
+        }
+
+        .header-bar__comment:hover {
+            border: 1px solid #cccccc;
+        }
+
+        .header-bar__comment.header-bar__comment--active {
+            background-color: #f2f5f8;
+            border: 1px solid #cccccc;
+        }
+    }
+}
+
 @media @medium {
     .lb-timeline {
       .description:before {
@@ -1084,11 +1129,11 @@ body .scorecard-top__info {
       }
 
       .lb-post {
-          padding: 40px 0px 40px;
+          padding: 40px 5px 40px;
       }
 
       .header-bar {
-          margin: 30px 0 0 10px;
+          margin: 30px 0 0 0;
       }
 
       .timeline-body {
@@ -1111,7 +1156,7 @@ body .scorecard-top__info {
 
       [class*="lb-type--embed"] {
         top: 40px;
-        left: 0px;
+        left: 5px;
       }
 
       .lb-author__avatar, .lb-author__comment   {
@@ -1266,7 +1311,7 @@ body .scorecard-top__info {
       }
 
       .lb-post {
-          padding: 35px 0px 30px;
+          padding: 35px 5px 30px;
       }
 
       .lb-post-date {
@@ -1299,46 +1344,13 @@ body .scorecard-top__info {
         margin-top: -8px;
       }
 
-      .sorting-bar {
-        margin-right: 10px;
-      }
-
-      .header-bar__highlight {
-        margin-right: 10px;
-      }
-
-      .header-bar__comment {
-        position: relative;
-        text-indent: -9999px;
-        color: #999999;
-        width: 32px;
-        background-image: url(../images/comment_icon--dark.svg);
-        background-repeat: no-repeat;
-        background-size: 14px;
-        background-position: center;
-        border: 1px solid @lightgrey;
-        border-radius: 2px;
-        padding: 6px 15px;
-        margin-top: 0px;
-        margin-left: 0px;
-      }
-
-      .header-bar__comment:hover {
-          border: 1px solid #cccccc;
-      }
-
-      .header-bar__comment.header-bar__comment--active {
-          background-color: #f2f5f8;
-          border: 1px solid #cccccc;
-      }
-
       .header-bar__logo {
         width: auto;
         flex: 1 1 auto;
-        margin-left: 0px;
+        margin-left: 5px;
       }
 
-      .header-bar__logo span {
+      a.header-bar__logo span {
         display: none;
       }
 
