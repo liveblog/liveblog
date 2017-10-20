@@ -15,7 +15,9 @@ var endpoint = apiHost + "api/client_blogs/" + LB.blog._id + "/posts"
   , settings = LB.settings
   , vm = {};
 
-let latestUpdate;
+let latestUpdate = new Date(Math.max(new Date(LB.blog.last_created_post._updated),
+                            new Date(LB.blog.last_updated_post._updated))).toISOString();
+
 /**
  * Get initial or reset viewmodel.
  * @returns {object} empty viewmodel store.
@@ -201,15 +203,11 @@ vm.isTimelineEnd = function(api_response) {
 vm.init = function() {
   this.settings = settings;
   this.vm = getEmptyVm(settings.postsPerPage);
-  latestUpdate = new Date().toISOString();
   this.vm.timeInitialized = new Date().toISOString();
 
   setInterval(() => {
     vm.loadPosts({fromDate: latestUpdate})
-      .then(view.renderPosts) // Start polling
-      .then(() => {
-        latestUpdate = new Date().toISOString();
-      });
+      .then(view.renderPosts);
   }, 10*1000);
 
   //return this.vm.latestUpdate;
