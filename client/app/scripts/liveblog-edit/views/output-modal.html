@@ -43,7 +43,6 @@
                                     style="width: {{ vm.output.progress.width }}%;"></div>
                             </div>
 
-
                             <div class="computer" ng-if="!vm.output.preview.url" ng-hide="vm.output.progress.width">
                                 <div class="dropzone" ngf-drop="vm.output.preview.img = $files[0]">
                                     <div class="text" translate>Drop it here</div>
@@ -86,7 +85,6 @@
                                     style="width: {{ vm.output.progress_logo.width }}%;"></div>
                             </div>
 
-
                             <div class="computer" ng-if="!vm.output.preview_logo.url" ng-hide="vm.output.progress_logo.width">
                                 <div class="dropzone" ngf-drop="vm.output.preview_logo.img = $files[0]">
                                     <div class="text" translate>Drop it here</div>
@@ -114,20 +112,24 @@
                 <div class="field" ng-if="vm.output._id">
                     <label for="inputEmbedCode" class="control-label" translate>Embed code</label>
                     <div class="form-input">
-                        <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click><iframe width="100%" height="715" src="{{ vm.blog.public_urls.output[vm.output._id] }}" frameborder="0" allowfullscreen></iframe></textarea>
-                        <a href="{{ vm.blog.public_urls.output[vm.output._id] }}" target="_blank"><span ng-bind="vm.blog.public_urls.output[vm.output._id]"></span> <i class="icon-external"></i></a>
+                        <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click>
+                            <iframe width="100%" height="715" src="{{ vm.blog.public_urls.output[vm.output._id] }}" frameborder="0" allowfullscreen></iframe>
+                        </textarea>
+                        <a href="{{ vm.blog.public_urls.output[vm.output._id] }}" target="_blank">
+                            <span ng-bind="vm.blog.public_urls.output[vm.output._id]"></span> <i class="icon-external"></i>
+                        </a>
                     </div>
                 </div>
 
                 <div class="field">
                     <label for="inputTheme" class="control-label" translate>Theme</label>
-                        <div class="form-input">
-                            <select ng-model="vm.output.theme"
-                                    ng-options="theme.name as theme.label for theme in vm.themes"></select>
-                            </select>
-                        </div>
+                    <p class="help-block">Please note: If you change the theme assigned to your output channel, it will also change the respective output channel URL.</p>
+                    <div class="form-input">
+                        <select ng-model="vm.output.theme"
+                            ng-options="theme.name as theme.label for theme in vm.themes"></select>
+                        </select>
+                    </div>
                 </div>
-
             </fieldset>
         </div>
     </div>
@@ -135,7 +137,7 @@
         <div>
             <button type="button" class="btn btn-default pull-left" translate ng-click="vm.cancelModal()">Cancel</button>
             <button type="button" class="btn btn-primary btn-info" translate ng-click="vm.saveOutput()"            
-            ng-disabled="vm.notValidName(vm.output, vm.outputs) || !vm.output.name || !vm.readyToSave || vm.disableSave" >Save</button>
+                ng-disabled="vm.notValidName(vm.output, vm.outputs) || !vm.output.name || !vm.readyToSave || vm.disableSave" >Save</button>
         </div>
     </div>
 </div>
