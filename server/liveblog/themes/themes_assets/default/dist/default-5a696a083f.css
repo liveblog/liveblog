@@ -916,6 +916,12 @@ html.lb-wrapHtml {
 .lb-timeline .lb-producer__author:after {
   content: ')';
 }
+.lb-timeline lb-producer__author:before {
+  content: '(';
+}
+.lb-timeline .lb-producer__author:after {
+  content: ')';
+}
 .lb-timeline .illustration {
   display: none;
   margin: 20px 0;
