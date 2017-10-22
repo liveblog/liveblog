@@ -102,11 +102,13 @@
       </div>
     {% if settings.stickyPosition == 'bottom' and api_response.stickyPosts._items|length > 0 %}
       <section class="lb-posts list-group sticky">
-        {% for item in api_response.stickyPosts._items %}
-          {% if not item.deleted %}
-            {% include "template-post.html" %}
-          {% endif %}
-        {% endfor %}
+        {% if api_response and api_response.stickyPosts and (api_response.stickyPosts._items | lenght > 0) %}
+            {% for item in api_response.stickyPosts._items %}
+              {% if not item.deleted %}
+                {% include "template-post.html" %}
+              {% endif %}
+            {% endfor %}
+        {% endif %}
       </section>
     {% endif %}
       <div data-empty-message class="lb-post empty-message {% if api_response.posts._items|length %}mod--displaynone{% endif %}">
