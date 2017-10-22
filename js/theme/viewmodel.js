@@ -13,10 +13,19 @@ const commentPostEndpoint = `${apiHost}api/client_comments`;
 
 var endpoint = apiHost + "api/client_blogs/" + LB.blog._id + "/posts"
   , settings = LB.settings
-  , vm = {};
+  , vm = {}
+  , latestUpdate;
 
-let latestUpdate = new Date(Math.max(new Date(LB.blog.last_created_post._updated),
+// Check if last_created_post and last_updated_post are there.
+// and use them properly
+if (LB.blog.last_created_post && LB.blog.last_updated_post) {
+  latestUpdate = new Date(Math.max(new Date(LB.blog.last_created_post._updated),
                             new Date(LB.blog.last_updated_post._updated))).toISOString();
+} else if (LB.blog.last_created_post) {
+  latestUpdate = new Date(LB.blog.last_created_post._updated).toISOString();
+} else {
+  latestUpdate = new Date().toISOString();
+}
 
 /**
  * Get initial or reset viewmodel.
