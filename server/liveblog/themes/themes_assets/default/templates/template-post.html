@@ -37,11 +37,13 @@
 
   <!-- author plus avatar -->
   <div class="lb-author">
-    {% if settings.showAuthor %}
+    {% if mainItem.commenter and not (item.syndication_in and not settings.showSyndicatedAuthor) %}
       <div class="lb-author__name">
-      {% if mainItem.commenter and not (item.syndication_in and not settings.showSyndicatedAuthor) %}
         {{ translate('Comment by') }} {{ mainItem.commenter }}
-      {% elif mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
+      </div>
+    {% elif settings.showAuthor %}
+      <div class="lb-author__name">
+      {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
         {{ mainItem.syndicated_creator.display_name }}
       {% elif mainItem.original_creator %}
         {{ mainItem.original_creator.display_name }}
@@ -50,10 +52,8 @@
         <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
       {% endif %}
       </div>
-      {% if settings.showAuthorAvatar %}
-        {% if type == 'comment' %}
-        <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
-        {% elif mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
+      {% if settings.showAuthorAvatar and type != 'comment' %}
+        {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
         <img class="lb-author__avatar" src="{{ mainItem.syndicated_creator.picture_url }}" />
         {% elif mainItem.original_creator and mainItem.original_creator.picture_url %}
         <img class="lb-author__avatar" src="{{ mainItem.original_creator.picture_url }}" />
@@ -81,9 +81,9 @@
             (item.groups[1].refs | length > 0) %}
         {% for ref in item.groups[1].refs %}
           {% if ref.item.item_type == "image" %}
-          <div class="{% if not item.sticky or settings.stickyPosition == 'bottom' %}lb-item{% endif %} {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %} {{ref.item.item_type}}">
+          <div class="lb-item {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %} {{ref.item.item_type}}">
           {% else %}
-          <div class="{% if not item.sticky or settings.stickyPosition == 'bottom' %}lb-item{% endif %} {{ref.item.item_type}}">
+          <div class="lb-item {{ref.item.item_type}}">
           {% endif %}
             {% if ref.item.item_type == "embed" %}
               {% include "template-item-embed.html" %}

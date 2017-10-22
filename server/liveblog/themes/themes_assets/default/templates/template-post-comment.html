@@ -1,4 +1,4 @@
-<div class="{% if not item.sticky or settings.stickyPosition == 'bottom' %}lb-item{% endif %} commentItem">
+<div class="lb-item commentItem">
     <article>{{ item.groups[1].refs[0].item.text | safe }}</article>
 </div>
 {% if item.groups[1].refs|length > 1 %}
@@ -36,9 +36,9 @@
         {% for ref in item.groups[1].refs %}
           {% if loop.index0 > 0 %}
               {% if ref.item.item_type == "image" %}
-              <div class="{% if not item.sticky or settings.stickyPosition == 'bottom' %}lb-item{% endif %} {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %} {{ref.item.item_type}}">
+              <div class="lb-item {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %} {{ref.item.item_type}}">
               {% else %}
-              <div class="{% if not item.sticky or settings.stickyPosition == 'bottom' %}lb-item{% endif %} {{ref.item.item_type}}">
+              <div class="lb-item {{ref.item.item_type}}">
               {% endif %}
                 {% if ref.item.item_type == "embed" %}
                   {% include "template-item-embed.html" %}
