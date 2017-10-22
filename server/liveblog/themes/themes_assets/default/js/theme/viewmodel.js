@@ -18,10 +18,11 @@ var endpoint = apiHost + "api/client_blogs/" + LB.blog._id + "/posts"
 
 // Check if last_created_post and last_updated_post are there.
 // and use them properly
-if (LB.blog.last_created_post._updated && LB.blog.last_updated_post._updated) {
+if (LB.blog.last_created_post && LB.blog.last_created_post._updated &&
+    LB.blog.last_updated_post && LB.blog.last_updated_post._updated) {
   latestUpdate = new Date(Math.max(new Date(LB.blog.last_created_post._updated),
                             new Date(LB.blog.last_updated_post._updated))).toISOString();
-} else if (LB.blog.last_created_post._updated) {
+} else if (LB.blog.last_created_post && LB.blog.last_created_post._updated) {
   latestUpdate = new Date(LB.blog.last_created_post._updated).toISOString();
 } else {
   latestUpdate = new Date().toISOString();
