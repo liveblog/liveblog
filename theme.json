@@ -16,9 +16,9 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-57ed9d53f9.css"],
+    "devStyles": ["dist/default-5a696a083f.css"],
     "devScripts": ["dist/default-3bc9b897fe.js"],
-    "styles": ["dist/default-57ed9d53f9.css"],
+    "styles": ["dist/default-5a696a083f.css"],
     "scripts": ["dist/default-3bc9b897fe.js"],
     "options": [
         {
