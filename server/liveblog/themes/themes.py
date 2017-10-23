@@ -355,7 +355,15 @@ class ThemesService(BaseService):
         else:
             logger.warning("Template file not found for {} theme.".format(theme_name))
 
-        theme['files'] = {'styles': {}, 'scripts': {}}
+        theme['files'] = {'styles': {}, 'scripts': {}, 'templates': {}}
+
+        for root, dirs, templates in os.walk(self.get_theme_template_filename(theme_name, 'templates')):
+            for template in templates:
+                template_path = self.get_theme_template_filename(theme_name, os.path.join('templates', template))
+                if os.path.exists(template_path):
+                    with open(template_path) as f:
+                        theme['files']['templates'][mongoencode(template)] = f.read()
+
         for style in theme.get('styles', []):
             style_path = self.get_theme_template_filename(theme_name, style)
             if os.path.exists(style_path):
