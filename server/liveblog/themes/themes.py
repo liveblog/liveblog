@@ -290,15 +290,23 @@ class ThemesService(BaseService):
         if not self.is_s3_storage_enabled:
             # Include upload folder if s3 storage is disabled.
             theme_dirs.append(UPLOAD_THEMES_DIRECTORY)
+            for theme_dir in theme_dirs:
+                for file in glob.glob(theme_dir + '/**/theme.json'):
+                    files = []
+                    for root, dirnames, filenames in os.walk(os.path.dirname(file)):
+                        for filename in filenames:
+                            files.append(os.path.join(root, filename))
 
-        for theme_dir in theme_dirs:
-            for file in glob.glob(theme_dir + '/**/theme.json'):
-                files = []
-                for root, dirnames, filenames in os.walk(os.path.dirname(file)):
-                    for filename in filenames:
-                        files.append(os.path.join(root, filename))
+                    yield json.loads(open(file).read()), files
+        else:
+            for theme_dir in ['angular', 'default', 'classic', 'amp']:
+                for file in glob.glob(theme_dir + '/theme.json'):
+                    files = []
+                    for root, dirnames, filenames in os.walk(os.path.dirname(file)):
+                        for filename in filenames:
+                            files.append(os.path.join(root, filename))
 
-                yield json.loads(open(file).read()), files
+                    yield json.loads(open(file).read()), files
 
     def update_registered_theme_with_local_files(self, force=False):
         """
