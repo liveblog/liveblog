@@ -1,7 +1,7 @@
 {
   "label": "Liveblog 3 AMP Theme",
   "name": "amp",
-  "version": "0.1.7",
+  "version": "0.1.21",
   "seoTheme": true,
   "ampTheme": true,
   "extends": "default",
@@ -9,15 +9,16 @@
   "author": "Sourcefabric <contact@sourcefabric.org>",
   "contributors": [
     "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>",
-    "Aleksandar Backo Jelicic <aleksandar.jelicic@sourcefabric.org>"
+    "Aleksandar Backo Jelicic <aleksandar.jelicic@sourcefabric.org>",
+    "Tomasz Rondio <tomasz.rondio@sourcefabric.org>"
   ],
   "repository": {
     "type" : "git",
     "url" : "git@github.com:liveblog/liveblog-amp-theme"
   },
   "license": "AGPL-3.0",
-  "devStyles": ["dist/amp-f2c804ca03.css"],
-  "styles": ["dist/amp-f2c804ca03.css"],
+  "devStyles": ["dist/amp-a3d40704ba.css"],
+  "styles": ["dist/amp-a3d40704ba.css"],
   "i18n": {
         "cs": {
           "Highlights": "Hlavní body",

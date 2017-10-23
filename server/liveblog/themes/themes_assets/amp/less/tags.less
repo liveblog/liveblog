@@ -28,7 +28,7 @@ body.lb-wrapBody {
 
   i {font-style: italic;}
   a {
-      color: #3394bc !important;
+      color: #3394bc;
   }
   a:hover {
       text-decoration: none;
@@ -42,8 +42,10 @@ body.lb-wrapBody {
   ol {
       list-style-type: decimal;
   }
+  button:not(#live-list-update-button, #live-sticky-list-update-button) {
+    display: table;
+  }
   button {
-      display: table;
       margin: auto;
       padding: 5px 25px;
       font-size: 1em;
