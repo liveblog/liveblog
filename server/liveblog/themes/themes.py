@@ -286,19 +286,27 @@ class ThemesService(BaseService):
 
         :return:
         """
-        theme_dirs = [LOCAL_THEMES_DIRECTORY]
         if not self.is_s3_storage_enabled:
+
             # Include upload folder if s3 storage is disabled.
-            theme_dirs.append(UPLOAD_THEMES_DIRECTORY)
+            theme_dirs = [LOCAL_THEMES_DIRECTORY, UPLOAD_THEMES_DIRECTORY]
 
-        for theme_dir in theme_dirs:
-            for file in sorted(glob.glob(theme_dir + '/**/theme.json'), key=os.path.getmtime):
+            for theme_dir in theme_dirs:
+                for file in glob.glob(theme_dir + '/**/theme.json'):
+                    files = []
+                    for root, dirnames, filenames in os.walk(os.path.dirname(file)):
+                        for filename in filenames:
+                            files.append(os.path.join(root, filename))
+
+                    yield json.loads(open(file).read()), files
+        else:
+            for theme in ['angular', 'default', 'classic', 'amp']:
                 files = []
-                for root, dirnames, filenames in os.walk(os.path.dirname(file)):
+                for root, dirnames, filenames in os.walk(os.path.join(LOCAL_THEMES_DIRECTORY, theme)):
                     for filename in filenames:
-                        files.append(os.path.join(root, filename))
-
-                yield json.loads(open(file).read()), files
+                        files.append(os.path.join(root, theme))
+                theme_json = os.path.join(LOCAL_THEMES_DIRECTORY, theme, 'theme.json')
+                yield json.loads(open(theme_json).read()), files
 
     def update_registered_theme_with_local_files(self, force=False):
         """
