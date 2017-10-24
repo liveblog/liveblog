@@ -25,12 +25,11 @@ from superdesk.users.services import is_admin
 from superdesk.utc import utcnow
 from liveblog.syndication.exceptions import ProducerAPIError
 
-from liveblog.blogs.tasks import publish_bloglist_embed_on_s3
 from liveblog.common import get_user, update_dates_for
 from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS
 
 from .schema import blogs_schema
-from .tasks import delete_blog_embed_on_s3, publish_blog_embed_on_s3
+from .tasks import delete_blog_embeds_on_s3, publish_blog_embed_on_s3, publish_blog_embeds_on_s3
 
 logger = logging.getLogger('superdesk')
 
@@ -74,8 +73,9 @@ def send_email_to_added_members(blog, recipients, origin):
         subject = render_template("invited_members_subject.txt", app_name=app_name)
         text_body = render_template("invited_members.txt", app_name=app_name, link=url, title=title)
         html_body = render_template("invited_members.html", app_name=app_name, link=url, title=title)
-        send_email.delay(subject=subject, sender=admins[0], recipients=recipients_email,
-                         text_body=text_body, html_body=html_body)
+        if not app.config.get('SUPERDESK_TESTING', False):
+            send_email.delay(subject=subject, sender=admins[0], recipients=recipients_email,
+                             text_body=text_body, html_body=html_body)
 
 
 class BlogService(BaseService):
@@ -112,7 +112,7 @@ class BlogService(BaseService):
         for blog in docs:
             blog_id = str(blog['_id'])
             # Publish on s3 if possible and save the public_url in the blog.
-            publish_blog_embed_on_s3.delay(blog_id)
+            publish_blog_embed_on_s3.apply_async(args=[blog], countdown=2)
             # Notify client with websocket.
             push_notification(self.notification_key, created=1, blog_id=blog_id)
             # And with member emails
@@ -125,9 +125,6 @@ class BlogService(BaseService):
                     recipients.append(user['user'])
 
             notify_members(blog, app.config['CLIENT_URL'], recipients)
-
-        # Publish bloglist aswell
-        publish_bloglist_embed_on_s3()
 
     def find_one(self, req, checkUser=True, **lookup):
         doc = super().find_one(req, **lookup)
@@ -171,7 +168,6 @@ class BlogService(BaseService):
 
     def on_updated(self, updates, original):
         original_id = str(original['_id'])
-        publish_blog_embed_on_s3.delay(original_id)
         # Invalidate cache for updated blog.
         app.blog_cache.invalidate(original_id)
         # Send notifications,
@@ -179,6 +175,13 @@ class BlogService(BaseService):
         # Notify newly added members.
         blog = original.copy()
         blog.update(updates)
+
+        if 'blog_preferences' in updates:
+            # Update blog embed
+            theme_name = updates['blog_preferences'].get('theme')
+            if theme_name:
+                publish_blog_embeds_on_s3.apply_async(args=[blog], kwargs={'save': False}, countdown=2)
+
         members = updates.get('members', {})
         recipients = []
         for user in members:
@@ -195,13 +198,13 @@ class BlogService(BaseService):
         if doc.get('syndication_enabled', False) and out.count():
             raise SuperdeskApiError.forbiddenError(message='Cannot delete syndication: blog has active consumers.')
 
-        delete_blog_embed_on_s3.delay(doc.get('_id'))
+        blog = get_resource_service('client_blogs').find_one(req=None, _id=doc['_id'])
+        delete_blog_embeds_on_s3.apply_async(args=[blog], countdown=2)
 
     def on_deleted(self, doc):
         # Invalidate cache for updated blog.
         blog_id = str(doc['_id'])
         app.blog_cache.invalidate(blog_id)
-        delete_blog_embed_on_s3.delay(blog_id)
 
         # Remove syndication on blog post delete.
         syndication_out = get_resource_service('syndication_out')
@@ -210,7 +213,6 @@ class BlogService(BaseService):
 
         self._on_deactivate(blog_id)
 
-        # send notifications
         # Send notifications.
         push_notification('blogs', deleted=1)
 

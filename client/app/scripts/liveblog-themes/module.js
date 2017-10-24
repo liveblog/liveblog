@@ -2,9 +2,11 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
 
 (function() {
     LiveblogThemesController.$inject = ['api', '$location', 'notify', 'gettext',
-    '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', '$window'];
+    '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', '$window', 'modal',
+    '$http', 'session'];
     function LiveblogThemesController(api, $location, notify, gettext,
-    $q, $sce, config, _, upload, blogService, $window) {
+    $q, $sce, config, _, upload, blogService, $window, modal,
+    $http, session) {
         var vm = this;
         /**
          * Return a collection that represent the hierachy of the themes
@@ -165,6 +167,19 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
                     $window.location = url.replace('/themes', '/theme-download/' + theme.name);
                 });
             },
+            redeploy: function(theme) {
+                $http.defaults.headers.common.Authorization = session.token;
+                api.themes.getUrl().then(function(url) {
+                    $http({
+                        url: url.replace('/themes', '/theme-redeploy/' + theme.name),
+                        method: 'GET'
+                    }).then(function(){
+                        notify.pop();
+                        notify.info(gettext('Theme redeployed.'));
+                    });
+                });
+            },
+
             makeDefault: function(theme) {
                 if (vm.globalTheme) {
                     api
@@ -184,15 +199,20 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
                 }
             },
             removeTheme: function(theme) {
-                api.themes.remove(angular.copy(theme)).then(function(message) {
-                    notify.pop();
-                    notify.info(gettext('Theme "' + theme.label + '" removed.'));
-                    loadThemes();
-                }, function(error) {
-                    notify.pop();
-                    notify.error('An error occured. ' + error.data.error);
-                    loadThemes();
-                });
+                modal.confirm(gettext('Are you sure you want to remove this theme?'))
+                    .then(() => api.themes.remove(angular.copy(theme)))
+                    .then((message) => {
+                        notify.pop();
+                        notify.info(gettext('Theme "' + theme.label + '" removed.'));
+                        loadThemes();
+                    })
+                    .catch((error) => {
+                        if (error) {
+                            notify.pop();
+                            notify.error('An error occured. ' + error.data.error);
+                            loadThemes();
+                        }
+                    });
             },
             switchBlogPreview: function(blog) {
                 // copy the selected blog
@@ -208,7 +228,8 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
             },
             uploadThemeFile: function(e) {
                 notify.pop();
-                notify.info('Uploading the theme...');
+                // show longer lasting message when uploading the theme, as on some situations it may take some time
+                notify.info(gettext('Uploading the theme, please wait...'), 120000);
                 api.themes.getUrl().then(function(url) {
                     upload.start({
                         method: 'POST',
@@ -218,7 +239,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
                     .then(function(response) {
                         loadThemes().then(function() {
                             notify.pop();
-                            notify.info('Theme uploaded and added');
+                            notify.info(gettext('Theme uploaded and added'));
                         });
                     }, function(error) {
                         notify.pop();

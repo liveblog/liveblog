@@ -1,0 +1,28 @@
+{% if ref.item.meta.provider_name == 'YouTube' %}
+<amp-youtube
+    data-videoid="{{ ref.item.meta.original_id }}"
+    layout="responsive"
+    width="480" height="270">
+</amp-youtube>
+{% elif ref.item.meta.provider_name == 'Facebook' %}
+<amp-facebook width="480" height="270"
+    layout="responsive"
+    data-href="{{ ref.item.meta.original_url }}">
+</amp-facebook>
+{% elif ref.item.meta.provider_name == 'Twitter' %}
+<amp-twitter width="480" height="270"
+    layout="responsive"
+    data-tweetid="{{ ref.item.meta.original_id }}">
+</amp-twitter>
+{% elif ref.item.meta.provider_name == 'Instagram' %}
+<amp-instagram
+    data-shortcode="{{ ref.item.meta.original_id }}"
+    width="480"
+    height="270"
+    layout="responsive">
+</amp-instagram>
+{% else %}
+<p>
+  <a href="{{ ref.item.meta.original_url }}" >{{ ref.item.meta.title }}</a>
+</p>
+{% endif %}

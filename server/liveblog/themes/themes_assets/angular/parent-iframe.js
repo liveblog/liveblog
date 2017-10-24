@@ -1,7 +1,17 @@
 if(typeof liveblog !== 'undefined') {
     liveblog.loadCallback = function() {
+        var timer = null;
+        function debounce(fn,time){
+            if (null === timer){
+                timer = setTimeout(function(){
+                    timer = null;
+                    fn();
+                }, time);
+            }
+        }
         function callbackJquery() {
-            liveblog.load("https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.5/iframeResizer.min.js", function() {
+            liveblog.load("https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.14/iframeResizer.contentWindow.min.js");
+            liveblog.load("https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.14/iframeResizer.min.js", function() {
                 var iframe = jQuery('#liveblog-iframe');
                 iFrameResize({
                     minHeight: 1000,
@@ -19,7 +29,9 @@ if(typeof liveblog !== 'undefined') {
                         reached = false;
                     }
                 };
-                jQuery(window).scroll(detectEndOfBlog);
+                jQuery(window).scroll(function(){
+                    debounce(detectEndOfBlog, 200, true);
+                });
             });
         };
         if (typeof jQuery === "undefined") {

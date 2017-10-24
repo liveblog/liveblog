@@ -70,18 +70,18 @@ describe('Themes Manager', function() {
     //    });
     //});
 
-    it('can remove a theme', function() {
-        themeManager.openThemesManager()
-        .themes
-        .then(function(themes) {
-            themeManager.remove(0);
-            browser.waitForAngular();
-            themeManager.openThemesManager()
-            .themes.then(function(newThemes) {
-                expect(newThemes.length).toEqual(themes.length - 1);
-            });
-        });
-    });
+    //it('can remove a theme', function() {
+    //    themeManager.openThemesManager()
+    //    .themes
+    //    .then(function(themes) {
+    //        themeManager.remove(0);
+    //        browser.waitForAngular();
+    //        themeManager.openThemesManager()
+    //        .themes.then(function(newThemes) {
+    //            expect(newThemes.length).toEqual(themes.length - 1);
+    //        });
+    //    });
+    //});
 
     it('can change theme settings', function() {
         themeManager.openThemesManager()

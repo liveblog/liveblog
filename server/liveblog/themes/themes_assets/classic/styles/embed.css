@@ -1,5 +1,7 @@
 body {
     background-color: #EAEAEA;
+    background-repeat: no-repeat;
+    background-position-x: center;
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
     color: #333333;
@@ -16,6 +18,10 @@ img {
     max-height: 500px;
     width: auto;
     height: auto;
+}
+td, th {
+    display: table-cell;
+    vertical-align: inherit;
 }
 img.pswp__img {
     max-width: none;
@@ -89,7 +95,7 @@ button.active {
 }
 .timeline-body {
     position: relative;
-}   
+}
 .header-bar {
     background-color: #FAFAFA;
     border-top: 2px solid #CBCBCB;
@@ -101,7 +107,7 @@ button.active {
 .header-bar__actions {
     position: absolute;
     right: 100px;
-    top: 5px; 
+    top: 5px;
 }
 .btn {
     background-color: rgba(0, 0, 0, 0.15);
@@ -153,7 +159,7 @@ button.active {
     box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.252);
 }
 .btn.comment i {
-    display: none; 
+    display: none;
 }
 .modal-backdrop {
     position: absolute;
@@ -162,7 +168,7 @@ button.active {
     left: 0;
     bottom: 0px;
     right: 0;
-    z-index: 2;    
+    z-index: 2;
 }
 .modal {
     z-index: 3;
@@ -273,6 +279,11 @@ button.active {
     position: absolute;
     right: 10px;
     top: 5px;
+    max-height: 50px;
+    max-width: 75px;
+    img {
+        max-height: 29px;
+    }
 }
 .load-new-posts {
     font-size: 1.2em;
@@ -311,6 +322,12 @@ button.active {
     content: '';
     clear: both;
     display: block;
+}
+lb-producer__author:before {
+    content: '(';
+}
+.lb-producer__author:after {
+    content: ')';
 }
 .lb-author__avatar {
     display: block;
@@ -394,6 +411,20 @@ article {
     font-size: 14px;
     overflow: hidden;
 }
+article h4 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 26px;
+    margin-bottom: 10px;
+}
+article h5 {
+    font-family: 'Roboto', sans-serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 24px;
+    margin-bottom: 10px;
+}
 article b {
     font-weight: bold;
 }
@@ -408,17 +439,19 @@ article .liveblog--card {
 /* quote */
 article blockquote {
     position: relative;
-    margin: 30px 0 0 16px;
+    margin: 30px 0 0 30px;
 }
 article blockquote p {
     font-size: 1.25em;
     line-height: 1.25em;
 }
 article blockquote p:before {
-    content: "“";
+    font-family: Georgia,"Times New Roman", Serif;
     font-size: 3em;
+    content: '\201C';
     position: absolute;
-    left: -0.3em;
+    top: 0.3em;
+    left: -0.6em;
     color: #7C7C7C;
 }
 article blockquote li {
@@ -474,16 +507,22 @@ article blockquote li:before {
 .loading.ng-hide {
     opacity: 0;
 }
+.lb-post-social {
+    position: absolute;
+    top: 10px;
+    right: 50px;
+    visibility: visible;
+}
 .lb-post-permalink {
     position: absolute;
     top: 10px;
-    right: 10px;
+    right: 30px;
     visibility: visible;
 }
 .lb-post-highlighted {
     position: absolute;
     top: 10px;
-    right: 30px;
+    right: 10px;
     color: #f89406;
 }
 .toggleHighlights {
@@ -544,6 +583,13 @@ article blockquote li:before {
     box-shadow: 0px 1px 4px -1px rgba(0, 0, 0, 0.25);
 }
 
+.livestream .pin-posts .lb-post {
+    background-color: initial!important;
+    border-bottom: none!important;
+    border-top: 1px solid #eee!important;
+}
+
+
 @-webkit-keyframes fadeIt {
   0%   { background-color: #FFFFFF; }
   50%  { background-color: #e6f6ef; }
@@ -590,6 +636,13 @@ article blockquote li:before {
 .no .sorting-bar__orders {
     padding-left: 75px;
 }
+/* Scorecard styles */
+body .scorecard-top {
+	background: #f5f5f5;
+	padding: 20px;
+	border-radius: 0px;
+}
+
 /* Remove this is angular-gettext is updated */
 [translate]{visibility:hidden !important;}
 
@@ -664,13 +717,13 @@ article blockquote li:before {
   content: "\e907";
 }
 
-/* Media queries */ 
+/* Media queries */
 /* hide permalink on larger screens, show only on hover */
 @media (min-width: 1025px) {
-    .lb-post-permalink {
+    .lb-post-permalink, .lb-post-social {
         visibility: hidden;
     }
-    .lb-post:hover .lb-post-permalink {
+    .lb-post:hover .lb-post-permalink, .lb-post:hover .lb-post-social {
         visibility: visible;
     }
 }
@@ -684,6 +737,9 @@ article blockquote li:before {
     }
     .item--embed__illustration ~ * {
         margin-left: 0;
+    }
+    .scorecard-top span.team-score {
+    	margin-bottom: 10px;
     }
 }
 @media (max-width: 600px) {
@@ -727,7 +783,7 @@ article blockquote li:before {
         float: right;
     }
     .btn.comment i {
-        display: inline-block;        
+        display: inline-block;
         line-height: 12px;
     }
 }
@@ -739,4 +795,30 @@ article blockquote li:before {
 
 .justified-gallery>a>.caption {
     max-height: 45%;
+}
+
+/* Social sharing */
+.share-box {
+    background: #F8F8F8;
+    padding: 10px;
+    border: 1px solid #D0D0D0;
+    position: absolute;
+    top: 18px;
+    right: 25px;
+    z-index: 5;
+    width: 140px;
+    height: 24px;
+}
+
+.share-box a {
+    text-decoration: none;
+}
+
+.share-icon {
+    color: #5ea9c8;
+    cursor: pointer;
+}
+.social-icon {
+    font-size: x-large!important;
+    margin-left: 4px!important;
 }

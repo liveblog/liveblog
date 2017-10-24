@@ -2,7 +2,7 @@
     "label": "Angular Liveblog Toolkit",
     "name": "angular",
     "abstract": true,
-    "version": "3.2.2",
+    "version": "3.2.18",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -22,8 +22,8 @@
         "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/locale/cs.js",
         "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/locale/ro.js",
         "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.8.2/lodash.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/angular-cache/4.5.0/angular-cache.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.5/iframeResizer.contentWindow.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/angular-cache/4.6.0/angular-cache.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.14/iframeResizer.contentWindow.min.js",
         "liveblog-embed/analytics.js",
         "liveblog-embed/main.js",
         "liveblog-embed/resources.service.js",
@@ -100,8 +100,8 @@
         "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/locale/cs.js",
         "https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.17.1/locale/ro.js",
         "https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.8.2/lodash.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/angular-cache/4.5.0/angular-cache.min.js",
-        "https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.5/iframeResizer.contentWindow.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/angular-cache/4.6.0/angular-cache.min.js",
+        "https://cdnjs.cloudflare.com/ajax/libs/iframe-resizer/3.5.14/iframeResizer.contentWindow.min.js",
         "dist/scripts.min.js"
     ]
 }

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ blog.title }}</title>
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+  </head>
+  <body>
+    <h1>{{ blog.title }}</h1>
+    <p>Iframe blog embed content:</p>
+    <div style="overflow:auto;-webkit-overflow-scrolling:touch">
+      <iframe id="liveblog-iframe" width="100%" height="715" src="{{ blog.public_url }}" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <script type="text/javascript">
+var l=document.getElementById("liveblog-iframe");l.addEventListener("load",function(){var t=l.contentWindow,e=l.getAttribute("src");t.postMessage(window.location.href,e),window.addEventListener("message",function(t){"fullscreen"===t.data?l.style.cssText="position:fixed;top:0;bottom:0;left:0;right:0;width:100%;height: 100%":l.style.cssText=""})});
+    </script>
+  </body>
+</html>
