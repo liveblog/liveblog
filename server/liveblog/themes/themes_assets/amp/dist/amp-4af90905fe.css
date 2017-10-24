@@ -133,7 +133,7 @@ body.lb-wrapBody {
   height: 28px;
   line-height: 12px;
   margin-bottom: 0;
-  outline: medium none !important;
+  outline: medium none;
   padding: 8px 14px;
   text-align: center;
   text-decoration: none;

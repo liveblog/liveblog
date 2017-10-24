@@ -7,15 +7,13 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
 
   <div class="lb-type lb-type--{{ item.post_items_type }}"></div>
   
-  {% if item.sticky and item.lb_highlight %}
-  <amp-img src="{{ assets_root }}images/pinpost.svg" class="pin-icon" />
-  <amp-img src="{{ assets_root }}images/highlighted.svg" class="highlight-icon" />
+{% if item.sticky and item.lb_highlight %}
+  <amp-img src="{{ assets_root }}images/pinpost.svg" width="10" height="13" class="pin-icon" ></amp-img>
+  <amp-img src="{{ assets_root }}images/highlighted.svg" width="14" height="13" class="highlight-icon" ></amp-img>
 {% elif item.sticky %}
-  <amp-img src="{{ assets_root }}images/pinpost.svg" class="pin-icon" />
+  <amp-img src="{{ assets_root }}images/pinpost.svg" width="10" height="13" class="pin-icon" ></amp-img>
 {% elif item.lb_highlight %}
-  <amp-img src="{{ assets_root }}images/highlighted.svg" class="highlight-icon" />
-{% elif item.post_items_type == "advertisement" %}
-  <div class="lb-advertisement">{{ translate('Advertisement') }}</div>
+  <amp-img src="{{ assets_root }}images/highlighted.svg" width="14" height="13" class="highlight-icon" ></amp-img>
 {% endif %}
 
   <div class="lb-post-date">{{ item._updated | date('')  }}</div>
