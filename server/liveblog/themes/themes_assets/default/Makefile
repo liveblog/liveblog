@@ -2,7 +2,7 @@ THEME_ARCHIVE = "liveblog-default-theme.zip"
 
 make:
 	make clean
-	gulp
+	gulp --NODE_ENV production
 	zip -r $(THEME_ARCHIVE) * \
 		-x ".git/*" \
 		-x "Makefile" \
