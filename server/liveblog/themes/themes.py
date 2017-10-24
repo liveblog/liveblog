@@ -27,6 +27,7 @@ import magic
 import logging
 from flask import make_response
 from liveblog.mongo_util import encode as mongoencode
+from liveblog.system_themes import system_themes
 
 from settings import (COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY, SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
@@ -300,11 +301,11 @@ class ThemesService(BaseService):
 
                     yield json.loads(open(file).read()), files
         else:
-            for theme in ['angular', 'default', 'classic', 'amp']:
+            for theme in system_themes:
                 files = []
                 for root, dirnames, filenames in os.walk(os.path.join(LOCAL_THEMES_DIRECTORY, theme)):
                     for filename in filenames:
-                        files.append(os.path.join(root, theme))
+                        files.append(os.path.join(root, filename))
                 theme_json = os.path.join(LOCAL_THEMES_DIRECTORY, theme, 'theme.json')
                 yield json.loads(open(theme_json).read()), files
 
@@ -655,7 +656,7 @@ def upload_a_theme():
             return json.dumps({'error': 'No name specified in theme.json file.'}), 400
 
         # Check if uploaded theme with the given name already exists.
-        if theme_name in ('angular', 'classic', 'default', 'amp'):
+        if theme_name in system_themes:
             return json.dumps({'error': 'A theme with the given name ({}) already exists!'.format(theme_name)}), 400
 
         # Check dependencies.
