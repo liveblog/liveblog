@@ -1,6 +1,7 @@
 import os
 from superdesk import get_resource_service
-from jinja2.loaders import FileSystemLoader, ModuleLoader, ChoiceLoader
+from jinja2.loaders import FileSystemLoader, ModuleLoader, ChoiceLoader, DictLoader
+from liveblog.mongo_util import decode as mongodecode
 
 __all__ = ['ThemeTemplateLoader', 'CompiledThemeTemplateLoader']
 
@@ -24,14 +25,32 @@ class ThemeTemplateLoader(FileSystemLoader):
 
 class CompiledThemeTemplateLoader(ChoiceLoader):
     """
+    Add template files as dictionary in the loades.
+    """
+    def addDictonary(self, theme):
+        files = theme.get('files', {'templates': {}})
+        if files.get('templates'):
+            compiled = {}
+            for file, content in files.get('templates').items():
+                compiled[mongodecode(file)] = content
+            self.loaders = [DictLoader(compiled)]
+
+    """
     Compiled theme template loader for jinja2 SEO themes.
     """
     def __init__(self, theme):
         theme_name = theme['name']
         themes = get_resource_service('themes')
         parent_theme = theme.get('extends')
-        compiled = themes.get_theme_compiled_templates_path(theme_name)
-        self.loaders = [ModuleLoader(compiled)]
-        if parent_theme:
-            parent_compiled = themes.get_theme_compiled_templates_path(parent_theme)
-            self.loaders.append(ModuleLoader(parent_compiled))
+        files = theme.get('files', {'templates': {}})
+        if files.get('templates'):
+            self.addDictonary(theme)
+            if parent_theme:
+                parent = themes.find_one(req=None, name=parent_theme)
+                self.addDictonary(parent)
+        else:
+            compiled = themes.get_theme_compiled_templates_path(theme_name)
+            self.loaders = [ModuleLoader(compiled)]
+            if parent_theme:
+                parent_compiled = themes.get_theme_compiled_templates_path(parent_theme)
+                self.loaders.append(ModuleLoader(parent_compiled))

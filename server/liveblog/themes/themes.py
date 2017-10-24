@@ -27,6 +27,7 @@ import magic
 import logging
 from flask import make_response
 from liveblog.mongo_util import encode as mongoencode
+from liveblog.system_themes import system_themes
 
 from settings import (COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY, SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
@@ -286,19 +287,27 @@ class ThemesService(BaseService):
 
         :return:
         """
-        theme_dirs = [LOCAL_THEMES_DIRECTORY]
         if not self.is_s3_storage_enabled:
-            # Include upload folder if s3 storage is disabled.
-            theme_dirs.append(UPLOAD_THEMES_DIRECTORY)
 
-        for theme_dir in theme_dirs:
-            for file in glob.glob(theme_dir + '/**/theme.json'):
+            # Include upload folder if s3 storage is disabled.
+            theme_dirs = [LOCAL_THEMES_DIRECTORY, UPLOAD_THEMES_DIRECTORY]
+
+            for theme_dir in theme_dirs:
+                for file in glob.glob(theme_dir + '/**/theme.json'):
+                    files = []
+                    for root, dirnames, filenames in os.walk(os.path.dirname(file)):
+                        for filename in filenames:
+                            files.append(os.path.join(root, filename))
+
+                    yield json.loads(open(file).read()), files
+        else:
+            for theme in system_themes:
                 files = []
-                for root, dirnames, filenames in os.walk(os.path.dirname(file)):
+                for root, dirnames, filenames in os.walk(os.path.join(LOCAL_THEMES_DIRECTORY, theme)):
                     for filename in filenames:
                         files.append(os.path.join(root, filename))
-
-                yield json.loads(open(file).read()), files
+                theme_json = os.path.join(LOCAL_THEMES_DIRECTORY, theme, 'theme.json')
+                yield json.loads(open(theme_json).read()), files
 
     def update_registered_theme_with_local_files(self, force=False):
         """
@@ -355,7 +364,15 @@ class ThemesService(BaseService):
         else:
             logger.warning("Template file not found for {} theme.".format(theme_name))
 
-        theme['files'] = {'styles': {}, 'scripts': {}}
+        theme['files'] = {'styles': {}, 'scripts': {}, 'templates': {}}
+
+        for root, dirs, templates in os.walk(self.get_theme_template_filename(theme_name, 'templates')):
+            for template in templates:
+                template_path = self.get_theme_template_filename(theme_name, os.path.join('templates', template))
+                if os.path.exists(template_path):
+                    with open(template_path) as f:
+                        theme['files']['templates'][mongoencode(template)] = f.read()
+
         for style in theme.get('styles', []):
             style_path = self.get_theme_template_filename(theme_name, style)
             if os.path.exists(style_path):
@@ -639,7 +656,7 @@ def upload_a_theme():
             return json.dumps({'error': 'No name specified in theme.json file.'}), 400
 
         # Check if uploaded theme with the given name already exists.
-        if theme_name in ('angular', 'classic', 'default', 'amp'):
+        if theme_name in system_themes:
             return json.dumps({'error': 'A theme with the given name ({}) already exists!'.format(theme_name)}), 400
 
         # Check dependencies.
