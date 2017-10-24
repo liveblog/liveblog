@@ -20,8 +20,10 @@ var gulp = require('gulp')
 const cwd = process.cwd();
 // Command-line and default theme options from theme.json.
 var theme = require(path.resolve(cwd, './theme.json'));
-
-const DEBUG = process.env.NODE_ENV !== "production";
+var node_env = plugins.util.env.NODE_ENV ?
+                    plugins.util.env.NODE_ENV :
+                    process.env.NODE_ENV;
+const DEBUG =  node_env!== "production";
 const inputPath = theme.extends ? `./node_modules/liveblog-${theme.extends}-theme/` : '';
 
 
