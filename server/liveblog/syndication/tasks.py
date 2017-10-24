@@ -81,7 +81,7 @@ def check_webhook_status(self, consumer_id):
     if 'webhook_url' in consumer:
         try:
             response = send_api_request(consumer['webhook_url'], None, method='GET', json_loads=False)
-        except:
+        except (Exception, APIConnectionError):
             logger.warning('Unable to connect to webhook_url "{}"'.format(consumer['webhook_url']))
             webhook_enabled = False
         else:
@@ -116,7 +116,7 @@ def check_api_status(self, producer_or_id):
         try:
             api_url = producers._get_api_url(producer, 'syndication/blogs')
             response = send_api_request(api_url, producer['consumer_api_key'], json_loads=False)
-        except:
+        except (Exception, APIConnectionError):
             api_status = 'invalid_url'
         else:
             if response.status_code != 200:
