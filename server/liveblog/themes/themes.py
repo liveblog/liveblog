@@ -383,7 +383,7 @@ class ThemesService(BaseService):
             target = self.get_theme_compiled_templates_path(theme_name)
             try:
                 template_env.compile_templates(target, ignore_errors=False)
-            except:
+            except Exception:
                 logger.exception("Template files compilation failed for {} theme.")
 
     def _save_theme_settings(self, theme, previous_theme):
