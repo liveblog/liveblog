@@ -2,6 +2,7 @@ import logging
 
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
+from celery.exceptions import SoftTimeLimitExceeded
 from liveblog.blogs.tasks import publish_blog_embeds_on_s3
 from liveblog.blogs.utils import is_seo_enabled
 from eve.io.base import DataLayer
@@ -77,7 +78,7 @@ def update_post_blog_embed(post):
     logger.warning('update_post_blog_embed for blog "{}" started.'.format(blog_id))
     try:
         publish_blog_embeds_on_s3(blog_id, save=False, safe=True)
-    except:
+    except (Exception, SoftTimeLimitExceeded):
         logger.exception('update_post_blog_embed for blog "{}" failed.'.format(blog_id))
     finally:
         logger.warning('update_post_blog_embed for blog "{}" finished.'.format(blog_id))
