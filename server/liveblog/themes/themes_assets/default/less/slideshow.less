@@ -1,5 +1,4 @@
 .lb-timeline {
-
   article.slideshow div.items-container {
     width: 100%;
     display: flex;
@@ -22,10 +21,19 @@
           left: 0;
           bottom: 0;
           width: 100%;
-          text-align: center;
+          text-align: left;
           color: #fff;
-          background: rgba(0,0,0,0.4);
           margin: 0;
+          padding: 10px 10px 5px 10px;
+          background: rgba(0,0,0,0);
+          background: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
+          background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(0,0,0,0)), color-stop(100%, rgba(0,0,0,0.6)));
+          background: -webkit-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
+          background: -o-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
+          background: -ms-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
+          background: linear-gradient(to bottom, rgba(0,0,0,0) 0%, rgba(0,0,0,0.6) 100%);
+          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#000000', GradientType=0 );
+          box-sizing: border-box;
         }
 
         img {
@@ -59,6 +67,7 @@
 
 
 #lb-slideshow {
+  font-family: 'Helvetica Neue', Helvetica, arial, sans-serif;
   :focus {
     outline: none;
   }
@@ -116,10 +125,13 @@
   }
 
   button {
+    font-size: 22px;
     position: absolute;
+    background: transparent;
+    border: none;
     outline: none;
     color: black;
-    font-size: 22px;
+    cursor: pointer;
   }
 
   button.fullscreen {
@@ -158,4 +170,3 @@
     right: 0;
   }
 }
-
