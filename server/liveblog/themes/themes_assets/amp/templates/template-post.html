@@ -46,6 +46,8 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
         {% include "template-item-embed.html" %}
       {% elif ref.item.item_type == "image" %}
         {% include "template-item-image.html" %}
+      {% elif ref.item.item_type == "Scorecard" %}
+        {% include "template-item-scorecard.html" %}
       {% elif ref.item.group_type == "freetype" %}
       <article>This content is not currently available</article>
       {% else %}
