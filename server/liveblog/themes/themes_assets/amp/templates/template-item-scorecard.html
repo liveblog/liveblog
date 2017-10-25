@@ -1,0 +1,25 @@
+<div class="scorecard">
+    <div>
+        <amp-img src="{{ ref.item.meta.data.home.img1.picture_url }}"
+            layout="fixed"
+            height="50"
+            width="100">
+        </amp-img>
+        <h2>{{ ref.item.meta.data.home.name }}</h2>
+        {% for scorer in ref.item.meta.data.home.scorers %}
+            <p class="scorecard__scorer">{{scorer.time}}&prime; {{scorer.name}}</p>
+        {% endfor %}
+    </div>
+    <div class="scorecard__score">{{ ref.item.meta.data.home.score }} : {{ ref.item.meta.data.away.score }}</div>
+    <div>
+        <amp-img src="{{ ref.item.meta.data.away.img1.picture_url }}"
+            layout="fixed"
+            height="50"
+            width="100">
+        </amp-img>
+        <h2>{{ ref.item.meta.data.away.name }}</h2>
+        {% for scorer in ref.item.meta.data.away.scorers %}
+            <p class="scorecard__scorer">{{scorer.time}}&prime; {{scorer.name}}</p>
+        {% endfor %}
+    </div>
+</div>

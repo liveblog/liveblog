@@ -974,6 +974,21 @@ body .scorecard-top__info {
 */
 /* Breakpoints */
 
+.lb-timeline .scorecard {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+}
+.lb-timeline .scorecard__score {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: bold;
+  padding: .5em 8px;
+}
+.lb-timeline .scorecard__scorer {
+  font-size: 0.8em;
+}
+
 .aligncenter {
   margin-left: 50%;
   position: absolute;
