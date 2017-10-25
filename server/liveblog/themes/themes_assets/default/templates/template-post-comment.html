@@ -36,20 +36,26 @@
         {% for ref in item.groups[1].refs %}
           {% if loop.index0 > 0 %}
               {% if ref.item.item_type == "image" %}
-              <div class="lb-item {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %} {{ref.item.item_type}}">
+              {% if loop.index0 + 1 < loop.length and item.groups[1].refs[loop.index0 + 1].item.item_type == "image" and (loop.index0 - 1 < 1 or not (loop.index0 > 1 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image")) %}
+              <div class="lb-slideshow">
+              {% endif %}
+              <div class="lb-item {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %}{{ref.item.item_type}}">
               {% else %}
               <div class="lb-item {{ref.item.item_type}}">
               {% endif %}
-                {% if ref.item.item_type == "embed" %}
-                  {% include "template-item-embed.html" %}
-                {% elif ref.item.item_type == "image" %}
-                  {% include "template-item-image.html" %}
-                {% elif ref.item.item_type == "quote" %}
-                  {% include "template-item-quote.html" %}
-                {% else %}
-                  <article>{{ ref.item.text | safe }}</article>
-                {% endif %}
-               </div>
+              {% if ref.item.item_type == "embed" %}
+                {% include "template-item-embed.html" %}
+              {% elif ref.item.item_type == "image" %}
+                {% include "template-item-image.html" %}
+              {% elif ref.item.item_type == "quote" %}
+                {% include "template-item-quote.html" %}
+              {% else %}
+                <article>{{ ref.item.text | safe }}</article>
+              {% endif %}
+              </div>
+              {% if ref.item.item_type == "image" and loop.index0 - 1 > 0 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image" and not (loop.index0 + 1 >= loop.length or item.groups[1].refs[loop.index0 + 1].item.item_type == "image") %}
+              </div>
+              {% endif %}
             {% endif %}
         {% endfor %}
     {% endif %}
