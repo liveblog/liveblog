@@ -160,43 +160,26 @@
 
   form.comment {
     position: absolute;
+    display: block;
     background: @white;
     left: 10px;
     right: 10px;
+    padding: 30px;    
     box-shadow: 1px 1px 20px rgba(0, 0, 0, 0.2);
     z-index: 1;
   }
 
   form.comment.hide {
-    max-height: 0px;
-  }
-
-  form.comment.hide .comment__wrap > * {
     display: none;
-  }
-
-  form.comment .comment__wrap > * {
-    display: block;
   }
 
   div.comment-sent.hide {
     display: none;
   }
 
-  .comment__wrap {
-    .animate_smooth(opacity, 0.3s);
-    transition-delay: 0.1s;
-    opacity: 1;
-    padding: 25px;
-  }
-
-  form.comment.hide .comment__wrap, div.comment-sent.hide .comment__wrap {
-    .animate_smooth(opacity, 0.2s);
-    opacity: 0;
-  }
-
   .comment-sent {
       margin-top: 20px;
+      margin-bottom: 10px;
   }
 
   .comment__headline {
@@ -1253,11 +1236,8 @@ body .scorecard-top__info {
         display: none;
       }
 
-      .comment__wrap {
-        padding: 30px;
-      }
-
       form.comment {
+        padding: 20px;
         margin-top: 15px;
       }
 
@@ -1388,11 +1368,8 @@ body .scorecard-top__info {
         display: none;
       }
 
-      .comment__wrap {
-        padding: 20px;
-      }
-
       form.comment {
+        padding: 20px;
         margin-top: 14px;
       }
 
