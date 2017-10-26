@@ -1,28 +1,46 @@
 {% if ref.item.meta.provider_name == 'YouTube' %}
-<amp-youtube
+  <amp-youtube
     data-videoid="{{ ref.item.meta.original_id }}"
     layout="responsive"
     width="480" height="270">
-</amp-youtube>
+  </amp-youtube>
 {% elif ref.item.meta.provider_name == 'Facebook' %}
-<amp-facebook width="480" height="270"
+  <amp-facebook width="480" height="270"
     layout="responsive"
     data-href="{{ ref.item.meta.original_url }}">
-</amp-facebook>
+  </amp-facebook>
 {% elif ref.item.meta.provider_name == 'Twitter' %}
-<amp-twitter width="480" height="270"
+  <amp-twitter width="480" height="270"
     layout="responsive"
     data-tweetid="{{ ref.item.meta.original_id }}">
-</amp-twitter>
+  </amp-twitter>
 {% elif ref.item.meta.provider_name == 'Instagram' %}
-<amp-instagram
+  <amp-instagram
     data-shortcode="{{ ref.item.meta.original_id }}"
     width="480"
     height="270"
     layout="responsive">
-</amp-instagram>
+  </amp-instagram>
 {% else %}
-<p>
-  <a href="{{ ref.item.meta.original_url }}" >{{ ref.item.meta.title }}</a>
-</p>
+  {% if ref.item.meta.thumbnail_url %}
+    <figure>
+      <amp-img src="{{ ref.item.meta.thumbnail_url }}"
+        layout="responsive"
+        width="{{ ref.item.meta.thumbnail_width }}"
+        height="{{ ref.item.meta.thumbnail_height }}"
+        alt="">
+      </amp-img>
+    </figure>
+  {% endif %}
+  {% if ref.item.meta.html %}
+    {{ ref.item.meta.html | replace("<iframe","<amp-iframe sandbox='allow-scripts allow-same-origin'
+    layout='responsive'") | replace("</iframe>", "<p placeholder>Loading</p></amp-iframe>") | safe}}
+  {% endif %}
+  {% if ref.item.meta.title %}
+    <div class="item--embed__title" >
+      <a href="{{ ref.item.meta.original_url }}" >{{ ref.item.meta.title }}</a>
+    </div>
+    <div class="item--embed__description">{{ ref.item.meta.description }}</div>
+    <div class="item--embed__credit">{{ ref.item.meta.credit }}</div>
+  {% endif %}
 {% endif %}

@@ -1,7 +1,7 @@
 {
   "label": "Liveblog 3 AMP Theme",
   "name": "amp",
-  "version": "0.1.25",
+  "version": "0.1.26",
   "seoTheme": true,
   "ampTheme": true,
   "extends": "default",
@@ -17,8 +17,8 @@
     "url" : "git@github.com:liveblog/liveblog-amp-theme"
   },
   "license": "AGPL-3.0",
-  "devStyles": ["dist/amp-6369201fda.css"],
-  "styles": ["dist/amp-6369201fda.css"],
+  "devStyles": ["dist/amp-2604f57d27.css"],
+  "styles": ["dist/amp-2604f57d27.css"],
   "i18n": {
         "cs": {
           "Highlights": "Hlavní body",

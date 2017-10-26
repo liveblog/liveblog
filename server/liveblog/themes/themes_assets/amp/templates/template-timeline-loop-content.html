@@ -1,0 +1,9 @@
+{% set weSupport = true %}
+{% for ref in item.groups[1].refs %}
+  {% if (ref.item.group_type == "freetype") and (ref.item.item_type != "Scorecard") %}
+      {% set weSupport = false %}
+  {% endif %}
+{% endfor %}
+{% if weSupport %}
+  {% include "template-post.html" %}
+{% endif %}

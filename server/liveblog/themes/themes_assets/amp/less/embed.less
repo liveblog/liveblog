@@ -597,20 +597,23 @@
 
   .lb-type--embed-facebook {
     background-color: #3c5a9a;
-    background-image: url("../images/facebook_logo.png");
-    background-size: 20px;
+    amp-img {
+      margin: 10px 0 0 10px;
+    }
   }
 
   .lb-type--embed-youtube {
     background-color: #e52d27;
-    background-image: url("../images/youtube_logo.png");
-    background-size: 20px;
+    amp-img {
+      margin: 10px 0 0 10px;
+    }
   }
 
   .lb-type--embed-instagram {
     background-color: #444;
-    background-image: url("../images/instagram_logo.png");
-    background-size: 20px;
+    amp-img {
+      margin: 10px 0 0 10px;
+    } 
   }
 
 
@@ -742,16 +745,6 @@
 
   /* text */
 
-
-  .item--embed__illustration {
-      position: absolute;
-      width: 200px;
-  }
-
-  /* if there is an image, leave space on the left */
-  .item--embed__illustration ~ * {
-      margin-left: 220px;
-  }
   .item--embed__description,
   .item--embed__credit {
       padding-top: 5px;
@@ -767,6 +760,14 @@
   .item--embed__credit {
       text-align: right;
   }
+
+  .credit {
+    font-size: .7em;
+    float: right;
+    color: #999;
+  }
+
+
 
   /* loading */
   .loading {
@@ -1361,4 +1362,8 @@ body .scorecard-top__info {
         line-height: 1.6em;
       }
     }
+    
+  .hide-item {
+    display: none;
+  }
 }

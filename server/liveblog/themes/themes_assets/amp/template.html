@@ -9,7 +9,7 @@
   {% endif %}
 
   {% if settings.showImage and blog.picture_url %}
-  <amp-img src="{{ blog.picture_url }}" width="1" height="1" layout="responsive"></amp-img>
+  <amp-img src="{{ blog.picture_url }}" width="600" height="400" layout="responsive"></amp-img>
   {% endif %}
 
   <div class="header-bar">
@@ -30,7 +30,6 @@
         width="90"
         height="30"
         >
-
         </amp-img>
       </a>
     {% endif %}
@@ -54,7 +53,7 @@
  
     <div items class="lb-posts">
       {% for item in api_response.stickyPosts._items %}
-        {% include "template-post.html" %}
+        {% include "template-timeline-loop-content.html" %}
       {% endfor %}
     </div>
  
@@ -70,7 +69,7 @@
     <button id="live-list-update-button" update on="tap:amp-live-list-insert-blog.update" class="ampstart-btn caps lb-post new-updates">You have updates</button>
     <div items class="lb-posts">
       {% for item in api_response.posts._items %}
-        {% include "template-post.html" %}
+        {% include "template-timeline-loop-content.html" %}
       {% endfor %}
     </div>
 
