@@ -1,10 +1,10 @@
 .lb-timeline {
-  article.slideshow div.items-container {
-    width: 100%;
+  .lb-slideshow {
     display: flex;
     flex-wrap: wrap;
     margin-left: 60px;
-
+    margin-bottom: 25px;
+    clear: both;
     div.lb-item {
       margin: 0;
       display: inline-block;
@@ -21,6 +21,7 @@
           left: 0;
           bottom: 0;
           width: 100%;
+          text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.6);
           text-align: left;
           color: #fff;
           margin: 0;
@@ -111,7 +112,7 @@
         width: 100%;
         color: white;
         font-size: 1rem;
-        text-shadow: 0px 0px 3px #000;
+        text-shadow: 0px 0px 4px rgba(0, 0, 0, 0.6);
         background: rgba(0,0,0,0);
         background: -moz-linear-gradient(top, rgba(0,0,0,0) 0%, rgba(0,0,0,0.4) 100%);
         background: -webkit-gradient(left top, left bottom, color-stop(0%, rgba(0,0,0,0)), color-stop(100%, rgba(0,0,0,0.4)));
@@ -168,5 +169,13 @@
 
   button.arrows.next {
     right: 0;
+  }
+}
+
+@media @medium {
+  .lb-timeline {
+    .lb-slideshow {
+      margin-left: 0px;
+    }
   }
 }
