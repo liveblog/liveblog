@@ -19,16 +19,20 @@
 .users-table .table-body > li > div:not(.tooltip).row-wrapper.four-col > div.api-key {
     width: 40%;
 }
+.users-table .table-body > li > div:not(.tooltip).action {
+    width: auto;
+}
 
 div.subnav.pan-right {
     float: right;
     left: auto;
+    box-shadow: none;
 }
 
 .producers-list, .syndicated-blogs-list {
    > li.post-item, > li.blog-item {
         background: #fff;
-        border-radius: 2px;        
+        border-radius: 2px;
         padding: 12px 15px;
         margin: 10px 0;
         display: block;
@@ -124,7 +128,7 @@ div.subnav.pan-right {
 .panel-definition-list {
     margin: 0;
 }
-.panel-definition-list__term, 
+.panel-definition-list__term,
 .panel-definition-list__definition {
     display: inline-block;
     font-weight: 400;
@@ -151,6 +155,7 @@ div.subnav.pan-right {
 }
 
 div.select-producer {
+    overflow: hidden;
     select {
         width: 85%;
         float: left;
@@ -166,12 +171,12 @@ div.select-producer {
     }
 }
 
-form[name="consumerForm"] div.error, 
+form[name="consumerForm"] div.error,
 form[name="producerForm"] div.error {
     color: #fe0201;
 }
 
-div.profile-info.syndication div.details-info {
+.profile-info .details-info.details-info--no-avatar {
     top: 15px;
 }
 
@@ -191,8 +196,8 @@ ul.dropdown__menu.more-activity-menu {
     div.datepicker-input {
         margin: auto 16px;
 
-        button { 
-            width: 24px; 
+        button {
+            width: 24px;
         }
     }
 }

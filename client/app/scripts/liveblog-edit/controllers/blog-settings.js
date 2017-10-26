@@ -12,8 +12,10 @@ import angular from 'angular';
 import _ from 'lodash';
 
 import './../../ng-sir-trevor';
-import './../../ng-sir-trevor-blocks';
+import './../../sir-trevor-blocks';
 import './../unread.posts.service';
+
+import outputEmbedCodeTpl from 'scripts/liveblog-edit/views/output-embed-code-modal.html'
 
 BlogSettingsController.$inject = [
     '$scope',
@@ -30,7 +32,10 @@ BlogSettingsController.$inject = [
     'config',
     'blogSecurityService',
     'moment',
-    'superdesk'
+    'superdesk',
+    'urls',
+    '$rootScope'
+
 ];
 
 function BlogSettingsController(
@@ -48,11 +53,20 @@ function BlogSettingsController(
     config,
     blogSecurityService,
     moment,
-    superdesk
+    superdesk,
+    urls,
+    $rootScope
 ) {
 
     // set view's model
     var vm = this;
+
+    var notif_listener = $rootScope.$on('blog', (e, data) => {
+        if (data.blog_id === vm.blog._id && data.published === 1) {
+            // update the blog property
+            vm.blog.public_urls = data.public_urls;
+        }
+    });
 
     angular.extend(vm, {
         mailto: 'mail:upgrade@liveblog.pro?subject='+
@@ -67,12 +81,14 @@ function BlogSettingsController(
         original_creator: {},
         availableThemes: [],
         availableCategories: [
-            '', 
-            'Breaking News', 
-            'Entertainment', 
-            'Business and Finance', 
-            'Sport', 
-            'Technology'
+            '',
+            'Breaking News',
+            'Entertainment',
+            'Business and Finance',
+            'Sport',
+            'Technology',
+            'Politics',
+            'Others'
         ],
         //used as an aux var to be able to change members and safely cancel the changes
         blogMembers: [],
@@ -89,6 +105,71 @@ function BlogSettingsController(
         tab: false,
         // by default themes are not accepting embed multi height and code.
         embedMultiHight: false,
+        outputs: [],
+        outputEmbedCodeTpl: outputEmbedCodeTpl,
+        loadOutputs: function(silent) {
+            silent = silent || false;
+            if (!silent) {
+                vm.outputsLoading = true;
+            }
+            var criteria = {where: JSON.stringify({
+                '$and': [
+                    {deleted: false},
+                    {blog: vm.blog._id}
+                ]
+            })}
+            api('outputs').query(criteria)
+            .then(function(data) {
+                vm.outputs = data._items;
+                if (!silent) {
+                    notify.info('Output channels loaded');
+                }
+                vm.outputsLoading = false;
+            }, function(data) {
+                notify.error(gettext('There was an error getting the output channels'));
+                vm.outputsLoading = false;
+            })
+        },
+        showOutputEmbedCode: function(output) {
+            vm.outputEmbedModal = true;
+            vm.output = output;
+            let outputTheme = _.find(vm.availableThemes, function(theme) {
+                return theme.name === vm.output.theme;
+            });
+            
+            if (outputTheme.styles && outputTheme.settings.removeStylesESI) {
+                vm.output.styleUrl = outputTheme.public_url + outputTheme.styles[outputTheme.styles.length - 1];
+            }
+        },
+        openOutputDialog: function(output) {
+            output = output || {};
+            vm.output = angular.copy(output);
+            vm.oldOutput = angular.copy(output);
+
+            if (vm.output.style) {
+                vm.output.preview = {
+                    url: vm.output.style['background-image']
+                }
+            } else {
+                vm.output.style = {};
+            }
+            vm.output.preview_logo = {};
+            if (vm.output.logo_url) {
+                vm.output.preview_logo.url = vm.output.logo_url;
+            }
+            vm.outputModalActive = true;
+        },
+        removeOutput: function (output, $index) {
+            modal.confirm(gettext('Are you sure you want to remove this output channel?'))
+            .then(function() {
+                api('outputs').save(output, {deleted: true})
+                .then(function(data) {
+                    vm.outputs.splice($index, 1);
+                }, function(data) {
+                    notify.error(gettext('Can\'t remove output'));
+                });
+            });
+        },
         userNotInMembers: function(user) {
             for (var i = 0; i < vm.members.length; i ++) {
                 if (user._id === vm.members[i]._id) {
@@ -105,9 +186,6 @@ function BlogSettingsController(
 
                 let firstPicture = pictures[0];
 
-                //$scope.image.picture_url = firstPicture.renditions.original.href;
-                //$scope.image.picture = firstPicture._id;
-
                 vm.newBlog.picture_url = firstPicture.renditions.viewImage.href;
                 vm.newBlog.picture = firstPicture._id;
                 vm.uploadModal = false;
@@ -117,7 +195,8 @@ function BlogSettingsController(
             });
         },
         changeTab: function(tab) {
-            if (vm.tab) {
+            // outputs does not dirty the blog settings
+            if (vm.tab && vm.tab !== 'outputs') {
                 vm.forms.dirty = vm.forms.dirty || vm.forms[vm.tab].$dirty;
             }
             vm.tab = tab;
@@ -190,7 +269,9 @@ function BlogSettingsController(
             // Set start_date to _created if date and time are empty
             var start_date = null;
             if (vm.start_date && vm.start_time)
-                start_date = datetimeHelper.mergeDateTime(vm.start_date, vm.start_time);
+                start_date = datetimeHelper.mergeDateTime(vm.start_date, vm.start_time) +
+                             moment.tz(config.defaultTimezone).format('Z');
+
             else
                 start_date = vm.blog._created;
 
@@ -209,6 +290,7 @@ function BlogSettingsController(
             delete vm.newBlog._current_version;
             delete vm.newBlog._version;
             delete vm.newBlog.marked_for_not_publication;
+            delete vm.newBlog._type;
             blogService.update(vm.blog, vm.newBlog).then(function(blog) {
                 vm.isSaved = true;
                 vm.blog = blog;
@@ -305,6 +387,9 @@ function BlogSettingsController(
             vm.selectedTheme = _.find(vm.availableThemes, function(theme) {
                 return theme.name === vm.blogPreferences.theme;
             });
+            if (vm.selectedTheme.styles) {
+                vm.styleUrl = vm.selectedTheme.public_url + vm.selectedTheme.styles[vm.selectedTheme.styles.length - 1];
+            }
         });
 
     // after publicUrl and theme is on `vm` object we can compute embeds code.
@@ -314,7 +399,9 @@ function BlogSettingsController(
         var parentIframe = 'http://localhost:5000/themes_assets/angular/';
         if (vm.angularTheme.public_url) {
             // production link
-            parentIframe = vm.angularTheme.public_url.replace(/\/[0-9\.]+\/themes_assets\//, '/themes_assets/');
+            parentIframe = vm.angularTheme.public_url
+                                        .replace(/\/[0-9\.]+\/themes_assets\//, '/themes_assets/')
+                                        .replace('http://', 'https://');
         }
         // loading mechanism, and load parent-iframe.js with callback.
         var loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){'
@@ -325,11 +412,19 @@ function BlogSettingsController(
         + 'parent-iframe.js?"+parseInt(new Date().getTime()/900000,10),function(){"function"==typeof '
         + 'liveblog.loadCallback&&liveblog.loadCallback()});</script>';
         // compute embeds code with the injected publicUrl
+        const slideshow = '<script type="text/javascript">'
+        + 'var l=document.getElementById("liveblog-iframe");'
+        + 'l.addEventListener("load",function(){var t=l.contentWindow,e=l.getAttribute("src");'
+        + 't.postMessage(window.location.href,e),window.addEventListener("message",function(t){'
+        + '"fullscreen"===t.data?l.style.cssText="position:fixed;top:0;bottom:0;left:0;right:0;'
+        + 'width:100%;height: 100%":l.style.cssText=""})});'
+        + '</script>';
+
         vm.embeds = {
-            normal: '<iframe width="100%" height="715" src="' + 
-                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>',
-            resizeing: loadingScript + '<iframe id="liveblog-iframe" width="100%" scrolling="no" src="' + 
-                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>'
+            normal: '<iframe id="liveblog-iframe" width="100%" height="715" src="' + 
+                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>' + slideshow,
+            resizeing: '<iframe id="liveblog-iframe" width="100%" scrolling="no" src="' + 
+                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>' + slideshow + loadingScript
         };
     });
 
@@ -358,6 +453,14 @@ function BlogSettingsController(
     //get team members details
     vm.members = [];
     vm.getUsers(vm.members, blog.members);
+    vm.loadOutputs();
+
+    //when an output is saved in the modal directive, reload outputs
+    $scope.$on('output.saved', function() {
+        // load outputs silently
+        vm.loadOutputs(true);
+    })
+
 
     //check if form is dirty before leaving the page
     var deregisterPreventer = $scope.$on('$locationChangeStart', routeChange);

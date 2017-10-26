@@ -3,7 +3,8 @@ import requests
 import json
 from flask import Blueprint, request
 from flask_cors import CORS
-from liveblog.syndication.utils import api_response, api_error, blueprint_superdesk_token_auth
+from liveblog.utils.api import api_response, api_error
+from liveblog.syndication.utils import blueprint_superdesk_token_auth
 from liveblog.syndication.exceptions import APIConnectionError
 from settings import MARKETPLACE_APP_URL
 from requests.exceptions import RequestException
@@ -45,15 +46,16 @@ def marketers():
         url = MARKETPLACE_APP_URL
         if not url.endswith('/'):
             url = '{}/'.format(url)
-        content = json.loads(response.content.decode('utf-8'))
-        for item in content['_items']:
-            if 'picture_url' in item.keys():
+        response_content = ''
+        try:
+            content = json.loads(response.content.decode('utf-8'))
+            for item in content['_items']:
                 picture_url = item['picture_url']
                 picture_url = picture_url.replace("/api/", "")
                 item['picture_url'] = url + picture_url
-            else:
-                item['picture_url'] = ''
-        response_content = json.dumps(content)
+            response_content = json.dumps(content)
+        except Exception as e:
+            logger.warning('Exception on attempt to parse response from marketplace app: {}'.format(str(e)))
         return api_response(response_content, response.status_code, json_dumps=False)
     else:
         return api_error('Unable to get marketers.', response.status_code)

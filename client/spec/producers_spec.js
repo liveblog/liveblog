@@ -1,8 +1,7 @@
 'use strict';
 
 var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
-    producersManagement = require('./helpers/pages').producersManagement,
-    assertToastMsg = require('./helpers/assert-toast-msg');
+    producersManagement = require('./helpers/pages').producersManagement;
 
 var producer = {
     name: 'Massey Fergusson',
@@ -139,9 +138,6 @@ describe('Producers', function() {
                     return element(by.css('#save-edit-btn')).click();
                 })
                 .then(function() {
-                    return assertToastMsg('success', 'Producer saved.');
-                })
-                .then(function() {
                     var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
                     expect(firstRowName.getText()).toEqual(producer.name);
                     return element.all(by.repeater('producer in producers')).count();
@@ -178,9 +174,6 @@ describe('Producers', function() {
                     })
                     .then(function() {
                         return element(by.css('#save-edit-btn')).click();
-                    })
-                    .then(function() {
-                        return assertToastMsg('success', 'Producer saved.');
                     })
                     .then(function() {
                         var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
@@ -220,6 +213,6 @@ describe('Producers', function() {
                 .then(function(count) {
                     expect(count).toEqual(originalCount - 1);
                 });
-});
+        });
     });
 });

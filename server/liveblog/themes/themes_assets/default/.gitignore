@@ -1,0 +1,12 @@
+npm-debug.log
+.settings
+.project
+.idea
+node_modules
+*.swp
+.tmp
+Thumbs.db
+!*.pot
+index.html
+liveblog-default-theme.zip
+py-test/env

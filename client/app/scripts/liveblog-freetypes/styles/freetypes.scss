@@ -3,21 +3,21 @@
         position: absolute;
         top: 0px;
         left: 0; right: 0; bottom: 0;
-        padding: 30px 30px 30px 0;
+        padding: 20px;
         overflow-y: auto;
         ul {
             li {
-                margin-left: 40px;
+                //margin-left: 40px;
             }
         }
     }
     .pills-list {
         max-width: 650px;
-        margin-top: 2px;
+        margin: 0;
+        padding-left: 2px;
         >li {
             background: #fff;
-            margin-bottom: 6px;
-            margin-right: 2px;
+            margin-bottom: 6px;            
             border-radius: 2px;
             padding: 10px 16px;
             min-height: 18px;
@@ -55,6 +55,9 @@
         }
     }
         
+}
+.alert-advert {
+    margin: 60px 10px 0px 10px;
 }
 .ft-alert {
     color: #b94a48;

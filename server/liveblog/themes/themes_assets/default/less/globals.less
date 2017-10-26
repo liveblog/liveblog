@@ -1,0 +1,153 @@
+.animate_hard(@prop, @speed) {
+  -webkit-transition: @prop @speed;
+     -moz-transition: @prop @speed;
+      -ms-transition: @prop @speed;
+       -o-transition: @prop @speed;
+          transition: @prop @speed;
+  -webkit-transition: @prop @speed;
+  -webkit-transition-timing-function: cubic-bezier(0.2,0.9,0.3,1);
+     -moz-transition-timing-function: cubic-bezier(0.2,0.9,0.3,1);
+      -ms-transition-timing-function: cubic-bezier(0.2,0.9,0.3,1);
+       -o-transition-timing-function: cubic-bezier(0.2,0.9,0.3,1);
+          transition-timing-function: cubic-bezier(0.2,0.9,0.3,1);
+}
+
+.animate_smooth(@prop, @speed) {
+  -webkit-transition: @prop @speed ease-in-out 0s;
+     -moz-transition: @prop @speed ease-in-out 0s;
+      -ms-transition: @prop @speed ease-in-out 0s;
+       -o-transition: @prop @speed ease-in-out 0s;
+          transition: @prop @speed ease-in-out 0s;
+  -webkit-transition: @prop @speed ease-in-out 0s;
+  -webkit-transition-timing-function: cubic-bezier(0.59,0.005,0,1);
+     -moz-transition-timing-function: cubic-bezier(0.59,0.005,0,1);
+      -ms-transition-timing-function: cubic-bezier(0.59,0.005,0,1);
+       -o-transition-timing-function: cubic-bezier(0.59,0.005,0,1);
+          transition-timing-function: cubic-bezier(0.59,0.005,0,1);
+}
+
+.translateX(@val) {
+  -webkit-transform: translateX(@val);
+     -moz-transform: translateX(@val);
+       -o-transform: translateX(@val);
+          transform: translateX(@val);
+}
+
+.user-select(@param) {
+  -webkit-user-select: @param;
+   -khtml-user-select: @param;
+     -moz-user-select: @param;
+       -o-user-select: @param;
+          user-select: @param;
+}
+
+.outline(@param) {
+  -webkit-outline: @param;
+   -khtml-outline: @param;
+     -moz-outline: @param;
+       -o-outline: @param;
+          outline: @param;
+}
+
+.font-smoothing(@param) {
+  -webkit-font-smoothing: @param;
+}
+
+.shadow(@param) {
+  -webkit-box-shadow: @param;
+     -moz-box-shadow: @param;
+       -o-box-shadow: @param;
+      -ms-box-shadow: @param;
+          box-shadow: @param;
+}
+
+.overflow-scrolling(@param) {
+  -webkit-overflow-scrolling: @param;
+   -khtml-overflow-scrolling: @param;
+     -moz-overflow-scrolling: @param;
+       -o-overflow-scrolling: @param;
+          overflow-scrolling: @param;
+}
+
+.transform-style(@param) {
+  -webkit-transform-style: @param;
+     -moz-transform-style: @param;
+      -ms-transform-style: @param;
+       -o-transform-style: @param;
+          transform-style: @param;
+}
+
+.transform(@param) {
+  -webkit-transform: @param;
+     -moz-transform: @param;
+      -ms-transform: @param;
+       -o-transform: @param;
+          transform: @param;
+}
+
+.perspective(@param) {
+  -webkit-perspective: @param;
+     -moz-perspective: @param;
+      -ms-perspective: @param;
+       -o-perspective: @param;
+          perspective: @param;
+}
+
+.backface(@param) {
+  -webkit-backface-visibility: @param;
+     -moz-backface-visibility: @param;
+      -ms-backface-visibility: @param;
+       -o-backface-visibility: @param;
+          backface-visibility: @param;
+}
+
+.set_bg(@url) {
+  background-image: url(@url);
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.rgba(@color, @opacity) {
+  background-color: rgba(red(@color), green(@color), blue(@color), @opacity);
+}
+
+
+.aligncenter {
+  margin-left: 50%;
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translateY(-50%) translateX(-50%);
+  -ms-transform: translateY(-50%) translateX(-50%);
+  transform: translateY(-50%) translateX(-50%);
+  transform: translateY(-50%) translateX(-50%);
+}
+
+/* Colors */
+
+/*
+@darkgreen:    #576b61;
+@bluegreen:    #708a9e;
+@warmgreen:    #50a064;
+@anthrazit:    #666666;
+@lightgrey:    #f9f9f9;
+@coolgrey:     #dfdfdf;
+@blue:         #4d536b;
+@darkblue:     #3f4246;
+@deepgreen:    #46643c;
+@red:          #EB5555;
+*/
+
+@green:        #48b958;
+@lbgreen:      #1eb06c;
+@washedgreen:  #81e496;
+@black:        #333333;
+@grey:         #ACACAC;
+@lightgrey:    #e9e9e9;
+@white:        #ffffff;
+
+/* Breakpoints */
+
+@xlarge:        ~"screen and (min-width: 1025px)";
+@large:        ~"screen and (max-width: 870px)";
+@medium:       ~"screen and (max-width: 580px)";
+@small:        ~"screen and (max-width: 450px)";

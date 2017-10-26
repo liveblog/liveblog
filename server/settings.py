@@ -11,7 +11,6 @@
 
 
 import os
-import json
 
 from celery.schedules import crontab
 
@@ -33,7 +32,7 @@ def env(variable, fallback_value=None):
         # Return None for __EMPTY__.
         return ''
 
-    if not fallback_value:
+    if fallback_value is None:
         # Return env value if fallback is not available
         return env_value
 
@@ -161,7 +160,8 @@ INSTALLED_APPS = [
     'liveblog.syndication',
     'liveblog.freetypes',
     'liveblog.marketplace',
-    'liveblog.analytics'
+    'liveblog.analytics',
+    'liveblog.advertisements',
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']
@@ -223,12 +223,13 @@ ACTIVATE_ACCOUNT_TOKEN_TIME_TO_LIVE = int(env('ACTIVATE_TTL', 7))
 
 # email server
 MAIL_SERVER = env('MAIL_SERVER', 'smtp.googlemail.com')
-MAIL_PORT = int(env('MAIL_PORT', 465))
-MAIL_USE_TLS = json.loads(env('MAIL_USE_TLS', 'False').lower())
-MAIL_USE_SSL = json.loads(env('MAIL_USE_SSL', 'False').lower())
+MAIL_PORT = env('MAIL_PORT', 465)
+MAIL_USE_TLS = env('MAIL_USE_TLS', False)
+MAIL_USE_SSL = env('MAIL_USE_SSL', False)
 MAIL_USERNAME = env('MAIL_USERNAME', 'liveblogsf@gmail.com')
 MAIL_PASSWORD = env('MAIL_PASSWORD', 'fabric2010')
 MAIL_FROM = env('MAIL_FROM', 'liveblogsf@gmail.com')
+MAIL_SUPPRESS_SEND = env('MAIL_SUPPRESS_SEND', False)
 ADMINS = [MAIL_FROM]
 
 # LDAP settings
@@ -323,3 +324,9 @@ S3_PUBLISH_BLOGSLIST = env('S3_PUBLISH_BLOGSLIST', True)
 
 # Superdesk-core related settings.
 CONTENTAPI_URL = None
+
+# Temp uploaded themes directory.
+UPLOAD_THEMES_DIRECTORY = env('UPLOAD_THEMES_DIRECTORY', os.path.join(ABS_PATH, 'themes'))
+
+# Compiled jinja2 templates path for SEO themes.
+COMPILED_TEMPLATES_PATH = env('COMPILED_TEMPLATES_PATH', os.path.join(ABS_PATH, '.jinja2'))

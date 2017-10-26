@@ -1,5 +1,6 @@
 import logging
 
+from flask import current_app as app
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
 from superdesk.metadata.item import CONTENT_TYPE, ITEM_TYPE
@@ -72,12 +73,15 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=50, po
 def check_webhook_status(self, consumer_id):
     """Check if consumer webhook is enabled by sending a fake http api request."""
     from .utils import send_api_request
+    if app.config.get('SUPERDESK_TESTING'):
+        return
+
     consumers = get_resource_service('consumers')
     consumer = consumers._get_consumer(consumer_id) or {}
     if 'webhook_url' in consumer:
         try:
             response = send_api_request(consumer['webhook_url'], None, method='GET', json_loads=False)
-        except:
+        except (Exception, APIConnectionError):
             logger.warning('Unable to connect to webhook_url "{}"'.format(consumer['webhook_url']))
             webhook_enabled = False
         else:
@@ -98,9 +102,12 @@ def check_webhook_status(self, consumer_id):
 
 
 @celery.task(bind=True)
-def check_api_status(self, producer_id):
+def check_api_status(self, producer_or_id):
     producers = get_resource_service('producers')
-    producer = producers._get_producer(producer_id) or {}
+    producer = producers._get_producer(producer_or_id) or {}
+    if not producer:
+        return
+
     if 'api_url' not in producer:
         api_status = 'invalid_url'
     elif 'consumer_api_key' not in producer:
@@ -109,7 +116,7 @@ def check_api_status(self, producer_id):
         try:
             api_url = producers._get_api_url(producer, 'syndication/blogs')
             response = send_api_request(api_url, producer['consumer_api_key'], json_loads=False)
-        except:
+        except (Exception, APIConnectionError):
             api_status = 'invalid_url'
         else:
             if response.status_code != 200:

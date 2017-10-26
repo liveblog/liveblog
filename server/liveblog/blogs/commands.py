@@ -8,15 +8,20 @@ class PublishBlogsCommand(superdesk.Command):
     """
 
     def run(self):
-        from .tasks import publish_blog_embed_on_s3
+        from .tasks import publish_blog_embeds_on_s3
 
         # Retrieves all opened blogs.
         blogs_service = get_resource_service('blogs')
         blogs = blogs_service.get(req=None, lookup=dict(blog_status='open'))
+        outputs = blogs_service.get(req=None, lookup=dict(deleted=False))
         # Republish on s3.
         print('\n* Republishing blogs:\n')
         for blog in blogs:
-            url = publish_blog_embed_on_s3(blog_id=str(blog['_id']), safe=False)
+            for output in outputs:
+                if output['blog'] == blog['_id']:
+                    url = publish_blog_embeds_on_s3(blog_id=str(blog['_id']), output=output, safe=False)
+                    print('  - Blog "%s" output "%s" republished: %s' % (blog['title'], output['name'], url))
+            url = publish_blog_embeds_on_s3(blog_id=str(blog['_id']), safe=False)
             print('  - Blog "%s" republished: %s' % (blog['title'], url))
 
 

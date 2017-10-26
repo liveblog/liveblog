@@ -1,0 +1,24 @@
+<div class="lb-item">
+  <amp-carousel class="carousel1"
+  layout="responsive"
+  height="450"
+  width="500"
+  type="slides">
+    {% for ref in item.groups[1].refs %}
+      <div>
+        <amp-img src="{{ ref.item.meta.media.renditions.viewImage.href }}"
+        layout="responsive"
+        width="{{ ref.item.meta.media.renditions.viewImage.width }}"
+        height="{{ ref.item.meta.media.renditions.viewImage.height }}"
+        alt="">
+        </amp-img>
+        <figcaption class="item--embed__description">
+          {{ ref.item.meta.caption }}
+          {% if ref.item.meta.credit %}
+            <span class="credit">Credit: {{ ref.item.meta.credit }}</span>
+          {% endif %}
+        </figcaption>
+      </div>
+    {% endfor %}
+  </amp-carousel>
+</div>

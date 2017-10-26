@@ -1,0 +1,163 @@
+{% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
+
+{% set mainItem = item.groups[1].refs[0].item %}
+{% if mainItem.commenter %}
+  {% set type = 'comment' %}
+{% else %}
+  {% set type = item.post_items_type %}
+{% endif %}
+
+<!-- sticky position toggle -->
+{% if item.sticky and settings.stickyPosition == 'top' %}
+<article
+  class="lb-sticky-top-post list-group-item {{ type }} {% if displaynone %}mod--displaynone{% endif %}"
+  data-js-post-id="{{ item._id }}">
+  {% else %}
+<article
+  class="lb-post list-group-item show-author-avatar {{ type }} {% if item.lb_highlight %}lb-post--highlighted{% endif %} {% if displaynone %}mod--displaynone{% endif %}"
+  data-js-post-id="{{ item._id }}">
+    
+  <div class="lb-type lb-type--{{ item.post_items_type }}"></div>
+
+  {% if item.sticky and item.lb_highlight %}
+    <img src="{{ assets_root }}images/pinpost.svg" class="pin-icon" />
+    <img src="{{ assets_root }}images/highlighted.svg" class="highlight-icon" />
+  {% elif item.sticky %}
+    <img src="{{ assets_root }}images/pinpost.svg" class="pin-icon" />
+  {% elif item.lb_highlight %}
+    <img src="{{ assets_root }}images/highlighted.svg" class="highlight-icon" />
+  {% elif item.post_items_type == "advertisement" %}
+    <div class="lb-advertisement">{{ translate('Advertisement') }}</div>
+  {% endif %}
+
+  <!-- remove advertisement stylization-->
+  {% if item.post_items_type != "advertisement" %}
+
+  <div class="lb-post-date" data-js-timestamp="{{ item.published_date }}">{{ item.published_date }}</div>
+
+  <!-- author plus avatar -->
+  <div class="lb-author">
+    {% if mainItem.commenter and not (item.syndication_in and not settings.showSyndicatedAuthor) %}
+      <div class="lb-author__name">
+        {{ translate('Comment by') }} {{ mainItem.commenter }}
+      </div>
+    {% elif settings.showAuthor %}
+      <div class="lb-author__name">
+      {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
+        {{ mainItem.syndicated_creator.display_name }}
+      {% elif mainItem.original_creator %}
+        {{ mainItem.original_creator.display_name }}
+      {% endif %}
+      {% if item.syndication_in %}
+        <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
+      {% endif %}
+      </div>
+      {% if type == 'comment' %}
+        <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
+      {% endif %}
+      {% if settings.showAuthorAvatar and type != 'comment' %}
+        {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
+        <img class="lb-author__avatar" src="{{ mainItem.syndicated_creator.picture_url }}" />
+        {% elif mainItem.original_creator and mainItem.original_creator.picture_url %}
+        <img class="lb-author__avatar" src="{{ mainItem.original_creator.picture_url }}" />
+        {% else %}
+        <div class="lb-author__avatar"></div>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  </div>
+  <!-- end author -->
+
+  {% endif %}
+  <!-- end sticky position toggle -->
+  {% endif %}
+  <!-- end remove advertisement stylization-->
+
+  <!-- item start -->
+  <div class="items-container">
+  {% if type == "comment" %}
+    {% include "template-post-comment.html" %}
+  {% else %}
+    {% if item and item.groups and
+            item.groups[1] and
+            item.groups[1].refs and
+            (item.groups[1].refs | length > 0) %}
+        {% for ref in item.groups[1].refs %}
+          {% if ref.item.item_type == "image" %}
+          {% if loop.index0 + 1 < loop.length and item.groups[1].refs[loop.index0 + 1].item.item_type == "image" and (loop.index0 - 1 < 0 or not (loop.index0 > 0 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image")) %}
+          <div class="lb-slideshow">
+          {% endif %}
+          <div class="lb-item {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %}{{ref.item.item_type}}">
+          {% else %}
+          <div class="lb-item {{ref.item.item_type}}">
+          {% endif %}
+          {% if ref.item.item_type == "embed" %}
+            {% include "template-item-embed.html" %}
+          {% elif ref.item.item_type == "image" %}
+            {% include "template-item-image.html" %}
+          {% elif ref.item.item_type == "quote" %}
+            {% include "template-item-quote.html" %}
+          {% elif ref.item.item_type == "comment" %}
+            {% include "template-item-comment.html" %}
+          {% else %}
+            <article>{{ ref.item.text | safe }}</article>
+          {% endif %}
+          </div>
+          {% if ref.item.item_type == "image" and loop.index0 - 1 >= 0 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image" and not (loop.index0 + 1 >= loop.length or item.groups[1].refs[loop.index0 + 1].item.item_type == "image") %}
+          </div>
+          {% endif %}
+        {% endfor %}
+    {% endif %}
+  {% endif %}
+  </div>
+  <!-- item end -->
+
+  <div class="lb-post-actions">
+
+    <!-- share 
+      Aco share buttons should be vissible on click, not on share
+    -->
+    <div class="lb-post-share">
+      <img src="{{ assets_root }}images/action_share.svg" class="lb-post-shareIcon" />
+      <div class="lb-post-shareBox">
+        <a class="lb-post-shareBox__item"
+          onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+          data-link-base="//www.facebook.com/sharer.php?s=100&p[title]=&p[url]="
+          data-link-id={{item._id}}><img src="{{ assets_root }}images/share_facebook.svg"/>
+        </a>
+        <a class="lb-post-shareBox__item"
+          onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+          data-link-base="//plus.google.com/share?url="
+          data-link-id={{item._id}}><img src="{{ assets_root }}images/share_google.svg"/>
+        </a>
+        <a class="lb-post-shareBox__item"
+          onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+          data-link-base="//www.linkedin.com/shareArticle?mini=true&url="
+          data-link-id={{item._id}}><img src="{{ assets_root }}images/share_linkedin.svg"/>
+        </a>
+        <a class="lb-post-shareBox__item"
+          onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+          data-link-base="//twitter.com/home?status="
+          data-link-id={{item._id}}><img src="{{ assets_root }}images/share_twitter.svg"/>
+        </a>
+        <a class="lb-post-shareBox__item"
+          onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1024,height=768');return false;"
+          data-link-base="mailto:?to=&subject=Liveblog&body="
+          data-link-id={{item._id}}><img src="{{ assets_root }}images/share_email.svg"/>
+        </a>
+        <span> | </span>
+      </div>
+    </div>
+    <!-- end share -->
+
+    <!-- permalink -->
+    <div class="lb-post-permalink">
+      <a id="{{ item._id }}" target="_blank">
+        <img src="{{ assets_root }}images/action_link.svg" class="lb-post-linkIcon" />
+      </a>
+    </div>
+    <!-- end permalink -->
+
+  </div>
+
+</article>

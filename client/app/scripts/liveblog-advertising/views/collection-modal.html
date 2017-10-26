@@ -1,0 +1,40 @@
+<div sd-modal data-model="collectionModalActive" class="advertising">
+    <div class="modal-header">
+        <button class="close" ng-click="cancelCollectionCreate()"><i class="icon-close-small"></i></button>
+        <h3 translate>Add collection</h3>
+    </div>
+    <div class="modal-body" style="min-height: 300px;">
+        <div class="item-creation">
+            <fieldset>
+                <div class="field">
+                    <label translate>Collection Name<span class="ft-alert" ng-if="notValidName(collection, collections)">{{ notValidName(collection, collections) }}</span></label>
+                    <input type="text" ng-model="collection.name" maxlength="24" required>
+                </div>
+                <div class="field" style="margin-top:10px;">
+                    <label translate>Assign adverts to collection</label>
+                    <ul class="collection-list">
+                        <li ng-repeat="advert in adverts">
+                            <input type="checkbox" ng-model="collection.checkAdverts[advert._id]" class="pull-left">
+                            <h6 class="pull-left adverts-in-collection">
+                                {{ advert.name }}
+                            </h6>
+                            <span class="state-label" ng-class="{ 'green-state': advert.type === 'Advertisement Local', 'yellow-state': advert.type === 'Advertisement Remote' }"}
+                            >
+                                {{ advert.type | translate }}
+                            </span>
+                        </li>
+                    </ul>
+                    {{ checkboxModel }}
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div>
+            <button type="button" class="btn btn-default pull-left" translate ng-click="cancelCollectionCreate()">Cancel</button>
+            <button type="button" class="btn btn-primary btn-info" translate ng-click="saveCollection()"
+            ng-disabled="notValidName(collection, collections) || dialogCollectionLoading"
+            >Save</button>
+        </div>
+    </div>
+</div>

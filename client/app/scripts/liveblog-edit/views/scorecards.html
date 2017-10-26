@@ -1,23 +1,125 @@
 <style>
-    .scorecard {
-        display: inline-flex;
+    .scorecard-top {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
         padding: 0;
         background-color: transparent;
         border-radius: 4px;
         margin: 10px 0;
-        min-width: 340px;
+        min-width: auto;
         max-width: 100%;
     }
-    .scorecard__column {
+    .scorecard-top--background {
+        position: relative;
+        background-position: center center;
+        padding: 20px;
+    }
+    .scorecard-top--background:after {
+        position: absolute;
+        display: block;
+        content: " ";
+        background: rgba(18, 31, 49, 0.8);
+        z-index: 0;
+        top: 0px;
+        left: 0px;
+        bottom: 0px;
+        right: 0px;
+    }
+    .scorecard-top--background > div {
+        z-index: 1;
+    }
+    .scorecard-top--background * {
+        color: #fff;
+    }
+    .editor-holder .scorecard-top--background {
+        background: none !important;
+        padding: 0px;
+    }
+    .editor-holder .scorecard-top--background * {
+        color: initial;
+    }
+    .scorecard-top .freetype--empty {
+        display: none;
+    }
+    .scorecard-top__column {
+        flex: 0 0 39%;
+        max-width: 39%;
         text-align: center;
         padding: 0 10px;
-        width: 50%;
+        box-sizing: border-box;
     }
-    .scorecard input {
+    .scorecard-top label {
+        text-align: left;
+    }
+    .scorecard-top hr {
+        width: 100%;
+        border: none;
+        margin: 10px 0px;
+    }
+    .editor-holder .scorecard-top__column {
+        flex: 0 0 50%;
+        max-width: 50%;
+        text-align: left;
+    }
+    .scorecard-top__column--result {
+        flex: 0 0 22%;
+        max-width: 22%;
+        max-height: 150px;
+        align-items: center;
+        order: 1;
+        justify-content: center;
+        display: flex;
+    }
+    .editor-holder .scorecard-top__column--result {
+        flex: 0 0 100%;
+        max-width: 100%;
+        order: 0;
+        display: flex;
+        align-items: flex-start;
+    }
+    .editor-holder .scorecard-top__column--result > div {
+        flex: 0 0 50%;
+        padding-right: 10px;
+    }
+    .editor-holder .scorecard-top__column--result > div:last-child {
+        padding-left: 10px;
+        padding-right: 0px;
+    }
+    .scorecard-top__column--home {
+        order: 0;
+    }
+    .scorecard-top__column--away {
+        order: 2;
+    }
+    .editor-holder .scorecard-top__logoWrap {
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        height: 210px;
+    }
+    .scorecard-top__logoWrap {
+        display: flex;
+        align-items: center;
+        height: 150px;
+        text-align: center;
+    }
+    .editor-holder .scorecard-top__logoWrap img {
+        height: 150px;
+    }
+    .scorecard-top__logoWrap img {
+        width: auto !important;
+        max-width: 100%;
+        max-height: 150px;
+    }
+    .scorecard-top__logo {
+        flex: 1 1 auto;
+    }
+    .scorecard-top input {
          box-sizing: border-box;
          height: 30px;
     }
-    .scorecard legend {
+    .scorecard-top legend {
         font-size: 11px;
         color: #999;
         display: block;
@@ -29,62 +131,102 @@
         background-color: transparent;
         width: 100%;
     }
-    .scorecard span {
+    .scorecard-top span {
         display: inline-block;
     }
-    .scorecard span.team-name {
-        font-size: 18px;
+    .scorecard-top span.team-name {
+        font-size: 22px;
         font-weight: 500;
-        text-transform: uppercase;
+        margin-top: 10px;
         margin-bottom: 6px;
-        min-height: 64px;
         line-height: 120%;
         word-wrap: break-word;
     }
-    .scorecard span.team-score {
-        font-size: 34px;
+    .scorecard-top span.team-score {
+        font-size: 42px;
         font-weight: 500;
         line-height: 1em;
-        margin-bottom: 24px;
         margin-top: 6px;
-        background: #5eadc8;
-        padding: 12px 30px;
-        border-radius: 2rem;
-        color: white;
+        margin-bottom: 24px;
     }
-    .scorecard .scorecard__scorers {
-        list-style-type: none;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .scorecard .scorecard__scorers li {
-        background: #e4e4e4;
-        margin-bottom: 20px;
-        padding: 6px 12px;
-        border-radius: 2px;
-        text-align: left;
-        overflow: hidden;
-        font-size: 13px;
-    }
-    .scorecard .scorecard__scorers li > div {
-        float: left;
-    }
-    .scorecard .scorecard__scorers li > div.time {
-        float: right;
-        font-weight: 700;
-        position: relative;        
-    }
-    .scorecard .scorecard__scorers li > div.time .freetype--empty {
+    .editor-holder .team-score-colon {
         display: none;
     }
-    .scorecard .scorecard__scorers li > div.time .freetype--element {
-        margin-left: 12px;
+    .scorecard-top .scorecard-top__scorers {
+        display: inline-flex;
+        flex-direction: column;
+        font-weight: 100;
+        list-style-type: none;
     }
-    .scorecard .scorecard__scorers li > div.time .freetype--element:after {
-        content: '′';
+    .editor-holder .scorecard-top .scorecard-top__scorers {
+      display: flex;
     }
-    .scorecard ul, .scorecard ol {
+    .scorecard-top .scorecard-top__scorers li {
+        margin-bottom: 5px;
+    }
+    .scorecard-top .scorecard-top__scorers li, .scorecard-top .scorecard-top__scorers li > div {
+        display: flex;
+        text-align: left;
+    }
+    .scorecard-top__info {
+        flex: 0 0 100%;
+        flex-direction: column;
+        max-width: 100%;
+        order: 3;
+        display: flex;
+        align-items: flex-start;
+        margin-top: 20px;
+        font-weight: 100;
+        line-height: 20px;
+    }
+    .editor-holder .scorecard-top__info {
+        flex-direction: row;
+    }
+    .editor-holder .scorecard-top__info > div {
+        flex: 0 0 50%;
+        padding-right: 10px;
+        box-sizing: border-box;
+    }
+    .editor-holder .scorecard-top__info > div:last-child {
+        padding-left: 10px;
+        padding-right: 0px;
+    }
+    .scorecard-top .scorecard-top__scorers li div.time .freetype--empty {
+        display: none;
+    }
+    .scorecard-top .scorecard-top__scorers li div.time .freetype--element {
+        margin-right: 12px;
+    }
+    .scorecard-top .scorecard-top__scorers li div.time .freetype--element:after {
+        content: '\2032';
+    }
+    .blogedit .panel--editor .content .editor-holder .scorecard-top .scorecard-top__scorers > li.ng-scope {
+        display: flex;
+        flex-direction: column;
+        border: 1px solid #e4e4e4;
+        margin-bottom: 10px !important;
+        padding: 10px !important;
+    }
+    .blogedit .panel--editor .content .editor-holder .scorecard-top .scorecard-top__scorers li > div {
+        display: block;
+    }
+    .blogedit .panel--editor .content .editor-holder .scorecard-top .scorecard-top__scorers .freetype-btn {
+        display: block;
+        margin: 10px 0px 0px 0px;
+    }
+    .blogedit .panel--editor .scorecard-top__background {
+        flex: 0 0 100%;
+        flex-direction: column;
+        max-width: 100%;
+        order: 4;
+        display: flex;
+        align-items: flex-start;
+        margin-top: 20px;
+    }
+    .scorecard-top__background {
+        display: none;
+    }
+    .scorecard-top ul, .scorecard-top ol {
         margin: 0 !important;
     }
     .inline {
@@ -93,64 +235,124 @@
     .marginleft10 {
         margin-left: 10px!important;
     }
+    @media (max-width:650px) {
+        .scorecard-top__column {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+        .scorecard-top__column--result {
+            flex: 0 0 100%;
+            max-width: 100%;
+            order: 0;
+        }
+        .scorecard-top__logoWrap {
+            height: 60px;
+        }
+        .scorecard-top__logoWrap img, .scorecard-top__column--result {
+            max-height: 60px;
+        }
+        .scorecard-top span.team-name {
+            font-size: 18px;
+        }
+        .scorecard-top span.team-score {
+            font-size: 32px;
+        }
+        .scorecard-top .scorecard-top__scorers {
+            display: none;
+        }
+        .editor-holder .scorecard-top__scorers {
+            display: block;
+        }
+    }
 </style>
-<div class="scorecard">
-    <div class="scorecard__column">
+<div class="scorecard-top @scorecard-top--background? background.img" style="background-size: cover; @background-image: background.img">
+    <div class="scorecard-top__column scorecard-top__column--result">
+        <div>
+            <label for="home.score" hide-render>Score Home</label>
+            <input id="home.score" name="$home.score" class="team-score" number="true" necessary="true" />
+        </div>
+        <div class="team-score-colon">
+            <span class="team-score">:</span>
+        </div>
+        <div>
+            <label for="away.score" hide-render>Score Away</label>
+            <input id="away.score" name="$away.score" class="team-score" necessary="true" number="true" />
+        </div>
+    </div>
+    <hr hide-render>
+    <div class="scorecard-top__column scorecard-top__column--home">
         <fieldset>
-            <legend class="legend--big">Home</legend>
-            <div >
+            <div class="scorecard-top__logoWrap">
+                <div class="scorecard-top__logo">
+                    <label for="home.img1" hide-render="">Home logo</label>
+                    <input image="$home.img1"/>
+                </div>
+            </div>
+            <hr hide-render>
+            <div>
                 <label for="home.name" hide-render>Name</label>
                 <input id="home.name" name="$home.name" class="team-name" necessary="true" />
-            </div>
-            <div>
-                <label for="home.score" hide-render>Score</label>
-                <input id="home.score" name="$home.score" class="team-score" number="true" necessary="true" initial="0" />
             </div>
         </fieldset>
         <fieldset>
             <legend class="legend--padding-top" hide-render>Scorers:</legend>
-            <ul class="scorecard__scorers">
+            <ul class="scorecard-top__scorers">
                 <li>
-                    <div>
-                        <label hide-render>Name</label>
-                        <input name="$home.scorers[0].name" tandem="$home.scorers[0].time"/>
-                    </div>
                     <div class="time">
                         <label hide-render>Minute</label>
                         <input name="$home.scorers[0].time" tandem="$home.scorers[0].name" number="true" />
+                    </div>
+                    <div>
+                        <label hide-render>Name</label>
+                        <input name="$home.scorers[0].name" tandem="$home.scorers[0].time"/>
                     </div>
                 </li>
             </ul>
         </fieldset>
     </div>
-    <div class="scorecard__column">
+    <div class="scorecard-top__column scorecard-top__column--away">
         <fieldset>
-            <legend class="legend--big">Away</legend>
+            <div class="scorecard-top__logoWrap">
+                <div class="scorecard-top__logo">
+                    <label for="away.img1" hide-render="">Away logo</label>
+                    <input image="$away.img1"/>
+                </div>
+            </div>
+            <hr hide-render>
             <div>
                 <label for="away.name" hide-render>Name</label>
                 <input id="away.name" name="$away.name" class="team-name" necessary="true"/>
             </div>
-            <div>
-                <label for="away.score" hide-render>Score</label>
-                <input id="away.score" name="$away.score" class="team-score" necessary="true" initial="0" number="true" />
-            </div>
         </fieldset>
-
         <fieldset>
             <legend class="legend--padding-top" hide-render>Scorers:</legend>
-            <ul class="scorecard__scorers">
+            <ul class="scorecard-top__scorers">
                 <li>
                     <div>
-                        <label hide-render>Name</label>
-                        <input name="$away.scorers[0].name" tandem="$away.scorers[0].time"/>
-                    </div>
                     <div class="time">
                         <label hide-render>Minute</label>
                         <input name="$away.scorers[0].time" tandem="$away.scorers[0].name" number="true"/>
                     </div>
+                        <label hide-render>Name</label>
+                        <input name="$away.scorers[0].name" tandem="$away.scorers[0].time"/>
+                    </div>
                 </li>
             </ul>
         </fieldset>
+    </div>
+    <div class="scorecard-top__info">
+        <div>
+            <label for="match.quaters" hide-render>Quater results</label>
+            <input id="match.quaters" name="$match.quaters" class="match-quaters"/>
+        </div>
+        <div>
+            <label for="match.info" hide-render>Match info</label>
+            <input id="match.info" name="$match.info" class="match-info"/>
+        </div>
+    </div>
+    <div class="scorecard-top__background">
+        <label for="home.img1" hide-render>Background image</label>
+        <input image="$background.img"/>
     </div>
 </div>
 <div hide-render>

@@ -1,5 +1,6 @@
+{% if not settings.renderForESI %}
 <!doctype html>
-<html>
+<html class="lb-wrapHtml">
     <head>
         <title>{{ blog.title }}</title>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -18,29 +19,41 @@
             {% endfor %}
         {% endif %}
     </head>
-
-    <body>
-
-        {{ template | safe }}
-
-        <script type="text/javascript">
-            window.LB = {
-                blog: {{ blog | tojson | safe }},
-                settings: {{ settings | tojson | safe }},
-                api_host: '{{ api_host }}',
-                assets_root: '{{ assets_root }}',
-                debug: {{ debug | tojson | safe }}
-            };
-        </script>
-        {% if debug %}
-            {% for script in assets.devScripts %}
-                <script type="text/javascript" src="{{ script }}"></script>
-            {% endfor %}
-        {% else %}        
-            {% for script in assets.scripts %}
-                <script type="text/javascript" src="{{ script }}"></script>
-            {% endfor %}
-        {% endif %}
-
+    <body class="lb-wrapBody" style="{{ (output and output.get('style')) | tostyle | safe }}">
+{% elif not settings.removeStylesESI %}
+    {% if debug %}
+        {% for style in assets.devStyles %}<link rel="stylesheet" href="{{ style }}">{% endfor %}
+    {% else %}
+        {% for style in assets.styles %}<link rel="stylesheet" href="{{ style }}">{% endfor %}
+    {% endif %}
+<div style="{{ (output and output.get('style')) | tostyle | safe }}">
+{% else %}
+<div style="{{ (output and output.get('style')) | tostyle | safe }}">
+{% endif %}
+{{ template | safe }}
+<script type="text/javascript">
+    window.LB = {
+        blog: {{ blog | tojson | safe }},
+        output: {{ output | tojson | safe }},
+        settings: {{ settings | tojson | safe }},
+        api_host: '{{ api_host }}',
+        assets_root: '{{ assets_root }}',
+        debug: {{ debug | tojson | safe }},
+        i18n: {{ i18n | tojson | safe }}
+    };
+</script>
+    {% if debug %}
+        {% for script in assets.devScripts %}
+            <script {% if async %}async {% endif%}type="text/javascript" src="{{ script }}"></script>
+        {% endfor %}
+    {% else %}
+        {% for script in assets.scripts %}
+            <script {% if async %}async {% endif%}type="text/javascript" src="{{ script }}"></script>
+        {% endfor %}
+    {% endif %}
+{% if not settings.renderForESI %}
     </body>
 </html>
+{% else %}
+</div>
+{% endif %}

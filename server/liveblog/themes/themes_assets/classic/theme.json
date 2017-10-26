@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "3.2.1",
+    "version": "3.2.76",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -235,6 +235,43 @@
             "type": "checkbox",
             "default": false,
             "help": "If the users will see the slideshow gallery for multiple images posts"
+        },
+        {
+            "name": "showSocialShare",
+            "label": "Show social sharing options",
+            "type": "checkbox",
+            "default": true,
+            "help": "If the users will see the social sharing options"
+        },
+        {
+            "name": "livestream",
+            "label": "Pinned post behaviour",
+            "type": "select",
+            "options": [
+                {
+                    "value": false,
+                    "label": "Show below menu bar"
+                },
+                {
+                    "value": true,
+                    "label": "Show above menu bar"
+                }
+            ],
+            "default": false
+        },
+        {
+            "name": "livestreamAutoplay",
+            "label": "Autoplay for livestream videos",
+            "type": "checkbox",
+            "default": false,
+            "help": "if the users will see the video autoplay for livestream"
+        },
+        {
+            "name": "showSyndicatedAuthor",
+            "label": "Show syndicated author",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users will see the syndicated author"
         }
     ]
 }

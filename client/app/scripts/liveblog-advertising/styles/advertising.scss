@@ -1,0 +1,71 @@
+.advertising {
+	.button-stack.right-stack {
+		margin: 0px!important;
+	}
+	.section-title {
+		float: left;
+		padding: 7px 20px;
+	}
+	.right-important {
+		float: right!important;
+	}
+
+	.advert-list-holder {
+		position: absolute;
+		top: 48px;
+		left: 0;
+		right: 0;
+		bottom: 0;		
+		overflow-y: auto;
+		& > .shadow-list-holder {
+			& > .pills-list {
+				padding: 20px;
+			}
+		}
+	}
+	.green-state {
+		border-color: #5e8d32!important;
+    	color: #5e8d32!important;
+    	margin-left: 20px;
+	}
+	.yellow-state {
+		border-color: #d2a800;
+    	color: #d2a800;
+    	margin-left: 20px;
+	}
+	.adverts-in-collection {
+		color: black;
+		margin-left: 10px;
+	}
+	.card-box__content {
+		min-height: 120px;
+	}
+	.ads-media {
+        img {
+            max-width: 100%;
+            margin-bottom: 8px;
+        }
+    }
+    .freetype--error {
+        color: #b94a48;
+        opacity: 0.6;
+    }
+    .ads-media-buttons {
+        margin-top: 10px;
+    }
+
+    .preview img {
+        width: auto !important;
+        max-width: 100%;
+    }
+
+    .preview .preview-large {
+        text-align: center;
+	}
+	.collection-list li {
+		padding: 5px 0;
+		.state-label {
+			vertical-align: top;
+		}
+	}
+}
