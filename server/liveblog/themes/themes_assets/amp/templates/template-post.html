@@ -2,10 +2,40 @@
 id="{{ item._id | string | replace(':', '') | replace('-', '') | replace('.', '') }}" 
 data-update-time="{{ item._updated | date('X') }}" 
 data-sort-time="{{ item.published_date | date('X') }}" 
-class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-post--highlighted{% endif %}"
+class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-post--highlighted{% endif %} {% if item.deleted %} hide-item {% endif %}"
 {% if item.deleted %} data-tombstone="true" {% endif %}>
 
-  <div class="lb-type lb-type--{{ item.post_items_type }}"></div>
+  <div class="lb-type lb-type--{{ item.post_items_type }}">
+    {% if item.post_items_type =="embed-facebook" %}
+      <amp-img src="{{ assets_root }}images/facebook_logo.png"
+      layout="fixed"
+      width="20"
+      height="20"
+      >
+      </amp-img>
+    {% elif item.post_items_type =="embed-youtube" %}
+      <amp-img src="{{ assets_root }}images/youtube_logo.png"
+      layout="fixed"
+      width="20"
+      height="20"
+      >
+      </amp-img>
+    {% elif item.post_items_type =="embed-twitter" %}
+      <amp-img src="{{ assets_root }}images/twitter_logo.png"
+      layout="fixed"
+      width="20"
+      height="20"
+      >
+      </amp-img>
+    {% elif item.post_items_type =="embed-instagram" %}
+      <amp-img src="{{ assets_root }}images/instagram_logo.png"
+      layout="fixed"
+      width="20"
+      height="20"
+      >
+      </amp-img>
+    {% endif %}
+  </div>
   
 {% if item.sticky and item.lb_highlight %}
   <amp-img src="{{ assets_root }}images/pinpost.svg" width="10" height="13" class="pin-icon" ></amp-img>
@@ -38,23 +68,36 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
     {% endif %}
   </div>
   <!-- end author -->
-
-  <!-- item start -->
-  {% for ref in item.groups[1].refs %}
-    <div class="lb-item">
-      {% if ref.item.item_type == "embed" %}
-        {% include "template-item-embed.html" %}
-      {% elif ref.item.item_type == "image" %}
-        {% include "template-item-image.html" %}
-      {% elif ref.item.item_type == "Scorecard" %}
-        {% include "template-item-scorecard.html" %}
-      {% elif ref.item.group_type == "freetype" %}
-      <article>This content is not currently available</article>
-      {% else %}
-      <article>{{ ref.item.text | safe }}</article>
+  
+  <!-- checking if post might be a gallery -->
+  {% set gallery = false %}
+  {% set numberOfItems=item.groups[1].refs|length %}
+  {% if numberOfItems > 1 %}
+    {% set gallery = true %}
+    {% for ref in item.groups[1].refs %}
+      {% if ref.item.item_type != "image" %}
+        {% set gallery = false %}
       {% endif %}
-    </div>
-  {% endfor %}
-  <!-- item end -->
+    {% endfor %}
+  {% endif %}
 
+  {% if gallery %}
+    {% include "template-item-gallery.html" %}
+  {% else %}
+    <!-- item start -->
+    {% for ref in item.groups[1].refs %}
+      <div class="lb-item">
+        {% if ref.item.item_type == "embed" %}
+          {% include "template-item-embed.html" %}
+        {% elif ref.item.item_type == "image" %}
+          {% include "template-item-image.html" %}
+        {% elif ref.item.item_type == "Scorecard" %}
+          {% include "template-item-scorecard.html" %}
+        {% else %}
+        <article>{{ ref.item.text | safe }}</article>
+        {% endif %}
+      </div>
+    {% endfor %}
+    <!-- item end -->
+  {% endif %}
 </article>

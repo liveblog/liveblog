@@ -60,7 +60,6 @@ body.lb-wrapBody {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* text */
-  /* if there is an image, leave space on the left */
   /* loading */
   /* pinned posts */
   /* highlighted posts */
@@ -382,18 +381,21 @@ body.lb-wrapBody {
 }
 .lb-timeline .lb-type--embed-facebook {
   background-color: #3c5a9a;
-  background-image: url("../images/facebook_logo.png");
-  background-size: 20px;
+}
+.lb-timeline .lb-type--embed-facebook amp-img {
+  margin: 10px 0 0 10px;
 }
 .lb-timeline .lb-type--embed-youtube {
   background-color: #e52d27;
-  background-image: url("../images/youtube_logo.png");
-  background-size: 20px;
+}
+.lb-timeline .lb-type--embed-youtube amp-img {
+  margin: 10px 0 0 10px;
 }
 .lb-timeline .lb-type--embed-instagram {
   background-color: #444;
-  background-image: url("../images/instagram_logo.png");
-  background-size: 20px;
+}
+.lb-timeline .lb-type--embed-instagram amp-img {
+  margin: 10px 0 0 10px;
 }
 .lb-timeline .lb-button {
   z-index: 1;
@@ -494,13 +496,6 @@ body.lb-wrapBody {
   font-weight: 500;
   font-size: 13px;
 }
-.lb-timeline .item--embed__illustration {
-  position: absolute;
-  width: 200px;
-}
-.lb-timeline .item--embed__illustration ~ * {
-  margin-left: 220px;
-}
 .lb-timeline .item--embed__description,
 .lb-timeline .item--embed__credit {
   padding-top: 5px;
@@ -515,6 +510,11 @@ body.lb-wrapBody {
 }
 .lb-timeline .item--embed__credit {
   text-align: right;
+}
+.lb-timeline .credit {
+  font-size: .7em;
+  float: right;
+  color: #999;
 }
 .lb-timeline .loading {
   color: #81e496;
@@ -948,6 +948,9 @@ body .scorecard-top__info {
   }
   .lb-timeline .lb-post-shareBox {
     line-height: 1.6em;
+  }
+  .hide-item {
+    display: none;
   }
 }
 
