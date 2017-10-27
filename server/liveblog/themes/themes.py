@@ -31,7 +31,7 @@ from liveblog.system_themes import system_themes
 
 from settings import (COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY, SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
-from .template.filters import moment_date_filter
+from .template.filters import moment_date_filter_container
 from .template.loaders import ThemeTemplateLoader
 
 
@@ -256,7 +256,7 @@ class ThemesService(BaseService):
         :return:
         """
         embed_env = jinja2.Environment(loader=loader(theme))  # , undefined=SilentUndefined
-        embed_env.filters['date'] = moment_date_filter
+        embed_env.filters['date'] = moment_date_filter_container(theme)
         return embed_env
 
     def get_theme_compiled_templates_path(self, theme_name):
