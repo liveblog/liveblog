@@ -113,11 +113,13 @@
         <div>{{ translate("No posts for now") }}</div>
       </div>
       <section class="lb-posts list-group normal">
-        {% for item in api_response.posts._items %}
-          {% if not item.deleted %}
-            {% include "template-post.html" %}
-          {% endif %}
-        {% endfor %}
+        {% if api_response.posts._items|length > 0 %}
+            {% for item in api_response.posts._items %}
+              {% if not item.deleted %}
+                {% include "template-post.html" %}
+              {% endif %}
+            {% endfor %}
+        {% endif %}
       </section>
       {% if api_response.posts._meta.max_results < api_response.posts._meta.total %}
         <button class="lb-button load-more-posts" data-js-loadmore>
