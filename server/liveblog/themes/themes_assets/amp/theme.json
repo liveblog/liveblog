@@ -19,6 +19,15 @@
   "license": "AGPL-3.0",
   "devStyles": ["dist/amp-a982e6eb7c.css"],
   "styles": ["dist/amp-a982e6eb7c.css"],
+  "options": [
+    {
+        "name": "postsPerPage",
+        "label": "Number of posts per page",
+        "type": "number",
+        "default": 100,
+        "help": "Be aware that paging is not yet available for the Liveblog 3 AMP theme"
+    }
+   ],
   "i18n": {
         "cs": {
           "Highlights": "Hlavní body",
