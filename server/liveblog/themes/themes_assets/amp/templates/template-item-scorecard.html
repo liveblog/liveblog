@@ -23,7 +23,9 @@
     {% endif %}
     <h2>{{ ref.item.meta.data.away.name }}</h2>
     {% for scorer in ref.item.meta.data.away.scorers %}
-      <p class="scorecard__scorer">{{scorer.time}}&prime; {{scorer.name}}</p>
+      {% if scorer.time %}
+        <p class="scorecard__scorer">{{scorer.time}}&prime; {{scorer.name}}</p>
+      {% endif %}
     {% endfor %}
   </div>
 </div>
