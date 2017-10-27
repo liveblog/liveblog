@@ -33,12 +33,13 @@ class CompiledThemeTemplateLoader(ChoiceLoader):
             compiled = {}
             for file, content in files.get('templates').items():
                 compiled[mongodecode(file)] = content
-            self.loaders = [DictLoader(compiled)]
+            self.loaders.append(DictLoader(compiled))
 
     """
     Compiled theme template loader for jinja2 SEO themes.
     """
     def __init__(self, theme):
+        self.loaders = []
         theme_name = theme['name']
         themes = get_resource_service('themes')
         parent_theme = theme.get('extends')
@@ -50,7 +51,7 @@ class CompiledThemeTemplateLoader(ChoiceLoader):
                 self.addDictonary(parent)
         else:
             compiled = themes.get_theme_compiled_templates_path(theme_name)
-            self.loaders = [ModuleLoader(compiled)]
+            self.loaders.append(ModuleLoader(compiled))
             if parent_theme:
                 parent_compiled = themes.get_theme_compiled_templates_path(parent_theme)
                 self.loaders.append(ModuleLoader(parent_compiled))

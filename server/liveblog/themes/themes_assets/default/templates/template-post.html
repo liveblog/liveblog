@@ -52,6 +52,9 @@
         <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
       {% endif %}
       </div>
+      {% if type == 'comment' %}
+        <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
+      {% endif %}
       {% if settings.showAuthorAvatar and type != 'comment' %}
         {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
         <img class="lb-author__avatar" src="{{ mainItem.syndicated_creator.picture_url }}" />
@@ -81,22 +84,28 @@
             (item.groups[1].refs | length > 0) %}
         {% for ref in item.groups[1].refs %}
           {% if ref.item.item_type == "image" %}
-          <div class="lb-item {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %} {{ref.item.item_type}}">
+          {% if loop.index0 + 1 < loop.length and item.groups[1].refs[loop.index0 + 1].item.item_type == "image" and (loop.index0 - 1 < 0 or not (loop.index0 > 0 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image")) %}
+          <div class="lb-slideshow">
+          {% endif %}
+          <div class="lb-item {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %}{{ref.item.item_type}}">
           {% else %}
           <div class="lb-item {{ref.item.item_type}}">
           {% endif %}
-            {% if ref.item.item_type == "embed" %}
-              {% include "template-item-embed.html" %}
-            {% elif ref.item.item_type == "image" %}
-              {% include "template-item-image.html" %}
-            {% elif ref.item.item_type == "quote" %}
-              {% include "template-item-quote.html" %}
-            {% elif ref.item.item_type == "comment" %}
-              {% include "template-item-comment.html" %}
-            {% else %}
-              <article>{{ ref.item.text | safe }}</article>
-            {% endif %}
+          {% if ref.item.item_type == "embed" %}
+            {% include "template-item-embed.html" %}
+          {% elif ref.item.item_type == "image" %}
+            {% include "template-item-image.html" %}
+          {% elif ref.item.item_type == "quote" %}
+            {% include "template-item-quote.html" %}
+          {% elif ref.item.item_type == "comment" %}
+            {% include "template-item-comment.html" %}
+          {% else %}
+            <article>{{ ref.item.text | safe }}</article>
+          {% endif %}
           </div>
+          {% if ref.item.item_type == "image" and loop.index0 - 1 >= 0 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image" and not (loop.index0 + 1 >= loop.length or item.groups[1].refs[loop.index0 + 1].item.item_type == "image") %}
+          </div>
+          {% endif %}
         {% endfor %}
     {% endif %}
   {% endif %}
