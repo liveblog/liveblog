@@ -1,7 +1,7 @@
 {
   "label": "Liveblog 3 AMP Theme",
   "name": "amp",
-  "version": "0.1.26",
+  "version": "0.1.30",
   "seoTheme": true,
   "ampTheme": true,
   "extends": "default",
@@ -17,8 +17,8 @@
     "url" : "git@github.com:liveblog/liveblog-amp-theme"
   },
   "license": "AGPL-3.0",
-  "devStyles": ["dist/amp-2604f57d27.css"],
-  "styles": ["dist/amp-2604f57d27.css"],
+  "devStyles": ["dist/amp-a982e6eb7c.css"],
+  "styles": ["dist/amp-a982e6eb7c.css"],
   "i18n": {
         "cs": {
           "Highlights": "Hlavní body",
@@ -47,7 +47,8 @@
           "Show highlighted post only": "Zobraz jen zvýrazněné příspěvky",
           "Sort by:": "Řazení:",
           "Updated": "Aktualizace",
-          "Your comment was sent for approval": "Váš text byl úspěšně odeslán Čeká na schválení"
+          "Your comment was sent for approval": "Váš text byl úspěšně odeslán Čeká na schválení",
+          "credit:": "autor:"
         }, "de": {
           "Highlights": "Highlights",
           "Comment by": "Kommentar von",
@@ -77,7 +78,8 @@
           "Show highlighted post only": "Anzeigen hervorgehoben Beitrag ist nur",
           "Sort by:": "Ordnen nach",
           "Updated": "Aktualisiert am",
-          "Your comment was sent for approval": "Ihr Kommentar wartet auf Freischaltung,"
+          "Your comment was sent for approval": "Ihr Kommentar wartet auf Freischaltung",
+          "credit:": "Bild:"
         }, "fi": {
           "Highlights": "Kohokohtia",
           "Comment by": "Comment by",
@@ -107,7 +109,8 @@
           "Show highlighted post only": "Näytä vain korostettu julkaisu",
           "Sort by:": "Järjestä:",
           "Updated": "Päivitetty",
-          "Your comment was sent for approval": "Kommenttisi lähetettiin hyväksyttäväksi"
+          "Your comment was sent for approval": "Kommenttisi lähetettiin hyväksyttäväksi",
+          "credit:": "©"
         }, "fr": {
           "Highlights": "Messages en surbrillance",
           "Comment by": "Commentaire de",
@@ -137,7 +140,8 @@
           "Show highlighted post only": "Afficher uniquement les messages en surbrillance",
           "Sort by:": "Trier par:",
           "Updated": "Mise à jour",
-          "Your comment was sent for approval": "Votre commentaire a été envoyé et est en attente de validation"
+          "Your comment was sent for approval": "Votre commentaire a été envoyé et est en attente de validation",
+          "credit:": "crédit:"
         }, "nl": {
           "Highlights": "Highlights",
           "Comment by": "Commentaar door",
@@ -164,7 +168,8 @@
           "See new updates": "Bekijk nieuwe berichten",
           "Send": "Verzenden",
           "Sort by:": "Sorteer:",
-          "Your comment was sent for approval": "Uw reactie is ontvangen ter beoordeling"
+          "Your comment was sent for approval": "Uw reactie is ontvangen ter beoordeling",
+          "credit:": "credit:"
         }, "no": {
           "Highlights": "Høydepunkter",
           "Comment by": "Kommentar av",
@@ -194,7 +199,8 @@
           "Show highlighted post only": "Vis bare høydepunkter",
           "Sort by:": "Sortér etter:",
           "Updated": "Oppdatert",
-          "Your comment was sent for approval": "Din kommentar er sendt til godkjenning"
+          "Your comment was sent for approval": "Din kommentar er sendt til godkjenning",
+          "credit:": "credit:"
         }, "ro": {
           "Highlights": "Repere",
           "Comment by": "Comentariu de",
@@ -221,7 +227,8 @@
           "See new updates": "Vezi articole noi",
           "Send": "Trimite",
           "Sort by:": "Ordonează după:",
-          "Your comment was sent for approval": "Comentariul tău a fost trimis spre aprobare"
+          "Your comment was sent for approval": "Comentariul tău a fost trimis spre aprobare",
+          "credit:": "credit:"
         }
     }
 }
