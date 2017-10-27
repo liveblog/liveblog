@@ -1,9 +1,11 @@
 {% set weSupport = true %}
-{% for ref in item.groups[1].refs %}
-  {% if (ref.item.group_type == "freetype") and (ref.item.item_type != "Scorecard") %}
+{% if item.groups and item.groups[1].refs and item.groups[1].refs | length %}
+  {% set fcount = item.groups[1].refs | selectattr("item.group_type", "equalto", "freetype") | rejectattr("item.item_type", "equalto", "Scorecard") | list %}
+  {% if fcount | length %}
       {% set weSupport = false %}
   {% endif %}
-{% endfor %}
+{% endif %}
+
 {% if weSupport %}
   {% include "template-post.html" %}
 {% endif %}
