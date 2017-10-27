@@ -63,7 +63,9 @@ class Slideshow {
 
     let slideshow = templates.slideshow({
       refs: items,
-      assets_root: window.LB.assets_root
+      assets_root: window.LB.assets_root,
+      options: { options: window.LB.i18n },
+      settings: window.LB.settings
     });
 
     document.querySelector('div.lb-timeline')
