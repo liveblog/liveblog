@@ -1,3 +1,5 @@
+{% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
+
 <div class="lb-timeline {{ settings.language }}">
   {% if settings.showTitle and blog.title %}
   <h1>{{ blog.title }}</h1>
@@ -16,6 +18,7 @@
     <div class="lb-social-share">
       <amp-social-share type="email" width="35" height="35"></amp-social-share>
       <amp-social-share type="gplus" width="35" height="35"></amp-social-share>
+      <amp-social-share type="facebook" width="35" height="35"></amp-social-share>
       <amp-social-share type="twitter" width="35" height="35"></amp-social-share>
       <amp-social-share type="linkedin" width="35" height="35"></amp-social-share>
       <amp-social-share type="whatsapp" width="35" height="35"></amp-social-share>
@@ -23,7 +26,7 @@
 
     {% if settings.showLiveblogLogo %}
       <a class="header-bar__logo" href="https://www.liveblog.pro" target="_blank">
-        <span>Powered by</span>
+        <span>{{ translate("Powered by") }}</span>
         <amp-img src="{{ assets_root }}images/lb-logo.svg"
         layout="fixed"
         width="90"
@@ -48,7 +51,7 @@
   id="amp-live-sticky-list-insert-blog"
   class="timeline-body">
 
-  <button id="live-sticky-list-update-button" update on="tap:amp-live-sticky-list-insert-blog.update" class="ampstart-btn caps lb-post new-updates">See new updates</button>
+  <button id="live-sticky-list-update-button" update on="tap:amp-live-sticky-list-insert-blog.update" class="ampstart-btn caps lb-post new-updates">{{ translate("See new updates") }}</button>
  
     <div items class="lb-posts">
       {% for item in api_response.stickyPosts._items %}
@@ -65,7 +68,7 @@
     id="amp-live-list-insert-blog"
     class="timeline-body">
 
-    <button id="live-list-update-button" update on="tap:amp-live-list-insert-blog.update" class="ampstart-btn caps lb-post new-updates">See new updates</button>
+    <button id="live-list-update-button" update on="tap:amp-live-list-insert-blog.update" class="ampstart-btn caps lb-post new-updates">{{ translate("See new updates") }}</button>
     <div items class="lb-posts">
       {% for item in api_response.posts._items %}
         {% include "template-timeline-loop-content.html" %}
