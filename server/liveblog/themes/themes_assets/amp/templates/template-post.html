@@ -1,3 +1,5 @@
+{% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
+
 <article 
 id="{{ item._id | string | replace(':', '') | replace('-', '') | replace('.', '') }}" 
 data-update-time="{{ item._updated | date('X') }}" 
