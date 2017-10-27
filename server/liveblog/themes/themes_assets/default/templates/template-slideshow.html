@@ -1,3 +1,5 @@
+{% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
+
 <div id="lb-slideshow">
   <div class="container">
     {% for ref in refs %}
