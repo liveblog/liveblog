@@ -53,18 +53,27 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
   <!-- author plus avatar -->
   <div class="lb-author">
     {% if settings.showAuthor %}
-      <div class="lb-author__name">{{ item.publisher.display_name }}</div>
-      {% if settings.showAuthorAvatar %}
-        {% if item.publisher.picture_url %}
-        <amp-img class="lb-author__avatar" src="{{ item.publisher.picture_url }}"
-          layout="fixed"
-          width="45"
-          height="45" 
-          alt="{{ item.publisher.display_name }}" 
-          >
+      {% if item.post_items_type == 'comment' %}
+      <div class="lb-author__name">{{ translate('Comment by') }} {{ item.groups[1].refs[0].item.commenter }}</div>
+      
+        <amp-img class="lb-author__avatar lb-author__avatar--comment" 
+        src="{{ assets_root }}images/comment_icon.svg"
+        layout="fixed"
+        width="45"
+        height="45" 
+        alt="{{ item.groups[1].refs[0].item.commenter }}"
+        >
         </amp-img>
-        {% else %}
-        <div class="lb-author__avatar"></div>
+      {% else %}
+        <div class="lb-author__name">{{ item.publisher.display_name }}</div>
+        {% if settings.showAuthorAvatar and item.publisher.picture_url %}
+          <amp-img class="lb-author__avatar" src="{{ item.publisher.picture_url }}"
+            layout="fixed"
+            width="45"
+            height="45" 
+            alt="{{ item.publisher.display_name }}" 
+            >
+          </amp-img>
         {% endif %}
       {% endif %}
     {% endif %}

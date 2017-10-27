@@ -1,7 +1,7 @@
 {
   "label": "Liveblog 3 AMP Theme",
   "name": "amp",
-  "version": "0.1.33",
+  "version": "0.1.30",
   "seoTheme": true,
   "ampTheme": true,
   "extends": "default",
@@ -48,7 +48,7 @@
           "Sort by:": "Řazení:",
           "Updated": "Aktualizace",
           "Your comment was sent for approval": "Váš text byl úspěšně odeslán Čeká na schválení",
-          "credit:": " autor:"
+          "credit:": "autor:"
         }, "de": {
           "Highlights": "Highlights",
           "Comment by": "Kommentar von",
