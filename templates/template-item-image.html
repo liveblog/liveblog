@@ -13,9 +13,8 @@
       </span>&nbsp;
     {% endif %}
     {% if ref.item.meta.credit %}
-      <span ng-if="ref.item.meta.credit" class="credit">
-        <b>{{ translate('credit:') }}</b> {{ ref.item.meta.credit }}
-      </span>
+      <b>{{ translate('credit:') }}</b>
+      <span class="credit">{{ ref.item.meta.credit }}</span>
     {% endif %}
   </figcaption>
 </figure>
