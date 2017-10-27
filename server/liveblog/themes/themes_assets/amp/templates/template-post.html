@@ -21,7 +21,7 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
       >
       </amp-img>
     {% elif item.post_items_type =="embed-twitter" %}
-      <amp-img src="{{ assets_root }}images/twitter_logo.png"
+      <amp-img src="{{ assets_root }}images/twitter_logo_white.png"
       layout="fixed"
       width="20"
       height="20"
@@ -71,14 +71,11 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
   
   <!-- checking if post might be a gallery -->
   {% set gallery = false %}
-  {% set numberOfItems=item.groups[1].refs|length %}
-  {% if numberOfItems > 1 %}
-    {% set gallery = true %}
-    {% for ref in item.groups[1].refs %}
-      {% if ref.item.item_type != "image" %}
-        {% set gallery = false %}
-      {% endif %}
-    {% endfor %}
+  {% if item.groups and item.groups[1].refs and item.groups[1].refs | length > 1 %}
+    {% set icount = item.groups[1].refs | selectattr("item.item_type", "equalto", "image") | list %}
+    {% if item.groups[1].refs | length == icount | length %}
+        {% set gallery = true %}
+    {% endif %}
   {% endif %}
 
   {% if gallery %}
