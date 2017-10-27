@@ -9,6 +9,9 @@ blogs_schema = {
         'type': 'string',
         'nullable': True
     },
+    'picture_renditions': {
+        'type': 'dict'
+    },
     'picture': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
     'original_creator': metadata_schema['original_creator'],
     'version_creator': metadata_schema['version_creator'],

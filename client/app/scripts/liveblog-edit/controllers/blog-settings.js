@@ -188,6 +188,7 @@ function BlogSettingsController(
 
                 vm.newBlog.picture_url = firstPicture.renditions.viewImage.href;
                 vm.newBlog.picture = firstPicture._id;
+                vm.newBlog.picture_renditions = firstPicture.renditions;
                 vm.uploadModal = false;
                 vm.preview = {};
                 vm.progress = {width: 0};

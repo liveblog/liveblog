@@ -130,6 +130,7 @@ export default function BlogListController(
                 description: $scope.newBlog.description,
                 picture_url: $scope.newBlog.picture_url,
                 picture: $scope.newBlog.picture,
+                picture_renditions: $scope.newBlog.picture_renditions,
                 members: members
             })
             .then((blog) => {
@@ -166,6 +167,7 @@ export default function BlogListController(
 
                 $scope.newBlog.picture_url = pictureUrl;
                 $scope.newBlog.picture = response.data._id;
+                $scope.newBlog.picture_renditions = response.data.renditions;
             }, (error) => {
                 notify.error(
                     error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
