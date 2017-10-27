@@ -50,6 +50,15 @@ download_theme_blueprint = superdesk.Blueprint('download_theme', __name__)
 themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=THEMES_ASSETS_DIR)
 
 
+class SilentUndefined(jinja2.Undefined):
+    '''
+    Dont break pageloads because vars arent there!
+    '''
+    def _fail_with_undefined_error(self, *args, **kwargs):
+        logger.error('JINJA2: something was undefined!')
+        return None
+
+
 class ThemesResource(Resource):
     schema = {
         'name': {
@@ -246,7 +255,7 @@ class ThemesService(BaseService):
         :param theme:
         :return:
         """
-        embed_env = jinja2.Environment(loader=loader(theme))
+        embed_env = jinja2.Environment(loader=loader(theme))  # , undefined=SilentUndefined
         embed_env.filters['date'] = moment_date_filter
         return embed_env
 

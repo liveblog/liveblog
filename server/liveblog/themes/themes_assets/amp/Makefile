@@ -1,9 +1,11 @@
-THEME_ARCHIVE = "liveblog-default-theme.zip"
+THEME_ARCHIVE = "liveblog-amp-theme.zip"
 
 make:
 	make clean
 	gulp --NODE_ENV production
 	zip -r $(THEME_ARCHIVE) * \
+		-x "__MACOSX/*" \
+		-x ".DS_Store" \
 		-x ".git/*" \
 		-x "Makefile" \
 		-x "less/*" \

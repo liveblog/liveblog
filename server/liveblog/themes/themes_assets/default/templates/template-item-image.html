@@ -1,10 +1,10 @@
 <figure>
-  <img 
+  <img
     {% if ref.item.active %}class="active"{% endif %}
     src="{{ ref.item.meta.media.renditions.thumbnail.href }}"
-    srcset="{{ ref.item.meta.media.renditions.baseImage.href }} 810w, 
-    {{ ref.item.meta.media.renditions.thumbnail.href }} 240w, 
-    {{ ref.item.meta.media.renditions.viewImage.href }} 540w" 
+    srcset="{{ ref.item.meta.media.renditions.baseImage.href }} 810w,
+    {{ ref.item.meta.media.renditions.thumbnail.href }} 240w,
+    {{ ref.item.meta.media.renditions.viewImage.href }} 540w"
     alt="{{ ref.item.meta.caption }}">
   <figcaption>
     {% if ref.item.meta.caption %}
@@ -14,9 +14,8 @@
     {% endif %}
     {% if ref.item.meta.credit %}
       <span ng-if="ref.item.meta.credit" class="credit">
-        <b>Credit:</b> {{ ref.item.meta.credit }}
+        <b>{{ translate('credit:') }}</b> {{ ref.item.meta.credit }}
       </span>
     {% endif %}
   </figcaption>
 </figure>
-
