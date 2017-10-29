@@ -48,7 +48,7 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
   <amp-img src="{{ assets_root }}images/highlighted.svg" width="14" height="13" class="highlight-icon" ></amp-img>
 {% endif %}
 
-  <div class="lb-post-date">{{ item._updated | date('')  }}</div>
+  <div class="lb-post-date">{{ item.published_date | date('')  }}</div>
 
   <!-- author plus avatar -->
   <div class="lb-author">
