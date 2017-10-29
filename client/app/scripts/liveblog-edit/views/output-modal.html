@@ -122,6 +122,7 @@
                 <div class="field">
                     <label for="inputTheme" class="control-label" translate>Theme</label>
                     <p class="help-block">Please note: If you change the theme assigned to your output channel, it will also change the respective output channel URL.</p>
+                    <p ng-if="vm.output.theme == 'amp'" class="warn-block"> Be aware that the Liveblog 3 AMP theme does not yet support all Live Blog features and post types.</p>
                     <div class="form-input">
                         <select ng-model="vm.output.theme"
                             ng-options="theme.name as theme.label for theme in vm.themes"></select>
