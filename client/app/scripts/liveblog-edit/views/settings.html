@@ -78,6 +78,7 @@
                                         <button class="btn btn--primary pull-left" ng-click="settings.openUploadModal()" translate>Upload Image</button>
                                         <div class="image-text pull-left" translate>Image has not been set so far</div>
                                     </div>
+                                    <p ng-if="settings.selectedTheme.name == 'amp'" class="warn-block">If you are using the Liveblog 3 AMP theme, please make sure to use an aspect ratio of 3x2 (600x400 pixels) for the blog image.</p>
                                 </div>
                             </div>
 
@@ -105,7 +106,6 @@
                                 </div>
                             </div>
                             <div class="form-group">
-                                <p ng-if="settings.selectedTheme.name == 'amp'" class="warn-block"> Be aware that the Liveblog 3 AMP theme does not yet support all Live Blog features and post types.</p>
                                 <label for="inputTheme" class="control-label" translate>Theme</label>
                                 <div class="form-input">
                                     <select
@@ -115,9 +115,9 @@
                                       ng-options="theme as theme.label for theme in settings.availableThemes track by theme.name"
                                       class="form-control">
                                     </select>
+                                <p ng-if="settings.selectedTheme.name == 'amp'" class="warn-block"> Be aware that the Liveblog 3 AMP theme does not yet support all Live Blog features and post types.</p>
                                 </div>
                             </div>
-
                             <div class="form-group" ng-if="settings.embedMultiHight && !settings.selectedTheme.settings.renderForESI">
                                 <label for="inputTitle" class="control-label" translate>Embed height</label>
                                 <div class="form-input relative">
