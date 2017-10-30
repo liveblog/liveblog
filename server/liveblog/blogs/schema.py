@@ -10,7 +10,11 @@ blogs_schema = {
         'nullable': True
     },
     'picture_renditions': {
-        'type': 'dict'
+        'type': 'dict',
+        'mapping': {
+            'type': 'dict',
+            'index': 'not_analyzed'
+        },
     },
     'picture': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
     'original_creator': metadata_schema['original_creator'],

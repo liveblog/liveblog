@@ -113,14 +113,26 @@ class ThemesResource(Resource):
         'options': {
             'type': 'list',
             'schema': {
-                'type': 'dict'
+                'type': 'dict',
+                'mapping': {
+                    'type': 'dict',
+                    'index': 'not_analyzed'
+                }
             }
         },
         'repository': {
-            'type': 'dict'
+            'type': 'dict',
+            'mapping': {
+                'type': 'dict',
+                'index': 'not_analyzed'
+            }
         },
         'settings': {
-            'type': 'dict'
+            'type': 'dict',
+            'mapping': {
+                'type': 'dict',
+                'index': 'not_analyzed'
+            }
         },
         'public_url': {
             'type': 'string'
@@ -139,6 +151,10 @@ class ThemesResource(Resource):
         },
         'i18n': {
             'type': 'dict',
+            'mapping': {
+                'type': 'dict',
+                'index': 'not_analyzed'
+            },
             'default': {}
         },
         'template': {
@@ -146,7 +162,11 @@ class ThemesResource(Resource):
             'default': ''
         },
         'files': {
-            'type': 'dict'
+            'type': 'dict',
+            'mapping': {
+                'type': 'dict',
+                'index': 'not_analyzed'
+            }
         }
     }
     datasource = {
