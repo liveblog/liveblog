@@ -1,5 +1,12 @@
 {% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
 
+{% set mainItem = item.groups[1].refs[0].item %}
+{% if mainItem.commenter %}
+  {% set type = 'comment' %}
+{% else %}
+  {% set type = item.post_items_type %}
+{% endif %}
+
 <article 
 id="{{ item._id | string | replace(':', '') | replace('-', '') | replace('.', '') }}" 
 data-update-time="{{ item._updated | date('X') }}" 
@@ -52,32 +59,47 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
 
   <!-- author plus avatar -->
   <div class="lb-author">
-    {% if settings.showAuthor %}
-      {% if item.post_items_type == 'comment' %}
-      <div class="lb-author__name">{{ translate('Comment by') }} {{ item.groups[1].refs[0].item.commenter }}</div>
-      
-        <amp-img class="lb-author__avatar lb-author__avatar--comment" 
-        src="{{ assets_root }}images/comment_icon.svg"
-        layout="fixed"
-        width="45"
-        height="45" 
-        alt="{{ item.groups[1].refs[0].item.commenter }}"
-        >
-        </amp-img>
-      {% else %}
-        <div class="lb-author__name">{{ item.publisher.display_name }}</div>
-        {% if settings.showAuthorAvatar and item.publisher.picture_url %}
-          <amp-img class="lb-author__avatar" src="{{ item.publisher.picture_url }}"
-            layout="fixed"
-            width="45"
-            height="45" 
-            alt="{{ item.publisher.display_name }}" 
-            >
+      {% if settings.showAuthor %}
+        <div class="lb-author__name">
+        {% if mainItem.commenter and not (item.syndication_in and not settings.showSyndicatedAuthor) %}
+          {{ translate('Comment by') }} {{ mainItem.commenter }}
+        {% elif mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
+          {{ mainItem.syndicated_creator.display_name }}
+        {% elif mainItem.original_creator %}
+          {{ mainItem.original_creator.display_name }}
+        {% endif %}
+        {% if item.syndication_in %}
+          <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
+        {% endif %}
+        </div>
+        {% if settings.showAuthorAvatar %}
+          {% if type == 'comment' %}
+          <amp-img class="lb-author__avatar lb-author__avatar--comment" 
+          src="{{ assets_root }}images/comment_icon.svg"
+          layout="fixed"
+          width="45"
+          height="45">
           </amp-img>
+          {% elif mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
+          <amp-img class="lb-author__avatar" 
+          src="{{ mainItem.syndicated_creator.picture_url }}" 
+          layout="fixed"
+          width="45"
+          height="45">
+          </amp-img>
+          {% elif mainItem.original_creator and mainItem.original_creator.picture_url %}
+          <amp-img class="lb-author__avatar" 
+          src="{{ mainItem.original_creator.picture_url }}"
+          layout="fixed"
+          width="45"
+          height="45">
+          </amp-img>
+          {% else %}
+          <div class="lb-author__avatar"></div>
+          {% endif %}
         {% endif %}
       {% endif %}
-    {% endif %}
-  </div>
+    </div>
   <!-- end author -->
   
   <!-- checking if post might be a gallery -->
@@ -91,9 +113,14 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
 
   {% if gallery %}
     {% include "template-item-gallery.html" %}
+  {% elif type == "comment" %}
+    {% include "template-post-comment.html" %}
   {% else %}
     <!-- item start -->
     {% for ref in item.groups[1].refs %}
+      {% if ref.item.item_type == "comment" %}
+        <div class="items-containerIndent">
+      {% endif %}
       <div class="lb-item">
         {% if ref.item.item_type == "embed" %}
           {% include "template-item-embed.html" %}
@@ -101,11 +128,17 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
           {% include "template-item-image.html" %}
         {% elif ref.item.item_type == "Scorecard" %}
           {% include "template-item-scorecard.html" %}
+        {% elif ref.item.item_type == "comment" %}
+          {% include "template-item-comment.html" %}
         {% else %}
         <article>{{ ref.item.text | safe }}</article>
         {% endif %}
       </div>
+      {% if ref.item.item_type == "comment" %}
+        </div>
+      {% endif %}
     {% endfor %}
     <!-- item end -->
   {% endif %}
+
 </article>
