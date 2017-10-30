@@ -45,7 +45,11 @@ blogs_schema = {
         'type': 'string'
     },
     'public_urls': {
-        'type': 'dict'
+        'type': 'dict',
+        'mapping': {
+            'type': 'dict',
+            'index': 'not_analyzed'
+        }
     },
     'syndication_enabled': {
         'type': 'boolean',

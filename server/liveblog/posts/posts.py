@@ -22,6 +22,19 @@ logger = logging.getLogger('superdesk')
 DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
 
+def get_publisher():
+    publisher = getattr(flask.g, 'user', None)
+    return {k: publisher.get(k, None) for k in ('_created',
+                                                '_etag',
+                                                '_id',
+                                                '_updated',
+                                                'username',
+                                                'display_name',
+                                                'sign_off',
+                                                'byline',
+                                                'email')}
+
+
 def private_draft_filter():
     """Filter out users private drafts.
     As private we treat items where user is creator
@@ -102,7 +115,18 @@ class PostsResource(ArchiveResource):
         'unpublished_date': {
             'type': 'datetime'
         },
-        'publisher': Resource.rel('users', True),
+        'publisher': {
+            'type': 'dict',
+            'mapping': {
+                'type': 'dict',
+                'properties': {
+                    'session_preferences': {
+                        'type': 'dict',
+                        'dynamic': False
+                    }
+                }
+            }
+        },
         'content_updated_date': {
             'type': 'datetime'
         },
@@ -178,7 +202,7 @@ class PostsService(ArchiveService):
                 if 'published_date' not in doc.keys():
                     doc['published_date'] = utcnow()
                 doc['content_updated_date'] = doc['published_date']
-                doc['publisher'] = getattr(flask.g, 'user', None)
+                doc['publisher'] = get_publisher()
         super().on_create(docs)
 
     def on_created(self, docs):
@@ -250,7 +274,7 @@ class PostsService(ArchiveService):
             updates['order'] = self.get_next_order_sequence(original.get('blog'))
             # if you publish a post it will save a published date and register who did it
             updates['published_date'] = utcnow()
-            updates['publisher'] = getattr(flask.g, 'user', None)
+            updates['publisher'] = get_publisher()
             # if you publish a post and hasn't `content_updated_date` add it.
             if not updates.get('content_updated_date', False):
                 updates['content_updated_date'] = updates['published_date']
