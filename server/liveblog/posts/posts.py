@@ -24,6 +24,8 @@ DEFAULT_POSTS_ORDER = [('order', -1), ('firstcreated', -1)]
 
 def get_publisher():
     publisher = getattr(flask.g, 'user', None)
+    if not publisher:
+        return None
     return {k: publisher.get(k, None) for k in ('_created',
                                                 '_etag',
                                                 '_id',
