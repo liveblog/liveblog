@@ -118,10 +118,10 @@ class PostsResource(ArchiveResource):
         'publisher': {
             'type': 'dict',
             'mapping': {
-                'type': 'dict',
+                'type': 'object',
                 'properties': {
                     'session_preferences': {
-                        'type': 'dict',
+                        'type': 'object',
                         'dynamic': False
                     }
                 }

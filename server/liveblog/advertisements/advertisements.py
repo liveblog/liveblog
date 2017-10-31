@@ -26,8 +26,8 @@ class AdvertisementsResource(Resource):
         'meta': {
             'type': 'dict',
             'mapping': {
-                'type': 'dict',
-                'index': 'not_analyzed'
+                'type': 'object',
+                'enabled': False
             },
             'nullable': True
         },

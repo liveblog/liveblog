@@ -12,8 +12,8 @@ blogs_schema = {
     'picture_renditions': {
         'type': 'dict',
         'mapping': {
-            'type': 'dict',
-            'index': 'not_analyzed'
+            'type': 'object',
+            'enabled': False
         },
     },
     'picture': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
@@ -51,8 +51,8 @@ blogs_schema = {
     'public_urls': {
         'type': 'dict',
         'mapping': {
-            'type': 'dict',
-            'index': 'not_analyzed'
+            'type': 'object',
+            'enabled': False
         }
     },
     'syndication_enabled': {

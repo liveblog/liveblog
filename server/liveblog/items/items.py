@@ -74,8 +74,8 @@ class ItemsResource(ArchiveResource):
         'meta': {
             'type': 'dict',
             'mapping': {
-                'type': 'dict',
-                'index': 'not_analyzed'
+                'type': 'object',
+                'enabled': False
             },
             'default': {}
         },
