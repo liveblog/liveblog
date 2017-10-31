@@ -115,23 +115,23 @@ class ThemesResource(Resource):
             'schema': {
                 'type': 'dict',
                 'mapping': {
-                    'type': 'dict',
-                    'index': 'not_analyzed'
+                    'type': 'object',
+                    'enabled': False
                 }
             }
         },
         'repository': {
             'type': 'dict',
             'mapping': {
-                'type': 'dict',
-                'index': 'not_analyzed'
+                'type': 'object',
+                'enabled': False
             }
         },
         'settings': {
             'type': 'dict',
             'mapping': {
-                'type': 'dict',
-                'index': 'not_analyzed'
+                'type': 'object',
+                'enabled': False
             }
         },
         'public_url': {
@@ -152,8 +152,8 @@ class ThemesResource(Resource):
         'i18n': {
             'type': 'dict',
             'mapping': {
-                'type': 'dict',
-                'index': 'not_analyzed'
+                'type': 'object',
+                'enabled': False
             },
             'default': {}
         },
@@ -164,8 +164,8 @@ class ThemesResource(Resource):
         'files': {
             'type': 'dict',
             'mapping': {
-                'type': 'dict',
-                'index': 'not_analyzed'
+                'type': 'object',
+                'enabled': False
             }
         }
     }
