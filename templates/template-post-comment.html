@@ -6,8 +6,7 @@
 {% set secondary = item.groups[1].refs[1].item %}
   <!-- author plus avatar -->
   <div class="lb-author lb-author--indent">
-    {% if settings.showAuthor and (secondary.original_creator or secondary.syndicated_creator) %}
-      {% if settings.showAuthorAvatar %}
+    {% if secondary.original_creator or secondary.syndicated_creator %}
         {% if secondary.original_creator and secondary.original_creator.picture_url %}
         <img class="lb-author__avatar" src="{{ secondary.original_creator.picture_url }}" />
         {% elif secondary.original_creator and secondary.syndicated_creator  and settings.showSyndicatedAuthor %}
@@ -25,7 +24,6 @@
             <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
         {% endif %}
         </div>
-      {% endif %}
     {% endif %}
   </div>
   <!-- end author -->
