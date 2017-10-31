@@ -4,7 +4,10 @@
 {% set postDate = item.published_date %}
 {% if mainItem.commenter %}
   {% set type = 'comment' %}
-  {% set postDate = mainItem.meta._created %}
+  {% set postDate = mainItem._created %}
+  {% if mainItem.meta._created %}
+    {% set postDate = mainItem.meta._created %}
+  {% endif %}
 {% else %}
   {% set type = item.post_items_type %}
 {% endif %}
