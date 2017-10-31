@@ -119,12 +119,7 @@ class PostsResource(ArchiveResource):
             'type': 'dict',
             'mapping': {
                 'type': 'object',
-                'properties': {
-                    'session_preferences': {
-                        'type': 'object',
-                        'dynamic': False
-                    }
-                }
+                'enabled': False
             }
         },
         'content_updated_date': {
