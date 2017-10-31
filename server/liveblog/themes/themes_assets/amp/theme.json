@@ -1,7 +1,7 @@
 {
   "label": "Liveblog 3 AMP Theme",
   "name": "amp",
-  "version": "0.1.34",
+  "version": "0.1.36",
   "seoTheme": true,
   "ampTheme": true,
   "extends": "default",
