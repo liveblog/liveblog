@@ -62,8 +62,9 @@ def delete_embed(blog, theme=None, output=None):
     else:
         for output_id, output_url in public_urls['output'].items():
             out = outputs.find_one(req=None, _id=output_id)
-            output_path = get_blog_path(blog_id, out.get('theme'), output_id)
-            app.media.delete(app.media.media_id(output_path, version=False))
+            if out:
+                output_path = get_blog_path(blog_id, out.get('theme'), output_id)
+                app.media.delete(app.media.media_id(output_path, version=False))
         for theme_name, theme_url in public_urls['theme'].items():
             theme_path = get_blog_path(blog_id, theme_name)
             app.media.delete(app.media.media_id(theme_path, version=False))
