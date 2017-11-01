@@ -16,13 +16,14 @@ def moment_date_filter_container(theme):
         """
         settings = theme.get('settings', {})
         parsed = arrow.get(date)
+
+        if not format:
+            format = settings.get('datetimeFormat', DEFAULT_THEME_DATE_FORMAT)
         # Workaround for "x" unsupported format
         if format == 'x':
             return parsed.timestamp
-        if not format:
-            format = settings.get('datetimeFormat', DEFAULT_THEME_DATE_FORMAT)
         # TODO: implement momentjs `Localized formats`
-        elif re.search('l+', format):
+        elif re.search('l+', format.lower()):
             format = DEFAULT_THEME_DATE_FORMAT
 
         formated = parsed.to(DEFAULT_THEME_TIMEZONE).format(DEFAULT_THEME_DATE_FORMAT)
