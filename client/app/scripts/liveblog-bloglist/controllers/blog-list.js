@@ -354,34 +354,6 @@ export default function BlogListController(
         $scope.blogsLoading = true;
         api.blogs.query(getCriteria(), false).then((blogs) => {
             $scope.blogs = blogs;
-            blogs._items.forEach((blog) => {
-                var criteria = {
-                    source: {
-                        query: {
-                            filtered: {filter: {and: [
-                                {term: {post_status: 'open'}},
-                                {term: {deleted: false}},
-                                {term: {blog: blog._id}}
-                            ]}}
-                        }, sort: [{published_date: 'desc'}]}
-                };
-                let lastUpdatedBlogTS = moment(blog._updated).format('X');
-
-                blog.lastUpdated = blog._updated;
-
-                api.posts.query(criteria).then((data) => {
-                    var posts = data._items;
-
-                    blog.posts_count = data._meta.total;
-                    blog.last_posted = posts[0].published_date;
-
-                    posts.forEach((post) => {
-                        if (moment(post._updated).format('X') > lastUpdatedBlogTS) {
-                            blog.lastUpdated = post._updated;
-                        }
-                    });
-                });
-            });
             $scope.blogsLoading = false;
         });
     }
