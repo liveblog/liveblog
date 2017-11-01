@@ -4,7 +4,10 @@
 {% set postDate = item.published_date %}
 {% if mainItem.commenter %}
   {% set type = 'comment' %}
-  {% set postDate = mainItem.meta._created %}
+  {% set postDate = mainItem._created %}
+  {% if mainItem.meta._created %}
+    {% set postDate = mainItem.meta._created %}
+  {% endif %}
 {% else %}
   {% set type = item.post_items_type %}
 {% endif %}
@@ -57,7 +60,7 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
   <amp-img src="{{ assets_root }}images/highlighted.svg" width="14" height="13" class="highlight-icon" ></amp-img>
 {% endif %}
 
-  <div class="lb-post-date">{{ postDate | date(settings.datetimeFormat)  }}</div>
+  <div class="lb-post-date">{{ postDate | date('')  }}</div>
 
   <!-- author plus avatar -->
   <div class="lb-author">
