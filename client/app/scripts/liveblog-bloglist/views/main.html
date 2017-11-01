@@ -85,7 +85,7 @@
                         <dt>{{ ::'Created' | translate}}:</dt>
                         <dd sd-reldate ng-model="blog._created"></dd>
                         <dt>{{ ::'No. of Posts' | translate }}:</dt>
-                        <dd>{{ ::blog.posts_count }}</dd>
+                        <dd>{{ ::blog.total_posts }}</dd>
                         <dl>
                         <dt> {{ :: 'Last updated' | translate }}:</dt>
                         <dd ng-if="blog.lastUpdated" sd-reldate ng-model="blog.lastUpdated"></dd>
