@@ -511,13 +511,19 @@ class ThemesService(BaseService):
         # get all the children for the theme that we modify the settings for
         theme_children = self.get_children(theme.get('name'))
         countdown = 1
+        step = 0.5
+        if theme.get('seoTheme'):
+            step = 0.9
+        if theme.get('ampTheme'):
+            step = 1.4
+
         for blog in blogs:
             blog_pref = blog.get('blog_preferences')
 
             if blog_pref.get('theme') == theme['name']:
                 for output in outputs:
                     if output.get('blog') == blog.get('_id'):
-                        countdown += 0.6
+                        countdown += step
                         publish_blog_embed_on_s3.apply_async(args=[blog['_id']],
                                                              kwargs={'output': output, theme: theme['name']},
                                                              countdown=countdown)
@@ -531,7 +537,7 @@ class ThemesService(BaseService):
                     if blog_pref.get('theme') == child:
                         for output in outputs:
                             if output.get('blog') == blog.get('_id'):
-                                countdown += 0.6
+                                countdown += step
                                 publish_blog_embed_on_s3.apply_async(args=[blog['_id']],
                                                                      kwargs={'output': output, theme: theme['name']},
                                                                      countdown=countdown)
