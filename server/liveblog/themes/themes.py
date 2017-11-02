@@ -510,16 +510,19 @@ class ThemesService(BaseService):
         outputs = get_resource_service('outputs').get(req=None, lookup={})
         # get all the children for the theme that we modify the settings for
         theme_children = self.get_children(theme.get('name'))
-
+        countdown = 1
         for blog in blogs:
             blog_pref = blog.get('blog_preferences')
 
             if blog_pref.get('theme') == theme['name']:
                 for output in outputs:
                     if output.get('blog') == blog.get('_id'):
-                        publish_blog_embed_on_s3.delay(blog['_id'], output=output)
-
-                publish_blog_embed_on_s3.delay(blog['_id'])
+                        countdown += 0.6
+                        publish_blog_embed_on_s3.apply_async(args=[blog['_id']],
+                                                             kwargs={'output': output, theme: theme['name']},
+                                                             countdown=countdown)
+            countdown += 3
+            publish_blog_embed_on_s3.apply_async(args=[blog['_id']], countdown=countdown)
 
             if theme_children:
                 # if a blog has associated the theme that is a  child of the one
@@ -528,9 +531,13 @@ class ThemesService(BaseService):
                     if blog_pref.get('theme') == child:
                         for output in outputs:
                             if output.get('blog') == blog.get('_id'):
-                                publish_blog_embed_on_s3.delay(blog['_id'], output=output)
+                                countdown += 0.6
+                                publish_blog_embed_on_s3.apply_async(args=[blog['_id']],
+                                                                     kwargs={'output': output, theme: theme['name']},
+                                                                     countdown=countdown)
 
-                        publish_blog_embed_on_s3.delay(blog['_id'])
+                        countdown += 1
+                        publish_blog_embed_on_s3.apply_async(args=[blog['_id']], countdown=countdown)
                         break
 
         return blogs
