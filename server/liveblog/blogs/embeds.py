@@ -14,7 +14,6 @@ import json
 import logging
 import os
 import math
-import re
 
 import superdesk
 from bson.json_util import dumps as bson_dumps

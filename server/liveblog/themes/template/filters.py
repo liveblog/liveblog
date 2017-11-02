@@ -36,9 +36,11 @@ def moment_date_filter_container(theme):
 
     return moment_date_filter
 
+
 def regaddten(obj):
     val = int(obj.group(1))
-    return str(val+10)
+    return str(val + 10)
+
 
 def addten(datestr):
     if datestr:
