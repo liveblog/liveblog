@@ -11,6 +11,7 @@
 
 
 import os
+import arrow
 
 from celery.schedules import crontab
 
@@ -330,3 +331,6 @@ UPLOAD_THEMES_DIRECTORY = env('UPLOAD_THEMES_DIRECTORY', os.path.join(ABS_PATH, 
 
 # Compiled jinja2 templates path for SEO themes.
 COMPILED_TEMPLATES_PATH = env('COMPILED_TEMPLATES_PATH', os.path.join(ABS_PATH, '.jinja2'))
+
+DEFAULT_THEME_DATE_FORMAT = env('DEFAULT_THEME_DATE_FORMAT', 'D. MMMM YYYY HH:mm')
+DEFAULT_THEME_TIMEZONE = env('DEFAULT_THEME_TIMEZONE', arrow.now().format('ZZZ'))

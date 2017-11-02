@@ -10,7 +10,11 @@ blogs_schema = {
         'nullable': True
     },
     'picture_renditions': {
-        'type': 'dict'
+        'type': 'dict',
+        'mapping': {
+            'type': 'object',
+            'enabled': False
+        },
     },
     'picture': Resource.rel('archive', embeddable=True, nullable=True, type='string'),
     'original_creator': metadata_schema['original_creator'],
@@ -45,7 +49,11 @@ blogs_schema = {
         'type': 'string'
     },
     'public_urls': {
-        'type': 'dict'
+        'type': 'dict',
+        'mapping': {
+            'type': 'object',
+            'enabled': False
+        }
     },
     'syndication_enabled': {
         'type': 'boolean',

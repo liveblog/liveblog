@@ -25,6 +25,10 @@ class AdvertisementsResource(Resource):
         },
         'meta': {
             'type': 'dict',
+            'mapping': {
+                'type': 'object',
+                'enabled': False
+            },
             'nullable': True
         },
         'text': {

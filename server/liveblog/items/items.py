@@ -73,6 +73,10 @@ class ItemsResource(ArchiveResource):
         },
         'meta': {
             'type': 'dict',
+            'mapping': {
+                'type': 'object',
+                'enabled': False
+            },
             'default': {}
         },
         'deleted': {
