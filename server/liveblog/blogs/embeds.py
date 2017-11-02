@@ -14,6 +14,7 @@ import json
 import logging
 import os
 import math
+import re
 
 import superdesk
 from bson.json_util import dumps as bson_dumps
@@ -303,3 +304,13 @@ def tostyle(obj):
 @embed_blueprint.app_template_filter('is_relative_to_current_folder')
 def is_relative_to_current_folder_filter(s):
     return is_relative_to_current_folder(s)
+
+def regaddten(obj):
+    val = int(obj.group(1))
+    return str(val+10)
+
+@embed_blueprint.app_template_filter('addten')
+def addten(datestr):
+    if datestr:
+        return re.sub(r'(\d{4})', regaddten, datestr)
+    return ''
