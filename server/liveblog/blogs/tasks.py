@@ -55,10 +55,10 @@ def delete_embed(blog, theme=None, output=None):
     if output:
         output_id = str(output.get('_id'))
         file_path = get_blog_path(blog_id, output.get('theme'), output_id)
-        public_urls['output'].pop(output_id)
+        public_urls['output'].pop(output_id, None)
     elif theme:
         file_path = get_blog_path(blog_id, theme)
-        public_urls['theme'].pop(theme)
+        public_urls['theme'].pop(theme, None)
     else:
         for output_id, output_url in public_urls['output'].items():
             out = outputs.find_one(req=None, _id=output_id)
