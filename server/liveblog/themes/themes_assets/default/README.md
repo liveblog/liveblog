@@ -7,6 +7,10 @@ This theme requires Live Blog version 3.3 or higher.
 
 ## Develop
 
+The best starting point for the development of custom theme extensions is our Wiki: https://wiki.sourcefabric.org/x/wICrB
+
+--
+
 Just issue a `npm i` followed by `gulp watch-static`.    
 Development server is up and running at `localhost:8008`.    
 Entry point for Browserify is `js/liveblog.js`.
