@@ -112,6 +112,15 @@ const templatePath = [
 dateFilter.setDefaultFormat('dddd, MMMM Do, YYYY, h:MM:ss A');
 nunjucksEnv.addFilter('date', dateFilter);
 
+// add addten filter used by AMP theme
+var addtenFilter = function( dateString ) {
+  var year = dateString.substring(0,4);
+  var rest = dateString.substring(4);
+  var newYear = parseInt(year) + 10;
+  return newYear + rest;
+};
+nunjucksEnv.addFilter('addten', addtenFilter);
+
 // nunjucks options.
 const nunjucksOptions = {
   env: nunjucksEnv
