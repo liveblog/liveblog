@@ -53,12 +53,7 @@ class Blog:
     def posts(self, sticky=None, highlight=None, ordering=None, page=default_page, limit=default_page_limit, wrap=False,
               all=False):
         order_by, sort = self.get_ordering(ordering or self.default_ordering)
-
         # Fetch total.
-        self._posts.ensure_index([
-            ("_created", pymongo.ASCENDING),
-            ("_created", pymongo.DESCENDING),
-            ("order", pymongo.DESCENDING)])
         results = self._posts.find(self._posts_lookup(sticky, highlight, all))
         total = results.count()
 
