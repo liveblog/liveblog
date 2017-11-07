@@ -134,7 +134,11 @@ class PostsResource(ArchiveResource):
         }
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
-
+    mongo_indexes = {
+        '_created_1': ([('_created', 1)]),
+        '_created_-1': ([('_created', -1)]),
+        'order_-1': ([('order', -1)]),
+    }
 
 class PostsService(ArchiveService):
     def find_one(self, req, **lookup):
