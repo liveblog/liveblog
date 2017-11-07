@@ -45,6 +45,11 @@ CONTENT_TYPES = {
     '.svg': 'image/svg+xml',
     '.svgz': 'image/svg+xml'
 }
+STEPS = {
+    'ampTheme': 1.4,
+    'seoTheme': 0.9,
+    'default': 0.5
+}
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
 download_theme_blueprint = superdesk.Blueprint('download_theme', __name__)
 themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=THEMES_ASSETS_DIR)
@@ -511,11 +516,11 @@ class ThemesService(BaseService):
         # get all the children for the theme that we modify the settings for
         theme_children = self.get_children(theme.get('name'))
         countdown = 1
-        step = 0.5
+        step = STEPS.get('default')
         if theme.get('seoTheme'):
-            step = 0.9
+            step = STEPS.get('seoTheme')
         if theme.get('ampTheme'):
-            step = 1.4
+            step = STEPS.get('ampTheme')
 
         for blog in blogs:
             blog_pref = blog.get('blog_preferences')
