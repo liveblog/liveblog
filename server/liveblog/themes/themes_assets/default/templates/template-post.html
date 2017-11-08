@@ -1,7 +1,7 @@
 {% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
 
 {% set mainItem = item.groups[1].refs[0].item %}
-{% set postDate = item.published_date %}
+{% set postDate = item.content_updated_date %}
 {% set type = item.post_items_type %}
 
 {% if mainItem.commenter %}
