@@ -140,6 +140,7 @@ class PostsResource(ArchiveResource):
         'order_-1': ([('order', -1)]),
     }
 
+
 class PostsService(ArchiveService):
     def find_one(self, req, **lookup):
         doc = super().find_one(req, **lookup)
