@@ -165,7 +165,9 @@ def publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sav
         logger.warning('publish_blog_on_s3 for blog "{}" not started: blog not found'.format(blog_id))
         return
 
-    logger.warning('publish_blog_on_s3 for blog "{}" started.'.format(blog_id))
+    logger.warning('publish_blog_on_s3 for blog "{}"{} started.'
+                   .format(blog_id,
+                           ' with output="{}"'.format(output.get('name')) if output else ''))
     try:
         return _publish_blog_embed_on_s3(blog_or_id, theme, output, safe, save)
     except (Exception, SoftTimeLimitExceeded):
