@@ -111,14 +111,8 @@
     content: ' ';
   }
 
-  .header-bar__comment--active:after {
-    /*display: none;*/
-    position: absolute;
-    bottom: -25px;
-    left: 50%;
-    margin-left: -30px;
-    content: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADUAAAAYCAYAAABa1LWYAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAA3JpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuNi1jMTM4IDc5LjE1OTgyNCwgMjAxNi8wOS8xNC0wMTowOTowMSAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wTU09Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9tbS8iIHhtbG5zOnN0UmVmPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VSZWYjIiB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDoxNDY0ZTdmZS0yMzI1LTI5NDctOWI0MS0xMGM1NTY4MTI1OTUiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6Nzg0OEJCQUU2RTEzMTFFNzhFNTE4MzFEQ0Y1Njc4NTMiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6Nzg0OEJCQUQ2RTEzMTFFNzhFNTE4MzFEQ0Y1Njc4NTMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENDIDIwMTcgKFdpbmRvd3MpIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6ZWQ2NjA5MjktYzI5OC04ODQ1LWFjZmItYjg5MjQ1N2M4M2FhIiBzdFJlZjpkb2N1bWVudElEPSJ4bXAuZGlkOjRDQjdGQUE5MzE5MTExRTc5QzQyODM3QTBBMTQ2RTFEIi8+IDwvcmRmOkRlc2NyaXB0aW9uPiA8L3JkZjpSREY+IDwveDp4bXBtZXRhPiA8P3hwYWNrZXQgZW5kPSJyIj8+3pwc1QAAAfdJREFUeNrslz9Lw1AUxfOn6T9M0tZS0K1j6Sbo1EEXtw7dFOkqKs6in6B+Ad3VTcFFUAoqWPTLdOlYcInnhBuNpUprkzQtHji0eSQv73dzc9+N6jiOMm/SlDnUP9Q/1BSVGDbY7XaDvk9Lfk+CnLRUKo0OFXAmnMF7cmzBh7Azq+lnwFc+IOoAvoD1yNMvAKXha7iuqqqSz+fdwV6vp2BfbOLvArwFv8/KkzLhBwJpmqYUCgUlkUi4JhzHoAZ8B2dnAWoRfoLXPQhd/8q0gbFNuA3bcYZahl/gVS7etu1vQJ44lsvlXECoBj/DxThCleFXuGoYhrvoYUB+MELzXGgF7khQYgNVhd8Ilkwm3cXKe/OrPDBeA1UkKOU4QK1Jyi2lUqmRgT5vjnMty/LAvKddmSbUBvzI4uABsXyPvQCA8VrOISnYkZSMHKoO37N8p9Npd1GTiMHwgRWleNSihNqBb7nBEojpE5QIxjmlzLel7IcOtQ9fcsvJZDKBAnninAKWlQ26ESYUO+xzXkMg0zRD690IxntArCA3cDPo3o9v/yl8NBDJUOUFrd/v69IEmxLUiaF0mWiXB9xUpfxGIh+YKp8wlgT4z+mXlE8HF4g9W5RAfjDfu9vyfXCODZWRCrfNcstOW1qaqYjpziwRHctT+3FT/BBgADATQjYSktMpAAAAAElFTkSuQmCC');
-    z-index: 2;
+  .header-bar__comment--active {
+    color: @black;
   }
 
   .header-bar__logo {
@@ -517,9 +511,7 @@
   }
 
   .lb-post-date {
-      float: left;
       padding-right: 20px;
-      margin: -10px 0 28px 60px;
       font-size: .9em;
       color: @grey;
   }
@@ -532,10 +524,6 @@
       padding: 6px 0px;
       width: 40px;
       z-index: 3;
-  }
-
-  .pin-icon + .lb-post-date, .pin-icon + .highlight-icon {
-    margin-left: 10px;
   }
 
   .lb-post:first-of-type
@@ -572,8 +560,16 @@
     box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.2);
   }
 
+  .lb-post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: -23px;
+    margin-bottom: 15px;
+  }
+
   .lb-type {
-    position: absolute;
+    flex-shrink: 0;
     width: 20px;
     height: 20px;
     //background-color: @lbgreen;
@@ -582,7 +578,6 @@
     background-repeat: no-repeat;
     border-radius: 50%;
     margin-left: -10px;
-    margin-top: -10px;
   }
 
   .lb-type--sticky {
@@ -598,6 +593,16 @@
     background: none;
   }
 
+  .lb-post-date-icons {
+    display: flex;
+    align-items: center;
+    margin-right: auto;
+    margin-left: 50px;
+    img {
+      margin-right: 10px;
+    }
+  }
+
   //.lb-type--embed {
   //  width: 40px;
   //  height: 40px;
@@ -606,12 +611,13 @@
   //}
 
   [class*="lb-type--embed"] {
-    top: 60px;
-    left: 0px;
     width: 40px;
     height: 40px;
-    margin-left: -18px;
-    margin-top: -20px;
+    margin-left: -20px;
+  }
+
+  [class*="lb-type--embed"] + .lb-post-date-icons {
+    margin-left: 40px;
   }
 
   .lb-type--embed-twitter {
@@ -684,9 +690,8 @@
 
   .lb-author {
     position: relative;
-    margin: -22px 0px 15px;
     height: 47px;
-    float: right;
+    margin: 0px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -699,13 +704,13 @@
   }
 
   .lb-author__avatar {
+    flex-shrink: 0;
     display: inline-block;
     border-radius: 50%;
     overflow: hidden;
     background: #B9B9B9;
     background-size: cover;
     border: 1px solid #f4f4f4;
-    float: left;
     margin-left: 20px;
     width: 45px;
     height: 45px;
@@ -876,40 +881,9 @@ lb-producer__author:before {
 
   }
 
-  .lb-post-sticky,
-  .lb-post-highlighted {
-      background-size: 15px;
-      border-radius: 4px;
-      background-repeat: no-repeat;
-      background-position: center 6px;
-      background-clip: border-box;
-      position: absolute;
-      margin-top: -12px;
-      padding: 5px;
-      left: -11px;
-      width: 16px;
-      height: 16px;
-      color: #f89406;
-      opacity: 1;
-  }
-
-  .lb-post-highlighted {
-    background-image: url("../images/star_highlight.svg");
-    background-color: #F05330;
-  }
-
-  .lb-post-sticky {
-    // background-image: url("../images/exclamation_sticky.svg");
-    background-color: #C6C6C6;
-    margin-top: -2px;
-  }
-
   .lb-advertisement {
-      position: absolute;
-      margin-top: -45px;
-      padding-left: 20px;
-      color: #767676;
-      font-size: 0.75rem;
+    font-size: 0.75rem;
+      color: @grey;
   }
 
   .lb-post:hover .lb-post-permalink, .lb-sticky-top-post:hover .lb-post-permalink {
@@ -945,10 +919,7 @@ lb-producer__author:before {
   }
 
   .pin-icon {
-    float: left;
     width: 10px;
-    margin-top: -5px;
-    margin-left: 60px;
   }
 
   .mod--hide {
@@ -967,14 +938,8 @@ lb-producer__author:before {
   /* highlighted posts */
 
   .highlight-icon {
-    float: left;
     width: 14px;
-    margin-top: -6px;
-    margin-left: 60px;
-  }
-
-  .highlight-icon + .lb-post-date {
-    margin-left: 10px;
+    margin-left: 0px;
   }
 
   .lb-post--highlighted {
@@ -1121,10 +1086,6 @@ body .scorecard-top__info {
       }
 
       .show-author-avatar .lb-author {
-          margin-top: -15px;
-      }
-
-      .show-author-avatar .lb-author {
         height: 32px;
         margin-left: 10px;
       }
@@ -1136,10 +1097,6 @@ body .scorecard-top__info {
 
       .lb-post, .lb-sticky-top-post {
           margin: 0;
-      }
-
-      .lb-post-date {
-          margin-left: 25px;
       }
 
       .lb-post-date__fulldate {
@@ -1165,11 +1122,18 @@ body .scorecard-top__info {
           background: none;
       }
 
+      .lb-post-date-icons{
+        margin-left: 20px;
+      }
+
+      [class*="lb-type--embed"] + .lb-post-date-icons {
+        margin-left: 20px;
+      }
+
       .lb-type {
           background-size: 8px;
           width: 12px;
           height: 12px;
-          margin-top: -4px;
           margin-left: 0;
       }
 
@@ -1179,15 +1143,9 @@ body .scorecard-top__info {
           margin-top: -7px;
       }
 
-      [class*="lb-type--embed"] {
-        top: 40px;
-        left: 5px;
-      }
-
       .lb-author__avatar, .lb-author__comment   {
           width: 30px;
           height: 30px;
-          left: -50px;
       }
 
       .lb-author__date {
@@ -1205,14 +1163,6 @@ body .scorecard-top__info {
       .sorting-bar__orders {
           position: relative;
           padding-left: 0 !important;
-      }
-
-      .pin-icon {
-        margin-left: 20px;
-      }
-
-      .highlight-icon {
-        margin-left: 20px;
       }
 
       .lb-post-highlighted,
@@ -1313,13 +1263,27 @@ body .scorecard-top__info {
         margin: 0;
       }
 
-
-      .lb-type {
-          margin-top: -7px;
+      .lb-post-header {
+        display: block;
       }
 
-      .lb-author {
-          margin: 15px 0px 10px;
+      .lb-type {
+        display: inline-block;
+      }
+
+      .lb-post-date-icons {
+        display: inline-flex;
+        margin-left: 10px;
+      }
+
+      [class*="lb-type--embed"] + .lb-post-date-icons {
+        margin-left: 10px;
+      }
+
+      .lb-post-header .lb-author {
+          display: block;
+          height: 20px;
+          margin: 10px 0px 0px 0px;
       }
 
       .lb-type--embed {
@@ -1336,11 +1300,6 @@ body .scorecard-top__info {
           padding: 35px 5px 30px;
       }
 
-      .lb-post-date {
-          margin-left: 18px;
-          margin-bottom: 10px;
-      }
-
       .lb-post-date__fulldate {
         margin-left: 0px;
         padding: 12px 8px 8px 0px;
@@ -1350,20 +1309,10 @@ body .scorecard-top__info {
       .lb-author__avatar {
           width: 18px;
           height: 18px;
-          margin-top: -4px;
-          margin-right: 6px;
       }
 
       .lb-updated-date {
           margin-top: 1px;
-      }
-
-      .pin-icon {
-        margin-top: -7px;
-      }
-
-      .highlight-icon {
-        margin-top: -8px;
       }
 
       .header-bar__logo {
@@ -1379,14 +1328,6 @@ body .scorecard-top__info {
       form.comment {
         padding: 20px;
         margin-top: 14px;
-      }
-
-      .show-author-avatar .lb-author {
-        height: 18px;
-        margin-top: 5px;
-        margin-left: 0px;
-        float: left;
-        clear: both;
       }
 
       .lb-post-shareBox {
