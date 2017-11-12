@@ -72,7 +72,7 @@
         </button>
       {% endif %}
 
-      {% if settings.showLiveblogLogo %}
+      {% if settings.showLiveblogLogo or output.logo_url %}
         {% if output.logo_url %}
         <div class="header-bar__logo">
           <img src="{{ output.logo_url }}"/>

@@ -20,7 +20,7 @@
         {% elif secondary.original_creator %}
             {{ secondary.original_creator.display_name }}
         {% endif %}
-        {% if item.syndication_in %}
+        {% if item.syndication_in and not settings.showSyndicatedAuthor %}
             <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
         {% endif %}
         </div>
