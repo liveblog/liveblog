@@ -7,7 +7,7 @@
                  ng-src="{{ item.original_creator.picture_url }}"
                  ng-srcset="{{ item.original_creator.picture_srcset }}"
                  sizes="(min-width: 1600px) 200px, 60px"/>
-    </div> 
+    </div>
     <div class="lb-author__date" ng-bind="item.displayDate | prettifyIsoDate"></div>
     <!-- author name, with or without mailto link  -->
     <div ng-if="!post.syndication_in || timeline.settings.showSyndicatedAuthor">   
@@ -22,7 +22,7 @@
                ng-bind="item.original_creator[timeline.settings.authorNameFormat]"></a>
         </div>
     </div>
-    <div ng-if="post.syndication_in.producer_blog_title"
+    <div ng-if="post.syndication_in.producer_blog_title && !timeline.settings.showSyndicatedAuthor"
          class="lb-producer"
          ng-class="{'lb-producer__author': timeline.settings.showSyndicatedAuthor}"
          ng-bind="post.syndication_in.producer_blog_title">
