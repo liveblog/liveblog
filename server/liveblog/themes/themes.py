@@ -45,6 +45,11 @@ CONTENT_TYPES = {
     '.svg': 'image/svg+xml',
     '.svgz': 'image/svg+xml'
 }
+STEPS = {
+    'ampTheme': 2,
+    'seoTheme': 2,
+    'default': 1
+}
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
 download_theme_blueprint = superdesk.Blueprint('download_theme', __name__)
 themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=THEMES_ASSETS_DIR)
@@ -502,49 +507,27 @@ class ThemesService(BaseService):
 
     def publish_related_blogs(self, theme):
         from liveblog.blogs.tasks import publish_blog_embed_on_s3
-        # FIXME: retrieve only the blogs who use a specified theme
-        # terms = []
-        # for t in self.get_children(theme['name']) + [theme['name']]:
-        #     terms.append({'term': {'blog_preferences.theme': t}})
-        blogs = get_resource_service('blogs').get(req=None, lookup={})
-        outputs = get_resource_service('outputs').get(req=None, lookup={})
-        # get all the children for the theme that we modify the settings for
-        theme_children = self.get_children(theme.get('name'))
+        blogs = get_resource_service('blogs').find({'blog_preferences.theme': theme.get('name')})
+        outputs = get_resource_service('outputs').find({'theme': theme.get('name')})
         countdown = 1
-        step = 0.5
+        step = STEPS.get('default')
         if theme.get('seoTheme'):
-            step = 0.9
+            step = STEPS.get('seoTheme')
         if theme.get('ampTheme'):
-            step = 1.4
+            step = STEPS.get('ampTheme')
 
         for blog in blogs:
-            blog_pref = blog.get('blog_preferences')
+            publish_blog_embed_on_s3.apply_async(args=[blog.get('_id')], countdown=countdown)
+            countdown += step
 
-            if blog_pref.get('theme') == theme['name']:
-                for output in outputs:
-                    if output.get('blog') == blog.get('_id'):
-                        countdown += step
-                        publish_blog_embed_on_s3.apply_async(args=[blog['_id']],
-                                                             kwargs={'output': output, theme: theme['name']},
-                                                             countdown=countdown)
-            countdown += 3
-            publish_blog_embed_on_s3.apply_async(args=[blog['_id']], countdown=countdown)
+        for output in outputs:
+            publish_blog_embed_on_s3.apply_async(args=[output.get('blog')],
 
-            if theme_children:
-                # if a blog has associated the theme that is a  child of the one
-                # for which we modify the settings, we redeploy the blog on s3
-                for child in theme_children:
-                    if blog_pref.get('theme') == child:
-                        for output in outputs:
-                            if output.get('blog') == blog.get('_id'):
-                                countdown += step
-                                publish_blog_embed_on_s3.apply_async(args=[blog['_id']],
-                                                                     kwargs={'output': output, theme: theme['name']},
-                                                                     countdown=countdown)
-
-                        countdown += 1
-                        publish_blog_embed_on_s3.apply_async(args=[blog['_id']], countdown=countdown)
-                        break
+                                                 kwargs={
+                                                     'theme': output.get('theme', None),
+                                                     'output': output},
+                                                 countdown=countdown)
+            countdown += step
 
         return blogs
 
