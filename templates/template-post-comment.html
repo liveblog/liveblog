@@ -9,7 +9,7 @@
     {% if secondary.original_creator or secondary.syndicated_creator %}
         {% if secondary.original_creator and secondary.original_creator.picture_url %}
         <img class="lb-author__avatar" src="{{ secondary.original_creator.picture_url }}" />
-        {% elif secondary.original_creator and secondary.syndicated_creator  and settings.showSyndicatedAuthor %}
+        {% elif secondary.original_creator and secondary.syndicated_creator  and settings.showSyndicatedAuthor and mainItem.syndicated_creator.picture_url %}
         <img class="lb-author__avatar" src="{{ mainItem.syndicated_creator.picture_url }}" />
         {% else %}
         <div class="lb-author__avatar"></div>
@@ -34,7 +34,7 @@
         {% for ref in item.groups[1].refs %}
           {% if loop.index0 > 0 %}
               {% if ref.item.item_type == "image" %}
-              {% if loop.index0 + 1 < loop.length and item.groups[1].refs[loop.index0 + 1].item.item_type == "image" and (loop.index0 - 1 < 1 or not (loop.index0 > 1 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image")) %}
+              {% if settings.showGallery and loop.index0 + 1 < loop.length and item.groups[1].refs[loop.index0 + 1].item.item_type == "image" and (loop.index0 - 1 < 1 or not (loop.index0 > 1 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image")) %}
               <div class="lb-slideshow">
               {% endif %}
               <div class="lb-item {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %}{{ref.item.item_type}}">

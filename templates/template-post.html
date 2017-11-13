@@ -67,7 +67,7 @@
           <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
         {% endif %}
         {% if settings.showAuthorAvatar and type != 'comment' %}
-          {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
+          {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor and mainItem.syndicated_creator.picture_url %}
           <img class="lb-author__avatar" src="{{ mainItem.syndicated_creator.picture_url }}" />
           {% elif mainItem.original_creator and mainItem.original_creator.picture_url %}
           <img class="lb-author__avatar" src="{{ mainItem.original_creator.picture_url }}" />
@@ -96,7 +96,7 @@
             (item.groups[1].refs | length > 0) %}
         {% for ref in item.groups[1].refs %}
           {% if ref.item.item_type == "image" %}
-          {% if loop.index0 + 1 < loop.length and item.groups[1].refs[loop.index0 + 1].item.item_type == "image" and (loop.index0 - 1 < 0 or not (loop.index0 > 0 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image")) %}
+          {% if settings.showGallery and loop.index0 + 1 < loop.length and item.groups[1].refs[loop.index0 + 1].item.item_type == "image" and (loop.index0 - 1 < 0 or not (loop.index0 > 0 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image")) %}
           <div class="lb-slideshow">
           {% endif %}
           <div class="lb-item {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %}{{ref.item.item_type}}">
