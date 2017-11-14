@@ -258,7 +258,7 @@ class ClientBlogPostsService(BlogPostsService):
                     if k == 'image' and sum(1 for _ in g) > 1:
                         post_items_type = 'slideshow'
                         break
-        if doc.get('syndication_in', False) and not type(doc['syndication_in']) == str:
+        if doc.get('syndication_in'):
             doc['syndication_in'] = get_resource_service('syndication_in')\
                 .find_one(req=None, _id=doc['syndication_in'])
         doc['post_items_type'] = post_items_type
