@@ -167,7 +167,7 @@ def _get_html_from_image_data(renditions, **meta):
 def _fetch_and_create_image_item(item):
     """Download and create image item from producer blog post renditions"""
     meta = item.get('meta')
-    renditions = meta.get('media',{}).get('renditions')
+    renditions = meta.get('media', {}).get('renditions')
     try:
         image_url = renditions['original']['href']
         mimetype = renditions['original']['mimetype']
