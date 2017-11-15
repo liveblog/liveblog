@@ -1,0 +1,23 @@
+<!-- author plus avatar -->
+<div class="lb-author lb-author--indent">
+    {% if settings.showAuthor and ref.item and (ref.item.original_creator or ref.item.syndicated_creator )%}
+    {% if settings.showAuthorAvatar %}
+        <amp-img class="lb-author__avatar lb-author__avatar--comment" 
+        src="{{ assets_root }}images/comment_icon.svg"
+        layout="fixed"
+        width="25"
+        height="25"
+        >
+        </amp-img>
+        <div class="lb-author__name">
+        {% if ref.item.commenter and not (item.syndication_in and not settings.showSyndicatedAuthor) %}
+            {{ translate('Comment by') }} {{ ref.item.commenter }}
+        {% endif %}
+        {% if item.syndication_in %}
+            <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
+        {% endif %}
+        </div>
+    {% endif %}
+    {% endif %}
+</div>
+<article>{{ ref.item.text | safe }}</article>

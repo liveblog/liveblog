@@ -1,8 +1,7 @@
 'use strict';
 
 var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
-    consumersManagement = require('./helpers/pages').consumersManagement,
-    assertToastMsg = require('./helpers/assert-toast-msg');
+    consumersManagement = require('./helpers/pages').consumersManagement;
 
 var consumer = {
     name: 'Massey Fergusson',
@@ -135,9 +134,6 @@ describe('Consumers', function() {
                     return element(by.css('#save-edit-btn')).click();
                 })
                 .then(function() {
-                    return assertToastMsg('success', 'Consumer saved.');
-                })
-                .then(function() {
                     var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
                     expect(firstRowName.getText()).toEqual(consumer.name);
                     return element.all(by.repeater('consumer in consumers')).count();
@@ -174,9 +170,6 @@ describe('Consumers', function() {
                     })
                     .then(function() {
                         return element(by.css('#save-edit-btn')).click();
-                    })
-                    .then(function() {
-                        return assertToastMsg('success', 'Consumer saved.');
                     })
                     .then(function() {
                         var firstRowName = element(by.css('ul.table-body div.row-wrapper div.name'));
@@ -263,9 +256,6 @@ describe('Consumers', function() {
                 })
                 .then(function() {
                     return element(by.css('#save-edit-btn')).click();
-                })
-                .then(function() {
-                    return assertToastMsg('success', 'Consumer saved.');
                 });
          });
     });

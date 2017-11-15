@@ -70,7 +70,7 @@ gulp.task('build', ['translations', 'templates', 'copy_vendors'], function() {
             }
         };
     
-    if(theme.devScripts) {
+    if(theme.devScripts && theme.devScripts.length) {
         theme.devScripts.forEach(function(script) {
             // check if it is an external url, if so add it like that in final scripts.
             if(externalUrlCheck.test(script) || (script === 'parent-iframe.js')) {
@@ -94,7 +94,7 @@ gulp.task('build', ['translations', 'templates', 'copy_vendors'], function() {
         build.to.scripts.push(config.get('script'));
         theme.scripts = build.to.scripts;
     }
-    if(theme.devStyles) {
+    if(theme.devStyles && theme.devStyles.length) {
         theme.devStyles.forEach(function(style) {
             // check if it is an external url, if so add it like that in final scripts.
             if(externalUrlCheck.test(style)) {

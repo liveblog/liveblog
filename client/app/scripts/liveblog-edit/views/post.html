@@ -14,18 +14,20 @@
             <div class="lb-post__figure">
                 <figure ng-class="{'avatar': (post.mainItem.item.item_type !== 'comment'),
                                    'avatar-comment': (post.mainItem.item.item_type === 'comment')}">
-                    <img class="ng-isolate-scope" src="{{post.mainItem.item.user.picture_url}}">
+                    <img class="ng-isolate-scope" src="{{ post.mainItem.item.user.picture_url }}">
                 </figure>
             </div>
             <div class="lb-post__content">
                 <div class="lb-post__header">
                     <div class="inline" ng-if="post.post_status != 'open'">
-                        <span class="name">{{ ::post.mainItem.item.user.display_name }}</span> | <time>{{ post._created | reldate }}</time>
+                        <span class="name">{{ ::post.mainItem.item.user.display_name }}</span>
+                        <span ng-if="post.producer_blog_title" class="producer">{{ ::post.producer_blog_title }}</span>
+                        | <time>{{ post._created | reldate }}</time>
                     </div>
                     <div class="inline" ng-if="post.post_status == 'open'">
-                        <span class="name">{{ post.mainItem.item.user.display_name || post.producer_blog_title }}</span>
-                        &nbsp;|
-                        <time>{{ post.published_date | reldate }}</time>
+                        <span class="name">{{ ::post.mainItem.item.user.display_name }}</span>
+                        <span ng-if="post.producer_blog_title" class="producer">{{ ::post.producer_blog_title }}</span>
+                        | <time>{{ post.published_date | reldate }}</time>
                     </div>
                     <div class="inline" ng-if="post.showUpdate">
                         <span class="updated-label" translate>&nbsp;Updated</span> <time class="updated-time">{{ post.content_updated_date | reldate }}</time>
@@ -45,12 +47,12 @@
                                     <i class="icon-close-thick"></i>
                                 </a>
                             </li>
-                            <li ng-if="functionize(postsListCtrl.allowEditing)(post)">
+                            <li ng-if="functionize(postsListCtrl.allowEditing)(post) && postsListCtrl.isEditable(post)">
                                 <a ng-click="onEditClick(post)" tooltip-placement="bottom" tooltip="{{ 'Edit' | translate }}">
                                     <i class="icon-pencil"></i>
                                 </a>
                             </li>
-                            <li ng-if="functionize(postsListCtrl.allowUnpublishing)(post)">
+                            <li ng-if="functionize(postsListCtrl.allowUnpublishing)(post) && postsListCtrl.isEditable(post)">
                                 <a ng-click="unpublishPost(post)" tooltip-placement="bottom" tooltip="{{ 'Unpublish and save in contributions' | translate }}">
                                     <i class="icon-unpublish" alt="contributions posts"></i>
                                 </a>
@@ -94,7 +96,9 @@
                                 <div class="lb-post__content">
                                     <div class="lb-post__header">
                                         <div class="inline">
-                                            <span class="name">{{ ::item.item.user.display_name }}</span> | <time>{{ ::(item.item.meta._created || item.item._created) | reldate }}</time>
+                                            <span class="name">{{ ::item.item.user.display_name }}</span> 
+                                            <span ng-if="post.producer_blog_title" class="producer">{{ ::post.producer_blog_title }}</span>
+                                            | <time>{{ ::(item.item.meta._created || item.item._created) | reldate }}</time>
                                         </div>
                                     </div>
                                     <lb-item item="item.item"></lb-item>

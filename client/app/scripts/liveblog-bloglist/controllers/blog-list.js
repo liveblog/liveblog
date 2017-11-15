@@ -10,7 +10,8 @@ BlogListController.$inject = [
     'blogSecurityService',
     'notify',
     'config',
-    'urls'
+    'urls',
+    'moment'
 ];
 
 export default function BlogListController(
@@ -25,7 +26,8 @@ export default function BlogListController(
     blogSecurityService,
     notify,
     config,
-    urls
+    urls,
+    moment
 ) {
     $scope.maxResults = 25;
     $scope.states = [
@@ -128,6 +130,7 @@ export default function BlogListController(
                 description: $scope.newBlog.description,
                 picture_url: $scope.newBlog.picture_url,
                 picture: $scope.newBlog.picture,
+                picture_renditions: $scope.newBlog.picture_renditions,
                 members: members
             })
             .then((blog) => {
@@ -164,6 +167,7 @@ export default function BlogListController(
 
                 $scope.newBlog.picture_url = pictureUrl;
                 $scope.newBlog.picture = response.data._id;
+                $scope.newBlog.picture_renditions = response.data.renditions;
             }, (error) => {
                 notify.error(
                     error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
@@ -350,27 +354,6 @@ export default function BlogListController(
         $scope.blogsLoading = true;
         api.blogs.query(getCriteria(), false).then((blogs) => {
             $scope.blogs = blogs;
-            blogs._items.forEach((blog) => {
-                var criteria = {
-                    source: {
-                        query: {
-                            filtered: {filter: {and: [
-                                {term: {post_status: 'open'}},
-                                {term: {deleted: false}},
-                                {term: {blog: blog._id}}
-                            ]}}
-                        }, sort: [{published_date: 'asc'}]}
-                };
-
-                api.posts.query(criteria).then((data) => {
-                    blog.posts_count = data._meta.total;
-                    var posts = data._items;
-
-                    posts.forEach((post) => {
-                        blog.last_posted = post.published_date;
-                    });
-                });
-            });
             $scope.blogsLoading = false;
         });
     }

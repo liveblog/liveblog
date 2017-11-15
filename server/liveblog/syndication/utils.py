@@ -4,7 +4,7 @@ import logging
 import tempfile
 import urllib.parse
 import uuid
-from flask import make_response, abort
+from flask import abort
 import requests
 from bson import ObjectId
 from hashlib import sha1
@@ -33,24 +33,6 @@ def trailing_slash(url):
     return url
 
 
-def api_response(data, status_code, json_dumps=True):
-    """Make json response for blueprints."""
-    if json_dumps:
-        data = json.dumps(data)
-    response = make_response(data)
-    response.status_code = status_code
-    response.mimetype = 'application/json'
-    return response
-
-
-def api_error(error_message, status_code):
-    """Make error for blueprints."""
-    return api_response({
-        '_status': 'ERR',
-        '_error': error_message
-    }, status_code)
-
-
 def cast_to_object_id(doc, fields):
     """Cast provided document fields to ObjectId."""
     for field in fields:
@@ -76,7 +58,7 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
     session.mount('http://', adapter)
     session.mount('https://', adapter)
 
-    logger.info('API {} request to {} with params={} and data={}'.format(method, api_url, args, data))
+    logger.debug('API {} request to {} with params={} and data={}'.format(method, api_url, args, data))
     headers = {
         'Content-Type': 'application/json'
     }
@@ -88,7 +70,7 @@ def send_api_request(api_url, api_key, method='GET', args=None, data=None, json_
     except (ConnectionError, ConnectTimeout, RequestException, MaxRetryError):
         raise APIConnectionError('Unable to connect to api_url "{}".'.format(api_url))
 
-    logger.warning('API {} request to {} - response: {} {}'.format(
+    logger.debug('API {} request to {} - response: {} {}'.format(
         method, api_url, response.status_code, response.content
     ))
 
@@ -122,15 +104,25 @@ def blueprint_superdesk_token_auth():
 def extract_post_items_data(original_doc):
     """Extract blog post items."""
     items_service = get_resource_service('items')
+    user_service = get_resource_service('users')
     item_type = original_doc.get(ITEM_TYPE, '')
     if item_type != CONTENT_TYPE.COMPOSITE:
         raise NotImplementedError('Post item_type "{}" not supported.'.format(item_type))
 
     items = []
+    needed_fields = ("avatar", "avatar_renditions", "byline",
+                     "display_name", "email", "first_name",
+                     "last_name", "picture_url", "sign_off",
+                     "username", "_id", "_created", "_updated")
+
     for group in original_doc['groups']:
         if group['id'] == 'main':
             for ref in group['refs']:
                 item = items_service.find_one(req=None, guid=ref['guid'])
+                syndicated_creator = user_service.find_one(req=None, _id=item['original_creator'])
+                syndicated_obj = None
+                if syndicated_creator:
+                    syndicated_obj = {k: v for k, v in syndicated_creator.items() if k in needed_fields}
                 text = item.get('text')
                 item_type = item.get('item_type')
                 group_type = item.get('group_type')
@@ -139,6 +131,8 @@ def extract_post_items_data(original_doc):
                     'text': text,
                     'item_type': item_type,
                     'group_type': group_type,
+                    'commenter': item.get('commenter'),
+                    'syndicated_creator': syndicated_obj,
                     'meta': meta
                 }
                 items.append(data)
@@ -170,8 +164,10 @@ def _get_html_from_image_data(renditions, **meta):
     ])
 
 
-def _fetch_and_create_image_item(renditions, **meta):
+def _fetch_and_create_image_item(item):
     """Download and create image item from producer blog post renditions"""
+    meta = item.get('meta')
+    renditions = meta.get('media', {}).get('renditions')
     try:
         image_url = renditions['original']['href']
         mimetype = renditions['original']['mimetype']
@@ -187,6 +183,7 @@ def _fetch_and_create_image_item(renditions, **meta):
     text = _get_html_from_image_data(archive['renditions'], **meta)
     return {
         'item_type': 'image',
+        'syndicated_creator': item.get('syndicated_creator'),
         'meta': {
             'media': {
                 '_id': item_id,
@@ -234,12 +231,7 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
     post_items = []
     for item in items:
         if item['item_type'] == 'image':
-            meta = item.pop('meta')
-            item = _fetch_and_create_image_item(
-                renditions=meta['media']['renditions'],
-                caption=meta['caption'],
-                credit=meta['credit']
-            )
+            item = _fetch_and_create_image_item(item)
         item['blog'] = in_syndication['blog_id']
         post_items.append(item)
 

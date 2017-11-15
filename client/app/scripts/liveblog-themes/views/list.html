@@ -1,26 +1,28 @@
 <div class="subnav ng-scope themes-manager">
-    <h3 class="page-nav-title" translate>Theme Manager</h3>
-    <div class="button-stack right-stack">
+    <h3 class="subnav__page-title" translate>Theme Manager</h3>
+    <div class="subnav__button-stack--square-buttons">
         <form
             action="#"
             method="post"
             enctype="multipart/form-data"
             ng-if="!vm.hasReachedThemesLimit() && !vm.isSolo()">
-            <label class="navbtn navbtn-info navbtn-auto" for="uploadAThemeFile" title="{{ 'New Theme' | translate }}">
-                <i class="svg-icon-add inverse"></i> <span class="title" translate>New Theme</span>
+            <label class="navbtn sd-create-btn" for="uploadAThemeFile" title="{{ 'New Theme' | translate }}">
+                <i class="svg-icon-plus"></i>
+                <span class="circle"></span>
             </label>
             <input
-                type="file" 
-                name="uploadAThemeFile" 
-                id="uploadAThemeFile" 
+                type="file"
+                name="uploadAThemeFile"
+                id="uploadAThemeFile"
                 onchange="angular.element(this).controller().uploadThemeFile(this)">
         </form>
 
         <button
             ng-if="vm.hasReachedThemesLimit()"
-            class="navbtn navbtn-info"
+            class="navbtn sd-create-btn"
             ng-click="vm.showUpgradeModal()" title="{{ 'New Theme' | translate }}">
-            <i class="svg-icon-add inverse"></i>
+            <i class="svg-icon-plus"></i>
+            <span class="circle"></span>
         </button>
     </div>
 </div>
@@ -28,12 +30,22 @@
 <section class="main-section themelist">
     <div class="loading-indicator" ng-show="vm.loading"><span translate>loading</span></div>
     <div class="list-container">
-        <div 
+        <div
             ng-if="!vm.isSolo()"
-            class="alert alert-info alert--margin-left" 
+            class="alert alert-info alert--margin-left"
             role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="icon-close-small"></i></button>Customize your themes to the specific needs of your organisation. All you need is someone in your team with frontend development skills and a download of the classic theme as a good starting point to create your own. You find all required code and some info on <a href="https://github.com/liveblog/liveblog/blob/e7945a48fcd19c1a959d8e83706114f13864871c/CUSTOM-THEME.MD" target="_blank">Github</a>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="icon-close-small"></i></button>
+            You want to customize a Live Blog theme? All you need is someone in your team with frontend development skills, a download of the <a href="https://github.com/liveblog/generator-liveblog-theme" target="_blank">theme generator</a> and with a good read of our <a href="https://wiki.sourcefabric.org/display/LIVEBLOG/Live+Blog+themes" target="_blank">documentation in the Wiki</a> - you can easily introduce a theme extension matching the exact needs of your organisation.
         </div>
+        <div
+            ng-if="!vm.isSolo()"
+            class="alert alert-error alert--margin-left"
+            role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="icon-close-small"></i></button>
+            Be aware that the Liveblog 3 AMP theme does not yet support all Live Blog features and post types.
+        </div>
+
+
         <!-- LIST VIEW -->
         <script type="text/ng-template" id="themeTree">
             <ul>
@@ -85,15 +97,9 @@
                         <div class="side">
                             <div ng-style="{'visibility': (vm.isDefaultTheme(theme) && 'hidden') || 'visible'}">
                                 <button ng-disabled="vm.hasChildren(theme)" ng-click="vm.removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
-                                <button ng-if="!theme.abstract" ng-click="vm.makeDefault(theme)" class="btn btn-info pull-right" type="button" translate>Make default</button>
+                                <button ng-if="!theme.abstract" ng-click="vm.makeDefault(theme)" class="btn btn--primary pull-right" type="button" translate>Make default</button>
                             </div>
                             <button ng-click="vm.openThemeSettings(theme)" class="btn btn-default pull-right" type="button" translate>Settings</button>
-                            <button
-                                ng-if="!vm.isSolo()"
-                                ng-click="vm.download(theme)"
-                                class="btn btn-info pull-right"
-                                type="button"
-                                translate>Download</button>
                         </div>
                         <div class="default-theme" ng-show="vm.isDefaultTheme(theme)"></div>
                     </div>
@@ -163,6 +169,6 @@
 
 <div
     theme-settings-modal
-    theme="vm.themeSettingsModalTheme" 
+    theme="vm.themeSettingsModalTheme"
     modal-opened="vm.themeSettingsModal"
     ng-if="vm.themeSettingsModal"></div>

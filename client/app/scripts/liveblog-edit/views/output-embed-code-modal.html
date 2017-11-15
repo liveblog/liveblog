@@ -1,0 +1,29 @@
+<div sd-modal data-model="settings.outputEmbedModal" class="advertising">
+    <div class="modal-header">
+        <button class="close" ng-click="settings.outputEmbedModal = false"><i class="icon-close-small"></i></button>
+        <h3 translate><span translate>Embed code for</span>&nbsp;<strong>{{ settings.output.name}} </strong><span translate>output channel</span></h3>
+    </div>
+    <div class="modal-body">
+        <div class="item-creation">
+            <fieldset>
+                <div class="field" ng-if="settings.output._id">
+                    <label for="inputEmbedCode" class="control-label" translate>Embed code</label>
+                    <div class="form-input">
+                        <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click><iframe id="liveblog-iframe" width="100%" height="715" src="{{ settings.blog.public_urls.output[settings.output._id] }}" frameborder="0" allowfullscreen></iframe></textarea>
+                       
+                        <a href="{{ settings.blog.public_urls.output[settings.output._id] }}" target="_blank"><span ng-bind="settings.blog.public_urls.output[settings.output._id]"></span> <i class="icon-external"></i></a>
+                        <div ng-if="settings.output.styleUrl">
+                            <label for="externalStylesheet" class="control-label" translate>Stylesheet</label> <br />
+                            <a href="{{ settings.output.styleUrl }}" target="_blank"><span ng-bind="settings.output.styleUrl"></span> <i class="icon-external"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div>
+            <button type="button" class="btn btn-primary btn-info" translate ng-click="settings.outputEmbedModal = false">OK</button>
+        </div>
+    </div>
+</div>

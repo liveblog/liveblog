@@ -1,0 +1,14 @@
+{
+  "name": "liveblog-amp-theme",
+  "version": "3.3.0",
+  "description": "Liveblog 3 AMP theme",
+  "author": "Sourcefabric <contact@sourcefabric.org>",
+  "license": "AGPL-3.0",
+  "main": "js/liveblog.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "liveblog-default-theme": "git+https://github.com/liveblog/liveblog-default-theme.git"
+  }
+}

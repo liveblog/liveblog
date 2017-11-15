@@ -1,0 +1,17 @@
+<figure>
+  <amp-img src="{{ ref.item.meta.media.renditions.viewImage.href }}"
+    on="tap:lb-lightbox"
+    role="button"
+    tabindex="0"
+    layout="responsive"
+    width="{{ ref.item.meta.media.renditions.viewImage.width }}"
+    height="{{ ref.item.meta.media.renditions.viewImage.height }}"
+    alt="AMP">
+  </amp-img>
+  <figcaption>
+    {{ ref.item.meta.caption }}
+    {% if ref.item.meta.credit %}
+    <b>{{ translate('credit:') }}</b> {{ ref.item.meta.credit }}
+    {% endif %}
+  </figcaption>
+</figure>

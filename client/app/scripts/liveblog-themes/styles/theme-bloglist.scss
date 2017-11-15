@@ -10,8 +10,7 @@
         display: inline-block;
         max-width: 100%;
         margin-bottom: 4px;
-        font-weight: 400;
-        font-size: 1.1em;
+        font-size: 1em;
     }
     .help-block {
         display: block;
@@ -35,7 +34,9 @@
             }
             input {
                 &[type="radio"] {
+                    margin-top: 6px;
                     margin-right: 8px;
+                    clear: both;
                 }
             }
         }
@@ -44,6 +45,7 @@
             float: left;
             &[type="checkbox"] {
                 @include box-shadow(none);
+                margin-top: 6px;
                 margin-right: 8px;
             }
             &[type="number"] {
@@ -53,6 +55,10 @@
         select {
             margin-bottom: 6px;
             margin-top: 4px;
+        }
+
+        div.text-input {
+            width: 100%;
         }
     }
     .modal-body {
@@ -138,7 +144,7 @@
         position: absolute;
         top: 0px;
         left: 0; right: 0; bottom: 0;
-        padding: 30px 30px 30px 0;
+        padding: 20px;
         overflow-y: auto;
         ul {
             li {

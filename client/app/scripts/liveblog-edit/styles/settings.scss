@@ -15,6 +15,7 @@ $PADDING: 20px;
         > .subnav {
             top: 1 - $SUBNAV_HEIGHT;
             background-color: #eaeaea;
+            padding: 0 20px;
         }
         .tab-content {
             > .header {
@@ -67,6 +68,21 @@ $PADDING: 20px;
         }
         .relative {
             position: relative;
+        }
+    }
+    .outputs {
+        .add-new-div {
+            float: right!important;
+            top: -11px;
+            right: -22px;
+            button {
+                top: 1px;
+            }
+        }
+        .header {
+            h2 {
+                display: inline;
+            }
         }
     }
     .dropdown-content {
@@ -220,4 +236,12 @@ div.datepicker-wrapper div.datepicker-additional td button {
 div.timepicker-popup div.timepicker-core button.btn.btn-info {
     margin: 0;
     float: left;
+}
+
+
+p.warn-block {
+    color: darkred;
+    font-size: 14px;
+    clear: both;
+    padding-top: 10px;
 }

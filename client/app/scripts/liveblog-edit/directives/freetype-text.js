@@ -46,7 +46,9 @@ export default function freetypeText() {
             validation: '=',
             number: '@',
             order: '@',
-            initial: '@'
+            initial: '@',
+            // pass on the maxlength attribute to the input
+            maxlength: '@'
         }
     };
 }

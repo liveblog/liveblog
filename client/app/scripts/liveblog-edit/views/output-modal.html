@@ -1,0 +1,142 @@
+<div sd-modal data-model="vm.modalActive" class="advertising">
+    <div class="modal-header">
+        <button class="close" ng-click="vm.cancelModal()"><i class="icon-close-small"></i></button>
+        <h3 translate>{{ vm.output._id? 'Edit': 'Add' | translate }} output</h3>
+    </div>
+    <div class="modal-body" style="min-height: 300px;">
+        <div class="item-creation">
+            <fieldset>
+                <div class="field">
+                    <label translate>Output Name<span class="ft-alert" ng-if="vm.notValidName(vm.output, vm.outputs)">{{ vm.notValidName(vm.output, vm.outputs) }}</span></label>
+                    <input type="text" ng-model="vm.output.name" maxlength="24" required>
+                </div>
+                <div class="field">
+                    <label translate>Advertising collection</label>
+                    <select ng-model="vm.output.collection" ng-options="collection._id as collection.name for collection in vm.collections"></select>
+                </div>
+                <div class="field">
+                    <label translate>Adverts frequency</label>
+                    <input type="text" min="4" max="20" ng-model="vm.output.settings.frequency">
+                </div>
+                <div class="field">
+                    <label translate>Order</label>
+                    <select ng-model="vm.output.settings.order" ng-options="order.value as order.title for order in vm.ordering"></select>
+                </div>
+                <div class="field">
+                    <label translate>Background color</label>
+                    <input type="color" ng-model="vm.output.style['background-color']">
+                </div>
+                <div class="field">
+                    <label translate>Background Image</label>
+                    <div class="upload-form">
+                        <section
+                            class="main"
+                            sd-image-preview="vm.output.preview.url"
+                            data-file="vm.output.preview.img"
+                            data-progress-width="vm.output.progress.width">
+
+                            <div
+                                class="upload-progress"
+                                ng-show="vm.output.progress.width">
+                                <div
+                                    class="bar"
+                                    style="width: {{ vm.output.progress.width }}%;"></div>
+                            </div>
+
+                            <div class="computer" ng-if="!vm.output.preview.url" ng-hide="vm.output.progress.width">
+                                <div class="dropzone" ngf-drop="vm.output.preview.img = $files[0]">
+                                    <div class="text" translate>Drop it here</div>
+                                    <div class="input-holder">
+                                        <input type="file" accept="image/*;capture=camera" ngf-select="vm.output.preview.img = $files[0]" label="{{ 'or Select from computer' | translate }}">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="preview" ng-if="vm.output.preview.url">
+                                <div class="crop-area">
+                                    <div class="preview">
+                                        <div class="preview-large">
+                                            <img ng-src="{{vm.output.preview.url}}" class="preview-target-1">
+                                        </div>
+                                    </div>
+                                </div>
+                                <figure class="ads-media-buttons">
+                                    <button class="btn btn-warning pull-right" ng-click="vm.removeOutputImage()" translate>Remove</button>
+                                </figure>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label translate>Logo Image</label>
+                    <div class="upload-form">
+                        <section
+                            class="main"
+                            sd-image-preview="vm.output.preview_logo.url"
+                            data-file="vm.output.preview_logo.img"
+                            data-progress-width="vm.output.preview_logo.width">
+
+                            <div
+                                class="upload-progress"
+                                ng-show="vm.output.progress_logo.width">
+                                <div
+                                    class="bar"
+                                    style="width: {{ vm.output.progress_logo.width }}%;"></div>
+                            </div>
+
+                            <div class="computer" ng-if="!vm.output.preview_logo.url" ng-hide="vm.output.progress_logo.width">
+                                <div class="dropzone" ngf-drop="vm.output.preview_logo.img = $files[0]">
+                                    <div class="text" translate>Drop it here</div>
+                                    <div class="input-holder">
+                                        <input type="file" accept="image/*;capture=camera" ngf-select="vm.output.preview_logo.img = $files[0]" label="{{ 'or Select from computer' | translate }}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="preview" ng-if="vm.output.preview_logo.url">
+                                <div class="crop-area">
+                                    <div class="preview">
+                                        <div class="preview-large">
+                                            <img ng-src="{{vm.output.preview_logo.url}}" class="preview-target-1">
+                                        </div>
+                                    </div>
+                                </div>
+                                <figure class="ads-media-buttons">
+                                    <button class="btn btn-warning pull-right" ng-click="vm.removeLogoImage()" translate>Remove</button>
+                                </figure>
+                            </div>
+                        </section>
+                    </div>
+                </div>
+
+                <div class="field" ng-if="vm.output._id">
+                    <label for="inputEmbedCode" class="control-label" translate>Embed code</label>
+                    <div class="form-input">
+                        <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click><iframe id="liveblog-iframe" width="100%" height="715" src="{{ vm.blog.public_urls.output[vm.output._id] }}" frameborder="0" allowfullscreen></iframe></textarea>
+                        <a href="{{ vm.blog.public_urls.output[vm.output._id] }}" target="_blank">
+                            <span ng-bind="vm.blog.public_urls.output[vm.output._id]"></span> <i class="icon-external"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <label for="inputTheme" class="control-label" translate>Theme</label>
+                    <p class="help-block">Please note: If you change the theme assigned to your output channel, it will also change the respective output channel URL.</p>
+                    <p ng-if="vm.output.theme == 'amp'" class="warn-block"> Be aware that the Liveblog 3 AMP theme does not yet support all Live Blog features and post types.</p>
+                    <div class="form-input">
+                        <select ng-model="vm.output.theme"
+                            ng-options="theme.name as theme.label for theme in vm.themes"></select>
+                        </select>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <div>
+            <button type="button" class="btn btn-default pull-left" translate ng-click="vm.cancelModal()">Cancel</button>
+            <button type="button" class="btn btn-primary btn-info" translate ng-click="vm.saveOutput()"            
+                ng-disabled="vm.notValidName(vm.output, vm.outputs) || !vm.output.name || !vm.readyToSave || vm.disableSave" >Save</button>
+        </div>
+    </div>
+</div>
