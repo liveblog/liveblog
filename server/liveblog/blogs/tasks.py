@@ -158,7 +158,7 @@ def _get_blog(blog_or_id):
     return blog_id, blog
 
 
-@celery.task(soft_time_limit=1800)
+@celery.task(soft_time_limit=5000)
 def publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, save=True):
     blog_id, blog = _get_blog(blog_or_id)
     if not blog:
@@ -176,7 +176,7 @@ def publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sav
         logger.warning('publish_blog_on_s3 for blog "{}" finished.'.format(blog_id))
 
 
-@celery.task(soft_time_limit=1800)
+@celery.task(soft_time_limit=5000)
 def publish_blog_embeds_on_s3(blog_or_id, safe=True, save=True, subtask_save=False):
     blogs = get_resource_service('client_blogs')
     blog_id, blog = _get_blog(blog_or_id)
@@ -196,7 +196,7 @@ def publish_blog_embeds_on_s3(blog_or_id, safe=True, save=True, subtask_save=Fal
     logger.warning('publish_blog_embeds_on_s3 for blog "{}" finished.'.format(blog_id))
 
 
-@celery.task(soft_time_limit=1800)
+@celery.task(soft_time_limit=5000)
 def delete_blog_embeds_on_s3(blog, theme=None, output=None, safe=True):
     logger.warning('delete_blog_embed_on_s3 for blog "{}" started.'.format(blog.get('_id')))
     try:
@@ -210,7 +210,7 @@ def delete_blog_embeds_on_s3(blog, theme=None, output=None, safe=True):
         logger.warning('delete_blog_embed_on_s3 for blog "{}" finished.'.format(blog.get('_id')))
 
 
-@celery.task(soft_time_limit=1800)
+@celery.task(soft_time_limit=5000)
 def publish_bloglist_assets(asset_type):
     assets = copy.deepcopy(BLOGLIST_ASSETS)
     # version_path = os.path.join(BLOGSLIST_DIRECTORY, BLOGSLIST_ASSETS_DIR, assets['version'])
@@ -233,7 +233,7 @@ def publish_bloglist_assets(asset_type):
             app.media.put(file.read(), filename=final_file_name, content_type=content_type)
 
 
-@celery.task(soft_time_limit=1800)
+@celery.task(soft_time_limit=5000)
 def publish_bloglist_embed_on_s3():
     if not app.config['S3_PUBLISH_BLOGSLIST']:
         logger.warning('Blog list embed publishing is disabled.')
