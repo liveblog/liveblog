@@ -105,7 +105,7 @@ gulp.task('build', ['translations', 'templates', 'copy_vendors'], function() {
         });
         gulp.src(build.from.styles)
             .pipe($.concat(config.style))
-            .pipe($.cleanCss())
+            //.pipe($.cleanCss())
             .pipe(gulp.dest(config.dest));
         build.to.styles.push(config.get('style'));
         theme.styles = build.to.styles;
