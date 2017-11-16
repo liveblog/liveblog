@@ -7,7 +7,7 @@ from flask.ext.script import Manager
 from app import get_app
 import flask_s3
 
-app = get_app()
+app = get_app({'INIT_ELASTIC': True})
 manager = Manager(app)
 
 
