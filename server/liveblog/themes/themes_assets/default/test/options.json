@@ -29,7 +29,8 @@
       "stickyPosition": "bottom",
       "gaCode": "UA-XXXXX-Y",
       "language": "de",
-      "showSyndicatedAuthor": true
+      "showSyndicatedAuthor": true,
+      "showUpdateDatetime": true
     },
     "start_date":"2017-03-08T12:30:20+00:00",
     "picture":{
@@ -179,7 +180,8 @@
     "stickyPosition": "bottom",
     "gaCode": "UA-XXXXX-Y",
     "language": "de",
-    "showSyndicatedAuthor": true
+    "showSyndicatedAuthor": true,
+    "showUpdateDatetime": true
   },
     "i18n": {
         "cs": {

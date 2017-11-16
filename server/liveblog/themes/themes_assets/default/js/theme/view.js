@@ -255,7 +255,7 @@ function hideLoadMore(shouldHide) {
  * @param {string} - a post URN
  */
 function updateTimestamps() {
-  var dateElems = helpers.getElems("lb-post-date");
+  var dateElems = helpers.getElems("relativeDate");
   for (var i = 0; i < dateElems.length; i++) {
     var elem = dateElems[i]
       , timestamp = elem.dataset.jsTimestamp;

@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.3.5",
+    "version": "3.3.6",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -16,10 +16,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-870de1ae3b.css"],
-    "devScripts": ["dist/default-d05d45a254.js"],
-    "styles": ["dist/default-870de1ae3b.css"],
-    "scripts": ["dist/default-d05d45a254.js"],
+    "devStyles": ["dist/default-47e66a4bc9.css"],
+    "devScripts": ["dist/default-56d787f47e.js"],
+    "styles": ["dist/default-47e66a4bc9.css"],
+    "scripts": ["dist/default-56d787f47e.js"],
     "options": [
         {
             "name": "datetimeFormat",
@@ -27,6 +27,13 @@
             "type": "datetimeformat",
             "default": "lll",
             "help": "Sets the date time format to be used in the embed. Please enter a custom format in valid moment.js format http://momentjs.com/docs/#/parsing/string-format"
+        },
+        {
+            "name": "showUpdateDatetime",
+            "label": "Show post update time",
+            "type": "checkbox",
+            "default": false,
+            "help": "If activated, users will see an additional timestamp, when the post has been updated"
         },
         {
             "name": "postsPerPage",
