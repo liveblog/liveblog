@@ -512,8 +512,6 @@
 
   .lb-post-date {
       padding-right: 20px;
-      font-size: .9em;
-      color: @grey;
   }
 
   .lb-post-date__fulldate {
@@ -823,10 +821,25 @@ lb-producer__author:before {
       opacity: 0;
   }
 
+  .lb-post-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-left: 60px;
+  }
+
+  .lb-post-updated {
+    color: @grey;
+    font-size: .9em;
+    margin-top: 20px;
+    margin-bottom: -20px;
+  }
+
   .lb-post-actions {
     position: relative;
     text-align: right;
-    margin-top: 10px;
+    margin-top: 20px;
+    margin-left: auto;
     margin-bottom: -20px;
     height: 24px;
     visibility: visible;
@@ -1152,6 +1165,10 @@ body .scorecard-top__info {
           float: none;
       }
 
+      .lb-post-bottom {
+        margin-left: 0px;
+      }
+
       .sorting-bar {
           margin-top: -6px;
       }
@@ -1328,6 +1345,22 @@ body .scorecard-top__info {
       form.comment {
         padding: 20px;
         margin-top: 14px;
+      }
+
+      .lb-post-bottom {
+        flex-direction: column;
+        align-items: initial;
+        > *:last-child {
+          margin-bottom: -20px;
+        }
+      }
+
+      .lb-post-updated {
+        margin-bottom: -5px;
+      }
+
+      .lb-post-actions {
+
       }
 
       .lb-post-shareBox {
