@@ -4,16 +4,18 @@
 
 'use strict';
 
-var helpers = require('./helpers');
-var templates = require('./templates');
-var Slideshow = require('./slideshow');
-var Permalink = require('./permalink');
-
-var timelineElem = document.querySelectorAll(".lb-posts.normal")
-  , loadMorePostsButton = helpers.getElems("load-more-posts")
-  , emptyMessage = helpers.getElems("empty-message");
+const helpers = require('./helpers');
+const templates = require('./templates');
+const Slideshow = require('./slideshow');
+const Permalink = require('./permalink');
 
 const permalink = new Permalink();
+const els = {
+  timelineSticky: document.querySelector("[data-timeline-sticky]"),
+  timelineNormal: document.querySelector("[data-timeline-normal]"),
+  emptyMessage: document.querySelector("[data-empty-message]"),
+  loadMore: document.querySelector("[data-load-more]")
+};
 
 /**
  * Replace the current timeline unconditionally.
@@ -31,13 +33,10 @@ function renderTimeline(api_response) {
     }));
 
   });
-  if (renderedPosts.length) {
-    emptyMessage[0].classList.toggle("mod--displaynone", true);
-    timelineElem[0].innerHTML = renderedPosts.join("");
-  } else {
-    emptyMessage[0].classList.toggle("mod--displaynone", false);
-    timelineElem[0].innerHTML = '';
-  }
+
+  els.emptyMessage.classList.toggle('mod--displaynone', Boolean(renderedPosts.length));
+  els.timelineNormal.innerHTML = renderedPosts.length ? renderedPosts.join('') : '';
+
   updateTimestamps();
   loadEmbeds();
   attachSlideshow();
@@ -62,24 +61,21 @@ function renderPosts(api_response) {
       deletePost(post._id);
       continue; // early
     }
-    const elem = helpers.getElems('[data-js-post-id=\"' + post._id + '\"]');
+    const elem = document.querySelector(`[data-post-id="${post._id}"]`);
     const displaynone = !!api_response.requestOpts.fromDate &&
-                    !window.LB.settings.autoApplyUpdates &&
-                    !elem.length;
-    var renderedPost = templates.post({
+                        !window.LB.settings.autoApplyUpdates &&
+                        !elem.length;
+    const rendered = templates.post({
       item: post,
       settings: window.LB.settings,
       assets_root: window.LB.assets_root,
       displaynone: displaynone
     });
-    if (!api_response.requestOpts.page) {
-      const updated = updatePost(post._id, renderedPost);
-      if ( updated ) {
-        continue; // early
-      }
-    }
 
-    renderedPosts.push(renderedPost); // create operation
+    if ( updatePost(post, rendered) ) {
+      continue;
+    }
+    renderedPosts.push({ html: rendered, data: post }); // create operation
   }
 
   if (!renderedPosts.length) {
@@ -88,9 +84,7 @@ function renderPosts(api_response) {
 
   renderedPosts.reverse();
 
-  addPosts(renderedPosts, { // if creates
-    position: api_response.requestOpts.fromDate ? "top" : "bottom"
-  });
+  addPosts(renderedPosts, api_response.requestOpts.fromDate ? 'afterbegin' : 'beforeend');
 
   loadEmbeds();
 }
@@ -99,24 +93,17 @@ function renderPosts(api_response) {
  * Add post nodes to DOM, do so regardless of settings.autoApplyUpdates,
  * but rather set them to NOT BE DISPLAYED if auto-apply is false.
  * This way we don't have to mess with two stacks of posts.
- * @param {array} posts - an array of Liveblog post items
- * @param {object} opts - keyword args
- * @param {string} opts.position - top or bottom
+ * @param {collection} posts - an array of object html, data for posts.
+ * @param {string} position - afterbegin or beforeend
  */
-function addPosts(posts, opts) {
-  opts = opts || {};
-  opts.position = opts.position || "bottom";
+function addPosts(posts, position) {
 
-  var postsHTML = ""
-    , position = opts.position === "top"
-        ? "afterbegin" // insertAdjacentHTML API => after start of node
-        : "beforeend"; // insertAdjacentHTML API => before end of node
+  const timelineNormal = posts.reduce((html, post) => post.data.sticky ? '' : html.concat(post.html), '');
+  const timelineSticky = posts.reduce((html, post) => post.data.sticky ? html.concat(post.html) : '', '');
 
-  for (var i = posts.length - 1; i >= 0; i--) {
-    postsHTML += posts[i];
-  }
+  els.timelineNormal.insertAdjacentHTML(position, timelineNormal);
+  els.timelineSticky.insertAdjacentHTML(position, timelineSticky);
 
-  timelineElem[0].insertAdjacentHTML(position, postsHTML);
   checkPending();
   attachSlideshow();
   attachPermalink();
@@ -124,9 +111,9 @@ function addPosts(posts, opts) {
 }
 
 function checkPending() {
-  let pending = document.querySelectorAll("[data-js-post-id].mod--displaynone"),
-    one = document.querySelectorAll('[data-one-new-update]')[0].classList,
-    updates = document.querySelectorAll('[data-new-updates]')[0].classList;
+  let pending = document.querySelectorAll("[data-post-id].mod--displaynone"),
+    one = document.querySelector('[data-one-new-update]').classList,
+    updates = document.querySelector('[data-new-updates]').classList;
   if (pending.length === 1) {
     one.toggle('mod--displaynone', false);
     updates.toggle('mod--displaynone', true);
@@ -142,27 +129,35 @@ function checkPending() {
  * Delete post <article> DOM node by data attribute.
  * @param {string} - a post URN
  */
-function deletePost(postId) {
-  var elem = helpers.getElems('[data-js-post-id=\"' + postId + '\"]');
-  if (elem.length) {
-    elem[0].remove();
+function deletePost(id) {
+  var elem = document.querySelector(`[data-post-id="${id}"]`);
+  if (elem) {
+    elem.remove();
   }
 }
 
 /**
- * Delete post <article> DOM node by data attribute.
+ * Update post <article> DOM node by data attribute.
  * @param {string} - a post URN
+ * @param {string} - a post rendered HTML
  */
-function updatePost(postId, renderedPost) {
-  var elem = helpers.getElems('[data-js-post-id=\"' + postId + '\"]');
-  if (elem.length) {
-    elem[0].outerHTML = renderedPost;
-    attachSlideshow();
-    attachPermalink();
-    attachShareBox();
-    return true;
+function updatePost(post, rendered) {
+  const elem = document.querySelector(`[data-post-id="${post._id}"]`);
+  if (!elem) {
+    return false;
   }
-  return false;
+
+  // has change the sticky status so we should delete it and add it again.
+  if (post.sticky !== (elem.getAttribute('data-post-sticky').toLowerCase() === 'true') ) {
+    deletePost(post._id);
+    return false;
+  }
+
+  elem.outerHTML = rendered;
+  attachSlideshow();
+  attachPermalink();
+  attachShareBox();
+  return true;
 }
 
 /**
@@ -240,13 +235,12 @@ function toggleSortDropdown(open) {
 }
 
 /**
- * Conditionally hide load-more-posts button.
- * @param {bool} shouldToggle - true => hide
+ * Conditionally hide load-more button.
+ * @param {bool} hide
  */
-function hideLoadMore(shouldHide) {
-  if (loadMorePostsButton.length > 0) {
-    loadMorePostsButton[0].classList.toggle(
-      "mod--hide", shouldHide);
+function hideLoadMore(hide) {
+  if (els.loadMore) {
+    els.loadMore.classList.toggle('mod--hide', hide);
   }
 }
 
@@ -339,27 +333,21 @@ function checkPermalink(posts) {
 }
 
 function permalinkScroll() {
-  var scrollElem;
-  var found = false;
+  const scrollElem = document.querySelector(`[data-post-id="${permalink._id}"]`);
 
-  scrollElem = helpers.getElems('[data-js-post-id=\"' + permalink._id + '\"]');
-
-  if (scrollElem.length > 0) {
-    scrollElem[0].classList.add('lb-post-permalink-selected');
-    scrollElem[0].scrollIntoView();
-    found = true;
+  if (scrollElem) {
+    scrollElem.classList.add('lb-post-permalink-selected');
+    scrollElem.scrollIntoView();
+    return true;
   }
 
-  return found;
+  return false;
 }
 
 module.exports = {
-  addPosts: addPosts,
-  deletePost: deletePost,
   displayNewPosts: displayNewPosts,
   renderTimeline: renderTimeline,
   renderPosts: renderPosts,
-  updatePost: updatePost,
   updateTimestamps: updateTimestamps,
   hideLoadMore: hideLoadMore,
   toggleSortBtn: toggleSortBtn,

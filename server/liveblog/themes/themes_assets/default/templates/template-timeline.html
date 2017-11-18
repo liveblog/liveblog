@@ -1,7 +1,7 @@
 {% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
 
 {% block timeline %}
-<div class="lb-timeline {{ settings.language }}">
+<div data-timeline class="lb-timeline {{ settings.language }}">
   {% if settings.showTitle and blog.title %}
     <h1>{{ blog.title }}</h1>
   {% endif %}
@@ -18,7 +18,7 @@
 
   {% if settings.stickyPosition == 'top' and api_response.stickyPosts._items|length > 0 %}
     <div class="timeline-top timeline-top--loaded">
-      <section class="lb-posts list-group">
+      <section data-timeline-sticky class="lb-posts list-group">
         {% for item in api_response.stickyPosts._items %}
           {% if not item.deleted %}
             {% include "template-post.html" %}
@@ -101,7 +101,7 @@
         <div>{{ translate("See new updates") }}</div>
       </div>
     {% if settings.stickyPosition == 'bottom' and api_response.stickyPosts._items|length > 0 %}
-      <section class="lb-posts list-group sticky">
+      <section data-timeline-sticky class="lb-posts list-group sticky">
         {% for item in api_response.stickyPosts._items %}
           {% if not item.deleted %}
             {% include "template-post.html" %}
@@ -112,7 +112,7 @@
       <div data-empty-message class="lb-post empty-message {% if api_response.posts._items|length %}mod--displaynone{% endif %}">
         <div>{{ translate("No posts for now") }}</div>
       </div>
-      <section class="lb-posts list-group normal">
+      <section data-timeline-normal class="lb-posts list-group normal">
         {% if api_response.posts._items|length > 0 %}
             {% for item in api_response.posts._items %}
               {% if not item.deleted %}
@@ -122,10 +122,10 @@
         {% endif %}
       </section>
       {% if api_response.posts._meta.max_results < api_response.posts._meta.total %}
-        <button class="lb-button load-more-posts" data-js-loadmore>
+        <button data-load-more class="lb-button load-more-posts">
             {{ translate("Load more posts") }}
         </button>
-    {% endif %}
+      {% endif %}
   </div>
   <!-- Timeline End -->
 
