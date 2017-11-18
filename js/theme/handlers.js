@@ -33,7 +33,7 @@ const sendComment = (e) => {
 };
 
 var showPendings = (e) => {
-  let pendings = document.querySelectorAll("[data-js-post-id].mod--displaynone");
+  let pendings = document.querySelectorAll('[data-post-id].mod--displaynone');
   pendings.forEach((pending) => {
     pending.classList.toggle('mod--displaynone', false);
   });
@@ -42,7 +42,7 @@ var showPendings = (e) => {
 
 var buttons = {
   handlers: {
-    "[data-js-loadmore]": () => {
+    "[data-load-more]": () => {
       viewmodel.loadPostsPage()
         .then(view.renderPosts)
         .then(view.displayNewPosts)
