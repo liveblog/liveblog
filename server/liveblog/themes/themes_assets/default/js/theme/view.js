@@ -62,9 +62,9 @@ function renderPosts(api_response) {
       continue; // early
     }
     const elem = document.querySelector(`[data-post-id="${post._id}"]`);
-    const displaynone = !!api_response.requestOpts.fromDate &&
+    const displaynone = api_response.requestOpts.fromDate &&
                         !window.LB.settings.autoApplyUpdates &&
-                        !elem.length;
+                        !elem;
     const rendered = templates.post({
       item: post,
       settings: window.LB.settings,
@@ -81,8 +81,6 @@ function renderPosts(api_response) {
   if (!renderedPosts.length) {
     return; // early
   }
-
-  renderedPosts.reverse();
 
   addPosts(renderedPosts, api_response.requestOpts.fromDate ? 'afterbegin' : 'beforeend');
 
