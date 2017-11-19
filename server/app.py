@@ -54,7 +54,7 @@ def get_app(config=None):
     config['DOMAIN'] = {}
 
     # Create superdesk app instance.
-    app = superdesk_app(config, media_storage, init_elastic=config.get('INIT_ELASTIC',False))
+    app = superdesk_app(config, media_storage, init_elastic=config.get('INIT_ELASTIC', False))
 
     # Add custom jinja2 template loader.
     custom_loader = jinja2.ChoiceLoader([
