@@ -16,7 +16,7 @@
     <img src="{{ blog.picture_url }}" />
   {% endif %}
 
-  {% if settings.stickyPosition == 'top' and api_response.stickyPosts._items|length > 0 %}
+  {% if settings.stickyPosition == 'top'%}
     <div class="timeline-top timeline-top--loaded">
       <section data-timeline-sticky class="lb-posts list-group">
         {% for item in api_response.stickyPosts._items %}
@@ -100,7 +100,7 @@
       <div data-new-updates class="lb-post new-updates mod--displaynone">
         <div>{{ translate("See new updates") }}</div>
       </div>
-    {% if settings.stickyPosition == 'bottom' and api_response.stickyPosts._items|length > 0 %}
+    {% if settings.stickyPosition == 'bottom' %}
       <section data-timeline-sticky class="lb-posts list-group sticky">
         {% for item in api_response.stickyPosts._items %}
           {% if not item.deleted %}

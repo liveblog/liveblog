@@ -98,8 +98,8 @@ vm.getPosts = function(opts) {
     sticky: opts.sticky
   });
 
-  var page = opts.fromDate ? 1 : opts.page;
-  var qs = '?max_results=' + settings.postsPerPage + '&page=' + page + '&source='
+  var page = opts.fromDate? '' : `&page=${opts.page?opts.page:'1'}`;
+  var qs = '?max_results=' + settings.postsPerPage + page + '&source='
     , fullPath = endpoint + qs + dbQuery;
 
   return helpers.getJSON(fullPath)
@@ -159,8 +159,7 @@ vm.loadPosts = function(opts) {
 vm.updateViewModel = function(api_response) {
   var self = this;
 
-  if ((!api_response.requestOpts.fromDate || api_response.requestOpts.sort)
-        && api_response.requestOpts.sort !== self.settings.postOrder) { // Means we're not polling
+  if (!api_response.requestOpts.fromDate) { // Means we're not polling
     view.hideLoadMore(self.isTimelineEnd(api_response)); // the end?
   } else { // Means we're polling for new posts
     if (!api_response._items.length) {
@@ -238,7 +237,7 @@ vm.getQuery = function(opts) {
       "filtered": {
         "filter": {
           "and": [
-            // @TODO: remove this so we can have unpublish posts aswell.
+            {"term": {"sticky": false}},
             {"term": {"post_status": "open"}},
             {"range": {"_updated": {"lt": this.vm ? this.vm.timeInitialized : new Date().toISOString()}}}
           ]
@@ -253,9 +252,12 @@ vm.getQuery = function(opts) {
   };
 
   if (opts.fromDate) {
-    query.query.filtered.filter.and[1].range._updated = {
+    query.query.filtered.filter.and[2].range._updated = {
       "gt": opts.fromDate
     };
+    // @TODO: remove `post_status` aswell so we can have unpublish posts
+    // remove sticky posts from update polling request.
+    query.query.filtered.filter.and.splice(0,1);
   }
 
   if (opts.highlightsOnly === true) {
