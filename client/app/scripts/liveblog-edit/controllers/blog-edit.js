@@ -92,7 +92,7 @@ export default function BlogEditController(
             return _.map(vm.editor.get(), function(block) {
                 return {
                     group_type: 'default',
-                    text: block.text.replace(/(^<div>)|(<\/div>$)/g, '').replace(/(<br>$)/g, ''),
+                    text: block.text,
                     meta: block.meta,
                     item_type: block.type
                 };
