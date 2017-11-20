@@ -151,4 +151,10 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
     <!-- item end -->
   {% endif %}
 
+  {% if settings.showUpdateDatetime and (item.content_updated_date != item.firstcreated) and item.post_items_type != "advertisement" %}
+    <div class="lb-post-updated">
+      <span>{{ translate('Updated') }}</span> <span class="lb-post-updated-time" >{{item.content_updated_date | date('')}}</span>
+    </div>
+  {% endif %}
+
 </article>
