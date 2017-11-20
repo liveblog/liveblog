@@ -24,10 +24,13 @@ const els = {
  */
 function renderTimeline(api_response) {
   var renderedPosts = [];
+  // for translation macro purposes 
+  var optionsObj = {i18n: window.LB.i18n};
 
   api_response._items.forEach((post) => {
     renderedPosts.push(templates.post({
       item: post,
+      options: optionsObj,
       settings: window.LB.settings,
       assets_root: window.LB.assets_root
     }));
@@ -65,9 +68,13 @@ function renderPosts(api_response) {
     const displaynone = api_response.requestOpts.fromDate &&
                         !window.LB.settings.autoApplyUpdates &&
                         !elem;
+    // for translation macro purposes                    
+    var optionsObj = {i18n: window.LB.i18n};
+  
     const rendered = templates.post({
       item: post,
       settings: window.LB.settings,
+      options: optionsObj,
       assets_root: window.LB.assets_root,
       displaynone: displaynone
     });
