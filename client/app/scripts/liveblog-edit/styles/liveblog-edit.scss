@@ -438,20 +438,22 @@
                                     &:before {
                                         content: "delete";
                                     }
-                                    &:active {
-                                        @include box-shadow(inset 0 2px 0px multiply($btnDefaultColor,rgba(0,0,0,12%)));
-                                    }
+// @TODO: superdesk missing
+//                                    &:active {
+//                                        @include box-shadow(inset 0 2px 0px multiply($btnDefaultColor,rgba(0,0,0,12%)));
+//                                    }
                                     &:hover {
                                         color: #d70014;
                                     }
                                 }
-                                .st-block-ui-btn--deny-delete {
-                                    @include buttonStates(#CDCDCD, $black); // needed to give a no transparent background in order to hide the cross
-                                    &:active {
-                                        @include box-shadow(inset 0 2px 0px multiply($btnDangerColor,rgba(0,0,0,12%)));
-                                    }
-                                    &:before {content: "cancel"; }
-                                }
+// @TODO: superdesk missing
+//                                .st-block-ui-btn--deny-delete {
+//                                    @include buttonStates(#CDCDCD, $black); // needed to give a no transparent background in order to hide the cross
+//                                    &:active {
+//                                        @include box-shadow(inset 0 2px 0px multiply($btnDangerColor,rgba(0,0,0,12%)));
+//                                    }
+//                                    &:before {content: "cancel"; }
+//                                }
                             }
                             &__dropzone {
                                 background-color: transparent; // prevent style from sir-trevor.css

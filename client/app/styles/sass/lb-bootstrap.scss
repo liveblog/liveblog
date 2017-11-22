@@ -24,9 +24,6 @@
 @import '~superdesk-core/styles/sass/tables';
 
 // Dropdowns
-@import '~superdesk-core/styles/sass/dropdowns/basic-dropdown';
-@import '~superdesk-core/styles/sass/dropdowns/nested-dropdown';
-@import '~superdesk-core/styles/sass/dropdowns/navigation-dropdown';
 @import '~superdesk-core/styles/sass/dropdowns/input-dropdown';
 
 // Components: common
@@ -38,10 +35,8 @@
 @import '~superdesk-core/styles/sass/avatars';
 
 // Components: Buttons & Alerts
-@import '~superdesk-core/styles/sass/buttons';
-@import '~superdesk-core/styles/sass/buttons/toggle-buttons';
-@import '~superdesk-core/styles/sass/buttons/basic-buttons';
 @import '~superdesk-core/styles/sass/button-groups';
+@import '~superdesk-core/styles/sass/buttons/toggle-buttons';
 @import '~superdesk-core/styles/sass/alerts'; // Note: alerts share common CSS with buttons and thus have styles in buttons.scss
 
 // Components: Nav

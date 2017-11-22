@@ -25,6 +25,7 @@ import 'angular-embed/dist/angular-embed';
 import 'angular-contenteditable';
 import 'angular-messages';
 import 'lr-infinite-scroll';
+import 'superdesk-ui-framework';
 
 import _ from 'lodash';
 import moment from 'moment-timezone';
@@ -113,6 +114,8 @@ let sdCore = angular.module('superdesk.core', [
     'ngRoute',
     'ngResource',
     'ngFileUpload',
+
+    'superdesk-ui',
 
     'ui.bootstrap',
 
