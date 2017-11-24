@@ -1,5 +1,3 @@
-import userSelectTpl from 'scripts/apps/desks/views/user-select.ng1';
-
 lbUserSelectList.$inject = ['api'];
 
 export default function lbUserSelectList(api) {
@@ -8,7 +6,7 @@ export default function lbUserSelectList(api) {
             members: '=',
             onchoose: '&'
         },
-        template: userSelectTpl,
+        templateUrl: 'scripts/apps/desks/views/user-select.html',
         link: function (scope, elem, attrs) {
             var ARROW_UP = 38, ARROW_DOWN = 40, ENTER = 13;
 

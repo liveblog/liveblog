@@ -13,36 +13,37 @@ module.exports = function makeConfig(grunt) {
         appConfigPath = path.join(process.cwd(), grunt.option('config'));
     }
 
-    var sdConfig = lodash.defaultsDeep(require(appConfigPath)(grunt), getDefaults(grunt));
-
+    const sdConfig = lodash.defaultsDeep(require(appConfigPath)(grunt), getDefaults(grunt));
 
     // shouldExclude returns true if the path p should be excluded from loaders
     // such as 'babel' or 'eslint'. This is to avoid including node_modules into
     // these loaders, but not node modules that are superdesk apps.
-    const shouldExclude = function(p) {
+    const shouldExclude = function (p) {
         // don't exclude anything outside node_modules
         if (p.indexOf('node_modules') === -1) {
             return false;
         }
+
         // include only 'superdesk-core' and valid modules inside node_modules
         let validModules = ['superdesk-core'].concat(sdConfig.apps);
-        return !validModules.some((app) => p.indexOf(app) > -1);
+        return !validModules.some(app => p.indexOf(app) > -1);
     };
 
+    // isEmbedded will be true when the app is embedded into the main repo as a
+    // node module.
+    const isEmbedded = require('fs').existsSync('./node_modules/superdesk-core');
+
     return {
-        cache: true,
-        debug: true,
         entry: {
-            app: ['app/scripts/index.js']
+            app: 'app/scripts/index.js'
         },
+
         output: {
             path: path.join(process.cwd(), 'dist'),
             filename: '[name].bundle.js',
             chunkFilename: '[id].bundle.js'
         },
-        stats: {
-          errorDetails: true,
-        },
+
         plugins: [
             new webpack.ProvidePlugin({
                 '$': 'jquery',
@@ -58,18 +59,18 @@ module.exports = function makeConfig(grunt) {
                 __SUPERDESK_CONFIG__: JSON.stringify(sdConfig)
             })
         ],
+
         resolve: {
-            root: [
+            modules: [
                 __dirname,
-                //path.join(__dirname, '/scripts'),
                 path.join(__dirname, '/app'),
                 path.join(__dirname, '/app/scripts'),
                 path.join(__dirname, '/app/styles/sass'),
                 path.join(__dirname, '/node_modules/superdesk-core/scripts'),
                 path.join(__dirname, '/node_modules/superdesk-core/styles/sass'),
-                path.join(__dirname, '/node_modules/superdesk-core')
+                path.join(__dirname, '/node_modules/superdesk-core'),
+                'node_modules'
             ],
-            modulesDirectories: [ 'node_modules' ],
             alias: {
                 //'moment-timezone': 'moment-timezone/builds/moment-timezone-with-data-2010-2020',
                 'rangy-saverestore': 'rangy/lib/rangy-selectionsaverestore',
@@ -79,17 +80,29 @@ module.exports = function makeConfig(grunt) {
                 'i18n': path.join(process.cwd(), 'dist', 'locale.generated.js'),
                 // ensure that react is loaded only once (3rd party apps can load more...)
                 'react': path.resolve('./node_modules/react')
- 
+
             },
-            extensions: ['', '.js', '.jsx']
+            extensions: ['.js', '.jsx']
         },
+
         module: {
-            loaders: [
+            rules: [
+                // {
+                //     enforce: "pre",
+                //     test: /\.jsx?$/,
+                //     loader: 'eslint-loader',
+                //     // superdesk apps handle their own linter
+                //     exclude: (p) => p.indexOf('node_modules') !== -1 || (sdConfig.apps && sdConfig.apps.some(app => p.indexOf(app) > -1)),
+                //     options: {
+                //         configFile: isEmbedded ? './node_modules/superdesk-core/.eslintrc.json' : './.eslintrc.json',
+                //         ignorePath: isEmbedded ? './node_modules/superdesk-core/.eslintignore' : './.eslintignore'
+                //     }
+                // },
                 {
                     test: /\.jsx?$/,
                     exclude: shouldExclude,
-                    loader: 'babel',
-                    query: {
+                    loader: 'babel-loader',
+                    options: {
                         cacheDirectory: true,
                         presets: ['es2015', 'react'],
                         plugins: ['transform-object-rest-spread']
@@ -100,27 +113,42 @@ module.exports = function makeConfig(grunt) {
                     loader: 'html-loader'
                 },
                 {
-                    test: /\.ng1$/,
+                    test: /\.css$/,
                     use: [
-                        { loader: 'ngtemplate-loader' },
-                        { loader: 'html-loader' }
+                        'style-loader',
+                        'css-loader'
                     ]
                 },
                 {
-                    test: /\.css/,
-                    loader: 'style!css'
+                    test: /\.less$/,
+                    use: [
+                        'style-loader',
+                        'css-loader',
+                        'less-loader',
+                    ]
                 },
                 {
                     test: /\.scss$/,
-                    loader: 'style!css!sass'
+                    use: [
+                        'style-loader',
+                        'css-loader',
+                        'sass-loader'
+                    ]
+                },
+                {
+                    test: /\.json$/,
+                    use: ['json-loader']
                 },
                 {
                     test: /\.(png|gif|jpeg|jpg|woff|woff2|eot|ttf|svg)(\?.*$|$)/,
                     loader: 'file-loader'
                 },
                 {
-                    test: /\.json$/,
-                    loader: 'json-loader'
+                    test: /\.ng1$/,
+                    use: [
+                        'ngtemplate-loader',
+                        'html-loader'
+                    ]
                 }
             ]
         }
@@ -157,6 +185,11 @@ function getDefaults(grunt) {
             key: process.env.IFRAMELY_KEY || ''
         },
 
+        // google settings
+        google: {
+            key: process.env.GOOGLE_KEY || ''
+        },
+
         // settings for various analytics
         analytics: {
             piwik: {
@@ -174,32 +207,13 @@ function getDefaults(grunt) {
             disableEditorToolbar: grunt.option('disableEditorToolbar')
         },
 
-        // if environment name is not set
-        isTestEnvironment: !!grunt.option('environmentName'),
-
-        // environment name
-        environmentName: grunt.option('environmentName'),
-
-        // route to be redirected to from '/'
-        defaultRoute: '/liveblog',
-
-        // override language translations
-        langOverride: {},
-
-        // app features
-        features: {
-            // tansa spellchecker
-            useTansaProofing: false
-        },
-
-        debug: grunt.option('debug-mode') || false,
         embedly: {
             key: grunt.option('embedly-key') || process.env.EMBEDLY_KEY || ''
         },
         facebookAppId: grunt.option('facebook-appid') || process.env.FACEBOOK_APP_ID || '',
         syndication: process.env.SYNDICATION || false,
         marketplace: process.env.MARKETPLACE || false,
-        themeCreationRestrictions: {team: 3},
+        themeCreationRestrictions: { team: 3 },
         excludedTheme: 'angular',
         assignableUsers: {
             solo: 2,
@@ -212,7 +226,6 @@ function getDefaults(grunt) {
         },
 
         maxContentLength: process.env.MAX_CONTENT_LENGTH || 8 * 1024 * 1024,
-
         // default timezone for the app
         defaultTimezone: grunt.option('defaultTimezone') || 'Europe/London',
 
@@ -230,6 +243,46 @@ function getDefaults(grunt) {
 
         system: {
             dateTimeTZ: 'YYYY-MM-DD[T]HH:mm:ssZ'
+        },
+
+        // if environment name is not set
+        isTestEnvironment: !!grunt.option('environmentName') || !!process.env.SUPERDESK_ENVIRONMENT,
+
+        // environment name
+        environmentName: grunt.option('environmentName') || process.env.SUPERDESK_ENVIRONMENT,
+
+        // route to be redirected to from '/'
+        defaultRoute: '/liveblog',
+
+        // override language translations
+        langOverride: {},
+
+        // app features
+        features: {
+            // tansa spellchecker
+            useTansaProofing: false,
+
+            // replace editor2
+            onlyEditor3: false,
+
+            // enable highlights (commenting and annotations) in editor3
+            editorHighlights: false
+        },
+
+        // tansa config
+        tansa: {
+            profile: {
+                nb: 1,
+                nn: 2
+            }
+        },
+
+        // workspace defaults
+        workspace: {
+            ingest: false,
+            content: false,
+            tasks: false,
+            analytics: false
         },
 
         // You might think this empty object is useless.

@@ -3,7 +3,7 @@
 var path = require('path');
 var makeConfig = require('../../webpack.config.js');
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     var webpackConfig = makeConfig(grunt);
 
     return {
@@ -19,10 +19,8 @@ module.exports = function(grunt) {
             }
         },
         start: {
-            keepAlive: true,
             webpack: {
                 devtool: 'eval',
-                debug: true,
                 entry: {
                     app: ['webpack-dev-server/client?http://0.0.0.0:9000/'].concat(webpackConfig.entry.app)
                 },
@@ -43,8 +41,7 @@ module.exports = function(grunt) {
                     path: path.join(process.cwd(), 'docs/dist'),
                     publicPath: 'docs/dist'
                 },
-                devtool: 'eval',
-                debug: true
+                devtool: 'eval'
             }
         }
     };
