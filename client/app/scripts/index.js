@@ -76,7 +76,7 @@ import 'superdesk-core/scripts/apps/desks';
 import 'superdesk-core/scripts/apps/authoring';
 import 'superdesk-core/scripts/apps/search';
 import 'superdesk-core/scripts/apps/legal-archive';
-// import 'superdesk-core/scripts/apps/stream';
+import 'superdesk-core/scripts/apps/stream';
 import 'superdesk-core/scripts/apps/packaging';
 import 'superdesk-core/scripts/apps/highlights';
 import 'superdesk-core/scripts/apps/translations';
@@ -116,8 +116,6 @@ let sdCore = angular.module('superdesk.core', [
     'ngFileUpload',
 
     'superdesk-ui',
-
-    'ui.bootstrap',
 
     'superdesk.core.activity',
     'superdesk.core.analytics',
@@ -163,7 +161,7 @@ angular.module('superdesk.apps', [
     'superdesk.apps.dictionaries',
     'superdesk.apps.vocabularies',
     // 'superdesk.apps.searchProviders',
-    // 'superdesk.apps.stream',
+    'superdesk.apps.stream',
     'superdesk.apps.publish', // Can't remove
     'superdesk.apps.templates',
     'superdesk.apps.monitoring',

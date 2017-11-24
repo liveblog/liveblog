@@ -1,4 +1,5 @@
-import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-modal.html';
+
+import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-modal.ng1';
 
 (function() {
     angular.module('liveblog.themes')

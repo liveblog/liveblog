@@ -1,4 +1,4 @@
-import searchFilterTpl from 'scripts/liveblog-marketplace/views/search-filter.html';
+import searchFilterTpl from 'scripts/liveblog-marketplace/views/search-filter.ng1';
 
 lbSearchFilter.$inject = ['MarketplaceActions'];
 
@@ -12,8 +12,8 @@ export default function lbSearchFilter(MarketplaceActions) {
             key: '@',
             id: '@'
         },
-        link: function(scope) {
-            scope.toggleFilter = function(type, value) {
+        link: function (scope) {
+            scope.toggleFilter = function (type, value) {
                 MarketplaceActions.toggleFilter(scope.filters, type, value);
             };
 

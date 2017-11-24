@@ -1,7 +1,7 @@
 import './styles/marketplace.scss';
 import './../flux';
 
-import marketplaceTpl from 'scripts/liveblog-marketplace/views/marketplace.html';
+import marketplaceTpl from 'scripts/liveblog-marketplace/views/marketplace.ng1';
 
 import marketplaceController from './controllers/marketplace';
 
@@ -24,7 +24,7 @@ export default angular
     .directive('lbSearchFilter', lbSearchFilter)
     .directive('lbBlogPreviewModal', lbBlogPreviewModal)
     .directive('lbMarketplaceSwitch', lbMarketplaceSwitch)
-    .config(['superdeskProvider', function(superdesk) {
+    .config(['superdeskProvider', function (superdesk) {
         superdesk
             .activity('/marketplace/', {
                 label: gettext('Marketplace'),
@@ -33,9 +33,11 @@ export default angular
                 category: superdesk.MENU_MAIN,
                 priority: 100,
                 adminTools: true,
-                resolve: {isArchivedFilterSelected: function() {
-                    return false;
-                }}
+                resolve: {
+                    isArchivedFilterSelected: function () {
+                        return false;
+                    }
+                }
             });
     }]);
 

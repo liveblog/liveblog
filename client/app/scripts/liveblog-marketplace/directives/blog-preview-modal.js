@@ -1,4 +1,4 @@
-import previewModalTpl from 'scripts/liveblog-marketplace/views/blog-preview-modal.html';
+import previewModalTpl from 'scripts/liveblog-marketplace/views/blog-preview-modal.ng1';
 
 lbBlogPreviewModal.$inject = ['MarketplaceActions', '$sce'];
 
@@ -8,7 +8,7 @@ export default function lbBlogPreviewModal(MarketplaceActions, $sce) {
         scope: {
             store: '='
         },
-        link: function(scope) {
+        link: function (scope) {
             var iframeAttrs = [
                 'width="100%"',
                 'height="715"',
@@ -23,19 +23,19 @@ export default function lbBlogPreviewModal(MarketplaceActions, $sce) {
             // This is unfortunately not the cleanest way to proceed,
             // but it avoid having a non empty current blog value
             // when closing the modal by clicking outside of it.
-            scope.$watch('embedModal', function(embedModal) {
+            scope.$watch('embedModal', function (embedModal) {
                 if (!embedModal && scope.currentBlog)
                     MarketplaceActions.closeEmbedModal();
             });
 
-            scope.store.connect(function(state) {
+            scope.store.connect(function (state) {
                 scope.embedModal = state.embedModal;
                 scope.currentBlog = state.currentBlog;
 
                 if (state.currentBlog)
                     scope.currentBlog = angular.extend(scope.currentBlog, {
-                        embed: '<iframe '+iframeAttrs+' src="'
-                            + scope.currentBlog.public_url+'"></iframe>',
+                        embed: '<iframe ' + iframeAttrs + ' src="'
+                            + scope.currentBlog.public_url + '"></iframe>',
                         iframeUrl: $sce.trustAsResourceUrl(scope.currentBlog.public_url)
                     });
             });

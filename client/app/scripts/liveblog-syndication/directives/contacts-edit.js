@@ -1,4 +1,4 @@
-import contactsEditFormTpl from 'scripts/liveblog-syndication/views/contacts-edit-form.html';
+import contactsEditFormTpl from 'scripts/liveblog-syndication/views/contacts-edit-form.ng1';
 
 export default function contactsEdit() {
     return {
@@ -8,16 +8,16 @@ export default function contactsEdit() {
             attempted: '='
         },
         require: "^form",
-        link: function(scope, elem, attrs, form) {
+        link: function (scope, elem, attrs, form) {
             if (!scope.contacts) {
                 scope.contacts = [{}];
             }
 
-            scope.addContact = function() {
+            scope.addContact = function () {
                 scope.contacts.push({});
             };
 
-            scope.removeContact = function(index) {
+            scope.removeContact = function (index) {
                 scope.contacts.splice(index, 1);
                 form.$setDirty();
             };

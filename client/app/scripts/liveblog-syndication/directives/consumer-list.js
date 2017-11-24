@@ -1,4 +1,4 @@
-import consumerListItemTpl from 'scripts/liveblog-syndication/views/consumer-list-item.html';
+import consumerListItemTpl from 'scripts/liveblog-syndication/views/consumer-list-item.ng1';
 
 consumerList.$inject = ['api', 'notify', 'modal', '$http', 'config'];
 
@@ -11,13 +11,13 @@ export default function consumerList(api, notify, modal, $http, config) {
             selected: '=',
             done: '='
         },
-        link: function(scope, elem, attrs) {
-            scope.select = function(consumer) {
+        link: function (scope, elem, attrs) {
+            scope.select = function (consumer) {
                 scope.selected = consumer;
             };
 
             // It's called disable, but really, it deletes the consumer
-            scope.disable = function(e, consumerToRemove) {
+            scope.disable = function (e, consumerToRemove) {
                 e.stopPropagation();
 
                 modal.confirm(gettext('Are you sure you want to remove this consumer?'))
@@ -37,11 +37,11 @@ export default function consumerList(api, notify, modal, $http, config) {
                     });
             };
 
-            scope.updateApiKey = function(e, consumer) {
+            scope.updateApiKey = function (e, consumer) {
                 e.stopPropagation();
 
                 modal.confirm(gettext('Are you sure you want to refresh the api key?'))
-                    .then(() => api.save('consumers', consumer, {api_key: ''}))
+                    .then(() => api.save('consumers', consumer, { api_key: '' }))
                     .then((result) => {
                         notify.pop();
                         notify.success(gettext('api key updated.'));
@@ -56,7 +56,7 @@ export default function consumerList(api, notify, modal, $http, config) {
                     });
             };
 
-            scope.checkOnlineStatus = function(e, consumer) {
+            scope.checkOnlineStatus = function (e, consumer) {
                 e.stopPropagation();
 
                 $http({
@@ -70,9 +70,9 @@ export default function consumerList(api, notify, modal, $http, config) {
 
             scope.$on('consumers', (e, data) => {
                 if (scope.consumers
-                && scope.consumers.length > 0
-                && data.consumer
-                && data.consumer.hasOwnProperty('webhook_enabled')) {
+                    && scope.consumers.length > 0
+                    && data.consumer
+                    && data.consumer.hasOwnProperty('webhook_enabled')) {
                     scope.consumers = scope.consumers.map((consumer) => {
                         if (consumer._id === data.consumer._id) {
                             consumer.webhook_enabled = data.consumer.webhook_enabled;

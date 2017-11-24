@@ -97,7 +97,14 @@ module.exports = function makeConfig(grunt) {
                 },
                 {
                     test: /\.html$/,
-                    loader: 'ngtemplate!html'
+                    loader: 'html-loader'
+                },
+                {
+                    test: /\.ng1$/,
+                    use: [
+                        { loader: 'ngtemplate-loader' },
+                        { loader: 'html-loader' }
+                    ]
                 },
                 {
                     test: /\.css/,

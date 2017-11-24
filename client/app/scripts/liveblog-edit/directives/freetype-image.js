@@ -1,4 +1,4 @@
-import freetypeImageTpl from 'scripts/liveblog-edit/views/freetype-image.html';
+import freetypeImageTpl from 'scripts/liveblog-edit/views/freetype-image.ng1';
 
 freetypeImage.$inject = ['$compile', 'modal', 'api', 'upload', 'superdesk', 'urls', 'notify'];
 
@@ -6,10 +6,10 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
     return {
         restrict: 'E',
         templateUrl: freetypeImageTpl,
-        controller: ['$scope', function($scope) {
+        controller: ['$scope', function ($scope) {
 
             $scope.preview = {};
-            $scope.progress = {width: 0};
+            $scope.progress = { width: 0 };
             $scope.saved = false;
 
             // prepare image preview
@@ -26,14 +26,14 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
 
                 $scope.$on('$destroy', sentinel);
             }
-            
+
             let _self = this;
 
             $scope.$watch('preview.img', function () {
                 _self.saveImage();
             });
 
-            this.saveImage = function() {
+            this.saveImage = function () {
                 var form = {};
                 var config = $scope.preview;
                 if (config.img) {
@@ -50,31 +50,31 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
                     url: uploadUrl,
                     data: form
                 })
-                .then((response) => {
-                    if (response.data._status === 'ERR') {
-                        return;
-                    }
-                    var pictureUrl = response.data.renditions.viewImage.href;
+                    .then((response) => {
+                        if (response.data._status === 'ERR') {
+                            return;
+                        }
+                        var pictureUrl = response.data.renditions.viewImage.href;
 
-                    $scope.image.picture_url = pictureUrl;
-                    $scope.image.picture = response.data._id;
+                        $scope.image.picture_url = pictureUrl;
+                        $scope.image.picture = response.data;
 
-                }, (error) => {
-                    notify.error(
-                        error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
-                    );
-                }, (progress) => {
-                    $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
-                }));
+                    }, (error) => {
+                        notify.error(
+                            error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
+                        );
+                    }, (progress) => {
+                        $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
+                    }));
             };
 
-            this.removeImage = function() {
+            this.removeImage = function () {
                 modal
                     .confirm(gettext('Are you sure you want to remove the image?'))
                     .then(() => {
                         $scope.image.picture_url = '';
                         $scope.preview = {};
-                        $scope.progress = {width: 0};
+                        $scope.progress = { width: 0 };
                         $scope.saved = false;
                     });
             };

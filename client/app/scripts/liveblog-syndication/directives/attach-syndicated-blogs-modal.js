@@ -1,4 +1,4 @@
-import attachSyndicatedBlogsModalTpl from 'scripts/liveblog-syndication/views/attach-syndicated-blogs-modal.html';
+import attachSyndicatedBlogsModalTpl from 'scripts/liveblog-syndication/views/attach-syndicated-blogs-modal.ng1';
 
 attachSyndicatedBlogsModal.$inject = ['$q', 'lodash', 'IngestPanelActions'];
 
@@ -8,7 +8,7 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
         scope: {
             store: '='
         },
-        link: function(scope) {
+        link: function (scope) {
             scope.actionName = 'Attach';
 
             scope.store.connect((state) => {
@@ -28,16 +28,16 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
             IngestPanelActions.getProducers();
             scope.blogsToAttach = [];
 
-            var compare = function() {
+            var compare = function () {
                 scope.hasChanged = angular.equals(
                     scope.localProducerBlogIds.sort(),
                     scope.blogsToAttach.sort()
                 );
 
                 var toSyndicate = _.difference(
-                        scope.blogsToAttach,
-                        scope.localProducerBlogIds
-                    ),
+                    scope.blogsToAttach,
+                    scope.localProducerBlogIds
+                ),
                     toUnSyndicate = _.difference(
                         scope.localProducerBlogIds,
                         scope.blogsToAttach
@@ -54,11 +54,11 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
                 }
             };
 
-            scope.cancel = function() {
+            scope.cancel = function () {
                 IngestPanelActions.toggleModal(false);
             };
 
-            scope.selectProducer = function(producerId) {
+            scope.selectProducer = function (producerId) {
                 scope.producers._items.forEach((producer) => {
                     if (producer._id === producerId) {
                         scope.currentProducer = producer;
@@ -68,12 +68,12 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
                 IngestPanelActions.getProducerBlogs(producerId);
             };
 
-            scope.refreshBlogList = function() {
+            scope.refreshBlogList = function () {
                 IngestPanelActions
                     .getProducerBlogs(scope.currentProducer._id);
             };
 
-            scope.isAlreadySyndicated = function(blog) {
+            scope.isAlreadySyndicated = function (blog) {
                 if (scope.localProducerBlogIds.length === 0) {
                     return false;
                 }
@@ -81,7 +81,7 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
                 return scope.localProducerBlogIds.indexOf(blog._id) !== -1;
             };
 
-            scope.check = function(blog) {
+            scope.check = function (blog) {
                 blog.checked = blog.hasOwnProperty('checked') ? !blog.checked : true;
 
                 if (blog.checked && scope.blogsToAttach.indexOf(blog._id) === -1) {
@@ -93,11 +93,11 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
                 compare();
             };
 
-            scope.attach = function() {
+            scope.attach = function () {
                 let toSyndicate = _.difference(
-                        scope.blogsToAttach,
-                        scope.localProducerBlogIds
-                    ),
+                    scope.blogsToAttach,
+                    scope.localProducerBlogIds
+                ),
                     toUnSyndicate = _.difference(
                         scope.localProducerBlogIds,
                         scope.blogsToAttach
@@ -117,7 +117,7 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
                         IngestPanelActions.syndicate(params);
                     } else if (toUnSyndicate.indexOf(blog._id) !== -1) {
                         IngestPanelActions.syndicate(
-                            angular.extend(params, {method: 'DELETE'})
+                            angular.extend(params, { method: 'DELETE' })
                         );
                     }
                 });

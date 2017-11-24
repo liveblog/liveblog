@@ -1,3 +1,5 @@
+import userSelectTpl from 'scripts/apps/desks/views/user-select.ng1';
+
 lbUserSelectList.$inject = ['api'];
 
 export default function lbUserSelectList(api) {
@@ -6,38 +8,40 @@ export default function lbUserSelectList(api) {
             members: '=',
             onchoose: '&'
         },
-        templateUrl: 'scripts/apps/desks/views/user-select.html',
-        link: function(scope, elem, attrs) {
+        template: userSelectTpl,
+        link: function (scope, elem, attrs) {
             var ARROW_UP = 38, ARROW_DOWN = 40, ENTER = 13;
 
             scope.selected = null;
             scope.search = null;
             scope.users = {};
 
-            var _refresh = function() {
+            var _refresh = function () {
                 scope.users = {};
-                return api('users').query({where: JSON.stringify({
-                    $or: [
-                        {username: {$regex: scope.search, $options: '-i'}},
-                        {first_name: {$regex: scope.search, $options: '-i'}},
-                        {last_name: {$regex: scope.search, $options: '-i'}},
-                        {email: {$regex: scope.search, $options: '-i'}}
-                    ]
-                })})
-                .then((result) => {
-                    scope.users = result;
-                    scope.users._items = _.filter(scope.users._items, (item) => {
-                        var found = false;
+                return api('users').query({
+                    where: JSON.stringify({
+                        $or: [
+                            { username: { $regex: scope.search, $options: '-i' } },
+                            { first_name: { $regex: scope.search, $options: '-i' } },
+                            { last_name: { $regex: scope.search, $options: '-i' } },
+                            { email: { $regex: scope.search, $options: '-i' } }
+                        ]
+                    })
+                })
+                    .then((result) => {
+                        scope.users = result;
+                        scope.users._items = _.filter(scope.users._items, (item) => {
+                            var found = false;
 
-                        _.each(scope.members, (member) => {
-                            if (member._id === item._id) {
-                                found = true;
-                            }
+                            _.each(scope.members, (member) => {
+                                if (member._id === item._id) {
+                                    found = true;
+                                }
+                            });
+                            return !found;
                         });
-                        return !found;
+                        scope.selected = null;
                     });
-                    scope.selected = null;
-                });
             };
             var refresh = _.debounce(_refresh, 1000);
 
@@ -81,30 +85,30 @@ export default function lbUserSelectList(api) {
             elem.bind('keydown keypress', (event) => {
                 scope.$apply(() => {
                     switch (event.which) {
-                    case ARROW_UP:
-                        event.preventDefault();
-                        previous();
-                        break;
-                    case ARROW_DOWN:
-                        event.preventDefault();
-                        next();
-                        break;
-                    case ENTER:
-                        event.preventDefault();
-                        if (getSelectedIndex() >= 0) {
-                            scope.choose(scope.selected);
-                        }
-                        break;
+                        case ARROW_UP:
+                            event.preventDefault();
+                            previous();
+                            break;
+                        case ARROW_DOWN:
+                            event.preventDefault();
+                            next();
+                            break;
+                        case ENTER:
+                            event.preventDefault();
+                            if (getSelectedIndex() >= 0) {
+                                scope.choose(scope.selected);
+                            }
+                            break;
                     }
                 });
             });
 
-            scope.choose = function(user) {
-                scope.onchoose({user: user});
+            scope.choose = function (user) {
+                scope.onchoose({ user: user });
                 scope.search = null;
             };
 
-            scope.select = function(user) {
+            scope.select = function (user) {
                 scope.selected = user;
             };
 

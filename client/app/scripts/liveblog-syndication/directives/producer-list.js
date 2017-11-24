@@ -1,4 +1,4 @@
-import producerListItemTpl from 'scripts/liveblog-syndication/views/producer-list-item.html';
+import producerListItemTpl from 'scripts/liveblog-syndication/views/producer-list-item.ng1';
 
 producerList.$inject = ['api', '$http', 'modal', 'config', 'notify'];
 
@@ -11,12 +11,12 @@ export default function producerList(api, $http, modal, config, notify) {
             selected: '=',
             done: '='
         },
-        link: function(scope, elem, attrs) {
-            scope.select = function(producer) {
+        link: function (scope, elem, attrs) {
+            scope.select = function (producer) {
                 scope.selected = producer;
             };
 
-            scope.disable = function(e, producerToRemove) {
+            scope.disable = function (e, producerToRemove) {
                 e.stopPropagation();
 
                 modal.confirm(gettext('Are you sure you want to remove this producer?'))
@@ -30,7 +30,7 @@ export default function producerList(api, $http, modal, config, notify) {
                     });
             };
 
-            scope.checkOnlineStatus = function(e, producer) {
+            scope.checkOnlineStatus = function (e, producer) {
                 e.stopPropagation();
 
                 $http({
@@ -44,9 +44,9 @@ export default function producerList(api, $http, modal, config, notify) {
 
             scope.$on('producers', (e, data) => {
                 if (scope.producers
-                && scope.producers.length > 0
-                && data.producer
-                && data.producer.hasOwnProperty('api_status')) {
+                    && scope.producers.length > 0
+                    && data.producer
+                    && data.producer.hasOwnProperty('api_status')) {
                     scope.producers = scope.producers.map((producer) => {
                         if (producer._id === data.producer._id) {
                             producer.api_status = data.producer.api_status;

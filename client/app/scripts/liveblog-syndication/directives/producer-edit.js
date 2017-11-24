@@ -1,4 +1,4 @@
-import producerEditFormTpl from 'scripts/liveblog-syndication/views/producer-edit-form.html';
+import producerEditFormTpl from 'scripts/liveblog-syndication/views/producer-edit-form.ng1';
 
 producerEdit.$inject = ['api', 'notify', 'lodash'];
 
@@ -11,15 +11,15 @@ export default function producerEdit(api, notify, _) {
             oncancel: '&',
             onupdate: '&'
         },
-        link: function(scope, elem) {
+        link: function (scope, elem) {
             scope.producerForm.attempted = false;
 
-            scope.$watch('producer', function(producer) {
+            scope.$watch('producer', function (producer) {
                 scope.isEditing = producer.hasOwnProperty('_id');
                 scope.origProducer = _.cloneDeep(producer);
             });
 
-            scope.save = function() {
+            scope.save = function () {
                 scope.producerForm.attempted = true;
 
                 if (!scope.producerForm.$valid)
@@ -46,7 +46,7 @@ export default function producerEdit(api, notify, _) {
                 else
                     apiQuery = api.producers.save(data);
 
-                apiQuery.then(function(result) {
+                apiQuery.then(function (result) {
                     var successMsg = gettext('Producer saved.');
 
                     notify.pop();
@@ -54,29 +54,29 @@ export default function producerEdit(api, notify, _) {
 
                     scope.onsave({ producer: result });
                 })
-                .catch(function(err) {
-                    var errorMsg = gettext('An error has occurred. Please try again later.');
+                    .catch(function (err) {
+                        var errorMsg = gettext('An error has occurred. Please try again later.');
 
-                    if (err.data.hasOwnProperty('_error'))
-                        errorMsg = err.data._error.message;
+                        if (err.data.hasOwnProperty('_error'))
+                            errorMsg = err.data._error.message;
 
-                    if (err.data.hasOwnProperty('_issues')) {
-                        Object.keys(err.data._issues).forEach(function(key) {
-                            var issue = err.data._issues[key];
-                            if (typeof issue === 'object') {
-                                if (issue.unique === true)
-                                    issue = gettext('The selected field value is not unique.');
-                            }
-                            scope.producerForm[key].issue = issue;
-                        });
-                    }
+                        if (err.data.hasOwnProperty('_issues')) {
+                            Object.keys(err.data._issues).forEach(function (key) {
+                                var issue = err.data._issues[key];
+                                if (typeof issue === 'object') {
+                                    if (issue.unique === true)
+                                        issue = gettext('The selected field value is not unique.');
+                                }
+                                scope.producerForm[key].issue = issue;
+                            });
+                        }
 
-                    notify.pop();
-                    notify.error(errorMsg);
-                });
+                        notify.pop();
+                        notify.error(errorMsg);
+                    });
             };
 
-            scope.cancel = function() {
+            scope.cancel = function () {
                 scope.oncancel();
             }
         }

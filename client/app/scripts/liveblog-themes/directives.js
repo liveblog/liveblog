@@ -1,3 +1,4 @@
+
 /**
  * This file is part of Superdesk.
  *
@@ -7,7 +8,7 @@
  * AUTHORS and LICENSE files distributed with this source code, or
  * at https://www.sourcefabric.org/superdesk/license
  */
-import dateFormTpl from 'scripts/liveblog-themes/views/date-format.html';
+import dateFormTpl from 'scripts/liveblog-themes/views/date-format.ng1';
 
 (function() {
     angular.module('liveblog.themes')

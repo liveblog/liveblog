@@ -1,11 +1,11 @@
-import syndicationSwitchTpl from 'scripts/liveblog-syndication/views/syndication-switch.html';
+import syndicationSwitchTpl from 'scripts/liveblog-syndication/views/syndication-switch.ng1';
 
 syndicationSwitch.$inject = ['api', '$routeParams'];
 
 export default function syndicationSwitch(api, $routeParams) {
     return {
         templateUrl: syndicationSwitchTpl,
-        link: function(scope) {
+        link: function (scope) {
             scope.enableSyndSwitch = true;
             scope.consumers = [];
 
@@ -15,7 +15,7 @@ export default function syndicationSwitch(api, $routeParams) {
                 }
             };
 
-            api.syndicationOut.query(params).then(function(syndOuts) {
+            api.syndicationOut.query(params).then(function (syndOuts) {
                 if (syndOuts._items.length > 0) {
                     scope.enableSyndSwitch = false;
 
