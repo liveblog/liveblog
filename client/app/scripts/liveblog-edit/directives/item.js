@@ -6,5 +6,5 @@ export default function lbItem() {
             item: '='
         },
         templateUrl: itemTpl,
-    }
+    };
 }

@@ -10,7 +10,7 @@ LiveblogAdvertisingController.$inject = ['$scope', 'api', 'notify', 'gettext',
 
 export default function LiveblogAdvertisingController($scope, api, notify, gettext,
     upload, $templateCache, freetypeService, modal, adsUtilSevice) {
-    adblockDetect(function (adblockDetected) {
+    adblockDetect((adblockDetected) => {
         $scope.adblockDetected = adblockDetected;
     });
     $scope.activeState = 'adverts';
@@ -36,24 +36,24 @@ export default function LiveblogAdvertisingController($scope, api, notify, gette
             name: 'Advertisement Remote',
             template: $templateCache.get(adsRemoteTpl)
         }
-    ]
+    ];
 
-    $scope.changeState = function (state) {
+    $scope.changeState = function(state) {
         $scope.activeState = state;
         switch (state) {
-            case 'collections':
-                loadCollections();
-                break;
-            default:
-                loadAdverts();
+        case 'collections':
+            loadCollections();
+            break;
+        default:
+            loadAdverts();
         }
-    }
+    };
 
-    $scope.openAdvertDialog = function (ad) {
+    $scope.openAdvertDialog = function(ad) {
         if (ad._id) {
             // editing advert
             $scope.advert = angular.copy(ad);
-            angular.forEach($scope.adTypes, function (adType) {
+            angular.forEach($scope.adTypes, (adType) => {
                 if (adType.name === ad.type) {
                     $scope.advertType = adType;
                 }
@@ -64,26 +64,25 @@ export default function LiveblogAdvertisingController($scope, api, notify, gette
             $scope.advertType = ad;
         }
         $scope.advertModalActive = true;
-    }
-    $scope.cancelAdvertCreate = function () {
+    };
+    $scope.cancelAdvertCreate = function() {
         $scope.freetypeControl.reset();
         $scope.advertModalActive = false;
-    }
+    };
 
-    function loadAdverts(silent) {
-        silent = silent || false;
+    function loadAdverts(silent = false) {
         $scope.advertsLoading = !silent;
-        return api('advertisements').query({ where: { deleted: false } })
-            .then(function (data) {
+        return api('advertisements').query({where: {deleted: false}})
+            .then((data) => {
                 $scope.adverts = data._items;
                 if (!silent) {
                     notify.info('Adverts loaded');
                 }
                 $scope.advertsLoading = false;
-            }, function (data) {
+            }, (data) => {
                 $scope.advertsLoading = false;
                 notify.error(gettext('There was an error getting the adverts'));
-            })
+            });
     }
 
     function handleAdvertSaveSuccess() {
@@ -95,53 +94,53 @@ export default function LiveblogAdvertisingController($scope, api, notify, gette
     }
 
     function handleAdvertSaveError() {
-        notify.error(gettext('Something went wrong, please try again later!'), 5000)
+        notify.error(gettext('Something went wrong, please try again later!'), 5000);
     }
 
-    $scope.removeAdvert = function (advert, $index) {
-        modal.confirm(gettext('Are you sure you want to remove this advert?')).then(function () {
-            api('advertisements').save(advert, { deleted: true })
-                .then(function (data) {
+    $scope.removeAdvert = function(advert, $index) {
+        modal.confirm(gettext('Are you sure you want to remove this advert?')).then(() => {
+            api('advertisements').save(advert, {deleted: true})
+                .then((data) => {
                     $scope.adverts.splice($index, 1);
-                }, function (data) {
+                }, (data) => {
                     notify.error(gettext('Can\'t remove advert'));
                 });
         });
-    }
+    };
 
-    $scope.saveAdvert = function () {
+    $scope.saveAdvert = function() {
         var newAd = {
             name: $scope.advert.name,
             type: $scope.advertType.name,
             text: freetypeService.htmlContent($scope.advertType.template, $scope.freetypesData),
-            meta: { data: $scope.freetypesData }
-        }
+            meta: {data: $scope.freetypesData}
+        };
+
         $scope.dialogAdvertLoading = true;
 
         api('advertisements').save($scope.advert, newAd)
             .then(handleAdvertSaveSuccess, handleAdvertSaveError);
-    }
+    };
 
     loadAdverts();
 
-    //COLLECTIONS
-    function loadCollections(silent) {
-        silent = silent || false;
+    // COLLECTIONS
+    function loadCollections(silent = false) {
         if (!silent) {
             $scope.collectionsLoading = true;
         }
-        return api('collections').query({ where: { deleted: false } })
-            .then(function (data) {
+        return api('collections').query({where: {deleted: false}})
+            .then((data) => {
                 $scope.collections = data._items;
                 if (!silent) {
                     notify.info(gettext('Collections loaded'));
                 }
                 $scope.collectionsLoading = false;
             })
-            .catch(function (data) {
+            .catch((data) => {
                 $scope.collectionsLoading = false;
                 notify.error(gettext('There was an error getting the adverts'));
-            })
+            });
     }
 
     function handleCollectionSaveSuccess() {
@@ -153,19 +152,18 @@ export default function LiveblogAdvertisingController($scope, api, notify, gette
     }
 
     function handleCollectionSaveError() {
-        notify.error(gettext('Something went wrong, please try again later!'), 5000)
+        notify.error(gettext('Something went wrong, please try again later!'), 5000);
     }
 
-    $scope.openCollectionDialog = function (collection) {
-        collection = collection || false;
+    $scope.openCollectionDialog = function(collection = false) {
         // load all available adverts without showing any messages
-        loadAdverts(true).then(function () {
+        loadAdverts(true).then(() => {
             if (collection) {
                 // editing collection
                 $scope.collection = angular.copy(collection);
                 $scope.collection.checkAdverts = {};
-                //console.log('$scope.collection ', $scope.collection);
-                angular.forEach($scope.adverts, function (advert) {
+                // console.log('$scope.collection ', $scope.collection);
+                angular.forEach($scope.adverts, (advert) => {
                     if ($scope.collectionHasAdvert($scope.collection, advert)) {
                         $scope.collection.checkAdverts[advert._id] = true;
                     } else {
@@ -176,57 +174,58 @@ export default function LiveblogAdvertisingController($scope, api, notify, gette
                 $scope.collection = {};
                 // for checkboxes and advert collections
                 $scope.collection.checkAdverts = {};
-                angular.forEach($scope.adverts, function (advert) {
+                angular.forEach($scope.adverts, (advert) => {
                     $scope.collection.checkAdverts[advert._id] = false;
                 });
             }
             $scope.collectionModalActive = true;
         });
-    }
+    };
 
-    $scope.saveCollection = function () {
-
-        //create the saveable advertisement array for the collection
+    $scope.saveCollection = function() {
+        // create the saveable advertisement array for the collection
         var advertisements = [];
-        angular.forEach($scope.collection.checkAdverts, function (checked, ad_id) {
+
+        angular.forEach($scope.collection.checkAdverts, (checked, adId) => {
             if (checked) {
-                advertisements.push({ 'advertisement_id': ad_id });
+                advertisements.push({advertisement_id: adId});
             }
-        })
+        });
         var newCollection = {
-            'name': $scope.collection.name,
-            'advertisements': advertisements
-        }
+            name: $scope.collection.name,
+            advertisements: advertisements
+        };
+
         $scope.dialogCollectionLoading = true;
 
         api('collections').save($scope.collection, newCollection)
             .then(handleCollectionSaveSuccess, handleCollectionSaveError);
-    }
+    };
 
-    $scope.removeCollection = function (collection, $index) {
+    $scope.removeCollection = function(collection, $index) {
         modal.confirm(gettext('Are you sure you want to remove this collection?'))
-            .then(function () {
-                api('collections').save(collection, { deleted: true })
-                    .then(function (data) {
+            .then(() => {
+                api('collections').save(collection, {deleted: true})
+                    .then((data) => {
                         $scope.collections.splice($index, 1);
-                    }, function (data) {
+                    }, (data) => {
                         notify.error(gettext('Can\'t remove collection'));
                     });
             });
-    }
+    };
 
-    $scope.cancelCollectionCreate = function () {
+    $scope.cancelCollectionCreate = function() {
         $scope.collection = {};
         $scope.collectionModalActive = false;
-    }
+    };
 
-    $scope.collectionHasAdvert = function (collection, advert) {
+    $scope.collectionHasAdvert = function(collection, advert) {
         return !!collection.advertisements.find((ad) => ad.advertisement_id === advert._id);
-    }
+    };
 
     $scope.notValidName = adsUtilSevice.uniqueNameInItems;
 
-    $scope.freetypeValid = function () {
+    $scope.freetypeValid = function() {
         return !Object.keys($scope.validation).find((key) => !$scope.validation[key]);
-    }
+    };
 }

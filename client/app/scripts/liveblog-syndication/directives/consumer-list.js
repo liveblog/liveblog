@@ -11,13 +11,13 @@ export default function consumerList(api, notify, modal, $http, config) {
             selected: '=',
             done: '='
         },
-        link: function (scope, elem, attrs) {
-            scope.select = function (consumer) {
+        link: function(scope, elem, attrs) {
+            scope.select = function(consumer) {
                 scope.selected = consumer;
             };
 
             // It's called disable, but really, it deletes the consumer
-            scope.disable = function (e, consumerToRemove) {
+            scope.disable = function(e, consumerToRemove) {
                 e.stopPropagation();
 
                 modal.confirm(gettext('Are you sure you want to remove this consumer?'))
@@ -37,18 +37,18 @@ export default function consumerList(api, notify, modal, $http, config) {
                     });
             };
 
-            scope.updateApiKey = function (e, consumer) {
+            scope.updateApiKey = function(e, consumer) {
                 e.stopPropagation();
 
                 modal.confirm(gettext('Are you sure you want to refresh the api key?'))
-                    .then(() => api.save('consumers', consumer, { api_key: '' }))
+                    .then(() => api.save('consumers', consumer, {api_key: ''}))
                     .then((result) => {
                         notify.pop();
                         notify.success(gettext('api key updated.'));
                     })
                     .catch((err) => {
                         if (err) {
-                            let msg = err.data._error.message || 'Fatal error';
+                            const msg = err.data._error.message || 'Fatal error';
 
                             notify.pop();
                             notify.error(msg);
@@ -56,7 +56,7 @@ export default function consumerList(api, notify, modal, $http, config) {
                     });
             };
 
-            scope.checkOnlineStatus = function (e, consumer) {
+            scope.checkOnlineStatus = function(e, consumer) {
                 e.stopPropagation();
 
                 $http({

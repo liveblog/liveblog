@@ -6,10 +6,9 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
     return {
         restrict: 'E',
         templateUrl: freetypeImageTpl,
-        controller: ['$scope', function ($scope) {
-
+        controller: ['$scope', ($scope) => {
             $scope.preview = {};
-            $scope.progress = { width: 0 };
+            $scope.progress = {width: 0};
             $scope.saved = false;
 
             // prepare image preview
@@ -27,15 +26,16 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
                 $scope.$on('$destroy', sentinel);
             }
 
-            let _self = this;
+            const _self = this;
 
-            $scope.$watch('preview.img', function () {
+            $scope.$watch('preview.img', () => {
                 _self.saveImage();
             });
 
-            this.saveImage = function () {
+            this.saveImage = function() {
                 var form = {};
                 var config = $scope.preview;
+
                 if (config.img) {
                     form.media = config.img;
                 } else if (config.url) {
@@ -58,7 +58,6 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
 
                         $scope.image.picture_url = pictureUrl;
                         $scope.image.picture = response.data;
-
                     }, (error) => {
                         notify.error(
                             error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
@@ -68,13 +67,13 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
                     }));
             };
 
-            this.removeImage = function () {
+            this.removeImage = function() {
                 modal
                     .confirm(gettext('Are you sure you want to remove the image?'))
                     .then(() => {
                         $scope.image.picture_url = '';
                         $scope.preview = {};
-                        $scope.progress = { width: 0 };
+                        $scope.progress = {width: 0};
                         $scope.saved = false;
                     });
             };

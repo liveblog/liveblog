@@ -8,15 +8,15 @@ export default function lbSearchPanel(MarketplaceActions) {
         scope: {
             store: '='
         },
-        link: function (scope) {
+        link: function(scope) {
             scope.categories = [
-                { code: 'Breaking News', name: 'Breaking News' },
-                { code: 'Entertainment', name: 'Entertainment' },
-                { code: 'Business and Finance', name: 'Business and Finance' },
-                { code: 'Sport', name: 'Sport' },
-                { code: 'Technology', name: 'Technology' },
-                { code: 'Politics', name: 'Politics' },
-                { code: 'Others', name: 'Others' }
+                {code: 'Breaking News', name: 'Breaking News'},
+                {code: 'Entertainment', name: 'Entertainment'},
+                {code: 'Business and Finance', name: 'Business and Finance'},
+                {code: 'Sport', name: 'Sport'},
+                {code: 'Technology', name: 'Technology'},
+                {code: 'Politics', name: 'Politics'},
+                {code: 'Others', name: 'Others'}
             ];
 
             scope.store.connect((state) => {

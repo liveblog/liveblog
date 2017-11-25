@@ -22,7 +22,7 @@ export default function incomingSyndication(
             openPanel: '=',
             syndId: '='
         },
-        link: function (scope) {
+        link: function(scope) {
             scope.blogId = $routeParams._id;
 
             scope.store = new Store(IncomingSyndicationReducers, {
@@ -35,16 +35,16 @@ export default function incomingSyndication(
                 scope.syndication = state.syndication;
             });
 
-            scope.goBack = function () {
+            scope.goBack = function() {
                 scope.openPanel('ingest', null);
             };
 
-            scope.publish = function (post) {
+            scope.publish = function(post) {
                 IncomingSyndicationActions
                     .publish(post);
             };
 
-            scope.askRemove = function (post) {
+            scope.askRemove = function(post) {
                 modal.confirm(gettext('Are you sure you want to delete the post?'))
                     .then(() => {
                         IncomingSyndicationActions

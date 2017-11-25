@@ -27,7 +27,7 @@ import dateFormTpl from 'scripts/liveblog-themes/views/date-format.ng1';
                         scope.radio = '';
                         scope.custom = scope.value;
                     }
-                    scope.$watch('radio + custom', function() {
+                    scope.$watch('radio + custom', () => {
                         if (scope.radio === '') {
                             scope.value = scope.custom;
                         } else {
@@ -37,5 +37,5 @@ import dateFormTpl from 'scripts/liveblog-themes/views/date-format.ng1';
                     });
                 }
             };
-        }])
+        }]);
 })();

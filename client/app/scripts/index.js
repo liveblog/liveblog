@@ -110,7 +110,7 @@ if (typeof window.superdeskConfig !== 'undefined') {
 // Commented angular modules are not required to run liveblog
 // But they are shown here to give a perspective of
 // what is required to run liveblog
-let sdCore = angular.module('superdesk.core', [
+const sdCore = angular.module('superdesk.core', [
     'ngRoute',
     'ngResource',
     'ngFileUpload',
@@ -170,7 +170,7 @@ angular.module('superdesk.apps', [
 
 angular.module('superdesk.config').constant('config', config);
 
-let liveblogModules = [
+const liveblogModules = [
     'liveblog.analytics',
     'liveblog.bloglist',
     'liveblog.edit',
@@ -190,7 +190,7 @@ if (config.marketplace) {
     liveblogModules.push('liveblog.marketplace');
 }
 
-let liveblog = angular.module('liveblog', liveblogModules);
+const liveblog = angular.module('liveblog', liveblogModules);
 
 sdCore.constant('lodash', _);
 sdCore.constant('moment', moment);
@@ -206,7 +206,7 @@ liveblog.config(['$routeProvider', '$locationProvider', ($routeProvider, $locati
 
 liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session',
     function($rootScope, $timeout, notify, gettext, session) {
-        var alertTimeout;
+        let alertTimeout;
 
         $rootScope.$on('disconnected', (event) => {
             $timeout.cancel(alertTimeout);
@@ -229,7 +229,7 @@ liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session',
         });
     }]);
 
-let body = angular.element('body');
+const body = angular.element('body');
 
 body.ready(() => {
     /**

@@ -10,7 +10,7 @@ export default function activities(superdesk) {
             betaMark: true,
             category: superdesk.MENU_MAIN,
             adminTools: true,
-            privileges: { 'global_preferences': 1 },
+            privileges: {global_preferences: 1},
             templateUrl: adManagTemplate
         });
 }

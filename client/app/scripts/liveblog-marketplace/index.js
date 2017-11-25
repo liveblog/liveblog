@@ -24,7 +24,7 @@ export default angular
     .directive('lbSearchFilter', lbSearchFilter)
     .directive('lbBlogPreviewModal', lbBlogPreviewModal)
     .directive('lbMarketplaceSwitch', lbMarketplaceSwitch)
-    .config(['superdeskProvider', function (superdesk) {
+    .config(['superdeskProvider', function(superdesk) {
         superdesk
             .activity('/marketplace/', {
                 label: gettext('Marketplace'),
@@ -34,7 +34,7 @@ export default angular
                 priority: 100,
                 adminTools: true,
                 resolve: {
-                    isArchivedFilterSelected: function () {
+                    isArchivedFilterSelected: function() {
                         return false;
                     }
                 }

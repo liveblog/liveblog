@@ -11,12 +11,12 @@ export default function producerList(api, $http, modal, config, notify) {
             selected: '=',
             done: '='
         },
-        link: function (scope, elem, attrs) {
-            scope.select = function (producer) {
+        link: function(scope, elem, attrs) {
+            scope.select = function(producer) {
                 scope.selected = producer;
             };
 
-            scope.disable = function (e, producerToRemove) {
+            scope.disable = function(e, producerToRemove) {
                 e.stopPropagation();
 
                 modal.confirm(gettext('Are you sure you want to remove this producer?'))
@@ -30,7 +30,7 @@ export default function producerList(api, $http, modal, config, notify) {
                     });
             };
 
-            scope.checkOnlineStatus = function (e, producer) {
+            scope.checkOnlineStatus = function(e, producer) {
                 e.stopPropagation();
 
                 $http({

@@ -9,8 +9,8 @@ export default function ingestPanelDropdown(IngestPanelActions) {
             consumerBlogId: '=',
             blog: '='
         },
-        link: function (scope) {
-            scope.toggleDropdown = function ($event, blog) {
+        link: function(scope) {
+            scope.toggleDropdown = function($event, blog) {
                 if (!blog.hasOwnProperty('isOpen')) {
                     blog.isOpen = false;
                 }
@@ -21,7 +21,7 @@ export default function ingestPanelDropdown(IngestPanelActions) {
                 blog.isOpen = !blog.isOpen;
             };
 
-            scope.updateSyndication = function () {
+            scope.updateSyndication = function() {
                 IngestPanelActions.updateSyndication(
                     scope.blog._id,
                     {
@@ -32,7 +32,7 @@ export default function ingestPanelDropdown(IngestPanelActions) {
                 );
             };
 
-            scope.destroy = function ($event) {
+            scope.destroy = function($event) {
                 $event.preventDefault();
                 $event.stopPropagation();
 

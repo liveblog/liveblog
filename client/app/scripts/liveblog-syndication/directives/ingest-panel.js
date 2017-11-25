@@ -23,8 +23,8 @@ export default function ingestPanel(
             ingestQueue: '=',
             openPanel: '='
         },
-        link: function (scope) {
-            var handleError = function () {
+        link: function(scope) {
+            const handleError = function() {
                 notify.pop();
                 notify.error(gettext(`
                     An error has occurred.
@@ -37,9 +37,9 @@ export default function ingestPanel(
             scope.store = new Store(IngestPanelReducers, {
                 error: null,
                 consumerBlogId: $routeParams._id,
-                syndicationIn: { _items: [] },
-                producers: { _items: [] },
-                producerBlogs: { _items: [] },
+                syndicationIn: {_items: []},
+                producers: {_items: []},
+                producerBlogs: {_items: []},
                 modalActive: false,
                 localProducerBlogIds: [],
                 locallySyndicatedItems: [],
@@ -95,18 +95,18 @@ export default function ingestPanel(
             // This watches for incoming posts when ingest is in focus
             scope.$on('posts', (e, data) => {
                 if (data.posts && data.hasOwnProperty('created')) {
-                    let syndPosts = data.posts
+                    const syndPosts = data.posts
                         .filter((post) => post.hasOwnProperty('syndication_in'));
 
                     IngestPanelActions.setUnreadQueue(syndPosts);
                 }
             });
 
-            scope.openSyndBlogsModal = function () {
+            scope.openSyndBlogsModal = function() {
                 IngestPanelActions.toggleModal(true);
             };
 
-            scope.select = function (synd) {
+            scope.select = function(synd) {
                 // In case you're wondering, this method calls
                 // a parent scope function in liveblog-edit/module
                 scope.openPanel('incoming-syndication', synd._id);

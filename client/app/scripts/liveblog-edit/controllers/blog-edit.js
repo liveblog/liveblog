@@ -70,7 +70,8 @@ export default function BlogEditController(
     $templateCache,
     $timeout
 ) {
-    var vm = this;
+    /* eslint consistent-this: ["error", "vm"]*/
+    const vm = this;
     // @TODO: remove this when theme at blog level.
     // check the theme setting for comments.
 
@@ -89,14 +90,12 @@ export default function BlogEditController(
     function getItemsFromEditor() {
         if (!isPostFreetype()) {
             // go with the 'classic' editor items
-            return _.map(vm.editor.get(), function (block) {
-                return {
-                    group_type: 'default',
-                    text: block.text,
-                    meta: block.meta,
-                    item_type: block.type
-                };
-            });
+            return _.map(vm.editor.get(), (block) => ({
+                group_type: 'default',
+                text: block.text,
+                meta: block.meta,
+                item_type: block.type
+            }));
         }
 
         // this is a freetype post
@@ -105,7 +104,7 @@ export default function BlogEditController(
                 group_type: 'freetype',
                 item_type: $scope.selectedPostType.name,
                 text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
-                meta: { data: $scope.freetypesData }
+                meta: {data: $scope.freetypesData}
             }
         ];
     }
@@ -126,20 +125,22 @@ export default function BlogEditController(
             var bp = angular.copy($scope.currentBlog.blog_preferences);
 
             bp.last_scorecard = $scope.freetypesData;
-            return blogService.update($scope.currentBlog, { 'blog_preferences': bp });
+            return blogService.update($scope.currentBlog, {blog_preferences: bp});
         }
 
-        return blogService.get($scope.blog._id).then(function (currentBlog) {
+        return blogService.get($scope.blog._id).then((currentBlog) => {
             $scope.currentBlog = currentBlog;
             var bp = angular.copy($scope.currentBlog.blog_preferences);
+
             bp.last_scorecard = $scope.freetypesData;
-            return blogService.update($scope.currentBlog, { 'blog_preferences': bp });
-        })
+            return blogService.update($scope.currentBlog, {blog_preferences: bp});
+        });
     }
 
     // determine if the loaded item is freetype
     function isItemFreetype(itemType) {
         var regularItemTypes = ['text', 'image', 'embed', 'quote', 'comment'];
+
         if (regularItemTypes.indexOf(itemType) !== -1) {
             return false;
         }
@@ -148,8 +149,8 @@ export default function BlogEditController(
     }
 
     function setDefautPostType() {
-        $scope.selectedPostType = 'Default'
-    };
+        $scope.selectedPostType = 'Default';
+    }
 
     // determine if current editor is not dirty
     function isEditorClean() {
@@ -157,15 +158,16 @@ export default function BlogEditController(
             return $scope.freetypeControl.isClean();
         }
 
-        var are_all_blocks_empty = _.every(vm.editor.blocks, function (block) { return block.isEmpty(); });
+        var areAllBlocksEmpty = _.every(vm.editor.blocks, (block) => block.isEmpty());
 
-        return are_all_blocks_empty || !$scope.isCurrentPostUnsaved();
+        return areAllBlocksEmpty || !$scope.isCurrentPostUnsaved();
     }
 
     // ask in a modalbox if the user is sure to want to overwrite editor.
     // call the callback if user say yes or if editor is empty
     function doOrAskBeforeIfEditorIsNotEmpty() {
         var deferred = $q.defer();
+
         if (isEditorClean()) {
             deferred.resolve();
         } else {
@@ -180,18 +182,17 @@ export default function BlogEditController(
 
     $scope.enableEditor = true;
 
-    $scope.$on('removing_timeline_post', function (event, data) {
+    $scope.$on('removing_timeline_post', (event, data) => {
         // if we try to remove a post that is currentry being edited, reset the editor
         if ($scope.currentPost && $scope.currentPost._id === data.post._id) {
             cleanEditor();
         }
-    })
+    });
 
     // remove and clean every items from the editor
-    function cleanEditor(actionDisabled) {
+    function cleanEditor(actionDisabled = true) {
         $scope.enableEditor = false;
 
-        actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
         if ($scope.freetypeControl.reset) {
             $scope.freetypeControl.reset();
         }
@@ -207,7 +208,7 @@ export default function BlogEditController(
     }
 
     // retieve the blog's public url
-    blogService.getPublicUrl(blog).then(function (url) {
+    blogService.getPublicUrl(blog).then((url) => {
         $scope.publicUrl = url;
     });
 
@@ -215,10 +216,8 @@ export default function BlogEditController(
     $scope.selectedFreetype = undefined;
     // retrieve the freetypes
     function getFreetypes() {
-        //these are the freetypes defined by the user with the CRUD form
-        var userFt = api.freetypes.query().then(function (data) {
-            return data._items;
-        });
+        // these are the freetypes defined by the user with the CRUD form
+        var userFt = api.freetypes.query().then((data) => data._items);
 
         var scorecards = {
             name: 'Scorecard',
@@ -236,27 +235,27 @@ export default function BlogEditController(
             template: $templateCache.get(adsRemoteTpl)
         };
 
-        $q.all([adLocal, adRemote, scorecards, userFt]).then(function (freetypes) {
-            angular.forEach(freetypes, function (freetype) {
+        $q.all([adLocal, adRemote, scorecards, userFt]).then((freetypes) => {
+            angular.forEach(freetypes, (freetype) => {
                 if (angular.isArray(freetype)) {
                     $scope.freetypes = $scope.freetypes.concat(freetype);
                 } else {
                     $scope.freetypes.push(freetype);
                 }
             });
-        })
-    };
+        });
+    }
 
-    //load freetype item
+    // load freetype item
     function loadFreetypeItem(item) {
-        //find freetype model
-        angular.forEach($scope.freetypes, function (freetype, key) {
+        // find freetype model
+        angular.forEach($scope.freetypes, (freetype, key) => {
             if (freetype.name === item.item_type) {
                 $scope.selectedPostType = freetype;
                 $scope.freetypesData = angular.copy(item.meta.data);
             }
-        })
-    };
+        });
+    }
 
     getFreetypes();
 
@@ -275,22 +274,22 @@ export default function BlogEditController(
         actionDisabled: true,
         sticky: false,
         highlight: false,
-        filter: { isHighlight: false },
+        filter: {isHighlight: false},
         selectPostTypeDialog: false,
         selectedPostType: 'Default',
-        toggleTypePostDialog: function () {
+        toggleTypePostDialog: function() {
             $scope.selectPostTypeDialog = !$scope.selectPostTypeDialog;
         },
-        selectPostType: function (postType) {
-            doOrAskBeforeIfEditorIsNotEmpty().then(function () {
-                cleanEditor()
+        selectPostType: function(postType) {
+            doOrAskBeforeIfEditorIsNotEmpty().then(() => {
+                cleanEditor();
                 $scope.selectedPostType = postType;
                 $scope.toggleTypePostDialog();
                 if (isPostScorecard()) {
-                    blogService.get($scope.blog._id).then(function (currentBlog) {
+                    blogService.get($scope.blog._id).then((currentBlog) => {
                         $scope.currentBlog = currentBlog;
                         if ($scope.currentBlog.blog_preferences.last_scorecard) {
-                            //load latest scorecard
+                            // load latest scorecard
                             if ($scope.currentBlog.blog_preferences.last_scorecard.remember) {
                                 $scope.freetypesData = angular.copy($scope.currentBlog.blog_preferences.last_scorecard);
                             }
@@ -299,18 +298,20 @@ export default function BlogEditController(
                 }
             });
         },
-        onEditorChanges: function () {
+        onEditorChanges: function() {
             var el = $(this).find('.st-text-block');
-            if (el.length === 0)
+
+            if (el.length === 0) {
                 return;
+            }
 
             var input = el.text().trim();
 
-            $scope.$apply(function () {
+            $scope.$apply(() => {
                 $scope.actionDisabled = _.isEmpty(input);
             });
         },
-        actionStatus: function () {
+        actionStatus: function() {
             if (isPostFreetype()) {
                 if (angular.isDefined($scope.currentPost)) {
                     return $scope.freetypeControl.isValid()
@@ -322,23 +323,23 @@ export default function BlogEditController(
             }
             return $scope.actionDisabled || $scope.actionPending;
         },
-        askAndResetEditor: function () {
+        askAndResetEditor: function() {
             doOrAskBeforeIfEditorIsNotEmpty().then(cleanEditor);
         },
-        toggleSticky: function () {
+        toggleSticky: function() {
             $scope.sticky = !$scope.sticky;
         },
-        toggleHighlight: function () {
+        toggleHighlight: function() {
             $scope.highlight = !$scope.highlight;
         },
-        showSaveAsDraft: function () {
+        showSaveAsDraft: function() {
             if (angular.isDefined($scope.currentPost)) {
                 return $scope.currentPost.original_creator === session.identity._id;
             }
 
             return true;
         },
-        openPostInEditor: function (post) {
+        openPostInEditor: function(post) {
             function fillEditor(post) {
                 cleanEditor(false);
                 var delay = 0;
@@ -346,21 +347,24 @@ export default function BlogEditController(
                 $scope.currentPost = angular.copy(post);
                 $scope.sticky = $scope.currentPost.sticky;
                 $scope.highlight = $scope.currentPost.lb_highlight;
-                //@TODO handle this better ASAP, remove $timeout and find the cause of the delay
+                // @TODO handle this better ASAP, remove $timeout and find the cause of the delay
                 if (isPostFreetype()) {
                     setDefautPostType();
                     delay = 5;
                 }
-                $timeout(function () {
+                $timeout(() => {
                     var items = post.groups[1].refs;
-                    items.forEach(function (item) {
-                        item = item.item;
+
+                    items.forEach((ref) => {
+                        const item = ref.item;
+
                         if (angular.isDefined(item)) {
                             if (isItemFreetype(item.item_type)) {
-                                //post it freetype so we need to reder it
+                                // post it freetype so we need to reder it
                                 loadFreetypeItem(item);
                             } else {
                                 var data = _.extend(item, item.meta);
+
                                 vm.editor.createBlock(item.item_type, data);
                             }
                         }
@@ -370,53 +374,53 @@ export default function BlogEditController(
             $scope.openPanel('editor');
             doOrAskBeforeIfEditorIsNotEmpty().then(fillEditor.bind(null, post));
         },
-        saveAsContribution: function () {
+        saveAsContribution: function() {
             $scope.actionPending = true;
             notify.info(gettext('Submitting contribution'));
             postsService
                 .saveContribution(
-                blog._id,
-                $scope.currentPost,
-                getItemsFromEditor(),
-                $scope.sticky,
-                $scope.highlight
+                    blog._id,
+                    $scope.currentPost,
+                    getItemsFromEditor(),
+                    $scope.sticky,
+                    $scope.highlight
                 )
-                .then(function (post) {
+                .then((post) => {
                     notify.pop();
                     notify.info(gettext('Contribution submitted'));
                     cleanEditor();
                     $scope.selectedPostType = 'Default';
                     $scope.actionPending = false;
-                }, function () {
+                }, () => {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
                     $scope.actionPending = false;
                 });
         },
-        saveAsDraft: function () {
+        saveAsDraft: function() {
             $scope.actionPending = true;
             notify.info(gettext('Saving draft'));
             postsService
                 .saveDraft(blog._id, $scope.currentPost, getItemsFromEditor(), $scope.sticky, $scope.highlight)
-                .then(function (post) {
+                .then((post) => {
                     notify.pop();
                     notify.info(gettext('Draft saved'));
                     cleanEditor();
                     $scope.selectedPostType = 'Default';
                     $scope.actionPending = false;
-                }, function () {
+                }, () => {
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please try again later'));
                     $scope.actionPending = false;
                 });
         },
-        publish: function () {
+        publish: function() {
             $scope.actionPending = true;
-            //save the keep scoreres setting( if needed)
+            // save the keep scoreres setting( if needed)
             if (isPostScorecard()) {
-                saveScorers().then(function () {
-                    //no need to show anything on success
-                }, function () {
+                saveScorers().then(() => {
+                    // no need to show anything on success
+                }, () => {
                     notify.error(gettext('Something went wrong with scoarers status. Please try again later'));
                 });
             }
@@ -424,21 +428,21 @@ export default function BlogEditController(
             postsService.savePost(blog._id,
                 $scope.currentPost,
                 getItemsFromEditor(),
-                { post_status: 'open', sticky: $scope.sticky, lb_highlight: $scope.highlight }
-            ).then(function (post) {
+                {post_status: 'open', sticky: $scope.sticky, lb_highlight: $scope.highlight}
+            ).then((post) => {
                 notify.pop();
                 notify.info(gettext('Post saved'));
 
                 cleanEditor();
                 $scope.selectedPostType = 'Default';
                 $scope.actionPending = false;
-            }, function () {
+            }, () => {
                 notify.pop();
                 notify.error(gettext('Something went wrong. Please try again later'));
                 $scope.actionPending = false;
             });
         },
-        filterHighlight: function (highlight) {
+        filterHighlight: function(highlight) {
             $scope.filter.isHighlight = highlight;
             vm.timelineInstance.pagesManager.changeHighlight(highlight);
             vm.timelineStickyInstance.pagesManager.changeHighlight(highlight);
@@ -446,63 +450,67 @@ export default function BlogEditController(
 
         // retrieve panel status from url
         panelState: undefined,
-        openPanel: function (panel, syndId) {
+        openPanel: function(panel, syndId) {
             $scope.panelState = panel;
             $scope.syndId = syndId;
             // update url for deeplinking
-            var params = { panel: $scope.panelState, syndId: null };
+            var params = {panel: $scope.panelState, syndId: null};
 
-            if (syndId) params.syndId = syndId;
+            if (syndId) {
+                params.syndId = syndId;
+            }
 
             $route.updateParams(params);
             unreadPostsService.reset(panel);
         },
         stParams: {
-            disableSubmit: function (actionDisabled) {
+            disableSubmit: function(actionDisabled) {
                 $scope.actionDisabled = actionDisabled;
                 // because this is called outside of angular scope from sir-trevor.
                 if (!$scope.$$phase) {
                     $scope.$digest();
                 }
             },
-            setPending: function (value) {
+            setPending: function(value) {
                 $scope.actionPending = value;
             },
             coverMaxWidth: 350,
             embedService: embedService,
             // provide an uploader to the editor for media (custom sir-trevor image block uses it)
-            uploader: function (file, success_callback, error_callback) {
+            uploader: function(file, successCallback, errorCallback) {
                 $scope.actionPending = true;
-                var handleError = function (response) {
+                var handleError = function(response) {
                     // call the uploader callback with the error message as parameter
-                    error_callback(response.data ? response.data._message : undefined);
+                    errorCallback(response.data ? response.data._message : undefined);
                     $scope.actionPending = true;
                 };
                 // return a promise of upload which will call the success/error callback
-                return api.archive.getUrl().then(function (url) {
+
+                return api.archive.getUrl().then((url) => {
                     upload.start({
                         method: 'POST',
                         url: url,
-                        data: { media: file }
+                        data: {media: file}
                     })
-                        .then(function (response) {
+                        .then((response) => {
                             if (response.data._issues) {
                                 return handleError(response);
                             }
                             $scope.actionPending = false;
                             // used in `SirTrevor.Blocks.Image` to fill in the block content.
-                            var media_meta = {
+                            var mediaMeta = {
                                 _info: config.server.url + response.data._links.self.href,
                                 _id: response.data._id,
                                 _url: response.data.renditions.thumbnail.href,
                                 renditions: response.data.renditions
                             };
                             // media will be added latter in the `meta` if this item in this callback
-                            success_callback({ media: media_meta });
+
+                            successCallback({media: mediaMeta});
                         }, handleError);
                 });
             },
-            gogoGadgetoRemoteImage: function (imgURL) {
+            gogoGadgetoRemoteImage: function(imgURL) {
                 return $http({
                     url: `${config.server.url}/archive/draganddrop`,
                     method: 'POST',
@@ -511,7 +519,7 @@ export default function BlogEditController(
                         mimetype: 'image/jpeg'
                     },
                     headers: {
-                        "Content-Type": "application/json;charset=utf-8"
+                        'Content-Type': 'application/json;charset=utf-8'
                     }
                 })
                     .then((response) => {
@@ -529,47 +537,45 @@ export default function BlogEditController(
                     });
             }
         },
-        fetchNewContributionPage: function () {
+        fetchNewContributionPage: function() {
             vm.contributionsPostsInstance.fetchNewPage();
         },
-        fetchNewDraftPage: function () {
+        fetchNewDraftPage: function() {
             vm.draftPostsInstance.fetchNewPage();
         },
-        fetchNewCommentsPage: function () {
+        fetchNewCommentsPage: function() {
             vm.commentPostsInstance.fetchNewPage();
         },
-        fetchNewTimelinePage: function () {
+        fetchNewTimelinePage: function() {
             vm.timelineInstance.fetchNewPage();
         },
-        isTimelineReordering: function () {
-            //vm.timelineInstance may not be instantiated yet when isTimelineReordering is first checked
+        isTimelineReordering: function() {
+            // vm.timelineInstance may not be instantiated yet when isTimelineReordering is first checked
             return vm.timelineInstance ? vm.timelineInstance.reorderPost : false;
         },
-        clearTimelineReordering: function () {
+        clearTimelineReordering: function() {
             return vm.timelineInstance.clearReorder();
         },
-        isBlogOpened: function () {
+        isBlogOpened: function() {
             return $scope.blog.blog_status === 'open';
         },
-        isCurrentPostPublished: function () {
+        isCurrentPostPublished: function() {
             return angular.isDefined($scope.currentPost) && $scope.currentPost.post_status === 'open';
         },
-        isCurrentPostUnsaved: function () {
+        isCurrentPostUnsaved: function() {
             if (angular.isDefined($scope.currentPost)) {
-                return _.some(getItemsFromEditor(), function (item, item_index) {
-                    return _.some(_.keys(item), function (key) {
-                        if (!angular.isDefined($scope.currentPost.items[item_index])) {
-                            return true;
-                        }
+                return _.some(getItemsFromEditor(), (item, itemIndex) => _.some(_.keys(item), (key) => {
+                    if (!angular.isDefined($scope.currentPost.items[itemIndex])) {
+                        return true;
+                    }
 
-                        return !_.isEqual(item[key], $scope.currentPost.items[item_index].item[key]);
-                    });
-                });
+                    return !_.isEqual(item[key], $scope.currentPost.items[itemIndex].item[key]);
+                }));
             }
 
             return true;
         },
-        togglePreview: function () {
+        togglePreview: function() {
             $scope.preview = !$scope.preview;
         }
     });
@@ -580,7 +586,7 @@ export default function BlogEditController(
     // Here we define an object instead of simple array.
     // because this variable needs to be update in the ingest-panel directive
     // and the two way data binding will only work with an object!
-    $scope.ingestQueue = { queue: [] };
+    $scope.ingestQueue = {queue: []};
 
     $scope.openPanel(panel, syndId);
 
@@ -596,4 +602,4 @@ export default function BlogEditController(
             $scope.ingestQueue.queue = $scope.ingestQueue.queue.concat(syndPosts);
         }
     });
-};
+}

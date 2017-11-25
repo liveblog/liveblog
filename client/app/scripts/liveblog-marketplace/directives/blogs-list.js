@@ -9,8 +9,8 @@ export default function lbBlogsList(MarketplaceActions) {
             title: '@',
             blogs: '='
         },
-        link: function (scope) {
+        link: function(scope) {
             scope.openEmbedModal = MarketplaceActions.openEmbedModal;
         }
-    }
+    };
 }

@@ -11,53 +11,58 @@ export default function consumerEdit(api, notify, _) {
             oncancel: '&',
             onupdate: '&'
         },
-        link: function (scope, elem) {
+        link: function(scope, elem) {
             scope.consumerForm.attempted = false;
 
-            scope.$watch('consumer', function (consumer) {
+            scope.$watch('consumer', (consumer) => {
                 scope.isEditing = consumer.hasOwnProperty('_id');
                 scope.origConsumer = _.cloneDeep(consumer);
             });
 
-            scope.save = function () {
+            scope.save = function() {
                 scope.consumerForm.attempted = true;
 
-                if (!scope.consumerForm.$valid)
+                if (!scope.consumerForm.$valid) {
                     return;
+                }
 
-                if (angular.equals(scope.origConsumer, scope.consumer))
+                if (angular.equals(scope.origConsumer, scope.consumer)) {
                     return;
+                }
 
-                var data = {};
-                var apiQuery;
+                const data = {};
+                let apiQuery;
 
                 data.contacts = scope.consumer.contacts;
 
-                if (!scope.consumerForm.name.$pristine)
+                if (!scope.consumerForm.name.$pristine) {
                     data.name = scope.consumer.name;
+                }
 
-                if (!scope.consumerForm.webhook_url.$pristine)
+                if (!scope.consumerForm.webhook_url.$pristine) {
                     data.webhook_url = scope.consumer.webhook_url;
+                }
 
-                if (scope.isEditing)
+                if (scope.isEditing) {
                     apiQuery = api.save('consumers', scope.origConsumer, data);
-                else
+                } else {
                     apiQuery = api.consumers.save(data);
+                }
 
-                apiQuery.then(function (result) {
-                    var successMsg = gettext('Consumer saved.');
+                apiQuery.then((result) => {
+                    const successMsg = gettext('Consumer saved.');
 
                     notify.pop();
                     notify.success(successMsg);
 
-                    scope.onsave({ consumer: result });
+                    scope.onsave({consumer: result});
                 })
-                    .catch(function (err) {
-                        var errorMsg = gettext('Fatal error!');
+                    .catch((err) => {
+                        const errorMsg = gettext('Fatal error!');
 
                         if (err.data.hasOwnProperty('_issues')) {
-                            Object.keys(err.data._issues).forEach(function (key) {
-                                var issue = err.data._issues[key];
+                            Object.keys(err.data._issues).forEach((key) => {
+                                let issue = err.data._issues[key];
 
                                 if (typeof issue === 'object' && issue.unique === 1) {
                                     issue = gettext('The selected field value is not unique.');
@@ -72,9 +77,9 @@ export default function consumerEdit(api, notify, _) {
                     });
             };
 
-            scope.cancel = function () {
+            scope.cancel = function() {
                 scope.oncancel();
-            }
+            };
         }
     };
-};
+}

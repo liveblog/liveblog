@@ -5,7 +5,7 @@ export default function notificationsCount() {
             'ng-if="count > 0">{{count}}</span>' +
             '<i class="big-icon-ingest" alt="ingest"></i>',
         link: function(scope) {
-            let ingestPanels = ['ingest', 'incoming-syndication'];
+            const ingestPanels = ['ingest', 'incoming-syndication'];
 
             scope.count = 0;
 

@@ -3,7 +3,7 @@ marketplaceActions.$inject = ['Dispatcher', 'api', '$http', 'lodash'];
 export default function marketplaceActions(Dispatcher, api, $http, _) {
     return {
         getBlogs: function(filters) {
-            var params = {
+            const params = {
                 where: filters,
                 sort: '-start_date'
             };
@@ -33,14 +33,14 @@ export default function marketplaceActions(Dispatcher, api, $http, _) {
                 });
             });
         },
-        toggleFilter: function(filters, type, value) {
-            if (filters && filters[type] === value) {
-                filters = _.omit(filters, type);
-            } else {
-                filters[type] = value;
+        toggleFilter: function(filtersParam, type, value) {
+            let filters = {type: value};
+
+            if (filtersParam && filtersParam[type] === value) {
+                filters = _.omit(filtersParam, type);
             }
 
-            var params = {
+            const params = {
                 where: filters,
                 sort: '-start_date'
             };

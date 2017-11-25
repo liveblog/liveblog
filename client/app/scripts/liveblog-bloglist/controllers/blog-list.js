@@ -67,12 +67,12 @@ export default function BlogListController(
     $scope.isUserAllowedToOpenBlog = blogSecurityService.canAccessBlog;
     // blog list embed code.
     function fetchBloglistEmbed() {
-        var criteria = {source: {
+        const criteria = {source: {
             query: {filtered: {filter: {term: {key: 'blogslist'}}}}
         }};
 
         api.blogslist.query(criteria, false).then((embed) => {
-            var url;
+            let url;
 
             if (embed._items.length) {
                 url = embed._items[0].value;
@@ -119,10 +119,10 @@ export default function BlogListController(
     $scope.createBlog = function() {
         $scope.creationInProcess = true;
 
-        var members = _.map($scope.blogMembers, (obj) => ({user: obj._id}));
+        const members = _.map($scope.blogMembers, (obj) => ({user: obj._id}));
 
         // Upload image only if we have a valid one chosen
-        var promise = $scope.preview.url ? $scope.upload($scope.preview) : $q.when();
+        const promise = $scope.preview.url ? $scope.upload($scope.preview) : $q.when();
 
         return promise.then(() => api.blogs
             .save({
@@ -144,7 +144,7 @@ export default function BlogListController(
     };
 
     $scope.upload = function(config) {
-        var form = {};
+        const form = {};
 
         if (config.img) {
             form.media = config.img;
@@ -159,22 +159,22 @@ export default function BlogListController(
                 url: uploadUrl,
                 data: form
             })
-            .then((response) => {
-                if (response.data._status === 'ERR') {
-                    return;
-                }
-                var pictureUrl = response.data.renditions.viewImage.href;
+                .then((response) => {
+                    if (response.data._status === 'ERR') {
+                        return;
+                    }
+                    const pictureUrl = response.data.renditions.viewImage.href;
 
-                $scope.newBlog.picture_url = pictureUrl;
-                $scope.newBlog.picture = response.data._id;
-                $scope.newBlog.picture_renditions = response.data.renditions;
-            }, (error) => {
-                notify.error(
-                    error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
-                );
-            }, (progress) => {
-                $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
-            }));
+                    $scope.newBlog.picture_url = pictureUrl;
+                    $scope.newBlog.picture = response.data._id;
+                    $scope.newBlog.picture_renditions = response.data.renditions;
+                }, (error) => {
+                    notify.error(
+                        error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
+                    );
+                }, (progress) => {
+                    $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
+                }));
         }
     };
 
@@ -206,7 +206,7 @@ export default function BlogListController(
     $scope.checkAccessRequestLimit = function(blog) {
         $scope.allowAccessRequest = false;
 
-        var theoricalMembers = [];
+        const theoricalMembers = [];
 
         if (blog.members) {
             blog.members.forEach((member) => {
@@ -223,23 +223,23 @@ export default function BlogListController(
                 'Content-Type': 'application/json;charset=utf-8'
             }
         })
-        .then((response) => {
-            if (response.data._items.length > 0) {
-                response.data._items.forEach((item) => {
-                    if (theoricalMembers.indexOf(item._id) === -1) {
-                        theoricalMembers.push(item._id);
-                    }
-                });
-            }
+            .then((response) => {
+                if (response.data._items.length > 0) {
+                    response.data._items.forEach((item) => {
+                        if (theoricalMembers.indexOf(item._id) === -1) {
+                            theoricalMembers.push(item._id);
+                        }
+                    });
+                }
 
-            if (theoricalMembers.length < config.assignableUsers[config.subscriptionLevel]) {
-                $scope.allowAccessRequest = true;
-            }
-        });
+                if (theoricalMembers.length < config.assignableUsers[config.subscriptionLevel]) {
+                    $scope.allowAccessRequest = true;
+                }
+            });
     };
 
     $scope.requestAccess = function(blog) {
-        var showRequestDialog = true;
+        let showRequestDialog = true;
 
         // Check to see if the current user hasn't been accepted during this session (before refreshing)
         if (blog.members) {
@@ -261,7 +261,7 @@ export default function BlogListController(
                     },
                     (data) => {
                         notify.pop();
-                        var message = gettext('Something went wrong, plase try again later!');
+                        let message = gettext('Something went wrong, plase try again later!');
 
                         if (data.data._message === 'A request has already been sent') {
                             message = gettext('A request has already been sent');
@@ -326,15 +326,15 @@ export default function BlogListController(
     $scope.setBlogsView();
 
     function getCriteria() {
-        var params = $location.search(),
-            criteria = {
-                max_results: $scope.maxResults,
-                embedded: {original_creator: 1},
-                sort: '[("versioncreated", -1)]',
-                source: {
-                    query: {filtered: {filter: {term: {blog_status: $scope.activeState.code}}}}
-                }
-            };
+        const params = $location.search();
+        const criteria = {
+            max_results: $scope.maxResults,
+            embedded: {original_creator: 1},
+            sort: '[("versioncreated", -1)]',
+            source: {
+                query: {filtered: {filter: {term: {blog_status: $scope.activeState.code}}}}
+            }
+        };
 
         if (params.q) {
             criteria.source.query.filtered.query = {

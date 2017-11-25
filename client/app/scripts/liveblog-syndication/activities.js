@@ -11,6 +11,8 @@ export default function activities(superdesk) {
             category: superdesk.MENU_MAIN,
             priority: 100,
             adminTools: true,
-            resolve: { isArchivedFilterSelected: function () { return false; } }
+            resolve: {isArchivedFilterSelected: function() {
+                return false;
+            }}
         });
-};
+}

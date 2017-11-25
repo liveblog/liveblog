@@ -8,8 +8,6 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 
-import angular from 'angular';
-
 blogService.$inject = ['api', '$q', '$rootScope', 'config'];
 
 export default function blogService(api, $q, $rootScope, config) {
@@ -33,8 +31,9 @@ export default function blogService(api, $q, $rootScope, config) {
     * @return {promise} public_url
     **/
     function getPublicUrl(blog) {
-        var deferred = $q.defer();
+        const deferred = $q.defer();
         // for debug purpose
+
         if (!blog.public_url && config.debug) {
             deferred.resolve('http://localhost:5000/embed/' + blog._id);
         } else if (blog.public_url) {
@@ -42,12 +41,12 @@ export default function blogService(api, $q, $rootScope, config) {
             deferred.resolve(blog.public_url.replace('http://', 'https://'));
         } else {
             // otherwise, listen for websocket notifications regarding publication
-            var notif_listener = $rootScope.$on('blog', function updateBlogAndResolve(e, data) {
+            const notifListener = $rootScope.$on('blog', function updateBlogAndResolve(e, data) {
                 if (data.blog_id === blog._id && data.published === 1) {
                     // update the blog property
                     blog.public_url = data.public_url;
                     // unbind the listener
-                    notif_listener();
+                    notifListener();
                     // return the url
                     // fix https issue
                     deferred.resolve(blog.public_url.replace('http://', 'https://'));
