@@ -7,9 +7,9 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
 
     function LbPostsListCtrl($scope, $element) {
         $scope.lbSticky = $scope.lbSticky === 'true';
-        const vm = this;
+        const self = this;
 
-        angular.extend(vm, {
+        angular.extend(self, {
             isLoading: true,
             blogId: $scope.lbPostsBlogId,
             status: $scope.lbPostsStatus,
@@ -35,21 +35,21 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                 $scope.lbPostsNoSyndication === true
             ),
             fetchNewPage: function() {
-                vm.isLoading = true;
-                return vm.pagesManager.fetchNewPage().then(() => {
-                    vm.isLoading = false;
+                self.isLoading = true;
+                return self.pagesManager.fetchNewPage().then(() => {
+                    self.isLoading = false;
                 });
             },
             startReorder: function(post) {
-                vm.reorderPost = post;
+                self.reorderPost = post;
             },
             clearReorder: function() {
-                vm.reorderPost = false;
+                self.reorderPost = false;
                 $timeout(() => {
-                    vm.keepHighlighted = false;
+                    self.keepHighlighted = false;
                 }, 2000);
                 $timeout(() => {
-                    vm.hideAllPosts = false;
+                    self.hideAllPosts = false;
                 }, 200);
             },
             getOrder: function(position) {
@@ -65,47 +65,47 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                     .order;
             },
             reorder: function(position, location) {
-                if (vm.allowReordering) {
+                if (self.allowReordering) {
                     let order;
                     let before;
                     let after;
 
                     if (position === 0) {
-                        order = vm.getOrder(0) + 1;
+                        order = self.getOrder(0) + 1;
                     } else if (position === $element.find('.posts').find('li .lb-post').length - 1) {
-                        order = vm.getOrder(position) - 1;
+                        order = self.getOrder(position) - 1;
                     } else {
                         if (location === 'above') {
-                            before = vm.getOrder(position - 1);
-                            after = vm.getOrder(position);
+                            before = self.getOrder(position - 1);
+                            after = self.getOrder(position);
                         } else {
-                            before = vm.getOrder(position);
-                            after = vm.getOrder(position + 1);
+                            before = self.getOrder(position);
+                            after = self.getOrder(position + 1);
                         }
                         order = after + (before - after) / 2;
                     }
-                    vm.updatePostOrder(vm.reorderPost, order);
+                    self.updatePostOrder(self.reorderPost, order);
                 }
             },
             updatePostOrder: function(post, order) {
-                vm.hideAllPosts = true;
+                self.hideAllPosts = true;
                 postsService.savePost(post.blog, post, undefined, {order: order}).then(() => {
-                    vm.keepHighlighted = order;
-                    vm.clearReorder();
+                    self.keepHighlighted = order;
+                    self.clearReorder();
                 }, () => {
-                    vm.hideAllPosts = false;
+                    self.hideAllPosts = false;
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please reload and try again later'));
                 });
             },
             removePostFromList: function(post) {
-                vm.pagesManager.removePost(post);
+                self.pagesManager.removePost(post);
             },
             isPostsEmpty: function() {
-                return vm.pagesManager.count() < 1 && !vm.isLoading && vm.isStickyPostsEmpty();
+                return self.pagesManager.count() < 1 && !self.isLoading && self.isStickyPostsEmpty();
             },
             numberOfPosts: function() {
-                return vm.pagesManager.count();
+                return self.pagesManager.count();
             },
             isStickyPostsEmpty: function() {
                 if ($scope.lbStickyInstance) {
@@ -115,16 +115,16 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                 return true;
             },
             isSinglePost: function() {
-                return vm.pagesManager.count() === 1;
+                return self.pagesManager.count() === 1;
             },
             isFilterEnable: function() {
-                return vm.pagesManager.authors.length > 0;
+                return self.pagesManager.authors.length > 0;
             },
             setAuthorFilter: function(users) {
-                vm.authorFilters = users;
-                vm.isLoading = true;
-                return vm.pagesManager.setAuthors(users.map((user) => user._id)).then(() => {
-                    vm.isLoading = false;
+                self.authorFilters = users;
+                self.isLoading = true;
+                return self.pagesManager.setAuthors(users.map((user) => user._id)).then(() => {
+                    self.isLoading = false;
                 });
             },
             isEditable: function(post) {
@@ -134,9 +134,9 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
             isBlogClosed: $scope.$parent.blog.blog_status === 'closed'
 
         });
-        $scope.lbPostsInstance = vm;
+        $scope.lbPostsInstance = self;
         // retrieve first page
-        vm.fetchNewPage()
+        self.fetchNewPage()
             // retrieve updates when event is recieved
             .then(() => {
                 // This function is responsible for updating the timeline,
@@ -155,8 +155,8 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                         return false;
                     }
 
-                    vm.isLoading = true;
-                    vm.pagesManager.retrieveUpdate(true).then(() => {
+                    self.isLoading = true;
+                    self.pagesManager.retrieveUpdate(true).then(() => {
                         // Regenerate the embed otherwise the image doesn't appear
                         if (window.hasOwnProperty('instgrm')) {
                             window.instgrm.Embeds.process();
@@ -166,7 +166,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                             notify.pop();
                             notify.info(gettext('Post removed'));
                         }
-                        vm.isLoading = false;
+                        self.isLoading = false;
                     });
                 };
 

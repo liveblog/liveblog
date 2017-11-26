@@ -7,7 +7,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
     function LiveblogThemesController(api, $location, notify, gettext,
         $q, $sce, config, _, upload, blogService, $window, modal,
         $http, session) {
-        const vm = this;
+        const self = this;
         /**
          * Return a collection that represent the hierachy of the themes
          * @param {array} themes
@@ -86,7 +86,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
         function loadThemes() {
             // load only global preference for themes.
             api.global_preferences.query({where: {key: 'theme'}}).then((globalPreferences) => {
-                vm.globalTheme = _.find(globalPreferences._items, (item) => item.key === 'theme');
+                self.globalTheme = _.find(globalPreferences._items, (item) => item.key === 'theme');
             });
             // load all the themes.
             // TODO: Pagination
@@ -118,7 +118,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                 const themesHierachy = getHierachyFromThemesCollection(themes);
                 // update the scope
 
-                angular.extend(vm, {
+                angular.extend(self, {
                     themesHierachy: themesHierachy,
                     themes: themes,
                     loading: false
@@ -126,7 +126,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                 return themes;
             });
         }
-        angular.extend(vm, {
+        angular.extend(self, {
             mailto: 'mailto:upgrade@liveblog.pro?subject=' +
                 encodeURIComponent(location.hostname) +
                 ' ' +
@@ -139,27 +139,27 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
             // loading indicatior for the first timeload.
             loading: true,
             getTheme: function(name) {
-                return _.find(vm.themes, (theme) => theme.name === name);
+                return _.find(self.themes, (theme) => theme.name === name);
             },
             isDefaultTheme: function(theme) {
-                if (angular.isDefined(vm.globalTheme)) {
-                    return vm.getTheme(vm.globalTheme.value).name === theme.name;
+                if (angular.isDefined(self.globalTheme)) {
+                    return self.getTheme(self.globalTheme.value).name === theme.name;
                 }
             },
             hasChildren: function(theme) {
-                return vm.themes.some((t) => t.extends === theme.name);
+                return self.themes.some((t) => t.extends === theme.name);
             },
             openThemeBlogsModal: function(theme) {
                 if (theme.blogs.length) {
-                    vm.selectedTheme = theme;
-                    vm.themeBlogsModal = true;
+                    self.selectedTheme = theme;
+                    self.themeBlogsModal = true;
                 }
             },
             closeThemeBlogsModal: function(theme) {
-                if (vm.selectedBlog) {
-                    vm.selectedBlog = false;
+                if (self.selectedBlog) {
+                    self.selectedBlog = false;
                 } else {
-                    vm.themeBlogsModal = false;
+                    self.themeBlogsModal = false;
                 }
             },
             download: function(theme) {
@@ -181,20 +181,20 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
             },
 
             makeDefault: function(theme) {
-                if (vm.globalTheme) {
+                if (self.globalTheme) {
                     api
                         .global_preferences
-                        .save(vm.globalTheme, {key: 'theme', value: theme.name})
+                        .save(self.globalTheme, {key: 'theme', value: theme.name})
                         .then((data) => {
                             notify.pop();
                             notify.info(gettext('Default theme saved'));
-                            vm.globalTheme = data;
+                            self.globalTheme = data;
                         });
                 } else {
                     api.global_preferences.save({key: 'theme', value: theme.name}).then((data) => {
                         notify.pop();
                         notify.info(gettext('Default theme saved'));
-                        vm.globalTheme = data;
+                        self.globalTheme = data;
                     });
                 }
             },
@@ -216,7 +216,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
             },
             switchBlogPreview: function(blog) {
                 // copy the selected blog
-                vm.selectedBlog = angular.copy(blog);
+                self.selectedBlog = angular.copy(blog);
             },
             save: function() {
                 notify.pop();
@@ -252,19 +252,19 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                 if (!theme.screenshot_url) {
                     return false;
                 }
-                vm.themePreviewModal = true;
-                vm.themePreviewModalTheme = theme;
+                self.themePreviewModal = true;
+                self.themePreviewModalTheme = theme;
             },
             openThemeSettings: function(theme) {
-                vm.themeSettingsModal = true;
-                vm.themeSettingsModalTheme = theme;
+                self.themeSettingsModal = true;
+                self.themeSettingsModalTheme = theme;
             },
             hasReachedThemesLimit: function() {
-                if (!vm.themes) {
+                if (!self.themes) {
                     return false;
                 }
 
-                const themes = vm.themes.filter((theme) => theme.name !== config.excludedTheme);
+                const themes = self.themes.filter((theme) => theme.name !== config.excludedTheme);
 
                 if (config.subscriptionLevel === 'team') {
                     return themes.length >= config.themeCreationRestrictions.team;
@@ -274,10 +274,10 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
             },
             upgradeModal: false,
             showUpgradeModal: function() {
-                vm.upgradeModal = true;
+                self.upgradeModal = true;
             },
             closeUpgradeModal: function() {
-                vm.upgradeModal = false;
+                self.upgradeModal = false;
             }
         });
 
@@ -290,7 +290,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                 .activity('/themes/', {
                     label: gettext('Theme Manager'),
                     controller: LiveblogThemesController,
-                    controllerAs: 'vm',
+                    controllerAs: 'self',
                     category: superdesk.MENU_MAIN,
                     adminTools: true,
                     privileges: {global_preferences: 1},

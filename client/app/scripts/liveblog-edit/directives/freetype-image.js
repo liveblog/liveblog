@@ -19,22 +19,20 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
             $scope.valid = true;
             $scope._id = _.uniqueId('image');
             if ($scope.compulsory !== undefined) {
-                var sentinel = $scope.$watch('[image,compulsory]', (value) => {
+                const sentinel = $scope.$watch('[image,compulsory]', (value) => {
                     $scope.compulsoryFlag = value[0].picture_url === '' && value[1] === '';
                 }, true);
 
                 $scope.$on('$destroy', sentinel);
             }
 
-            const _self = this;
-
             $scope.$watch('preview.img', () => {
-                _self.saveImage();
+                $scope.saveImage();
             });
 
-            this.saveImage = function() {
-                var form = {};
-                var config = $scope.preview;
+            $scope.saveImage = function() {
+                const form = {};
+                const config = $scope.preview;
 
                 if (config.img) {
                     form.media = config.img;
@@ -54,7 +52,7 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
                         if (response.data._status === 'ERR') {
                             return;
                         }
-                        var pictureUrl = response.data.renditions.viewImage.href;
+                        const pictureUrl = response.data.renditions.viewImage.href;
 
                         $scope.image.picture_url = pictureUrl;
                         $scope.image.picture = response.data;
@@ -67,7 +65,7 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
                     }));
             };
 
-            this.removeImage = function() {
+            $scope.removeImage = function() {
                 modal
                     .confirm(gettext('Are you sure you want to remove the image?'))
                     .then(() => {

@@ -1,10 +1,10 @@
-var path = require('path');
-var webpack = require('webpack');
-var lodash = require('lodash');
+const path = require('path');
+const webpack = require('webpack');
+const lodash = require('lodash');
 
 // makeConfig creates a new configuration file based on the passed options.
 module.exports = function makeConfig(grunt) {
-    var appConfigPath = path.join(process.cwd(), 'superdesk.config.js');
+    let appConfigPath = path.join(process.cwd(), 'superdesk.config.js');
 
     if (process.env.SUPERDESK_CONFIG) {
         appConfigPath = path.join(process.cwd(), process.env.SUPERDESK_CONFIG);
@@ -25,7 +25,7 @@ module.exports = function makeConfig(grunt) {
         }
 
         // include only 'superdesk-core' and valid modules inside node_modules
-        let validModules = ['superdesk-core'].concat(sdConfig.apps);
+        const validModules = ['superdesk-core'].concat(sdConfig.apps);
 
         return !validModules.some((app) => p.indexOf(app) > -1);
     };
@@ -93,7 +93,9 @@ module.exports = function makeConfig(grunt) {
                     test: /\.jsx?$/,
                     loader: 'eslint-loader',
                     // superdesk apps handle their own linter
-                    exclude: (p) => p.indexOf('node_modules') !== -1 || sdConfig.apps && sdConfig.apps.some((app) => p.indexOf(app) > -1),
+                    exclude: (p) => p.indexOf('node_modules') !== -1 || sdConfig.apps && sdConfig.apps.some(
+                        (app) => p.indexOf(app) > -1
+                    ),
                     options: {
                         configFile: isEmbedded ? './node_modules/superdesk-core/.eslintrc.json' : './.eslintrc.json',
                         ignorePath: isEmbedded ? './node_modules/superdesk-core/.eslintignore' : './.eslintignore'
@@ -159,7 +161,7 @@ module.exports = function makeConfig(grunt) {
 
 // getDefaults returns the default configuration for the app
 function getDefaults(grunt) {
-    var version;
+    let version;
 
     try {
         version = require('git-rev-sync').short('..');

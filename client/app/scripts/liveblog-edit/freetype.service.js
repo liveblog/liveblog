@@ -54,49 +54,37 @@ function makeAngularAttr(name, attrRef = '') {
     * Sets and gets the obj from path.
     *    this is needed to create the vectors in the angular scope.
     */
-function path2obj(obj, path, value) {
-    if (path.substr(0, 1) === '$') {
+function _recusivePath2obj(obj, path, value) {
+    const index = path.indexOf('.');
+
+    if (index === -1) {
+        obj[path] = value;
         return;
     }
-    let parts, part, vector;
 
-    if (angular.isString(path)) {
-        parts = path.split(/\./);
-        for (let i = 0, variable = obj; i < parts.length; i++) {
-            if (parts[i].indexOf('[') !== -1) {
-                vector = parts[i].match(/([^\]]*)\[([^\]]*)]/);
-                if (parseInt(vector[2], 10) === vector[2]) {
-                    vector[2] = parseInt(vector[2], 10);
-                }
-                part = {};
-                // if the array is already set, just use that.
-                if (angular.isArray(variable[vector[1]])) {
-                    // is the array is set but not that index, make it.
-                    if (angular.isDefined(variable[vector[1]][vector[2]])) {
-                        variable = variable[vector[1]][vector[2]];
-                    } else {
-                        variable[vector[1]][vector[2]] = part;
-                        variable = part;
-                    }
-                } else {
-                    variable[vector[1]] = [];
-                    variable[vector[1]][vector[2]] = part;
-                    variable = part;
-                }
-                // if the object is already set, just use that.
-            } else if (angular.isDefined(variable[parts[i]])) {
-                variable = variable[parts[i]];
-                if (i === parts.length - 1) {
-                    return variable;
-                }
-            } else if (i === parts.length - 1) {
-                variable[parts[i]] = value || '';
-            } else {
-                variable[parts[i]] = {};
-                variable = variable[parts[i]];
-            }
-        }
+    const key = path.substring(0, index);
+    const [next] = path.substring(index + 1).split('.', 1);
+
+    if (!obj[key]) {
+        // integer values sets a vector and string sets an object.
+        // check if the integer next value is the same with the next value.
+        obj[key] = +next + '' === next ? [] : {};
     }
+    _recusivePath2obj(obj[key], path.substring(index + 1), value);
+}
+
+function path2obj(obj, path, value) {
+    // the path should be a string and not a $value variable
+    if (typeof path !== 'string' || path.substr(0, 1) === '$') {
+        return;
+    }
+
+    // normalize the path, square brackets to . and [] has a default value 0.
+    _recusivePath2obj(obj,
+        path.replace(/\[\]/g, '[0]')
+            .replace(/\[/g, '.')
+            .replace(/]/g, ''),
+        value);
 }
 /**
     * Create a list of paths from `obj` parameter and return it in the
@@ -343,16 +331,21 @@ angular.module('liveblog.edit')
             return template;
         },
         // create the html template that will be shown in the timeline and the live feed
-        htmlContent: function(template, data) {
+        htmlContent: function(templateParam, data) {
             const paths = {};
             let wrapBefore = '';
             let wrapAfter = '';
 
             obj2path(paths, data);
-            template = template.replace(/<li([^>]*)>((.|\n)*?)<\/li>/g, (all, attr, repeater) => {
-                let vector, vectorPath, parts, templ = '', emptyIndex = [], i;
+            let template = templateParam.replace(/<li([^>]*)>((.|\n)*?)<\/li>/g, (all, attr, repeaterParam) => {
+                let vector;
+                let vectorPath;
+                let parts;
+                let templ = '';
+                const emptyIndex = [];
+                let i;
 
-                repeater = repeater.replace(REGEX_VARIABLE, (all, path) => {
+                const repeater = repeaterParam.replace(REGEX_VARIABLE, (all, path) => {
                     parts = path.split(/[\d*]/);
                     if (parts.length === 2 && parts[1] !== '') {
                         vectorPath = parts[0].substr(0, parts[0].length - 1);
@@ -361,12 +354,16 @@ angular.module('liveblog.edit')
 
                     return all;
                 });
+
                 if (vectorPath) {
                     vector = path2obj(data, vectorPath);
                     for (i = 1; i < vector.length; i++) {
                         // if current object has empty values add it to emptyIndexs and don't render it.
                         if (!emptyValues(vector[i])) {
-                            templ += '<li' + attr + '>' + repeater.replace(REGEX_VARIABLE, (all) => all.replace('[]', '[0]').replace('[0]', '[' + i + ']')) + '</li>';
+                            templ += `<li${attr}>${
+                                repeater.replace(REGEX_VARIABLE,
+                                    (all) => all.replace('[]', '[0]').replace('[0]', '[' + i + ']'))
+                            }</li>`;
                         } else {
                             emptyIndex.push(i);
                         }
@@ -383,10 +380,12 @@ angular.module('liveblog.edit')
                 }
                 return all.replace('[]', '[0]');
             });
-            template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, (all, tag, attr) => {
-                let name, type;
 
-                attr = _.trim(attr);
+            const attributeScoop = (attrParam) => {
+                let name;
+                let type;
+                let attr = _.trim(attrParam);
+
                 if (attr.substr(-1, 1) === '/') {
                     attr = attr.substr(0, attr.length - 1);
                 }
@@ -430,57 +429,46 @@ angular.module('liveblog.edit')
                         // remove the dollar variable from the attributes.
                         return '';
                     });
+                return {
+                    name,
+                    type,
+                    attr
+                };
+            };
 
-                if (name || type) {
-                    switch (type) {
-                    case 'text':
-                        if (paths[name]) {
-                            return '<span '
-                                                + injectClass(attr, 'freetype--element')
-                                                + '>'
-                                                + _.escape(paths[name])
-                                                + '</span>';
-                        }
+            /* eslint complexity: [0, 14] */
+            template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, (all, tag, attrParam) => {
+                const {name, type, attr} = attributeScoop(attrParam);
 
-                        return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
+                if (!name || !type) {
+                    return all;
+                }
 
-                    case 'select':
-                        if (paths[name]) {
-                            return '<span '
-                                                + injectClass(attr, 'freetype--element')
-                                                + '>'
-                                                + _.escape(paths[name])
-                                                + '</span>';
-                        }
+                switch (type) {
+                case 'select':
+                case 'text':
+                    return paths[name] ?
+                        `<span ${injectClass(attr, 'freetype--element')}>${_.escape(paths[name])}</span>` :
+                        `<span ${injectClass(attr, 'freetype--empty')}></span>`;
 
-                        return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
-
-                    case 'image':
-                        if (paths[name]) {
-                            return '<img src="' + paths[name] + '"/>';
-                        }
-
-                        return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
-
-                    case 'embed':
-                        if (paths[name]) {
-                            return paths[name];
-                        }
-
-                        return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
-
-                    case 'wrap-link':
-                        if (paths[name]) {
-                            wrapBefore = '<a href="'
+                case 'image':
+                    return paths[name] ?
+                        `<img src="${paths[name]}"/>` :
+                        `<span ${injectClass(attr, 'freetype--empty')}></span>`;
+                case 'embed':
+                    return paths[name] ?
+                        paths[name] :
+                        `<span ${injectClass(attr, 'freetype--empty')}></span>`;
+                case 'wrap-link':
+                    if (paths[name]) {
+                        wrapBefore = '<a href="'
                                                     + paths[name]
                                                     + '"'
                                                     + injectClass(attr, 'freetype--wrap')
                                                     + ' target="_blank">';
-                            wrapAfter = '</a>';
-                        }
-
-                        return '';
+                        wrapAfter = '</a>';
                     }
+                    return '';
                 }
                 return all;
             });
@@ -495,14 +483,18 @@ angular.module('liveblog.edit')
                 return '';
             });
             // replace conditional string variables.
-            template = template.replace(/@([a-z0-9_.\[\]\-]+):\s*([a-z0-9_.\[\]]+)/gi, (all, str, name) => {
+            template = template.replace(/@([a-z0-9_.\[\]\-]+):\s*([a-z0-9_.\[\]]+)/gi, (all, str, nameParam) => {
+                let name = nameParam;
+
                 if (str.indexOf('media') !== -1) {
                     return all;
                 }
-                let prefix = '', sufix = '';
+                let prefix = '';
+                let sufix = '';
 
                 if (['background-image'].indexOf(str) !== -1) {
-                    name = name + '.picture_url';
+                    name = nameParam + '.picture_url';
+
                     prefix = 'url(';
                     sufix = ')';
                 }
@@ -522,12 +514,13 @@ angular.module('liveblog.edit')
                 return '';
             });
             // remove elements with the hide-render attribute
-            template = (function recursiveContent(template) {
-                template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>((.|\n)*?)<\/\1>?/gi,
-                    (all, tag, attr, content) => {
+            template = (function recursiveContent(templateParam) {
+                const template = templateParam.replace(/<([a-z][a-z0-9]*)\b([^>]*)>((.|\n)*?)<\/\1>?/gi,
+                    (all, tag, attrParam, contentParam) => {
                         let type;
+                        let content = contentParam;
 
-                        attr = attr.replace(/hide-render/gi, () => {
+                        const attr = attrParam.replace(/hide-render/gi, () => {
                             type = 'hide-render';
                             // remove hide-render from attributes
                             return '';
@@ -540,6 +533,7 @@ angular.module('liveblog.edit')
                         }
                         return '<' + tag + attr + '>' + content + '</' + tag + '>';
                     });
+
                 return template;
             })(template);
 

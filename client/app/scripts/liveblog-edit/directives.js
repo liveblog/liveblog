@@ -9,7 +9,6 @@
  */
 
 import angular from 'angular';
-import _ from 'lodash';
 
 import lbPostsList from './directives/posts-list';
 import lbPost from './directives/post';

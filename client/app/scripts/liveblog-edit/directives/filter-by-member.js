@@ -10,59 +10,59 @@ export default function lbFilterByMember(api) {
             onFilterChange: '='
         },
         templateUrl: filterByMemberTpl,
-        controllerAs: 'vm',
+        controllerAs: 'self',
         controller: ['$scope', function($scope) {
-            const vm = this;
+            const self = this;
 
-            angular.extend(vm, {
+            angular.extend(self, {
                 members: [],
                 openSelector: false,
                 preselectedUsers: [],
                 selectedUsers: [],
                 findUserInPreselection: function(userId) {
-                    return _.find(vm.preselectedUsers, (user) => user._id === userId);
+                    return _.find(self.preselectedUsers, (user) => user._id === userId);
                 },
                 toggleUserInPreselection: function(user) {
-                    var oldUser = vm.findUserInPreselection(user._id);
+                    const oldUser = self.findUserInPreselection(user._id);
 
                     if (oldUser) {
-                        vm.preselectedUsers.splice(vm.preselectedUsers.indexOf(oldUser), 1);
+                        self.preselectedUsers.splice(self.preselectedUsers.indexOf(oldUser), 1);
                     } else {
-                        vm.preselectedUsers.push(user);
+                        self.preselectedUsers.push(user);
                     }
                 },
                 isUserInPreselection: function(user) {
-                    return vm.findUserInPreselection(user._id);
+                    return self.findUserInPreselection(user._id);
                 },
                 confirmPreselection: function() {
-                    vm.updateFilters(angular.copy(vm.preselectedUsers));
+                    self.updateFilters(angular.copy(self.preselectedUsers));
                 },
                 updateFilters: function(fitlers) {
-                    vm.selectedUsers = fitlers;
-                    $scope.onFilterChange(vm.selectedUsers);
+                    self.selectedUsers = fitlers;
+                    $scope.onFilterChange(self.selectedUsers);
                 },
                 clearSelection: function() {
-                    vm.updateFilters([]);
+                    self.updateFilters([]);
                 },
                 removeUserFromSelection: function(user) {
-                    var filters = angular.copy(vm.selectedUsers);
+                    const filters = angular.copy(self.selectedUsers);
 
-                    filters.splice(vm.selectedUsers.indexOf(user), 1);
-                    vm.updateFilters(filters);
+                    filters.splice(self.selectedUsers.indexOf(user), 1);
+                    self.updateFilters(filters);
                 },
                 toggleSelector: function() {
-                    vm.openSelector = !vm.openSelector;
-                    if (vm.openSelector) {
+                    self.openSelector = !self.openSelector;
+                    if (self.openSelector) {
                         // clear the search input
-                        vm.search = '';
+                        self.search = '';
                         // preset the preselection to the current selection
-                        vm.preselectedUsers = angular.copy(vm.selectedUsers);
+                        self.preselectedUsers = angular.copy(self.selectedUsers);
                         // retrieve blog information to know the owner and the members
                         api('blogs')
                             .getById($scope.blogId)
                             .then((blog) => {
                                 // add the owner
-                                var ids = [blog.original_creator];
+                                const ids = [blog.original_creator];
 
                                 // add the members
                                 if (blog.members) {
@@ -72,7 +72,7 @@ export default function lbFilterByMember(api) {
                                 api('users')
                                     .query({where: {_id: {$in: ids}}})
                                     .then((data) => {
-                                        vm.members = data._items;
+                                        self.members = data._items;
                                     });
                             });
                     }

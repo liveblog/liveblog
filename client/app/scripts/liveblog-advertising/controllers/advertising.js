@@ -2,7 +2,6 @@ import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.ng1';
 import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.ng1';
 import advertModalTpl from 'scripts/liveblog-advertising/views/advert-modal.ng1';
 import collectionModalTpl from 'scripts/liveblog-advertising/views/collection-modal.ng1';
-import _ from 'lodash';
 import adblockDetect from 'adblock-detect';
 
 LiveblogAdvertisingController.$inject = ['$scope', 'api', 'notify', 'gettext',
@@ -109,7 +108,7 @@ export default function LiveblogAdvertisingController($scope, api, notify, gette
     };
 
     $scope.saveAdvert = function() {
-        var newAd = {
+        const newAd = {
             name: $scope.advert.name,
             type: $scope.advertType.name,
             text: freetypeService.htmlContent($scope.advertType.template, $scope.freetypesData),
@@ -184,14 +183,14 @@ export default function LiveblogAdvertisingController($scope, api, notify, gette
 
     $scope.saveCollection = function() {
         // create the saveable advertisement array for the collection
-        var advertisements = [];
+        const advertisements = [];
 
         angular.forEach($scope.collection.checkAdverts, (checked, adId) => {
             if (checked) {
                 advertisements.push({advertisement_id: adId});
             }
         });
-        var newCollection = {
+        const newCollection = {
             name: $scope.collection.name,
             advertisements: advertisements
         };

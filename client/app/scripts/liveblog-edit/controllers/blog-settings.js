@@ -111,7 +111,7 @@ function BlogSettingsController(
             if (!silent) {
                 vm.outputsLoading = true;
             }
-            var criteria = {
+            const criteria = {
                 where: JSON.stringify({
                     $and: [
                         {deleted: false},
@@ -135,7 +135,7 @@ function BlogSettingsController(
         showOutputEmbedCode: function(output) {
             vm.outputEmbedModal = true;
             vm.output = output;
-            let outputTheme = _.find(vm.availableThemes, (theme) => theme.name === vm.output.theme);
+            const outputTheme = _.find(vm.availableThemes, (theme) => theme.name === vm.output.theme);
 
             if (outputTheme.styles && outputTheme.settings.removeStylesESI) {
                 vm.output.styleUrl = outputTheme.public_url + outputTheme.styles[outputTheme.styles.length - 1];
@@ -170,7 +170,7 @@ function BlogSettingsController(
                 });
         },
         userNotInMembers: function(user) {
-            for (var i = 0; i < vm.members.length; i++) {
+            for (let i = 0; i < vm.members.length; i++) {
                 if (user._id === vm.members[i]._id) {
                     return false;
                 }
@@ -183,7 +183,7 @@ function BlogSettingsController(
                     return;
                 }
 
-                let firstPicture = pictures[0];
+                const firstPicture = pictures[0];
 
                 vm.newBlog.picture_url = firstPicture.renditions.viewImage.href;
                 vm.newBlog.picture = firstPicture._id;
@@ -261,20 +261,20 @@ function BlogSettingsController(
         },
         save: function() {
             // save on backend
-            var deferred = $q.defer();
-            var members = _.map(vm.members, (member) => ({user: member._id}));
+            const deferred = $q.defer();
+            const members = _.map(vm.members, (member) => ({user: member._id}));
 
             notify.info(gettext('saving blog settings'));
 
             // Set start_date to _created if date and time are empty
-            var startDate = vm.blog._created;
+            let startDate = vm.blog._created;
 
             if (vm.start_date && vm.start_time) {
                 startDate = datetimeHelper.mergeDateTime(vm.start_date, vm.start_time) +
                     moment.tz(config.defaultTimezone).format('Z');
             }
 
-            var changedBlog = {
+            const changedBlog = {
                 blog_preferences: vm.blogPreferences,
                 original_creator: vm.original_creator._id,
                 blog_status: vm.blog_switch === true ? 'open' : 'closed',
@@ -363,7 +363,7 @@ function BlogSettingsController(
         }
     });
     // retieve the blog's public url
-    var qPublicUrl = blogService.getPublicUrl(blog).then((url) => {
+    const qPublicUrl = blogService.getPublicUrl(blog).then((url) => {
         vm.publicUrl = url;
     });
     // load available languages
@@ -375,7 +375,7 @@ function BlogSettingsController(
         });
 
     // load available themes
-    var qTheme = api('themes')
+    const qTheme = api('themes')
         .query()
         .then((data) => {
             // filter theme with label (without label are `generic` from inheritance)
@@ -391,7 +391,7 @@ function BlogSettingsController(
     $q.all([qPublicUrl, qTheme]).then(() => {
         vm.embedMultiHight = true;
         // devel link
-        var parentIframe = 'http://localhost:5000/themes_assets/angular/';
+        let parentIframe = 'http://localhost:5000/themes_assets/angular/';
 
         if (vm.angularTheme.public_url) {
             // production link
@@ -400,7 +400,7 @@ function BlogSettingsController(
                 .replace('http://', 'https://');
         }
         // loading mechanism, and load parent-iframe.js with callback.
-        var loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){'
+        const loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){'
             + 'var a=document,l=a.createElement("script"),'
             + 'o=a.getElementsByTagName("script")[0];'
             + 'return l.type="text/javascript",l.onload=t,l.async=!0,l.src=e,o.parentNode.insertBefore(l,o),'
@@ -462,11 +462,11 @@ function BlogSettingsController(
 
 
     // check if form is dirty before leaving the page
-    var deregisterPreventer = $scope.$on('$locationChangeStart', routeChange);
+    const deregisterPreventer = $scope.$on('$locationChangeStart', routeChange);
 
     function routeChange(event, next, current) {
         // check if one of the forms is dirty
-        var dirty = false;
+        let dirty = false;
 
         if (vm.forms.dirty) {
             dirty = true;
@@ -488,7 +488,7 @@ function BlogSettingsController(
         }
     }
 
-    let splitDate = datetimeHelper.splitDateTime(
+    const splitDate = datetimeHelper.splitDateTime(
         vm.newBlog.start_date,
         config.defaultTimezone
     );

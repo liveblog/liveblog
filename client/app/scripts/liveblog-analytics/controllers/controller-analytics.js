@@ -1,14 +1,14 @@
 liveblogAnalyticsController.$inject = ['$scope', '$location', 'api', 'analytics', 'blog', 'notify'];
 
 function liveblogAnalyticsController($scope, $location, api, analytics, blog, notify) {
-    var vm = this;
+    const self = this;
 
-    var close = function() { // Return to blog list page
+    const close = function() { // Return to blog list page
         $location.path('/liveblog/edit/' + blog._id);
     };
 
-    var loadAnalytics = function(page) {
-        var q = {page: page || 1, max_results: 200};
+    const loadAnalytics = function(page = 1) {
+        const q = {page: page, max_results: 200};
 
         api('blogs/<regex("[a-f0-9]{24}"):blog_id>/bloganalytics', {_id: blog._id})
             .query(q)
@@ -24,17 +24,18 @@ function liveblogAnalyticsController($scope, $location, api, analytics, blog, no
             });
     };
 
-    var downloadCSV = function() { // Convert relevant item fields to CSV
-        var fileContent = '', filename = 'liveblog_analytics_' + blog._id;
+    const downloadCSV = function() { // Convert relevant item fields to CSV
+        let fileContent = '';
+        const filename = `liveblog_analytics_${blog._id}`;
 
         $scope.analytics_data._items.forEach((arr, index) => {
-            var item = $scope.analytics_data._items[index],
-                filtered = [item.blog_id, item.context_url, item.hits];
+            const item = $scope.analytics_data._items[index];
+            const filtered = [item.blog_id, item.context_url, item.hits];
 
             fileContent += filtered.join(',') + '\n';
         });
 
-        var blob = new Blob([fileContent], {
+        const blob = new Blob([fileContent], {
             type: 'text/csv;charset=utf-8;'
         });
 
@@ -43,13 +44,13 @@ function liveblogAnalyticsController($scope, $location, api, analytics, blog, no
             return; // early exit
         }
 
-        var link = document.createElement('a');
+        const link = document.createElement('a');
 
         if (link.download === undefined) {
             return;
         } // detect HTML5 download attribute
 
-        var url = URL.createObjectURL(blob);
+        const url = URL.createObjectURL(blob);
 
         link.setAttribute('href', url);
         link.setAttribute('download', filename);
@@ -60,13 +61,13 @@ function liveblogAnalyticsController($scope, $location, api, analytics, blog, no
 
     loadAnalytics(); // load all, calls aren't expensive
 
-    angular.extend(vm, {
+    angular.extend(self, {
         blog: blog,
         close: close,
         tab: 'embeds',
         downloadCSV: downloadCSV,
         changeTab: function(tab) {
-            vm.tab = tab;
+            self.tab = tab;
         },
     });
 }

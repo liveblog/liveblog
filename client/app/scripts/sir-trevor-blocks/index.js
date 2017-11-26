@@ -124,7 +124,7 @@ angular
                 ].join('\n');
             },
             onBlockRender: function() {
-                const that = this;
+                const self = this;
 
                 // create and trigger a 'change' event for the $editor which is a contenteditable
                 this.$editor.filter('[contenteditable]').on('focus', function(ev) {
@@ -140,7 +140,7 @@ angular
                         $this.trigger('change');
                     }
                 });
-                handlePlaceholder(this.$editor.filter('[contenteditable]'), that.embedPlaceholder);
+                handlePlaceholder(this.$editor.filter('[contenteditable]'), self.embedPlaceholder);
                 // when the link field changes
                 const callServiceAndLoadData = function() {
                     let input = $(this)
@@ -149,31 +149,31 @@ angular
 
                     // exit if the input field is empty
                     if (_.isEmpty(input)) {
-                        that.getOptions().disableSubmit(true);
+                        self.getOptions().disableSubmit(true);
                         return false;
                     }
-                    that.getOptions().disableSubmit(false);
+                    self.getOptions().disableSubmit(false);
                     // reset error messages
-                    that.resetMessages();
+                    self.resetMessages();
                     // start a loader over the block, it will be stopped in the loadData function
-                    that.loading();
+                    self.loading();
                     input = fixSecureEmbed(input);
                     // if the input is an url, use embed services
                     if (isURI(input)) {
                         // request the embedService with the provided url
-                        that.getOptions().embedService.get(input, that.getOptions().coverMaxWidth).then(
+                        self.getOptions().embedService.get(input, self.getOptions().coverMaxWidth).then(
                             function successCallback(data) {
                                 data.original_url = input;
-                                that.loadData(data);
+                                self.loadData(data);
                             },
                             function errorCallback(error) {
-                                that.addMessage(error);
-                                that.ready();
+                                self.addMessage(error);
+                                self.ready();
                             }
                         );
                     // otherwise, use the input as the embed code
                     } else {
-                        that.loadData({html: input});
+                        self.loadData({html: input});
                     }
                 };
 
@@ -190,27 +190,27 @@ angular
                 return _.isEmpty(this.retrieveData().url || this.retrieveData().html);
             },
             retrieveData: function() {
-                const that = this;
+                const self = this;
                 // retrieve new data from editor
                 const editorData = {
-                    title: that.$('.title-preview').text(),
-                    description: that.$('.description-preview').text(),
-                    credit: that.$('.credit-preview').text()
+                    title: self.$('.title-preview').text(),
+                    description: self.$('.description-preview').text(),
+                    credit: self.$('.credit-preview').text()
                 };
 
                 // remove thumbnail_url if it was removed by user
-                if (that.$('.cover-preview').hasClass('hidden')) {
+                if (self.$('.cover-preview').hasClass('hidden')) {
                     editorData.thumbnail_url = null;
                 }
                 // add data which are not in the editor but has been saved before (like thumbnail_width)
-                _.merge(that.data, editorData);
+                _.merge(self.data, editorData);
                 // clean data by removing empty string
-                _.forEach(that.data, (value, key) => {
+                _.forEach(self.data, (value, key) => {
                     if (typeof value === 'string' && value.trim() === '') {
-                        delete that.data[key];
+                        delete self.data[key];
                     }
                 });
-                return that.data;
+                return self.data;
             },
             renderCard: function(data) {
                 const cardClass = 'liveblog--card';
@@ -299,16 +299,16 @@ angular
             },
             // render a card from data, and make it editable
             loadData: function(data) {
-                const that = this;
+                const self = this;
 
-                that.data = fixDataEmbed(data);
+                self.data = fixDataEmbed(data);
                 // hide the embed input field, render the card and add it to the DOM
-                that.$('.embed-input')
+                self.$('.embed-input')
                     .addClass('hidden')
-                    .after(that.renderCard(data));
+                    .after(self.renderCard(data));
                 // set somes fields contenteditable
                 ['title', 'description', 'credit'].forEach((fieldName) => {
-                    that.$('.' + fieldName + '-preview').attr({
+                    self.$('.' + fieldName + '-preview').attr({
                         contenteditable: true,
                         placeholder: fieldName
                     });
@@ -333,14 +333,14 @@ angular
                         .addClass('hidden');
 
                     $removeLink.on('click', function removeCoverAndDisillustrationplayShowLink(e) {
-                        that.saved_cover_url = that.data.thumbnail_url;
+                        self.saved_cover_url = self.data.thumbnail_url;
                         $coverPreview.addClass('hidden');
                         $(this).addClass('hidden');
                         $showLink.removeClass('hidden');
                         e.preventDefault();
                     });
                     $showLink.on('click', function showCoverAndDisplayRemoveLink(e) {
-                        that.data.thumbnail_url = that.saved_cover_url;
+                        self.data.thumbnail_url = self.saved_cover_url;
                         $coverPreview.removeClass('hidden');
                         $(this).addClass('hidden');
                         $removeLink.removeClass('hidden');
@@ -476,7 +476,7 @@ angular
         };
 
         SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
-            const that = this;
+            const self = this;
             const placeHolderText = window.gettext('Start writing here…');
 
             // add placeholder class and placeholder text
@@ -516,12 +516,12 @@ angular
                     .trim();
 
                 if (_.isEmpty(input)) {
-                    if (that.getOptions()) {
-                        that.getOptions().disableSubmit(true);
+                    if (self.getOptions()) {
+                        self.getOptions().disableSubmit(true);
                     }
                     return false;
-                } else if (that.getOptions()) {
-                    that.getOptions().disableSubmit(false);
+                } else if (self.getOptions()) {
+                    self.getOptions().disableSubmit(false);
                 }
             }, 200));
         };
@@ -686,6 +686,7 @@ angular
             text: 'link',
             onClick: function() {
                 const selectionText = document.getSelection();
+                /* eslint-disable no-alert */
                 let link = prompt(window.i18n.t('general:link'));
                 const linkRegex = /((ftp|http|https):\/\/.)|mailto(?=\:[-\.\w]+@)/;
 

@@ -30,7 +30,8 @@ export default function producerEdit(api, notify, _) {
                     return;
                 }
 
-                let data = {}, apiQuery;
+                const data = {};
+                let apiQuery;
 
                 data.contacts = scope.producer.contacts;
 
