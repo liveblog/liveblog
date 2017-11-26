@@ -232,24 +232,22 @@ export default function postsService(api, $q, userList) {
 
         if (items && items.length > 0) {
             // prepare the list of items if needed
-            if (angular.isDefined(items) && items.length > 0) {
-                if (_.difference(_.keys(items[0]), ['residRef', 'item']).length === 0) {
-                    items = _.map(items, (item) => item.item);
-                }
+            if (_.difference(_.keys(items[0]), ['residRef', 'item']).length === 0) {
+                items = _.map(items, (item) => item.item);
             }
             // save every items
             _.each(items, (itemParam) => {
                 let item = {};
                 // because it fails when item has a `_id` field without `_links`
 
-                if (angular.isDefined(itemParam, '_id')) {
+                if (angular.isDefined(items, '_id')) {
                     item = {
                         blog: blogId,
-                        text: item.text,
-                        meta: item.meta,
-                        group_type: item.group_type,
-                        item_type: item.item_type,
-                        commenter: item.meta && item.meta.commenter
+                        text: itemParam.text,
+                        meta: itemParam.meta,
+                        group_type: itemParam.group_type,
+                        item_type: itemParam.item_type,
+                        commenter: itemParam.meta && itemParam.meta.commenter
                     };
                 }
                 dfds.push(api.items.save(item));

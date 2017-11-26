@@ -157,10 +157,10 @@ const app = angular.module('liveblog.edit', [
             return text.replace(absoluteProtocol, '//');
         };
     }])
-    .filter('outboundAnchors', () => function(text) {
+    .filter('outboundAnchors', () => function(text = '') {
         return text.replace(/<a([^>]*)>/g, (match, attr) => {
             if (attr.indexOf('target') === -1) {
-                return '<a' + attr + ' target="_blank">';
+                return `<a${attr} target="_blank">`;
             }
             return match;
         });

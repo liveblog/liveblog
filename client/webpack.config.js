@@ -97,8 +97,8 @@ module.exports = function makeConfig(grunt) {
                         (app) => p.indexOf(app) > -1
                     ),
                     options: {
-                        configFile: isEmbedded ? './node_modules/superdesk-core/.eslintrc.json' : './.eslintrc.json',
-                        ignorePath: isEmbedded ? './node_modules/superdesk-core/.eslintignore' : './.eslintignore'
+                        configFile: './.eslintrc.json',
+                        ignorePath: './.eslintignore'
                     }
                 },
                 {

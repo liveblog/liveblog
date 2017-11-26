@@ -135,7 +135,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                         ));
                     }
                     return $q.all(promises).then((updatesPages) => angular.extend({}, updatesPages[0], {
-                        _items: [...updatesPages.map((update) => update._items)],
+                        _items: [].concat(...updatesPages.map((update) => update._items)),
                         _meta: angular.extend(meta, {max_results: meta.max_results * updatesPages.length})
                     }));
                 })
@@ -272,6 +272,9 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
          * @returns {array|undefined} - [pageIndex, postIndex]
          */
         function getPostPageIndexes(postToFind) {
+            if (!postToFind) {
+                return [0, 0];
+            }
             let page;
 
             for (let pageIndex = 0; pageIndex < self.pages.length; pageIndex++) {
@@ -396,7 +399,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
              */
             allPosts: function() {
                 // flatten array
-                return [...[...self.pages]];
+                return [].concat(...self.pages.map((page) => page.posts));
             },
             /**
              * Returns the number of posts in the local pages

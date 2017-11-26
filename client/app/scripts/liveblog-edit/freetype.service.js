@@ -58,8 +58,8 @@ function _recusivePath2obj(obj, path, value) {
     const index = path.indexOf('.');
 
     if (index === -1) {
-        obj[path] = value;
-        return;
+        obj[path] = value ? value : obj[path];
+        return obj[path];
     }
 
     const key = path.substring(0, index);
@@ -70,7 +70,7 @@ function _recusivePath2obj(obj, path, value) {
         // check if the integer next value is the same with the next value.
         obj[key] = +next + '' === next ? [] : {};
     }
-    _recusivePath2obj(obj[key], path.substring(index + 1), value);
+    return _recusivePath2obj(obj[key], path.substring(index + 1), value);
 }
 
 function path2obj(obj, path, value) {
@@ -80,7 +80,7 @@ function path2obj(obj, path, value) {
     }
 
     // normalize the path, square brackets to . and [] has a default value 0.
-    _recusivePath2obj(obj,
+    return _recusivePath2obj(obj,
         path.replace(/\[\]/g, '[0]')
             .replace(/\[/g, '.')
             .replace(/]/g, ''),
