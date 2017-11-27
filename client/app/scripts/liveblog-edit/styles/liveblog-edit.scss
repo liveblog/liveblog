@@ -438,22 +438,23 @@
                                     &:before {
                                         content: "delete";
                                     }
-// @TODO: superdesk missing
-//                                    &:active {
-//                                        @include box-shadow(inset 0 2px 0px multiply($btnDefaultColor,rgba(0,0,0,12%)));
-//                                    }
+                                   &:active {
+                                       // @TODO: superdesk missing $btnDefaultColor temporarily replaced with blue.
+                                       @include box-shadow(inset 0 2px 0px multiply(blue,rgba(0,0,0,12%)));
+                                   }
                                     &:hover {
                                         color: #d70014;
                                     }
                                 }
-// @TODO: superdesk missing
-//                                .st-block-ui-btn--deny-delete {
-//                                    @include buttonStates(#CDCDCD, $black); // needed to give a no transparent background in order to hide the cross
-//                                    &:active {
-//                                        @include box-shadow(inset 0 2px 0px multiply($btnDangerColor,rgba(0,0,0,12%)));
-//                                    }
-//                                    &:before {content: "cancel"; }
-//                                }
+                               .st-block-ui-btn--deny-delete {
+                                // @TODO: superdesk missing buttonSlates mixins.
+                                //    @include buttonStates(#CDCDCD, $black); // needed to give a no transparent background in order to hide the cross
+                                   &:active {
+                                       // @TODO: superdesk missing $btnDefaultColor temporarily replaced with blue. 
+                                       @include box-shadow(inset 0 2px 0px multiply(blue,rgba(0,0,0,12%)));
+                                   }
+                                   &:before {content: "cancel"; }
+                               }
                             }
                             &__dropzone {
                                 background-color: transparent; // prevent style from sir-trevor.css
