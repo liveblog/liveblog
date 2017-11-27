@@ -289,11 +289,11 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
 
         /**
          * Add a post or a list of posts to the local pages
-         * @param {Post|array<Post>} posts - posts to be added to the pages
+         * @param {Post|array<Post>} postsParams - posts to be added to the pages
          */
         function addPost(postsParams) {
             const allPosts = self.allPosts();
-            const posts = angular.isArray(posts) ? posts : [posts];
+            const posts = angular.isArray(postsParams) ? postsParams : [postsParams];
             // for every post, check if exist before or add it
 
             posts.forEach((post) => {

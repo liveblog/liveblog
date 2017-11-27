@@ -142,7 +142,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                 // This function is responsible for updating the timeline,
                 // the contribution, the draft and the comment panel on incoming
                 // new post as well unpublished posts
-                const onNotification = (e, eventParams) => {
+                const onNotification = _.throttle((e, eventParams) => {
                     if (!$element.hasClass('timeline-posts-list')
                         && $scope.lbPostsStatus !== 'comment'
                         && eventParams.posts
@@ -168,7 +168,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                         }
                         self.isLoading = false;
                     });
-                };
+                }, 100);
 
                 $scope.$on('posts', onNotification);
                 $scope.$on('content:update', onNotification);
