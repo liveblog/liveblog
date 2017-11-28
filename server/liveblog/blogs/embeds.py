@@ -188,6 +188,15 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         posts = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering)
         sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True,
                                            ordering='newest_first')
+        # Bring the client user in the posts so we can post.original_creator.
+        # LBSD-2010
+        for post in posts['_items']:
+            post['original_creator'] = get_resource_service('client_users')\
+                .find_one(req=None, _id=post['original_creator'])
+        for post in sticky_posts['_items']:
+            post['original_creator'] = get_resource_service('client_users')\
+                .find_one(req=None, _id=post['original_creator'])
+
 
         if output and output.get('collection', False):
             ads = []
