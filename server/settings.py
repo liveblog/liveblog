@@ -260,6 +260,8 @@ SUPERDESK_TESTING = (env('SUPERDESK_TESTING', 'false').lower() == 'true')
 # Debuging state, this is used when generating theme emebed files default `false`.
 LIVEBLOG_DEBUG = (env('LIVEBLOG_DEBUG', 'false').lower() == 'true')
 
+EMBED_PROTOCOL = env('EMBED_PROTOCOL', 'http://' if LIVEBLOG_DEBUG else 'https://')
+
 # The number of minutes since the last update of the Mongo auth object after which it will be deleted
 SESSION_EXPIRY_MINUTES = 240
 

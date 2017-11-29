@@ -77,8 +77,8 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
           {{ mainItem.syndicated_creator.display_name }}
         {% elif item.syndication_in and not settings.showSyndicatedAuthor %}
           <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
-        {% elif mainItem.original_creator %}
-          {{ mainItem.original_creator.display_name }}
+        {% elif item.original_creator %}
+          {{ item.original_creator.display_name }}
         {% endif %}
 
         </div>
@@ -97,9 +97,9 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
           width="45"
           height="45">
           </amp-img>
-          {% elif mainItem.original_creator and mainItem.original_creator.picture_url %}
+          {% elif item.original_creator and item.original_creator.picture_url %}
           <amp-img class="lb-author__avatar" 
-          src="{{ mainItem.original_creator.picture_url }}"
+          src="{{ item.original_creator.picture_url }}"
           layout="fixed"
           width="45"
           height="45">

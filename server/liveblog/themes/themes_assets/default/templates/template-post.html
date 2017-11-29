@@ -57,8 +57,8 @@
         <div class="lb-author__name">
         {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
           {{ mainItem.syndicated_creator.display_name }}
-        {% elif mainItem.original_creator %}
-          {{ mainItem.original_creator.display_name }}
+        {% elif item.original_creator %}
+          {{ item.original_creator.display_name }}
         {% endif %}
         {% if item.syndication_in and not settings.showSyndicatedAuthor %}
           <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
@@ -70,8 +70,8 @@
         {% if settings.showAuthorAvatar and type != 'comment' %}
           {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor and mainItem.syndicated_creator.picture_url %}
           <img class="lb-author__avatar" src="{{ mainItem.syndicated_creator.picture_url }}" />
-          {% elif mainItem.original_creator and mainItem.original_creator.picture_url %}
-          <img class="lb-author__avatar" src="{{ mainItem.original_creator.picture_url }}" />
+          {% elif item.original_creator and item.original_creator.picture_url %}
+          <img class="lb-author__avatar" src="{{ item.original_creator.picture_url }}" />
           {% else %}
           <div class="lb-author__avatar"></div>
           {% endif %}
