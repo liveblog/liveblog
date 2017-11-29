@@ -197,7 +197,6 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             post['original_creator'] = get_resource_service('client_users')\
                 .find_one(req=None, _id=post['original_creator'])
 
-
         if output and output.get('collection', False):
             ads = []
             if output['collection'].get('advertisements'):
