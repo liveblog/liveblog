@@ -1,2 +1,0 @@
-class MediaStorageUnsupportedForBlogPublishing(Exception):
-    pass

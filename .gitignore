@@ -1,94 +1,12 @@
-/.pydevproject
-/.project
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*.sublime-*
-.vagrant
-
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-src/
-env/
-.env
-data/
-build/
-develop-eggs/
-client/dist/
-downloads/
-eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
-
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
-
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.coverage
-.cache
-nosetests.xml
-coverage.xml
-
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-celerybeatschedule.db
-celerybeatschedule.db.*
-dump.rdb
-
-# PyCharm idea folders
-.idea/
-
-# Themes folder
-server/liveblog/themes/themes_assets/*
-!server/liveblog/themes/themes_assets/angular
-!server/liveblog/themes/themes_assets/classic
-!server/liveblog/themes/themes_assets/default
-!server/liveblog/themes/themes_assets/amp
-
-# Vim stuff
-*.swo
+npm-debug.log
+.settings
+.project
+.idea
+node_modules
 *.swp
-*.swn
-*.swm
-.vimrc
-
-client/config.js
-server/test-env.local
-
-# Vagrant
-.vagrant
-
-# Jinja2 compiled templates
-.jinja2
-
-# Theme uploads
-themes/*
-
+.tmp
+Thumbs.db
+!*.pot
+index.html
+liveblog-default-theme.zip
+py-test/env
