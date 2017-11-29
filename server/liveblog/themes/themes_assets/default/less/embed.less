@@ -21,6 +21,21 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
+  .lb-responsive-video {
+    position: relative;
+    padding-bottom: 56.2%;
+    height: 0;
+    margin: 10px 0;
+    overflow: hidden;
+    iframe {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+  }
+
   .description {
     margin: 0px 0px 20px 0px;
   }
@@ -642,8 +657,7 @@
     background-size: 20px;
   }
 
-
-  // Posts End
+   // Posts End
 
   // Load New Post
 
@@ -778,16 +792,6 @@ lb-producer__author:before {
 
   /* text */
 
-
-  .item--embed__illustration {
-      position: absolute;
-      width: 200px;
-  }
-
-  /* if there is an image, leave space on the left */
-  .item--embed__illustration ~ * {
-      margin-left: 220px;
-  }
   .item--embed__description,
   .item--embed__credit {
       padding-top: 5px;
@@ -975,7 +979,7 @@ body .scorecard-top hr {
 }
 
 body .scorecard-top span.team-score {
-  font-size: 45px;
+  font-size: 42px;
   font-weight: bold;
 }
 
@@ -984,7 +988,7 @@ body .scorecard-top__logoWrap img {
 }
 
 body .scorecard-top span.team-name {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: bold;
   line-height: 110%;
   margin-bottom: 10px;
@@ -993,6 +997,7 @@ body .scorecard-top span.team-name {
 body .scorecard-top .scorecard-top__scorers {
   font-size: .9em;
   line-height: 125%;
+  font-weight: normal;
 }
 
 body .scorecard-top .scorecard-top__scorers li {
@@ -1001,6 +1006,7 @@ body .scorecard-top .scorecard-top__scorers li {
 
 body .scorecard-top__info {
   font-size: .9em;
+  font-weight: normal;
   margin-top: 10px;
 }
 
