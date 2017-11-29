@@ -82,7 +82,8 @@ export default function BlogEditController(
             blog.blog_preferences.theme = themes[0];
         });
     }
-
+    const emptyPRegex = /<p><br[\/]?><\/p>/g;
+    const emptyDivRegex = /<div><br[\/]?><\/div>/g;
     // start listening for unread posts.
     unreadPostsService.startListening();
     // return the list of items from the editor
@@ -92,7 +93,7 @@ export default function BlogEditController(
             return _.map(vm.editor.get(), function(block) {
                 return {
                     group_type: 'default',
-                    text: block.text,
+                    text: block.text.replace(emptyPRegex, '').replace(emptyDivRegex, ''),
                     meta: block.meta,
                     item_type: block.type
                 };
