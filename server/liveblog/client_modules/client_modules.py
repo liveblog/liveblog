@@ -263,6 +263,11 @@ class ClientBlogPostsService(BlogPostsService):
                 .find_one(req=None, _id=doc['syndication_in'])
         doc['post_items_type'] = post_items_type
 
+        # Bring the client user in the posts so we can post.original_creator.
+        # LBSD-2010
+        doc['original_creator'] = get_resource_service('users') \
+            .find_one(req=None, _id=doc['original_creator'])
+
     def on_fetched(self, docs):
         super().on_fetched(docs)
         for doc in docs['_items']:

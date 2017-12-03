@@ -34,7 +34,7 @@ embed_blueprint = superdesk.Blueprint('embed_liveblog', __name__, template_folde
 THEMES_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), os.pardir, 'themes'))
 
 
-def collect_theme_assets(theme, assets=None, template=None):
+def collect_theme_assets(theme, assets=None, template=None, parents=[]):
     theme_name = theme['name']
     themes = get_resource_service('themes')
     is_local_upload = themes.is_uploaded_theme(theme_name) and not themes.is_s3_storage_enabled
@@ -52,14 +52,16 @@ def collect_theme_assets(theme, assets=None, template=None):
             template = theme.get('template')
 
     # Add assets from parent theme.
-    extends = theme.get('extends')
-    if extends and not theme.get('seoTheme', False):
-        parent_theme = get_resource_service('themes').find_one(req=None, name=extends)
+    if theme.get('extends') and not theme.get('seoTheme') and \
+            theme.get('name') != theme.get('extends') and \
+            theme.get('name') not in parents:
+        parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
         if parent_theme:
-            assets, template = collect_theme_assets(parent_theme, assets=assets, template=template)
+            parents.append(theme.get('extends'))
+            assets, template = collect_theme_assets(parent_theme, assets=assets, template=template, parents=parents)
         else:
             error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
-                % (theme_name, extends)
+                % (theme_name, theme.get('extends'))
             logger.info(error_message)
             raise UnknownTheme(error_message)
 
@@ -228,8 +230,8 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         )
 
     async = theme.get('asyncTheme', False)
-    api_host = api_host.replace('//', 'https://') if api_host.startswith('//') else api_host
-    api_host = api_host.replace('http://', 'https://')
+    api_host = api_host.replace('//', app.config.get('EMBED_PROTOCOL')) if api_host.startswith('//') else api_host
+    api_host = api_host.replace('http://', app.config.get('EMBED_PROTOCOL'))
 
     scope = {
         'blog': blog,
