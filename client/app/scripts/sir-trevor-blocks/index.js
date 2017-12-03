@@ -298,9 +298,9 @@ angular
                 return htmlToReturn;
             },
             // render a card from data, and make it editable
-            loadData: function(data) {
+            loadData: function(dataParam) {
                 const self = this;
-
+                const data = _.has(dataParam, 'meta') ? dataParam.meta : dataParam;
                 self.data = fixDataEmbed(data);
                 // hide the embed input field, render the card and add it to the DOM
                 self.$('.embed-input')
