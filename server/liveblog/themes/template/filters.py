@@ -64,7 +64,6 @@ def ampify(html):
         src = re.search(r'src\s*=\s*"(?P<src>[^\"]+)"', html)
         width = re.search(r'width\s*=\s*"(?P<width>[^\"]+)"', html)
         height = re.search(r'height\s*=\s*"(?P<height>[^\"]+)"', html)
-        print(src.group('src'))
         return '''
 <amp-iframe
     width={width}
