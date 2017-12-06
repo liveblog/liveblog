@@ -57,3 +57,25 @@ def addten(date):
         return re.sub(r'(\d{4})', regaddten, date)
 
     return date
+
+
+def ampify(html):
+    if re.search('iframe', html, re.IGNORECASE):
+        src = re.search(r'src\s*=\s*"(?P<src>[^\"]+)"', html)
+        width = re.search(r'width\s*=\s*"(?P<width>[^\"]+)"', html)
+        height = re.search(r'height\s*=\s*"(?P<height>[^\"]+)"', html)
+        return '''
+<amp-iframe
+    width={width}
+    height={height}
+    layout="responsive"
+    frameborder="0"
+    sandbox="allow-scripts allow-same-origin allow-popups"
+    src="{src}">
+    <p placeholder>Loading...</p>
+</amp-iframe>
+'''.format(
+            width=width.group('width') if width else 0,
+            height=height.group('height') if height else 0,
+            src=src.group('src') if src else '')
+    return html
