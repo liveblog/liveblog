@@ -40,10 +40,18 @@ blogs_schema = {
         'maxmembers': True
     },
     'blog_preferences': {
-        'type': 'dict'
+        'type': 'dict',
+        'mapping': {
+            'type': 'object',
+            'enabled': False
+        }
     },
     'theme_settings': {
-        'type': 'dict'
+        'type': 'dict',
+        'mapping': {
+            'type': 'object',
+            'enabled': False
+        }
     },
     'public_url': {
         'type': 'string'
