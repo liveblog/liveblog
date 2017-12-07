@@ -252,7 +252,7 @@ class ClientBlogPostsService(BlogPostsService):
                     if 'provider_name' in items[0]['meta']:
                         post_items_type = "{}-{}".format(post_items_type, items[0]['meta']['provider_name'].lower())
                 else:
-                    post_items_type = items[0]['item_type']
+                    post_items_type = items[0].get('item_type')
             elif items_length > 1:
                 for k, g in groupby(items, key=lambda i: i['item_type']):
                     if k == 'image' and sum(1 for _ in g) > 1:
@@ -261,6 +261,7 @@ class ClientBlogPostsService(BlogPostsService):
         if doc.get('syndication_in'):
             doc['syndication_in'] = get_resource_service('syndication_in')\
                 .find_one(req=None, _id=doc['syndication_in'])
+
         doc['post_items_type'] = post_items_type
 
         # Bring the client user in the posts so we can post.original_creator.
