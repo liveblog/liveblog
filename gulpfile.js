@@ -112,6 +112,31 @@ const templatePath = [
 dateFilter.setDefaultFormat('dddd, MMMM Do, YYYY, h:MM:ss A');
 nunjucksEnv.addFilter('date', dateFilter);
 
+// ampify filter used by AMP theme
+var ampifyFilter = function(html){
+  if (html.search(/iframe/i) > 0) {
+    // html contains iframe
+    var src = (/src=\"([^\"]+)\"/).exec(html)[1],
+      width = (/width=\"([^\"]+)\"/).exec(html)[1],
+      height = (/height=\"([^\"]+)\"/).exec(html)[1];
+
+    return [
+      '<amp-iframe width=' + width,
+      'height=' + height,
+      'layout="responsive"',
+      'frameborder="0"',
+      'sandbox="allow-scripts allow-same-origin allow-popups"',
+      'src="' + src + '">',
+      '<p placeholder>Loading...</p>',
+      '</amp-iframe>'
+    ].join(' ');
+  }
+  
+  return html;
+};
+
+nunjucksEnv.addFilter('ampify', ampifyFilter);
+
 // add addten filter used by AMP theme
 var addtenFilter = function( dateString ) {
   var year = dateString.substring(0,4);
