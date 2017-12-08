@@ -298,13 +298,7 @@ function displayCommentFormErrors(errors) {
 
 function attachSlideshow() {
   const slideshow = new Slideshow();
-  const slideshowImages = document.querySelectorAll('article.slideshow img');
-
-  if (slideshowImages) {
-    slideshowImages.forEach((image) => {
-      image.addEventListener('click', slideshow.start);
-    });
-  }
+  slideshow.init();
 }
 
 function attachPermalink() {

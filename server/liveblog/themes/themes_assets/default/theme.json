@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.3.16",
+    "version": "3.3.18",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -16,10 +16,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-ed084ca5e4.css"],
-    "devScripts": ["dist/default-4139682f02.js"],
-    "styles": ["dist/default-ed084ca5e4.css"],
-    "scripts": ["dist/default-4139682f02.js"],
+    "devStyles": ["dist/default-ae3acfe971.css"],
+    "devScripts": ["dist/default-969dc0452f.js"],
+    "styles": ["dist/default-ae3acfe971.css"],
+    "scripts": ["dist/default-969dc0452f.js"],
     "options": [
         {
             "name": "datetimeFormat",
@@ -176,9 +176,10 @@
         {
             "name": "gaCode",
             "label": "Google analytics code",
-            "type": "textarea",
+            "type": "text",
+            "placeholder": "UA-XXXXX-Y",
             "default": "",
-            "help": "Please paste in your google analytics code"
+            "help": "Please enter your google analytics account ID."
         },
         {
             "name": "renderForESI",
