@@ -35,10 +35,8 @@
                 }
                 // fix youtube width and height issues.
                 if(embed.indexOf('youtube') !== -1) {
-                    // replace 100% any width in embed code.
-                    embed = embed.replace(/width\s*=\s*("|')?([\d]+)("|')?/g, 'width="100%"');
-                    // remove any fixed height on embed code.
-                    //embed = embed.replace(/height\s*=\s*("|')?([\d]+)("|')?/g, '');
+                    // add wrapper div
+                    embed = '<div class="responsive-video">' + embed + '</div>';
                 }
                 // fix intragram height by removing max-height from blockquote
                 return embed.replace(/<blockquote class="instagram-media"[^>]*/g, function(tag) {
