@@ -523,7 +523,7 @@ angular
                 // use paragraph tag `p` instead of `div` witch isn't supported.
                 val = val.replace(/<(\/)?div\b[^\/>]*>/ig, '<$1p>');
                 val = val.replace(/<(br|p|b|i|strike|ul|ol|li|a)\b[^\/>]+>/ig, '<$1>');
-                val = val.replace(/<(?!\s*\/?(br|p|b|i|strike|ul|ol|li|a)\b)[^>]+>/ig, '');
+                val = val.replace(/<(?!\s*\/?(br|p|b|i|strike|ul|ol|li|a|h4|h5)\b)[^>]+>/ig, '');
             }
             input.html(val);
             placeCaretAtEnd(input.get(0));
