@@ -82,8 +82,8 @@ export default function BlogEditController(
             blog.blog_preferences.theme = themes[0];
         });
     }
-    const emptyPRegex = /<p><br[\/]?><\/p>/g;
-    const emptyDivRegex = /<div><br[\/]?><\/div>/g;
+    const emptyPRegex = /<p><br\/?><\/p>/g;
+    const emptyDivRegex = /<div><br\/?><\/div>/g;
     const targetIconRegex = /target\s*=\s*"\<\/?i\>blank\"/g;
     // start listening for unread posts.
     unreadPostsService.startListening();
@@ -95,8 +95,8 @@ export default function BlogEditController(
                 return {
                     group_type: 'default',
                     text: block.text
-                            .replace(emptyPRegex, '')
-                            .replace(emptyDivRegex, '')
+                            .replace(emptyPRegex, '<br/>')
+                            .replace(emptyDivRegex, '<br/>')
                             .replace(targetIconRegex, 'target="_blank"'),
                     meta: block.meta,
                     item_type: block.type
