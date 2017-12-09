@@ -84,6 +84,7 @@ export default function BlogEditController(
     }
     const emptyPRegex = /<p><br[\/]?><\/p>/g;
     const emptyDivRegex = /<div><br[\/]?><\/div>/g;
+    const targetIconRegex = /target\s*=\s*"\<\/?i\>blank\"/g;
     // start listening for unread posts.
     unreadPostsService.startListening();
     // return the list of items from the editor
@@ -93,7 +94,10 @@ export default function BlogEditController(
             return _.map(vm.editor.get(), function(block) {
                 return {
                     group_type: 'default',
-                    text: block.text.replace(emptyPRegex, '').replace(emptyDivRegex, ''),
+                    text: block.text
+                            .replace(emptyPRegex, '')
+                            .replace(emptyDivRegex, '')
+                            .replace(targetIconRegex, 'target="_blank"'),
                     meta: block.meta,
                     item_type: block.type
                 };
