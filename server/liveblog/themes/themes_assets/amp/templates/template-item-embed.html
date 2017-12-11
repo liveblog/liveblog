@@ -33,8 +33,7 @@
     </figure>
   {% endif %}
   {% if ref.item.meta.html %}
-    {{ ref.item.meta.html | replace("<iframe","<amp-iframe sandbox='allow-scripts allow-same-origin'
-    layout='responsive'") | replace("</iframe>", "<p placeholder>{{  translate('Loading') }}</p></amp-iframe>") | safe}}
+    {{ ref.item.meta.html | ampify | safe}}
   {% endif %}
   {% if ref.item.meta.title %}
     <div class="item--embed__title" >

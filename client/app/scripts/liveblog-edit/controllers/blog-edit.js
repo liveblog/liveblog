@@ -265,7 +265,7 @@ export default function BlogEditController(
         blog: blog,
         currentBlog: {},
         panels: {},
-        syndicationEnabled: $injector.has('lbNotificationsCountDirective') && blogSecurityService.isAdmin(),
+        syndicationEnabled: $injector.has('lbNotificationsCountDirective'),
         selectedUsersFilter: [],
         currentPost: undefined,
         blogSecurityService: blogSecurityService,
