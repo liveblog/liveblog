@@ -36,7 +36,8 @@ function createCaretPlacer(atStart) {
 var placeCaretAtStart = createCaretPlacer(true);
 var placeCaretAtEnd = createCaretPlacer(false);
 var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
-var socialEmbedRegex = '(iframe|blockquote)+.*(youtube\.com\/embed|facebook\.com\/plugins|instagram\.com\/p|twitter\.com\/.*\/status).*(iframe|blockquote)';
+var socialEmbedRegex = '(iframe|blockquote)+.*(youtube\\.com\\/embed|facebook\\.' 
+    + 'com\\/plugins|instagram\\.com\\/p|twitter\\.com\\/.*\\/status).*(iframe|blockquote)';
 
 function fixDataEmbed(data) {
     if (data.html) {
@@ -74,7 +75,8 @@ function isURI(string) {
 
 function replaceEmbedWithUrl(string) {
     var generalPattern = new RegExp(socialEmbedRegex, 'i');
-    var youtubePattern = /(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))(\w+)/i;
+    var youtubePattern = new RegExp('(?:https?:\\/\\/)?(?:www\\.)?(?:youtu\\.be\\/|youtube\\.com\\/'
+        + '(?:embed\\/|v\\/|watch\\?v=|watch\\?.+&v=))(\\w+)', 'i');
     var facebookPattern = /(?:post\.php\?href=)(https?(\w|%|\.)+)/i;
     var instagramPattern = /(https?:\/\/(?:www)?\.?instagram\.com\/p\/(?:\w+.)+\/)/i;
     var twitterPattern = /(https?:\/\/(?:www)?\.?twitter\.com\/\w+\/status\/\d+)/i;
@@ -135,7 +137,6 @@ angular
             },
             onBlockRender: function() {
                 var that = this;
-
                 // create and trigger a 'change' event for the $editor which is a contenteditable
                 this.$editor.filter('[contenteditable]').on('focus', function(ev) {
                     var $this = $(this);
@@ -156,7 +157,6 @@ angular
                     var input = $(this)
                         .text()
                         .trim();
-                   
                     // exit if the input field is empty
                     if (_.isEmpty(input)) {
                         that.getOptions().disableSubmit(true);
