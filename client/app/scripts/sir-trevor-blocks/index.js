@@ -36,6 +36,8 @@ function createCaretPlacer(atStart) {
 var placeCaretAtStart = createCaretPlacer(true);
 var placeCaretAtEnd = createCaretPlacer(false);
 var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
+var socialEmbedRegex = '(iframe|blockquote)+.*(youtube\\.com\\/embed|facebook\\.' 
+    + 'com\\/plugins|instagram\\.com\\/p|twitter\\.com\\/.*\\/status).*(iframe|blockquote)';
 
 function fixDataEmbed(data) {
     if (data.html) {
@@ -69,6 +71,34 @@ function fixSecureEmbed(string) {
 function isURI(string) {
     var pattern = new RegExp('^' + uriRegx, 'i');
     return pattern.test(string);
+}
+
+function replaceEmbedWithUrl(string) {
+    var generalPattern = new RegExp(socialEmbedRegex, 'i');
+    var youtubePattern = new RegExp('(?:https?:\\/\\/)?(?:www\\.)?(?:youtu\\.be\\/|youtube\\.com\\/'
+        + '(?:embed\\/|v\\/|watch\\?v=|watch\\?.+&v=))(\\w+)', 'i');
+    var facebookPattern = /(?:post\.php\?href=)(https?(\w|%|\.)+)/i;
+    var instagramPattern = /(https?:\/\/(?:www)?\.?instagram\.com\/p\/(?:\w+.)+\/)/i;
+    var twitterPattern = /(https?:\/\/(?:www)?\.?twitter\.com\/\w+\/status\/\d+)/i;
+    var m;
+
+    // checking if string contains any of the "big four" embeds
+    if (generalPattern.test(string)) {
+        if ((m = youtubePattern.exec(string)) !== null){
+            return 'https://www.youtube.com/watch?v='+m[1];
+        }
+        else if ((m = facebookPattern.exec(string)) !== null) {
+            return decodeURIComponent(m[1]);
+        }
+        else if ((m = instagramPattern.exec(string)) !== null) {
+            return m[1];
+        }
+        else if ((m = twitterPattern.exec(string)) !== null) {
+            return m[1];
+        }
+    }
+    
+    return string;
 }
 
 angular
@@ -107,7 +137,6 @@ angular
             },
             onBlockRender: function() {
                 var that = this;
-
                 // create and trigger a 'change' event for the $editor which is a contenteditable
                 this.$editor.filter('[contenteditable]').on('focus', function(ev) {
                     var $this = $(this);
@@ -128,7 +157,6 @@ angular
                     var input = $(this)
                         .text()
                         .trim();
-
                     // exit if the input field is empty
                     if (_.isEmpty(input)) {
                         that.getOptions().disableSubmit(true);
@@ -139,6 +167,7 @@ angular
                     that.resetMessages();
                     // start a loader over the block, it will be stopped in the loadData function
                     that.loading();
+                    input = replaceEmbedWithUrl(input);
                     input = fixSecureEmbed(input);
                     // if the input is an url, use embed services
                     if (isURI(input)) {
