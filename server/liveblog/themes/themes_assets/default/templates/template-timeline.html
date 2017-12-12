@@ -62,7 +62,7 @@
     </div>
     <div class="header-bar__actions"></div>
       {% if settings.hasHighlights %}
-          <button class="header-bar__highlight" data-js-show-highlighted>{{ translate('Highlights') }}</button>
+          <button class="header-bar__highlight" data-js-show-highlighted><span>{{ translate('Highlights') }}</span></button>
       {% endif %}
 
       {% if settings.canComment %}
@@ -131,8 +131,6 @@
 
 </div>
 {% endblock %}
-
-{% include "template-embed-providers.html" %}
 
 {% if include_js_options %}
   <script type="text/javascript">
