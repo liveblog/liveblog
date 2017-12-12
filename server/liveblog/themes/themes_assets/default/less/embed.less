@@ -175,7 +175,7 @@
     right: 10px;
     padding: 30px;    
     box-shadow: 1px 1px 20px rgba(0, 0, 0, 0.2);
-    z-index: 1;
+    z-index: 2;
   }
 
   form.comment.hide {
@@ -368,9 +368,9 @@
 
   .header-bar__highlight {
       position: relative;
-      text-indent: -9999px;
       color: #999999;
       width: 32px;
+      height: 32px;
       background-image: url("../images/highlighted.svg");
       background-repeat: no-repeat;
       background-size: 14px;
@@ -387,8 +387,27 @@
   }
 
   .header-bar__highlight.header-bar__highlight--active {
-      background-color: #f2f5f8;
-      border: 1px solid #cccccc;
+    background-color: #f2f5f8;
+    border: 1px solid #cccccc;
+  }
+
+  .header-bar__highlight span {
+    display: none;
+    font-size: 12px;
+    letter-spacing: 0.2px;
+    color: @white;
+    background-color: @black;
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 4px 10px;
+    border-radius: 2px;
+    white-space: nowrap;
+  }
+
+  .header-bar__highlight:hover span {
+    display: block;
   }
 
   // Sorting Bar End
@@ -624,12 +643,17 @@
   //}
 
   [class*="lb-type--embed"] {
+    background-image: url("../images/link-icon.svg");
+    background-size: 9px;
+  }
+
+  .lb-type--embed-twitter, .lb-type--embed-facebook, .lb-type--embed-youtube, .lb-type--embed-instagram {
     width: 40px;
     height: 40px;
     margin-left: -20px;
   }
 
-  [class*="lb-type--embed"] + .lb-post-date-icons {
+  .lb-type--embed-twitter + .lb-post-date-icons, .lb-type--embed-facebook + .lb-post-date-icons, .lb-type--embed-youtube + .lb-post-date-icons, .lb-type--embed-instagram + .lb-post-date-icons {
     margin-left: 40px;
   }
 
@@ -1028,11 +1052,15 @@ body .scorecard-top__info {
         .sorting-bar__order {
             margin-right: 15px;
         }
+        .header-bar__highlight:hover span {
+          display: none;
+        }
         .header-bar__comment {
           position: relative;
           text-indent: -9999px;
           color: #999999;
           width: 32px;
+          height: 32px;
           background-image: url(../images/comment_icon--dark.svg);
           background-repeat: no-repeat;
           background-size: 14px;
@@ -1167,10 +1195,13 @@ body .scorecard-top__info {
           margin-left: 0;
       }
 
+      [class*="lb-type--embed"] {
+        background-size: 8px;
+      }
+
       .lb-type--embed {
-          width: 16px;
-          height: 16px;
-          margin-top: -7px;
+          width: 12px;
+          height: 12px;
       }
 
       .lb-author__avatar, .lb-author__comment   {

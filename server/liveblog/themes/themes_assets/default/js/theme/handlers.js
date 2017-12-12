@@ -38,6 +38,7 @@ var showPendings = (e) => {
     pending.classList.toggle('mod--displaynone', false);
   });
   view.checkPending();
+  view.attachSlideshow();
 };
 
 var buttons = {
