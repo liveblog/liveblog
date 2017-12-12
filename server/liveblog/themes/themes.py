@@ -31,7 +31,7 @@ from liveblog.system_themes import system_themes
 
 from settings import (COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY, SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
-from .template.filters import moment_date_filter_container, addten
+from .template.filters import moment_date_filter_container, addten, ampify
 from .template.loaders import ThemeTemplateLoader
 
 
@@ -195,19 +195,23 @@ class UnknownTheme(Exception):
 
 
 class ThemesService(BaseService):
-    def get_options(self, theme, options=None):
+    def get_options(self, theme, options=None, parents=[]):
         """
         Get theme options.
 
         :param theme:
         :param options:
+        :param parents:
         :return:
         """
         options = options or []
-        if theme.get('extends', False):
+        if theme.get('extends', False) and \
+                theme.get('name') != theme.get('extends') and \
+                theme.get('name') not in parents:
             parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
             if parent_theme:
-                options = self.get_options(parent_theme, options)
+                parents.append(theme.get('extends'))
+                options = self.get_options(parent_theme, options, parents)
             else:
                 error_message = 'Embed: "%s" theme depends on "%s" but this theme is not registered.' \
                     % (theme.get('name'), theme.get('extends'))
@@ -285,6 +289,7 @@ class ThemesService(BaseService):
         embed_env = jinja2.Environment(loader=loader(theme), undefined=UndefinedVar)
         embed_env.filters['date'] = moment_date_filter_container(theme)
         embed_env.filters['addten'] = addten
+        embed_env.filters['ampify'] = ampify
         return embed_env
 
     def get_theme_compiled_templates_path(self, theme_name):

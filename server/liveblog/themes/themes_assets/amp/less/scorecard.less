@@ -1,16 +1,127 @@
-.lb-timeline .scorecard {
-    display: flex;
-    justify-content: space-around;
-    text-align: center;
+@import "globals.less";
 
-    &__score {
-        text-align: center;
-        font-size: 2rem;
-        font-weight: bold;
-        padding: .5em 8px;
+.lb-timeline {
+    .scorecard-top {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        border-radius: 4px;
+        min-width: auto;
+        max-width: 100%;
+        background-color: #f2f5f8;
+        padding: 30px;
     }
 
-    &__scorer {
-        font-size: 0.8em;
+    .scorecard-top hr {
+        display: none;
+    }
+
+    .scorecard-top span.team-score {
+        font-size: 42px;
+        font-weight: bold;
+    }
+
+    .scorecard-top__column {
+        flex: 0 0 39%;
+        max-width: 39%;
+        text-align: center;
+        padding: 0 10px;
+        box-sizing: border-box;
+    }
+
+    .scorecard-top__column--home {
+        order: 0;
+    }
+    
+    .scorecard-top__column--away {
+        order: 2;
+    }   
+    
+    .scorecard-top__column--result {
+        font-size: 45px;
+        font-weight: 700;
+        line-height: 1em;
+        white-space: nowrap;
+        flex: 0 0 22%;
+        max-width: 22%;
+        max-height: 150px;
+        align-items: center;
+        order: 1;
+        justify-content: center;
+        display: flex;
+        margin-bottom: 24px;
+    }
+
+    .scorecard-top__logoWrap img {
+        max-width: 160px;
+    }
+
+    .scorecard-top span.team-name {
+        font-size: 24px;
+        font-weight: bold;
+        line-height: 110%;
+        display: inline-block;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+
+    .scorecard-top__scorers {
+        font-size: .9em;
+        line-height: 125%;
+        font-weight: normal;
+        display: inline-flex;
+        flex-direction: column;
+        margin: 0px;
+        padding: 0px;
+        list-style-type: none;
+    }
+
+    .scorecard-top__scorers li {
+        margin-bottom: 10px;
+    }
+
+    .scorecard-top__info {
+        font-size: .9em;
+        font-weight: normal;
+        margin-top: 10px;
+        flex: 0 0 100%;
+        flex-direction: column;
+        max-width: 100%;
+        order: 3;
+        display: flex;
+        align-items: flex-start;
+    }
+}
+
+@media screen and (max-width: 650px) {
+    .lb-timeline {
+        .scorecard-top__column {
+            flex: 0 0 50%;
+            max-width: 50%;
+        }
+        .scorecard-top__column--result {
+            flex: 0 0 100%;
+            max-width: 100%;
+            order: 0;
+            max-height: 60px;
+            margin-bottom: 6px;
+        }
+        .scorecard-top__scorers {
+            display: none;
+        }
+    }
+}
+
+@media @medium {
+    .lb-timeline {
+        .scorecard-top {
+            padding: 20px;
+        }
+        .scorecard-top__column--result {
+            font-size: 32px;
+        }
+        .scorecard-top span.team-name {
+            font-size: 18px;
+        }
     }
 }

@@ -1,31 +1,49 @@
-<div class="scorecard">
-  <div>
+<div class="scorecard-top">
+  <div class="scorecard-top__column scorecard-top__column--result">{{ ref.item.meta.data.home.score }}:{{ ref.item.meta.data.away.score }}</div>
+  
+  <div class="scorecard-top__column scorecard-top__column--home">
     {% if ref.item.meta.data.home.img1.picture_url %}
       <amp-img src="{{ ref.item.meta.data.home.img1.picture_url }}"
-          layout="fixed"
-          height="50"
+          layout="responsive"
+          height="100"
           width="100">
       </amp-img>
     {% endif %}
-    <h2>{{ ref.item.meta.data.home.name }}</h2>
+    <span class="team-name">{{ ref.item.meta.data.home.name }}</span>
+    <ul class="scorecard-top__scorers">
     {% for scorer in ref.item.meta.data.home.scorers %}
-      <p class="scorecard__scorer">{{scorer.time}}&prime; {{scorer.name}}</p>
-    {% endfor %}
+      {% if scorer.time %}
+        <li>{{scorer.time}}&prime; {{scorer.name}}</p>
+      {% endif %}
+      {% endfor %}
+    </ul>
   </div>
-  <div class="scorecard__score">{{ ref.item.meta.data.home.score }} : {{ ref.item.meta.data.away.score }}</div>
-  <div>
+  
+  <div class="scorecard-top__column scorecard-top__column--away">
     {% if ref.item.meta.data.away.img1.picture_url %}
       <amp-img src="{{ ref.item.meta.data.away.img1.picture_url }}"
-          layout="fixed"
-          height="50"
+          layout="responsive"
+          height="100"
           width="100">
       </amp-img>
     {% endif %}
-    <h2>{{ ref.item.meta.data.away.name }}</h2>
+    <span class="team-name">{{ ref.item.meta.data.away.name }}</span>
+    <ul class="scorecard-top__scorers">
     {% for scorer in ref.item.meta.data.away.scorers %}
       {% if scorer.time %}
-        <p class="scorecard__scorer">{{scorer.time}}&prime; {{scorer.name}}</p>
+        <li>{{scorer.time}}&prime; {{scorer.name}}</li>
       {% endif %}
-    {% endfor %}
+      {% endfor %}
+    </ul>
   </div>
+  {% if ref.item.meta.data.match.info or ref.item.meta.data.match.quaters %}
+    <div class="scorecard-top__info">
+      <div>
+          <span class="match-quaters">{{ref.item.meta.data.match.quaters}}</span>
+      </div>
+      <div>
+          <span class="match-info">{{ref.item.meta.data.match.info}}</span>
+      </div>
+    </div>
+  {% endif %}
 </div>

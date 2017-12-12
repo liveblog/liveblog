@@ -306,8 +306,6 @@ angular
                 if (data.provider_name === 'Twitter') {
                     // remove credit and title fields (duplicated with rendered card)
                     html.find('.credit-preview, .title-preview').remove();
-                    // empty the description
-                    html.find('.description-preview').html('');
                 }
                 // retrieve the final html code
                 var html_to_return = '';
@@ -317,8 +315,9 @@ angular
                 return html_to_return;
             },
             // render a card from data, and make it editable
-            loadData: function(data) {
-                var that = this;
+            loadData: function(dataParam) {
+                const that = this;
+                const data = _.has(dataParam, 'meta') ? dataParam.meta : dataParam;
                 that.data = fixDataEmbed(data);
                 // hide the embed input field, render the card and add it to the DOM
                 that.$('.embed-input')

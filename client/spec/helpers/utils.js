@@ -27,7 +27,7 @@ function logout() {
     element(by.buttonText('SIGN OUT')).click();
     browser.sleep(500); // it reloads page
     browser.wait(function() {
-        return browser.driver.isElementPresent(by.id('login-btn'));
+        return element(by.id('login-btn'));
     }, 5000);
 }
 
@@ -56,7 +56,7 @@ var blogs = [
 function waitAndClick(elmBy) {
     'use strict';
     browser.wait(function() {
-        return browser.driver.isElementPresent(elmBy);
+        return element(elmBy);
     }, 5000);
     return element(elmBy).click();
 }
