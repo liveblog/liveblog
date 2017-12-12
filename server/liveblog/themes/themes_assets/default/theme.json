@@ -176,9 +176,10 @@
         {
             "name": "gaCode",
             "label": "Google analytics code",
-            "type": "textarea",
+            "type": "text",
+            "placeholder": "UA-XXXXX-Y",
             "default": "",
-            "help": "Please paste in your google analytics code"
+            "help": "Please enter your google analytics account ID."
         },
         {
             "name": "renderForESI",
