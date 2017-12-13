@@ -79,6 +79,8 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
           <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
         {% elif item.original_creator %}
           {{ item.original_creator.display_name }}
+        {% elif item.publisher %}
+          {{ item.publisher.display_name }}
         {% endif %}
 
         </div>
@@ -100,6 +102,13 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
           {% elif item.original_creator and item.original_creator.picture_url %}
           <amp-img class="lb-author__avatar" 
           src="{{ item.original_creator.picture_url }}"
+          layout="fixed"
+          width="45"
+          height="45">
+          </amp-img>
+          {% elif item.publisher and item.publisher.picture_url %}
+          <amp-img class="lb-author__avatar" 
+          src="{{ item.publisher.picture_url }}"
           layout="fixed"
           width="45"
           height="45">
