@@ -49,8 +49,8 @@ cache:
     - $HOME/.npm
 
 before_install:
-    - nvm install 6.70
-    - nvm use 6.70
+    - nvm install 6.7.0
+    - nvm use 6.7.0
     - sudo apt-get -qq update --allow-unauthenticated
     - sudo apt-get purge -f elasticsearch
     - sudo apt-get install -t stable elasticsearch
