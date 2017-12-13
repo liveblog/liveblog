@@ -107,5 +107,9 @@
     "raven-js": "^3.9.1",
     "sir-trevor": "m0g/sir-trevor-js#liveblog",
     "superdesk-core": "liveblog/superdesk-client-core#bd052590f93e1bcba88049cb404060c84ffa4363"
+  },
+  "engines": {
+    "node": ">=6.6.0 <7.0.0",
+    "npm": ">=3.10 <4.0.0"
   }
 }
