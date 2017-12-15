@@ -108,6 +108,7 @@ function addPosts(posts, position) {
 
   els.timelineNormal.insertAdjacentHTML(position, timelineNormal);
   els.timelineSticky.insertAdjacentHTML(position, timelineSticky);
+  els.timelineSticky.classList.remove('sticky--empty');
 
   checkPending();
   attachSlideshow();
