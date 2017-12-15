@@ -37,7 +37,7 @@ var placeCaretAtStart = createCaretPlacer(true);
 var placeCaretAtEnd = createCaretPlacer(false);
 var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
 var socialEmbedRegex = '(iframe|blockquote)+(?:.|\\n)*(youtube\\.com\\/embed|facebook\\.com'
-    + '\\/plugins|instagram\\.com\\/p|twitter\\.com\\/.*\\/status)(?:.|\\n)*(iframe|blockquote)';
+    + '\\/plugins|instagram\\.com\\/p\\/|twitter\\.com\\/.*\\/status)(?:.|\\n)*(iframe|blockquote)';
 
 function fixDataEmbed(data) {
     if (data.html) {
@@ -74,7 +74,7 @@ function isURI(string) {
 }
 
 function replaceEmbedWithUrl(string) {
-    var generalPattern = new RegExp(socialEmbedRegex, 'si');
+    var generalPattern = new RegExp(socialEmbedRegex, 'i');
     var youtubePattern = new RegExp('(?:https?:\\/\\/)?(?:www\\.)?(?:youtu\\.be\\/|youtube\\.com\\/'
         + '(?:embed\\/|v\\/|watch\\?v=|watch\\?.+&v=))(\\w+)', 'i');
     var facebookPattern = /(?:post\.php\?href=)(https?(\w|%|\.)+)/i;
