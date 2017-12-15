@@ -187,9 +187,9 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         page_limit = theme_settings.get('postsPerPage', 10)
         sticky_limit = theme_settings.get('stickyPostsPerPage', 10)
         ordering = theme_settings.get('postOrder', blog_instance.default_ordering)
-        posts = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering)
+        posts = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering, deleted=is_amp)
         sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True,
-                                           ordering='newest_first')
+                                           ordering='newest_first', deleted=is_amp)
 
         if output and output.get('collection', False):
             ads = []
