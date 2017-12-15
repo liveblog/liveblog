@@ -77,7 +77,7 @@ function replaceEmbedWithUrl(string) {
     var generalPattern = new RegExp(socialEmbedRegex, 'si');
     var youtubePattern = new RegExp('(?:https?:\\/\\/)?(?:www\\.)?(?:youtu\\.be\\/|youtube\\.com\\/'
         + '(?:embed\\/|v\\/|watch\\?v=|watch\\?.+&v=))(\\w+)', 'i');
-    var facebookPattern = /(?:post\.php\?href=)(https?(\w|%|\.)+)/i;
+    var facebookPattern = /(?:post\.php|video\.php)\?href=(https?(\w|%|\.)+)/i;
     var instagramPattern = /(https?:\/\/(?:www)?\.?instagram\.com\/p\/(?:\w+.)+\/)/i;
     var twitterPattern = /(https?:\/\/(?:www)?\.?twitter\.com\/\w+\/status\/\d+)/i;
     var m;
