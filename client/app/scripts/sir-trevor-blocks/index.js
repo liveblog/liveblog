@@ -74,7 +74,7 @@ function isURI(string) {
 }
 
 function replaceEmbedWithUrl(string) {
-    var generalPattern = new RegExp(socialEmbedRegex, 'si');
+    var generalPattern = new RegExp(socialEmbedRegex, 'i');
     var youtubePattern = new RegExp('(?:https?:\\/\\/)?(?:www\\.)?(?:youtu\\.be\\/|youtube\\.com\\/'
         + '(?:embed\\/|v\\/|watch\\?v=|watch\\?.+&v=))(\\w+)', 'i');
     var facebookPattern = /(?:post\.php|video\.php)\?href=(https?(\w|%|\.)+)/i;

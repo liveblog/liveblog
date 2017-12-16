@@ -108,7 +108,7 @@ class ItemsService(ArchiveService):
             re.compile('https?://(www\.)?youtu\.be/(?P<original_id>[a-zA-Z0-9_-]+)')
         ],
         'instagram': [
-            re.compile('https?://(www\.)?instagr(?:\.am|am\.com)/p/(?P<original_id>.+)')
+            re.compile('https?://(www\.)?instagr(?:\.am|am\.com)/p/(?P<original_id>[^/]+)')
         ],
         'facebook': [
             re.compile('https?://(www\.)?facebook.com/(?P<original_id>.*)')
