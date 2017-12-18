@@ -178,7 +178,6 @@ function displayNewPosts() {
 
 /**
  * Trigger embed provider unpacking
- * Todo: Make required scripts available on subsequent loads
  */
 function loadEmbeds() {
   if (window.instgrm) {
@@ -188,6 +187,12 @@ function loadEmbeds() {
   if (window.twttr) {
     twttr.widgets.load();
   }
+
+  if (window.FB) {
+    window.FB.XFBML.parse();
+  }
+
+  attachSlideshow();
 }
 
 function clearCommentDialog() {
