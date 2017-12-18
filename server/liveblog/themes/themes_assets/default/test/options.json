@@ -20,7 +20,7 @@
       "showImage":true,
       "canComment":false,
       "language":"en",
-      "postsPerPage":20,
+      "postsPerPage":10,
       "postOrder":"editorial",
       "showAuthorAvatar":true,
       "showTitle":true,
