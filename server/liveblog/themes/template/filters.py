@@ -2,6 +2,7 @@ import arrow
 import datetime
 import re
 from settings import (DEFAULT_THEME_DATE_FORMAT, DEFAULT_THEME_TIMEZONE)
+from superdesk import get_resource_service
 import logging
 
 logger = logging.getLogger('superdesk')
@@ -15,9 +16,8 @@ def moment_date_filter_container(theme):
         :param format:
         :return: str
         """
-        settings = theme.get('settings', {})
+        settings = get_resource_service('themes').get_default_settings(theme)
         parsed = arrow.get(date)
-
         if not format:
             format = settings.get('datetimeFormat', DEFAULT_THEME_DATE_FORMAT)
         # Workaround for "x" unsupported format
