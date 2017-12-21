@@ -127,8 +127,17 @@ const ampifyFilter = (html) => {
   if (html.search(/iframe/i) > 0) {
     // html contains iframe
     const src = (/src=\"([^\"]+)\"/).exec(html)[1];
-    const width = (/width=\"([^\"]+)\"/).exec(html)[1];
-    const height = (/height=\"([^\"]+)\"/).exec(html)[1];
+    var width = (/width=\"([^\"]+)\"/).exec(html)[1];
+    var height = (/height=\"([^\"]+)\"/).exec(html)[1];
+
+    if (!width || width.search("%") >= 0) {
+      width = '350';
+    }
+
+    if (!height) {
+      height = '350';
+    }
+
     return `
     <amp-iframe
         width=${width}
