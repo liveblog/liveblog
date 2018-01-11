@@ -435,7 +435,27 @@ class ThemesService(BaseService):
 
         # Check if theme settings are changed.
         if 'settings' in previous_theme:
+            options = []
+            old_theme_settings = {}
+            old_theme = previous_theme.copy()
+            # Save the previous theme settings.
+            if old_theme.get('options', False):
+                options += old_theme.get('options')
+
+            for option in options:
+                old_theme_settings[option.get('name')] = option.get('default')
+                old_theme_settings.update(theme.get('old_theme_settings', {}))
+
+            # Initialize the theme settings values for the old theme based on the new settings
             theme_settings = {}
+            # loop over theme settings
+            for key, value in old_theme_settings.items():
+                if value == default_prev_theme_settings[key]:
+                    # If settings of previous theme are the same as the current, we keep them in a new variable
+                    theme_settings[key] = value
+                else:
+                    # Otherwise we keep the settings that are already on the theme.
+                    default_theme_settings[key] = default_prev_theme_settings[key]
             theme_settings.update(default_theme_settings)
             theme_settings.update(default_prev_theme_settings)
             theme['settings'] = theme_settings
