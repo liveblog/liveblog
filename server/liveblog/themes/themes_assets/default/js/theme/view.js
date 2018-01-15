@@ -264,6 +264,7 @@ function updateTimestamps() {
   for (var i = 0; i < dateElems.length; i++) {
     var elem = dateElems[i]
       , timestamp = elem.dataset.jsTimestamp;
+    elem.classList.remove('mod--displaynone');
     elem.textContent = helpers.convertTimestamp(timestamp);
   }
   return null;
