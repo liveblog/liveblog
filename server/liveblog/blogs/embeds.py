@@ -50,11 +50,10 @@ def collect_theme_assets(theme, assets=None, template=None, parents=[]):
                 template = theme.get('template')
         else:
             template = theme.get('template')
-
     # Add assets from parent theme.
     if theme.get('extends') and not theme.get('seoTheme') and \
             theme.get('name') != theme.get('extends') and \
-            theme.get('name') not in parents:
+            theme.get('extends') not in parents:
         parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
         if parent_theme:
             parents.append(theme.get('extends'))
