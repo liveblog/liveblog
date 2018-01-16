@@ -43,7 +43,8 @@ BlogEditController.$inject = [
     'themesService',
     '$templateCache',
     '$timeout',
-    '$rootScope'
+    '$rootScope',
+    '$location'
 ];
 
 export default function BlogEditController(
@@ -70,7 +71,8 @@ export default function BlogEditController(
     themesService,
     $templateCache,
     $timeout,
-    $rootScope
+    $rootScope,
+    $location
 ) {
     var vm = this;
     // @TODO: remove this when theme at blog level.
@@ -308,6 +310,12 @@ export default function BlogEditController(
                         }
                     });
                 }
+            });
+        },
+        backToBlogsList: function() {
+            doOrAskBeforeIfEditorIsNotEmpty().then(function() {
+                cleanEditor()
+                $location.url('/liveblog');
             });
         },
         onEditorChanges: function() {
