@@ -50,11 +50,11 @@ def collect_theme_assets(theme, assets=None, template=None, parents=[]):
                 template = theme.get('template')
         else:
             template = theme.get('template')
-
     # Add assets from parent theme.
-    if theme.get('extends') and not theme.get('seoTheme') and \
-            theme.get('name') != theme.get('extends') and \
-            theme.get('name') not in parents:
+    if theme.get('extends') and not \
+            theme.get('seoTheme') and \
+            (theme.get('name') != theme.get('extends')) and \
+            (theme.get('extends') not in parents):
         parent_theme = get_resource_service('themes').find_one(req=None, name=theme.get('extends'))
         if parent_theme:
             parents.append(theme.get('extends'))
@@ -158,7 +158,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             message='You will be able to access the embed after you register the themes')
 
     try:
-        assets, template_content = collect_theme_assets(theme)
+        assets, template_content = collect_theme_assets(theme, parents=[])
     except UnknownTheme as e:
         return str(e), 500
 
