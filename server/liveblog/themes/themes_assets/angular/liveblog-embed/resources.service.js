@@ -179,7 +179,6 @@
                         // special cases for comments.
                         post.showUpdate = (post.content_updated_date !== post.published_date) && 
                                            !post.hasComments && (post.mainItem.item_type !== 'comment');
-
                         // add all the items directly in a `items` property.
                         if (angular.isDefined(post.groups[1])) {
                             post.items = post.groups[1].refs.map(function(value) {
@@ -201,6 +200,12 @@
                         }
                         // replace the creator id by the user object
                         post = _completeUser(post);
+                        if(post.fullDetails) {
+                            post.displayDate = (post.mainItem.meta && post.mainItem.meta._created) || post.mainItem._created;
+                        } else {
+                            post.displayDate = post.published_date;
+                        }
+
                     });
                     return posts;
                 }
