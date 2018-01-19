@@ -29,7 +29,8 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
             
             let _self = this;
 
-            $scope.$watch('preview.img', function () {
+            $scope.$watch('preview.img', function (newValue, oldValue, scope) {
+                if(newValue !== undefined || newValue !== oldValue)
                 _self.saveImage();
             });
 
