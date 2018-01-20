@@ -456,8 +456,8 @@ class ThemesService(BaseService):
                 else:
                     # Otherwise we keep the settings that are already on the theme.
                     default_theme_settings[key] = default_prev_theme_settings[key]
-
             theme_settings.update(default_theme_settings)
+            theme_settings.update(default_prev_theme_settings)
             theme['settings'] = theme_settings
 
             # Set theme settings for blogs using previous theme.
