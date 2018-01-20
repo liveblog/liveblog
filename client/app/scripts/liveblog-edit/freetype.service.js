@@ -153,6 +153,7 @@ import './module';
             */
             transform: function(template, scope) {
                 template = template || '';
+
                 if (!angular.isObject(scope[SCOPE_FREETYPEDATA])) {
                     scope[SCOPE_FREETYPEDATA] = {};
                 }
@@ -178,7 +179,7 @@ import './module';
                 // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
                 template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
                     var name;
-                    attr = attr.replace(/(checkbox|radio)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi, 
+                    attr = attr.replace(/(checkbox|radio)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
                         function(match, tag, quote, rname) {
                         name = rname;
                         // remove the dollar variable from the attributes.
@@ -201,7 +202,7 @@ import './module';
                     });
                     if (name) {
                         path2obj(scope[SCOPE_FREETYPEDATA], name);
-                        return '<freetype-text text=' 
+                        return '<freetype-text text='
                                 + makeAngularAttr(name, attr)
                                 + ' validation="validation"></freetype-text>';
                     }
@@ -508,7 +509,7 @@ import './module';
                                 // remove hide-render from attributes
                                 return '';
                             });
-                            
+
                             if (type === 'hide-render') {
                                 return '';
                             } else if (content) {
@@ -518,9 +519,8 @@ import './module';
                         });
                     return template;
                 })(template);
-                
+
                 return wrapBefore + template + wrapAfter;
             }
         };
     });
-
