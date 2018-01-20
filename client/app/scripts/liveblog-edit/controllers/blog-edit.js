@@ -42,7 +42,8 @@ BlogEditController.$inject = [
     'blogSecurityService',
     'themesService',
     '$templateCache',
-    '$timeout'
+    '$timeout',
+    '$rootScope'
 ];
 
 export default function BlogEditController(
@@ -68,7 +69,8 @@ export default function BlogEditController(
     blogSecurityService,
     themesService,
     $templateCache,
-    $timeout
+    $timeout,
+    $rootScope
 ) {
     var vm = this;
     // @TODO: remove this when theme at blog level.
@@ -170,7 +172,7 @@ export default function BlogEditController(
     // ask in a modalbox if the user is sure to want to overwrite editor.
     // call the callback if user say yes or if editor is empty
     function doOrAskBeforeIfEditorIsNotEmpty() {
-         var deferred = $q.defer();
+        var deferred = $q.defer();
         if (isEditorClean()) {
             deferred.resolve();
         } else {
@@ -190,7 +192,7 @@ export default function BlogEditController(
         if ($scope.currentPost && $scope.currentPost._id === data.post._id) {
             cleanEditor();
         }
-    })  
+    })
 
     // remove and clean every items from the editor
     function cleanEditor(actionDisabled) {
@@ -288,7 +290,11 @@ export default function BlogEditController(
         },
         selectPostType: function(postType) {
             doOrAskBeforeIfEditorIsNotEmpty().then(function() {
-                cleanEditor()
+                cleanEditor();
+
+                // see https://dev.sourcefabric.org/browse/LBSD-2009 for reference
+                $rootScope.$emit('freetypeScopeDestroy');
+
                 $scope.selectedPostType = postType;
                 $scope.toggleTypePostDialog();
                 if (isPostScorecard()) {
@@ -318,6 +324,7 @@ export default function BlogEditController(
         actionStatus: function() {
             if (isPostFreetype()) {
                 if (angular.isDefined($scope.currentPost)) {
+
                     return $scope.freetypeControl.isValid()
                             && ($scope.currentPost.post_status === 'draft'
                             || $scope.currentPost.post_status === 'submitted');
