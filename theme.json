@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.3.30",
+    "version": "3.3.37",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -16,10 +16,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-8d6a2338a1.css"],
-    "devScripts": ["dist/default-5581feb259.js"],
-    "styles": ["dist/default-8d6a2338a1.css"],
-    "scripts": ["dist/default-5581feb259.js"],
+    "devStyles": ["dist/default-5648d26af8.css"],
+    "devScripts": ["dist/default-0014ea2d82.js"],
+    "styles": ["dist/default-5648d26af8.css"],
+    "scripts": ["dist/default-0014ea2d82.js"],
     "options": [
         {
             "name": "datetimeFormat",
@@ -241,6 +241,13 @@
             "type": "checkbox",
             "default": false,
             "help": "If the users will see the syndicated author"
+        },
+        {
+            "name": "clientDatetimeOnly",
+            "label": "Show datetime only on client",
+            "type": "checkbox",
+            "default": false,
+            "help": "If the users will see the datetime only on client rendered"
         }
     ],
     "i18n": {
@@ -283,7 +290,7 @@
           "Comment *": "Kommentar",
           "Comment should be maximum 300 characters in length": "Kommentar darf maximal 300 Zeichen lang sein",
           "Editorial": "Redaktionell",
-          "Load more posts": "Mehr Einträge laden",
+          "Load more posts": "Weitere Beiträge",
           "Loading": "Lade",
           "Name *": "Name",
           "Name should be maximum 30 characters in length": "Name darf maximal 30 Zeichen lang sein",
