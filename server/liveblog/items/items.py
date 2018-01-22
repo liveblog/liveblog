@@ -55,8 +55,7 @@ class ItemsResource(ArchiveResource):
     schema.update(schema)
     schema.update({
         'text': {
-            'type': 'string',
-            'htmloutput': True
+            'type': 'string'
         },
         'blog': Resource.rel('blogs', True),
         'particular_type': {
