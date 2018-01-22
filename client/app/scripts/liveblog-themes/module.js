@@ -144,10 +144,13 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
                     return vm.getTheme(vm.globalTheme.value).name === theme.name;
                 }
             },
-            hasChildren: function(theme) {
-                return vm.themes.some(function(t) {
+            cannotRemove: function(theme) {
+                const hasChildren = vm.themes.some(function(t) {
                     return t.extends === theme.name;
                 });
+                const systemThemes = ['angular', 'classic', 'default', 'amp'];
+                const isSystemTheme = systemThemes.indexOf(theme.name) !== -1;
+                return hasChildren || isSystemTheme;
             },
             openThemeBlogsModal: function(theme) {
                 if (theme.blogs.length) {
