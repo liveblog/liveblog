@@ -17,6 +17,7 @@
     "eslint": "^3.19.0",
     "graceful-fs": "^4.1.4",
     "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^4.1.0",
     "gulp-clean-css": "^3.0.4",
     "gulp-concat": "^2.6.1",
     "gulp-connect": "^5.0.0",
@@ -45,5 +46,12 @@
     "promise-polyfill": "^6.0.2",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^1.1.0"
+  },
+  "browserslist": [
+    "last 2 versions"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:liveblog/liveblog-default-theme"
   }
 }
