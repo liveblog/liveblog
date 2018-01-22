@@ -27,6 +27,7 @@ const inputPath = theme.extends ?
   path.resolve(`${CWD}/node_modules/liveblog-${theme.extends}-theme/`) :
   path.resolve(`${CWD}/`);
 
+const { options } = require(path.resolve(`${CWD}/test`));
 
 let argvKey = 0;
 let apiHost = "";
@@ -93,8 +94,9 @@ if (match.length > 0) {
   });
 
   query.query.filtered.filter.and[0].term.sticky = false;
+  const { postsPerPage } = options.blog.theme_settings;
 
-  request.get(`${postsEndpoint}?source=${JSON.stringify(query)}`, (response) => {
+  request.get(`${postsEndpoint}?max_results=${postsPerPage}&source=${JSON.stringify(query)}`, (response) => {
     let body = '';
 
     response.on('data', (d) => {
@@ -169,6 +171,8 @@ const nunjucksOptions = {
   env: nunjucksEnv
 };
 
+nunjucks.env = nunjucksEnv;
+
 const paths = {
   less: 'less/*.less',
   js: ['js/*.js', 'js/*/*.js'],
@@ -211,14 +215,15 @@ gulp.task('browserify', browserifyPreviousTasks, (cb) => {
   });
 
   var rewriteFilenames = function(filename) {
-    var parts = filename.split("/");
+    var parts = filename.split('/');
+
     return parts[parts.length - 1];
-    //return filename;
+    // return filename;
   };
 
   // Source-mapped
   return b
-    .transform("babelify", {presets: ["es2015"]})
+    .transform('babelify', {presets: ['es2015']})
     .transform(nunjucksify, {
       extension: '.html',
       nameFunction: rewriteFilenames
@@ -251,6 +256,9 @@ const lessCommon = (cleanCss) => {
   return gulp.src(lessFiles)
     .pipe(plugins.less({
       paths: [path.resolve(inputPath, 'less')]
+    }))
+    .pipe(plugins.autoprefixer({
+      flexbox: 'no-2009'
     }))
     /* @TODO:
      *  generate a full api support with
@@ -296,7 +304,7 @@ gulp.task('less', ['clean-css'], () =>
 
 // Inject API response into template for dev/test purposes.
 gulp.task('index-inject', ['less', 'browserify'], () => {
-  var testdata = require(path.resolve(inputPath,'./test'));
+  var testdata = require(path.resolve(`${CWD}/test`));
   var sources = gulp.src(['./dist/*.js', './dist/*.css'], {
     read: false // We're only after the file paths
   });
@@ -306,7 +314,7 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
     testdata.options.blog._id = blogId;
   }
   const index = './templates/template-index.html';
-  var indexTask = gulp.src(fs.existsSync(index) ? index : path.resolve(inputPath,index))
+  var indexTask = gulp.src(fs.existsSync(index) ? index : path.resolve(inputPath, index))
     .pipe(plugins.inject(sources))
     .pipe(plugins.nunjucks.compile({
       options: testdata.options,
@@ -318,7 +326,6 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
     }, apiResponse.posts._items.length > 0 ? {} : nunjucksOptions));
 
   if (theme.ampTheme) {
-
     indexTask = indexTask.pipe(plugins.inject(
       lessCommon(false),
       {

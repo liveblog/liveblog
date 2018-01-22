@@ -203,7 +203,10 @@ vm.getLatestUpdate = function(api_response) {
  */
 vm.isTimelineEnd = function(api_response) {
   var itemsInView = this.vm._items.length + settings.postsPerPage;
-  return api_response._meta.total <= itemsInView;
+  // number of post loaded on top as updates
+  var extraPosts = itemsInView % settings.postsPerPage;
+ 
+  return api_response._meta.total <= itemsInView - extraPosts;
 };
 
 /**
