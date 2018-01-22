@@ -249,7 +249,7 @@ vm.getQuery = function(opts) {
     },
     "sort": [
       {
-        "_updated": {"order": "desc"}
+        "published_date": {order: 'desc', missing: '_last', unmapped_type: 'long'}
       }
     ]
   };
@@ -276,7 +276,7 @@ vm.getQuery = function(opts) {
   }
 
   if (opts.sort === "ascending") {
-    query.sort[0]._updated.order = "asc";
+    query.sort[0].published_date.order = "asc";
   } else if (opts.sort === "editorial") {
     query.sort = [
       {
