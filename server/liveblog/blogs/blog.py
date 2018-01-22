@@ -1,5 +1,4 @@
 import pymongo
-import re
 from bson.objectid import ObjectId
 from superdesk import get_resource_service
 from html5lib.html5parser import ParseError
