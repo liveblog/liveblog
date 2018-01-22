@@ -47,6 +47,7 @@ var buttons = {
       viewmodel.loadPostsPage()
         .then(view.renderPosts)
         .then(view.displayNewPosts)
+        .then(view.updateTimestamps)
         .catch(catchError);
     },
     
