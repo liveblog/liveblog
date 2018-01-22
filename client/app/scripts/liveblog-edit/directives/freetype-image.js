@@ -7,7 +7,6 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
         restrict: 'E',
         templateUrl: freetypeImageTpl,
         controller: ['$scope', function($scope) {
-
             $scope.preview = {};
             $scope.progress = {width: 0};
             $scope.saved = false;
@@ -26,16 +25,19 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
 
                 $scope.$on('$destroy', sentinel);
             }
-            
-            let _self = this;
 
-            $scope.$watch('preview.img', function () {
-                _self.saveImage();
+            let self = this;
+
+            $scope.$watch('preview.img', (newValue, oldValue, scope) => {
+                if (newValue !== undefined || newValue !== oldValue) {
+                    self.saveImage();
+                }
             });
 
             this.saveImage = function() {
                 var form = {};
                 var config = $scope.preview;
+
                 if (config.img) {
                     form.media = config.img;
                 } else if (config.url) {
@@ -50,22 +52,21 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
                     url: uploadUrl,
                     data: form
                 })
-                .then((response) => {
-                    if (response.data._status === 'ERR') {
-                        return;
-                    }
-                    var pictureUrl = response.data.renditions.viewImage.href;
+                    .then((response) => {
+                        if (response.data._status === 'ERR') {
+                            return;
+                        }
+                        var pictureUrl = response.data.renditions.viewImage.href;
 
-                    $scope.image.picture_url = pictureUrl;
-                    $scope.image.picture = response.data._id;
-
-                }, (error) => {
-                    notify.error(
-                        error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
-                    );
-                }, (progress) => {
-                    $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
-                }));
+                        $scope.image.picture_url = pictureUrl;
+                        $scope.image.picture = response.data._id;
+                    }, (error) => {
+                        notify.error(
+                            error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
+                        );
+                    }, (progress) => {
+                        $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
+                    }));
             };
 
             this.removeImage = function() {
