@@ -91,21 +91,10 @@ class Blog:
                         ref['item'] = get_resource_service('archive').find_one(req=None, _id=ref['residRef'])
                         # Check the original text html markup.
                         original_text = ref['item'].get('text')
-                        text = original_text
-                        if not is_valid_html(original_text):
-                            # Check that `div` wasn't striped from markup.
-                            text = '<div>{}</div>'.format(original_text)
-                            if not is_valid_html(text):
-                                # If even so strip away all the tags to ensure it is correct.
-                                text = re.sub('<[^<]+?>', '', text)
-                                # Add the `invalid_flag` in meta
-                                # Also the `original_html`
-                                meta = ref['item'].get('meta')
-                                meta['invalid_html'] = True
-                                meta['original_html'] = original_text
-                                ref['item']['meta'] = meta
-
-                        ref['item']['text'] = text
+                        div_wrapped = '<div>{}</div>'.format(original_text)
+                        if not is_valid_html(original_text) and is_valid_html(div_wrapped):
+                            original_text = div_wrapped
+                        ref['item']['text'] = original_text
 
             posts.append(doc)
 

@@ -517,6 +517,20 @@ import './module';
                             }
                             return '<' + tag + attr + '>' + content + '</' + tag + '>';
                         });
+                    template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>?/gi,
+                        function(all, tag, attr) {
+                            var type;
+                            attr = attr.replace(/hide-render/gi, function() {
+                                type = 'hide-render';
+                                // remove hide-render from attributes
+                                return '';
+                            });
+
+                            if (type === 'hide-render') {
+                                return '';
+                            }
+                            return '<' + tag + attr + '>';
+                        });
                     return template;
                 })(template);
 
