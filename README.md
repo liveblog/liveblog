@@ -11,9 +11,9 @@
 
 ### How to install Liveblog locally (recommended)
 
-Here I'm assuming you are running Ubuntu Linux 16.04 
+Here I'm assuming you are running Ubuntu Linux 16.04
 
-#### Install the dependencies
+#### Install the dependencies (for mac os users [follow this](https://github.com/liveblog/liveblog/blob/master/README-macos.md))
 
 First we need to install the necessary dependencies:
 
