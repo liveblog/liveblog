@@ -1,6 +1,16 @@
 import pymongo
 from bson.objectid import ObjectId
 from superdesk import get_resource_service
+from html5lib.html5parser import ParseError
+from lxml.html.html5parser import fragments_fromstring, HTMLParser
+
+
+def is_valid_html(html):
+    try:
+        fragments_fromstring(html.encode('utf-8'), parser=HTMLParser(strict=True))
+    except ParseError:
+        return False
+    return True
 
 
 class Blog:
@@ -78,6 +88,13 @@ class Blog:
                 if group['id'] == 'main':
                     for ref in group['refs']:
                         ref['item'] = get_resource_service('archive').find_one(req=None, _id=ref['residRef'])
+                        # Check the original text html markup.
+                        original_text = ref['item'].get('text')
+                        div_wrapped = '<div>{}</div>'.format(original_text)
+                        if not is_valid_html(original_text) and is_valid_html(div_wrapped):
+                            original_text = div_wrapped
+                        ref['item']['text'] = original_text
+
             posts.append(doc)
 
         # Enrich documents

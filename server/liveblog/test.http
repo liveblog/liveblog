@@ -1,0 +1,40 @@
+@token = Basic NWU1N2M4MGQtYTQ0MC00N2JiLTg2ODEtODhhYzY5Yzk0ZmY2Og==
+@blog = 5a5d0e9d336e6f4cb4b7c608
+@item = urn:newsml:localhost:2018-01-20T23:27:09.819233:2abe13d3-b27c-4605-b142-e89185d7b0c1
+
+### ITEM REQUES
+POST http://localhost:5000/api/items HTTP/1.1
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+    "blog":"{{blog}}",
+    "text":"<span>This item</span><br></div><br/><br/><div>is broken",
+    "group_type":"default",
+    "item_type":"text"
+}
+
+### POST REQUEST
+POST http://localhost:5000/api/posts HTTP/1.1
+Authorization: {{token}}
+Content-Type: application/json
+
+{
+    "post_status": "open",
+    "sticky": false,
+    "lb_highlight": false,
+    "blog": "{{blog}}",
+    "groups": [{
+        "id": "root",
+        "refs": [{
+            "idRef": "main"
+        }],
+        "role": "grpRole:NEP"
+    }, {
+        "id": "main",
+        "refs": [{
+            "residRef": "{{item}}"
+        }],
+        "role": "grpRole:Main"
+    }]
+}
