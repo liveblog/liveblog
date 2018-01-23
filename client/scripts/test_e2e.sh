@@ -17,10 +17,3 @@ done
 
 ./node_modules/protractor/bin/protractor protractor-conf.js --baseUrl=${baseUrl} --specs=${specs} --params.baseBackendUrl=${backendUrl}
 TEST_STATUS=$?
-
-# stop server
-kill $!
-
-# return test status
-# exit $TEST_STATUS
-
