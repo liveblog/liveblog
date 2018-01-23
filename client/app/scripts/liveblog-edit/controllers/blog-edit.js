@@ -166,6 +166,10 @@ export default function BlogEditController(
             return $scope.freetypeControl.isClean();
         }
 
+        if (!vm.editor) {
+            return true;
+        }
+
         var are_all_blocks_empty = _.every(vm.editor.blocks, function(block) {return block.isEmpty();});
 
         return are_all_blocks_empty || !$scope.isCurrentPostUnsaved();
@@ -198,6 +202,9 @@ export default function BlogEditController(
 
     // remove and clean every items from the editor
     function cleanEditor(actionDisabled) {
+        if (!vm.editor) {
+            return;
+        }
         $scope.enableEditor = false;
 
         actionDisabled = (typeof actionDisabled === 'boolean') ? actionDisabled : true;
