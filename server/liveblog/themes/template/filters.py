@@ -16,6 +16,7 @@ def moment_date_filter_container(theme):
         :return: str
         """
         settings = theme.get('settings', {})
+        locale = settings.get('language', 'en')
         parsed = arrow.get(date)
 
         if not format:
@@ -27,9 +28,16 @@ def moment_date_filter_container(theme):
         elif re.search('l+', format.lower()):
             format = DEFAULT_THEME_DATE_FORMAT
 
-        formated = parsed.to(DEFAULT_THEME_TIMEZONE).format(DEFAULT_THEME_DATE_FORMAT)
+        if format == 'ago':
+            formated = parsed.humanize()
+        else:
+            formated = parsed.to(DEFAULT_THEME_TIMEZONE).format(DEFAULT_THEME_DATE_FORMAT)
+
         try:
-            formated = parsed.to(DEFAULT_THEME_TIMEZONE).format(format, locale=settings.get('language', 'en'))
+            if format == 'ago':
+                formated = parsed.humanize(locale=locale)
+            else:
+                formated = parsed.to(DEFAULT_THEME_TIMEZONE).format(format, locale=locale)
         except Exception:
             logger.info("language not supported")
 
