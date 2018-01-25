@@ -52,8 +52,8 @@
 {% endif %}
 <!-- end esi -->
 {{ template | safe }}
+{% if settings.gaCode -%}
 <!-- google analytics -->
-{% if settings.gaCode %}
 <amp-analytics type="googleanalytics">
 <script type="application/json">
 {
@@ -68,9 +68,9 @@
   }
 }
 </script>
-{% endif %}
-<!-- end google analytics -->
 </amp-analytics>
+<!-- end google analytics -->
+{% endif -%}
 <!-- esi -->
 {% if not settings.renderForESI %}
   </body>
