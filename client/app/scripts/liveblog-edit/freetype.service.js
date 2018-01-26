@@ -409,7 +409,16 @@ import './module';
                             // remove the dollar variable from the attributes.
                             return '';
                         });
-
+                    const removeAttr = ['number', 'necessary', 'maxlength', 'tandem'];
+                    attr = attr.replace(
+                        new RegExp([
+                            `(${removeAttr.join('|')})`,
+                            '\\s*=\\s*("|\')?',
+                            '([^"]+)',
+                            '("|\')?'
+                        ].join(''),
+                        'gi'
+                    ), '');
                     if (name || type) {
                         switch (type) {
                             case 'text':
