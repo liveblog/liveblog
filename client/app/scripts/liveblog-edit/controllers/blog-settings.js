@@ -412,20 +412,11 @@ function BlogSettingsController(
         + 'l}};liveblog.load("' + parentIframe 
         + 'parent-iframe.js?"+parseInt(new Date().getTime()/900000,10),function(){"function"==typeof '
         + 'liveblog.loadCallback&&liveblog.loadCallback()});</script>';
-        // compute embeds code with the injected publicUrl
-        const slideshow = '<script type="text/javascript">'
-        + 'var l=document.getElementById("liveblog-iframe");'
-        + 'l.addEventListener("load",function(){var t=l.contentWindow,e=l.getAttribute("src");'
-        + 't.postMessage(window.location.href,e),window.addEventListener("message",function(t){'
-        + '"fullscreen"===t.data?l.style.cssText="position:fixed;top:0;bottom:0;left:0;right:0;'
-        + 'width:100%;height: 100%":l.style.cssText=""})});'
-        + '</script>';
-
         vm.embeds = {
             normal: '<iframe id="liveblog-iframe" width="100%" height="715" src="' + 
-                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>' + slideshow,
+                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>',
             resizeing: '<iframe id="liveblog-iframe" width="100%" scrolling="no" src="' + 
-                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>' + slideshow + loadingScript
+                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>' + loadingScript
         };
     });
 
