@@ -19,6 +19,7 @@ env:
         - MAIL_USE_SSL=0
         - MAIL_DEBUG=1
         - MAIL_SUPPRESS_SEND=True
+        - secure: fPxVS405GPTH3QJyEHpRmrRZiA1XT9CNccOQk9Ba4DwElyu1qPCoFspeKHctTas/q+1LURkBfkftkwEx83AEA4HMh0lXuWIR+Cj6B1XuCInkiev8dDh6hcfiDsa5ERuXQSc+DYuThhHhATl1ukpWhFL+dNYyyzixbgBORudc+CU=
 
 services:
     - mongodb
