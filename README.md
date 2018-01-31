@@ -206,6 +206,8 @@ grunt build --force
 grunt connect:build
 ```
 
+test from origin
+
 **Update classic and angular theme**
 
 ```
