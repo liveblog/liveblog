@@ -16,6 +16,12 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
                 $scope.preview.url = $scope.image.picture_url;
             }
 
+            $scope.$watch('image', (value) => {
+                if (value.picture_url) {
+                    $scope.preview.url = value.picture_url;
+                }
+            });
+
             $scope.valid = true;
             $scope._id = _.uniqueId('image');
             if ($scope.compulsory !== undefined) {
