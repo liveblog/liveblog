@@ -13,6 +13,18 @@ describe('editor embed:', function() {
             .then(done);
     });
 
+    afterEach(function(){
+        browser.manage().logs().get('browser').then(function(browserLogs) {
+            // browserLogs is an array of objects with level and message fields
+            browserLogs.forEach(function(log){
+              if (log.level.value > 900) { // it's an error log
+                console.log('Browser console error!');
+                console.log(log.message);
+              }
+            });
+        });
+    });
+
     it('add a youtube iframe in the editor', function() {
         var editor = blogs.openBlog(0).editor
                             .addTop()
