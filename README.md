@@ -214,4 +214,4 @@ git subtree pull --prefix server/liveblog/themes/themes_assets/angular https://g
 git subtree pull --prefix server/liveblog/themes/themes_assets/default https://github.com/liveblog/liveblog-default-theme master --squash
 ```
 
-Modify readme from fork to test e2e tests
+Modify readme from fork to test e2e tests - no encrypted
