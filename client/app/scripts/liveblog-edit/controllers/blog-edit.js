@@ -198,7 +198,15 @@ export default function BlogEditController(
         if ($scope.currentPost && $scope.currentPost._id === data.post._id) {
             cleanEditor();
         }
-    })
+    });
+
+    $scope.$on('posts', (event, data) => {
+        const edited = $scope.currentPost && data.posts.find((post) => post._id === $scope.currentPost._id);
+
+        if (edited) {
+            $scope.currentPost = {...$scope.currentPost, ...edited };
+        }
+    });
 
     // remove and clean every items from the editor
     function cleanEditor(actionDisabled) {
