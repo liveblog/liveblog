@@ -19,6 +19,9 @@ env:
         - MAIL_USE_SSL=0
         - MAIL_DEBUG=1
         - MAIL_SUPPRESS_SEND=True
+        # Using travis encrypted keys didn't solve the issue with cross-forks Pull Requests
+        # So, we can use the test key taken from http://embed.ly/code site
+        - EMBEDLY_KEY=fd92ebbc52fc43fb98f69e50e7893c13
 
 services:
     - mongodb
