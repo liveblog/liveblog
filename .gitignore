@@ -93,3 +93,13 @@ server/test-env.local
 
 # Theme uploads
 themes/*
+
+# Client
+/npm-debug.log
+/.settings
+/.project
+node_modules
+dist
+*.swp
+.tmp
+.sass-cache
