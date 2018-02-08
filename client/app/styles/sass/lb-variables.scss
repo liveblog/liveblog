@@ -1,1 +1,9 @@
 @import '~superdesk-core/styles/sass/variables';
+
+// Sprite icons path
+// -------------------------
+$iconSpritePath:          "/images/glyphicons-halflings.png";
+$iconWhiteSpritePath:     "/images/glyphicons-halflings-white.png";
+
+$btnDefaultColor: rgba(0,0,0,15%);
+$btnDangerColor: #c83929

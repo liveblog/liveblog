@@ -7,10 +7,10 @@
     <h3 class="page-nav-title">{{ blog.title }}</h3>
     <div class="button-stack right-stack" ng-if="blogSecurityService.canAccessSettings(blog)">
         <a class="navbtn analytics-link" ng-href="#/liveblog/analytics/{{::blog._id}}" title="{{ 'Analytics' | translate }}">
-            <i class="svg-icon-analytics"></i>
+            <i class="big-icon--analytics"></i>
         </a>
         <a class="navbtn settings-link" ng-href="#/liveblog/settings/{{::blog._id}}" title="{{ 'Settings' | translate }}">
-            <i class="svg-icon-settings"></i>
+            <i class="big-icon--cog"></i>
         </a>
     </div>
 </div>
@@ -20,15 +20,15 @@
     <!-- left sidebar -->
     <div class="side-menu">
         <button class="navbtn" ng-click="openPanel('editor')" ng-class="{'active': panelState === 'editor'}" title="{{ 'Editor' | translate }}" >
-            <i class="big-icon-editor" alt="editor"></i>
+            <i class="lb-big-icon-editor" alt="editor"></i>
         </button>
         <button class="navbtn" ng-click="openPanel('contributions')" ng-class="{'active': panelState === 'contributions'}" title="{{ 'Contributions' | translate }}">
             <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countContributions() > 0">
             {{ unreadPostsService.countContributions() }}</span>
-            <i class="big-icon-contributions" alt="contributions"></i>
+            <i class="lb-big-icon-contributions" alt="contributions"></i>
         </button>
         <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}" title="{{ 'Drafts' | translate }}">
-            <i class="big-icon-archive" alt="draft posts"></i>
+            <i class="lb-big-icon-archive" alt="draft posts"></i>
         </button>
         <button 
             class="navbtn" 
@@ -45,7 +45,7 @@
             ng-class="{'active': panelState === 'comments'}"
             title="{{ 'Comments' | translate }}">
                 <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countComments() > 0">{{ unreadPostsService.countComments() }}</span>
-                <i class="big-icon-comments" alt="comments posts"></i>
+                <i class="lb-big-icon-comments" alt="comments posts"></i>
 
         </button>        
     </div>

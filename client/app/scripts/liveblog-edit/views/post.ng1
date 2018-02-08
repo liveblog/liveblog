@@ -37,9 +37,11 @@
                             <li ng-if="functionize(postsListCtrl.allowEditing)(post)">
                                 <a ng-click="highlightPost(post)" tooltip-placement="bottom" tooltip="{{ 'Highlight post' | translate }}">
                                     <i class="icon-star" ng-class="{'orange': post.lb_highlight, 'opaque': post.lb_highlight}"></i>
+                                </a>
+                            </li>
                             <li ng-if="functionize(postsListCtrl.allowEditing)(post)">
                                 <a ng-click="togglePinStatus(post)" tooltip-placement="bottom" tooltip="{{ post.sticky ? 'Unpin': 'Pin' | translate }}">
-                                    <i class="icon-pin rotate" ng-class="{'blue': post.sticky, 'opaque': post.sticky}"></i>
+                                    <i class="icon-pin" ng-class="{'blue': post.sticky, 'opaque': post.sticky}"></i>
                                 </a>
                             </li>
                             <li ng-if="functionize(postsListCtrl.allowDeleting)(post)">
