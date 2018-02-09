@@ -101,6 +101,7 @@ export default function lbUserSelectList(api) {
 
             scope.choose = function(user) {
                 scope.onchoose({user: user});
+                scope.members.push(user)
                 scope.search = null;
             };
 
