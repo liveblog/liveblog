@@ -34,10 +34,12 @@ export default function marketplaceActions(Dispatcher, api, $http, _) {
             });
         },
         toggleFilter: function(filtersParam, type, value) {
-            let filters = {type: value};
+            let filters = filtersParam;
 
-            if (filtersParam && filtersParam[type] === value) {
-                filters = _.omit(filtersParam, type);
+            if (filters && filters[type] === value) {
+                filters = _.omit(filters, type);
+            } else {
+                filters[type] = value;
             }
 
             const params = {

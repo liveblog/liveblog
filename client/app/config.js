@@ -4,7 +4,7 @@
 // and add the variable you want to configure.
 window.superdeskConfig = {
     // subscriptionLevel: 'solo', // SUBSCRIPTION_LEVEL
-    // syndication: true, // SYNDICATION
-    // marketplace: true, // MARKETPLACE
+    syndication: true, // SYNDICATION
+    marketplace: true, // MARKETPLACE
     // maxContentLength: 8 * 1024 * 1024 // MAX_CONTENT_LENGTH
 };
