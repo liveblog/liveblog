@@ -24,20 +24,20 @@ export default function lbUserSelectList(api) {
                         {email: {$regex: scope.search, $options: '-i'}}
                     ]
                 })})
-                .then((result) => {
-                    scope.users = result;
-                    scope.users._items = _.filter(scope.users._items, (item) => {
-                        var found = false;
+                    .then((result) => {
+                        scope.users = result;
+                        scope.users._items = _.filter(scope.users._items, (item) => {
+                            var found = false;
 
-                        _.each(scope.members, (member) => {
-                            if (member._id === item._id) {
-                                found = true;
-                            }
+                            _.each(scope.members, (member) => {
+                                if (member._id === item._id) {
+                                    found = true;
+                                }
+                            });
+                            return !found;
                         });
-                        return !found;
+                        scope.selected = null;
                     });
-                    scope.selected = null;
-                });
             };
             var refresh = _.debounce(_refresh, 1000);
 
@@ -101,7 +101,7 @@ export default function lbUserSelectList(api) {
 
             scope.choose = function(user) {
                 scope.onchoose({user: user});
-                scope.members.push(user)
+                scope.members.push(user);
                 scope.search = null;
             };
 
