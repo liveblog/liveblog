@@ -491,8 +491,8 @@ class ThemesService(BaseService):
         previous_theme = self.find_one(req=None, name=theme_name)
         if previous_theme:
             self._save_theme_settings(theme, previous_theme)
+            self.replace(previous_theme['_id'], theme, previous_theme)
             if force_update:
-                self.replace(previous_theme['_id'], theme, previous_theme)
                 blogs_updated = self.publish_related_blogs(theme)
                 response = dict(status='updated', theme=theme, blogs_updated=blogs_updated)
             else:
