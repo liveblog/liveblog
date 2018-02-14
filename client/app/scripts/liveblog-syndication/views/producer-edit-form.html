@@ -1,7 +1,6 @@
 <form name="producerForm" class="flat" novalidate ng-submit="save()">
     <div class="action-bar clearfix" ng-class="{show: !producerForm.$pristine}">
-        <button
-            id="save-edit-btn"
+        <button ng-disabled="notValidName(producer, producers)" id="save-edit-btn"
             type="submit"
             class="btn btn--primary pull-right"
             translate>Save</button>
@@ -19,7 +18,7 @@
             <div class="title">{{ 'General' | translate }} <span class="required-info" translate>* mandatory fields</span></div>
             <fieldset class="label-light">
                 <div sd-info-item>
-                  <label for="name" translate>name</label>
+                  <label for="name" translate>name<span class="ft-alert" ng-if="notValidName(producer, producers)">{{ notValidName(producer, producers) }}</span></label>
                   <input
                     type="text"
                     name="name"
