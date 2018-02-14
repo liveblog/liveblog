@@ -191,7 +191,10 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True,
                                            ordering='newest_first', deleted=is_amp)
 
-        if output and output.get('collection', False):
+        # let's do this below only for amp for now, since we're handling
+        # ads for default theme browser side
+        # see: https://dev.sourcefabric.org/browse/LBSD-2005
+        if is_amp and output and output.get('collection', False):
             ads = []
             if output['collection'].get('advertisements'):
                 for ad in output['collection']['advertisements']:

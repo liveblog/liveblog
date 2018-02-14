@@ -9,6 +9,10 @@ const blogId = config.blog._id;
 const outputId = config.output._id;
 const endpoint =  `${apiHost}/api/advertisements/${blogId}/${outputId}/`;
 
+// ways to order the ads
+const ASC = 1;
+const DESC = -1;
+
 // NOTE: temporal place to store advertisements, perhaps put them in localstorage
 var advertisements = [];
 
@@ -32,18 +36,27 @@ function resetAds() {
 
 function renderAds() {
     const articles = document.querySelectorAll(adsSettings.postSelector);
-    const postCount = articles.length;
     const adsCount = advertisements.length;
-    const frequency = adsSettings.frequency;
 
-    const looper = helpers.range(0, postCount, frequency);
+    if (adsCount === 0) return;
+
+    const postCount = articles.length;
+    const frequency = adsSettings.frequency;
+    const order = config.output.settings.order;
+
+    let adsList = advertisements.slice();
+    //check if we need to show ads in descending order
+    if (order === DESC)
+        adsList = adsList.reverse();
+
+    let looper = helpers.range(0, postCount, frequency);
     looper.forEach(i => {
         let index = Math.ceil(i / frequency) % adsCount;
         let refNode = articles[i];
         let parentNode = refNode.parentNode;
 
         const rendered = nunjucks.env.render('template-ad-entry.html', {
-          item: advertisements[index],
+          item: adsList[index],
           settings: config.settings,
           assets_root: window.LB.assets_root
         });
