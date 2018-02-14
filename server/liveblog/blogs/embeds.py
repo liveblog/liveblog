@@ -233,7 +233,6 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             i18n=i18n
         )
 
-
     async = theme.get('asyncTheme', False)
     api_host = api_host.replace('//', app.config.get('EMBED_PROTOCOL')) if api_host.startswith('//') else api_host
     api_host = api_host.replace('http://', app.config.get('EMBED_PROTOCOL'))
