@@ -67,9 +67,47 @@ function post(url, data) {
 
 }
 
+/**
+ * Simple function to convert plain text to html
+ * @param {string} strHTML - plain html to be converted to DOM Nodes
+ */
+function fragmentFromString(strHTML) {
+  return document.createRange().createContextualFragment(strHTML.trim());
+}
+
+/**
+ * Simple `range` function that behaves like python's `range`
+ * see https://docs.python.org/2/library/functions.html#range
+ *
+ * Create arrays containing arithmetic progressions
+ * Thanks StackOverflow -> https://stackoverflow.com/a/8273091/240364
+ */
+function range(start, stop, step) {
+    if (typeof stop === 'undefined') {
+        // one param defined
+        stop = start;
+        start = 0;
+    }
+
+    if (typeof step === 'undefined')
+        step = 1;
+
+    if ((step > 0 && start >= stop) || (step < 0 && start <= stop))
+        return [];
+
+    let result = [];
+    for (let i = start; step > 0 ? i < stop : i > stop; i += step) {
+        result.push(i);
+    }
+
+    return result;
+};
+
 module.exports = {
   getElems: getElems,
   getJSON: getJSON,
   post: post,
-  convertTimestamp: convertTimestamp
+  convertTimestamp: convertTimestamp,
+  fragmentFromString: fragmentFromString,
+  range: range
 };

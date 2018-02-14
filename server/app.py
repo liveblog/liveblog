@@ -26,6 +26,7 @@ from liveblog.marketplace.marketer import marketers_blueprint
 from liveblog.analytics.analytics import analytics_blueprint
 from liveblog.items.items import drag_and_drop_blueprint
 from liveblog.client_modules.client_modules import blog_posts_blueprint
+from liveblog.advertisements.advertisements import advertisements_blueprint
 
 
 from superdesk.factory import get_app as superdesk_app
@@ -80,6 +81,9 @@ def get_app(config=None):
 
     # Analytics.
     app.register_blueprint(analytics_blueprint)
+
+    # Advertisements.
+    app.register_blueprint(advertisements_blueprint)
 
     # Syndication feature.
     app.register_blueprint(producers_blueprint)

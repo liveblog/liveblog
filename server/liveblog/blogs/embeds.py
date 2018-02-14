@@ -201,16 +201,20 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             acount = len(ads)
             frequency = output["settings"].get("frequency", 4)
             order = output["settings"].get("order", 1)
-            if order == 1:
-                for i in range(0, pcount, (frequency + 1)):
-                    index = math.ceil(i / (frequency + 1)) % acount
-                    # transform ad into a valid post.
-                    posts['_items'].insert(i, ad_to_post(ads[index]))
-            else:
-                for i in range(pcount, 0, (frequency + 1)):
-                    index = math.floor(i / (frequency + 1)) % acount
-                    # transform ad into a valid post.
-                    posts['_items'].insert(i, ad_to_post(ads[index]))
+
+            # acount must be higher than 0 in order to avoid
+            # error: ZeroDivisionError: integer division or modulo by zero
+            if acount > 0:
+                if order == 1 and acount > 0:
+                    for i in range(0, pcount, (frequency + 1)):
+                        index = math.ceil(i / (frequency + 1)) % acount
+                        # transform ad into a valid post.
+                        posts['_items'].insert(i, ad_to_post(ads[index]))
+                else:
+                    for i in range(pcount, 0, (frequency + 1)):
+                        index = math.floor(i / (frequency + 1)) % acount
+                        # transform ad into a valid post.
+                        posts['_items'].insert(i, ad_to_post(ads[index]))
 
         api_response = {
             'posts': posts,
@@ -228,6 +232,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             assets_root=assets_root,
             i18n=i18n
         )
+
 
     async = theme.get('asyncTheme', False)
     api_host = api_host.replace('//', app.config.get('EMBED_PROTOCOL')) if api_host.startswith('//') else api_host
