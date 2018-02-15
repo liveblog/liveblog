@@ -15,6 +15,12 @@
                             <p>{{ item.meta.title }}</p>
                         </blockquote>
                     </div>
+                    <div ng-switch-when="Facebook">
+                        <blockquote class="embedly-card" data-card-controls="0">
+                            <h4><a href="{{ item.meta.original_url }}">{{ item.meta.credit }}</a></h4>
+                            <p>{{ item.meta.title }}</p>
+                        </blockquote>
+                    </div>
                     <div ng-switch-default lb-generic-embed lb-fluid-iframe item="item"></div>
                 </div>
             </div>
