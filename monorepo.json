@@ -1,0 +1,10 @@
+{
+  "adapter": "npm",
+  "packages": [
+  	"client",
+  	"server/liveblog/themes/themes_assets/default",
+  	"server/liveblog/themes/themes_assets/amp",
+  	"server/liveblog/themes/themes_assets/angular",
+  	"server/liveblog/themes/themes_assets/classic"
+  ]
+}
