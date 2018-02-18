@@ -223,7 +223,7 @@ gulp.task('browserify', browserifyPreviousTasks, (cb) => {
 
   // Source-mapped
   return b
-    .transform('babelify', {presets: ['es2015']})
+    .transform('babelify', {presets: ['es2015', 'stage-0']})
     .transform(nunjucksify, {
       extension: '.html',
       nameFunction: rewriteFilenames
