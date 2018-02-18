@@ -21,7 +21,8 @@ CORS(producers_blueprint)
 producers_schema = {
     'name': {
         'type': 'string',
-        'required': True
+        'required': True,
+        'unique': True
     },
     'contacts': {
         'type': 'list',
