@@ -226,12 +226,12 @@
                                             <ul class="users-list-embed">
                                                  <a>Team</a>
                                                 <li ng-repeat="member in settings.members track by member._id" ng-click="settings.temp_selected_owner = member" ng-class="{'active': settings.temp_selected_owner._id === member._id}">
-                                                    <figure class="avatar small"><img sd-user-avatar data-src="user.picture_url"></figure>
+                                                    <figure class="avatar small"><img sd-user-avatar data-user="member" alt="{{member.display_name || member.username }}"></figure>
                                                     <div class="name">{{member.display_name}}</div>
                                                 </li>
                                                 <a>Users</a>
                                                 <li ng-repeat="user in settings.avUsers | filter:settings.search | filter:settings.userNotInMembers | orderBy: 'display_name'" ng-click="settings.temp_selected_owner = user" ng-class="{'active': settings.temp_selected_owner._id === user._id}">
-                                                    <figure class="avatar small"><img sd-user-avatar data-src="user.picture_url"></figure>
+                                                    <figure class="avatar small"><img sd-user-avatar data-user="user" alt="{{user.display_name || user.username }}"></figure>
                                                     <div class="name">{{user.display_name}}</div>
                                                 </li>
                                             </ul>
@@ -250,7 +250,7 @@
                                         <div class="inline-content padded-right">
                                             <div class="form-input profile-pic">
                                                  <figure class="avatar large">
-                                                    <img sd-user-avatar data-src="settings.original_creator.picture_url">
+                                                    <img sd-user-avatar data-user="settings.original_creator" alt="{{settings.original_creator.display_name || settings.original_creator.username }}">
                                                 </figure>
                                             </div>
                                         </div>
@@ -276,7 +276,7 @@
                                 <div class="inline-content first-block members-bottom" ng-repeat="member in settings.members track by member._id">
                                     <div class="inline-content padded-right">
                                         <div class="form-input profile-pic">
-                                             <figure class="avatar large"><img sd-user-avatar data-src="member.picture_url"></figure>
+                                             <figure class="avatar large"><img sd-user-avatar data-user="member" alt="{{member.display_name || member.username }}"></figure>
                                         </div>
                                     </div>
                                     <div class="inline-content">
@@ -347,7 +347,7 @@
                                                 <ul>
                                                     <li ng-repeat="user in settings.blogMembers" ng-class="{'inactive' : !user.is_enabled || !user.is_active}">
                                                         <i class="icon-close-small" ng-click="settings.removeMember(user)"></i>
-                                                        <figure class="avatar"><img sd-user-avatar data-src="user.picture_url"></figure>
+                                                        <figure class="avatar"><img sd-user-avatar data-user="user" alt="{{user.display_name || user.username }}"></figure>
                                                         <div class="name">{{user.display_name}}</div>
                                                     </li>
                                                 </ul>
