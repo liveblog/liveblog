@@ -242,8 +242,9 @@ class ThemesService(BaseService):
         :param theme_name:
         :return:
         """
-        theme_folder = os.path.join(LOCAL_THEMES_DIRECTORY, theme_name)
-        return os.path.exists(theme_folder)
+        # theme_folder = os.path.join(LOCAL_THEMES_DIRECTORY, theme_name)
+        # return os.path.exists(theme_folder)
+        return theme_name in system_themes
 
     def is_uploaded_theme(self, theme_name):
         """
@@ -539,7 +540,7 @@ class ThemesService(BaseService):
     def on_create(self, docs):
         subscription = SUBSCRIPTION_LEVEL
         if subscription in SUBSCRIPTION_MAX_THEMES:
-            all = self.find()
+            all = self.find({})
 
             if (all.count() + len(docs) > SUBSCRIPTION_MAX_THEMES[subscription]):
                 raise SuperdeskApiError.forbiddenError(message='Cannot add another theme.')
