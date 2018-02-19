@@ -11,7 +11,8 @@ BlogListController.$inject = [
     'notify',
     'config',
     'urls',
-    'moment'
+    'moment',
+    'modal'
 ];
 
 export default function BlogListController(
@@ -27,7 +28,8 @@ export default function BlogListController(
     notify,
     config,
     urls,
-    moment
+    moment,
+    modal
 ) {
     $scope.maxResults = 25;
     $scope.states = [
@@ -159,22 +161,22 @@ export default function BlogListController(
                 url: uploadUrl,
                 data: form
             })
-            .then((response) => {
-                if (response.data._status === 'ERR') {
-                    return;
-                }
-                var pictureUrl = response.data.renditions.viewImage.href;
+                .then((response) => {
+                    if (response.data._status === 'ERR') {
+                        return;
+                    }
+                    var pictureUrl = response.data.renditions.viewImage.href;
 
-                $scope.newBlog.picture_url = pictureUrl;
-                $scope.newBlog.picture = response.data._id;
-                $scope.newBlog.picture_renditions = response.data.renditions;
-            }, (error) => {
-                notify.error(
-                    error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
-                );
-            }, (progress) => {
-                $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
-            }));
+                    $scope.newBlog.picture_url = pictureUrl;
+                    $scope.newBlog.picture = response.data._id;
+                    $scope.newBlog.picture_renditions = response.data.renditions;
+                }, (error) => {
+                    notify.error(
+                        error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
+                    );
+                }, (progress) => {
+                    $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
+                }));
         }
     };
 
@@ -223,19 +225,19 @@ export default function BlogListController(
                 'Content-Type': 'application/json;charset=utf-8'
             }
         })
-        .then((response) => {
-            if (response.data._items.length > 0) {
-                response.data._items.forEach((item) => {
-                    if (theoricalMembers.indexOf(item._id) === -1) {
-                        theoricalMembers.push(item._id);
-                    }
-                });
-            }
+            .then((response) => {
+                if (response.data._items.length > 0) {
+                    response.data._items.forEach((item) => {
+                        if (theoricalMembers.indexOf(item._id) === -1) {
+                            theoricalMembers.push(item._id);
+                        }
+                    });
+                }
 
-            if (theoricalMembers.length < config.assignableUsers[config.subscriptionLevel]) {
-                $scope.allowAccessRequest = true;
-            }
-        });
+                if (theoricalMembers.length < config.assignableUsers[config.subscriptionLevel]) {
+                    $scope.allowAccessRequest = true;
+                }
+            });
     };
 
     $scope.requestAccess = function(blog) {
@@ -301,6 +303,13 @@ export default function BlogListController(
 
     $scope.removeMember = function(user) {
         $scope.blogMembers.splice($scope.blogMembers.indexOf(user), 1);
+    };
+
+    $scope.removeImage = function() {
+        modal.confirm(gettext('Are you sure you want to remove the blog image?')).then(() => {
+            $scope.preview.url = '';
+            $scope.progress.width = 0;
+        });
     };
 
     $scope.hasReachedMembersLimit = function() {
