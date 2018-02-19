@@ -50,6 +50,9 @@ STEPS = {
     'seoTheme': 2,
     'default': 1
 }
+
+THEMES_MAX_RESULTS = 50
+
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
 download_theme_blueprint = superdesk.Blueprint('download_theme', __name__)
 themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=THEMES_ASSETS_DIR)
@@ -195,6 +198,17 @@ class UnknownTheme(Exception):
 
 
 class ThemesService(BaseService):
+
+    def get(self, req, lookup):
+        """
+        Simply override just because we don't have pagination in themes ui
+        so we set max_results to 50 expecting clients won't have more than 50
+        themes (at least for now)
+        """
+
+        req.max_results = THEMES_MAX_RESULTS
+        return super().get(req, lookup)
+
     def get_options(self, theme, options=None, parents=[]):
         """
         Get theme options.
