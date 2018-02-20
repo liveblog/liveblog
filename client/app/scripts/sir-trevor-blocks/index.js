@@ -97,7 +97,7 @@ function replaceEmbedWithUrl(string) {
             return m[1];
         }
     }
-    
+
     return string;
 }
 
@@ -490,7 +490,8 @@ angular
         };
 
         SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
-                var that = this, placeHolderText = window.gettext('Start writing here…');
+                var that = this;
+                var placeHolderText = window.gettext('Write here (or press Ctrl+Shift+V to paste unformatted text)...');
 
                 //add placeholder class and placeholder text
                 this.$editor.attr('placeholder', placeHolderText).addClass('st-placeholder');
