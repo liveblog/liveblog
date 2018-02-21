@@ -26,7 +26,7 @@
   data-post-id="{{ item._id }}"
   data-post-sticky="{{ item.sticky }}">
   <div class="lb-post-header">
-    
+
     <div class="lb-type lb-type--{{ item.post_items_type }}"></div>
 
     <div class="lb-post-date-icons">
@@ -43,7 +43,7 @@
 
       <!-- remove advertisement stylization-->
       {% if item.post_items_type != "advertisement" %}
-  
+
       <div class="lb-post-date relativeDate{% if settings.clientDatetimeOnly %} mod--displaynone{% endif %}" data-js-timestamp="{{ postDate }}">{{ postDate | date('') }}</div>
 
     </div>
