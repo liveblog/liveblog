@@ -57,6 +57,10 @@ describe('Producers', function() {
                     return element(by.css('input#name')).isDisplayed();
                 })
                 .then(function() {
+                    return element(by.css('input#name'))
+                        .sendKeys(producer.name);
+                })
+                .then(function() {
                     return element(by.css('input[name="first_name"]'))
                         .sendKeys(contact.firstName);
                 })
@@ -65,14 +69,6 @@ describe('Producers', function() {
                 })
                 .then(function() {
                     return element(by.css('#save-edit-btn')).click();
-                })
-                .then(function() {
-                    var fieldName = 'div[ng-show="producerForm.attempted &&' +
-                        ' producerForm.name.$error.required"]';
-
-                    return expect(
-                        $(fieldName).isDisplayed()
-                    ).toBeTruthy();
                 })
                 .then(function() {
                     var fieldName = 'div[ng-show="producerForm.attempted &&' +
