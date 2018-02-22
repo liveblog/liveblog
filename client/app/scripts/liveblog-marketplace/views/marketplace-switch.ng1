@@ -4,8 +4,8 @@
         <span class="blog-status">{{ marketEnabled ? 'Marketed' : 'Private' | translate }}</span>
         <span
             style="display: block"
-            tooltip="{{ marketEnabled ? 'Keep private' : 'Show in market' | translate }}"
-            tooltip-placement="right">
+            sd-tooltip="{{ marketEnabled ? 'Keep private' : 'Show in market' | translate }}"
+            data-flow="right">
             <span
                 class="pull-left"
                 sd-switch

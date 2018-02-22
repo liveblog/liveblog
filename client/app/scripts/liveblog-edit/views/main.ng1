@@ -30,15 +30,15 @@
         <button class="navbtn" ng-click="openPanel('drafts')" ng-class="{'active': panelState === 'drafts'}" title="{{ 'Drafts' | translate }}">
             <i class="lb-big-icon-archive" alt="draft posts"></i>
         </button>
-        <button 
-            class="navbtn" 
+        <button
+            class="navbtn"
             title="{{ 'Ingest' | translate }}"
             ng-if="syndicationEnabled"
             lb-notifications-count
-            ng-click="openPanel('ingest')" 
+            ng-click="openPanel('ingest')"
             ng-class="{'active': panelState === 'ingest' || panelState === 'incoming-syndication'}">
         </button>
-        <button 
+        <button
             ng-if="blog.blog_preferences.theme.settings.canComment"
             class="navbtn ng-cloak"
             ng-click="openPanel('comments')"
@@ -47,7 +47,7 @@
                 <span class="label label-info circle small notification-counter" ng-if="unreadPostsService.countComments() > 0">{{ unreadPostsService.countComments() }}</span>
                 <i class="lb-big-icon-comments" alt="comments posts"></i>
 
-        </button>        
+        </button>
     </div>
 
     <div class="columns-holder">
@@ -122,7 +122,7 @@
                     ng-if="panelState === 'ingest'"></div>
                 <!-- incoming syndication -->
                 <div
-                    lb-incoming-syndication 
+                    lb-incoming-syndication
                     lb-posts-on-post-selected="openPostInEditor"
                     open-panel="openPanel"
                     synd-id="syndId"
@@ -147,7 +147,7 @@
                             <p translate>There aren't any comments.</p>
                         </lb-posts-list>
                     </div>
-                </div>                
+                </div>
                 <!-- editor -->
                     <div class="panel--editor" ng-show="panelState === 'editor'">
                         <div ng-if="!preview">
@@ -168,7 +168,7 @@
                         </div>
                         <div ng-if="preview">
                         <header>
-                            <h4>{{'Preview' | translate}}</h4><span ng-click="togglePreview()" class="close-preview pull-right" tooltip-placement="bottom" tooltip="{{ 'Back to edit' | translate }}">
+                            <h4>{{'Preview' | translate}}</h4><span ng-click="togglePreview()" class="close-preview pull-right" flow="down" sd-tooltip="{{ 'Back to edit' | translate }}">
                             ⨯
                             </span>
                         </header>
@@ -177,7 +177,7 @@
                         <div class="editor-holder" ng-class="{'preview': preview}">
                             <div class="editor">
                                 <div
-                                    class="editor" 
+                                    class="editor"
                                     ng-if="selectedPostType=='Default' && enableEditor"
                                     ng-sir-trevor
                                     st-model="blogEdit.editor"
@@ -185,7 +185,7 @@
                                     st-change="onEditorChanges"></div>
                             </div>
                             <freetype-render
-                                    ng-if="selectedPostType!='Default'" 
+                                    ng-if="selectedPostType!='Default'"
                                     freetype="selectedPostType"
                                     freetype-data="freetypesData"
                                     validation="validation"
@@ -195,12 +195,12 @@
                             <div class="actions__options" style="display:table-row">
                                 <div style="display:table-cell"></div>
                                 <div style="display:table-cell">
-                                    <div ng-click="toggleSticky();" tooltip-placement="bottom" tooltip="{{ sticky ? 'Unpin': 'Pin' | translate }}" ng-class="{'option-not-activated': !sticky}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
+                                    <div ng-click="toggleSticky();" flow="down" sd-tooltip="{{ sticky ? 'Unpin': 'Pin' | translate }}" ng-class="{'option-not-activated': !sticky}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
                                         <span class="actions__label" translate>PIN POST</span><span class="actions__icon"><i class="icon-pin rotate" ng-class="{'blue': sticky}"></i></span>
                                     </div>
                                 </div>
                                 <div style="display:table-cell">
-                                    <div ng-click="toggleHighlight();" tooltip-placement="bottom" tooltip="{{ highlight ? 'Un-highlight': 'Highlight' | translate }}" ng-class="{'option-not-activated': !highlight}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
+                                    <div ng-click="toggleHighlight();" flow="down" sd-tooltip="{{ highlight ? 'Un-highlight': 'Highlight' | translate }}" ng-class="{'option-not-activated': !highlight}" class="pull-right" ng-disabled="isCurrentPostPublished() || actionStatus()">
                                         <span class="actions__label" translate>HIGHTLIGHT POST</span><span class="actions__icon"><i class="icon-star" ng-class="{'orange': highlight}" style="margin-top: -4px;"></i></span>
                                     </div>
                                 </div>
@@ -221,7 +221,7 @@
                         <ul class="users-list-embed">
                             <li translate ng-click="selectPostType('Default')"
                             ng-class="{'active': selectedPostType === 'Default'}">Default</li>
-                            
+
                             <li ng-repeat="freetype in freetypes" ng-click="selectPostType(freetype)"
                             ng-class="{'active': freetype == selectedPostType, 'separator': freetype.separator}"
                             >
@@ -245,14 +245,14 @@
                 <div translate class="header--timeline">Timeline</div>
                 <div ng-if="isTimelineReordering()" class="cancel-reorder header--filters">
                     <i class="svg-icon-move fix-cancel-move-icon"></i>
-                    <button class="btn btn-xs fix-cancel-move-button" translate ng-click="clearTimelineReordering();" tooltip-placement="bottom" tooltip="Cancel and exit reordering mode">Cancel</button>
+                    <button class="btn btn-xs fix-cancel-move-button" translate ng-click="clearTimelineReordering();" flow="down" sd-tooltip="Cancel and exit reordering mode">Cancel</button>
                 </div>
                 <div class="header--live" ng-if="isBlogOpened()">
                     <a href="{{ publicUrl }}" target="_blank" ng-disabled="!publicUrl" translate>Live</a>
                 </div>
-                <div class="header--filters">                                        
-                    <button class="btn btn-xs active" ng-click="filterHighlight(false);" ng-class="{'active': !filter.isHighlight}" tooltip-placement="bottom" tooltip="Show all" translate>All</button>
-                    <button class="btn btn-xs" ng-click="filterHighlight(true);" ng-class="{'active': filter.isHighlight}" tooltip-placement="bottom" tooltip="Show highlights" translate><i class="icon-star"></i></button>
+                <div class="header--filters">
+                    <button class="btn btn-xs active" ng-click="filterHighlight(false);" ng-class="{'active': !filter.isHighlight}" flow="down" sd-tooltip="Show all" translate>All</button>
+                    <button class="btn btn-xs" ng-click="filterHighlight(true);" ng-class="{'active': filter.isHighlight}" flow="down" sd-tooltip="Show highlights" translate><i class="icon-star"></i></button>
                 </div>
             </header>
             <div class="content content--timeline" lr-infinite-scroll="fetchNewTimelinePage">
@@ -274,7 +274,7 @@
                     </div>
 
                     <div ng-if="!blogEdit.timelineStickyInstance.isPostsEmpty()"
-                        class="pin-drawer"                        
+                        class="pin-drawer"
                         >
                         <div ng-if="blogEdit.timelineStickyInstance.hideSticky"
                         translate translate-n="blogEdit.timelineStickyInstance.numberOfPosts()" translate-plural="{{blogEdit.timelineStickyInstance.numberOfPosts()}} PINNED POSTS"
@@ -283,7 +283,7 @@
                         ng-click="blogEdit.timelineStickyInstance.hideSticky = !blogEdit.timelineStickyInstance.hideSticky">
                         <i class="icon-chevron-up-thin"></i></button>
                     </div>
-                    
+
                     <div
                       class="timeline-posts-list"
                       lb-posts-instance="blogEdit.timelineInstance"
