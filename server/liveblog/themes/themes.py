@@ -50,6 +50,9 @@ STEPS = {
     'seoTheme': 2,
     'default': 1
 }
+
+THEMES_MAX_RESULTS = 50
+
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
 download_theme_blueprint = superdesk.Blueprint('download_theme', __name__)
 themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=THEMES_ASSETS_DIR)
@@ -195,6 +198,17 @@ class UnknownTheme(Exception):
 
 
 class ThemesService(BaseService):
+
+    def get(self, req, lookup):
+        """
+        Simply override just because we don't have pagination in themes ui
+        so we set max_results to 50 expecting clients won't have more than 50
+        themes (at least for now)
+        """
+
+        req.max_results = THEMES_MAX_RESULTS
+        return super().get(req, lookup)
+
     def get_options(self, theme, options=None, parents=[]):
         """
         Get theme options.
@@ -242,8 +256,9 @@ class ThemesService(BaseService):
         :param theme_name:
         :return:
         """
-        theme_folder = os.path.join(LOCAL_THEMES_DIRECTORY, theme_name)
-        return os.path.exists(theme_folder)
+        # theme_folder = os.path.join(LOCAL_THEMES_DIRECTORY, theme_name)
+        # return os.path.exists(theme_folder)
+        return theme_name in system_themes
 
     def is_uploaded_theme(self, theme_name):
         """
@@ -491,8 +506,8 @@ class ThemesService(BaseService):
         previous_theme = self.find_one(req=None, name=theme_name)
         if previous_theme:
             self._save_theme_settings(theme, previous_theme)
+            self.replace(previous_theme['_id'], theme, previous_theme)
             if force_update:
-                self.replace(previous_theme['_id'], theme, previous_theme)
                 blogs_updated = self.publish_related_blogs(theme)
                 response = dict(status='updated', theme=theme, blogs_updated=blogs_updated)
             else:
@@ -539,7 +554,7 @@ class ThemesService(BaseService):
     def on_create(self, docs):
         subscription = SUBSCRIPTION_LEVEL
         if subscription in SUBSCRIPTION_MAX_THEMES:
-            all = self.find()
+            all = self.find({})
 
             if (all.count() + len(docs) > SUBSCRIPTION_MAX_THEMES[subscription]):
                 raise SuperdeskApiError.forbiddenError(message='Cannot add another theme.')

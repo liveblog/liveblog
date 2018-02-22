@@ -92,4 +92,4 @@ server/test-env.local
 .jinja2
 
 # Theme uploads
-themes/*
+themes

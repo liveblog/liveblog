@@ -28,7 +28,16 @@ html.lb-wrapHtml, body.lb-wrapBody {
       font-size: 100%;
       font: inherit;
       vertical-align: baseline;
+      max-width: 100%;
   }
+
+  /* iOS trick */
+  iframe {
+    width: 1px;
+    min-width: 100% !important;
+    *width: 100%;
+  }
+
   /* HTML5 display-role reset for older browsers */
   article, aside, details, figcaption, figure,
   footer, header, hgroup, menu, nav, section {
