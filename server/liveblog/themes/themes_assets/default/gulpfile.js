@@ -327,7 +327,7 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
       api_response: apiResponse.posts._items.length > 0 ? apiResponse : testdata.api_response,
       include_js_options: true,
       debug: DEBUG
-    }, apiResponse.posts._items.length > 0 ? {} : nunjucksOptions));
+    }, nunjucksOptions));
 
   if (theme.ampTheme) {
     indexTask = indexTask.pipe(plugins.inject(
