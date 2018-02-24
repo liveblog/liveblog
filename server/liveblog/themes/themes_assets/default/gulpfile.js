@@ -242,16 +242,20 @@ gulp.task('browserify', browserifyPreviousTasks, (cb) => {
 });
 
 const lessCommon = (cleanCss) => {
-  var lessFiles = [];
-  // Name of the less theme file.
-  let themeLess = `./less/${theme.name}.less`;
-  // Compile all the files under the less folder if no theme less file pressent.
-  lessFiles.push(fs.existsSync(themeLess) ? themeLess : './less/*.less');
+  const lessFiles = [];
+  let themeLess;
 
+  // process inherited styles from extended theme first
+  // this makes it easier to override rules with this theme's CSS and avoids specificity war
   if ( !theme.onlyOwnCss && theme.extends ) {
-    let themeLess = path.resolve(`${inputPath}/less/${theme.extends}.less`);
+    themeLess = path.resolve(`${inputPath}/less/${theme.extends}.less`);
     lessFiles.push(fs.existsSync(themeLess) ? themeLess : path.resolve(`${inputPath}/less/*.less`));
   }
+
+  // Name of the less theme file.
+  themeLess = `./less/${theme.name}.less`;
+  // Compile all the files under the less folder if no theme less file pressent.
+  lessFiles.push(fs.existsSync(themeLess) ? themeLess : './less/*.less');
 
   return gulp.src(lessFiles)
     .pipe(plugins.less({
