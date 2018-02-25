@@ -13,7 +13,8 @@
   ],
   "scripts": {
     "install": "monorepo install",
-    "publish": "monorepo publish --access public"
+    "publish": "monorepo publish --access public",
+    "build": "monorepo run build"
   },
   "engines": {
     "node": ">=6.6.0 <7.0.0",
