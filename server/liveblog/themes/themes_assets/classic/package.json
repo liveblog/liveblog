@@ -2,6 +2,9 @@
   "name": "classic",
   "description": "Classic Theme",
   "main": "main.js",
+  "scripts": {
+    "build": "gulp build"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/liveblog/lb-theme-classic.git"
