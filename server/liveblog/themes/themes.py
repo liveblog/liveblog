@@ -206,7 +206,8 @@ class ThemesService(BaseService):
         themes (at least for now)
         """
 
-        req.max_results = THEMES_MAX_RESULTS
+        if req:
+            req.max_results = THEMES_MAX_RESULTS
         return super().get(req, lookup)
 
     def get_options(self, theme, options=None, parents=[]):
