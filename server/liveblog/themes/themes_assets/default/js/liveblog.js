@@ -1,7 +1,3 @@
-/**
- * @author ps / @___paul
- */
-
 'use strict';
 
 // Prerender functions
