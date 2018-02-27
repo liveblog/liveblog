@@ -71,7 +71,17 @@ def addten(date):
 
 
 def ampify(html):
-    if re.search('iframe', html, re.IGNORECASE):
+    if re.search('players.brightcove.net/\d*/\w*_\w*\/index\.html\?videoId=\d*', html):
+        account = re.search(r'net\/(\d*)', html)[0].split('/')[1]
+        playerEmbed = re.search(r'\w*_\w*', html)[0]
+        playerEmbed = playerEmbed.split('_')
+        player = playerEmbed[0]
+        embed = playerEmbed[1]
+        videoId = re.search(r'videoId=(\d*)', html)[0].split('=')[1]
+
+        return '<amp-brightcove data-account=' + account + ' data-player=' + player + ' data-embed=' + embed + ' data-video-id=' + videoId + ' \
+         layout="responsive" width="480" height="270"></amp-brightcove>'
+    if re.search('<\S*iframe', html, re.IGNORECASE):
         src = re.search(r'src\s*=\s*"(?P<src>[^\"]+)"', html)
         width = re.search(r'width\s*=\s*"(?P<width>[^\"]+)"', html)
         height = re.search(r'height\s*=\s*"(?P<height>[^\"]+)"', html)
