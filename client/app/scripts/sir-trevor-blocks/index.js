@@ -37,7 +37,7 @@ var placeCaretAtStart = createCaretPlacer(true);
 var placeCaretAtEnd = createCaretPlacer(false);
 var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
 var socialEmbedRegex = '(iframe|blockquote)+(?:.|\\n)*(youtube\\.com\\/embed|facebook\\.com'
-    + '\\/plugins|instagram\\.com\\/p\\/|twitter\\.com\\/.*\\/status)(?:.|\\n)*(iframe|blockquote)';
+    + '\\/plugins|instagram\\.com\\/p\\/|players\\.brightcove\\.net|twitter\\.com\\/.*\\/status)(?:.|\\n)*(iframe|blockquote)';
 
 function fixDataEmbed(data) {
     if (data.html) {
@@ -80,11 +80,13 @@ function replaceEmbedWithUrl(string) {
     var facebookPattern = /(?:post\.php|video\.php)\?href=(https?(\w|%|\.)+)/i;
     var instagramPattern = /(https?:\/\/(?:www)?\.?instagram\.com\/p\/(?:\w+.)+\/)/i;
     var twitterPattern = /(https?:\/\/(?:www)?\.?twitter\.com\/\w+\/status\/\d+)/i;
+    var brightcovePattern = /(http|https)?:?\/\/players.brightcove.net\/\d*\/[a-zA-Z\d\_\-]*\/index\.html\?videoId=\d*/i;
     var m;
 
     // checking if string contains any of the "big four" embeds
     if (generalPattern.test(string)) {
-        if ((m = youtubePattern.exec(string)) !== null){
+        console.log("social!");
+        if ((m = youtubePattern.exec(string)) !== null) {
             return 'https://www.youtube.com/watch?v='+m[1];
         }
         else if ((m = facebookPattern.exec(string)) !== null) {
@@ -95,6 +97,9 @@ function replaceEmbedWithUrl(string) {
         }
         else if ((m = twitterPattern.exec(string)) !== null) {
             return m[1];
+        }
+        else if ((m = brightcovePattern.exec(string)) !== null) {
+            return m[0];
         }
     }
 
