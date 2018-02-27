@@ -6,7 +6,8 @@ const events = require('./events');
 const config = window.LB;
 const apiHost = config.api_host.replace(/\/$/, '');
 const blogId = config.blog._id;
-const outputId = config.output._id;
+const output = config.output || {settings: {}};
+const outputId = output._id;
 const endpoint =  `${apiHost}/api/advertisements/${blogId}/${outputId}/`;
 
 // ways to order the ads
@@ -26,7 +27,7 @@ nunjucks.env = nunjucksEnv;
 const adsSettings = {
     postSelector: "section.lb-posts.normal > article.lb-post",
     adsSelector: "article.lb-post.advertisement",
-    frequency: config.output.settings.frequency,
+    frequency: output.settings.frequency,
 };
 
 function resetAds() {
@@ -42,7 +43,7 @@ function renderAds() {
 
     const postCount = articles.length;
     const frequency = adsSettings.frequency;
-    const order = config.output.settings.order;
+    const order = output.settings.order;
 
     let adsList = advertisements.slice();
     //check if we need to show ads in descending order
@@ -69,6 +70,9 @@ function renderAds() {
 
 module.exports = {
     init: () => {
+        // if we are not in an output channel
+        if (!outputId) return;
+
         helpers.getJSON(endpoint).then((data) => {
             advertisements = data;
         });
@@ -86,7 +90,8 @@ module.exports = {
     },
 
     refreshAds: () => {
-        // console.log('refreshing ads...');
+        // if we are not in an output channel
+        if (!outputId) return;
 
         // @TODO: perhaps pull new ads?
         resetAds();
