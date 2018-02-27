@@ -1,6 +1,7 @@
 {
-  "name": "classic",
+  "name": "lb-theme-classic",
   "description": "Classic Theme",
+  "version": "3.3.11",
   "main": "main.js",
   "scripts": {
     "build": "gulp build"
