@@ -152,11 +152,11 @@ const ampifyFilter = (html) => {
             <p placeholder>Loading...</p>
     </amp-iframe>`;
   }
-  if (html.search(/players\.brightcove\.net\/\d*\/[a-z0-9]*_\w*\/index\.html\?videoId/i) > 0) {
+  if (html.search(/players\.brightcove\.net\/\d*\/[a-z0-9\-]*_\w*\/index\.html\?videoId/i) > 0) {
     let account, playerEmbed, player, embed, videoId = '';
 
     account = (/net\/(\d*)\//).exec(html)[1];
-    playerEmbed = (/\/([a-z0-9]*_\S*)\//i).exec(html)[1];
+    playerEmbed = (/\w*(-[a-zA-Z0-9]+)*_\w*/i).exec(html)[0];
     playerEmbed = playerEmbed.split('_');
     player = playerEmbed[0];
     embed = playerEmbed[1];

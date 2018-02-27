@@ -80,7 +80,7 @@ function replaceEmbedWithUrl(string) {
     var facebookPattern = /(?:post\.php|video\.php)\?href=(https?(\w|%|\.)+)/i;
     var instagramPattern = /(https?:\/\/(?:www)?\.?instagram\.com\/p\/(?:\w+.)+\/)/i;
     var twitterPattern = /(https?:\/\/(?:www)?\.?twitter\.com\/\w+\/status\/\d+)/i;
-    var brightcovePattern = /(http|https)?:?\/\/players.brightcove.net\/\d*\/[a-zA-Z\d\_]*\/index\.html\?videoId=\d*/i;
+    var brightcovePattern = /(http|https)?:?\/\/players.brightcove.net\/\d*\/[a-zA-Z\d\_\-]*\/index\.html\?videoId=\d*/i;
     var m;
 
     // checking if string contains any of the "big four" embeds
@@ -99,7 +99,6 @@ function replaceEmbedWithUrl(string) {
             return m[1];
         }
         else if ((m = brightcovePattern.exec(string)) !== null) {
-            console.log(m);
             return m[0];
         }
     }
