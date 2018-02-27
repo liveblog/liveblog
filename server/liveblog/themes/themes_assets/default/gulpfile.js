@@ -126,7 +126,7 @@ nunjucksEnv.addFilter('date', dateFilter);
 
 // ampify filter used by AMP theme
 const ampifyFilter = (html) => {
-  if (html.search(/iframe/i) > 0) {
+  if (html.search(/<\S*iframe/i) > 0) {
     // html contains iframe
     const src = (/src=\"([^\"]+)\"/).exec(html)[1];
     var width = (/width=\"([^\"]+)\"/).exec(html)[1];
@@ -152,6 +152,27 @@ const ampifyFilter = (html) => {
             <p placeholder>Loading...</p>
     </amp-iframe>`;
   }
+  if (html.search(/players\.brightcove\.net\/\d*\/[a-z0-9]*_\w*\/index\.html\?videoId/i) > 0) {
+    let account, playerEmbed, player, embed, videoId = '';
+
+    account = (/net\/(\d*)\//).exec(html)[1];
+    playerEmbed = (/\/([a-z0-9]*_\S*)\//i).exec(html)[1];
+    playerEmbed = playerEmbed.split('_');
+    player = playerEmbed[0];
+    embed = playerEmbed[1];
+    videoId = (/videoId=(\S*)/i).exec(html)[1];
+
+    return `
+      <amp-brightcove
+      data-account="${account}"
+      data-player="${player}"
+      data-embed="${embed}"
+      data-video-id="${videoId}"
+      layout="responsive"
+      width="480" height="270">
+      </amp-brightcove>`;
+  }
+
   return html;
 };
 
