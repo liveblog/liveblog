@@ -6,9 +6,9 @@
   "license": "AGPL-3.0",
   "main": "js/liveblog.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "gulp"
   },
   "dependencies": {
-    "liveblog-default-theme": "^3.3.47"
+    "liveblog-default-theme": "latest"
   }
 }

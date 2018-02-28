@@ -348,7 +348,7 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
       api_response: apiResponse.posts._items.length > 0 ? apiResponse : testdata.api_response,
       include_js_options: true,
       debug: DEBUG
-    }, apiResponse.posts._items.length > 0 ? {} : nunjucksOptions));
+    }, nunjucksOptions));
 
   if (theme.ampTheme) {
     indexTask = indexTask.pipe(plugins.inject(
@@ -430,7 +430,9 @@ gulp.task('theme-replace', ['browserify', 'less'], () => {
     .pipe(plugins.replace(jsName, manifest[paths.jsfile] || manifest[`${theme.name}.js`]))
     .pipe(plugins.replace(/"version":\s*"(\d+\.\d+\.)(\d+)"/,(a, p, r) => `"version": "${p}${++r}"`))
     .pipe(gulp.dest(base));
-
+  gulp.src('package.json', {base: base})
+    .pipe(plugins.replace(/"version":\s*"(\d+\.\d+\.)(\d+)"/,(a, p, r) => `"version": "${p}${++r}"`))
+    .pipe(gulp.dest(base));
   // Reload theme options
   loadThemeJSON();
 });
