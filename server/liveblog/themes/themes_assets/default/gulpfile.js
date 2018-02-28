@@ -152,11 +152,11 @@ const ampifyFilter = (html) => {
             <p placeholder>Loading...</p>
     </amp-iframe>`;
   }
-  if (html.search(/players\.brightcove\.net\/\d*\/[a-z0-9]*_\w*\/index\.html\?videoId/i) > 0) {
+  if (html.search(/players\.brightcove\.net\/\d*\/[a-z0-9\-]*_\w*\/index\.html\?videoId/i) > 0) {
     let account, playerEmbed, player, embed, videoId = '';
 
     account = (/net\/(\d*)\//).exec(html)[1];
-    playerEmbed = (/\/([a-z0-9]*_\S*)\//i).exec(html)[1];
+    playerEmbed = (/\w*(-[a-zA-Z0-9]+)*_\w*/i).exec(html)[0];
     playerEmbed = playerEmbed.split('_');
     player = playerEmbed[0];
     embed = playerEmbed[1];
@@ -348,7 +348,7 @@ gulp.task('index-inject', ['less', 'browserify'], () => {
       api_response: apiResponse.posts._items.length > 0 ? apiResponse : testdata.api_response,
       include_js_options: true,
       debug: DEBUG
-    }, apiResponse.posts._items.length > 0 ? {} : nunjucksOptions));
+    }, nunjucksOptions));
 
   if (theme.ampTheme) {
     indexTask = indexTask.pipe(plugins.inject(
@@ -430,7 +430,9 @@ gulp.task('theme-replace', ['browserify', 'less'], () => {
     .pipe(plugins.replace(jsName, manifest[paths.jsfile] || manifest[`${theme.name}.js`]))
     .pipe(plugins.replace(/"version":\s*"(\d+\.\d+\.)(\d+)"/,(a, p, r) => `"version": "${p}${++r}"`))
     .pipe(gulp.dest(base));
-
+  gulp.src('package.json', {base: base})
+    .pipe(plugins.replace(/"version":\s*"(\d+\.\d+\.)(\d+)"/,(a, p, r) => `"version": "${p}${++r}"`))
+    .pipe(gulp.dest(base));
   // Reload theme options
   loadThemeJSON();
 });

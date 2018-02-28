@@ -1,0 +1,26 @@
+{
+  "name": "liveblog",
+  "version": "3.3.7",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:liveblog/liveblog.git"
+  },
+  "licenses": [
+    {
+      "type": "GPLv3",
+      "url": "http://www.gnu.org/licenses/gpl-3.0.txt"
+    }
+  ],
+  "scripts": {
+    "install": "monorepo install",
+    "publish": "monorepo publish --access public",
+    "build": "monorepo run build"
+  },
+  "engines": {
+    "node": ">=6.6.0 <7.0.0",
+    "npm": ">=3.10 <4.0.0"
+  },
+  "devDependencies": {
+    "monorepo": "liveblog/monorepo"
+  }
+}
