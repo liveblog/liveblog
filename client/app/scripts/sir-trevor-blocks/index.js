@@ -16,16 +16,19 @@ import handlePlaceholder from './handle-placeholder';
 function createCaretPlacer(atStart) {
     return function(el) {
         el.focus();
-        if (typeof window.getSelection !== "undefined"
-                && typeof document.createRange !== "undefined") {
+        if (typeof window.getSelection !== 'undefined'
+                && typeof document.createRange !== 'undefined') {
             var range = document.createRange();
+
             range.selectNodeContents(el);
             range.collapse(atStart);
             var sel = window.getSelection();
+
             sel.removeAllRanges();
             sel.addRange(range);
-        } else if (typeof document.body.createTextRange !== "undefined") {
+        } else if (typeof document.body.createTextRange !== 'undefined') {
             var textRange = document.body.createTextRange();
+
             textRange.moveToElementText(el);
             textRange.collapse(atStart);
             textRange.select();
@@ -37,12 +40,14 @@ var placeCaretAtStart = createCaretPlacer(true);
 var placeCaretAtEnd = createCaretPlacer(false);
 var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
 var socialEmbedRegex = '(iframe|blockquote)+(?:.|\\n)*(youtube\\.com\\/embed|facebook\\.com'
-    + '\\/plugins|instagram\\.com\\/p\\/|players\\.brightcove\\.net|twitter\\.com\\/.*\\/status)(?:.|\\n)*(iframe|blockquote)';
+    + '\\/plugins|instagram\\.com\\/p\\/|players\\.brightcove\\.net'
+    + '|twitter\\.com\\/.*\\/status)(?:.|\\n)*(iframe|blockquote)';
 
 function fixDataEmbed(data) {
     if (data.html) {
         var tmp = document.createElement("DIV");
-            tmp.innerHTML = data.html;
+
+        tmp.innerHTML = data.html;
         data.html = tmp.innerHTML;
     }
     return data;
@@ -70,6 +75,7 @@ function fixSecureEmbed(string) {
 
 function isURI(string) {
     var pattern = new RegExp('^' + uriRegx, 'i');
+
     return pattern.test(string);
 }
 
@@ -80,12 +86,11 @@ function replaceEmbedWithUrl(string) {
     var facebookPattern = /(?:post\.php|video\.php)\?href=(https?(\w|%|\.)+)/i;
     var instagramPattern = /(https?:\/\/(?:www)?\.?instagram\.com\/p\/(?:\w+.)+\/)/i;
     var twitterPattern = /(https?:\/\/(?:www)?\.?twitter\.com\/\w+\/status\/\d+)/i;
-    var brightcovePattern = /(http|https)?:?\/\/players.brightcove.net\/\d*\/[a-zA-Z\d\_\-]*\/index\.html\?videoId=\d*/i;
+    var bcPattern = /(http|https)?:?\/\/players.brightcove.net\/\d*\/[a-zA-Z\d\_\-]*\/index\.html\?videoId=\d*/i;
     var m;
 
     // checking if string contains any of the "big four" embeds
     if (generalPattern.test(string)) {
-        console.log("social!");
         if ((m = youtubePattern.exec(string)) !== null) {
             return 'https://www.youtube.com/watch?v='+m[1];
         }
@@ -98,7 +103,7 @@ function replaceEmbedWithUrl(string) {
         else if ((m = twitterPattern.exec(string)) !== null) {
             return m[1];
         }
-        else if ((m = brightcovePattern.exec(string)) !== null) {
+        else if ((m = bcPattern.exec(string)) !== null) {
             return m[0];
         }
     }
