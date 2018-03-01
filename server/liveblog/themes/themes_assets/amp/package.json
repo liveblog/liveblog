@@ -9,10 +9,6 @@
     "build": "gulp"
   },
   "dependencies": {
-<<<<<<< HEAD
     "liveblog-default-theme": "latest"
-=======
-    "liveblog-default-theme": "^3.3.47"
->>>>>>> WIP
   }
 }
