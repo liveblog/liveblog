@@ -50,7 +50,6 @@ def moment_date_filter_container(theme):
 
 
 def regaddten(obj):
-    print(obj)
     val = int(obj.group(1))
     return str(val + 10)
 
@@ -71,16 +70,19 @@ def addten(date):
 
 
 def ampify(html):
-    if re.search('players.brightcove.net/\d*/\[a-zA-Z0-9\-]*_\w*\/index\.html\?videoId=\d*', html):
-        account = re.search(r'net\/(\d*)', html)[0].split('/')[1]
-        playerEmbed = re.search(r'\w*(-[a-zA-Z0-9]+)*_\w*', html)[0]
-        playerEmbed = playerEmbed.split('_')
-        player = playerEmbed[0]
-        embed = playerEmbed[1]
-        videoId = re.search(r'videoId=(\d*)', html)[0].split('=')[1]
-
-        return '<amp-brightcove data-account=' + account + ' data-player=' + player + ' data-embed=' + embed + ' data-video-id=' + videoId + ' \
-         layout="responsive" width="480" height="270"></amp-brightcove>'
+    brightcove_re_array = [
+        'https?://(www\.)?players\.brightcove\.net/',
+        '(?P<account>\d*)/',
+        '(?P<player>\w*)',
+        '_',
+        '(?P<embed>\w*)',
+        '\/index\.html\?videoId=',
+        '(?P<videoId>\d*)'
+    ]
+    match = re.compile(''.join(brightcove_re_array)).match(html)
+    if match:
+        return ('<amp-brightcove data-account="{account}" data-player="{player}" data-embed="{embed}" data-video-id="{videoId}" \
+         layout="responsive" width="480" height="270"></amp-brightcove>'.format(**match.groupdict()))
     if re.search('<\S*iframe', html, re.IGNORECASE):
         src = re.search(r'src\s*=\s*"(?P<src>[^\"]+)"', html)
         width = re.search(r'width\s*=\s*"(?P<width>[^\"]+)"', html)
