@@ -83,17 +83,12 @@ def get_advertisements(blog_id, output):
             collection = get_resource_service('collections').find_one(req=None, _id=output.get('collection'))
             output['collection'] = collection
 
+    ads = []
     if output and output.get('collection', False):
         ads_ids = output['collection'].get('advertisements', [])
         ads_ids = list(map(lambda x: x['advertisement_id'], ads_ids))
 
         ads_query = get_resource_service('advertisements').find({"_id": {"$in": ads_ids}})
         ads = list(ads_query)
-
-        # looping over them, not sure which one is more performant
-        # ads = []
-        # if output['collection'].get('advertisements'):
-        #     for ad in output['collection']['advertisements']:
-        #         ads.append(get_resource_service('advertisements').find_one(req=None, _id=ad['advertisement_id']))
 
     return api_response(ads, 200)
