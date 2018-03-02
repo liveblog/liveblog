@@ -191,34 +191,6 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True,
                                            ordering='newest_first', deleted=is_amp)
 
-        # let's do this below only for amp for now, since we're handling
-        # ads for default theme browser side
-        # see: https://dev.sourcefabric.org/browse/LBSD-2005
-        if is_amp and output and output.get('collection', False):
-            ads = []
-            if output['collection'].get('advertisements'):
-                for ad in output['collection']['advertisements']:
-                    ads.append(get_resource_service('advertisements').find_one(req=None, _id=ad['advertisement_id']))
-
-            pcount = len(posts['_items'])
-            acount = len(ads)
-            frequency = output["settings"].get("frequency", 4)
-            order = output["settings"].get("order", 1)
-
-            # acount must be higher than 0 in order to avoid
-            # error: ZeroDivisionError: integer division or modulo by zero
-            if acount > 0:
-                if order == 1 and acount > 0:
-                    for i in range(0, pcount, (frequency + 1)):
-                        index = math.ceil(i / (frequency + 1)) % acount
-                        # transform ad into a valid post.
-                        posts['_items'].insert(i, ad_to_post(ads[index]))
-                else:
-                    for i in range(pcount, 0, (frequency + 1)):
-                        index = math.floor(i / (frequency + 1)) % acount
-                        # transform ad into a valid post.
-                        posts['_items'].insert(i, ad_to_post(ads[index]))
-
         api_response = {
             'posts': posts,
             'stickyPosts': sticky_posts
