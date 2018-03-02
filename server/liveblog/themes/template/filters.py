@@ -73,7 +73,7 @@ def ampify(html):
     brightcove_re_array = [
         'https?://(www\.)?players\.brightcove\.net/',
         '(?P<account>\d*)/',
-        '(?P<player>\w*)',
+        '(?P<player>[a-zA-Z0-9\-]*)',
         '_',
         '(?P<embed>\w*)',
         '\/index\.html\?videoId=',

@@ -152,6 +152,8 @@ const ampifyFilter = (html) => {
             <p placeholder>Loading...</p>
     </amp-iframe>`;
   }
+
+  // brightcove url recognition
   if (html.search(/players\.brightcove\.net\/\d*\/[a-z0-9\-]*_\w*\/index\.html\?videoId/i) > 0) {
     let account, playerEmbed, player, embed, videoId = '';
 
@@ -161,6 +163,26 @@ const ampifyFilter = (html) => {
     player = playerEmbed[0];
     embed = playerEmbed[1];
     videoId = (/videoId=(\S*)/i).exec(html)[1];
+
+    return `
+      <amp-brightcove
+      data-account="${account}"
+      data-player="${player}"
+      data-embed="${embed}"
+      data-video-id="${videoId}"
+      layout="responsive"
+      width="480" height="270">
+      </amp-brightcove>`;
+  }
+
+  // brightcove in-page embed recognition
+  if (html.search(/players\.brightcove\.net\/\d*\/[a-z0-9\-]*_\w*\/index\.min\.js/i) > 0) {
+    let account, playerEmbed, player, embed, videoId = '';
+
+    account = (/data-account="(\d*)"/).exec(html)[1];
+    player = (/data-player="([a-zA-Z0-9-]*)"/i).exec(html)[1];
+    embed = (/data-embed="([a-zA-Z0-9-]*)"/i).exec(html)[1];
+    videoId = (/data-video-id="(\d*)"/i).exec(html)[1];
 
     return `
       <amp-brightcove
