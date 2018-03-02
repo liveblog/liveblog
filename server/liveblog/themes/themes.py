@@ -51,6 +51,11 @@ STEPS = {
     'default': 1
 }
 
+IGNORED = [
+    'node_modules',
+    '.git',
+    'package-lock.json'
+]
 THEMES_MAX_RESULTS = 50
 
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
@@ -499,7 +504,8 @@ class ThemesService(BaseService):
         # Save the file in the media storage if needed
         if self.is_s3_storage_enabled:
             for name in files:
-                self._save_theme_file(name, theme, upload_path=upload_path)
+                if not any(ignored in name for ignored in IGNORED):
+                    self._save_theme_file(name, theme, upload_path=upload_path)
 
         # Save theme template and jinja2 compiled templates for SEO themes.
         self._save_theme_files(theme)
