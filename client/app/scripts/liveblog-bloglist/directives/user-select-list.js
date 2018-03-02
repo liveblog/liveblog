@@ -18,20 +18,18 @@ export default function lbUserSelectList(api) {
 
             const _refresh = function() {
                 scope.users = {};
-                return api('users').query({
-                    where: JSON.stringify({
-                        $or: [
-                            {username: {$regex: scope.search, $options: '-i'}},
-                            {first_name: {$regex: scope.search, $options: '-i'}},
-                            {last_name: {$regex: scope.search, $options: '-i'}},
-                            {email: {$regex: scope.search, $options: '-i'}}
-                        ]
-                    })
-                })
+                return api('users').query({where: JSON.stringify({
+                    $or: [
+                        {username: {$regex: scope.search, $options: '-i'}},
+                        {first_name: {$regex: scope.search, $options: '-i'}},
+                        {last_name: {$regex: scope.search, $options: '-i'}},
+                        {email: {$regex: scope.search, $options: '-i'}}
+                    ]
+                })})
                     .then((result) => {
                         scope.users = result;
                         scope.users._items = _.filter(scope.users._items, (item) => {
-                            let found = false;
+                            var found = false;
 
                             _.each(scope.members, (member) => {
                                 if (member._id === item._id) {

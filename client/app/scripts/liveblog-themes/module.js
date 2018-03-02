@@ -146,8 +146,13 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                     return self.getTheme(self.globalTheme.value).name === theme.name;
                 }
             },
-            hasChildren: function(theme) {
-                return self.themes.some((t) => t.extends === theme.name);
+            cannotRemove: function(theme) {
+                const hasChildren = self.themes.some(function(t) {
+                    return t.extends === theme.name;
+                });
+                const systemThemes = ['angular', 'classic', 'default', 'amp'];
+                const isSystemTheme = systemThemes.indexOf(theme.name) !== -1;
+                return hasChildren || isSystemTheme;
             },
             openThemeBlogsModal: function(theme) {
                 if (theme.blogs.length) {

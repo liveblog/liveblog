@@ -6,7 +6,7 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
     return {
         restrict: 'E',
         templateUrl: freetypeImageTpl,
-        controller: ['$scope', ($scope) => {
+        controller: ['$scope', function($scope) {
             $scope.preview = {};
             $scope.progress = {width: 0};
             $scope.saved = false;
@@ -15,6 +15,12 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
             if ($scope.image.picture_url) {
                 $scope.preview.url = $scope.image.picture_url;
             }
+
+            $scope.$watch('image', (value) => {
+                if (value.picture_url) {
+                    $scope.preview.url = value.picture_url;
+                }
+            });
 
             $scope.valid = true;
             $scope._id = _.uniqueId('image');
@@ -26,13 +32,18 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
                 $scope.$on('$destroy', sentinel);
             }
 
-            $scope.$watch('preview.img', () => {
-                $scope.saveImage();
+            let self = this;
+
+            $scope.$watch('preview.img', (newValue, oldValue, scope) => {
+                if (newValue !== undefined || newValue !== oldValue) {
+                    self.saveImage();
+                }
             });
 
-            $scope.saveImage = function() {
-                const form = {};
-                const config = $scope.preview;
+            this.saveImage = function() {
+                $scope.validation.imageUploaded = false;
+                var form = {};
+                var config = $scope.preview;
 
                 if (config.img) {
                     form.media = config.img;
@@ -52,16 +63,17 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
                         if (response.data._status === 'ERR') {
                             return;
                         }
-                        const pictureUrl = response.data.renditions.viewImage.href;
+                        var pictureUrl = response.data.renditions.viewImage.href;
 
                         $scope.image.picture_url = pictureUrl;
-                        $scope.image.picture = response.data;
+                        $scope.image.picture = response.data._id;
                     }, (error) => {
                         notify.error(
                             error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
                         );
                     }, (progress) => {
                         $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
+                        $scope.validation.imageUploaded = true;
                     }));
             };
 

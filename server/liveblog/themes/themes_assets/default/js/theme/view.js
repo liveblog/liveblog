@@ -4,10 +4,15 @@
 
 'use strict';
 
+require('./templates');
 const helpers = require('./helpers');
-const templates = require('./templates');
 const Slideshow = require('./slideshow');
 const Permalink = require('./permalink');
+const nunjucks = require("nunjucks/browser/nunjucks-slim");
+
+const nunjucksEnv = new nunjucks.Environment();
+nunjucksEnv.addFilter('date', helpers.convertTimestamp);
+nunjucks.env = nunjucksEnv;
 
 const permalink = new Permalink();
 const els = {
@@ -28,12 +33,14 @@ function renderTimeline(api_response) {
   var optionsObj = {i18n: window.LB.i18n};
 
   api_response._items.forEach((post) => {
-    renderedPosts.push(templates.post({
-      item: post,
-      options: optionsObj,
-      settings: window.LB.settings,
-      assets_root: window.LB.assets_root
-    }));
+    renderedPosts.push(
+      nunjucks.env.render('template-post.html', {
+        item: post,
+        options: optionsObj,
+        settings: window.LB.settings,
+        assets_root: window.LB.assets_root
+      })
+    );
 
   });
 
@@ -71,7 +78,7 @@ function renderPosts(api_response) {
     // for translation macro purposes                    
     var optionsObj = {i18n: window.LB.i18n};
   
-    const rendered = templates.post({
+    const rendered = nunjucks.env.render('template-post.html', {
       item: post,
       settings: window.LB.settings,
       options: optionsObj,
@@ -108,6 +115,7 @@ function addPosts(posts, position) {
 
   els.timelineNormal.insertAdjacentHTML(position, timelineNormal);
   els.timelineSticky.insertAdjacentHTML(position, timelineSticky);
+  els.timelineSticky.classList.remove('sticky--empty');
 
   checkPending();
   attachSlideshow();
@@ -177,7 +185,6 @@ function displayNewPosts() {
 
 /**
  * Trigger embed provider unpacking
- * Todo: Make required scripts available on subsequent loads
  */
 function loadEmbeds() {
   if (window.instgrm) {
@@ -187,6 +194,12 @@ function loadEmbeds() {
   if (window.twttr) {
     twttr.widgets.load();
   }
+
+  if (window.FB) {
+    window.FB.XFBML.parse();
+  }
+
+  attachSlideshow();
 }
 
 function clearCommentDialog() {
@@ -258,6 +271,7 @@ function updateTimestamps() {
   for (var i = 0; i < dateElems.length; i++) {
     var elem = dateElems[i]
       , timestamp = elem.dataset.jsTimestamp;
+    elem.classList.remove('mod--displaynone');
     elem.textContent = helpers.convertTimestamp(timestamp);
   }
   return null;
@@ -298,13 +312,7 @@ function displayCommentFormErrors(errors) {
 
 function attachSlideshow() {
   const slideshow = new Slideshow();
-  const slideshowImages = document.querySelectorAll('article.slideshow img');
-
-  if (slideshowImages) {
-    slideshowImages.forEach((image) => {
-      image.addEventListener('click', slideshow.start);
-    });
-  }
+  slideshow.init();
 }
 
 function attachPermalink() {
@@ -343,6 +351,7 @@ function permalinkScroll() {
   if (scrollElem) {
     scrollElem.classList.add('lb-post-permalink-selected');
     scrollElem.scrollIntoView();
+    updateTimestamps();
     return true;
   }
 

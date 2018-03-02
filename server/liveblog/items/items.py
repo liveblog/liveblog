@@ -99,8 +99,20 @@ class ItemsResource(ArchiveResource):
 
 class ItemsService(ArchiveService):
     embed_providers = {
-        'twitter': re.compile('https?://twitter\.com/(?:\#!/)?(\w+)/status(es)?/(?P<original_id>\d+)'),
-        'youtube': re.compile('(watch\?.*?(?=v=)v=|embed/|v/|.+\?v=)?(?P<original_id>[^&=%\?]{11})')
+        'twitter': [
+            re.compile('https?://(?:www|mobile\.)?twitter\.com/(?:#!/)?[^/]+/status(?:es)?/(?P<original_id>\d+)/?$'),
+            re.compile('https?://(www\.)?t\.co/(?P<original_id>[a-zA-Z0-9]+)')
+        ],
+        'youtube': [
+            re.compile('https?://(?:[^\.]+\.)?youtube\.com/watch/?\?(?:.+&)?v=(?P<original_id>[^&]+)'),
+            re.compile('https?://(www\.)?youtu\.be/(?P<original_id>[a-zA-Z0-9_-]+)')
+        ],
+        'instagram': [
+            re.compile('https?://(www\.)?instagr(?:\.am|am\.com)/p/(?P<original_id>[^/]+)')
+        ],
+        'facebook': [
+            re.compile('https?://(www\.)?facebook.com/(?P<original_id>.*)')
+        ]
     }
 
     def set_embed_metadata(self, doc):
@@ -115,13 +127,11 @@ class ItemsService(ArchiveService):
             return
         provider_name = doc['meta']['provider_name'].lower()
         if provider_name in self.embed_providers:
-            original_id_re = self.embed_providers[provider_name]
-            match = original_id_re.match(original_url)
-            if match:
-                original_id = match.group('original_id')
-                doc['meta']['original_id'] = original_id
-            else:
-                logger.warning('Unable to get orginal_id for url: {}'.format(original_url))
+            for original_id_re in self.embed_providers[provider_name]:
+                match = original_id_re.match(original_url)
+                if match:
+                    original_id = match.group('original_id')
+                    doc['meta']['original_id'] = original_id
 
     def get(self, req, lookup):
         if req is None:

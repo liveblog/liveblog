@@ -1,34 +1,17 @@
-{% if ref.item.meta.provider_name|lower == 'youtube' %}
+{% if ref.item.meta.provider_name|lower == 'youtube' and ref.item.meta.html %}
     <div class="item--embed__element lb-responsive-video">{{ ref.item.meta.html | safe }}</div>
-{% elif ref.item.meta.provider_name|lower == 'facebook' %}
+{% elif (ref.item.meta.provider_name|lower == 'twitter') and ref.item.meta.html  %}
     <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div>
-{% elif ref.item.meta.provider_name|lower == 'instagram' %}
-    {% if ref.item.meta.html %}
-        <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div>
-    {% endif %}
-    <article class="item--embed item--embed__wrapper">
-        {% if not ref.item.meta.html and ref.item.meta.thumbnail_url %}
-            <a href="{{ ref.item.meta.original_url }}" target="_blank" class="{{ 'item--embed__illustration' if ref.item.meta.description else 'item--embed__only-illustration' }}">
-                <img src="{{ ref.item.meta.thumbnail_url }}"/>
-            </a>
-        {% endif %}
-        {% if ref.item.meta.title or ref.item.meta.description or ref.item.meta.credit %}
-            <div class="item--embed__info">
-                {% if ref.item.meta.title %}
-                <div class="item--embed__description">
-                    {{ ref.item.meta.title }}
-                </div>
-                {% endif %}
-                {% if ref.item.meta.credit %}
-                <div class="item--embed__credit">
-                    <a href="{{ ref.item.meta.author_url }}" target="_blank">
-                        {{ ref.item.meta.credit }}
-                    </a>
-                </div>
-                {% endif %}
-            </div>
-        {% endif %}
-    </article>
+{% elif ref.item.meta.provider_name|lower == 'facebook' and ref.item.meta.original_url %}
+    <blockquote class="embedly-card" data-card-controls="0">
+        <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
+        <p>{{ ref.item.meta.title }}</p>
+    </blockquote>
+{% elif ref.item.meta.provider_name|lower == 'instagram' and ref.item.meta.original_url %}
+    <blockquote class="embedly-card" data-card-controls="0">
+        <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
+        <p>{{ ref.item.meta.title }}</p>
+    </blockquote>
 {% else %}
     {% if ref.item.meta.html %}
     <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div>

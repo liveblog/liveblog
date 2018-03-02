@@ -5,7 +5,7 @@
             class="freetype--error freetype--error-text"
             ng-show="necessaryFlag"
             hide-render
-            translate>It is necessary!</span>
+            translate>Required</span>
         <span
             class="freetype--error freetype--error-text"
             ng-show="compulsoryFlag"
@@ -15,7 +15,7 @@
             class="freetype--error freetype--error-text"
             ng-show="tandemFlag"
             hide-render
-            translate>It is necessary!</span>
+            translate>Required</span>
         <span
             class="freetype--error freetype--error-text"
             ng-show="numberFlag"

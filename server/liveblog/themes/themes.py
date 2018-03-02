@@ -31,7 +31,7 @@ from liveblog.system_themes import system_themes
 
 from settings import (COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY, SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
-from .template.filters import moment_date_filter_container, addten
+from .template.filters import moment_date_filter_container, addten, ampify
 from .template.loaders import ThemeTemplateLoader
 
 
@@ -50,6 +50,14 @@ STEPS = {
     'seoTheme': 2,
     'default': 1
 }
+
+IGNORED = [
+    'node_modules',
+    '.git',
+    'package-lock.json'
+]
+THEMES_MAX_RESULTS = 50
+
 upload_theme_blueprint = superdesk.Blueprint('upload_theme', __name__)
 download_theme_blueprint = superdesk.Blueprint('download_theme', __name__)
 themes_assets_blueprint = superdesk.Blueprint('themes_assets', __name__, static_folder=THEMES_ASSETS_DIR)
@@ -195,6 +203,18 @@ class UnknownTheme(Exception):
 
 
 class ThemesService(BaseService):
+
+    def get(self, req, lookup):
+        """
+        Simply override just because we don't have pagination in themes ui
+        so we set max_results to 50 expecting clients won't have more than 50
+        themes (at least for now)
+        """
+
+        if req:
+            req.max_results = THEMES_MAX_RESULTS
+        return super().get(req, lookup)
+
     def get_options(self, theme, options=None, parents=[]):
         """
         Get theme options.
@@ -242,8 +262,9 @@ class ThemesService(BaseService):
         :param theme_name:
         :return:
         """
-        theme_folder = os.path.join(LOCAL_THEMES_DIRECTORY, theme_name)
-        return os.path.exists(theme_folder)
+        # theme_folder = os.path.join(LOCAL_THEMES_DIRECTORY, theme_name)
+        # return os.path.exists(theme_folder)
+        return theme_name in system_themes
 
     def is_uploaded_theme(self, theme_name):
         """
@@ -289,6 +310,7 @@ class ThemesService(BaseService):
         embed_env = jinja2.Environment(loader=loader(theme), undefined=UndefinedVar)
         embed_env.filters['date'] = moment_date_filter_container(theme)
         embed_env.filters['addten'] = addten
+        embed_env.filters['ampify'] = ampify
         return embed_env
 
     def get_theme_compiled_templates_path(self, theme_name):
@@ -455,8 +477,8 @@ class ThemesService(BaseService):
                 else:
                     # Otherwise we keep the settings that are already on the theme.
                     default_theme_settings[key] = default_prev_theme_settings[key]
-
             theme_settings.update(default_theme_settings)
+            theme_settings.update(default_prev_theme_settings)
             theme['settings'] = theme_settings
 
             # Set theme settings for blogs using previous theme.
@@ -482,7 +504,8 @@ class ThemesService(BaseService):
         # Save the file in the media storage if needed
         if self.is_s3_storage_enabled:
             for name in files:
-                self._save_theme_file(name, theme, upload_path=upload_path)
+                if not any(ignored in name for ignored in IGNORED):
+                    self._save_theme_file(name, theme, upload_path=upload_path)
 
         # Save theme template and jinja2 compiled templates for SEO themes.
         self._save_theme_files(theme)
@@ -490,8 +513,8 @@ class ThemesService(BaseService):
         previous_theme = self.find_one(req=None, name=theme_name)
         if previous_theme:
             self._save_theme_settings(theme, previous_theme)
+            self.replace(previous_theme['_id'], theme, previous_theme)
             if force_update:
-                self.replace(previous_theme['_id'], theme, previous_theme)
                 blogs_updated = self.publish_related_blogs(theme)
                 response = dict(status='updated', theme=theme, blogs_updated=blogs_updated)
             else:
@@ -538,7 +561,7 @@ class ThemesService(BaseService):
     def on_create(self, docs):
         subscription = SUBSCRIPTION_LEVEL
         if subscription in SUBSCRIPTION_MAX_THEMES:
-            all = self.find()
+            all = self.find({})
 
             if (all.count() + len(docs) > SUBSCRIPTION_MAX_THEMES[subscription]):
                 raise SuperdeskApiError.forbiddenError(message='Cannot add another theme.')

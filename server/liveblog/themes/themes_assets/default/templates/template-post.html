@@ -2,6 +2,7 @@
 {% set mainItem = item.groups[1].refs[0].item %}
 {% set postDate = item.published_date %}
 {% set type = item.post_items_type %}
+{% set galleryItem = false %}
 
 {% if mainItem.commenter %}
   {% if item.groups[1].refs|length > 1 %}
@@ -25,7 +26,7 @@
   data-post-id="{{ item._id }}"
   data-post-sticky="{{ item.sticky }}">
   <div class="lb-post-header">
-    
+
     <div class="lb-type lb-type--{{ item.post_items_type }}"></div>
 
     <div class="lb-post-date-icons">
@@ -42,8 +43,8 @@
 
       <!-- remove advertisement stylization-->
       {% if item.post_items_type != "advertisement" %}
-  
-      <div class="lb-post-date relativeDate" data-js-timestamp="{{ postDate }}">{{ postDate }}</div>
+
+      <div class="lb-post-date relativeDate{% if settings.clientDatetimeOnly %} mod--displaynone{% endif %}" data-js-timestamp="{{ postDate }}">{{ postDate | date('') }}</div>
 
     </div>
     <!-- author plus avatar -->
@@ -59,6 +60,8 @@
           {{ mainItem.syndicated_creator.display_name }}
         {% elif item.original_creator %}
           {{ item.original_creator.display_name }}
+        {% elif item.publisher %}
+          {{ item.publisher.display_name }}
         {% endif %}
         {% if item.syndication_in and not settings.showSyndicatedAuthor %}
           <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
@@ -72,6 +75,8 @@
           <img class="lb-author__avatar" src="{{ mainItem.syndicated_creator.picture_url }}" />
           {% elif item.original_creator and item.original_creator.picture_url %}
           <img class="lb-author__avatar" src="{{ item.original_creator.picture_url }}" />
+          {% elif item.publisher and item.publisher.picture_url %}
+          <img class="lb-author__avatar" src="{{ item.publisher.picture_url }}" />
           {% else %}
           <div class="lb-author__avatar"></div>
           {% endif %}
@@ -86,26 +91,36 @@
   {% endif %}
   <!-- end sticky position toggle -->
 
-  <!-- item start -->
+  <!-- post start -->
   <div class="items-container">
   {% if type == "comment" %}
     {% include "template-post-comment.html" %}
   {% else %}
-    {% if item and item.groups and
-            item.groups[1] and
-            item.groups[1].refs and
-            (item.groups[1].refs | length > 0) %}
+    {% if item and item.groups and item.groups[1] and item.groups[1].refs and (item.groups[1].refs | length > 0) %}
         {% for ref in item.groups[1].refs %}
           {% if ref.item.item_type == "image" %}
-          {% if settings.showGallery and loop.index0 + 1 < loop.length and item.groups[1].refs[loop.index0 + 1].item.item_type == "image" and (loop.index0 - 1 < 0 or not (loop.index0 > 0 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image")) %}
-          <div class="lb-slideshow">
-          {% endif %}
-          <div class="lb-item {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %}{{ref.item.item_type}}">
+            {% if settings.showGallery and loop.index0 + 1 < loop.length and item.groups[1].refs[loop.index0 + 1].item.item_type == "image" and (loop.index0 - 1 < 0 or not (loop.index0 > 0 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image")) %}
+              {# this works only for first element in gallery loop bcs variables are scoped in jinja2 #}
+              {% set galleryItem = true %}
+              <!-- slideshow start -->
+              <div class="lb-slideshow">
+                <div class="lb-slideshow_frame">
+                  <div class="lb-slideshow_slides">
+            {% endif %}
+            {# if previous item was an image and current item is an image as well = we are inside gallery loop #}
+            {% if settings.showGallery and item.groups[1].refs[loop.index0 - 1].item.item_type == "image" %}
+              {% set galleryItem = true %}
+            {% endif %}
+            <!-- image item start -->
+            <div class="lb-item {% if ref.item.meta.media.renditions.original.height > ref.item.meta.media.renditions.original.width %}portrait{% endif %}{{ref.item.item_type}}">
           {% else %}
-          <div class="lb-item {{ref.item.item_type}}">
+            <!-- item start -->
+            <div class="lb-item {{ref.item.item_type}}">
           {% endif %}
           {% if ref.item.item_type == "embed" %}
             {% include "template-item-embed.html" %}
+          {% elif ref.item.item_type == "image" and galleryItem %}
+            {% include "template-item-galleryImage.html" %}
           {% elif ref.item.item_type == "image" %}
             {% include "template-item-image.html" %}
           {% elif ref.item.item_type == "quote" %}
@@ -116,19 +131,28 @@
             <article>{{ ref.item.text | safe }}</article>
           {% endif %}
           </div>
-          {% if ref.item.item_type == "image" and loop.index0 - 1 >= 0 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image" and not (loop.index0 + 1 >= loop.length or item.groups[1].refs[loop.index0 + 1].item.item_type == "image") %}
-          </div>
+          <!-- item end -->
+          {% if settings.showGallery and ref.item.item_type == "image" and loop.index0 - 1 >= 0 and item.groups[1].refs[loop.index0 - 1].item.item_type == "image" and item.groups[1].refs[loop.index0 + 1].item.item_type != "image" %}    </div>
+                <span class="lb-slideshow_prev">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 501.5 501.5"><g><path fill="#2E435A" d="M302.67 90.877l55.77 55.508L254.575 250.75 358.44 355.116l-55.77 55.506L143.56 250.75z"/></g></svg>
+                </span>
+                <span class="lb-slideshow_next">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="50" height="50" viewBox="0 0 501.5 501.5"><g><path fill="#2E435A" d="M199.33 410.622l-55.77-55.508L247.425 250.75 143.56 146.384l55.77-55.507L358.44 250.75z"/></g></svg>
+                </span>
+              </div>
+            </div>
+            <!-- slideshow end -->
           {% endif %}
         {% endfor %}
     {% endif %}
   {% endif %}
   </div>
-  <!-- item end -->
+  <!-- post end -->
 
   <div class="lb-post-bottom">
     {% if settings.showUpdateDatetime and (item.content_updated_date != item.firstcreated) and item.post_items_type != "advertisement" %}
       <div class="lb-post-updated">
-        <span>{{ translate('Updated') }}</span> <span class="lb-post-updated-time relativeDate" data-js-timestamp="{{item.content_updated_date}}">{{item.content_updated_date}}</span>
+        <span>{{ translate('Updated') }}</span> <span class="lb-post-updated-time relativeDate{% if settings.clientDatetimeOnly %} mod--displaynone{% endif %}" data-js-timestamp="{{item.content_updated_date}}">{{item.content_updated_date | date('')}}</span>
       </div>
     {% endif %}
 

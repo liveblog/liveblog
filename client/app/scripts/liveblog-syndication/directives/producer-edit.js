@@ -1,15 +1,16 @@
 import producerEditFormTpl from 'scripts/liveblog-syndication/views/producer-edit-form.ng1';
 
-producerEdit.$inject = ['api', 'notify', 'lodash'];
+producerEdit.$inject = ['api', 'notify', 'lodash', 'adsUtilSevice'];
 
-export default function producerEdit(api, notify, _) {
+export default function producerEdit(api, notify, _, adsUtilSevice) {
     return {
         templateUrl: producerEditFormTpl,
         scope: {
             producer: '=',
             onsave: '&',
             oncancel: '&',
-            onupdate: '&'
+            onupdate: '&',
+            producers: '='
         },
         link: function(scope, elem) {
             scope.producerForm.attempted = false;
@@ -54,7 +55,7 @@ export default function producerEdit(api, notify, _) {
                 }
 
                 apiQuery.then((result) => {
-                    const successMsg = gettext('Producer saved.');
+                    var successMsg = gettext('Producer saved.');
 
                     notify.pop();
                     notify.success(successMsg);
@@ -62,7 +63,7 @@ export default function producerEdit(api, notify, _) {
                     scope.onsave({producer: result});
                 })
                     .catch((err) => {
-                        let errorMsg = gettext('An error has occurred. Please try again later.');
+                        var errorMsg = gettext('An error has occurred. Please try again later.');
 
                         if (err.data.hasOwnProperty('_error')) {
                             errorMsg = err.data._error.message;
@@ -70,7 +71,7 @@ export default function producerEdit(api, notify, _) {
 
                         if (err.data.hasOwnProperty('_issues')) {
                             Object.keys(err.data._issues).forEach((key) => {
-                                let issue = err.data._issues[key];
+                                var issue = err.data._issues[key];
 
                                 if (typeof issue === 'object') {
                                     if (issue.unique === true) {
@@ -89,6 +90,8 @@ export default function producerEdit(api, notify, _) {
             scope.cancel = function() {
                 scope.oncancel();
             };
+
+            scope.notValidName = adsUtilSevice.uniqueNameInItems;
         }
     };
 }

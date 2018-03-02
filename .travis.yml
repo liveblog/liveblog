@@ -19,6 +19,9 @@ env:
         - MAIL_USE_SSL=0
         - MAIL_DEBUG=1
         - MAIL_SUPPRESS_SEND=True
+        # Using travis encrypted keys didn't solve the issue with cross-forks Pull Requests
+        # So, we can use the test key taken from http://embed.ly/code site
+        - EMBEDLY_KEY=fd92ebbc52fc43fb98f69e50e7893c13
 
 services:
     - mongodb
@@ -49,6 +52,8 @@ cache:
     - $HOME/.npm
 
 before_install:
+    - nvm install 6.7.0
+    - nvm use 6.7.0
     - sudo apt-get -qq update --allow-unauthenticated
     - sudo apt-get purge -f elasticsearch
     - sudo apt-get install -t stable elasticsearch
@@ -85,6 +90,7 @@ script:
     - cd $TRAVIS_BUILD_DIR/server && flake8 ;
     - cd $TRAVIS_BUILD_DIR/client && npm test ;
     - cd $TRAVIS_BUILD_DIR/server
+    - python3 app_init_elastic.py ;
     - python3 manage.py app:initialize_data ;
     - python3 manage.py users:create -u admin -p admin -e 'admin@example.com' --admin ;
     - python3 manage.py register_local_themes ;

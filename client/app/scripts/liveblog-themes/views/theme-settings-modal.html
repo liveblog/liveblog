@@ -1,0 +1,68 @@
+<div sd-modal="" data-model="modalOpened" class="theme-settings-modal">
+    <div class="modal-header">        
+        <button class="close" ng-click="vm.closeModal()"><i class="icon-close-small"></i></button>
+        <h3>{{ 'Theme Settings' | translate }} : {{ vm.theme.label }}</h3>
+    </div>
+    <div class="modal-body">
+        <div ng-if="vm.optionsAreloading" translate>Options are loading...</div>
+        <form ng-if="!vm.optionsAreloading" name="vm.themeSettingsForm">
+            <div ng-repeat="option in vm.options" ng-if="vm.optionRequirementIsSatisfied(option)">
+                <div class="form-group">                    
+                    <div ng-switch="option.type">
+                        <div ng-switch-when="checkbox" class="pull-left">
+                            <input
+                                type="{{ option.type }}"
+                                name="{{ option.name }}"
+                                ng-model="vm.settings[option.name]" />
+                        </div>
+                        <div
+                            ng-switch-when="number"
+                            class="pull-right">
+                            <input
+                                type="{{ option.type }}"
+                                name="{{ option.name }}"
+                                ng-model="vm.settings[option.name]" />
+                        </div>
+                        <label ng-bind="option.label"></label>
+                        <div
+                            ng-switch-when="text"
+                            class="pull-right text-input">
+                            <input
+                                type="{{ option.type }}"
+                                name="{{ option.name }}"
+                                placeholder="{{ option.placeholder }}"
+                                ng-model="vm.settings[option.name]" />
+                        </div>
+                        <div
+                            ng-switch-when="textarea"
+                            class="pull-right text-input">
+                            <textarea
+                                rows="4"
+                                name="{{ option.name }}"
+                                ng-model="vm.settings[option.name]">
+                            </textarea>
+                        </div>
+                        <div ng-switch-when="select">
+                            <select class="form-control"
+                                    name="{{ option.name }}"
+                                    ng-model="vm.settings[option.name]"
+                                    ng-options="option.value as option.label for option in option.options">
+                            </select>
+                        </div>
+                        <div ng-switch-when="datetimeformat" class="datetimeformat">
+                            <lb-date-format options="vm.datetimeFormats" ng-model="vm.settings[option.name]" />
+                        </div>
+                    </div>
+                    <div ng-messages="vm.themeSettingsForm[option.name].$error" style="color:maroon" role="alert">
+                        <div ng-message="number" trans>You did not enter a number</div>
+                    </div>
+                    <p class="help-block" ng-bind-html="option.help | linkup"></p>
+                </div>
+            </div>            
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button ng-click="vm.submitSettings()" type="submit" class="btn btn--primary" ng-disabled="vm.themeSettingsForm.$invalid || !vm.themeSettingsForm.$dirty">Save</button>
+        <button ng-click="vm.submitSettings(true)" type="submit" class="btn btn-default">Done</button>
+    </div>
+</div>

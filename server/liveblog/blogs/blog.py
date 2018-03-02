@@ -1,6 +1,16 @@
 import pymongo
 from bson.objectid import ObjectId
 from superdesk import get_resource_service
+from html5lib.html5parser import ParseError
+from lxml.html.html5parser import fragments_fromstring, HTMLParser
+
+
+def is_valid_html(html):
+    try:
+        fragments_fromstring(html.encode('utf-8'), parser=HTMLParser(strict=True))
+    except ParseError:
+        return False
+    return True
 
 
 class Blog:
@@ -28,13 +38,16 @@ class Blog:
         self._blog = blog
         self._posts = get_resource_service('client_posts')
 
-    def _posts_lookup(self, sticky=None, highlight=None, all=False):
+    # @TODO: refactor params, deleted was introduced as a hot fix.
+    def _posts_lookup(self, sticky=None, highlight=None, all=False, deleted=False):
         filters = [
             {'blog': {'$eq': self._blog['_id']}}
         ]
         if not all:
             filters.append({'post_status': {'$eq': 'open'}})
-            filters.append({'deleted': {'$eq': False}})
+            if not deleted:
+                filters.append({'deleted': {'$eq': False}})
+
         if sticky:
             filters.append({'sticky': {'$eq': True}})
         else:
@@ -51,10 +64,10 @@ class Blog:
             return self.default_order_by, self.default_sort
 
     def posts(self, sticky=None, highlight=None, ordering=None, page=default_page, limit=default_page_limit, wrap=False,
-              all=False):
+              all=False, deleted=False):
         order_by, sort = self.get_ordering(ordering or self.default_ordering)
         # Fetch total.
-        results = self._posts.find(self._posts_lookup(sticky, highlight, all))
+        results = self._posts.find(self._posts_lookup(sticky, highlight, all, deleted))
         total = results.count()
 
         # Get sorting direction.
@@ -75,6 +88,13 @@ class Blog:
                 if group['id'] == 'main':
                     for ref in group['refs']:
                         ref['item'] = get_resource_service('archive').find_one(req=None, _id=ref['residRef'])
+                        # Check the original text html markup.
+                        original_text = ref['item'].get('text')
+                        div_wrapped = '<div>{}</div>'.format(original_text)
+                        if not is_valid_html(original_text) and is_valid_html(div_wrapped):
+                            original_text = div_wrapped
+                        ref['item']['text'] = original_text
+
             posts.append(doc)
 
         # Enrich documents

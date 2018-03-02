@@ -203,7 +203,10 @@ vm.getLatestUpdate = function(api_response) {
  */
 vm.isTimelineEnd = function(api_response) {
   var itemsInView = this.vm._items.length + settings.postsPerPage;
-  return api_response._meta.total <= itemsInView;
+  // number of post loaded on top as updates
+  var extraPosts = itemsInView % settings.postsPerPage;
+ 
+  return api_response._meta.total <= itemsInView - extraPosts;
 };
 
 /**
@@ -246,7 +249,7 @@ vm.getQuery = function(opts) {
     },
     "sort": [
       {
-        "_updated": {"order": "desc"}
+        "published_date": {order: 'desc', missing: '_last', unmapped_type: 'long'}
       }
     ]
   };
@@ -273,7 +276,7 @@ vm.getQuery = function(opts) {
   }
 
   if (opts.sort === "ascending") {
-    query.sort[0]._updated.order = "asc";
+    query.sort[0].published_date.order = "asc";
   } else if (opts.sort === "editorial") {
     query.sort = [
       {

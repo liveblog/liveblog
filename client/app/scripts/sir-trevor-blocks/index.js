@@ -36,9 +36,11 @@ function createCaretPlacer(atStart) {
     };
 }
 
-// const placeCaretAtStart = createCaretPlacer(true);
-const placeCaretAtEnd = createCaretPlacer(false);
-const uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
+var placeCaretAtStart = createCaretPlacer(true);
+var placeCaretAtEnd = createCaretPlacer(false);
+var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
+var socialEmbedRegex = '(iframe|blockquote)+(?:.|\\n)*(youtube\\.com\\/embed|facebook\\.com'
+    + '\\/plugins|instagram\\.com\\/p\\/|twitter\\.com\\/.*\\/status)(?:.|\\n)*(iframe|blockquote)';
 
 function fixDataEmbed(data) {
     if (data.html) {
@@ -90,6 +92,34 @@ function isURI(string) {
     return pattern.test(string);
 }
 
+function replaceEmbedWithUrl(string) {
+    var generalPattern = new RegExp(socialEmbedRegex, 'i');
+    var youtubePattern = new RegExp('(?:https?:\\/\\/)?(?:www\\.)?(?:youtu\\.be\\/|youtube\\.com\\/'
+        + '(?:embed\\/|v\\/|watch\\?v=|watch\\?.+&v=))(\\w+)', 'i');
+    var facebookPattern = /(?:post\.php|video\.php)\?href=(https?(\w|%|\.)+)/i;
+    var instagramPattern = /(https?:\/\/(?:www)?\.?instagram\.com\/p\/(?:\w+.)+\/)/i;
+    var twitterPattern = /(https?:\/\/(?:www)?\.?twitter\.com\/\w+\/status\/\d+)/i;
+    var m;
+
+    // checking if string contains any of the "big four" embeds
+    if (generalPattern.test(string)) {
+        if ((m = youtubePattern.exec(string)) !== null){
+            return 'https://www.youtube.com/watch?v='+m[1];
+        }
+        else if ((m = facebookPattern.exec(string)) !== null) {
+            return decodeURIComponent(m[1]);
+        }
+        else if ((m = instagramPattern.exec(string)) !== null) {
+            return m[1];
+        }
+        else if ((m = twitterPattern.exec(string)) !== null) {
+            return m[1];
+        }
+    }
+
+    return string;
+}
+
 angular
     .module('SirTrevorBlocks', [])
     .config(['SirTrevorProvider', 'config', function(SirTrevor, config) {
@@ -124,8 +154,7 @@ angular
                 ].join('\n');
             },
             onBlockRender: function() {
-                const self = this;
-
+                var that = this;
                 // create and trigger a 'change' event for the $editor which is a contenteditable
                 this.$editor.filter('[contenteditable]').on('focus', function(ev) {
                     const $this = $(this);
@@ -146,7 +175,6 @@ angular
                     let input = $(this)
                         .text()
                         .trim();
-
                     // exit if the input field is empty
                     if (_.isEmpty(input)) {
                         self.getOptions().disableSubmit(true);
@@ -156,7 +184,8 @@ angular
                     // reset error messages
                     self.resetMessages();
                     // start a loader over the block, it will be stopped in the loadData function
-                    self.loading();
+                    that.loading();
+                    input = replaceEmbedWithUrl(input);
                     input = fixSecureEmbed(input);
                     // if the input is an url, use embed services
                     if (isURI(input)) {
@@ -288,7 +317,15 @@ angular
                     html.find('.credit-preview').html(data.credit);
                 }
 
-                fixSocial(html, data);
+                // remove link for some provider (included in the card)
+                if (['Facebook', 'Youtube', 'Twitter', 'Soundcloud'].indexOf(data.provider_name) > -1) {
+                    html.find('.link-preview').remove();
+                }
+                // special case for twitter
+                if (data.provider_name === 'Twitter') {
+                    // remove credit and title fields (duplicated with rendered card)
+                    html.find('.credit-preview, .title-preview').remove();
+                }
                 // retrieve the final html code
                 let htmlToReturn = '';
 
@@ -299,10 +336,9 @@ angular
             },
             // render a card from data, and make it editable
             loadData: function(dataParam) {
-                const self = this;
+                const that = this;
                 const data = _.has(dataParam, 'meta') ? dataParam.meta : dataParam;
-
-                self.data = fixDataEmbed(data);
+                that.data = fixDataEmbed(data);
                 // hide the embed input field, render the card and add it to the DOM
                 self.$('.embed-input')
                     .addClass('hidden')
@@ -477,8 +513,8 @@ angular
         };
 
         SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
-            const self = this;
-            const placeHolderText = window.gettext('Start writing here…');
+                var that = this;
+                var placeHolderText = window.gettext('Write here (or press Ctrl+Shift+V to paste unformatted text)...');
 
             // add placeholder class and placeholder text
             this.$editor.attr('placeholder', placeHolderText).addClass('st-placeholder');
@@ -546,7 +582,7 @@ angular
                 // use paragraph tag `p` instead of `div` witch isn't supported.
                 val = val.replace(/<(\/)?div\b[^\/>]*>/ig, '<$1p>');
                 val = val.replace(/<(br|p|b|i|strike|ul|ol|li|a)\b[^\/>]+>/ig, '<$1>');
-                val = val.replace(/<(?!\s*\/?(br|p|b|i|strike|ul|ol|li|a)\b)[^>]+>/ig, '');
+                val = val.replace(/<(?!\s*\/?(br|p|b|i|strike|ul|ol|li|a|h4|h5)\b)[^>]+>/ig, '');
             }
             input.html(val);
             placeCaretAtEnd(input.get(0));

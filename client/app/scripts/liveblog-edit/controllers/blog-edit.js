@@ -42,7 +42,9 @@ BlogEditController.$inject = [
     'blogSecurityService',
     'themesService',
     '$templateCache',
-    '$timeout'
+    '$timeout',
+    '$rootScope',
+    '$location'
 ];
 
 export default function BlogEditController(
@@ -68,22 +70,28 @@ export default function BlogEditController(
     blogSecurityService,
     themesService,
     $templateCache,
-    $timeout
+    $timeout,
+    $rootScope,
+    $location
 ) {
-    const self = this;
+    var self = this;
     // @TODO: remove this when theme at blog level.
     // check the theme setting for comments.
 
     // init with empty vector
     $scope.freetypesData = {}; $scope.freetypeControl = {}; $scope.validation = {};
+    $scope.validation.imageUploaded = true;
 
     if (blog.blog_preferences.theme) {
         themesService.get(blog.blog_preferences.theme).then((themes) => {
             blog.blog_preferences.theme = themes[0];
         });
     }
-
+    const emptyPRegex = /<p><br\/?><\/p>/g;
+    const emptyDivRegex = /<div><br\/?><\/div>/g;
+    const targetIconRegex = /target\s*=\s*"\<\/?i\>blank\"/g;
     // start listening for unread posts.
+
     unreadPostsService.startListening();
     // return the list of items from the editor
     function getItemsFromEditor() {
@@ -91,7 +99,10 @@ export default function BlogEditController(
             // go with the 'classic' editor items
             return _.map(self.editor.get(), (block) => ({
                 group_type: 'default',
-                text: block.text,
+                text: block.text
+                    .replace(emptyPRegex, '<br/>')
+                    .replace(emptyDivRegex, '<br/>')
+                    .replace(targetIconRegex, 'target="_blank"'),
                 meta: block.meta,
                 item_type: block.type
             }));
@@ -121,7 +132,7 @@ export default function BlogEditController(
     // save the 'keep scoarers' if needed
     function saveScorers() {
         if ($scope.currentBlog.blog_preferences) {
-            const bp = angular.copy($scope.currentBlog.blog_preferences);
+            var bp = angular.copy($scope.currentBlog.blog_preferences);
 
             bp.last_scorecard = $scope.freetypesData;
             return blogService.update($scope.currentBlog, {blog_preferences: bp});
@@ -129,7 +140,7 @@ export default function BlogEditController(
 
         return blogService.get($scope.blog._id).then((currentBlog) => {
             $scope.currentBlog = currentBlog;
-            const bp = angular.copy($scope.currentBlog.blog_preferences);
+            var bp = angular.copy($scope.currentBlog.blog_preferences);
 
             bp.last_scorecard = $scope.freetypesData;
             return blogService.update($scope.currentBlog, {blog_preferences: bp});
@@ -138,7 +149,7 @@ export default function BlogEditController(
 
     // determine if the loaded item is freetype
     function isItemFreetype(itemType) {
-        const regularItemTypes = ['text', 'image', 'embed', 'quote', 'comment'];
+        var regularItemTypes = ['text', 'image', 'embed', 'quote', 'comment'];
 
         if (regularItemTypes.indexOf(itemType) !== -1) {
             return false;
@@ -157,15 +168,19 @@ export default function BlogEditController(
             return $scope.freetypeControl.isClean();
         }
 
-        const areAllBlocksEmpty = _.every(self.editor.blocks, (block) => block.isEmpty());
+        if (!self.editor) {
+            return true;
+        }
 
-        return areAllBlocksEmpty || !$scope.isCurrentPostUnsaved();
+        var areallBlocksempty = _.every(self.editor.blocks, (block) => block.isEmpty());
+
+        return areallBlocksempty || !$scope.isCurrentPostUnsaved();
     }
 
     // ask in a modalbox if the user is sure to want to overwrite editor.
     // call the callback if user say yes or if editor is empty
     function doOrAskBeforeIfEditorIsNotEmpty() {
-        const deferred = $q.defer();
+        var deferred = $q.defer();
 
         if (isEditorClean()) {
             deferred.resolve();
@@ -188,15 +203,29 @@ export default function BlogEditController(
         }
     });
 
+    $scope.$on('posts', (event, data) => {
+        const edited = $scope.currentPost && data.posts.find((post) => post._id === $scope.currentPost._id);
+
+        if (edited) {
+            $scope.currentPost = {...$scope.currentPost, ...edited};
+        }
+    });
+
     // remove and clean every items from the editor
-    function cleanEditor(actionDisabled = true) {
+    function cleanEditor(actionDisabled) {
+        var actionDisable = actionDisabled;
+
+        if (!self.editor) {
+            return;
+        }
         $scope.enableEditor = false;
 
+        actionDisable = typeof actionDisable === 'boolean' ? actionDisable : true;
         if ($scope.freetypeControl.reset) {
             $scope.freetypeControl.reset();
         }
         self.editor.reinitialize();
-        $scope.actionDisabled = actionDisabled;
+        $scope.actionDisabled = actionDisable;
         $scope.currentPost = undefined;
         $scope.sticky = false;
         $scope.highlight = false;
@@ -216,7 +245,7 @@ export default function BlogEditController(
     // retrieve the freetypes
     function getFreetypes() {
         // these are the freetypes defined by the user with the CRUD form
-        const userFt = api.freetypes.query().then((data) => data._items);
+        var userFt = api.freetypes.query().then((data) => data._items);
 
         const scorecards = {
             name: 'Scorecard',
@@ -282,6 +311,10 @@ export default function BlogEditController(
         selectPostType: function(postType) {
             doOrAskBeforeIfEditorIsNotEmpty().then(() => {
                 cleanEditor();
+
+                // see https://dev.sourcefabric.org/browse/LBSD-2009 for reference
+                $rootScope.$emit('freetypeScopeDestroy');
+
                 $scope.selectedPostType = postType;
                 $scope.toggleTypePostDialog();
                 if (isPostScorecard()) {
@@ -297,8 +330,14 @@ export default function BlogEditController(
                 }
             });
         },
+        backToBlogsList: function() {
+            doOrAskBeforeIfEditorIsNotEmpty().then(() => {
+                cleanEditor();
+                $location.url('/liveblog');
+            });
+        },
         onEditorChanges: function() {
-            const el = $(this).find('.st-text-block');
+            var el = $(this).find('.st-text-block');
 
             if (el.length === 0) {
                 return;
@@ -352,19 +391,20 @@ export default function BlogEditController(
                     delay = 5;
                 }
                 $timeout(() => {
-                    const items = post.groups[1].refs;
+                    var items = post.groups[1].refs;
 
-                    items.forEach((ref) => {
-                        const item = ref.item;
+                    items.forEach((item) => {
+                        var itm = item;
 
-                        if (angular.isDefined(item)) {
-                            if (isItemFreetype(item.item_type)) {
+                        itm = itm.item;
+                        if (angular.isDefined(itm)) {
+                            if (isItemFreetype(itm.item_type)) {
                                 // post it freetype so we need to reder it
-                                loadFreetypeItem(item);
+                                loadFreetypeItem(itm);
                             } else {
-                                const data = _.extend(item, item.meta);
+                                var data = _.extend(itm, itm.meta);
 
-                                self.editor.createBlock(item.item_type, data);
+                                self.editor.createBlock(itm.item_type, data);
                             }
                         }
                     });
@@ -453,7 +493,7 @@ export default function BlogEditController(
             $scope.panelState = panel;
             $scope.syndId = syndId;
             // update url for deeplinking
-            const params = {panel: $scope.panelState, syndId: null};
+            var params = {panel: $scope.panelState, syndId: null};
 
             if (syndId) {
                 params.syndId = syndId;
@@ -497,7 +537,7 @@ export default function BlogEditController(
                             }
                             $scope.actionPending = false;
                             // used in `SirTrevor.Blocks.Image` to fill in the block content.
-                            const mediaMeta = {
+                            var mediaMeta = {
                                 _info: config.server.url + response.data._links.self.href,
                                 _id: response.data._id,
                                 _url: response.data.renditions.thumbnail.href,
@@ -526,13 +566,11 @@ export default function BlogEditController(
                             throw response.data._issues;
                         }
 
-                        return {
-                            media: {
-                                _id: response.data._id,
-                                _url: response.data.renditions.thumbnail.href,
-                                renditions: response.data.renditions
-                            }
-                        };
+                        return {media: {
+                            _id: response.data._id,
+                            _url: response.data.renditions.thumbnail.href,
+                            renditions: response.data.renditions
+                        }};
                     });
             }
         },
@@ -579,8 +617,8 @@ export default function BlogEditController(
         }
     });
     // initalize the view with the editor panel
-    const panel = angular.isDefined($routeParams.panel) ? $routeParams.panel : 'editor';
-    const syndId = angular.isDefined($routeParams.syndId) ? $routeParams.syndId : null;
+    var panel = angular.isDefined($routeParams.panel) ? $routeParams.panel : 'editor',
+        syndId = angular.isDefined($routeParams.syndId) ? $routeParams.syndId : null;
 
     // Here we define an object instead of simple array.
     // because this variable needs to be update in the ingest-panel directive

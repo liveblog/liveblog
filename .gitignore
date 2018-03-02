@@ -66,6 +66,8 @@ dump.rdb
 # PyCharm idea folders
 .idea/
 
+.editor-settings
+
 # Themes folder
 server/liveblog/themes/themes_assets/*
 !server/liveblog/themes/themes_assets/angular
@@ -90,5 +92,4 @@ server/test-env.local
 .jinja2
 
 # Theme uploads
-themes/*
-
+server/themes/

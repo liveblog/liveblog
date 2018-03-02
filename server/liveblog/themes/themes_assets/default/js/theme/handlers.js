@@ -38,6 +38,7 @@ var showPendings = (e) => {
     pending.classList.toggle('mod--displaynone', false);
   });
   view.checkPending();
+  view.attachSlideshow();
 };
 
 var buttons = {
@@ -46,6 +47,7 @@ var buttons = {
       viewmodel.loadPostsPage()
         .then(view.renderPosts)
         .then(view.displayNewPosts)
+        .then(view.updateTimestamps)
         .catch(catchError);
     },
     

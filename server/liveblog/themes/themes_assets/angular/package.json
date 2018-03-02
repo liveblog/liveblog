@@ -1,7 +1,11 @@
 {
-  "name": "angular",
+  "name": "lb-theme-angular",
   "description": "Angular Liveblog Toolkit",
+  "version": "3.3.4",
   "main": "main.js",
+  "scripts": {
+    "build": "gulp build"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/liveblog/lb-theme-angular.git"

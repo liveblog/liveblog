@@ -1,24 +1,24 @@
-{% if ref.item.meta.provider_name == 'YouTube' %}
+{% if ref.item.meta.provider_name == 'YouTube' and ref.item.meta.original_id %}
   <amp-youtube
     data-videoid="{{ ref.item.meta.original_id }}"
     layout="responsive"
     width="480" height="270">
   </amp-youtube>
-{% elif ref.item.meta.provider_name == 'Facebook' %}
+{% elif ref.item.meta.provider_name == 'Facebook' and ref.item.meta.original_url %}
   <amp-facebook width="480" height="270"
     layout="responsive"
     data-href="{{ ref.item.meta.original_url }}">
   </amp-facebook>
-{% elif ref.item.meta.provider_name == 'Twitter' %}
+{% elif ref.item.meta.provider_name == 'Twitter' and ref.item.meta.original_id %}
   <amp-twitter width="480" height="270"
     layout="responsive"
     data-tweetid="{{ ref.item.meta.original_id }}">
   </amp-twitter>
-{% elif ref.item.meta.provider_name == 'Instagram' %}
+{% elif ref.item.meta.provider_name == 'Instagram' and ref.item.meta.original_id %}
   <amp-instagram
     data-shortcode="{{ ref.item.meta.original_id }}"
-    width="480"
-    height="270"
+    width="1"
+    height="1"
     layout="responsive">
   </amp-instagram>
 {% else %}
@@ -33,8 +33,7 @@
     </figure>
   {% endif %}
   {% if ref.item.meta.html %}
-    {{ ref.item.meta.html | replace("<iframe","<amp-iframe sandbox='allow-scripts allow-same-origin'
-    layout='responsive'") | replace("</iframe>", "<p placeholder>{{  translate('Loading') }}</p></amp-iframe>") | safe}}
+    {{ ref.item.meta.html | ampify | safe}}
   {% endif %}
   {% if ref.item.meta.title %}
     <div class="item--embed__title" >

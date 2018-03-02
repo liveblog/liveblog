@@ -11,7 +11,8 @@ BlogListController.$inject = [
     'notify',
     'config',
     'urls',
-    'moment'
+    'moment',
+    'modal'
 ];
 
 export default function BlogListController(
@@ -27,7 +28,8 @@ export default function BlogListController(
     notify,
     config,
     urls,
-    moment
+    moment,
+    modal
 ) {
     $scope.maxResults = 25;
     $scope.states = [
@@ -163,7 +165,7 @@ export default function BlogListController(
                     if (response.data._status === 'ERR') {
                         return;
                     }
-                    const pictureUrl = response.data.renditions.viewImage.href;
+                    var pictureUrl = response.data.renditions.viewImage.href;
 
                     $scope.newBlog.picture_url = pictureUrl;
                     $scope.newBlog.picture = response.data._id;
@@ -301,6 +303,13 @@ export default function BlogListController(
 
     $scope.removeMember = function(user) {
         $scope.blogMembers.splice($scope.blogMembers.indexOf(user), 1);
+    };
+
+    $scope.removeImage = function() {
+        modal.confirm(gettext('Are you sure you want to remove the blog image?')).then(() => {
+            $scope.preview.url = '';
+            $scope.progress.width = 0;
+        });
     };
 
     $scope.hasReachedMembersLimit = function() {

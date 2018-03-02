@@ -3,7 +3,7 @@
 [Fork](https://github.com/liveblog/liveblog) •
 [License](https://github.com/liveblog/liveblog/blob/master/LICENSE) •
 [Documentation](http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/) •
-*Version 3.3.3*
+*Version 3.3.7*
 
 [![Build Status](https://travis-ci.org/liveblog/liveblog.svg?branch=master)](https://travis-ci.org/liveblog/liveblog)
 
@@ -11,9 +11,9 @@
 
 ### How to install Liveblog locally (recommended)
 
-Here I'm assuming you are running Ubuntu Linux 16.04 
+Here I'm assuming you are running Ubuntu Linux 16.04
 
-#### Install the dependencies
+#### Install the dependencies (for mac os users [follow this](https://github.com/liveblog/liveblog/blob/master/README-macos.md))
 
 First we need to install the necessary dependencies:
 
