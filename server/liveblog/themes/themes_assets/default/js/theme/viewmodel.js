@@ -205,7 +205,7 @@ vm.isTimelineEnd = function(api_response) {
   var itemsInView = this.vm._items.length + settings.postsPerPage;
   // number of post loaded on top as updates
   var extraPosts = itemsInView % settings.postsPerPage;
- 
+
   return api_response._meta.total <= itemsInView - extraPosts;
 };
 
@@ -219,7 +219,8 @@ vm.init = function() {
 
   setInterval(() => {
     vm.loadPosts({fromDate: latestUpdate})
-      .then(view.renderPosts);
+      .then(view.renderPosts)
+      .then(view.adsManager.refreshAds);
   }, 10*1000);
 
   //return this.vm.latestUpdate;
