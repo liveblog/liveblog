@@ -254,17 +254,27 @@ liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session', '$templa
             <header class="title" translate>Notifications</header>
             <div class="notification-list">
                 <ul>
-                    <li ng-repeat="notification in notifications._items track by notification._id" ng-class="{unread: notification._unread}" sd-mark-as-read>
+                    <li ng-repeat="notification in notifications._items track by notification._id"
+                        ng-class="{unread: notification._unread}" sd-mark-as-read>
                         <figure class="avatar">
                             <img sd-user-avatar data-user="notification.user">
                         </figure>
                         <div class="content" ng-if="notification.name == 'notify'">
                             <time sd-datetime data-date="notification._created"></time>
-                            <p class="text"><b>{{:: notification.user_name }}</b> <span translate>commented on</span> <i><a ng-href="#/authoring/{{ notification.item }}?_id={{ notification.item }}&comments={{ notification.data.comment_id }}" title="{{ notification.item_slugline }}">{{ :: notification.item_slugline }}</a></i>:<br>{{:: notification.data.comment }}</p>
+                            <p class="text"><b>{{:: notification.user_name }}</b>
+                            <span translate>commented on</span>
+<i><a
+ng-href="#/authoring/{{ notification.item }}?_id={{ notification.item }}&comments={{ notification.data.comment_id }}"
+title="{{ notification.item_slugline }}">
+                                    {{ :: notification.item_slugline }}
+</a></i>
+                            :<br>{{:: notification.data.comment }}</p>
                         </div>
                         <div class="content" ng-if="notification.name == 'user:mention'">
                             <time sd-datetime data-date="notification._created"></time>
-                            <p class="text"><b>{{:: notification.user_name }}</b> <span translate>mentioned you</span> <i>
+                            <p class="text">
+                                <b>{{:: notification.user_name }}</b>
+                                <span translate>mentioned you</span> <i>
                                 <a title="{{ notification.item_slugline }}" ng-click="openArticle(notification)">
                                     {{:: notification.item_slugline}}
                                 </a></i>:<br>{{:: notification.data.comment }}</p>
@@ -275,16 +285,21 @@ liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session', '$templa
                                 <b>{{:: notification.user_name }}</b>
                                 <span translate>added you as a member to </span>
                                 <i>
-                                    <a ng-href="#/liveblog/edit/{{ notification.item }}?panel=editor" title="{{:: notification.data.item_slugline }}">
-                                    {{:: notification.data.item_slugline }}
-                                    </a>
+<a ng-href="#/liveblog/edit/{{ notification.item }}?panel=editor" title="{{:: notification.data.item_slugline }}">
+{{:: notification.data.item_slugline }}
+</a>
                                 </i>
                             </p>
                         </div>
-                        <div class="content" ng-if="notification.name != 'notify' && notification.name != 'user:mention' && notification.name != 'liveblog:add'"
+                        <div class="content"
+                            ng-if="notification.name != 'notify' &&
+                                    notification.name != 'user:mention' &&
+                                    notification.name != 'liveblog:add'"
                             ng-click="onNotificationClick(notification)">
                             <time sd-datetime data-date="notification._created"></time>
-                            <p class="text"><b>{{:: notification.user_name || "System" }}</b>: <span sd-activity-message data-activity="notification"></span></p>
+                            <p class="text">
+                                <b>{{:: notification.user_name || "System" }}</b>:
+                                <span sd-activity-message data-activity="notification"></span></p>
                         </div>
                     </li>
                     <div class="info" ng-show="notifications._items.length === 0" translate>All good so far.</div>
