@@ -40,7 +40,10 @@ export default function consumerList(api, notify, modal, $http, config) {
             scope.updateApiKey = function(e, consumer) {
                 e.stopPropagation();
 
-                modal.confirm(gettext('Are you sure you want to refresh the api key?'))
+                modal.confirm(gettext('When refreshing the API key, please be\n' +
+                    'aware that syndication will fail, until the new key has been\n' +
+                    'copied to the consumer instance! Are you sure you want to refresh\n' +
+                    'the API key?'))
                     .then(() => api.save('consumers', consumer, {api_key: ''}))
                     .then((result) => {
                         notify.pop();
