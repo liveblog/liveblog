@@ -112,9 +112,9 @@ def ampify(html):
             height=height,
             src=src.group('src') if src else '')
     if re.search('players.brightcove.net/\d*/\w*([a-zA-Z0-9\-]*)_\w*\/index\.min\.js', html):
-        account = re.search(r'data-account\s*=\s*"([^\"]+)"', html)[0].split('=')[1]
-        player = re.search(r'data-player\s*=\s*"([^\"]+)"', html)[0].split('=')[1]
-        embed = re.search(r'data-embed\s*=\s*"([^\"]+)"', html)[0].split('=')[1]
+        account = re.search(r'account\s*=\s*"(?P<account>[^\"]+)"', html)
+        player = re.search(r'player\s*=\s*"(?P<player>[^\"]+)"', html)
+        embed = re.search(r'embed\s*=\s*"(?P<embed>[^\"]+)"', html)
         videoId = re.search(r'data-video-id\s*=\s*"([^\"]+)"', html)[0].split('=')[1]
 
         return '''
@@ -126,5 +126,9 @@ def ampify(html):
     layout="responsive"
     width="480" height="270">
 </amp-brightcove>
-'''.format(account, player, embed, videoId)
+'''.format(
+            account.group('account') if account else '',
+            player.group('player') if player else '',
+            embed.group('embed') if embed else '',
+            videoId)
     return html
