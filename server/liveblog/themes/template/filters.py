@@ -111,4 +111,20 @@ def ampify(html):
             width=width,
             height=height,
             src=src.group('src') if src else '')
+    if re.search('<\S*video', html, re.IGNORECASE):
+        account = re.search(r'data-account\s*=\s*"([^\"]+)"', html)[0].split('=')[1]
+        player = re.search(r'data-player\s*=\s*"([^\"]+)"', html)[0].split('=')[1]
+        embed = re.search(r'data-embed\s*=\s*"([^\"]+)"', html)[0].split('=')[1]
+        videoId = re.search(r'data-video-id\s*=\s*"([^\"]+)"', html)[0].split('=')[1]
+
+        return '''
+<amp-brightcove
+    data-account={}
+    data-player={}
+    data-embed={}
+    data-video-id={}
+    layout="responsive"
+    width="480" height="270">
+</amp-brightcove>
+'''.format(account, player, embed, videoId)
     return html
