@@ -74,6 +74,7 @@ server/liveblog/themes/themes_assets/*
 !server/liveblog/themes/themes_assets/classic
 !server/liveblog/themes/themes_assets/default
 !server/liveblog/themes/themes_assets/amp
+!server/liveblog/themes/themes_assets/base
 
 # Vim stuff
 *.swo

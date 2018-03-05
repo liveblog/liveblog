@@ -1,0 +1,81 @@
+@import "globals.less";
+
+.lb-timeline {
+  .lb-slideshow {
+    margin-left: 60px;
+    position: relative;
+    @media @medium {
+      margin-left: 0;
+    }
+    &_frame {
+      position: relative;
+      font-size: 0;
+      line-height: 0;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    &_slides {
+      display: inline-block;
+      > * {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+        margin-left: 0;
+        overflow: hidden;
+        margin-bottom: 0;
+        vertical-align: top;
+      
+        figcaption {
+          font-size: 0.8rem;
+          line-height: 2em;
+          background: rgba(255,255,255,0.8);
+          white-space: normal;
+        }
+        
+      }
+    }
+
+    &_imageContainer {
+      height: 380px;
+      width: 100%;
+      display: flex;
+      img {
+        object-fit: cover;
+        display: block;
+        margin: 0 auto;
+        box-shadow: none !important;
+        pointer-events: none;
+      }
+    }
+
+    &_prev, &_next {
+      position: absolute;
+      top: 50%;
+      margin-top: -25px;
+      display: block;
+      cursor: pointer;
+      background-color: rgba(255,255,255, 0.8);
+      line-height: 0;
+      opacity: .7;
+      &:hover{
+        opacity:1;
+      }
+    }
+
+    &_next {
+      right: 0;
+    }
+
+    &_prev {
+      left: 0;
+    }
+
+    &_next svg, &_prev svg {
+      width: 25px;
+    }
+  }
+  .portraitimage .lb-slideshow_imageContainer img {
+    object-fit: contain;
+  }
+}
