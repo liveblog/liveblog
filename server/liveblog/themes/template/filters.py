@@ -111,7 +111,7 @@ def ampify(html):
             width=width,
             height=height,
             src=src.group('src') if src else '')
-    if re.search('<\S*video', html, re.IGNORECASE):
+    if re.search('players.brightcove.net/\d*/\w*([a-zA-Z0-9\-]*)_\w*\/index\.min\.js', html):
         account = re.search(r'data-account\s*=\s*"([^\"]+)"', html)[0].split('=')[1]
         player = re.search(r'data-player\s*=\s*"([^\"]+)"', html)[0].split('=')[1]
         embed = re.search(r'data-embed\s*=\s*"([^\"]+)"', html)[0].split('=')[1]
