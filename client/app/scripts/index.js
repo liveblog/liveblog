@@ -259,6 +259,7 @@ liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session', '$templa
                         <figure class="avatar">
                             <img sd-user-avatar data-user="notification.user">
                         </figure>
+                        {{notification}}
                         <div class="content" ng-if="notification.name == 'notify'">
                             <time sd-datetime data-date="notification._created"></time>
                             <p class="text"><b>{{:: notification.user_name }}</b>
@@ -279,6 +280,18 @@ title="{{ notification.item_slugline }}">
                                     {{:: notification.item_slugline}}
                                 </a></i>:<br>{{:: notification.data.comment }}</p>
                         </div>
+                        <div class="content" ng-if="notification.name == 'liveblog:request'">
+                            <time sd-datetime data-date="notification._created"></time>
+                            <p class="text">
+                                <b>{{:: notification.user_name }}</b>
+                                <span translate>request access to </span>
+                                <i>
+<a ng-href="#/liveblog/edit/{{ notification.item }}?panel=editor" title="{{:: notification.data.item_slugline }}">
+{{:: notification.data.item_slugline }}
+</a>
+                                </i>
+                            </p>
+                        </div>
                         <div class="content" ng-if="notification.name == 'liveblog:add'">
                             <time sd-datetime data-date="notification._created"></time>
                             <p class="text">
@@ -294,7 +307,7 @@ title="{{ notification.item_slugline }}">
                         <div class="content"
                             ng-if="notification.name != 'notify' &&
                                     notification.name != 'user:mention' &&
-                                    notification.name != 'liveblog:add'"
+                                    notification.name.indexOf('liveblog') == -1"
                             ng-click="onNotificationClick(notification)">
                             <time sd-datetime data-date="notification._created"></time>
                             <p class="text">

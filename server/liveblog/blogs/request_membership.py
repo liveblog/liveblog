@@ -30,14 +30,16 @@ def notify_the_owner(doc, origin):
     if not get_user():
         logger.info('there is no logged in user so no membership is allowed')
     else:
-        owner_list = []
         owner = doc.get('original_creator')
-        if isinstance(owner, ObjectId):
-            owner_list.append(owner)
-        else:
-            owner_list.append(str(owner))
-        add_activity('notify', 'one user requested liveblog membership', resource=None, item=doc, notify=owner_list)
-        send_email_to_owner(doc, owner_list, origin)
+        blog = get_resource_service('blogs').find_one(req=None, _id=doc.get('blog'))
+        owner_list = [blog.get('original_creator')]
+        add_activity(
+            'liveblog:request', 'one user requested liveblog membership',
+            resource=None,
+            item=blog,
+            item_slugline=blog.get('title'),
+            notify=owner_list)
+        send_email_to_owner(doc, [owner], origin)
 
 
 def send_email_to_owner(doc, owner, origin):
