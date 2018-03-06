@@ -141,7 +141,7 @@ describe('Blogs list', function() {
             blogs.title.sendKeys(newBlog.title);
             blogs.description.sendKeys(newBlog.description);
             blogs.createBlogNext();
-            blogs.team.searchUser('s')
+            blogs.team.searchUser('g')
                     .waitChooseUser()
                     .changeToUser();
             blogs.createBlogCreate().openSettings().then(function(settingsPage) {
