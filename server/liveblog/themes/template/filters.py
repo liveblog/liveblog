@@ -71,7 +71,7 @@ def addten(date):
 
 def ampify(html):
     brightcove_re_array = [
-        'https?://(www\.)?players\.brightcove\.net/',
+        '(http[s:]*)?//(www\.)?players\.brightcove\.net/',
         '(?P<account>\d*)/',
         '(?P<player>[a-zA-Z0-9\-]*)',
         '_',
