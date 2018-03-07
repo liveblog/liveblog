@@ -27,7 +27,6 @@ export default function imageBlock(SirTrevor, config) {
         descriptionPlaceholder: window.gettext('Add a description'),
         authorPlaceholder: window.gettext('Add author / photographer'),
         loadData: function(data) {
-            this.original_data = data;
             let that = this, fileUrl = '';
 
             if (typeof data.file !== 'undefined') {
@@ -235,7 +234,7 @@ export default function imageBlock(SirTrevor, config) {
                 media: this.getData().media,
                 caption: this.$('[name=caption]').text(),
                 credit: this.$('[name=credit]').text(),
-                syndicated_creator: this.original_data && this.original_data.syndicated_creator
+                syndicated_creator: this.getData().syndicated_creator
             };
         },
         toHTML: function() {
