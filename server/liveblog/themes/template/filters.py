@@ -115,8 +115,7 @@ def ampify(html):
         account = re.search(r'account\s*=\s*"(?P<account>[^\"]+)"', html)
         player = re.search(r'player\s*=\s*"(?P<player>[^\"]+)"', html)
         embed = re.search(r'embed\s*=\s*"(?P<embed>[^\"]+)"', html)
-        video = re.search(r'data-video-id\s*=\s*"([^\"]+)"', html)
-        videoId = video[0].split('=')[1] if video else ''
+        videoId = re.search(r'data-video-id\s*=\s*"([^\"]+)"', html)
 
         return '''
 <amp-brightcove
@@ -131,5 +130,5 @@ def ampify(html):
             account.group('account') if account else '',
             player.group('player') if player else '',
             embed.group('embed') if embed else '',
-            videoId)
+            videoId.group(1) if videoId else '')
     return html
