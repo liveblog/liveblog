@@ -127,7 +127,9 @@ angular
             });
         };
         // Add toMeta method to all blocks.
-        SirTrevor.Block.prototype.toMeta = function() {return;};
+        SirTrevor.Block.prototype.toMeta = function() {
+            return this.getData();
+        };
         SirTrevor.Block.prototype.getOptions = function() {
             var instance = SirTrevor.$get().getInstance(this.instanceID);
 
@@ -216,7 +218,7 @@ angular
                     title: that.$('.title-preview').text(),
                     description: that.$('.description-preview').text(),
                     credit: that.$('.credit-preview').text(),
-                    syndicated_creator: that.original_data && this.original_data.syndicated_creator
+                    syndicated_creator: this.getData().syndicated_creator
                 };
 
                 // remove thumbnail_url if it was removed by user
@@ -328,7 +330,6 @@ angular
             // render a card from data, and make it editable
             loadData: function(dataParam) {
                 const that = this;
-                this.original_data = dataParam;
                 const data = _.has(dataParam, 'meta') ? dataParam.meta : dataParam;
                 that.data = fixDataEmbed(data);
                 // hide the embed input field, render the card and add it to the DOM
@@ -450,13 +451,12 @@ angular
                 return {
                     quote: this.$('.quote-input').text() || undefined,
                     credit: this.$('.js-cite-input').text() || undefined,
-                    syndicated_creator: this.original_data && this.original_data.syndicated_creator
+                    syndicated_creator: this.getData().syndicated_creator
                 };
             },
             loadData: function(data) {
                 this.$('.quote-input').text(data.quote);
                 this.$('.js-cite-input').text(data.credit);
-                this.original_data = data;
             },
             isEmpty: function() {
                 return _.isEmpty(this.retrieveData().quote);
@@ -501,7 +501,12 @@ angular
 
         SirTrevor.Blocks.Text.prototype.loadData = function(data) {
             this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
-            this.original_data = data;
+        };
+
+        SirTrevor.Blocks.Text.prototype.toMeta = function() {
+            return {
+                syndicated_creator: this.getData().syndicated_creator
+            };
         };
 
         SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
@@ -585,7 +590,6 @@ angular
 
             loadData: function(data) {
                 this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
-                this.original_data = data;
             },
             isEmpty: function() {
                 return _.isEmpty(this.getData().text);
@@ -593,7 +597,7 @@ angular
             retrieveData: function() {
                 return {
                     text: this.$('.st-text-block').text() || undefined,
-                    syndicated_creator: this.original_data && this.original_data.syndicated_creator
+                    syndicated_creator: this.getData().syndicated_creator
                 };
             },
             toHTML: function(html) {
@@ -608,7 +612,8 @@ angular
                 return {
                     text: data.text,
                     commenter: data.commenter,
-                    _created: data._created
+                    _created: data._created,
+
                 }
             }
         });
