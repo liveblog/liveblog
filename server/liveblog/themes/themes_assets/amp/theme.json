@@ -17,8 +17,8 @@
     "url" : "git@github.com:liveblog/liveblog-amp-theme"
   },
   "license": "AGPL-3.0",
-  "devStyles": ["dist/amp-044b76ace9.css"],
-  "styles": ["dist/amp-044b76ace9.css"],
+  "devStyles": ["dist/amp-b47b7b368f.css"],
+  "styles": ["dist/amp-b47b7b368f.css"],
   "options": [
     {
         "name": "postsPerPage",
