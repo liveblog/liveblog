@@ -94,28 +94,28 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
           {% if type == 'comment' %}
           <amp-img class="lb-author__avatar lb-author__avatar--comment" 
           src="{{ assets_root }}images/comment_icon.svg"
-          layout="fixed"
+          layout="responsive"
           width="45"
           height="45">
           </amp-img>
           {% elif mainItem.syndicated_creator and settings.showSyndicatedAuthor and mainItem.syndicated_creator.picture_url %}
           <amp-img class="lb-author__avatar" 
           src="{{ mainItem.syndicated_creator.picture_url }}" 
-          layout="fixed"
+          layout="responsive"
           width="45"
           height="45">
           </amp-img>
           {% elif item.original_creator and item.original_creator.picture_url %}
           <amp-img class="lb-author__avatar" 
           src="{{ item.original_creator.picture_url }}"
-          layout="fixed"
+          layout="responsive"
           width="45"
           height="45">
           </amp-img>
           {% elif item.publisher and item.publisher.picture_url %}
           <amp-img class="lb-author__avatar" 
           src="{{ item.publisher.picture_url }}"
-          layout="fixed"
+          layout="responsive"
           width="45"
           height="45">
           </amp-img>
