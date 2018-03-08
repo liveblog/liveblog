@@ -117,7 +117,9 @@ angular
             });
         };
         // Add toMeta method to all blocks.
-        SirTrevor.Block.prototype.toMeta = function() {return;};
+        SirTrevor.Block.prototype.toMeta = function() {
+            return this.getData();
+        };
         SirTrevor.Block.prototype.getOptions = function() {
             var instance = SirTrevor.$get().getInstance(this.instanceID);
 
@@ -205,7 +207,8 @@ angular
                 var editor_data = {
                     title: that.$('.title-preview').text(),
                     description: that.$('.description-preview').text(),
-                    credit: that.$('.credit-preview').text()
+                    credit: that.$('.credit-preview').text(),
+                    syndicated_creator: this.getData().syndicated_creator
                 };
 
                 // remove thumbnail_url if it was removed by user
@@ -437,7 +440,8 @@ angular
             retrieveData: function() {
                 return {
                     quote: this.$('.quote-input').text() || undefined,
-                    credit: this.$('.js-cite-input').text() || undefined
+                    credit: this.$('.js-cite-input').text() || undefined,
+                    syndicated_creator: this.getData().syndicated_creator
                 };
             },
             loadData: function(data) {
@@ -487,6 +491,12 @@ angular
 
         SirTrevor.Blocks.Text.prototype.loadData = function(data) {
             this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
+        };
+
+        SirTrevor.Blocks.Text.prototype.toMeta = function() {
+            return {
+                syndicated_creator: this.getData().syndicated_creator
+            };
         };
 
         SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
@@ -577,6 +587,7 @@ angular
             retrieveData: function() {
                 return {
                     text: this.$('.st-text-block').text() || undefined,
+                    syndicated_creator: this.getData().syndicated_creator
                 };
             },
             toHTML: function(html) {
@@ -591,7 +602,8 @@ angular
                 return {
                     text: data.text,
                     commenter: data.commenter,
-                    _created: data._created
+                    _created: data._created,
+
                 }
             }
         });
