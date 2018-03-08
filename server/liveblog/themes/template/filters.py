@@ -50,7 +50,6 @@ def moment_date_filter_container(theme):
 
 
 def regaddten(obj):
-    print(obj)
     val = int(obj.group(1))
     return str(val + 10)
 
@@ -71,7 +70,20 @@ def addten(date):
 
 
 def ampify(html):
-    if re.search('iframe', html, re.IGNORECASE):
+    brightcove_re_array = [
+        '(http[s:]*)?//(www\.)?players\.brightcove\.net/',
+        '(?P<account>\d*)/',
+        '(?P<player>[a-zA-Z0-9\-]*)',
+        '_',
+        '(?P<embed>\w*)',
+        '\/index\.html\?videoId=',
+        '(?P<videoId>\d*)'
+    ]
+    match = re.compile(''.join(brightcove_re_array)).match(html)
+    if match:
+        return ('<amp-brightcove data-account="{account}" data-player="{player}" data-embed="{embed}" data-video-id="{videoId}" \
+         layout="responsive" width="480" height="270"></amp-brightcove>'.format(**match.groupdict()))
+    if re.search('<\S*iframe', html, re.IGNORECASE):
         src = re.search(r'src\s*=\s*"(?P<src>[^\"]+)"', html)
         width = re.search(r'width\s*=\s*"(?P<width>[^\"]+)"', html)
         height = re.search(r'height\s*=\s*"(?P<height>[^\"]+)"', html)
@@ -99,4 +111,24 @@ def ampify(html):
             width=width,
             height=height,
             src=src.group('src') if src else '')
+    if re.search('players.brightcove.net/\d*/\w*([a-zA-Z0-9\-]*)_\w*\/index\.min\.js', html):
+        account = re.search(r'account\s*=\s*"(?P<account>[^\"]+)"', html)
+        player = re.search(r'player\s*=\s*"(?P<player>[^\"]+)"', html)
+        embed = re.search(r'embed\s*=\s*"(?P<embed>[^\"]+)"', html)
+        videoId = re.search(r'data-video-id\s*=\s*"([^\"]+)"', html)
+
+        return '''
+<amp-brightcove
+    data-account={}
+    data-player={}
+    data-embed={}
+    data-video-id={}
+    layout="responsive"
+    width="480" height="270">
+</amp-brightcove>
+'''.format(
+            account.group('account') if account else '',
+            player.group('player') if player else '',
+            embed.group('embed') if embed else '',
+            videoId.group(1) if videoId else '')
     return html

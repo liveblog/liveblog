@@ -21,6 +21,8 @@
     height="1"
     layout="responsive">
   </amp-instagram>
+{% elif ref.item.meta.provider_name == 'Brightcove' and ref.item.meta.original_url %}
+  {{ref.item.meta.original_url | ampify | safe}}
 {% else %}
   {% if ref.item.meta.thumbnail_url %}
     <figure>
@@ -33,7 +35,7 @@
     </figure>
   {% endif %}
   {% if ref.item.meta.html %}
-    {{ ref.item.meta.html | ampify | safe}}
+    {{ ref.item.meta.html | ampify | safe }}
   {% endif %}
   {% if ref.item.meta.title %}
     <div class="item--embed__title" >
