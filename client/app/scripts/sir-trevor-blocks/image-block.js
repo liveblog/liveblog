@@ -233,7 +233,8 @@ export default function imageBlock(SirTrevor, config) {
             return {
                 media: this.getData().media,
                 caption: this.$('[name=caption]').text(),
-                credit: this.$('[name=credit]').text()
+                credit: this.$('[name=credit]').text(),
+                syndicated_creator: this.getData().syndicated_creator
             };
         },
         toHTML: function() {
