@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.3.51",
+    "version": "3.3.52",
     "version": "3.3.50",
     "asyncTheme": true,
     "seoTheme": true,
@@ -18,9 +18,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/default-cff4725720.css"],
-    "devScripts": ["dist/default-b559bd72de.js"],
+    "devScripts": ["dist/default-0a784110b9.js"],
     "styles": ["dist/default-cff4725720.css"],
-    "scripts": ["dist/default-b559bd72de.js"],
+    "scripts": ["dist/default-0a784110b9.js"],
     "options": [
         {
             "name": "datetimeFormat",
