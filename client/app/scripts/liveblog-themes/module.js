@@ -307,10 +307,10 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
                 // generate the git:// parsing regex
                 // with options, e.g., the ability
                 // to specify multiple GHE domains.
-                var github_re = function(opts) {
+                const github_re = function(opts) {
                     opts = opts || {};
                     // whitelist of URLs that should be treated as GitHub repos.
-                    var baseUrls = ['gist.github.com', 'github.com'].concat(opts.extraBaseUrls || []);
+                    const baseUrls = ['gist.github.com', 'github.com'].concat(opts.extraBaseUrls || []);
                     // build regex from whitelist.
                     return new RegExp(
                         /^(?:https?:\/\/|git:\/\/|git\+ssh:\/\/|git\+https:\/\/)?(?:[^@]+@)?/.source +
@@ -318,16 +318,38 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
                         /[:\/]([^\/]+\/[^\/]+?|[0-9]+)$/.source
                     );
                 };
-                try {
-                    var m = github_re(opts).exec(url.replace(/\.git(#.*)?$/, ''));
-                    var host = m[1];
-                    var path = m[2];
-                    return 'https://' + host + '/' + path;
-                } catch (err) {
-                    // ignore
+                const matches = github_re(opts).exec(url.replace(/\.git(#.*)?$/, ''));
+                if (matches) {
+                    const [all, host, path] = matches;
+                    return `https://${host}/${path}`;
                 }
+                return '';
             }
             return githubUrlFromGit(string);
+        };
+    })
+    .filter('stashUrlFromGit', function() {
+        return function(string) {
+            function stashUrlFromGit(url, opts) {
+                const stash_re = function(opts) {
+                    opts = opts || {};
+                    // whitelist of URLs that should be treated as Stash, BitBucket repos.
+                    const baseUrls = ['stash.sourcefabric.org'].concat(opts.extraBaseUrls || []);
+                    // build regex from whitelist.
+                    return new RegExp(
+                        /^(?:https?:\/\/|git:\/\/|git\+ssh:\/\/|git\+https:\/\/)?(?:[^@]+@)?/.source +
+                        '(' + baseUrls.join('|') + ')' +
+                        /[:\/]([^\/]+\/)([^\/]+\/)(.*?)$/.source
+                    );
+                };
+                const matches = stash_re(opts).exec(url.replace(/\.git(#.*)?$/, ''));
+                if (matches) {
+                    const [all, host, port, organization, project] = matches;
+                    return `https://${host}/rest/api/latest/projects/${organization}repos/${project}`;
+                }
+                return '';
+              }
+            return stashUrlFromGit(string);
         };
     })
     .config(['apiProvider', function(apiProvider) {
