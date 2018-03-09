@@ -80,6 +80,7 @@ export default function BlogEditController(
 
     // init with empty vector
     $scope.freetypesData = {}; $scope.freetypeControl = {}; $scope.validation = {};
+    $scope.freetypesOriginal = {};
     $scope.validation.imageUploaded = true;
 
     if (blog.blog_preferences.theme) {
@@ -97,15 +98,23 @@ export default function BlogEditController(
     function getItemsFromEditor() {
         if (!isPostFreetype()) {
             // go with the 'classic' editor items
-            return _.map(self.editor.get(), (block) => ({
-                group_type: 'default',
-                text: block.text
-                    .replace(emptyPRegex, '<br/>')
-                    .replace(emptyDivRegex, '<br/>')
-                    .replace(targetIconRegex, 'target="_blank"'),
-                meta: block.meta,
-                item_type: block.type
-            }));
+            return _.map(self.editor.get(), (block) => {
+                const syndicatedCreator = block.meta && block.meta.syndicated_creator;
+
+                if (syndicatedCreator) {
+                    delete block.meta.syndicated_creator;
+                }
+                return {
+                    group_type: 'default',
+                    text: block.text
+                        .replace(emptyPRegex, '<br/>')
+                        .replace(emptyDivRegex, '<br/>')
+                        .replace(targetIconRegex, 'target="_blank"'),
+                    meta: block.meta,
+                    syndicated_creator: syndicatedCreator,
+                    item_type: block.type
+                }
+            });
         }
 
         // this is a freetype post
@@ -114,7 +123,8 @@ export default function BlogEditController(
                 group_type: 'freetype',
                 item_type: $scope.selectedPostType.name,
                 text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
-                meta: {data: $scope.freetypesData}
+                meta: {data: $scope.freetypesData},
+                syndicated_creator: $scope.freetypesOriginal.syndicated_creator
             }
         ];
     }
@@ -281,6 +291,7 @@ export default function BlogEditController(
             if (freetype.name === item.item_type) {
                 $scope.selectedPostType = freetype;
                 $scope.freetypesData = angular.copy(item.meta.data);
+                $scope.freetypesOriginal = item;
             }
         });
     }

@@ -255,7 +255,8 @@ export default function postsService(api, $q, userList) {
                         meta: item.meta,
                         group_type: item.group_type,
                         item_type: item.item_type,
-                        commenter: item.meta && item.meta.commenter
+                        commenter: item.meta && item.meta.commenter,
+                        syndicated_creator: item.syndicated_creator
                     };
                 }
                 dfds.push(api.items.save(item));
