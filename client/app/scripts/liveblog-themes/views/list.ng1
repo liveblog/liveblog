@@ -5,7 +5,7 @@
             action="#"
             method="post"
             enctype="multipart/form-data"
-            ng-if="!vm.hasReachedThemesLimit() && !vm.isSolo()">
+            ng-if="!self.hasReachedThemesLimit() && !self.isSolo()">
             <label class="navbtn sd-create-btn" for="uploadAThemeFile" title="{{ 'New Theme' | translate }}">
                 <i class="svg-icon-plus"></i>
                 <span class="circle"></span>
@@ -18,9 +18,9 @@
         </form>
 
         <button
-            ng-if="vm.hasReachedThemesLimit()"
+            ng-if="self.hasReachedThemesLimit()"
             class="navbtn sd-create-btn"
-            ng-click="vm.showUpgradeModal()" title="{{ 'New Theme' | translate }}">
+            ng-click="self.showUpgradeModal()" title="{{ 'New Theme' | translate }}">
             <i class="svg-icon-plus"></i>
             <span class="circle"></span>
         </button>
@@ -28,17 +28,17 @@
 </div>
 
 <section class="main-section themelist">
-    <div class="loading-indicator" ng-show="vm.loading"><span translate>loading</span></div>
+    <div class="loading-indicator" ng-show="self.loading"><span translate>loading</span></div>
     <div class="list-container">
         <div
-            ng-if="!vm.isSolo()"
+            ng-if="!self.isSolo()"
             class="alert alert-info alert--margin-left"
             role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="icon-close-small"></i></button>
             You want to customize a Live Blog theme? All you need is someone in your team with frontend development skills, a download of the <a href="https://github.com/liveblog/generator-liveblog-theme" target="_blank">theme generator</a> and with a good read of our <a href="https://wiki.sourcefabric.org/display/LIVEBLOG/Live+Blog+themes" target="_blank">documentation in the Wiki</a> - you can easily introduce a theme extension matching the exact needs of your organisation.
         </div>
         <div
-            ng-if="!vm.isSolo()"
+            ng-if="!self.isSolo()"
             class="alert alert-error alert--margin-left"
             role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="icon-close-small"></i></button>
@@ -49,9 +49,9 @@
         <!-- LIST VIEW -->
         <script type="text/ng-template" id="themeTree">
             <ul>
-                <li ng-init="theme=vm.getTheme(themeName)">
-                    <div class="theme card" ng-class="{'default': vm.isDefaultTheme(theme)}">
-                        <figure class="media" ng-click="theme.screenshot_url && vm.openThemePreview(theme)" ng-class="{'no-screenshot': !theme.screenshot_url}">
+                <li ng-init="theme=self.getTheme(themeName)">
+                    <div class="theme card" ng-class="{'default': self.isDefaultTheme(theme)}">
+                        <figure class="media" ng-click="theme.screenshot_url && self.openThemePreview(theme)" ng-class="{'no-screenshot': !theme.screenshot_url}">
                             <div if-background-image="{{theme.screenshot_url}}"></div>
                             <div ng-if="theme.screenshot_url" class="overlay big-icon-search"></div>
                         </figure>
@@ -72,8 +72,8 @@
                                         {{ ::theme.author.name }}
                                     </div>
                                 </dd>
-                                <dt ng-if="!vm.isSolo()">{{ ::'Sources' | translate }}:</dt>
-                                <dd ng-if="!vm.isSolo()">
+                                <dt ng-if="!self.isSolo()">{{ ::'Sources' | translate }}:</dt>
+                                <dd ng-if="!self.isSolo()">
                                     <div ng-if="!theme.repository.url">unavailable</div>
                                     <a href="{{::theme.repository.url | githubUrlFromGit}}/archive/master.zip"
                                        ng-if="theme.repository.url"
@@ -84,7 +84,7 @@
                                 </dd>
                                 <dt>{{ ::'No. of blogs using theme' | translate }}:</dt>
                                 <dd>
-                                    <a ng-click="vm.openThemeBlogsModal(theme)" ng-if="theme.blogs_count > 0">
+                                    <a ng-click="self.openThemeBlogsModal(theme)" ng-if="theme.blogs_count > 0">
                                         <span translate translate-n="::theme.blogs_count" translate-plural="<span data-name='noOfBlogs'>{{::theme.blogs_count}}</span> blogs">
                                         <span data-name='noOfBlogs'>1 blog</span></span>
                                     </a>
@@ -95,62 +95,62 @@
                             </dl>
                         </div>
                         <div class="side">
-                            <div ng-style="{'visibility': (vm.isDefaultTheme(theme) && 'hidden') || 'visible'}">
-                                <button ng-disabled="vm.cannotRemove(theme)" ng-click="vm.removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
-                                <button ng-if="!theme.abstract" ng-click="vm.makeDefault(theme)" class="btn btn--primary pull-right" type="button" translate>Make default</button>
+                            <div ng-style="{'visibility': (self.isDefaultTheme(theme) && 'hidden') || 'visible'}">
+                                <button ng-disabled="self.hasChildren(theme)" ng-click="self.removeTheme(theme)" class="btn btn-default pull-right" type="button" translate>Remove</button>
+                                <button ng-if="!theme.abstract" ng-click="self.makeDefault(theme)" class="btn btn--primary pull-right" type="button" translate>Make default</button>
                             </div>
-                            <button ng-click="vm.openThemeSettings(theme)" class="btn btn-default pull-right" type="button" translate>Settings</button>
+                            <button ng-click="self.openThemeSettings(theme)" class="btn btn-default pull-right" type="button" translate>Settings</button>
                         </div>
-                        <div class="default-theme" ng-show="vm.isDefaultTheme(theme)"></div>
+                        <div class="default-theme" ng-show="self.isDefaultTheme(theme)"></div>
                     </div>
                     <ng-include ng-repeat="(themeName, themeChildren) in themeChildren" src="'themeTree'"></ng-include>
                 </li>
             </ul>
         </script>
-        <ng-include ng-repeat="(themeName, themeChildren) in vm.themesHierachy" src="'themeTree'"></ng-include>
+        <ng-include ng-repeat="(themeName, themeChildren) in self.themesHierachy" src="'themeTree'"></ng-include>
     </div>
 </section>
-<div sd-modal="" data-model="vm.themeBlogsModal" class="theme-blogs-modal" macro-team="">
-    <div class="modal-header" ng-class="{'modal-header-blogs': !vm.selectedBlog}">
-        <button class="close" ng-click="vm.closeThemeBlogsModal()"><i class="icon-close-small"></i></button>
-        <div ng-hide="vm.selectedBlog">
+<div sd-modal="" data-model="self.themeBlogsModal" class="theme-blogs-modal" macro-team="">
+    <div class="modal-header" ng-class="{'modal-header-blogs': !self.selectedBlog}">
+        <button class="close" ng-click="self.closeThemeBlogsModal()"><i class="icon-close-small"></i></button>
+        <div ng-hide="self.selectedBlog">
             <h3 translate>List of blogs using theme</h3>
-            <h2>{{vm.selectedTheme.label}}</h2>
+            <h2>{{self.selectedTheme.label}}</h2>
         </div>
     </div>
     <div class="modal-body">
-        <div  ng-hide="vm.selectedBlog">
+        <div  ng-hide="self.selectedBlog">
             <ul class="theme-blogs">
-                <li ng-repeat="blog in vm.selectedTheme.blogs" ng-click="vm.switchBlogPreview(blog)">
+                <li ng-repeat="blog in self.selectedTheme.blogs" ng-click="self.switchBlogPreview(blog)">
                     {{ blog.title }}
                     <a ng-href="{{ blog.iframe_url }}" target="_blank"><i class="icon-share"></i></a>
                 </li>
             </ul>
         </div>
-        <div ng-show="vm.selectedBlog">
-            <iframe width="100%" height="715" ng-if="vm.selectedBlog.iframe_url" ng-src="{{ vm.selectedBlog.iframe_url }}" frameborder="0" allowfullscreen></iframe>
+        <div ng-show="self.selectedBlog">
+            <iframe width="100%" height="715" ng-if="self.selectedBlog.iframe_url" ng-src="{{ self.selectedBlog.iframe_url }}" frameborder="0" allowfullscreen></iframe>
         </div>
     </div>
     <div class="modal-footer">
-        <button type="button" class="btn btn-default" translate ng-click="vm.closeThemeBlogsModal()">Cancel</button>
+        <button type="button" class="btn btn-default" translate ng-click="self.closeThemeBlogsModal()">Cancel</button>
     </div>
 </div>
 
-<div sd-modal="" data-model="vm.themePreviewModal" class="theme-preview-modal" macro-team="">
+<div sd-modal="" data-model="self.themePreviewModal" class="theme-preview-modal" macro-team="">
     <div class="modal-header">
-        <button class="close" ng-click="vm.themePreviewModal = false">⨯</button>
+        <button class="close" ng-click="self.themePreviewModal = false">⨯</button>
     </div>
     <div class="modal-body">
-        <img ng-src="{{vm.themePreviewModalTheme.screenshot_url}}"
+        <img ng-src="{{self.themePreviewModalTheme.screenshot_url}}"
             full-height
             full-height-use-max-height="true"
             full-height-offset-bottom="50"/>
     </div>
 </div>
 
-<div sd-modal="" data-model="vm.upgradeModal">
+<div sd-modal="" data-model="self.upgradeModal">
     <div class="modal-header">
-        <button class="close" ng-click="vm.closeUpgradeModal()">
+        <button class="close" ng-click="self.closeUpgradeModal()">
             <i class="icon-close-small"></i>
         </button>
         <h3>Sorry</h3>
@@ -163,12 +163,12 @@
       </ul>
       <br/>
       <p>To remove a theme from your Live Blog instance, click on the burger menu on the top left and open the Theme Manager. You can now delete a theme by clicking on the “Remove” button.</p>
-      <p>Want to upgrade to a plan more suitable to your needs? Email us at <a href="{{vm.mailto}}">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
+      <p>Want to upgrade to a plan more suitable to your needs? Email us at <a href="{{self.mailto}}">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
     </div>
 </div>
 
 <div
     theme-settings-modal
-    theme="vm.themeSettingsModalTheme"
-    modal-opened="vm.themeSettingsModal"
-    ng-if="vm.themeSettingsModal"></div>
+    theme="self.themeSettingsModalTheme"
+    modal-opened="self.themeSettingsModal"
+    ng-if="self.themeSettingsModal"></div>

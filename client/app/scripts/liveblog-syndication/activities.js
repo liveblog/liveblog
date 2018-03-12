@@ -1,4 +1,4 @@
-import syndicationTpl from 'scripts/liveblog-syndication/views/syndication.html';
+import syndicationTpl from 'scripts/liveblog-syndication/views/syndication.ng1';
 
 activities.$inject = ['superdeskProvider'];
 
@@ -14,4 +14,4 @@ export default function activities(superdesk) {
             privileges: {'global_preferences': 1},
             resolve: {isArchivedFilterSelected: function() {return false;}}
         });
-};
+}

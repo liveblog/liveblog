@@ -8,6 +8,8 @@ const nunjucks = require("nunjucks/browser/nunjucks-slim");
 const settings = window.LB.settings;
 
 const defaultTemplates = {
+  postActions: require("../../templates/template-post-actions.html"),
+  author: require("../../templates/template-author.html"),
   post: require("../../templates/template-post.html"),
   timeline: require("../../templates/template-timeline.html"),
   postComment: require("../../templates/template-post-comment.html"),

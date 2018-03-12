@@ -1,5 +1,4 @@
-define([], function() {
-
+define([], () => {
     /**
      * Noop for registering string for translation in js files.
      *

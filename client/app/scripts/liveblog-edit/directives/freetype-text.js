@@ -1,4 +1,4 @@
-import freetypeTextTpl from 'scripts/liveblog-edit/views/freetype-text.html';
+import freetypeTextTpl from 'scripts/liveblog-edit/views/freetype-text.ng1';
 
 export default function freetypeText() {
     return {

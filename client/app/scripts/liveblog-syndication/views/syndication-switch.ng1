@@ -4,10 +4,10 @@
         <span class="blog-status">
             {{ settings.syndication_enabled ? 'Enabled' : 'Disabled' | translate }}
         </span>
-        <span 
+        <span
             style="display: block"
-            tooltip="{{ settings.syndication_enabled ? 'Disable Syndication' : 'Enable Syndication' | translate }}"
-            tooltip-placement="right">
+            sd-tooltip="{{ settings.syndication_enabled ? 'Disable Syndication' : 'Enable Syndication' | translate }}"
+            data-flow="right">
             <span
                 class="pull-left"
                 sd-switch

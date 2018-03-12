@@ -10,7 +10,7 @@ export default function api(apiProvider) {
             type: 'http',
             backend: {rel: 'syndication_out'}
         })
-         .api('consumers', {
+        .api('consumers', {
             type: 'http',
             backend: {rel: 'consumers'}
         })
@@ -18,4 +18,4 @@ export default function api(apiProvider) {
             type: 'http',
             backend: {rel: 'producers'}
         });
-};
+}

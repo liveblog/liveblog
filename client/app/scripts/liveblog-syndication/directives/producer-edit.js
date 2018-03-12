@@ -1,4 +1,4 @@
-import producerEditFormTpl from 'scripts/liveblog-syndication/views/producer-edit-form.html';
+import producerEditFormTpl from 'scripts/liveblog-syndication/views/producer-edit-form.ng1';
 
 producerEdit.$inject = ['api', 'notify', 'lodash', 'adsUtilSevice'];
 
@@ -31,7 +31,8 @@ export default function producerEdit(api, notify, _, adsUtilSevice) {
                     return;
                 }
 
-                var data = {}, apiQuery;
+                const data = {};
+                let apiQuery;
 
                 data.contacts = scope.producer.contacts;
 

@@ -1,4 +1,4 @@
-import producerListTpl from 'scripts/liveblog-syndication/views/producer-list.html';
+import producerListTpl from 'scripts/liveblog-syndication/views/producer-list.ng1';
 
 export default function lbProducers() {
     return {
@@ -9,5 +9,5 @@ export default function lbProducers() {
 
             angular.extend(this, $controller('BaseController', {$scope: $scope}));
         }]
-    }
+    };
 }

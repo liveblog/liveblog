@@ -1,110 +1,113 @@
-import listTpl from 'scripts/liveblog-themes/views/list.html';
+import listTpl from 'scripts/liveblog-themes/views/list.ng1';
 
 (function() {
     LiveblogThemesController.$inject = ['api', '$location', 'notify', 'gettext',
-    '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', '$window', 'modal',
-    '$http', 'session'];
+        '$q', '$sce', 'config', 'lodash', 'upload', 'blogService', '$window', 'modal',
+        '$http', 'session'];
     function LiveblogThemesController(api, $location, notify, gettext,
-    $q, $sce, config, _, upload, blogService, $window, modal,
-    $http, session) {
-        var vm = this;
+        $q, $sce, config, _, upload, blogService, $window, modal,
+        $http, session) {
+        const self = this;
         /**
          * Return a collection that represent the hierachy of the themes
          * @param {array} themes
          * @returns {object} hierachical collection
          */
+
         function getHierachyFromThemesCollection(themes) {
-            var todo = [];
-            var themes_hierachy = {};
-            function getParentNode(name, collection) {
-                collection = collection || themes_hierachy;
-                for (var key in collection) {
-                    if (collection.hasOwnProperty(key)) {
-                        if (key === name) {
-                            return collection[key];
-                        }
-                        if (angular.isObject(collection[key])) {
-                            var res = getParentNode(name, collection[key]);
-                            if (angular.isDefined(res)) {
-                                return res;
-                            }
+            const todo = [];
+            const themesHierachy = {};
+
+            function getParentNode(name, collectionParam) {
+                const collection = collectionParam || themesHierachy;
+
+                Object.keys(collection).forEach((key) => {
+                    if (key === name) {
+                        return collection[key];
+                    }
+                    if (angular.isObject(collection[key])) {
+                        const res = getParentNode(name, collection[key]);
+
+                        if (angular.isDefined(res)) {
+                            return res;
                         }
                     }
-                }
+                });
             }
             function addToHierarchy(name, extend) {
                 if (angular.isDefined(extend)) {
-                    var parent_node = getParentNode(extend);
-                    var index = _.findIndex(todo, function(a) {
-                        return a[0] === name;
-                    });
-                    if (angular.isDefined(parent_node)) {
+                    const parentNode = getParentNode(extend);
+                    const index = _.findIndex(todo, (a) => a[0] === name);
+
+                    if (angular.isDefined(parentNode)) {
                         if (index > -1) {
                             todo.splice(index, 1);
                         }
-                        parent_node[name] = {};
+                        parentNode[name] = {};
                     } else if (index === -1) {
                         todo.push([name, extend]);
                     }
-                } else if (!angular.isDefined(themes_hierachy[name])) {
-                    themes_hierachy[name] = {};
+                } else if (!angular.isDefined(themesHierachy[name])) {
+                    themesHierachy[name] = {};
                 }
             }
-            themes.forEach(function(theme) {
+            themes.forEach((theme) => {
                 addToHierarchy(theme.name, theme.extends);
             });
-            var max_loops = todo.length * todo.length;
-            while (todo.length > 0 && max_loops > 0) {
-                for (var i = 0; i < todo.length; i++) {
+            let maxLoops = todo.length * todo.length;
+
+            while (todo.length > 0 && maxLoops > 0) {
+                for (let i = 0; i < todo.length; i++) {
                     addToHierarchy(todo[i][0], todo[i][1]);
                 }
-                max_loops--;
+                maxLoops--;
             }
-            return themes_hierachy;
+            return themesHierachy;
         }
         // parse the theme and create or fix properties.
         function parseTheme(theme) {
-            var authorRX = /^([^<(]+?)?[ \t]*(?:<([^>(]+?)>)?[ \t]*(?:\(([^)]+?)\)|$)/gm,
-                authorArray;
+            const authorRX = /^([^<(]+?)?[ \t]*(?:<([^>(]+?)>)?[ \t]*(?:\(([^)]+?)\)|$)/gm;
+            let authorArray;
             // If the author is a string then use the format:
             // Name <Email> (Url)
+
             if (angular.isString(theme.author)) {
                 authorArray = authorRX.exec(theme.author);
 
                 if (authorArray) {
                     theme.author = {
-                        'name': authorArray[1],
-                        'email': authorArray[2],
-                        'url': authorArray[3]
+                        name: authorArray[1],
+                        email: authorArray[2],
+                        url: authorArray[3]
                     };
                 }
             }
         }
         function loadThemes() {
             // load only global preference for themes.
-            api.global_preferences.query({'where': {'key': 'theme'}}).then(function(global_preferences) {
-                vm.globalTheme = _.find(global_preferences._items, function(item) {
-                    return item.key === 'theme';
-                });
+            api.global_preferences.query({where: {key: 'theme'}}).then((globalPreferences) => {
+                self.globalTheme = _.find(globalPreferences._items, (item) => item.key === 'theme');
             });
             // load all the themes.
             // TODO: Pagination
-            return api.themes.query().then(function(data) {
-                var themes = data._items;
-                themes.forEach(function(theme) {
+            return api.themes.query().then((data) => {
+                const themes = data._items;
+
+                themes.forEach((theme) => {
                     // create criteria to load blogs with the theme.
-                    var criteria = {
-                            source: {
-                                query: {match: {'blog_preferences.theme': theme.name}}
-                            }
-                        };
-                    api.blogs.query(criteria).then(function(data) {
+                    const criteria = {
+                        source: {
+                            query: {match: {'blog_preferences.theme': theme.name}}
+                        }
+                    };
+
+                    api.blogs.query(criteria).then((data) => {
                         theme.blogs_count = data._meta.total;
                         // TODO: Pagination. Will only show the first results page
                         theme.blogs = data._items;
                         // retrieve the public url for each blog
-                        theme.blogs.forEach(function(blog) {
-                            blogService.getPublicUrl(blog).then(function(url) {
+                        theme.blogs.forEach((blog) => {
+                            blogService.getPublicUrl(blog).then((url) => {
                                 blog.iframe_url = $sce.trustAsResourceUrl(url);
                             });
                         });
@@ -112,18 +115,19 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
                     parseTheme(theme);
                 });
                 // object that represent the themes hierachy
-                var themes_hierachy = getHierachyFromThemesCollection(themes);
+                const themesHierachy = getHierachyFromThemesCollection(themes);
                 // update the scope
-                angular.extend(vm, {
-                    themesHierachy: themes_hierachy,
+
+                angular.extend(self, {
+                    themesHierachy: themesHierachy,
                     themes: themes,
                     loading: false
                 });
                 return themes;
             });
         }
-        angular.extend(vm, {
-            mailto: 'mailto:upgrade@liveblog.pro?subject='+
+        angular.extend(self, {
+            mailto: 'mailto:upgrade@liveblog.pro?subject=' +
                 encodeURIComponent(location.hostname) +
                 ' ' +
                 config.subscriptionLevel,
@@ -135,17 +139,15 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
             // loading indicatior for the first timeload.
             loading: true,
             getTheme: function(name) {
-                return _.find(vm.themes, function(theme) {
-                    return theme.name === name;
-                });
+                return _.find(self.themes, (theme) => theme.name === name);
             },
             isDefaultTheme: function(theme) {
-                if (angular.isDefined(vm.globalTheme)) {
-                    return vm.getTheme(vm.globalTheme.value).name === theme.name;
+                if (angular.isDefined(self.globalTheme)) {
+                    return self.getTheme(self.globalTheme.value).name === theme.name;
                 }
             },
             cannotRemove: function(theme) {
-                const hasChildren = vm.themes.some(function(t) {
+                const hasChildren = self.themes.some(function(t) {
                     return t.extends === theme.name;
                 });
                 const systemThemes = ['angular', 'classic', 'default', 'amp'];
@@ -154,29 +156,29 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
             },
             openThemeBlogsModal: function(theme) {
                 if (theme.blogs.length) {
-                    vm.selectedTheme = theme;
-                    vm.themeBlogsModal = true;
+                    self.selectedTheme = theme;
+                    self.themeBlogsModal = true;
                 }
             },
             closeThemeBlogsModal: function(theme) {
-                if (vm.selectedBlog) {
-                    vm.selectedBlog = false;
+                if (self.selectedBlog) {
+                    self.selectedBlog = false;
                 } else {
-                    vm.themeBlogsModal = false;
+                    self.themeBlogsModal = false;
                 }
             },
             download: function(theme) {
-                api.themes.getUrl().then(function(url) {
+                api.themes.getUrl().then((url) => {
                     $window.location = url.replace('/themes', '/theme-download/' + theme.name);
                 });
             },
             redeploy: function(theme) {
                 $http.defaults.headers.common.Authorization = session.token;
-                api.themes.getUrl().then(function(url) {
+                api.themes.getUrl().then((url) => {
                     $http({
                         url: url.replace('/themes', '/theme-redeploy/' + theme.name),
                         method: 'GET'
-                    }).then(function(){
+                    }).then(() => {
                         notify.pop();
                         notify.info(gettext('Theme redeployed.'));
                     });
@@ -184,20 +186,20 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
             },
 
             makeDefault: function(theme) {
-                if (vm.globalTheme) {
+                if (self.globalTheme) {
                     api
                         .global_preferences
-                        .save(vm.globalTheme, {'key': 'theme', 'value': theme.name})
-                        .then(function(data) {
+                        .save(self.globalTheme, {key: 'theme', value: theme.name})
+                        .then((data) => {
                             notify.pop();
                             notify.info(gettext('Default theme saved'));
-                            vm.globalTheme = data;
+                            self.globalTheme = data;
                         });
                 } else {
-                    api.global_preferences.save({'key': 'theme', 'value': theme.name}).then(function(data) {
+                    api.global_preferences.save({key: 'theme', value: theme.name}).then((data) => {
                         notify.pop();
                         notify.info(gettext('Default theme saved'));
-                        vm.globalTheme = data;
+                        self.globalTheme = data;
                     });
                 }
             },
@@ -219,35 +221,35 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
             },
             switchBlogPreview: function(blog) {
                 // copy the selected blog
-                vm.selectedBlog = angular.copy(blog);
+                self.selectedBlog = angular.copy(blog);
             },
             save: function() {
                 notify.pop();
                 notify.info(gettext('Saving changes'));
             },
             close: function() {
-                //return to blog list page
+                // return to blog list page
                 $location.path('/liveblog/');
             },
             uploadThemeFile: function(e) {
                 notify.pop();
                 // show longer lasting message when uploading the theme, as on some situations it may take some time
                 notify.info(gettext('Uploading the theme, please wait...'), 120000);
-                api.themes.getUrl().then(function(url) {
+                api.themes.getUrl().then((url) => {
                     upload.start({
                         method: 'POST',
                         url: url.replace('/themes', '/theme-upload'),
                         data: {media: e.files[0]}
                     })
-                    .then(function(response) {
-                        loadThemes().then(function() {
+                        .then((response) => {
+                            loadThemes().then(() => {
+                                notify.pop();
+                                notify.info(gettext('Theme uploaded and added'));
+                            });
+                        }, (error) => {
                             notify.pop();
-                            notify.info(gettext('Theme uploaded and added'));
+                            notify.error(error.data.error);
                         });
-                    }, function(error) {
-                        notify.pop();
-                        notify.error(error.data.error);
-                    });
                 });
             },
             themePreviewModal: false,
@@ -255,95 +257,95 @@ import listTpl from 'scripts/liveblog-themes/views/list.html';
                 if (!theme.screenshot_url) {
                     return false;
                 }
-                vm.themePreviewModal = true;
-                vm.themePreviewModalTheme = theme;
+                self.themePreviewModal = true;
+                self.themePreviewModalTheme = theme;
             },
             openThemeSettings: function(theme) {
-                vm.themeSettingsModal = true;
-                vm.themeSettingsModalTheme = theme;
+                self.themeSettingsModal = true;
+                self.themeSettingsModalTheme = theme;
             },
             hasReachedThemesLimit: function() {
-                if (!vm.themes)
+                if (!self.themes) {
                     return false;
+                }
 
-                var themes = vm.themes.filter(function(theme) {
-                    return (theme.name !== config.excludedTheme);
-                });
+                const themes = self.themes.filter((theme) => theme.name !== config.excludedTheme);
 
-                if (config.subscriptionLevel === 'team')
-                    return (themes.length >= config.themeCreationRestrictions.team);
+                if (config.subscriptionLevel === 'team') {
+                    return themes.length >= config.themeCreationRestrictions.team;
+                }
 
                 return false;
             },
             upgradeModal: false,
             showUpgradeModal: function() {
-                vm.upgradeModal = true;
+                self.upgradeModal = true;
             },
             closeUpgradeModal: function() {
-                vm.upgradeModal = false;
+                self.upgradeModal = false;
             }
         });
 
         loadThemes();
     }
 
-    var liveblogThemeModule = angular.module('liveblog.themes', [])
-    .config(['superdeskProvider', function(superdesk) {
-        superdesk
-            .activity('/themes/', {
-                label: gettext('Theme Manager'),
-                controller: LiveblogThemesController,
-                controllerAs: 'vm',
-                category: superdesk.MENU_MAIN,
-                adminTools: true,
-                privileges: {'global_preferences': 1},
-                templateUrl: listTpl
-            });
-    }])
-    .filter('githubUrlFromGit', function() {
-        return function(string) {
+    const liveblogThemeModule = angular.module('liveblog.themes', [])
+        .config(['superdeskProvider', function(superdesk) {
+            superdesk
+                .activity('/themes/', {
+                    label: gettext('Theme Manager'),
+                    controller: LiveblogThemesController,
+                    controllerAs: 'self',
+                    category: superdesk.MENU_MAIN,
+                    adminTools: true,
+                    privileges: {global_preferences: 1},
+                    templateUrl: listTpl
+                });
+        }])
+        .filter('githubUrlFromGit', () => function(string) {
             function githubUrlFromGit(url, opts) {
                 // from https://github.com/tj/node-github-url-from-git
                 // generate the git:// parsing regex
                 // with options, e.g., the ability
                 // to specify multiple GHE domains.
-                var github_re = function(opts) {
-                    opts = opts || {};
+                const githubRe = function(opts = {}) {
                     // whitelist of URLs that should be treated as GitHub repos.
-                    var baseUrls = ['gist.github.com', 'github.com'].concat(opts.extraBaseUrls || []);
+                    const baseUrls = ['gist.github.com', 'github.com'].concat(opts.extraBaseUrls || []);
                     // build regex from whitelist.
+
                     return new RegExp(
                         /^(?:https?:\/\/|git:\/\/|git\+ssh:\/\/|git\+https:\/\/)?(?:[^@]+@)?/.source +
-                        '(' + baseUrls.join('|') + ')' +
-                        /[:\/]([^\/]+\/[^\/]+?|[0-9]+)$/.source
+                            '(' + baseUrls.join('|') + ')' +
+                            /[:\/]([^\/]+\/[^\/]+?|[0-9]+)$/.source
                     );
                 };
+
                 try {
-                    var m = github_re(opts).exec(url.replace(/\.git(#.*)?$/, ''));
-                    var host = m[1];
-                    var path = m[2];
+                    const m = githubRe(opts).exec(url.replace(/\.git(#.*)?$/, ''));
+                    const host = m[1];
+                    const path = m[2];
+
                     return 'https://' + host + '/' + path;
                 } catch (err) {
                     // ignore
                 }
             }
             return githubUrlFromGit(string);
-        };
-    })
-    .config(['apiProvider', function(apiProvider) {
-        apiProvider.api('global_preferences', {
-            type: 'http',
-            backend: {rel: 'global_preferences'}
-        });
-        apiProvider.api('themes', {
-            type: 'http',
-            backend: {rel: 'themes'}
-        });
-        apiProvider.api('blogs', {
-            type: 'http',
-            backend: {rel: 'blogs'}
-        });
-    }]);
-    return liveblogThemeModule;
+        })
+        .config(['apiProvider', function(apiProvider) {
+            apiProvider.api('global_preferences', {
+                type: 'http',
+                backend: {rel: 'global_preferences'}
+            });
+            apiProvider.api('themes', {
+                type: 'http',
+                backend: {rel: 'themes'}
+            });
+            apiProvider.api('blogs', {
+                type: 'http',
+                backend: {rel: 'blogs'}
+            });
+        }]);
 
+    return liveblogThemeModule;
 })();

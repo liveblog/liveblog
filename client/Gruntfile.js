@@ -1,10 +1,10 @@
-module.exports = function (grunt) {
+module.exports = function(grunt) {
     // util for grunt.template
     grunt.toJSON = function(input) {
         return JSON.stringify(input);
     };
 
-    var config = {
+    const config = {
         pkg: grunt.file.readJSON('./package.json'),
         appDir: 'app',
         tmpDir: '.tmp',

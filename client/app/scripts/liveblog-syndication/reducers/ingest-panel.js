@@ -2,16 +2,20 @@ ingestPanelReducers.$inject = ['moment'];
 
 export default function ingestPanelReducers(moment) {
     // Associate a syndication to a producer blog via blog token
-    var locallySyndicatedItems = function(syndicationIn, localSyndTokens) {
+    const locallySyndicatedItems = function(syndicationIn, localSyndTokens) {
         return syndicationIn._items
             .filter((item) => localSyndTokens.indexOf(item.blog_token) !== -1);
     };
 
     return function(state, action) {
+        let localSyndTokens;
+        let syndicationIn;
+        let localProducerBlogIds;
+
         switch (action.type) {
         case 'ON_GET_SYND':
-                // Filters out syndicationIns that aren't corresponding to the current blog
-            var localSyndTokens = action.syndicationIn._items
+            // Filters out syndicationIns that aren't corresponding to the current blog
+            localSyndTokens = action.syndicationIn._items
                 .filter((syndication) => syndication.blog_id === state.consumerBlogId)
                 .map((syndication) => syndication.blog_token);
 
@@ -27,7 +31,7 @@ export default function ingestPanelReducers(moment) {
             });
 
         case 'ON_UPDATED_SYND':
-            var syndicationIn = angular.extend(state.syndicationIn, {
+            syndicationIn = angular.extend(state.syndicationIn, {
                 _items: state.syndicationIn._items.map((item) => {
                     if (item._id === action.syndEntry._id) {
                         return action.syndEntry;
@@ -51,7 +55,7 @@ export default function ingestPanelReducers(moment) {
             });
 
         case 'ON_GET_PRODUCER_BLOGS':
-            var localProducerBlogIds = [];
+            localProducerBlogIds = [];
 
             return angular.extend(state, {
                 producerBlogs: angular.extend(action.producerBlogs, {

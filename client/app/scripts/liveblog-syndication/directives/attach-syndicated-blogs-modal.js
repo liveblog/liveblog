@@ -1,4 +1,4 @@
-import attachSyndicatedBlogsModalTpl from 'scripts/liveblog-syndication/views/attach-syndicated-blogs-modal.html';
+import attachSyndicatedBlogsModalTpl from 'scripts/liveblog-syndication/views/attach-syndicated-blogs-modal.ng1';
 
 attachSyndicatedBlogsModal.$inject = ['$q', 'lodash', 'IngestPanelActions'];
 
@@ -28,20 +28,20 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
             IngestPanelActions.getProducers();
             scope.blogsToAttach = [];
 
-            var compare = function() {
+            const compare = function() {
                 scope.hasChanged = angular.equals(
                     scope.localProducerBlogIds.sort(),
                     scope.blogsToAttach.sort()
                 );
 
-                var toSyndicate = _.difference(
-                        scope.blogsToAttach,
-                        scope.localProducerBlogIds
-                    ),
-                    toUnSyndicate = _.difference(
-                        scope.localProducerBlogIds,
-                        scope.blogsToAttach
-                    );
+                const toSyndicate = _.difference(
+                    scope.blogsToAttach,
+                    scope.localProducerBlogIds
+                );
+                const toUnSyndicate = _.difference(
+                    scope.localProducerBlogIds,
+                    scope.blogsToAttach
+                );
 
                 if (toSyndicate.length > 0 && toUnSyndicate.length === 0) {
                     scope.actionName = 'Attach';
@@ -94,17 +94,17 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
             };
 
             scope.attach = function() {
-                let toSyndicate = _.difference(
-                        scope.blogsToAttach,
-                        scope.localProducerBlogIds
-                    ),
-                    toUnSyndicate = _.difference(
-                        scope.localProducerBlogIds,
-                        scope.blogsToAttach
-                    );
+                const toSyndicate = _.difference(
+                    scope.blogsToAttach,
+                    scope.localProducerBlogIds
+                );
+                const toUnSyndicate = _.difference(
+                    scope.localProducerBlogIds,
+                    scope.blogsToAttach
+                );
 
                 scope.producerBlogs._items.forEach((blog) => {
-                    var params = {
+                    const params = {
                         producerId: scope.currentProducer._id,
                         producerBlogId: blog._id,
                         consumerBlogId: scope.consumerBlogId,

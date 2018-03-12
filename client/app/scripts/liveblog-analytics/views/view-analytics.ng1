@@ -7,10 +7,10 @@
     <h3 class="page-nav-title">{{ analytics.blog.title }}</h3>
     <div class="button-stack right-stack active">
         <span class="navbtn navbtn-active">
-            <i class="svg-icon-analytics"></i>
+            <i class="big-icon--analytics"></i>
         </span>
         <span class="navbtn">
-            <i class="svg-icon-settings"></i>
+                <i class="big-icon--cog"></i>
         </span>
     </div>
 </div>
