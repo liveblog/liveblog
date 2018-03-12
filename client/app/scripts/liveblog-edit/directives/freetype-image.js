@@ -1,8 +1,8 @@
 import freetypeImageTpl from 'scripts/liveblog-edit/views/freetype-image.html';
 
-freetypeImage.$inject = ['$compile', 'modal', 'api', 'upload', 'superdesk', 'urls', 'notify'];
+freetypeImage.$inject = ['$compile', 'modal', 'api', 'upload', 'superdesk', 'urls', 'notify', '$timeout'];
 
-export default function freetypeImage($compile, modal, api, upload, superdesk, urls, notify) {
+export default function freetypeImage($compile, modal, api, upload, superdesk, urls, notify, $timeout) {
     return {
         restrict: 'E',
         templateUrl: freetypeImageTpl,
@@ -73,7 +73,9 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
                         );
                     }, (progress) => {
                         $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
-                        $scope.validation.imageUploaded = true;
+                        $timeout(function () {
+                            $scope.validation.imageUploaded = true;
+                        }, 3000);
                     }));
             };
 
