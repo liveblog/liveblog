@@ -9,7 +9,6 @@ const settings = window.LB.settings;
 
 const defaultTemplates = {
   post: require("../../templates/template-post.html"),
-  adentry: require("../../templates/template-ad-entry.html"),
   timeline: require("../../templates/template-timeline.html"),
   postComment: require("../../templates/template-post-comment.html"),
   itemImage: require("../../templates/template-item-image.html"),

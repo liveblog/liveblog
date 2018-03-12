@@ -87,7 +87,7 @@ describe('Blog settings', function() {
         })
         .then(function() {
             blogs.blog.settings.team
-            .searchUser('g')
+            .searchUser('s')
             .waitChooseUser()
             .changeToUser();
             blogs.blog.settings

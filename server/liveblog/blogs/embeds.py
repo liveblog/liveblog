@@ -13,6 +13,7 @@ import copy
 import json
 import logging
 import os
+import math
 
 import superdesk
 from bson.json_util import dumps as bson_dumps
@@ -189,6 +190,27 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         posts = blog_instance.posts(wrap=True, limit=page_limit, ordering=ordering, deleted=is_amp)
         sticky_posts = blog_instance.posts(wrap=True, limit=sticky_limit, sticky=True,
                                            ordering='newest_first', deleted=is_amp)
+
+        if output and output.get('collection', False):
+            ads = []
+            if output['collection'].get('advertisements'):
+                for ad in output['collection']['advertisements']:
+                    ads.append(get_resource_service('advertisements').find_one(req=None, _id=ad['advertisement_id']))
+
+            pcount = len(posts['_items'])
+            acount = len(ads)
+            frequency = output["settings"].get("frequency", 4)
+            order = output["settings"].get("order", 1)
+            if order == 1:
+                for i in range(0, pcount, (frequency + 1)):
+                    index = math.ceil(i / (frequency + 1)) % acount
+                    # transform ad into a valid post.
+                    posts['_items'].insert(i, ad_to_post(ads[index]))
+            else:
+                for i in range(pcount, 0, (frequency + 1)):
+                    index = math.floor(i / (frequency + 1)) % acount
+                    # transform ad into a valid post.
+                    posts['_items'].insert(i, ad_to_post(ads[index]))
 
         api_response = {
             'posts': posts,
