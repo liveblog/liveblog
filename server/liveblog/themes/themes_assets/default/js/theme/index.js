@@ -8,8 +8,7 @@ const handlers = require('./handlers'),
   viewmodel = require('./viewmodel'),
   view = require('./view'),
   pageview = require('./pageview'),
-  localAnalytics = require('./local-analytics'),
-  adsManager = require('./ads-manager');
+  localAnalytics = require('./local-analytics');
 
 require("iframe-resizer/js/iframeResizer.contentWindow.min.js");
 module.exports = {
@@ -22,8 +21,6 @@ module.exports = {
     viewmodel.init();
     localAnalytics.hit();
     pageview.init();
-
-    adsManager.init();
 
     view.updateTimestamps();
     setInterval(() => {

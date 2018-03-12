@@ -253,10 +253,6 @@ Feature: Blog operations
         """
         [{"name": "forest"}]
         """
-    	Given "blogs"
-        """
-        [{"title": "Sports blog", "blog_preferences": {"theme": "forest", "language": "fr"}}]
-        """
     	Given "roles"
         """
         [{"name": "Contributor", "privileges": {"blogs": 1, "publish_post": 1, "users": 1, "posts": 1, "archive": 1, "request_membership": 1}}]
@@ -265,20 +261,26 @@ Feature: Blog operations
         """
         [{"username": "foo", "email": "foo@bar.com", "is_active": true, "role": "#roles._id#", "password": "barbar"}]
         """
+        When we find for "users" the id as "user_foo" by "where={"username": "foo"}"
         When we login as user "foo" with password "barbar"
+        Given empty "blogs"
+        When we post to "blogs"
+        """
+        [{"title": "Sports blog", "blog_status": "open", "blog_preferences": {"theme": "forest", "language": "fr"}}]
+        """
         And we get "/blogs"
         Then we get list with 1 items
         """
-        {"_items": [{"title": "Sports blog"}]}
+        {"_items": [{"title": "Sports blog", "original_creator": "#user_foo#"}]}
         """
         Given empty "request_membership"
 		When we post to "/request_membership"
 		"""
-        {"blog": "#blogs._id#"}
+        {"blog": "#blogs._id#", "original_creator": "#user_foo#"}
         """
         Then we get new resource
         """
-        {"blog": "#blogs._id#"}
+        {"blog": "#blogs._id#", "original_creator": "#user_foo#"}
         """
         Then we get notifications
         """

@@ -48,7 +48,12 @@ class BlogsResource(Resource):
 
 
 def notify_members(blog, origin, recipients):
-    add_activity('notify', 'you have been added as a member', resource=None, item=blog, notify=recipients)
+    add_activity(
+        'liveblog:add', 'you have been added as a member',
+        resource=None,
+        item=blog,
+        item_slugline=blog.get('title'),
+        notify=recipients)
     send_email_to_added_members(blog, recipients, origin)
 
 

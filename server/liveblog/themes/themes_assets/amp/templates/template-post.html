@@ -17,37 +17,44 @@
   {% set sortTime = item.published_date | addten %}
 {% endif %}
 
-<article 
-id="{{ item._id | string | replace(':', '') | replace('-', '') | replace('.', '') }}" 
-data-update-time="{{ item._updated | date('X') }}" 
-data-sort-time="{{ sortTime | date('X') }}" 
+<article
+id="{{ item._id | string | replace(':', '') | replace('-', '') | replace('.', '') }}"
+data-update-time="{{ item._updated | date('X') }}"
+data-sort-time="{{ sortTime | date('X') }}"
 class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-post--highlighted{% endif %} {% if item.deleted %} hide-item {% endif %}"
 {% if item.deleted %} data-tombstone="true" {% endif %}>
 
   <div class="lb-type lb-type--{{ item.post_items_type }}">
     {% if item.post_items_type =="embed-facebook" %}
       <amp-img src="{{ assets_root }}images/facebook_logo.png"
-      layout="fixed"
+      layout="responsive"
       width="20"
       height="20"
       >
       </amp-img>
     {% elif item.post_items_type =="embed-youtube" %}
       <amp-img src="{{ assets_root }}images/youtube_logo.png"
-      layout="fixed"
+      layout="responsive"
       width="20"
       height="20"
       >
       </amp-img>
     {% elif item.post_items_type =="embed-twitter" %}
       <amp-img src="{{ assets_root }}images/twitter_logo_white.png"
-      layout="fixed"
+      layout="responsive"
       width="20"
       height="20"
       >
       </amp-img>
     {% elif item.post_items_type =="embed-instagram" %}
       <amp-img src="{{ assets_root }}images/instagram_logo.png"
+      layout="responsive"
+      width="20"
+      height="20"
+      >
+      </amp-img>
+    {% elif item.post_items_type =="embed-brightcove" %}
+      <amp-img src="{{ assets_root }}images/video_logo.png"
       layout="fixed"
       width="20"
       height="20"
@@ -55,13 +62,13 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
       </amp-img>
     {% elif item.post_items_type and item.post_items_type | truncate(5, True, '', 0) == "embed" %}
       <amp-img src="{{ assets_root }}images/link-icon.png"
-      layout="fixed"
+      layout="responsive"
       width="40"
       height="40"
       >
     {% endif %}
   </div>
-  
+
 {% if item.sticky and item.lb_highlight %}
   <amp-img src="{{ assets_root }}images/pinpost.svg" width="10" height="13" class="pin-icon" ></amp-img>
   <amp-img src="{{ assets_root }}images/highlighted.svg" width="14" height="13" class="highlight-icon" ></amp-img>
@@ -71,7 +78,7 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
   <amp-img src="{{ assets_root }}images/highlighted.svg" width="14" height="13" class="highlight-icon" ></amp-img>
 {% endif %}
 
-  <div class="lb-post-date">{{ postDate | date('')  }}</div>
+  <div class="lb-post-date">{{ postDate | date('') }}</div>
 
   <!-- author plus avatar -->
   <div class="lb-author">
@@ -92,30 +99,30 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
         </div>
         {% if settings.showAuthorAvatar %}
           {% if type == 'comment' %}
-          <amp-img class="lb-author__avatar lb-author__avatar--comment" 
+          <amp-img class="lb-author__avatar lb-author__avatar--comment"
           src="{{ assets_root }}images/comment_icon.svg"
-          layout="fixed"
+          layout="responsive"
           width="45"
           height="45">
           </amp-img>
           {% elif mainItem.syndicated_creator and settings.showSyndicatedAuthor and mainItem.syndicated_creator.picture_url %}
           <amp-img class="lb-author__avatar" 
           src="{{ mainItem.syndicated_creator.picture_url }}" 
-          layout="fixed"
+          layout="responsive"
           width="45"
           height="45">
           </amp-img>
           {% elif item.original_creator and item.original_creator.picture_url %}
-          <amp-img class="lb-author__avatar" 
+          <amp-img class="lb-author__avatar"
           src="{{ item.original_creator.picture_url }}"
-          layout="fixed"
+          layout="responsive"
           width="45"
           height="45">
           </amp-img>
           {% elif item.publisher and item.publisher.picture_url %}
-          <amp-img class="lb-author__avatar" 
+          <amp-img class="lb-author__avatar"
           src="{{ item.publisher.picture_url }}"
-          layout="fixed"
+          layout="responsive"
           width="45"
           height="45">
           </amp-img>
@@ -126,7 +133,7 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
       {% endif %}
     </div>
   <!-- end author -->
-  
+
   <!-- checking if post might be a gallery -->
   {% set gallery = false %}
   {% if item.groups and item.groups[1].refs and item.groups[1].refs | length > 1 %}
@@ -168,7 +175,7 @@ class="lb-post list-group-item show-author-avatar  {% if item.lb_highlight %}lb-
 
   {% if settings.showUpdateDatetime and (item.content_updated_date != item.firstcreated) and item.post_items_type != "advertisement" %}
     <div class="lb-post-updated">
-      <span>{{ translate('Updated') }}</span> <span class="lb-post-updated-time" >{{item.content_updated_date | date('')}}</span>
+      <span>{{ translate('Updated') }}</span> <span class="lb-post-updated-time" >{{ item.content_updated_date | date('') }}</span>
     </div>
   {% endif %}
 

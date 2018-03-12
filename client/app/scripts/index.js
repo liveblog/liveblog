@@ -99,6 +99,7 @@ import 'liveblog-analytics';
 import 'liveblog-advertising';
 
 import 'liveblog-security.service';
+import notificationsTpl from 'template/core/menu/notifications/views/notifications.html';
 
 const config = __SUPERDESK_CONFIG__;
 
@@ -203,8 +204,8 @@ liveblog.config(['$routeProvider', '$locationProvider', ($routeProvider, $locati
     $routeProvider.when('/', {redirectTo: '/liveblog'});
 }]);
 
-liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session',
-    function($rootScope, $timeout, notify, gettext, session) {
+liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session', '$templateCache',
+    function($rootScope, $timeout, notify, gettext, session, $templateCache) {
         var alertTimeout;
 
         $rootScope.$on('disconnected', (event) => {
@@ -226,6 +227,104 @@ liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session',
                 }, 100);
             }
         });
+        $templateCache.put(
+            'scripts/core/menu/notifications/views/notifications.html',
+/**
+ * @TODO: from template loacated `template/core/menu/notifications/views/notifications.html`
+ * wepack `ngtemplate` isn't loading the content.
+ *
+*/
+`
+<div class="notification-pane" ng-class="{show: flags.notifications}">
+    <div class="header" ng-if="flags.notifications">
+        <figure class="avatar medium">
+            <img sd-user-avatar data-user="currentUser">
+        </figure>
+        <div class="user-info">
+            <span class="name">{{currentUser.display_name }}</span>
+            <span class="displayname">{{currentUser.username }}</span>
+        </div>
+        <div class="actions">
+            <a href="#/profile/" ng-click="flags.notifications = false" translate>Profile</a>
+            <button ng-click="logout()" translate>SIGN OUT</button>
+        </div>
+    </div>
+    <div class="content" ng-if="flags.notifications">
+        <section class="module">
+            <header class="title" translate>Notifications</header>
+            <div class="notification-list">
+                <ul>
+                    <li ng-repeat="notification in notifications._items track by notification._id"
+                        ng-class="{unread: notification._unread}" sd-mark-as-read>
+                        <figure class="avatar">
+                            <img sd-user-avatar data-user="notification.user">
+                        </figure>
+                        {{notification}}
+                        <div class="content" ng-if="notification.name == 'notify'">
+                            <time sd-datetime data-date="notification._created"></time>
+                            <p class="text"><b>{{:: notification.user_name }}</b>
+                            <span translate>commented on</span>
+<i><a
+ng-href="#/authoring/{{ notification.item }}?_id={{ notification.item }}&comments={{ notification.data.comment_id }}"
+title="{{ notification.item_slugline }}">
+                                    {{ :: notification.item_slugline }}
+</a></i>
+                            :<br>{{:: notification.data.comment }}</p>
+                        </div>
+                        <div class="content" ng-if="notification.name == 'user:mention'">
+                            <time sd-datetime data-date="notification._created"></time>
+                            <p class="text">
+                                <b>{{:: notification.user_name }}</b>
+                                <span translate>mentioned you</span> <i>
+                                <a title="{{ notification.item_slugline }}" ng-click="openArticle(notification)">
+                                    {{:: notification.item_slugline}}
+                                </a></i>:<br>{{:: notification.data.comment }}</p>
+                        </div>
+                        <div class="content" ng-if="notification.name == 'liveblog:request'">
+                            <time sd-datetime data-date="notification._created"></time>
+                            <p class="text">
+                                <b>{{:: notification.user_name }}</b>
+                                <span translate>request access to </span>
+                                <i>
+<a ng-href="#/liveblog/edit/{{ notification.item }}?panel=editor" title="{{:: notification.data.item_slugline }}">
+{{:: notification.data.item_slugline }}
+</a>
+                                </i>
+                            </p>
+                        </div>
+                        <div class="content" ng-if="notification.name == 'liveblog:add'">
+                            <time sd-datetime data-date="notification._created"></time>
+                            <p class="text">
+                                <b>{{:: notification.user_name }}</b>
+                                <span translate>added you as a member to </span>
+                                <i>
+<a ng-href="#/liveblog/edit/{{ notification.item }}?panel=editor" title="{{:: notification.data.item_slugline }}">
+{{:: notification.data.item_slugline }}
+</a>
+                                </i>
+                            </p>
+                        </div>
+                        <div class="content"
+                            ng-if="notification.name != 'notify' &&
+                                    notification.name != 'user:mention' &&
+                                    notification.name.indexOf('liveblog') == -1"
+                            ng-click="onNotificationClick(notification)">
+                            <time sd-datetime data-date="notification._created"></time>
+                            <p class="text">
+                                <b>{{:: notification.user_name || "System" }}</b>:
+                                <span sd-activity-message data-activity="notification"></span></p>
+                        </div>
+                    </li>
+                    <div class="info" ng-show="notifications._items.length === 0" translate>All good so far.</div>
+                    <div class="info" ng-show="notifications._items == null" translate>Loading...</div>
+                </ul>
+            </div>
+        </section>
+    </div>
+</div>
+
+`
+        );
     }]);
 
 let body = angular.element('body');

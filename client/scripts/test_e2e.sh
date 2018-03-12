@@ -13,7 +13,7 @@ for arg; do
 done
 
 # run tests
-./node_modules/protractor/bin/webdriver-manager update
+./node_modules/protractor/bin/webdriver-manager update --versions.chrome 2.36
 
 ./node_modules/protractor/bin/protractor protractor-conf.js --baseUrl=${baseUrl} --specs=${specs} --params.baseBackendUrl=${backendUrl}
 TEST_STATUS=$?
