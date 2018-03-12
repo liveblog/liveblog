@@ -6,6 +6,7 @@
 
 var view = require('./view')
   , viewmodel = require('./viewmodel')
+  , adsManager = require('./ads-manager')
   , helpers = require('./helpers');
 
 /**
@@ -47,10 +48,11 @@ var buttons = {
       viewmodel.loadPostsPage()
         .then(view.renderPosts)
         .then(view.displayNewPosts)
+        .then(view.adsManager.refreshAds)
         .then(view.updateTimestamps)
         .catch(catchError);
     },
-    
+
     "[data-js-sort_dropdown_button]": () => {
       view.toggleSortDropdown();
     },
@@ -140,6 +142,7 @@ function loadSort(sortBy) {
     .then(view.renderTimeline)
     .then(view.displayNewPosts)
     .then(view.toggleSortBtn(sortBy))
+    .then(view.adsManager.refreshAds)
     .catch(catchError);
 }
 
