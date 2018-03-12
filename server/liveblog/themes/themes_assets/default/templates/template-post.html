@@ -43,49 +43,15 @@
 
       <!-- remove advertisement stylization-->
       {% if item.post_items_type != "advertisement" %}
-
-      <div class="lb-post-date relativeDate{% if settings.clientDatetimeOnly %} mod--displaynone{% endif %}" data-js-timestamp="{{ postDate }}">{{ postDate | date('') }}</div>
-
-    </div>
-    <!-- author plus avatar -->
-    <div class="lb-author">
-      {% if mainItem.commenter and not (item.syndication_in and not settings.showSyndicatedAuthor) %}
-        <div class="lb-author__name">
-          {{ translate('Comment by') }} {{ mainItem.commenter }}
-        </div>
-        <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
-      {% elif settings.showAuthor %}
-        <div class="lb-author__name">
-        {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
-          {{ mainItem.syndicated_creator.display_name }}
-        {% elif item.original_creator %}
-          {{ item.original_creator.display_name }}
-        {% elif item.publisher %}
-          {{ item.publisher.display_name }}
-        {% endif %}
-        {% if item.syndication_in and not settings.showSyndicatedAuthor %}
-          <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
-        {% endif %}
-        </div>
-        {% if type == 'comment' %}
-          <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
-        {% endif %}
-        {% if settings.showAuthorAvatar and type != 'comment' %}
-          {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor and mainItem.syndicated_creator.picture_url %}
-          <img class="lb-author__avatar" src="{{ mainItem.syndicated_creator.picture_url }}" />
-          {% elif item.original_creator and item.original_creator.picture_url %}
-          <img class="lb-author__avatar" src="{{ item.original_creator.picture_url }}" />
-          {% elif item.publisher and item.publisher.picture_url %}
-          <img class="lb-author__avatar" src="{{ item.publisher.picture_url }}" />
-          {% else %}
-          <div class="lb-author__avatar"></div>
-          {% endif %}
-        {% endif %}
+        <div class="lb-post-date relativeDate{% if settings.clientDatetimeOnly %} mod--displaynone{% endif %}" data-js-timestamp="{{ postDate }}">{{ postDate | date('') }}</div>
       {% endif %}
-      {% endif %}
-      <!-- end remove advertisement stylization-->
     </div>
-    <!-- end author -->
+    {% if settings.authorPosition == "top"  %}
+      {% include "template-author.html" %}
+    {% else %}
+      {% include "template-post-actions.html" %}
+    {% endif %}
+
   </div>
 
   {% endif %}
@@ -156,48 +122,11 @@
       </div>
     {% endif %}
 
-    <div class="lb-post-actions">
-
-      <div class="lb-post-share">
-        <img src="{{ assets_root }}images/action_share.svg" class="lb-post-shareIcon" />
-        <div class="lb-post-shareBox">
-          <a class="lb-post-shareBox__item"
-            onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-            data-link-base="//www.facebook.com/sharer.php?s=100&p[title]=&p[url]="
-            data-link-id={{item._id}}><img src="{{ assets_root }}images/share_facebook.svg"/>
-          </a>
-          <a class="lb-post-shareBox__item"
-            onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-            data-link-base="//plus.google.com/share?url="
-            data-link-id={{item._id}}><img src="{{ assets_root }}images/share_google.svg"/>
-          </a>
-          <a class="lb-post-shareBox__item"
-            onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-            data-link-base="//www.linkedin.com/shareArticle?mini=true&url="
-            data-link-id={{item._id}}><img src="{{ assets_root }}images/share_linkedin.svg"/>
-          </a>
-          <a class="lb-post-shareBox__item"
-            onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-            data-link-base="//twitter.com/home?status="
-            data-link-id={{item._id}}><img src="{{ assets_root }}images/share_twitter.svg"/>
-          </a>
-          <a class="lb-post-shareBox__item"
-            onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1024,height=768');return false;"
-            data-link-base="mailto:?to=&subject=Liveblog&body="
-            data-link-id={{item._id}}><img src="{{ assets_root }}images/share_email.svg"/>
-          </a>
-          <span> | </span>
-        </div>
-      </div>
-      <!-- end share -->
-
-      <!-- permalink -->
-      <div class="lb-post-permalink">
-        <a id="{{ item._id }}" target="_blank">
-          <img src="{{ assets_root }}images/action_link.svg" class="lb-post-linkIcon" />
-        </a>
-      </div>
-      <!-- end permalink -->
+    {% if settings.authorPosition == "bottom"  %}
+      {% include "template-author.html" %}
+    {% else %}
+      {% include "template-post-actions.html" %}
+    {% endif %}
 
     </div>
 

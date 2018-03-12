@@ -18,16 +18,16 @@ function createCaretPlacer(atStart) {
         el.focus();
         if (typeof window.getSelection !== 'undefined'
                 && typeof document.createRange !== 'undefined') {
-            const range = document.createRange();
+            var range = document.createRange();
 
             range.selectNodeContents(el);
             range.collapse(atStart);
-            const sel = window.getSelection();
+            var sel = window.getSelection();
 
             sel.removeAllRanges();
             sel.addRange(range);
         } else if (typeof document.body.createTextRange !== 'undefined') {
-            const textRange = document.body.createTextRange();
+            var textRange = document.body.createTextRange();
 
             textRange.moveToElementText(el);
             textRange.collapse(atStart);
@@ -40,11 +40,12 @@ var placeCaretAtStart = createCaretPlacer(true);
 var placeCaretAtEnd = createCaretPlacer(false);
 var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
 var socialEmbedRegex = '(iframe|blockquote)+(?:.|\\n)*(youtube\\.com\\/embed|facebook\\.com'
-    + '\\/plugins|instagram\\.com\\/p\\/|twitter\\.com\\/.*\\/status)(?:.|\\n)*(iframe|blockquote)';
+    + '\\/plugins|instagram\\.com\\/p\\/|players\\.brightcove\\.net'
+    + '|twitter\\.com\\/.*\\/status)(?:.|\\n)*(iframe|blockquote)';
 
 function fixDataEmbed(data) {
     if (data.html) {
-        const tmp = document.createElement('DIV');
+        var tmp = document.createElement("DIV");
 
         tmp.innerHTML = data.html;
         data.html = tmp.innerHTML;
@@ -87,7 +88,7 @@ function fixSocial(html, data) {
 }
 
 function isURI(string) {
-    const pattern = new RegExp('^' + uriRegx, 'i');
+    var pattern = new RegExp('^' + uriRegx, 'i');
 
     return pattern.test(string);
 }
@@ -99,11 +100,12 @@ function replaceEmbedWithUrl(string) {
     var facebookPattern = /(?:post\.php|video\.php)\?href=(https?(\w|%|\.)+)/i;
     var instagramPattern = /(https?:\/\/(?:www)?\.?instagram\.com\/p\/(?:\w+.)+\/)/i;
     var twitterPattern = /(https?:\/\/(?:www)?\.?twitter\.com\/\w+\/status\/\d+)/i;
+    var bcPattern = /(http|https)?:?\/\/players.brightcove.net\/\d*\/[a-zA-Z\d\_\-]*\/index\.html\?videoId=\d*/i;
     var m;
 
     // checking if string contains any of the "big four" embeds
     if (generalPattern.test(string)) {
-        if ((m = youtubePattern.exec(string)) !== null){
+        if ((m = youtubePattern.exec(string)) !== null) {
             return 'https://www.youtube.com/watch?v='+m[1];
         }
         else if ((m = facebookPattern.exec(string)) !== null) {
@@ -114,6 +116,9 @@ function replaceEmbedWithUrl(string) {
         }
         else if ((m = twitterPattern.exec(string)) !== null) {
             return m[1];
+        }
+        else if ((m = bcPattern.exec(string)) !== null) {
+            return m[0];
         }
     }
 
@@ -135,7 +140,9 @@ angular
             });
         };
         // Add toMeta method to all blocks.
-        SirTrevor.Block.prototype.toMeta = (data) => data;
+        SirTrevor.Block.prototype.toMeta = function() {
+            return this.getData();
+        };
         SirTrevor.Block.prototype.getOptions = function() {
             const instance = SirTrevor.$get().getInstance(this.instanceID);
 
@@ -221,10 +228,11 @@ angular
             retrieveData: function() {
                 const self = this;
                 // retrieve new data from editor
-                const editorData = {
-                    title: self.$('.title-preview').text(),
-                    description: self.$('.description-preview').text(),
-                    credit: self.$('.credit-preview').text()
+                var editor_data = {
+                    title: that.$('.title-preview').text(),
+                    description: that.$('.description-preview').text(),
+                    credit: that.$('.credit-preview').text(),
+                    syndicated_creator: this.getData().syndicated_creator
                 };
 
                 // remove thumbnail_url if it was removed by user
@@ -460,7 +468,8 @@ angular
             retrieveData: function() {
                 return {
                     quote: this.$('.quote-input').text() || undefined,
-                    credit: this.$('.js-cite-input').text() || undefined
+                    credit: this.$('.js-cite-input').text() || undefined,
+                    syndicated_creator: this.getData().syndicated_creator
                 };
             },
             loadData: function(data) {
@@ -510,6 +519,12 @@ angular
 
         SirTrevor.Blocks.Text.prototype.loadData = function(data) {
             this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
+        };
+
+        SirTrevor.Blocks.Text.prototype.toMeta = function() {
+            return {
+                syndicated_creator: this.getData().syndicated_creator
+            };
         };
 
         SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
@@ -608,6 +623,7 @@ angular
             retrieveData: function() {
                 return {
                     text: this.$('.st-text-block').text() || undefined,
+                    syndicated_creator: this.getData().syndicated_creator
                 };
             },
             toHTML: function(html) {
@@ -623,8 +639,9 @@ angular
                 return {
                     text: data.text,
                     commenter: data.commenter,
-                    _created: data._created
-                };
+                    _created: data._created,
+
+                }
             }
         });
         const Strikethrough = SirTrevor.Formatter.extend({

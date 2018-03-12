@@ -1,7 +1,6 @@
 {
-  "name": "lb-theme-angular",
+  "name": "angular",
   "description": "Angular Liveblog Toolkit",
-  "version": "3.3.4",
   "main": "main.js",
   "scripts": {
     "build": "gulp build"
