@@ -19,7 +19,7 @@
     transition: opacity .35s ease-in-out;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-  
+
   .aligncenter {
     margin-left: 50%;
     position: absolute;
@@ -617,10 +617,15 @@
     margin-top: -20px;
   }
 
+  [class*="lb-type--embed"] amp-img {
+    width: 40px;
+  }
+
   .lb-type--embed-twitter {
     background-color: #6bacdf;
     amp-img {
       margin: 10px 0 0 10px;
+      width: 20px;
     }
   }
 
@@ -628,6 +633,7 @@
     background-color: #3c5a9a;
     amp-img {
       margin: 10px 0 0 10px;
+      width: 20px;
     }
   }
 
@@ -635,6 +641,7 @@
     background-color: #e52d27;
     amp-img {
       margin: 10px 0 0 10px;
+      width: 20px;
     }
   }
 
@@ -642,9 +649,16 @@
     background-color: #444;
     amp-img {
       margin: 10px 0 0 10px;
-    } 
+      width: 20px;
+    }
   }
 
+  .lb-type--embed-brightcove {
+    background-color: #abc37a;
+    amp-img {
+      margin: 10px 0 0 10px;
+    }
+  }
 
   // Posts End
 
@@ -1092,7 +1106,7 @@ body .scorecard-top__info {
           margin-left: 0;
           margin-top: 18px;
       }
-      
+
       .lb-post, .lb-sticky-top-post {
           margin: 0;
       }
@@ -1143,10 +1157,14 @@ body .scorecard-top__info {
         left: 0px;
       }
 
+      [class*="lb-type--embed"] amp-img {
+        width: 8px;
+        margin: 2px 0px 0px 2px;
+      }
+
       .lb-author__avatar, .lb-author__comment   {
           width: 30px;
           height: 30px;
-          left: -50px;
       }
 
       .lb-author__date {
@@ -1391,7 +1409,7 @@ body .scorecard-top__info {
         line-height: 1.6em;
       }
     }
-    
+
   .hide-item {
     display: none;
   }

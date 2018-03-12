@@ -12,6 +12,18 @@
         <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
         <p>{{ ref.item.meta.title }}</p>
     </blockquote>
+{% elif ref.item.meta.provider_name|lower == 'brightcove' and ref.item.meta.html %}
+    <div class="item--embed__element lb-responsive-video">{{ ref.item.meta.html | safe }}</div>
+    <div class="item--embed__info">
+        {% if ref.item.meta.title %}
+        <div class="item--embed__title">
+           {{ ref.item.meta.title }}
+        </div>
+        {% endif %}
+        {% if ref.item.meta.description %}
+        <div class="item--embed__description">{{ ref.item.meta.description }}</div>
+        {% endif %}
+    </div>
 {% else %}
     {% if ref.item.meta.html %}
     <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div>
@@ -24,7 +36,7 @@
     </a>
     {% endif %}
     {% if ref.item.meta.title or ref.item.meta.description or ref.item.meta.credit %}
-    <div class="item--embed__info">
+        <div class="item--embed__info">
             {% if ref.item.meta.title %}
             <div class="item--embed__title">
                 <a href="{{ ref.item.meta.original_url }}" target="_blank" title="{{ ref.item.meta.title }}">{{ ref.item.meta.title }}</a>
