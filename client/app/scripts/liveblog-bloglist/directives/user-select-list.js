@@ -4,6 +4,7 @@ export default function lbUserSelectList(api) {
     return {
         scope: {
             members: '=',
+            user: '=',
             onchoose: '&'
         },
         templateUrl: 'scripts/apps/desks/views/user-select.html',
@@ -27,8 +28,7 @@ export default function lbUserSelectList(api) {
                     .then((result) => {
                         for (var i = 0; i < result._items.length; i++) {
                             var obj = result._items[i];
-
-                            if (obj.role === null) {
+                            if (obj._id === scope.user._id) {
                                 result._items.splice(i, 1);
                             }
                         }
