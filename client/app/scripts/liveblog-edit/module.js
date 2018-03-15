@@ -156,6 +156,24 @@ var app = angular.module('liveblog.edit', [
         return text.replace(absoluteProtocol, '//')
     };
 }])
+/**
+ * Returns relative date and auto updates values every 60s
+ *
+ * @param {Datetime} date iso format datetime
+ * @return {String} relative time
+ */
+
+.filter('reldateAutoUpdate', ['$interval', function reldateAutorUpdateFactory($interval) {
+    // trigger digest every 60 seconds
+    $interval(function(){}, 60000);
+
+    function reldateAutoUpdate(date) {
+        return moment(date).fromNow();
+    }
+
+    reldateAutoUpdate.$stateful = true;
+    return reldateAutoUpdate;
+}])
 .filter('outboundAnchors', function() {
     return function(text) {
         return text.replace(/<a([^>]*)>/g, function(match, attr) {
@@ -187,7 +205,7 @@ var app = angular.module('liveblog.edit', [
     }
     return insta;
 }])
-.config(['embedlyServiceProvider', 'embedServiceProvider', 'config', 
+.config(['embedlyServiceProvider', 'embedServiceProvider', 'config',
     function(embedlyServiceProvider, embedServiceProvider, config) {
         embedlyServiceProvider.setKey(config.embedly.key);
         embedServiceProvider.setConfig('facebookAppId', config.facebookAppId);
