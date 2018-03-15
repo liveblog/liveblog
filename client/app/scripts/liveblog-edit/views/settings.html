@@ -340,7 +340,7 @@
                                             lb-user-select-list
                                             ng-if="!settings.hasReachedMembersLimit()"
                                             data-members="settings.posibleMembers"
-                                            data-onchoose="settings.addMember(user)"></div>
+                                            data-onchoose="settings.addMember(user)" data-user="settings.original_creator"></div>
                                         <div class="content">
                                             <p ng-if="message">{{ message }}</p>
                                             <div class="member-list clearfix">

@@ -6,9 +6,10 @@
 
 require('./templates');
 const helpers = require('./helpers');
+const adsManager = require('./ads-manager');
 const Slideshow = require('./slideshow');
 const Permalink = require('./permalink');
-const nunjucks = require("nunjucks/browser/nunjucks-slim");
+const nunjucks = require('nunjucks/browser/nunjucks-slim');
 
 const nunjucksEnv = new nunjucks.Environment();
 nunjucksEnv.addFilter('date', helpers.convertTimestamp);
@@ -29,7 +30,7 @@ const els = {
  */
 function renderTimeline(api_response) {
   var renderedPosts = [];
-  // for translation macro purposes 
+  // for translation macro purposes
   var optionsObj = {i18n: window.LB.i18n};
 
   api_response._items.forEach((post) => {
@@ -75,9 +76,9 @@ function renderPosts(api_response) {
     const displaynone = api_response.requestOpts.fromDate &&
                         !window.LB.settings.autoApplyUpdates &&
                         !elem;
-    // for translation macro purposes                    
+    // for translation macro purposes
     var optionsObj = {i18n: window.LB.i18n};
-  
+
     const rendered = nunjucks.env.render('template-post.html', {
       item: post,
       settings: window.LB.settings,
@@ -99,6 +100,8 @@ function renderPosts(api_response) {
   addPosts(renderedPosts, api_response.requestOpts.fromDate ? 'afterbegin' : 'beforeend');
 
   loadEmbeds();
+
+  return api_response;
 }
 
 /**
@@ -377,5 +380,6 @@ module.exports = {
   attachShareBox: attachShareBox,
   permalink: permalink,
   clearCommentDialog: clearCommentDialog,
-  checkPending: checkPending
+  checkPending: checkPending,
+  adsManager: adsManager
 };
