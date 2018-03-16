@@ -67,15 +67,15 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
 
                         $scope.image.picture_url = pictureUrl;
                         $scope.image.picture = response.data._id;
+                        if ($scope.progress.width === 100) {
+                            $scope.validation.imageUploaded = true;
+                        }
                     }, (error) => {
                         notify.error(
                             error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
                         );
                     }, (progress) => {
                         $scope.progress.width = Math.round(progress.loaded / progress.total * 100.0);
-                        $timeout(function () {
-                            $scope.validation.imageUploaded = true;
-                        }, 3000);
                     }));
             };
 
