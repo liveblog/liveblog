@@ -73,7 +73,7 @@
                                     </div>
                                 </dd>
                                 <dt ng-if="!vm.isSolo()">{{ ::'Sources' | translate }}:</dt>
-                                <dd ng-if="!vm.isSolo()">
+                                <dd ng-if="!vm.isSolo() && theme.repository.url | githubUrlFromGit">
                                     <div ng-if="!theme.repository.url">unavailable</div>
                                     <a href="{{::theme.repository.url | githubUrlFromGit}}/archive/master.zip"
                                        ng-if="theme.repository.url"
@@ -81,6 +81,15 @@
                                     <a href="{{::theme.repository.url | githubUrlFromGit}}"
                                        ng-if="theme.repository.url"
                                        target="_blank">Github</a>
+                                </dd>
+                                <dd ng-if="!vm.isSolo() && theme.repository.url | stashUrlFromGit">
+                                    <div ng-if="!theme.repository.url">unavailable</div>
+                                    <a href="{{::theme.repository.url | stashUrlFromGit}}/archive?format=zip"
+                                       ng-if="theme.repository.url"
+                                       target="_blank"> <i class="icon-download"></i></a>
+                                    <a href="{{::(theme.repository.url | stashUrlFromGit).replace('rest/api/latest/','')}}"
+                                       ng-if="theme.repository.url"
+                                       target="_blank">Stash</a>
                                 </dd>
                                 <dt>{{ ::'No. of blogs using theme' | translate }}:</dt>
                                 <dd>
