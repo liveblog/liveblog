@@ -1,8 +1,8 @@
 import freetypeImageTpl from 'scripts/liveblog-edit/views/freetype-image.html';
 
-freetypeImage.$inject = ['$compile', 'modal', 'api', 'upload', 'superdesk', 'urls', 'notify', '$timeout'];
+freetypeImage.$inject = ['$compile', 'modal', 'api', 'upload', 'superdesk', 'urls', 'notify'];
 
-export default function freetypeImage($compile, modal, api, upload, superdesk, urls, notify, $timeout) {
+export default function freetypeImage($compile, modal, api, upload, superdesk, urls, notify) {
     return {
         restrict: 'E',
         templateUrl: freetypeImageTpl,
