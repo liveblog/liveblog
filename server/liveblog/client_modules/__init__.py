@@ -3,7 +3,8 @@ from liveblog.client_modules.client_modules import ClientBlogsResource, ClientBl
     ClientPostsService, ClientPostsResource, ClientUsersResource, ClientUsersService, ClientBlogPostsService,\
     ClientBlogPostsResource, ClientCommentsService, ClientCommentsResource, ClientItemsService, ClientItemsResource,\
     ClientAdvertisementsResource, ClientAdvertisementsService, ClientCollectionsResource, ClientCollectionsService,\
-    ClientOutputsResource, ClientOutputsService
+    ClientOutputsResource, ClientOutputsService, ClientItemCommentsService,\
+    ClientItemCommentsResource
 
 
 def init_app(app):
@@ -42,3 +43,7 @@ def init_app(app):
     endpoint_name = 'client_items'
     service = ClientItemsService(endpoint_name, backend=superdesk.get_backend())
     ClientItemsResource(endpoint_name, app=app, service=service)
+
+    endpoint_name = 'client_item_comments'
+    service = ClientItemCommentsService(endpoint_name, backend=superdesk.get_backend())
+    ClientItemCommentsResource(endpoint_name, app=app, service=service)

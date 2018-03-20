@@ -166,6 +166,31 @@ class ClientItemsResource(ItemsResource):
     schema.update(ItemsResource.schema)
 
 
+class ClientItemCommentsResource(ItemsResource, PostsResource):
+    datasource = {
+        'source': 'archive',
+        'default_sort': [('order', -1)]
+    }
+    public_methods = ['GET', 'POST']
+    public_item_methods = ['GET', 'POST']
+    item_methods = ['GET']
+    resource_methods = ['GET', 'POST']
+    schema = {
+        'client_blog': Resource.rel('client_blogs', True),
+        'blog': {
+            'type': 'string'
+        }
+    }
+    schema.update(ItemsResource.schema)
+    schema.update(PostsResource.schema)
+
+
+class ClientItemCommentsService(BaseService):
+    def on_create(self, docs):
+        for doc in docs:
+            check_comment_length(doc['text'])
+
+
 class ClientItemsService(ItemsService):
     def on_create(self, docs):
         for doc in docs:
