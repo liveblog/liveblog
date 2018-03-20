@@ -64,7 +64,13 @@ consumers_schema = {
         'type': 'boolean',
         'default': False,
         'required': False
-    }
+    },
+    'picture_url': {
+        'type': 'string',
+        'nullable': True
+    },
+    'avatar': Resource.rel('upload', embeddable=True, nullable=True),
+    'avatar_renditions': {'type': 'dict'}
 }
 
 

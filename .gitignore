@@ -93,3 +93,6 @@ server/test-env.local
 
 # Theme uploads
 server/themes/
+
+# Monorepo
+node_modules
