@@ -185,7 +185,7 @@ class ClientItemCommentsResource(ItemsResource, PostsResource):
     schema.update(PostsResource.schema)
 
 
-class ClientItemCommentsService(BaseService):
+class ClientItemCommentsService(PostsService):
     def on_create(self, docs):
         for doc in docs:
             check_comment_length(doc['text'])
