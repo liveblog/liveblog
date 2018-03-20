@@ -189,6 +189,10 @@ class ClientItemCommentsService(BaseService):
     def on_create(self, docs):
         for doc in docs:
             check_comment_length(doc['text'])
+            if request.method == 'POST':
+                doc['post_status'] = 'comment'
+                doc['blog'] = str(doc['client_blog'])
+        super().on_create(docs)
 
 
 class ClientItemsService(ItemsService):
