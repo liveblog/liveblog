@@ -354,6 +354,9 @@ function permalinkScroll() {
   if (scrollElem) {
     scrollElem.classList.add('lb-post-permalink-selected');
     scrollElem.scrollIntoView();
+    window.onload = function() {
+      scrollElem.scrollIntoView();
+    };
     updateTimestamps();
     return true;
   }
