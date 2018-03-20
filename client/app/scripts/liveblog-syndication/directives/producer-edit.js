@@ -1,8 +1,8 @@
 import producerEditFormTpl from 'scripts/liveblog-syndication/views/producer-edit-form.html';
 
-producerEdit.$inject = ['api', 'notify', 'lodash', 'adsUtilSevice'];
+producerEdit.$inject = ['api', 'notify', 'lodash', 'adsUtilSevice', 'superdesk'];
 
-export default function producerEdit(api, notify, _, adsUtilSevice) {
+export default function producerEdit(api, notify, _, adsUtilSevice, superdesk) {
     return {
         templateUrl: producerEditFormTpl,
         scope: {
@@ -14,11 +14,19 @@ export default function producerEdit(api, notify, _, adsUtilSevice) {
         },
         link: function(scope, elem) {
             scope.producerForm.attempted = false;
+            scope.dirty = false;
 
             scope.$watch('producer', (producer) => {
                 scope.isEditing = producer.hasOwnProperty('_id');
                 scope.origProducer = _.cloneDeep(producer);
             });
+
+            scope.editPicture = function() {
+                superdesk.intent('edit', 'avatar', scope.producer).then((avatar) => {
+                    scope.producer.picture_url = avatar; // prevent replacing Avatar which would get into diff
+                    scope.dirty = true;
+                });
+            };
 
             scope.save = function() {
                 scope.producerForm.attempted = true;
@@ -34,6 +42,12 @@ export default function producerEdit(api, notify, _, adsUtilSevice) {
                 var data = {}, apiQuery;
 
                 data.contacts = scope.producer.contacts;
+
+                if (scope.producer.picture_url) {
+                    data.picture_url = scope.producer.picture_url;
+                } else {
+                    data.picture_url = null;
+                }
 
                 if (!scope.producerForm.name.$pristine) {
                     data.name = scope.producer.name;

@@ -6,9 +6,10 @@
 
 require('./templates');
 const helpers = require('./helpers');
+const adsManager = require('./ads-manager');
 const Slideshow = require('./slideshow');
 const Permalink = require('./permalink');
-const nunjucks = require("nunjucks/browser/nunjucks-slim");
+const nunjucks = require('nunjucks/browser/nunjucks-slim');
 
 const nunjucksEnv = new nunjucks.Environment();
 nunjucksEnv.addFilter('date', helpers.convertTimestamp);
@@ -99,6 +100,8 @@ function renderPosts(api_response) {
   addPosts(renderedPosts, api_response.requestOpts.fromDate ? 'afterbegin' : 'beforeend');
 
   loadEmbeds();
+
+  return api_response;
 }
 
 /**
@@ -380,5 +383,6 @@ module.exports = {
   attachShareBox: attachShareBox,
   permalink: permalink,
   clearCommentDialog: clearCommentDialog,
-  checkPending: checkPending
+  checkPending: checkPending,
+  adsManager: adsManager
 };

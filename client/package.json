@@ -1,9 +1,12 @@
 {
   "name": "liveblog-client",
-  "version": "3.3.7",
+  "version": "3.3.8",
   "repository": {
     "type": "git",
     "url": "git@github.com:liveblog/liveblog.git"
+  },
+  "scripts": {
+    "build": "grunt build"
   },
   "licenses": [
     {
