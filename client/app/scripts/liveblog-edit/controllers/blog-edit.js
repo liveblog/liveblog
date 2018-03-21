@@ -90,7 +90,7 @@ export default function BlogEditController(
     }
     const emptyPRegex = /<p><br\/?><\/p>/g;
     const emptyDivRegex = /<div><br\/?><\/div>/g;
-    const targetIconRegex = /target\s*=\s*"\<\/?i\>blank\"/g;
+    const targetIconRegex = /target\s*=\s*"<\/?i>blank"/g;
     // start listening for unread posts.
 
     unreadPostsService.startListening();
@@ -113,7 +113,7 @@ export default function BlogEditController(
                     meta: block.meta,
                     syndicated_creator: syndicatedCreator,
                     item_type: block.type
-                }
+                };
             });
         }
 

@@ -396,17 +396,19 @@ function BlogSettingsController(
         if (vm.angularTheme.public_url) {
             // production link
             parentIframe = vm.angularTheme.public_url
-                .replace(/\/[0-9\.]+\/themes_assets\//, '/themes_assets/')
+                .replace(/\/[0-9.]+\/themes_assets\//, '/themes_assets/')
                 .replace('http://', 'https://');
         }
         // loading mechanism, and load parent-iframe.js with callback.
-        var loadingScript = '<script type="text/javascript">var liveblog={load:function(e,t){'
-        + 'var a=document,l=a.createElement("script"),'
-        + 'o=a.getElementsByTagName("script")[0];'
-        + 'return l.type="text/javascript",l.onload=t,l.async=!0,l.src=e,o.parentNode.insertBefore(l,o),'
-        + 'l}};liveblog.load("' + parentIframe
-        + 'parent-iframe.js?"+parseInt(new Date().getTime()/900000,10),function(){"function"==typeof '
-        + 'liveblog.loadCallback&&liveblog.loadCallback()});</script>';
+        var loadingScript = `
+<script type="text/javascript">
+var liveblog={load:function(e,t){
+    var a=document,l=a.createElement("script"),
+        o=a.getElementsByTagName("script")[0];
+    return l.type="text/javascript",l.onload=t,l.async=!0,l.src=e,o.parentNode.insertBefore(l,o),l}};
+liveblog.load("${parentIframe}parent-iframe.js?"+parseInt(new Date().getTime()/900000,10),function(){"function"==typeof 
+liveblog.loadCallback&&liveblog.loadCallback()});</script>`;
+
         vm.embeds = {
             normal: '<iframe id="liveblog-iframe" width="100%" height="715" src="' +
                 vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>',

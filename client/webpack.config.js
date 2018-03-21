@@ -97,7 +97,7 @@ module.exports = function makeConfig(grunt) {
                         (app) => p.indexOf(app) > -1
                     ),
                     options: {
-                        configFile: './.eslintrc.json',
+                        configFile: './.eslintrc.js',
                         ignorePath: './.eslintignore'
                     }
                 },

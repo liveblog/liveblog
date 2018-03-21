@@ -147,11 +147,10 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                 }
             },
             cannotRemove: function(theme) {
-                const hasChildren = self.themes.some(function(t) {
-                    return t.extends === theme.name;
-                });
+                const hasChildren = self.themes.some((t) => t.extends === theme.name);
                 const systemThemes = ['angular', 'classic', 'default', 'amp'];
                 const isSystemTheme = systemThemes.indexOf(theme.name) !== -1;
+
                 return hasChildren || isSystemTheme;
             },
             openThemeBlogsModal: function(theme) {
@@ -316,7 +315,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                     return new RegExp(
                         /^(?:https?:\/\/|git:\/\/|git\+ssh:\/\/|git\+https:\/\/)?(?:[^@]+@)?/.source +
                             '(' + baseUrls.join('|') + ')' +
-                            /[:\/]([^\/]+\/[^\/]+?|[0-9]+)$/.source
+                            /[:/]([^/]+\/[^/]+?|[0-9]+)$/.source
                     );
                 };
 

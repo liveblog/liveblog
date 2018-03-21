@@ -79,7 +79,7 @@ function LiveblogFreetypesController(api, $location, notify, gettext,
             let valid = true;
             let unique = true;
             // check for variables
-            const patt = /\$([\$a-z0-9_.\[\]]+)/gi;
+            const patt = /\$([$a-z0-9_.[\]]+)/gi;
 
             if (!patt.test(template)) {
                 valid = false;

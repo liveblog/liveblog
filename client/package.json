@@ -45,7 +45,7 @@
     "grunt-open": "0.2.3",
     "grunt-template": "0.2.3",
     "grunt-usemin": "3.1.1",
-    "grunt-webpack": "^1.0.14",
+    "grunt-webpack": "^3.1.1",
     "jasmine-reporters": "2.2.1",
     "json-loader": "^0.5.4",
     "karma": "1.7.1",
@@ -68,6 +68,7 @@
     "request": "^2.79.0",
     "sass-loader": "6.0.6",
     "style-loader": "0.19.0",
+    "superdesk-code-style": "^1.0.0",
     "webpack": "3.6.0",
     "webpack-dev-server": "2.8.2"
   },

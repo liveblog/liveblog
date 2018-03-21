@@ -20,7 +20,7 @@ const SCOPE_FREETYPEDATA = 'freetypeData';
 /**
      * General regex for catching a $dolar variable
      */
-const REGEX_VARIABLE = /\$([\$a-z0-9_.\[\]]+)/gi;
+const REGEX_VARIABLE = /\$([$a-z0-9_.[\]]+)/gi;
 
 /**
      * Generation of new index.
@@ -38,7 +38,7 @@ function getNewIndex(string) {
 function makeAngularAttr(name, attrRef = '') {
     // remove any trailing `/` character from attr.
     // the trailing character is composed.
-    let attr = attrRef.replace(/compulsory\s*=\s*("|')?([^\"\']+)("|')/g, 'compulsory="' + SCOPE_FREETYPEDATA + '.$2"');
+    let attr = attrRef.replace(/compulsory\s*=\s*("|')?([^"']+)("|')/g, 'compulsory="' + SCOPE_FREETYPEDATA + '.$2"');
 
     attr = attr.replace(/\$\$/g, '');
     if (attr.substr(attr.length - 1, 1) === '/') {
@@ -115,7 +115,7 @@ function injectClass(attrParam, cls) {
     let attr = attrParam;
 
     if (attr.indexOf('class') > -1) {
-        return attr.replace(/class\s*=\s*("|')?([^\"\']+)("|')/, 'class="' + cls + ' $2"');
+        return attr.replace(/class\s*=\s*("|')?([^"']+)("|')/, 'class="' + cls + ' $2"');
     }
 
     attr += 'class="' + cls + '" ';
@@ -143,23 +143,8 @@ angular.module('liveblog.edit')
             * also requires `scope` object so that the proper object with the data is set.
             *     this is special case for vector array.
             */
-            transform: function(template, scope) {
-                template = template || '';
-
-                if (!angular.isObject(scope[SCOPE_FREETYPEDATA])) {
-                    scope[SCOPE_FREETYPEDATA] = {};
-                }
-                // transform collection mechaism for `scorers` or for dinamical lists.
-                template = template.replace(/<li([^>]*)>((.|\n)*?)<\/li>/g, function(all, attr, repeater) {
-                    var iteratorName = getNewIndex('iterator');
-                    var parts, vector = '', collection;
-                    repeater = repeater.replace(REGEX_VARIABLE, function(all, path) {
-                        path2obj(scope[SCOPE_FREETYPEDATA], path);
-                        parts = path.split(/[\d*]/);
-                        if (parts.length === 2 && parts[1] !== '') {
-                            vector = parts[0].substr(0, parts[0].length - 1);
-                            return '$$' + iteratorName + '.' + parts[1].substr(2);
-                        }
+        transform: function(templateParam = '', scope) {
+            let template = templateParam;
 
             if (!angular.isObject(scope[SCOPE_FREETYPEDATA])) {
                 scope[SCOPE_FREETYPEDATA] = {};
@@ -185,12 +170,13 @@ angular.module('liveblog.edit')
                 return '<li ng-repeat="' + iteratorName + ' in ' + collection + '">' +
                             repeater + '<freetype-collection-remove index="$index" vector="' + collection + '"/>' +
                             '</li><li><freetype-collection-add vector="' + collection + '"/></li>';
-                });
-                // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
-                template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, function(all, tag, attr) {
-                    var name;
-                    attr = attr.replace(/(checkbox|radio)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
-                        function(match, tag, quote, rname) {
+            });
+            // transform dollar variables in the attributes of `name` or `text` in any standalone tag .
+            template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, (all, tag, attrParam) => {
+                let name;
+
+                const attr = attrParam.replace(/(checkbox|radio)\s*=\s*("|')?\$([$a-z0-9_.[\]]+)("|')?/gi,
+                    (match, tag, quote, rname) => {
                         name = rname;
                         // remove the dollar variable from the attributes.
                         return '';
@@ -206,15 +192,16 @@ angular.module('liveblog.edit')
             template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, (all, tag, attrParam) => {
                 let name;
 
-                const attr = attrParam.replace(/(name|text)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                const attr = attrParam.replace(/(name|text)\s*=\s*("|')?\$([$a-z0-9_.[\]]+)("|')?/gi,
                     (match, tag, quote, rname) => {
                         name = rname;
                         // remove the dollar variable from the attributes.
                         return '';
                     });
-                    if (name) {
-                        path2obj(scope[SCOPE_FREETYPEDATA], name);
-                        return '<freetype-text text='
+
+                if (name) {
+                    path2obj(scope[SCOPE_FREETYPEDATA], name);
+                    return '<freetype-text text='
                                 + makeAngularAttr(name, attr)
                                 + ' validation="validation"></freetype-text>';
                 }
@@ -225,7 +212,7 @@ angular.module('liveblog.edit')
                 let name;
                 let options;
 
-                let attr = attrParam.replace(/(select|dropdown)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                let attr = attrParam.replace(/(select|dropdown)\s*=\s*("|')?\$([$a-z0-9_.[\]]+)("|')?/gi,
                     (match, tag, quote, rname) => {
                         name = rname;
                         // remove the dollar variable from the attributes.
@@ -252,7 +239,7 @@ angular.module('liveblog.edit')
                     let name;
 
                     const parts = content.replace(/^\s+|\s+$/g, '')
-                        .match(/^\$([\$a-z0-9]+)/gi);
+                        .match(/^\$([$a-z0-9]+)/gi);
 
                     // content should be only the variable name
                     if (parts && parts[0].length === content.length) {
@@ -268,7 +255,7 @@ angular.module('liveblog.edit')
             template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, (all, tag, attrParam) => {
                 let name;
 
-                const attr = attrParam.replace(/(image|graphic|rendition)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                const attr = attrParam.replace(/(image|graphic|rendition)\s*=\s*("|')?\$([$a-z0-9_.[\]]+)("|')?/gi,
                     (match, tag, quote, rname) => {
                         name = rname;
                         // remove the dollar variable from the attributes.
@@ -287,7 +274,7 @@ angular.module('liveblog.edit')
             template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, (all, tag, attrParam) => {
                 let name;
 
-                const attr = attrParam.replace(/(link|url)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                const attr = attrParam.replace(/(link|url)\s*=\s*("|')?\$([$a-z0-9_.[\]]+)("|')?/gi,
                     (match, tag, quote, rname) => {
                         name = rname;
                         // remove the dollar variable from the attributes.
@@ -306,7 +293,7 @@ angular.module('liveblog.edit')
             template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, (all, tag, attrParam) => {
                 let name;
 
-                const attr = attrParam.replace(/(embed|html)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                const attr = attrParam.replace(/(embed|html)\s*=\s*("|')?\$([$a-z0-9_.[\]]+)("|')?/gi,
                     (match, tag, quote, rname) => {
                         name = rname;
                         // remove the dollar variable from the avem o problema, attributes.
@@ -321,21 +308,21 @@ angular.module('liveblog.edit')
             });
 
             // replace if not empty string variables.
-            template = template.replace(/@([a-z0-9_.\[\]\-]+)\?\s*([a-z0-9_.\[\]]+)/gi, (all, str, name) => {
+            template = template.replace(/@([a-z0-9_.[\]-]+)\?\s*([a-z0-9_.[\]]+)/gi, (all, str, name) => {
                 if (str.indexOf('media') !== -1) {
                     return all;
                 }
                 return '';
             });
             // replace conditional string variables.
-            template = template.replace(/@([a-z0-9_.\[\]\-]+):\s*([a-z0-9_.\[\]]+)/gi, (all, str, name) => {
+            template = template.replace(/@([a-z0-9_.[\]-]+):\s*([a-z0-9_.[\]]+)/gi, (all, str, name) => {
                 if (str.indexOf('media') !== -1) {
                     return all;
                 }
                 return '';
             });
             // replace variables
-            template = template.replace(/@([a-z0-9_.\[\]\-]+)/gi, (all, name) => {
+            template = template.replace(/@([a-z0-9_.[\]-]+)/gi, (all, name) => {
                 if (all.indexOf('media') !== -1) {
                     return all;
                 }
@@ -403,7 +390,7 @@ angular.module('liveblog.edit')
                     attr = attr.substr(0, attr.length - 1);
                 }
                 // transform `name` and `text` variables.
-                attr = attr.replace(/(name|text)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                attr = attr.replace(/(name|text)\s*=\s*("|')?\$([$a-z0-9_.[\]]+)("|')?/gi,
                     (match, tag, quote, rname) => {
                         name = rname;
                         type = 'text';
@@ -411,7 +398,7 @@ angular.module('liveblog.edit')
                         return '';
                     });
 
-                attr = attr.replace(/(image|graphic|rendition)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                attr = attr.replace(/(image|graphic|rendition)\s*=\s*("|')?\$([$a-z0-9_.[\]]+)("|')?/gi,
                     (match, tag, quote, rname) => {
                         name = rname + '.picture_url';
                         type = 'image';
@@ -419,7 +406,7 @@ angular.module('liveblog.edit')
                         return '';
                     });
 
-                attr = attr.replace(/(wrap-link)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                attr = attr.replace(/(wrap-link)\s*=\s*("|')?\$([$a-z0-9_.[\]]+)("|')?/gi,
                     (match, tag, quote, rname) => {
                         name = rname;
                         type = 'wrap-link';
@@ -427,7 +414,7 @@ angular.module('liveblog.edit')
                         return '';
                     });
 
-                attr = attr.replace(/(embed)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                attr = attr.replace(/(embed)\s*=\s*("|')?\$([$a-z0-9_.[\]]+)("|')?/gi,
                     (match, tag, quote, rname) => {
                         name = rname;
                         type = 'embed';
@@ -435,13 +422,25 @@ angular.module('liveblog.edit')
                         return '';
                     });
 
-                attr = attr.replace(/(select|dropdown)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
+                attr = attr.replace(/(select|dropdown)\s*=\s*("|')?\$([$a-z0-9_.[\]]+)("|')?/gi,
                     (match, tag, quote, rname) => {
                         name = rname;
                         type = 'select';
                         // remove the dollar variable from the attributes.
                         return '';
                     });
+
+                const removeAttr = ['number', 'necessary', 'maxlength', 'tandem'];
+
+                attr = attr.replace(
+                    new RegExp([
+                        `(${removeAttr.join('|')})`,
+                        '\\s*=\\s*("|\')?',
+                        '([^"]+)',
+                        '("|\')?'
+                    ].join(''),
+                    'gi'
+                    ), '');
                 return {
                     name,
                     type,
@@ -449,64 +448,32 @@ angular.module('liveblog.edit')
                 };
             };
 
-                    attr = attr.replace(/(select|dropdown)\s*=\s*("|')?\$([\$a-z0-9_.\[\]]+)("|')?/gi,
-                        function(match, tag, quote, rname) {
-                            name = rname;
-                            type = 'select';
-                            // remove the dollar variable from the attributes.
-                            return '';
-                        });
-                    const removeAttr = ['number', 'necessary', 'maxlength', 'tandem'];
-                    attr = attr.replace(
-                        new RegExp([
-                            `(${removeAttr.join('|')})`,
-                            '\\s*=\\s*("|\')?',
-                            '([^"]+)',
-                            '("|\')?'
-                        ].join(''),
-                        'gi'
-                    ), '');
-                    if (name || type) {
-                        switch (type) {
-                            case 'text':
-                                if (paths[name]) {
-                                    return '<span '
-                                                + injectClass(attr, 'freetype--element')
-                                                + '>'
-                                                + _.escape(paths[name])
-                                                + '</span>';
-                                }
+            /* eslint complexity: [0, 14] */
+            template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>/gi, (all, tag, attrParam) => {
+                const {name, type, attr} = attributeScoop(attrParam);
 
-                                return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
+                if (!name || !type) {
+                    return all;
+                }
 
-                            case 'select':
-                                if (paths[name]) {
-                                    return '<span '
-                                                + injectClass(attr, 'freetype--element')
-                                                + '>'
-                                                + _.escape(paths[name])
-                                                + '</span>';
-                                }
+                switch (type) {
+                case 'select':
+                case 'text':
+                    return paths[name] ?
+                        `<span ${injectClass(attr, 'freetype--element')}>${_.escape(paths[name])}</span>` :
+                        `<span ${injectClass(attr, 'freetype--empty')}></span>`;
 
-                                return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
-
-                            case 'image':
-                                if (paths[name]) {
-                                    return '<img src="' + paths[name] + '"/>'
-                                }
-
-                                return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
-
-                            case 'embed':
-                                if (paths[name]) {
-                                    return paths[name]
-                                }
-
-                                return '<span ' + injectClass(attr, 'freetype--empty') + '></span>';
-
-                            case 'wrap-link':
-                                if (paths[name]) {
-                                    wrapBefore = '<a href="'
+                case 'image':
+                    return paths[name] ?
+                        `<img src="${paths[name]}"/>` :
+                        `<span ${injectClass(attr, 'freetype--empty')}></span>`;
+                case 'embed':
+                    return paths[name] ?
+                        paths[name] :
+                        `<span ${injectClass(attr, 'freetype--empty')}></span>`;
+                case 'wrap-link':
+                    if (paths[name]) {
+                        wrapBefore = '<a href="'
                                                     + paths[name]
                                                     + '"'
                                                     + injectClass(attr, 'freetype--wrap')
@@ -514,43 +481,90 @@ angular.module('liveblog.edit')
                         wrapAfter = '</a>';
                     }
                     return '';
-                });
-                // remove elements with the hide-render attribute
-                template = (function recursiveContent(template) {
-                    template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>((.|\n)*?)<\/\1>?/gi,
-                        function(all, tag, attr, content) {
-                            var type;
-                            attr = attr.replace(/hide-render/gi, function() {
-                                type = 'hide-render';
-                                // remove hide-render from attributes
-                                return '';
-                            });
+                }
+                return all;
+            });
+            // replace if not empty string variables.
+            template = template.replace(/@([a-z0-9_.[\]-]+)\?\s*([a-z0-9_.[\]]+)/gi, (all, str, name) => {
+                if (str.indexOf('media') !== -1) {
+                    return all;
+                }
+                if (paths[name] || paths[name + '.picture_url']) {
+                    return str;
+                }
+                return '';
+            });
+            // replace conditional string variables.
+            template = template.replace(/@([a-z0-9_.[\]-]+):\s*([a-z0-9_.[\]]+)/gi, (all, str, nameParam) => {
+                let name = nameParam;
 
-                            if (type === 'hide-render') {
-                                return '';
-                            } else if (content) {
-                                content = recursiveContent(content);
-                            }
-                            return '<' + tag + attr + '>' + content + '</' + tag + '>';
+                if (str.indexOf('media') !== -1) {
+                    return all;
+                }
+                let prefix = '';
+                let sufix = '';
+
+                if (['background-image'].indexOf(str) !== -1) {
+                    name = nameParam + '.picture_url';
+
+                    prefix = 'url(';
+                    sufix = ')';
+                }
+                if (paths[name]) {
+                    return str + ':' + prefix + paths[name] + sufix;
+                }
+                return '';
+            });
+            // replace variables
+            template = template.replace(/@([a-z0-9_.[\]-]+)/gi, (all, name) => {
+                if (all.indexOf('media') !== -1) {
+                    return all;
+                }
+                if (paths[name]) {
+                    return paths[name];
+                }
+                return '';
+            });
+            // remove elements with the hide-render attribute
+            template = (function recursiveContent(templateParam) {
+                let template = templateParam.replace(/<([a-z][a-z0-9]*)\b([^>]*)>((.|\n)*?)<\/\1>?/gi,
+                    (all, tag, attrParam, contentParam) => {
+                        let type;
+                        let content = contentParam;
+
+                        const attr = attrParam.replace(/hide-render/gi, () => {
+                            type = 'hide-render';
+                            // remove hide-render from attributes
+                            return '';
                         });
-                    template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>?/gi,
-                        function(all, tag, attr) {
-                            var type;
-                            attr = attr.replace(/hide-render/gi, function() {
-                                type = 'hide-render';
-                                // remove hide-render from attributes
-                                return '';
-                            });
 
-                            if (type === 'hide-render') {
-                                return '';
-                            }
-                            return '<' + tag + attr + '>';
+                        if (type === 'hide-render') {
+                            return '';
+                        } else if (content) {
+                            content = recursiveContent(content);
+                        }
+                        return '<' + tag + attr + '>' + content + '</' + tag + '>';
+                    });
+
+                template = template.replace(/<([a-z][a-z0-9]*)\b([^>]*)>?/gi,
+                    (all, tag, attrParam) => {
+                        let type;
+
+                        const attr = attrParam.replace(/hide-render/gi, () => {
+                            type = 'hide-render';
+                            // remove hide-render from attributes
+                            return '';
                         });
-                    return template;
-                })(template);
 
-                return wrapBefore + template + wrapAfter;
-            }
-        };
-    });
+                        if (type === 'hide-render') {
+                            return '';
+                        }
+                        return '<' + tag + attr + '>';
+                    });
+
+                return template;
+            })(template);
+
+            return wrapBefore + template + wrapAfter;
+        }
+    }));

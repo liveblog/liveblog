@@ -196,7 +196,7 @@ export default function postsService(api, $q, userList) {
     }
 
     function retrievePosts(blogId, postsCriteria) {
-        return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blogId})
+        return api('blogs/<regex("[a-f0-9]{24}"):blog_id>/posts', {_id: blogId})
             .query(postsCriteria)
             .then(retrieveSyndications)
             .then((data) => $q.all(data._items.map(_completePost))
@@ -242,7 +242,7 @@ export default function postsService(api, $q, userList) {
 
                 if (angular.isDefined(items, '_id')) {
                     item = {
-                        blog: blog_id,
+                        blog: blogId,
                         text: item.text,
                         meta: item.meta,
                         group_type: item.group_type,

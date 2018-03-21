@@ -5,7 +5,7 @@ export default function freetypeLink() {
         restrict: 'E',
         templateUrl: freetypeLinkTpl,
         controller: ['$scope', function($scope) {
-            const regex = /https?:\/\/[^\s]+\.[^\s\.]+/;
+            const regex = /https?:\/\/[^\s]+\.[^\s.]+/;
 
             $scope._id = _.uniqueId('link');
             const sentinel = $scope.$watch('link', (value) => {

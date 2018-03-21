@@ -100,9 +100,8 @@ import 'liveblog-analytics';
 import 'liveblog-advertising';
 
 import 'liveblog-security.service';
-import notificationsTpl from 'template/core/menu/notifications/views/notifications.html';
 
-const config = __SUPERDESK_CONFIG__;
+const config = window.__SUPERDESK_CONFIG__;
 
 if (typeof window.superdeskConfig !== 'undefined') {
     angular.extend(config, window.superdeskConfig);
@@ -230,12 +229,12 @@ liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session', '$templa
         });
         $templateCache.put(
             'scripts/core/menu/notifications/views/notifications.html',
-/**
- * @TODO: from template loacated `template/core/menu/notifications/views/notifications.html`
- * wepack `ngtemplate` isn't loading the content.
- *
-*/
-`
+            /**
+             * @TODO: from template loacated `template/core/menu/notifications/views/notifications.html`
+             * wepack `ngtemplate` isn't loading the content.
+             *
+            */
+            `
 <div class="notification-pane" ng-class="{show: flags.notifications}">
     <div class="header" ng-if="flags.notifications">
         <figure class="avatar medium">

@@ -36,16 +36,16 @@ function createCaretPlacer(atStart) {
     };
 }
 
-var placeCaretAtStart = createCaretPlacer(true);
+createCaretPlacer(true);
 var placeCaretAtEnd = createCaretPlacer(false);
-var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
+var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?';
 var socialEmbedRegex = '(iframe|blockquote)+(?:.|\\n)*(youtube\\.com\\/embed|facebook\\.com'
     + '\\/plugins|instagram\\.com\\/p\\/|players\\.brightcove\\.net'
     + '|twitter\\.com\\/.*\\/status)(?:.|\\n)*(iframe|blockquote)';
 
 function fixDataEmbed(data) {
     if (data.html) {
-        var tmp = document.createElement("DIV");
+        var tmp = document.createElement('DIV');
 
         tmp.innerHTML = data.html;
         data.html = tmp.innerHTML;
@@ -100,24 +100,20 @@ function replaceEmbedWithUrl(string) {
     var facebookPattern = /(?:post\.php|video\.php)\?href=(https?(\w|%|\.)+)/i;
     var instagramPattern = /(https?:\/\/(?:www)?\.?instagram\.com\/p\/(?:\w+.)+\/)/i;
     var twitterPattern = /(https?:\/\/(?:www)?\.?twitter\.com\/\w+\/status\/\d+)/i;
-    var bcPattern = /(http|https)?:?\/\/players.brightcove.net\/\d*\/[a-zA-Z\d\_\-]*\/index\.html\?videoId=\d*/i;
+    var bcPattern = /(http|https)?:?\/\/players.brightcove.net\/\d*\/[a-zA-Z\d_-]*\/index\.html\?videoId=\d*/i;
     var m;
 
     // checking if string contains any of the "big four" embeds
     if (generalPattern.test(string)) {
         if ((m = youtubePattern.exec(string)) !== null) {
-            return 'https://www.youtube.com/watch?v='+m[1];
-        }
-        else if ((m = facebookPattern.exec(string)) !== null) {
+            return 'https://www.youtube.com/watch?v=' + m[1];
+        } else if ((m = facebookPattern.exec(string)) !== null) {
             return decodeURIComponent(m[1]);
-        }
-        else if ((m = instagramPattern.exec(string)) !== null) {
+        } else if ((m = instagramPattern.exec(string)) !== null) {
             return m[1];
-        }
-        else if ((m = twitterPattern.exec(string)) !== null) {
+        } else if ((m = twitterPattern.exec(string)) !== null) {
             return m[1];
-        }
-        else if ((m = bcPattern.exec(string)) !== null) {
+        } else if ((m = bcPattern.exec(string)) !== null) {
             return m[0];
         }
     }
@@ -161,7 +157,8 @@ angular
                 ].join('\n');
             },
             onBlockRender: function() {
-                var that = this;
+                var self = this;
+
                 // create and trigger a 'change' event for the $editor which is a contenteditable
                 this.$editor.filter('[contenteditable]').on('focus', function(ev) {
                     const $this = $(this);
@@ -182,6 +179,7 @@ angular
                     let input = $(this)
                         .text()
                         .trim();
+
                     // exit if the input field is empty
                     if (_.isEmpty(input)) {
                         self.getOptions().disableSubmit(true);
@@ -191,7 +189,7 @@ angular
                     // reset error messages
                     self.resetMessages();
                     // start a loader over the block, it will be stopped in the loadData function
-                    that.loading();
+                    self.loading();
                     input = replaceEmbedWithUrl(input);
                     input = fixSecureEmbed(input);
                     // if the input is an url, use embed services
@@ -228,10 +226,10 @@ angular
             retrieveData: function() {
                 const self = this;
                 // retrieve new data from editor
-                var editor_data = {
-                    title: that.$('.title-preview').text(),
-                    description: that.$('.description-preview').text(),
-                    credit: that.$('.credit-preview').text(),
+                var editorData = {
+                    title: self.$('.title-preview').text(),
+                    description: self.$('.description-preview').text(),
+                    credit: self.$('.credit-preview').text(),
                     syndicated_creator: this.getData().syndicated_creator
                 };
 
@@ -325,15 +323,7 @@ angular
                     html.find('.credit-preview').html(data.credit);
                 }
 
-                // remove link for some provider (included in the card)
-                if (['Facebook', 'Youtube', 'Twitter', 'Soundcloud'].indexOf(data.provider_name) > -1) {
-                    html.find('.link-preview').remove();
-                }
-                // special case for twitter
-                if (data.provider_name === 'Twitter') {
-                    // remove credit and title fields (duplicated with rendered card)
-                    html.find('.credit-preview, .title-preview').remove();
-                }
+                fixSocial(html, data);
                 // retrieve the final html code
                 let htmlToReturn = '';
 
@@ -344,9 +334,10 @@ angular
             },
             // render a card from data, and make it editable
             loadData: function(dataParam) {
-                const that = this;
+                const self = this;
                 const data = _.has(dataParam, 'meta') ? dataParam.meta : dataParam;
-                that.data = fixDataEmbed(data);
+
+                self.data = fixDataEmbed(data);
                 // hide the embed input field, render the card and add it to the DOM
                 self.$('.embed-input')
                     .addClass('hidden')
@@ -358,7 +349,7 @@ angular
                         placeholder: fieldName
                     });
                 });
-                // remove the loader when media is loaded
+                // remove the loader when media is loadedhtml =
                 const iframe = this.$('.embed-preview iframe');
 
                 if (iframe.length > 0) {
@@ -528,8 +519,8 @@ angular
         };
 
         SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
-                var that = this;
-                var placeHolderText = window.gettext('Write here (or press Ctrl+Shift+V to paste unformatted text)...');
+            const self = this;
+            const placeHolderText = window.gettext('Write here (or press Ctrl+Shift+V to paste unformatted text)...');
 
             // add placeholder class and placeholder text
             this.$editor.attr('placeholder', placeHolderText).addClass('st-placeholder');
@@ -595,8 +586,8 @@ angular
                 val = val.replace(/(<style\b[^>]*>)[^<>]*(<\/style>)/ig, '');
                 val = val.replace(/(<script\b[^>]*>)[^<>]*(<\/script>)/ig, '');
                 // use paragraph tag `p` instead of `div` witch isn't supported.
-                val = val.replace(/<(\/)?div\b[^\/>]*>/ig, '<$1p>');
-                val = val.replace(/<(br|p|b|i|strike|ul|ol|li|a)\b[^\/>]+>/ig, '<$1>');
+                val = val.replace(/<(\/)?div\b[^/>]*>/ig, '<$1p>');
+                val = val.replace(/<(br|p|b|i|strike|ul|ol|li|a)\b[^/>]+>/ig, '<$1>');
                 val = val.replace(/<(?!\s*\/?(br|p|b|i|strike|ul|ol|li|a|h4|h5)\b)[^>]+>/ig, '');
             }
             input.html(val);
@@ -640,8 +631,7 @@ angular
                     text: data.text,
                     commenter: data.commenter,
                     _created: data._created,
-
-                }
+                };
             }
         });
         const Strikethrough = SirTrevor.Formatter.extend({
@@ -742,7 +732,7 @@ angular
                 const selectionText = document.getSelection();
                 /* eslint-disable no-alert */
                 let link = prompt(window.i18n.t('general:link'));
-                const linkRegex = /((ftp|http|https):\/\/.)|mailto(?=\:[-\.\w]+@)/;
+                const linkRegex = /((ftp|http|https):\/\/.)|mailto(?=:[-.\w]+@)/;
 
                 if (link && link.length > 0) {
                     if (!linkRegex.test(link)) {
