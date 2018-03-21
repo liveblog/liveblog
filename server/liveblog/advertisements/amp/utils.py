@@ -9,7 +9,7 @@
 # at https://www.sourcefabric.org/superdesk/license
 
 import logging
-
+import time
 import bs4
 import math
 from superdesk import get_resource_service
@@ -135,7 +135,8 @@ def inject_advertisments(content, settings, ads_list, theme):
         ad_content = prepare_amp_content(ad_content)
 
         # we need to increment the data-update-time in order to trigger amp updating
-        ref_article['data-update-time'] = int(ref_article['data-update-time']) + 1
+        # if date-update-time is not updated, the advertisement will display wrong content
+        ref_article['data-update-time'] = int(time.time())
         ref_article.append(ad_content)
 
 

@@ -234,27 +234,29 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     response_content = render_template(embed_template, **scope)
 
     if is_amp and output and theme.get('supportAdsInjection', False):
-        parsed_content = BeautifulSoup(response_content, "lxml")
+        parsed_content = BeautifulSoup(response_content, 'lxml')
         ads = get_advertisements_list(output)
 
-        frequency = output["settings"].get("frequency", 2)
-        order = output["settings"].get("order", 1)
+        frequency = output['settings'].get('frequency', 4)
+        order = output['settings'].get('order', 1)
+
+        ad_template = get_theme_template(theme, 'template-ad-entry.html')
+        ads_settings = AdsSettings(
+            frequency=frequency, order=order,
+            template=ad_template, tombstone_class='hide-item')
 
         # let's remove hidden elements initially because they're just garbage
         # complex validation because `embed` it's also called from outside without request context
         if not request or request and not request.args.get('amp_latest_update_time', False):
-            hidden_items = parsed_content.find_all('article', class_="hide-item")
+            hidden_items = parsed_content.find_all('article', class_=ads_settings.tombstone_class)
             for tag in hidden_items:
                 tag.decompose()
 
-        styles_tmpl = get_theme_template(theme, "template-ad-styles.html")
-        amp_style = BeautifulSoup(styles_tmpl.render(frequency=frequency), "html.parser")
+        styles_tmpl = get_theme_template(theme, 'template-ad-styles.html')
+        amp_style = BeautifulSoup(styles_tmpl.render(frequency=frequency), 'html.parser')
 
         style_tag = parsed_content.find('style', attrs={'amp-custom': True})
         style_tag.append(amp_style.find('style').contents[0])
-
-        ad_template = get_theme_template(theme, "template-ad-entry.html")
-        ads_settings = AdsSettings(frequency=frequency, order=order, template=ad_template)
 
         inject_advertisments(parsed_content, ads_settings, ads, theme)
         response_content = parsed_content.prettify()
