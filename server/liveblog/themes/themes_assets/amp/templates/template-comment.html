@@ -1,0 +1,39 @@
+<amp-accordion class="comment__accordion">
+    <section>
+        <h4>{{ translate('Post a comment') }}</h4>
+        <form method="post"
+            action-xhr="{{ api_host }}api/client_item_comments"
+            target="_top"
+            class="comment">
+            <div class="comment__wrap">
+                <div>
+                    <input type="text"
+                        name="commenter"
+                        placeholder="{{ translate('Name *') }}"
+                        required>
+                </div>
+                <div>
+                    <textarea placeholder="{{ translate('Comment *') }}" name="text" required></textarea>
+                </div>
+                <div submit-success>
+                    <template type="amp-mustache">
+                        {{ translate('Your comment was sent for approval') }}
+                    </template>
+                </div>
+                <div submit-error>
+                    <template type="amp-mustache">
+                        Error!
+                    </template>
+                </div>
+                <div>
+                    <input type="hidden"
+                        name="client_blog"
+                        value="{{blog._id}}">
+                    <input type="submit" value="{{ translate('Send') }}" class="comment__button">
+                </div>
+            </div>
+        </form>
+    </section>
+</amp-accordion>
+
+

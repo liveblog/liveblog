@@ -150,6 +150,19 @@
 
 
   // Comment
+  .comment__accordion {
+    margin-top: 20px;
+  }
+
+  .comment__accordion .i-amphtml-accordion-header {
+    border: none;
+    background: none;
+    outline: none;
+    padding: 0 20px;
+    background: transparent url('../images/dropdown_arrow.svg') right 7px no-repeat;
+    display: inline-block !important;
+    line-height: 1em;
+  }
   //
   // form.comment {
   //   outline: 2px solid @lightgrey;
@@ -183,52 +196,52 @@
   //     margin-top: 20px;
   // }
   //
-  // .comment__headline {
-  //   font-size: 1.3em;
-  //   line-height: 1.4em;
-  //   margin-bottom: 10px;
-  // }
-  //
-  // .comment input, .comment textarea {
-  //   font-family: 'Helvetica Neue', Helvetica, arial, sans-serif;
-  //   width: 100%;
-  //   padding: 10px;
-  //   margin: 10px 0px;
-  //   border: 1px solid #d0dbe6;
-  //   border-radius: 2px;
-  //   box-sizing: border-box;
-  // }
-  //
-  // ::-webkit-input-placeholder {
-  //   color: @grey;
-  // }
-  // :-moz-placeholder {
-  //   color: @grey;
-  //    opacity: 1;
-  // }
-  // ::-moz-placeholder {
-  //   color: @grey;
-  //    opacity: 1;
-  // }
-  // :-ms-input-placeholder {
-  //   color: @grey;
-  // }
-  //
-  // .comment__button {
-  //   font-size: .9em;
-  //   color: @white;
-  //   display: inline-block;
-  //   background-color: #73889b;
-  //   border-radius: 2px;
-  //   padding: 10px 20px;
-  //   margin-top: 5px;
-  //   margin-right: 5px;
-  // }
-  //
-  // .comment__button:hover {
-  //   color: @white;
-  //   background-color: #657a8e;
-  // }
+  .comment__headline {
+    font-size: 1.3em;
+    line-height: 1.4em;
+    margin-bottom: 10px;
+  }
+
+  .comment input, .comment textarea {
+    font-family: 'Helvetica Neue', Helvetica, arial, sans-serif;
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0px;
+    border: 1px solid #d0dbe6;
+    border-radius: 2px;
+    box-sizing: border-box;
+  }
+
+  ::-webkit-input-placeholder {
+    color: @grey;
+  }
+  :-moz-placeholder {
+    color: @grey;
+     opacity: 1;
+  }
+  ::-moz-placeholder {
+    color: @grey;
+     opacity: 1;
+  }
+  :-ms-input-placeholder {
+    color: @grey;
+  }
+
+  .comment__button {
+    font-size: .9em;
+    color: @white;
+    display: inline-block;
+    background-color: #73889b;
+    border-radius: 2px;
+    padding: 10px 20px;
+    margin-top: 5px;
+    margin-right: 5px;
+  }
+
+  .comment__button:hover {
+    color: @white;
+    background-color: #657a8e;
+  }
   //
   // .comment__button--grey {
   //   background-color: #c7c7c7;
@@ -1407,6 +1420,10 @@ body .scorecard-top__info {
 
       .lb-post-shareBox {
         line-height: 1.6em;
+      }
+
+      .comment__accordion .i-amphtml-accordion-header {
+        background-position: right 5px;
       }
     }
 

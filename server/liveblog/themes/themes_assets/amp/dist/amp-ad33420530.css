@@ -122,6 +122,62 @@ body.lb-wrapBody {
   top: -20px;
   right: 25px;
 }
+.lb-timeline .comment__accordion {
+  margin-top: 20px;
+}
+.lb-timeline .comment__accordion .i-amphtml-accordion-header {
+  border: none;
+  background: none;
+  outline: none;
+  padding: 0 20px;
+  background: transparent url('../images/dropdown_arrow.svg') right 7px no-repeat;
+  display: inline-block !important;
+  line-height: 1em;
+}
+.lb-timeline .comment__headline {
+  font-size: 1.3em;
+  line-height: 1.4em;
+  margin-bottom: 10px;
+}
+.lb-timeline .comment input,
+.lb-timeline .comment textarea {
+  font-family: 'Helvetica Neue', Helvetica, arial, sans-serif;
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0px;
+  border: 1px solid #d0dbe6;
+  border-radius: 2px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+.lb-timeline ::-webkit-input-placeholder {
+  color: #ACACAC;
+}
+.lb-timeline :-moz-placeholder {
+  color: #ACACAC;
+  opacity: 1;
+}
+.lb-timeline ::-moz-placeholder {
+  color: #ACACAC;
+  opacity: 1;
+}
+.lb-timeline :-ms-input-placeholder {
+  color: #ACACAC;
+}
+.lb-timeline .comment__button {
+  font-size: .9em;
+  color: #ffffff;
+  display: inline-block;
+  background-color: #73889b;
+  border-radius: 2px;
+  padding: 10px 20px;
+  margin-top: 5px;
+  margin-right: 5px;
+}
+.lb-timeline .comment__button:hover {
+  color: #ffffff;
+  background-color: #657a8e;
+}
 .lb-timeline .err-msg {
   font-size: 0.7em;
   color: #b82f00;
@@ -966,6 +1022,9 @@ body .scorecard-top__info {
   }
   .lb-timeline .lb-post-shareBox {
     line-height: 1.6em;
+  }
+  .lb-timeline .comment__accordion .i-amphtml-accordion-header {
+    background-position: right 5px;
   }
   .hide-item {
     display: none;
