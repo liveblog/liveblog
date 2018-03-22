@@ -114,7 +114,10 @@ module.exports = function makeConfig(grunt) {
                 {
                     test: /\.html$/,
                     // loader: 'ngtemplate!html'
-                    loader: 'ngtemplate?relativeTo=' + __dirname + '/!html'
+                    use: [
+                        'ngtemplate-loader?relativeTo=' + __dirname + '/',
+                        'html-loader'
+                    ]
                 },
                 {
                     test: /\.less$/,
