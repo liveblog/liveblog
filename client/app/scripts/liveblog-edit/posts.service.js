@@ -243,12 +243,12 @@ export default function postsService(api, $q, userList) {
                 if (angular.isDefined(items, '_id')) {
                     item = {
                         blog: blogId,
-                        text: item.text,
-                        meta: item.meta,
-                        group_type: item.group_type,
-                        item_type: item.item_type,
-                        commenter: item.meta && item.meta.commenter,
-                        syndicated_creator: item.syndicated_creator
+                        text: itemParam.text,
+                        meta: itemParam.meta,
+                        group_type: itemParam.group_type,
+                        item_type: itemParam.item_type,
+                        commenter: itemParam.meta && itemParam.meta.commenter,
+                        syndicated_creator: itemParam.syndicated_creator
                     };
                 }
                 dfds.push(api.items.save(item));
