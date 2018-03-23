@@ -101,7 +101,8 @@ import 'liveblog-advertising';
 
 import 'liveblog-security.service';
 
-const config = window.__SUPERDESK_CONFIG__;
+// eslint-disable-next-line
+const config = __SUPERDESK_CONFIG__;
 
 if (typeof window.superdeskConfig !== 'undefined') {
     angular.extend(config, window.superdeskConfig);
