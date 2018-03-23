@@ -18,7 +18,8 @@ from flask import Blueprint, request
 from flask_cors import CORS
 from distutils.util import strtobool
 from superdesk import get_resource_service
-
+from flask import make_response
+from bson.json_util import dumps
 
 blog_posts_blueprint = Blueprint('blog_posts', __name__)
 CORS(blog_posts_blueprint)
@@ -166,35 +167,6 @@ class ClientItemsResource(ItemsResource):
     schema.update(ItemsResource.schema)
 
 
-class ClientItemCommentsResource(ItemsResource, PostsResource):
-    datasource = {
-        'source': 'archive',
-        'default_sort': [('order', -1)]
-    }
-    public_methods = ['GET', 'POST']
-    public_item_methods = ['GET', 'POST']
-    item_methods = ['GET']
-    resource_methods = ['GET', 'POST']
-    schema = {
-        'client_blog': Resource.rel('client_blogs', True),
-        'blog': {
-            'type': 'string'
-        }
-    }
-    schema.update(ItemsResource.schema)
-    schema.update(PostsResource.schema)
-
-
-class ClientItemCommentsService(PostsService):
-    def on_create(self, docs):
-        for doc in docs:
-            check_comment_length(doc['text'])
-            if request.method == 'POST':
-                doc['post_status'] = 'comment'
-                doc['blog'] = str(doc['client_blog'])
-        super().on_create(docs)
-
-
 class ClientItemsService(ItemsService):
     def on_create(self, docs):
         for doc in docs:
@@ -311,6 +283,40 @@ class ClientBlogPostsService(BlogPostsService):
             docs = super().get(req, lookup)
             app.blog_cache.set(blog_id, cache_key, docs)
         return docs
+
+
+@blog_posts_blueprint.route('/api/client_item_comments/', methods=['POST'])
+def create_amp_comment():
+    data = request.values
+    check_comment_length(data['text'])
+
+    item_data = dict()
+    item_data['text'] = data['text']
+    item_data['commenter'] = data['commenter']
+    item_data['client_blog'] = data['client_blog']
+    item_data['item_type'] = "comment"
+    items = get_resource_service('client_items')
+    item_id = items.post([item_data])[0]
+
+    comment_data = dict()
+    comment_data["post_status"] = "comment"
+    comment_data["blog"] = item_data['client_blog']
+    comment_data["groups"] = [{
+        "id": "root",
+        "refs": [{"idRef": "main"}],
+        "role": "grpRole:NEP"
+    }, {
+        "id": "main",
+        "refs": [{"residRef": item_id}],
+        "role": "grpRole:Main"}
+    ]
+
+    post_comments = get_resource_service('blog_posts')
+    post_comment = post_comments.post([comment_data])[0]
+
+    comment = post_comments.find_one(req=None, _id=post_comment)
+
+    return make_response(dumps(comment), 201)
 
 
 @blog_posts_blueprint.route('/api/v2/client_blogs/<blog_id>/posts', methods=['GET'])
