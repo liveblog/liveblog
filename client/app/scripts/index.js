@@ -260,7 +260,6 @@ liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session', '$templa
                         <figure class="avatar">
                             <img sd-user-avatar data-user="notification.user">
                         </figure>
-                        {{notification}}
                         <div class="content" ng-if="notification.name == 'notify'">
                             <time sd-datetime data-date="notification._created"></time>
                             <p class="text"><b>{{:: notification.user_name }}</b>

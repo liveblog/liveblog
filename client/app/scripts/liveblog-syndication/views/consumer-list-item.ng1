@@ -5,8 +5,8 @@
 
     <figure class="avatar avatar-with-info">
         <div class="logged-info"></div>
-        <div class="consumer-image">
-            <img sd-consumer-avatar data-consumer="consumer">
+        <div class="user-image">
+            <img sd-user-avatar data-user="consumer">
         </div>
     </figure>
 

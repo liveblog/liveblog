@@ -4,6 +4,7 @@ export default function lbUserSelectList(api) {
     return {
         scope: {
             members: '=',
+            user: '=',
             onchoose: '&'
         },
         templateUrl: 'scripts/apps/desks/views/user-select.html',
@@ -27,6 +28,15 @@ export default function lbUserSelectList(api) {
                     ]
                 })})
                     .then((result) => {
+
+                        //todo in future to filter blog owner
+
+                        // for (var i = 0; i < result._items.length; i++) {
+                        //     var obj = result._items[i];
+                        //     if (obj._id === scope.user._id) {
+                        //         result._items.splice(i, 1);
+                        //     }
+                        // }
                         scope.users = result;
                         scope.users._items = _.filter(scope.users._items, (item) => {
                             var found = false;
@@ -103,6 +113,11 @@ export default function lbUserSelectList(api) {
 
             scope.choose = function(user) {
                 scope.onchoose({user: user});
+                var exists = scope.members.some((el) => el._id === user._id);
+
+                if (!exists) {
+                    scope.members.push(user);
+                }
                 scope.search = null;
             };
 
