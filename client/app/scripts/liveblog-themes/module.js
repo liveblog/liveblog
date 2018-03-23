@@ -288,7 +288,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
         loadThemes();
     }
 
-    const liveblogThemeModule = angular.module('liveblog.themes', [])
+    return angular.module('liveblog.themes', [])
         .config(['superdeskProvider', function(superdesk) {
             superdesk
                 .activity('/themes/', {
@@ -318,54 +318,53 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                             /[:/]([^/]+\/[^/]+?|[0-9]+)$/.source
                     );
                 };
-                const matches = github_re(opts).exec(url.replace(/\.git(#.*)?$/, ''));
+                const matches = githubRe(opts).exec(url.replace(/\.git(#.*)?$/, ''));
+
                 if (matches) {
-                    const [all, host, path] = matches;
+                    const [, host, path] = matches;
+
                     return `https://${host}/${path}`;
                 }
                 return '';
             }
             return githubUrlFromGit(string);
-        };
-    })
-    .filter('stashUrlFromGit', function() {
-        return function(string) {
+        })
+        .filter('stashUrlFromGit', () => function(string) {
             function stashUrlFromGit(url, opts) {
-                const stash_re = function(opts) {
-                    opts = opts || {};
+                const stashRe = function(opts = {}) {
                     // whitelist of URLs that should be treated as Stash, BitBucket repos.
                     const baseUrls = ['stash.sourcefabric.org'].concat(opts.extraBaseUrls || []);
+
                     // build regex from whitelist.
                     return new RegExp(
                         /^(?:https?:\/\/|git:\/\/|git\+ssh:\/\/|git\+https:\/\/)?(?:[^@]+@)?/.source +
                         '(' + baseUrls.join('|') + ')' +
-                        /[:\/]([^\/]+\/)([^\/]+\/)(.*?)$/.source
+                        /[:/]([^/]+\/)([^/]+\/)(.*?)$/.source
                     );
                 };
-                const matches = stash_re(opts).exec(url.replace(/\.git(#.*)?$/, ''));
+                const matches = stashRe(opts).exec(url.replace(/\.git(#.*)?$/, ''));
+
                 if (matches) {
-                    const [all, host, port, organization, project] = matches;
+                    const [, host, , organization, project] = matches;
+
                     return `https://${host}/rest/api/latest/projects/${organization}repos/${project}`;
                 }
                 return '';
-              }
+            }
             return stashUrlFromGit(string);
-        };
-    })
-    .config(['apiProvider', function(apiProvider) {
-        apiProvider.api('global_preferences', {
-            type: 'http',
-            backend: {rel: 'global_preferences'}
-        });
-        apiProvider.api('themes', {
-            type: 'http',
-            backend: {rel: 'themes'}
-        });
-        apiProvider.api('blogs', {
-            type: 'http',
-            backend: {rel: 'blogs'}
-        });
-    }]);
-    return liveblogThemeModule;
-
+        })
+        .config(['apiProvider', function(apiProvider) {
+            apiProvider.api('global_preferences', {
+                type: 'http',
+                backend: {rel: 'global_preferences'}
+            });
+            apiProvider.api('themes', {
+                type: 'http',
+                backend: {rel: 'themes'}
+            });
+            apiProvider.api('blogs', {
+                type: 'http',
+                backend: {rel: 'blogs'}
+            });
+        }]);
 })();

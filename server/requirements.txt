@@ -8,4 +8,4 @@ Flask-S3==0.1.7
 html5lib==0.999999999
 
 # Superdesk
--e git://github.com/superdesk/superdesk-core.git@v1.8.6#egg=Superdesk-Core
+-e git://github.com/superdesk/superdesk-core.git@v1.14.2#egg=Superdesk-Core

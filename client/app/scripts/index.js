@@ -7,7 +7,6 @@ import 'jquery-gridster';
 import 'bootstrap';
 import 'angular';
 import 'angular-moment';
-import 'angular-bootstrap-npm';
 import 'angular-resource';
 import 'angular-route';
 import 'angular-gettext';

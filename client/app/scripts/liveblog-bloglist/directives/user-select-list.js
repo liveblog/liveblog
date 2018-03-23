@@ -28,15 +28,8 @@ export default function lbUserSelectList(api) {
                     ]
                 })})
                     .then((result) => {
+                        // todo in future to filter blog owner
 
-                        //todo in future to filter blog owner
-
-                        // for (var i = 0; i < result._items.length; i++) {
-                        //     var obj = result._items[i];
-                        //     if (obj._id === scope.user._id) {
-                        //         result._items.splice(i, 1);
-                        //     }
-                        // }
                         scope.users = result;
                         scope.users._items = _.filter(scope.users._items, (item) => {
                             var found = false;
