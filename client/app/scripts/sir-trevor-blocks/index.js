@@ -587,8 +587,8 @@ angular
 
             if (val) {
                 val = sanitizeHtml(val, sanitizeConfig);
-                val = (val || "").trim();
-                //let's also remove not needed line breaks
+                val = (val || '').trim();
+                // let's also remove not needed line breaks
                 val = val.replace(/\r/g, ' ');
                 val = val.replace(/\n/g, ' ');
             }
