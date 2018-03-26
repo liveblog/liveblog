@@ -10,8 +10,11 @@
 import angular from 'angular';
 import _ from 'lodash';
 
+import sanitizeHtml from 'sanitize-html';
+
 import imageBlock from './image-block';
 import handlePlaceholder from './handle-placeholder';
+import sanitizeConfig from './sanitizer-config';
 
 function createCaretPlacer(atStart) {
     return function(el) {
@@ -567,14 +570,16 @@ angular
             // Content pasted. Delegate to the drop parse method
             var input = $(event.target).closest('[contenteditable]'),
                 val = input.html();
+
             if (val) {
-                val = val.replace(/(<style\b[^>]*>)[^<>]*(<\/style>)/ig, '');
-                val = val.replace(/(<script\b[^>]*>)[^<>]*(<\/script>)/ig, '');
-                // use paragraph tag `p` instead of `div` witch isn't supported.
-                val = val.replace(/<(\/)?div\b[^\/>]*>/ig, '<$1p>');
-                val = val.replace(/<(br|p|b|i|strike|ul|ol|li|a)\b[^\/>]+>/ig, '<$1>');
-                val = val.replace(/<(?!\s*\/?(br|p|b|i|strike|ul|ol|li|a|h4|h5)\b)[^>]+>/ig, '');
+                val = sanitizeHtml(val, sanitizeConfig);
+                val = (val || "").trim();
+
+                //let's also remove not needed line breaks
+                val = val.replace(/\r/g, ' ');
+                val = val.replace(/\n/g, ' ');
             }
+
             input.html(val);
             placeCaretAtEnd(input.get(0));
         }, 0);

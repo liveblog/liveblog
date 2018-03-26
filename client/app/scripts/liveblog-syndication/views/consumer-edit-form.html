@@ -1,5 +1,5 @@
 <form name="consumerForm" class="flat" novalidate ng-submit="save()">
-    <div class="action-bar clearfix" ng-class="{show: !consumerForm.$pristine}">
+    <div class="action-bar clearfix" ng-class="{show: !consumerForm.$pristine || dirty}">
         <button
             id="save-edit-btn"
             type="submit"
@@ -13,9 +13,15 @@
             ng-click="cancel()"
             translate>Cancel</button>
     </div>
+    <div class="profile-pic">
+        <figure class="avatar">
+            <img sd-user-avatar data-user="consumer" alt="{{ consumer.name }}">
+            <a href="" class="change-photo" ng-click="editPicture()" translate>Change Photo</a>
+        </figure>
+    </div>
 
     <div class="profile-info editmode syndication">
-        <div class="details-info details-info--no-avatar form-flat" ng-class="{shifted : error}">
+        <div class="details-info form-flat" ng-class="{shifted : error}">
             <div class="title">{{ 'General' | translate }} <span class="required-info" translate>* mandatory fields</span></div>
             <fieldset class="label-light">
                 <div sd-info-item>

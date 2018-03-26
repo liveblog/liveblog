@@ -62,7 +62,13 @@ producers_schema = {
     'api_status': {
         'allowed': ['enabled', 'invalid_key', 'invalid_url'],
         'default': 'enabled'
-    }
+    },
+    'picture_url': {
+        'type': 'string',
+        'nullable': True
+    },
+    'avatar': Resource.rel('upload', embeddable=True, nullable=True),
+    'avatar_renditions': {'type': 'dict'},
 }
 
 
