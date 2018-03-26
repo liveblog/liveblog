@@ -413,8 +413,7 @@ export default function BlogEditController(
                                 // post it freetype so we need to reder it
                                 loadFreetypeItem(itm);
                             } else {
-                                var data = _.extend(itm, itm.meta);
-
+                                var data = _.extend({}, itm, itm.meta);
                                 self.editor.createBlock(itm.item_type, data);
                             }
                         }

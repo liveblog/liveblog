@@ -6,7 +6,8 @@
     "url": "git@github.com:liveblog/liveblog.git"
   },
   "scripts": {
-    "build": "grunt build"
+    "build": "grunt build",
+    "test": "grunt ci:travis"
   },
   "licenses": [
     {
@@ -71,9 +72,6 @@
     "webpack": "^1.13.2",
     "webpack-dev-server": "^1.16.1"
   },
-  "scripts": {
-    "test": "grunt ci:travis"
-  },
   "dependencies": {
     "adblock-detect": "^1.0.5",
     "angular": "^1.5.8",
@@ -109,6 +107,7 @@
     "rangy": "^1.3.0",
     "raven-js": "^3.9.1",
     "sir-trevor": "liveblog/sir-trevor-js",
+    "sanitize-html": "^1.18.2",
     "superdesk-core": "liveblog/superdesk-client-core#bd052590f93e1bcba88049cb404060c84ffa4363"
   },
   "engines": {
