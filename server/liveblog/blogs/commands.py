@@ -23,10 +23,8 @@ class PublishBlogsCommand(superdesk.Command):
                     url = publish_blog_embeds_on_s3(blog_id=str(blog['_id']), output=output, safe=False)
                     print('  - Blog "%s" output "%s" republished: %s' % (blog['title'], output['name'], url))
             url = publish_blog_embeds_on_s3.apply_async(args=[blog.get('_id')],
-                                                        kwargs={
-                                                            'safe': False
-                                                        },
-                                                        countdown=i*0.5);
+                                                        kwargs={'safe': False},
+                                                        countdown=i * 0.5)
             print('  - Blog "%s" republished: %s' % (blog['title'], url))
             i += 1
 
