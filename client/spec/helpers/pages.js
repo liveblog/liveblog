@@ -1,40 +1,35 @@
 var waitAndClick = require('./utils').waitAndClick;
 
 var blogs = [
-    [
-        {
-            title: 'title: end to end image',
-            description: 'description: end to end image',
-            username: 'Victor the Editor',
-            picture_url: 'http://i.imgur.com/L0Ci8Yj.png'
-        },
-        {title: 'title: end To end three', description: 'description: end to end three', username: 'Victor the Editor'},
-        {title: 'title: end to end two', description: 'description: end to end two', username: 'Victor the Editor'},
-        {title: 'title: end to end One', description: 'description: end to end one', username: 'Victor the Editor'}
-    ], [
-        {title: 'title: end to end closed', description: 'description: end to end closed', username: 'Victor the Editor'}
-    ]
-], stateMap = {
-    'active': 0,
-    'archived': 1
-};
+        [
+            {
+                title: 'title: end to end image',
+                description: 'description: end to end image',
+                username: 'Victor the Editor',
+                picture_url: 'http://i.imgur.com/L0Ci8Yj.png'
+            },
+            {title: 'title: end To end three', description: 'description: end to end three', username: 'Victor the Editor'},
+            {title: 'title: end to end two', description: 'description: end to end two', username: 'Victor the Editor'},
+            {title: 'title: end to end One', description: 'description: end to end one', username: 'Victor the Editor'}
+        ], [
+            {title: 'title: end to end closed', description: 'description: end to end closed', username: 'Victor the Editor'}
+        ]
+    ], stateMap = {
+        active: 0,
+        archived: 1
+    };
 
 function waitForModal() {
-    'use strict';
-     /*jshint validthis: true */
-    browser.wait(function() {
-        return element(by.css('.modal-footer')).isDisplayed();
-    }, 1000);
+    /* jshint validthis: true */
+    browser.wait(() => element(by.css('.modal__dialog')).isDisplayed(), 1000);
     return this;
 }
 function okModal() {
-    'use strict';
-     /*jshint validthis: true */
+    /* jshint validthis: true */
     element(by.css('[ng-click="ok()"]')).click();
     return this;
 }
 function BlogsPage() {
-    'use strict';
     var self = this;
 
     self.blog = new BlogPage(self);
@@ -45,7 +40,7 @@ function BlogsPage() {
     self.cloneBlog = function(index, state) {
         index = index || 0;
         state = state || 0;
-        if (parseInt(state, 10) !== state){
+        if (parseInt(state, 10) !== state) {
             state = stateMap[state];
         }
         return JSON.parse(JSON.stringify(self.blogs[state][index]));
@@ -73,21 +68,22 @@ function BlogsPage() {
 
     self.searchBlogs = function(search) {
         element(by.css('[ng-click="flags.extended = !flags.extended"]')).click()
-        .then(function() {
-            element(by.model('q')).waitReady()
-            .then(function(elem) {
-                elem.clear().sendKeys(search.search);
-                browser.getCurrentUrl().then(function(url) {
-                    expect(url.indexOf('q=' + search.search)).toBeGreaterThan(-1);
-                })
-                .then(function () {
-                    self.expectCount(search.blogs.length);
-                    for (var j = 0, countj = search.blogs.length; j < countj; j++) {
-                        self.expectBlog(self.blogs[0][search.blogs[j]], j);
-                    }
-                });
+            .then(() => {
+                element(by.model('q')).waitReady()
+                    .then((elem) => {
+                        elem.clear().sendKeys(search.search);
+                        browser
+                            .getCurrentUrl().then((url) => {
+                                expect(url.indexOf('q=' + search.search)).toBeGreaterThan(-1);
+                            })
+                            .then(() => {
+                                self.expectCount(search.blogs.length);
+                                for (var j = 0, countj = search.blogs.length; j < countj; j++) {
+                                    self.expectBlog(self.blogs[0][search.blogs[j]], j);
+                                }
+                            });
+                    });
             });
-        });
         return self;
     };
 
@@ -116,6 +112,7 @@ function BlogsPage() {
         index = index || 0;
         browser.waitForAngular();
         var currentBlog = element.all(by.repeater('blog in blogs._items')).get(index);
+
         expect(currentBlog.element(by.binding('blog.title')).getText()).toBe(blog.title);
         expect(currentBlog.element(by.binding('blog.description')).getText()).toBe(blog.description);
         if (blog.picture_url) {
@@ -124,7 +121,7 @@ function BlogsPage() {
             expect(currentBlog.element(by.css('[if-background-image]')).isPresent()).toBe(false);
         }
         expect(currentBlog.element(by.binding('blog.original_creator | username')).getText())
-        .toBe(blog.username);
+            .toBe(blog.username);
     };
 
     self.expectCount = function(count) {
@@ -134,7 +131,7 @@ function BlogsPage() {
 
     self.selectState = function(state) {
         state = state || 1;
-        if (parseInt(state, 10) !== state){
+        if (parseInt(state, 10) !== state) {
             state = stateMap[state];
         }
         browser.waitForAngular();
@@ -144,8 +141,8 @@ function BlogsPage() {
 }
 
 function FreetypesManagerPage() {
-    'use strict';
     var self = this;
+
     self.title = element(by.css('[ng-model="vm.dialogFreetype.name"]'));
     self.template = element(by.css('[ng-model="vm.dialogFreetype.template"]'));
 
@@ -154,9 +151,7 @@ function FreetypesManagerPage() {
     };
     self.openFreetypesManager = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
-        browser.wait(function() {
-            return element(by.css('[href="#/freetypes/"][title]')).isDisplayed();
-        });
+        browser.wait(() => element(by.css('[href="#/freetypes/"][title]')).isDisplayed());
         waitAndClick(by.css('[href="#/freetypes/"][title]'));
         return self;
     };
@@ -176,18 +171,22 @@ function FreetypesManagerPage() {
         var freeData = self.createFreetypeData();
         self.title.sendKeys(freeData.title);
         self.template.sendKeys(freeData.template);
-        return self.saveFreetype().then(function() {return freeData;});
+        return self.saveFreetype().then(() => freeData);
     };
     self.removeFreetype = function(index) {
         index = index || 0;
-        self.getFreetypes().get(index).click().all(by.css('[ng-click="vm.removeFreetype(freetype, $index);"]')).click();
+        self.getFreetypes()
+            .get(index)
+            .click()
+            .all(by.css('[ng-click="vm.removeFreetype(freetype, $index);"]'))
+            .click();
         okModal();
     };
 }
 
 function AdvertisingManagerPage() {
-    'use strict';
     var self = this;
+
     self.advertTitle = element(by.css('[ng-model="advert.name"]'));
     self.collectionTitle = element(by.css('[ng-model="collection.name"]'));
     self.advertEmbed = element(by.css('[ng-model="embed"]'));
@@ -789,12 +788,12 @@ function BlogSettingsPage(blog) {
     }
 
     self.saveOutput = function() {
-        return element(by.css('[ng-click="vm.saveOutput()"]')).click();
+        return element(by.css('[ng-click="self.saveOutput()"]')).click();
     }
 
     self.editOutput = function() {
         var outputData = self.createOutputData();
-        element(by.css('[ng-model="vm.output.name"]')).sendKeys(outputData.title);
+        element(by.css('[ng-model="self.output.name"]')).sendKeys(outputData.title);
         return self.saveOutput().then(function() {return outputData;});
     }
 

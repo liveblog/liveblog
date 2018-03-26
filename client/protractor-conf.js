@@ -11,7 +11,7 @@ function getChromeOptions() {
         chromeOptions.binary = process.env.CHROME_BIN;
     }
 
-    //chromeOptions.binary = '/usr/bin/chromium-browser';
+    // chromeOptions.binary = '/usr/bin/chromium-browser';
 
     return chromeOptions;
 }

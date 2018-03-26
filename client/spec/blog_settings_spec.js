@@ -4,9 +4,7 @@ var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login
 
 describe('Blog settings', () => {
     beforeEach((done) => {
-        browser.ignoreSynchronization = true;
         login('editor', 'editor')
-            .then(() => browser.ignoreSynchronization = false)
             .then(done);
     });
 
@@ -136,96 +134,101 @@ describe('Blog settings', () => {
 
     it('changes blog ownership & admin can open settings for any blog & contributor can\'t access blog settings even if owner',
         () => {
-        blogs.openBlog(0).openSettings().then(function(settingsPage) {
-            return settingsPage.openTeam().then(function() {
-                settingsPage.changeOwner()
-                .changeToOwner()
-                .selectOwner()
-                .done();
-            });
-        })
-        .then(function() {
-            browser.waitForAngular();
-            browser.get('/');
-            browser.sleep(2000); // it reloads page
-            var blog = blogs.openBlog(0);
-            browser.waitForAngular();
-            blog.openSettings().then(function(settingsPage) {
-                return settingsPage.openTeam()
-                .then(function() {
-                    blogs.blog.settings.userName.getText().then(function(text) {
-                        expect(text).toEqual('contributor');
+            blogs.openBlog(0).openSettings()
+                .then((settingsPage) => {
+                    return settingsPage.openTeam().then(() => {
+                        settingsPage.changeOwner()
+                            .changeToOwner()
+                            .selectOwner()
+                            .done();
                     });
-                });
-            })
-            .then(function() {
-                browser.get('/');
-                element(by.css('button.current-user')).click();
-                browser.waitForAngular();
-                browser.sleep(1000); // it reloads page
-                element(by.buttonText('SIGN OUT')).click();
-                browser.ignoreSynchronization = true;
-                browser.sleep(2000); // it reloads page
-                browser.waitForAngular();
-                browser.sleep(2000); // it reloads page
+                })
+                .then(() => {
+                    browser.get('/');
+                    browser.sleep(2000); // it reloads page
+                    var blog = blogs.openBlog(0);
 
-                login('contributor', 'contributor').then(function() {
-                    browser.waitForAngular();
-                    browser.ignoreSynchronization = false;
-                    expect(element(by.css('.settings-link')).isPresent()).toBeFalsy();
+                    blog.openSettings()
+                        .then((settingsPage) => {
+                            return settingsPage.openTeam()
+                                .then(() => {
+                                    blogs.blog.settings.userName.getText()
+                                        .then((text) => {
+                                            expect(text).toEqual('contributor');
+                                        });
+                                });
+                        })
+                        .then(() => {
+                            browser.get('/');
+                            element(by.css('button.current-user')).click();
+                            browser.sleep(1000); // it reloads page
+                            element(by.buttonText('SIGN OUT')).click();
+                            browser.sleep(2000); // it reloads page
+                            browser.sleep(2000); // it reloads page
+
+                            login('contributor', 'contributor').then(() => {
+                                expect(element(by.css('.settings-link')).isPresent()).toBeFalsy();
+                            });
+                        });
                 });
-            });
         });
-    });
 
-    it('remove a blog', function() {
+    it('remove a blog', () => {
         blogs.expectCount(4);
-        blogs.openBlog(0).openSettings().then(function(settingsPage) {
-            settingsPage.removeBlog();
-            browser.waitForAngular();
-            browser.get('/');
-            browser.sleep(2000); // it reloads page
-            blogs.expectCount(3);
-        });
+        blogs.openBlog(0)
+            .openSettings()
+            .then((settingsPage) => {
+                settingsPage.removeBlog();
+
+                browser.get('/');
+                browser.sleep(2000); // it reloads page
+                blogs.expectCount(3);
+            });
     });
 
-    it('should do CRUD operations on output channels', function() {
-
-        blogs.openBlog(0).openSettings().then(function(sp) {
-            sp.openOutputs();
-            // no outputs by default
-            expect(sp.getOutputs().count()).toBe(0);
-
-            sp.openOutputDialog();
-
-            sp.editOutput().then(function(outputData) {
-                var outputTitle = element(by.css('[ng-model="vm.output.name"]'));
-                // we should now have one output
-                expect(sp.getOutputs().count()).toBe(1);
-                //open 1st output and check contents
-
-                sp.getOutputs().get(0).click();
-                element(by.css('[ng-click="settings.openOutputDialog(output);"]')).click();
-
-                expect(outputTitle.getAttribute('value')).toEqual(outputData.title);
-
-                // edit output
-                var newData = sp.createOutputData();
-                outputTitle.sendKeys(newData.title);
-
-
-                sp.saveOutput().then(function() {
-                    //check the new contents to match
-                    var newTitle = outputData.title + newData.title;
-                    expect(element(by.id('output-name')).getText()).toEqual(newTitle);
-                });
-
-                // remove first output
-                sp.removeOutput(0);
-
-                // expect no outputs available
+    it('should do CRUD operations on output channels', () => {
+        blogs.openBlog(0)
+            .openSettings()
+            .then((sp) => {
+                sp.openOutputs();
+                // no outputs by default
                 expect(sp.getOutputs().count()).toBe(0);
+
+                sp.openOutputDialog();
+
+                sp.editOutput().then((outputData) => {
+                    var outputTitle = element(by.css('[ng-model="self.output.name"]'));
+
+                    // we should now have one output
+                    expect(sp.getOutputs().count()).toBe(1);
+
+                    // open 1st output and check contents
+                    sp.getOutputs()
+                        .get(0)
+                        .click();
+                    element(by.css('[ng-click="settings.openOutputDialog(output);"]')).click();
+
+                    expect(outputTitle.getAttribute('value')).toEqual(outputData.title);
+
+                    // edit output
+                    var newData = sp.createOutputData();
+
+                    outputTitle.sendKeys(newData.title);
+
+
+                    sp.saveOutput().then(() => {
+                        // check the new contents to match
+                        var newTitle = outputData.title + newData.title;
+
+                        expect(element(by.id('output-name')).getText()).toEqual(newTitle);
+                    });
+
+                    // remove first output
+                    sp.removeOutput(0);
+
+                    // expect no outputs available
+                    expect(sp.getOutputs().count()).toBe(0);
+                });
             });
-        });
     });
 });
