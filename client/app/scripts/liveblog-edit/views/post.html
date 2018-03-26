@@ -1,5 +1,5 @@
 <li>
-    <div ng-if="functionize(postsListCtrl.allowReordering)(post)" 
+    <div ng-if="functionize(postsListCtrl.allowReordering)(post)"
         ng-class="{'active top': post.order > reorderPost.order}"
         class="timeline-reorder {{ post.post_type }}"
         ng-click="movePost(index, 'above');"
@@ -96,7 +96,7 @@
                                 <div class="lb-post__content">
                                     <div class="lb-post__header">
                                         <div class="inline">
-                                            <span class="name">{{ ::item.item.user.display_name }}</span> 
+                                            <span class="name">{{ ::item.item.user.display_name }}</span>
                                             <span ng-if="post.producer_blog_title" class="producer">{{ ::post.producer_blog_title }}</span>
                                             | <time>{{ ::(item.item.meta._created || item.item._created) | reldate }}</time>
                                         </div>
@@ -104,7 +104,7 @@
                                     <lb-item item="item.item"></lb-item>
                                 </div>
                             </div>
-                            <div 
+                            <div
                                 ng-if="!post.fullDetails || $first"
                                 lb-bind-html
                                 html-content="{{ item.item.text }}"

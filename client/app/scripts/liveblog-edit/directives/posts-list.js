@@ -136,7 +136,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
         vm.fetchNewPage()
         // retrieve updates when event is recieved
         .then(function() {
-            // This function is responsible for updating the timeline, 
+            // This function is responsible for updating the timeline,
             // the contribution, the draft and the comment panel on incoming
             // new post as well unpublished posts
             const onNotification = (e, event_params) => {

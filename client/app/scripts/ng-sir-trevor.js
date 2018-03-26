@@ -97,5 +97,3 @@ export default angular
         };
         return directive;
     }]);
-
-
