@@ -15,6 +15,7 @@ import logging
 import os
 
 import superdesk
+from bs4 import BeautifulSoup
 from bson.json_util import dumps as bson_dumps
 from eve.io.mongo import MongoJSONEncoder
 from flask import current_app as app
@@ -23,6 +24,7 @@ from liveblog.themes import UnknownTheme
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
+from liveblog.themes.template.utils import get_theme_template
 from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
@@ -103,19 +105,15 @@ def render_bloglist_embed(api_host=None, assets_root=None):
     return render_template('blog-list-embed.html', **scope)
 
 
-def ad_to_post(ad):
-    ad["item_type"] = ad["type"]
-    post = {"_id": ad["_id"], "post_items_type": "advertisement"}
-    post["groups"] = [{"role": "grpRole:NEP", "id": "root", "refs": [{"idRef": "main"}]}]
-    post["groups"].append({"role": "grpRole:Main", "id": "main", "refs": [{"item": ad}]})
-    return post
-
-
 @embed_blueprint.route('/embed/<blog_id>', defaults={'theme': None, 'output': None})
 @embed_blueprint.route('/embed/<blog_id>/<output>', defaults={'theme': None})
 @embed_blueprint.route('/embed/<blog_id>/theme/<theme>', defaults={'output': None})
 @embed_blueprint.route('/embed/<blog_id>/<output>/theme/<theme>/')
 def embed(blog_id, theme=None, output=None, api_host=None):
+    # adding import here to avoid circular references
+    from liveblog.advertisements.utils import get_advertisements_list
+    from liveblog.advertisements.amp import AdsSettings, inject_advertisments
+
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if not blog:
@@ -151,7 +149,9 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         # No theme specified. Fallback to theme in blog_preferences.
         theme_name = blog_theme_name
 
-    theme = get_resource_service('themes').find_one(req=None, name=theme_name)
+    theme_service = get_resource_service('themes')
+    theme = theme_service.find_one(req=None, name=theme_name)
+
     if theme is None:
         raise SuperdeskApiError.badRequestError(
             message='You will be able to access the embed after you register the themes')
@@ -164,8 +164,6 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     if not template_content:
         logger.error('Template file not found for theme "%s". Theme: %s' % (theme_name, theme))
         return 'Template file not found', 500
-
-    theme_service = get_resource_service('themes')
 
     # Compute the assets root.
     if theme.get('public_url', False):
@@ -233,7 +231,37 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     if is_amp:
         embed_template = 'embed_amp.html'
 
-    return render_template(embed_template, **scope)
+    response_content = render_template(embed_template, **scope)
+
+    if is_amp and output and theme.get('supportAdsInjection', False):
+        parsed_content = BeautifulSoup(response_content, 'lxml')
+        ads = get_advertisements_list(output)
+
+        frequency = output['settings'].get('frequency', 4)
+        order = output['settings'].get('order', 1)
+
+        ad_template = get_theme_template(theme, 'template-ad-entry.html')
+        ads_settings = AdsSettings(
+            frequency=frequency, order=order,
+            template=ad_template, tombstone_class='hide-item')
+
+        # let's remove hidden elements initially because they're just garbage
+        # complex validation because `embed` it's also called from outside without request context
+        if not request or request and not request.args.get('amp_latest_update_time', False):
+            hidden_items = parsed_content.find_all('article', class_=ads_settings.tombstone_class)
+            for tag in hidden_items:
+                tag.decompose()
+
+        styles_tmpl = get_theme_template(theme, 'template-ad-styles.html')
+        amp_style = BeautifulSoup(styles_tmpl.render(frequency=frequency), 'html.parser')
+
+        style_tag = parsed_content.find('style', attrs={'amp-custom': True})
+        style_tag.append(amp_style.find('style').contents[0])
+
+        inject_advertisments(parsed_content, ads_settings, ads, theme)
+        response_content = parsed_content.prettify()
+
+    return response_content
 
 
 @embed_blueprint.route('/embed/iframe/<blog_id>')
