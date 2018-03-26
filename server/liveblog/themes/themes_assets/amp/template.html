@@ -10,9 +10,11 @@
   <p>{{ blog.description | safe }}</p>
   {% endif %}
 
-  {% if settings.showImage and blog.picture_url %}
-  <amp-img src="{{ blog.picture_url }}" width="600" height="400" layout="responsive"></amp-img>
-  {% endif %}
+  {# % if settings.showImage and blog.picture_url % #}
+    <div class="lb-blog-picture-container">
+      <amp-img src="{{ blog.picture_url }}" layout="fill"></amp-img>
+    </div>
+  {# % endif % #}
 
   <div class="header-bar">
 
@@ -47,7 +49,9 @@
     {% endif %}
 
   </div>
-
+  {% if settings.canComment %}
+    {% include "template-comment.html" %}
+  {% endif %}
   <amp-img src="image.png"
   width="1"
   height="1"
