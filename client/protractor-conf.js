@@ -45,6 +45,7 @@ var config = {
     onPrepare: function() {
         require('./node_modules/superdesk-core/spec/helpers/setup')({fixture_profile: 'test'});
         var reporters = require('jasmine-reporters');
+
         jasmine.getEnv().addReporter(
             new reporters.JUnitXmlReporter({
                 savePath: 'e2e-test-results',
