@@ -11,7 +11,9 @@
   {% endif %}
 
   {% if settings.showImage and blog.picture_url %}
-  <amp-img src="{{ blog.picture_url }}" width="600" height="400" layout="responsive"></amp-img>
+    <div class="lb-blog-picture-container">
+      <amp-img src="{{ blog.picture_url }}" layout="fill"></amp-img>
+    </div>
   {% endif %}
 
   <div class="header-bar">
