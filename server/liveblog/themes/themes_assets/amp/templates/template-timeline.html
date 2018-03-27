@@ -9,11 +9,11 @@
   <p>{{ blog.description | safe }}</p>
   {% endif %}
 
-  {# % if settings.showImage and blog.picture_url % #}
+  {% if settings.showImage and blog.picture_url %}
     <div class="lb-blog-picture-container">
       <amp-img src="{{ blog.picture_url }}" layout="fill"></amp-img>
     </div>
-  {# % endif % #}
+  {% endif %}
 
   <div class="header-bar">
 
