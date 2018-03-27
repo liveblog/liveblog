@@ -3,9 +3,7 @@ var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login
 
 describe('Advertising Manager', () => {
     beforeEach((done) => {
-        browser.ignoreSynchronization = true;
         login()
-            .then(() => browser.ignoreSynchronization = false)
             .then(done);
     });
 

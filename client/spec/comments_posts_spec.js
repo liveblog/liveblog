@@ -7,39 +7,40 @@ var comment = {
     text: 'comment: contents'
 };
 
-describe('Comments Posts', function() {
-    'use strict';
-
-    beforeEach(function(done) {
-      browser.ignoreSynchronization = true;
-      login('editor', 'editor')
-        .then(() => browser.ignoreSynchronization = false)
-        .then(done);
+describe('Comments Posts', () => {
+    beforeEach((done) => {
+        login('editor', 'editor')
+            .then(done);
     });
 
-    it('can open comments panel from url', function() {
+    it('can open comments panel from url', () => {
         var comments = blogs.openBlog(0).comments;
-        browser.getCurrentUrl().then(function(url) {
-            browser.get(url.split('?')[0] + '?panel=comments').then(function() {
-                expect(comments.column.isPresent()).toBe(true);
-            });
+
+        browser.getCurrentUrl().then((url) => {
+            browser.get(url.split('?')[0] + '?panel=comments')
+                .then(() => {
+                    expect(comments.column.isPresent()).toBe(true);
+                });
         });
     });
 
-    it('can publish it', function() {
+    it('can publish it', () => {
         var comments = blogs.openBlog(0).openComments();
+
         comments.publish(comments.get(0));
         expect(blogs.blog.timeline.get(0).isPresent()).toBe(true);
         expect(comments.all().count()).toBe(0);
     });
 
-    it('can open a comment in the editor and publish it', function() {
+    it('can open a comment in the editor and publish it', () => {
         var blog = blogs.openBlog(0),
             comments = blog.openComments();
+
         comments.edit(comments.get(0));
         var editor = blog.openEditor();
+
         expect(editor.textElement.getText()).toEqual(comment.text);
-        editor.publish().then(function() {
+        editor.publish().then(() => {
             expect(blogs.blog.timeline.get(0).isPresent()).toBe(true);
             blog.openComments();
             expect(comments.all().count()).toBe(0);

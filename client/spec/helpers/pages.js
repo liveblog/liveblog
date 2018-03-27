@@ -937,7 +937,6 @@ function randomString(maxLen) {
 }
 
 function randomNumber(maxLen) {
-    'use strict';
     maxLen = maxLen || 15;
     var text = '';
     var possible = '123456789';
@@ -948,8 +947,8 @@ function randomNumber(maxLen) {
 }
 
 function ConsumersManagementPage() {
-    'use strict';
     var self = this;
+
     self.themes = element.all(by.css('.theme'));
     self.blogsRows = element.all(by.repeater('blog in vm.selectedTheme.blogs'));
     self.fileThemeElement = element(by.css('#uploadAThemeFile'));
@@ -959,12 +958,12 @@ function ConsumersManagementPage() {
 
     self.openConsumersManagement = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
-        browser.wait(function() {
+        browser.wait(() => {
             return element(by.css('[href="#/syndication/"][title]')).isDisplayed();
         });
         waitAndClick(by.css('[href="#/syndication/"][title]'));
 
-        browser.waitForAngular();
+        // browser.waitForAngular();
         element.all(by.repeater('state in states').row(1)).click();
 
         return self;
@@ -972,7 +971,6 @@ function ConsumersManagementPage() {
 }
 
 function ProducersManagementPage() {
-    'use strict';
     var self = this;
 
     self.openProducersManagement = function() {
