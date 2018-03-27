@@ -41,19 +41,19 @@ class Blog:
     # @TODO: refactor params, deleted was introduced as a hot fix.
     def _posts_lookup(self, sticky=None, highlight=None, all=False, deleted=False):
         filters = [
-            {'blog': {'$eq': self._blog['_id']}}
+            {'blog': self._blog['_id']}
         ]
         if not all:
-            filters.append({'post_status': {'$eq': 'open'}})
+            filters.append({'post_status': 'open'})
             if not deleted:
-                filters.append({'deleted': {'$eq': False}})
+                filters.append({'deleted': False})
 
         if sticky:
-            filters.append({'sticky': {'$eq': True}})
+            filters.append({'sticky': True})
         else:
-            filters.append({'sticky': {'$eq': False}})
+            filters.append({'sticky': False})
         if highlight:
-            filters.append({'lb_highlight': {'$eq': True}})
+            filters.append({'lb_highlight': True})
         return {'$and': filters}
 
     def get_ordering(self, label):

@@ -31,9 +31,9 @@ def update_post_blog_data(post, action='created'):
 
     # Fetch total posts.
     total_posts = posts.find({'$and': [
-        {'blog': {'$eq': blog_id}},
-        {'post_status': {'$eq': 'open'}},
-        {'deleted': {'$eq': False}}
+        {'blog': blog_id},
+        {'post_status': 'open'},
+        {'deleted': False}
     ]}).count()
     updates = {
         'total_posts': total_posts,
