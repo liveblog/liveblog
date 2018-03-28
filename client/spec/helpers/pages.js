@@ -143,11 +143,11 @@ function BlogsPage() {
 function FreetypesManagerPage() {
     var self = this;
 
-    self.title = element(by.css('[ng-model="vm.dialogFreetype.name"]'));
-    self.template = element(by.css('[ng-model="vm.dialogFreetype.template"]'));
+    self.title = element(by.css('[ng-model="self.dialogFreetype.name"]'));
+    self.template = element(by.css('[ng-model="self.dialogFreetype.template"]'));
 
     self.getFreetypes = function() {
-        return element.all(by.repeater('freetype in vm.freetypes'));
+        return element.all(by.repeater('freetype in self.freetypes'));
     };
     self.openFreetypesManager = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
@@ -156,10 +156,10 @@ function FreetypesManagerPage() {
         return self;
     };
     self.saveFreetype = function() {
-        return element(by.css('[ng-click="vm.saveFreetype()"]')).click();
+        return element(by.css('[ng-click="self.saveFreetype()"]')).click();
     };
     self.openNewFreetypeDialog = function() {
-        element(by.css('[ng-click="vm.openFreetypeDialog();"]')).click();
+        element(by.css('[ng-click="self.openFreetypeDialog();"]')).click();
     };
     self.createFreetypeData = function() {
         return {
@@ -178,7 +178,7 @@ function FreetypesManagerPage() {
         self.getFreetypes()
             .get(index)
             .click()
-            .all(by.css('[ng-click="vm.removeFreetype(freetype, $index);"]'))
+            .all(by.css('[ng-click="self.removeFreetype(freetype, $index);"]'))
             .click();
         okModal();
     };
@@ -267,11 +267,11 @@ function ThemesManagerPage() {
     'use strict';
     var self = this;
     self.themes = element.all(by.css('.theme'));
-    self.blogsRows = element.all(by.repeater('blog in vm.selectedTheme.blogs'));
+    self.blogsRows = element.all(by.repeater('blog in self.selectedTheme.blogs'));
     self.fileThemeElement = element(by.css('#uploadAThemeFile'));
-    self.byRemove = by.css('[ng-click="vm.removeTheme(theme)"]');
-    self.bySettings = by.css('[ng-click="vm.openThemeSettings(theme)"]');
-    self.byPreview = by.css('[ng-click="theme.screenshot_url && vm.openThemePreview(theme)"]');
+    self.byRemove = by.css('[ng-click="self.removeTheme(theme)"]');
+    self.bySettings = by.css('[ng-click="self.openThemeSettings(theme)"]');
+    self.byPreview = by.css('[ng-click="theme.screenshot_url && self.openThemePreview(theme)"]');
 
     self.openThemesManager = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
@@ -283,7 +283,7 @@ function ThemesManagerPage() {
     };
 
     self.setAsDefault = function(theme_index) {
-        return self.themes.get(theme_index).element(by.css('[ng-click="vm.makeDefault(theme)"]')).click();
+        return self.themes.get(theme_index).element(by.css('[ng-click="self.makeDefault(theme)"]')).click();
     };
 
     self.openSettingsForTheme = function(themeIndex) {
@@ -340,7 +340,7 @@ function ThemesManagerPage() {
             }
             // check if the number of row matchs
             expect(self.blogsRows.count()).toBe(params.number_of_blogs_expected);
-            var close_modal = element(by.css('[ng-click="vm.closeThemeBlogsModal()"]'));
+            var close_modal = element(by.css('[ng-click="self.closeThemeBlogsModal()"]'));
             close_modal.isPresent().then(function(is_present) {
                 if (is_present) {
                     close_modal.click();
@@ -479,7 +479,7 @@ function ContributionsPage(blog) {
     AbstractPanelPage.call(self);
 
     self.openFiterByMember = function() {
-        return self.column.element(by.css('.btn--plus')).click();
+        return self.column.element(by.css('[ng-click="self.toggleSelector()"]')).click();
     };
 
     self.filterByMember = function(member_name) {
@@ -950,11 +950,11 @@ function ConsumersManagementPage() {
     var self = this;
 
     self.themes = element.all(by.css('.theme'));
-    self.blogsRows = element.all(by.repeater('blog in vm.selectedTheme.blogs'));
+    self.blogsRows = element.all(by.repeater('blog in self.selectedTheme.blogs'));
     self.fileThemeElement = element(by.css('#uploadAThemeFile'));
-    self.byRemove = by.css('[ng-click="vm.removeTheme(theme)"]');
-    self.bySettings = by.css('[ng-click="vm.openThemeSettings(theme)"]');
-    self.byPreview = by.css('[ng-click="theme.screenshot_url && vm.openThemePreview(theme)"]');
+    self.byRemove = by.css('[ng-click="self.removeTheme(theme)"]');
+    self.bySettings = by.css('[ng-click="self.openThemeSettings(theme)"]');
+    self.byPreview = by.css('[ng-click="theme.screenshot_url && self.openThemePreview(theme)"]');
 
     self.openConsumersManagement = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();

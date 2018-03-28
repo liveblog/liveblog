@@ -5,9 +5,7 @@ describe('Scorecards Posts', function() {
     'use strict';
 
     beforeEach(function(done) {
-        browser.ignoreSynchronization = true;
         login('editor', 'editor')
-            .then(() => browser.ignoreSynchronization = false)
             .then(done);
     });
 
