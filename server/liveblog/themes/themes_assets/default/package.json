@@ -54,5 +54,8 @@
   "repository": {
     "type": "git",
     "url": "git@github.com:liveblog/liveblog-default-theme"
+  },
+  "devDependencies": {
+    "gulp-install": "^1.1.0"
   }
 }
