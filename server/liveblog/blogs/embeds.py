@@ -204,7 +204,8 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             settings=theme_settings,
             api_response=api_response,
             assets_root=assets_root,
-            i18n=i18n
+            i18n=i18n,
+            api_host=api_host
         )
 
     async = theme.get('asyncTheme', False)
