@@ -20,19 +20,21 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
 
             function getParentNode(name, collectionParam) {
                 const collection = collectionParam || themesHierachy;
+                let ret;
 
                 Object.keys(collection).forEach((key) => {
                     if (key === name) {
-                        return collection[key];
+                        ret = collection[key];
                     }
                     if (angular.isObject(collection[key])) {
                         const res = getParentNode(name, collection[key]);
 
                         if (angular.isDefined(res)) {
-                            return res;
+                            ret = res;
                         }
                     }
                 });
+                return ret;
             }
             function addToHierarchy(name, extend) {
                 if (angular.isDefined(extend)) {
@@ -303,6 +305,9 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
         }])
         .filter('githubUrlFromGit', () => function(string) {
             function githubUrlFromGit(url, opts) {
+                if (!url) {
+                    return '';
+                }
                 // from https://github.com/tj/node-github-url-from-git
                 // generate the git:// parsing regex
                 // with options, e.g., the ability
@@ -331,6 +336,9 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
         })
         .filter('stashUrlFromGit', () => function(string) {
             function stashUrlFromGit(url, opts) {
+                if (!url) {
+                    return '';
+                }
                 const stashRe = function(opts = {}) {
                     // whitelist of URLs that should be treated as Stash, BitBucket repos.
                     const baseUrls = ['stash.sourcefabric.org'].concat(opts.extraBaseUrls || []);
