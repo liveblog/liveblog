@@ -459,7 +459,7 @@ gulp.task('theme-replace', ['browserify', 'less'], () => {
   loadThemeJSON();
 });
 
-gulp.task('server', ['browserify', 'less', 'index-inject'], () => {
+gulp.task('server', ['install', 'browserify', 'less', 'index-inject'], () => {
   plugins.connect.server({
     port: 8008,
     root: '.',
@@ -481,6 +481,10 @@ gulp.task('watch-static', ['server'], () => {
   });
 });
 
+gulp.task('install', [], () => {
+  gulp.src([path.resolve(`${CWD}/package.json`)]).pipe(plugins.install());
+});
+
 gulp.task('set-production', () => {DEBUG = false;});
 
 // Clean CSS
@@ -489,11 +493,11 @@ gulp.task('clean-css', () => del(['dist/*.css']));
 // Clean JS
 gulp.task('clean-js', () => del(['dist/*.js']));
 
-gulp.task('production', ['browserify', 'less', 'theme-replace', 'template-inject']);
+gulp.task('production', ['install', 'browserify', 'less', 'theme-replace', 'template-inject']);
 
 gulp.task('default', ['set-production', 'production']);
 
 // Default build for development
-gulp.task('devel', ['browserify', 'less', 'theme-replace', 'index-inject']);
+gulp.task('devel', ['install', 'browserify', 'less', 'theme-replace', 'index-inject']);
 
 module.exports = gulp;

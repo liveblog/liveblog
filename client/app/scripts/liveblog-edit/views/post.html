@@ -1,5 +1,5 @@
 <li>
-    <div ng-if="functionize(postsListCtrl.allowReordering)(post)" 
+    <div ng-if="functionize(postsListCtrl.allowReordering)(post)"
         ng-class="{'active top': post.order > reorderPost.order}"
         class="timeline-reorder {{ post.post_type }}"
         ng-click="movePost(index, 'above');"
@@ -22,15 +22,15 @@
                     <div class="inline" ng-if="post.post_status != 'open'">
                         <span class="name">{{ ::post.mainItem.item.user.display_name }}</span>
                         <span ng-if="post.producer_blog_title" class="producer">{{ ::post.producer_blog_title }}</span>
-                        | <time>{{ post._created | reldate }}</time>
+                        | <time datetime="{{ post._created}}">{{ post._created | reldateAutoUpdate }}</time>
                     </div>
                     <div class="inline" ng-if="post.post_status == 'open'">
                         <span class="name">{{ ::post.mainItem.item.user.display_name }}</span>
                         <span ng-if="post.producer_blog_title" class="producer">{{ ::post.producer_blog_title }}</span>
-                        | <time>{{ post.published_date | reldate }}</time>
+                        | <time datetime="{{ post.published_date}}">{{ post.published_date | reldateAutoUpdate }}</time>
                     </div>
                     <div class="inline" ng-if="post.showUpdate">
-                        <span class="updated-label" translate>&nbsp;Updated</span> <time class="updated-time">{{ post.content_updated_date | reldate }}</time>
+                        <span class="updated-label" translate>&nbsp;Updated</span> <time class="updated-time" datetime="{{ post.content_updated_date}}">{{ post.content_updated_date | reldateAutoUpdate }}</time>
                     </div>
                     <div class="lb-post__actions" ng-if="!postsListCtrl.isBlogClosed">
                         <ul>
@@ -96,15 +96,15 @@
                                 <div class="lb-post__content">
                                     <div class="lb-post__header">
                                         <div class="inline">
-                                            <span class="name">{{ ::item.item.user.display_name }}</span> 
+                                            <span class="name">{{ ::item.item.user.display_name }}</span>
                                             <span ng-if="post.producer_blog_title" class="producer">{{ ::post.producer_blog_title }}</span>
-                                            | <time>{{ ::(item.item.meta._created || item.item._created) | reldate }}</time>
+                                            | <time datetime="{{ (item.item.meta._created || item.item._created) }}">{{ ::(item.item.meta._created || item.item._created) | reldateAutoUpdate }}</time>
                                         </div>
                                     </div>
                                     <lb-item item="item.item"></lb-item>
                                 </div>
                             </div>
-                            <div 
+                            <div
                                 ng-if="!post.fullDetails || $first"
                                 lb-bind-html
                                 html-content="{{ item.item.text }}"

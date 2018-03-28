@@ -10,11 +10,11 @@
   <p>{{ blog.description | safe }}</p>
   {% endif %}
 
-  {# % if settings.showImage and blog.picture_url % #}
+  {% if settings.showImage and blog.picture_url %}
     <div class="lb-blog-picture-container">
       <amp-img src="{{ blog.picture_url }}" layout="fill"></amp-img>
     </div>
-  {# % endif % #}
+  {% endif %}
 
   <div class="header-bar">
 
@@ -64,7 +64,7 @@
     class="timeline-body">
 
     <button id="live-list-update-button" update on="tap:amp-live-list-insert-blog.update" class="ampstart-btn caps lb-post new-updates">{{ translate("See new updates") }}</button>
-    <div items class="lb-posts">
+    <div items class="lb-posts" id="lb-posts">
       {% for item in api_response.stickyPosts._items %}
         {% include "template-timeline-loop-content.html" %}
       {% endfor %}

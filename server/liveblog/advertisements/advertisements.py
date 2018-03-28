@@ -15,6 +15,8 @@ from superdesk import get_resource_service
 
 from liveblog.utils.api import api_response, api_error
 
+from .utils import get_advertisements_list
+
 advertisements_blueprint = Blueprint('foo', __name__)
 CORS(advertisements_blueprint)
 
@@ -71,9 +73,14 @@ class AdvertisementsService(BaseService):
 
 @advertisements_blueprint.route('/api/advertisements/<blog_id>/<output>/')
 def get_advertisements(blog_id, output):
-    """@TODO: add docstrings"""
+    """
+    Returns the list of advertisements for a given output id
 
-    # if the `output` is the `_id` get the data.
+    Args:
+        :blog_id: string
+        :output: string of the desired output channel
+    """
+
     if output:
         if isinstance(output, str):
             output = get_resource_service('outputs').find_one(req=None, _id=output)
@@ -83,12 +90,5 @@ def get_advertisements(blog_id, output):
             collection = get_resource_service('collections').find_one(req=None, _id=output.get('collection'))
             output['collection'] = collection
 
-    ads = []
-    if output and output.get('collection', False):
-        ads_ids = output['collection'].get('advertisements', [])
-        ads_ids = list(map(lambda x: x['advertisement_id'], ads_ids))
-
-        ads_query = get_resource_service('advertisements').find({"_id": {"$in": ads_ids}})
-        ads = list(ads_query)
-
+    ads = get_advertisements_list(output)
     return api_response(ads, 200)
