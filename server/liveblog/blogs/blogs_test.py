@@ -1,19 +1,20 @@
-import unittest
-from liveblog.blogs.blogs import BlogService
+from liveblog.blogs import init_app
+from superdesk.tests import TestCase
+from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 
-class BlogsTestCase(unittest.TestCase):
+
+class BlogsTestCase(TestCase):
 
     def setUp(self):
-        pass
+        # from nose.tools import set_trace; set_trace()
+        init_app(self.app)
+
+    def test_if_not_check_max_active(self):
+        increment = 0
+        self.assertEqual(get_resource_service('blogs')._check_max_active(increment), None)
 
     def test_if_check_max_active(self):
-        increment = 10
-        """so if check "subscription in SUBSCRIPTION_MAX_ACTIVE_BLOGS" pass in method \
-        _check_max_active it will create exception"""
-        error_reach_maximum = False
-        try:
-            BlogService()._check_max_active(increment)
-        except:
-            error_reach_maximum = True
-        self.assertEqual(error_reach_maximum, True)
+        increment = 5
+        with self.assertRaises(SuperdeskApiError):
+            get_resource_service('blogs')._check_max_active(increment)
