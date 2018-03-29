@@ -313,8 +313,8 @@ function ThemesManagerPage() {
 
     self.openPreview = function(theme_index) {
         self.themes.get(theme_index).element(self.byPreview).click().then(function() {
-            expect(element(by.css('.theme-preview-modal .modal-dialog')).isDisplayed()).toBe(true);
-            element(by.css('.theme-preview-modal .close')).click();
+            expect(element(by.css('.theme-preview-modal .modal__dialog')).isDisplayed()).toBe(true);
+            element(by.css('.theme-preview-modal .modal__close')).click();
         });
         return self;
     };
