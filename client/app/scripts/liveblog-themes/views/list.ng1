@@ -146,10 +146,10 @@
 </div>
 
 <div sd-modal="" data-model="self.themePreviewModal" class="theme-preview-modal" macro-team="">
-    <div class="modal-header">
-        <button class="close" ng-click="self.themePreviewModal = false">⨯</button>
+    <div class="modal__header">
+        <button class="modal__close pull-right" ng-click="self.themePreviewModal = false"><i class="icon-close-small"></i></button>
     </div>
-    <div class="modal-body">
+    <div class="modal__body">
         <img ng-src="{{self.themePreviewModalTheme.screenshot_url}}"
             full-height
             full-height-use-max-height="true"
@@ -158,13 +158,13 @@
 </div>
 
 <div sd-modal="" data-model="self.upgradeModal">
-    <div class="modal-header">
-        <button class="close" ng-click="self.closeUpgradeModal()">
+    <div class="modal__header">
+        <button class="modad__close pull-right" ng-click="self.closeUpgradeModal()">
             <i class="icon-close-small"></i>
         </button>
         <h3>Sorry</h3>
     </div>
-    <div class="modal-body">
+    <div class="modal__body">
       <p>You have reached the maximum number of themes on your Live Blog plan. You can either:</p>
       <ul>
         <li>1. Remove an existing theme or</li>
