@@ -15,6 +15,6 @@ class BlogsTestCase(TestCase):
         self.assertEqual(get_resource_service('blogs')._check_max_active(increment), None)
 
     def test_if_check_max_active(self):
-        increment = 5
+        increment = 10
         with self.assertRaises(SuperdeskApiError):
             get_resource_service('blogs')._check_max_active(increment)
