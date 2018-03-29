@@ -316,7 +316,7 @@ def create_amp_comment():
 
     comment = post_comments.find_one(req=None, _id=post_comment)
 
-    return make_response(dumps(comment), 201)
+    return api_response(dumps(comment), 201)
 
 
 @blog_posts_blueprint.route('/api/v2/client_blogs/<blog_id>/posts', methods=['GET'])
