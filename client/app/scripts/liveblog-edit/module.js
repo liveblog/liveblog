@@ -157,6 +157,24 @@ const app = angular.module('liveblog.edit', [
             return text.replace(absoluteProtocol, '//');
         };
     }])
+    /**
+     * Returns relative date and auto updates values every 60s
+     *
+     * @param {Datetime} date iso format datetime
+     * @return {String} relative time
+     */
+
+    .filter('reldateAutoUpdate', ['$interval', function reldateAutorUpdateFactory($interval) {
+        // trigger digest every 60 seconds
+        $interval(() => true, 60000);
+
+        function reldateAutoUpdate(date) {
+            return moment(date).fromNow();
+        }
+
+        reldateAutoUpdate.$stateful = true;
+        return reldateAutoUpdate;
+    }])
     .filter('outboundAnchors', () => function(text = '') {
         return text.replace(/<a([^>]*)>/g, (match, attr) => {
             if (attr.indexOf('target') === -1) {

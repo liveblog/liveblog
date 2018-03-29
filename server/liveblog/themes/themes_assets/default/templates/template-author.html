@@ -1,0 +1,39 @@
+{% if item.post_items_type != "advertisement" %}
+<!-- author plus avatar -->
+<div class="lb-author {% if settings.authorPosition == "bottom"  %}lb-author--bottom{% endif %}">
+    {% if mainItem.commenter and not (item.syndication_in and not settings.showSyndicatedAuthor) %}
+      <div class="lb-author__name">
+        {{ translate('Comment by') }} {{ mainItem.commenter }}
+      </div>
+      <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
+    {% elif settings.showAuthor %}
+      <div class="lb-author__name">
+      {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
+        {{ mainItem.syndicated_creator.display_name }}
+      {% elif item.original_creator %}
+        {{ item.original_creator.display_name }}
+      {% elif item.publisher %}
+        {{ item.publisher.display_name }}
+      {% endif %}
+      {% if item.syndication_in and not settings.showSyndicatedAuthor %}
+        <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
+      {% endif %}
+      </div>
+      {% if type == 'comment' %}
+        <img class="lb-author__avatar lb-author__avatar--comment" src="{{ assets_root }}images/comment_icon.svg">
+      {% endif %}
+      {% if settings.showAuthorAvatar and type != 'comment' %}
+        {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor and mainItem.syndicated_creator.picture_url %}
+        <img class="lb-author__avatar" src="{{ mainItem.syndicated_creator.picture_url }}" />
+        {% elif item.original_creator and item.original_creator.picture_url %}
+        <img class="lb-author__avatar" src="{{ item.original_creator.picture_url }}" />
+        {% elif item.publisher and item.publisher.picture_url %}
+        <img class="lb-author__avatar" src="{{ item.publisher.picture_url }}" />
+        {% else %}
+        <div class="lb-author__avatar"></div>
+        {% endif %}
+      {% endif %}
+    {% endif %}
+  </div>
+  <!-- end author -->
+  {% endif %}
