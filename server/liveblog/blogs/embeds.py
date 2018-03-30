@@ -19,7 +19,6 @@ from bson.json_util import dumps as bson_dumps
 from eve.io.mongo import MongoJSONEncoder
 from flask import current_app as app
 from flask import json, render_template, request, url_for
-from liveblog.themes import UnknownTheme
 from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
@@ -34,6 +33,7 @@ THEMES_DIRECTORY = os.path.abspath(os.path.join(os.path.dirname(os.path.realpath
 
 
 def collect_theme_assets(theme, assets=None, template=None, parents=[]):
+    from liveblog.themes import UnknownTheme
     theme_name = theme['name']
     themes = get_resource_service('themes')
     is_local_upload = themes.is_uploaded_theme(theme_name) and not themes.is_s3_storage_enabled
@@ -116,6 +116,7 @@ def ad_to_post(ad):
 @embed_blueprint.route('/embed/<blog_id>/theme/<theme>', defaults={'output': None})
 @embed_blueprint.route('/embed/<blog_id>/<output>/theme/<theme>/')
 def embed(blog_id, theme=None, output=None, api_host=None):
+    from liveblog.themes import UnknownTheme
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if not blog:
