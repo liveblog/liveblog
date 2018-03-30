@@ -376,12 +376,14 @@ function BlogPage(blogs) {
         return self.editor;
     };
 
-    self.openFreetypesEditor = function(index) {
+    self.openFreetypesEditor = (index) => {
         var freetypeIndex = index || 0;
-        element(by.css('[ng-click="toggleTypePostDialog()"]')).click()
-        .then(function() {
-            element(by.repeater('freetype in freetypes').row(freetypeIndex)).click();
-        });
+
+        element(by.css('[ng-click="toggleTypePostDialog()"]'))
+            .click()
+            .then(() => {
+                element(by.repeater('freetype in freetypes').row(freetypeIndex)).click();
+            });
         return self.editor;
     };
 
@@ -594,15 +596,17 @@ function EditPostPage() {
     self.embedElement = element(by.css('.embed-input'));
     self.iframe = element(by.css('.liveblog--card iframe'));
     self.publishElement = element(by.css('[ng-click="publish()"]'));
-    //for scorecards
+    // for scorecards
     self.homeName = element(by.css('[text="freetypeData.home.name"] [ng-model="text"]'));
     self.homeScore = element(by.css('[text="freetypeData.home.score"] [ng-model="text"]'));
     self.awayName = element(by.css('[text="freetypeData.away.name"] [ng-model="text"]'));
     self.awayScore = element(by.css('[text="freetypeData.away.score"] [ng-model="text"]'));
     self.player1Name = element.all(by.css('[text="iterator__1.name"] [ng-model="text"]')).get(0);
     self.player1Time = element.all(by.css('[text="iterator__1.time"] [ng-model="text"]')).get(0);
-    self.player2Name = element.all(by.css('[text="iterator__1.name"] [ng-model="text"]')).get(1);
-    self.player2Time = element.all(by.css('[text="iterator__1.time"] [ng-model="text"]')).get(1);
+    self.player2Name = element.all(by.css('[text="iterator__2.name"] [ng-model="text"]')).get(0);
+    self.player2Time = element.all(by.css('[text="iterator__2.time"] [ng-model="text"]')).get(0);
+    self.player3Name = element.all(by.css('[text="iterator__1.name"] [ng-model="text"]')).get(1);
+    self.player3Time = element.all(by.css('[text="iterator__1.time"] [ng-model="text"]')).get(1);
 
     self.addTop = function() {
         // click on the "+" bar
@@ -638,7 +642,7 @@ function EditPostPage() {
     };
 
     self.waitForPublish = function() {
-        browser.wait(function() {
+        browser.wait(() => {
             return self.publishElement.isEnabled();
         }, 2000);
     };
@@ -665,13 +669,19 @@ function EditPostPage() {
             player1Time: randomNumber(2),
             player2Name: randomString(10),
             player2Time: randomNumber(2),
+            player3Name: randomString(10),
+            player3Time: randomNumber(2)
         };
+
         self.homeName.sendKeys(data.homeName);
         self.homeScore.sendKeys(data.homeScore);
         self.awayName.sendKeys(data.awayName);
         self.awayScore.sendKeys(data.awayScore);
         self.player1Name.sendKeys(data.player1Name);
         self.player1Time.sendKeys(data.player1Time);
+        self.player2Name.sendKeys(data.player2Name);
+        self.player2Time.sendKeys(data.player2Time);
+
 
         return self.publish().then(function() {return data;});
     };

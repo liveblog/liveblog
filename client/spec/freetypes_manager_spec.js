@@ -20,7 +20,7 @@ describe('Free types Manager', () => {
             freetypesManager.getFreetypes()
                 .get(0)
                 .click()
-                .all(by.css('[ng-click="vm.openFreetypeDialog(freetype);"]'))
+                .all(by.css('[ng-click="self.openFreetypeDialog(freetype);"]'))
                 .click();
             expect(freetypesManager.title.getAttribute('value')).toEqual(freeData.title);
             expect(freetypesManager.template.getAttribute('value')).toEqual(freeData.template);
@@ -35,13 +35,13 @@ describe('Free types Manager', () => {
                 freetypesManager.getFreetypes()
                     .get(0)
                     .click()
-                    .all(by.css('[ng-click="vm.openFreetypeDialog(freetype);"]'))
+                    .all(by.css('[ng-click="self.openFreetypeDialog(freetype);"]'))
                     .click();
                 expect(freetypesManager.title.getAttribute('value')).toEqual(freeData.title + newData.title);
                 expect(freetypesManager.template.getAttribute('value')).toEqual(freeData.template + newData.template);
             });
             // close edit freetype dialog
-            element(by.css('[ng-click="vm.cancelCreate()"]')).click();
+            element(by.css('[ng-click="self.cancelCreate()"]')).click();
             // remove first freetype
             freetypesManager.removeFreetype(0);
             // expect no freetypes available
