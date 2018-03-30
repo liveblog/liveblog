@@ -11,9 +11,9 @@
 import angular from 'angular';
 import _ from 'lodash';
 
-import scorecardsTpl from 'scripts/liveblog-edit/views/scorecards.html';
-import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.html';
-import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.html';
+import scorecardsTpl from 'scripts/liveblog-edit/views/scorecards.ng1';
+import adsLocalTpl from 'scripts/liveblog-edit/views/ads-local.ng1';
+import adsRemoteTpl from 'scripts/liveblog-edit/views/ads-remote.ng1';
 
 import './../../ng-sir-trevor';
 import './../../sir-trevor-blocks';
@@ -90,7 +90,7 @@ export default function BlogEditController(
     }
     const emptyPRegex = /<p><br\/?><\/p>/g;
     const emptyDivRegex = /<div><br\/?><\/div>/g;
-    const targetIconRegex = /target\s*=\s*"\<\/?i\>blank\"/g;
+    const targetIconRegex = /target\s*=\s*"<\/?i>blank"/g;
     // start listening for unread posts.
 
     unreadPostsService.startListening();
@@ -113,7 +113,7 @@ export default function BlogEditController(
                     meta: block.meta,
                     syndicated_creator: syndicatedCreator,
                     item_type: block.type
-                }
+                };
             });
         }
 
@@ -257,18 +257,18 @@ export default function BlogEditController(
         // these are the freetypes defined by the user with the CRUD form
         var userFt = api.freetypes.query().then((data) => data._items);
 
-        var scorecards = {
+        const scorecards = {
             name: 'Scorecard',
             template: $templateCache.get(scorecardsTpl),
             separator: true
         };
 
-        var adLocal = {
+        const adLocal = {
             name: 'Advertisement Local',
             template: $templateCache.get(adsLocalTpl)
         };
 
-        var adRemote = {
+        const adRemote = {
             name: 'Advertisement Remote',
             template: $templateCache.get(adsRemoteTpl)
         };
@@ -354,7 +354,7 @@ export default function BlogEditController(
                 return;
             }
 
-            var input = el.text().trim();
+            const input = el.text().trim();
 
             $scope.$apply(() => {
                 $scope.actionDisabled = _.isEmpty(input);
@@ -364,7 +364,7 @@ export default function BlogEditController(
             if (isPostFreetype()) {
                 if (angular.isDefined($scope.currentPost)) {
                     return $scope.freetypeControl.isValid()
-                            && ($scope.currentPost.post_status === 'draft'
+                        && ($scope.currentPost.post_status === 'draft'
                             || $scope.currentPost.post_status === 'submitted');
                 }
 
@@ -391,7 +391,7 @@ export default function BlogEditController(
         openPostInEditor: function(post) {
             function fillEditor(post) {
                 cleanEditor(false);
-                var delay = 0;
+                let delay = 0;
 
                 $scope.currentPost = angular.copy(post);
                 $scope.sticky = $scope.currentPost.sticky;
@@ -413,7 +413,8 @@ export default function BlogEditController(
                                 // post it freetype so we need to reder it
                                 loadFreetypeItem(itm);
                             } else {
-                                var data = _.extend({}, itm, itm.meta);
+                                const data = _.extend({}, itm, itm.meta);
+
                                 self.editor.createBlock(itm.item_type, data);
                             }
                         }
@@ -528,7 +529,7 @@ export default function BlogEditController(
             // provide an uploader to the editor for media (custom sir-trevor image block uses it)
             uploader: function(file, successCallback, errorCallback) {
                 $scope.actionPending = true;
-                var handleError = function(response) {
+                const handleError = function(response) {
                     // call the uploader callback with the error message as parameter
                     errorCallback(response.data ? response.data._message : undefined);
                     $scope.actionPending = true;
@@ -641,9 +642,9 @@ export default function BlogEditController(
     // unread count when this one isn't currently selected/displayed
     $scope.$on('posts', (e, data) => {
         if ($scope.panelState !== 'ingest'
-        && data.hasOwnProperty('posts')
-        && data.hasOwnProperty('created')) {
-            let syndPosts = data.posts
+            && data.hasOwnProperty('posts')
+            && data.hasOwnProperty('created')) {
+            const syndPosts = data.posts
                 .filter((post) => post.hasOwnProperty('syndication_in'));
 
             $scope.ingestQueue.queue = $scope.ingestQueue.queue.concat(syndPosts);

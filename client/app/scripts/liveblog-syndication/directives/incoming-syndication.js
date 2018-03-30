@@ -1,4 +1,4 @@
-import incomingSyndicationTpl from 'scripts/liveblog-syndication/views/incoming-syndication.html';
+import incomingSyndicationTpl from 'scripts/liveblog-syndication/views/incoming-syndication.ng1';
 
 incomingSyndication.$inject = [
     '$routeParams',
@@ -62,7 +62,7 @@ export default function incomingSyndication(
             // Not very fast, but easy to setup
             scope.$on('posts', (e, data) => {
                 if (data.hasOwnProperty('deleted') && data.deleted === true
-                || data.posts && data.posts[0].syndication_in) {
+                    || data.posts && data.posts[0].syndication_in) {
                     IncomingSyndicationActions
                         .getPosts(scope.blogId, scope.syndId);
                 }

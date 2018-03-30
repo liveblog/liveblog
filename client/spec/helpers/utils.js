@@ -54,8 +54,7 @@ var blogs = [
 ];
 
 function waitAndClick(elmBy) {
-    'use strict';
-    browser.wait(function() {
+    browser.wait(() => {
         return element(elmBy);
     }, 5000);
     return element(elmBy).click();

@@ -4,7 +4,7 @@ from apps.io.tests import setup_providers
 from superdesk import tests
 from superdesk.tests import setup_auth_user
 from superdesk.tests.environment import setup_search_provider
-from superdesk.vocabularies.command import VocabulariesPopulateCommand
+from superdesk.vocabularies.commands import VocabulariesPopulateCommand
 from liveblog.tests import setup_auth_consumer, test_consumer
 from .test_settings import DATE_FORMAT
 

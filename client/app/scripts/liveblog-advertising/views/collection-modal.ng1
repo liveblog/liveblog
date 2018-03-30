@@ -1,14 +1,15 @@
 <div sd-modal data-model="collectionModalActive" class="advertising">
-    <div class="modal-header">
-        <button class="close" ng-click="cancelCollectionCreate()"><i class="icon-close-small"></i></button>
+    <div class="modal__header">
+        <button class="modal__close pull-right" ng-click="cancelCollectionCreate()"><i class="icon-close-small"></i></button>
         <h3 translate>Add collection</h3>
     </div>
-    <div class="modal-body" style="min-height: 300px;">
+    <div class="modal__body" style="min-height: 300px;">
         <div class="item-creation">
             <fieldset>
-                <div class="field">
-                    <label translate>Collection Name<span class="ft-alert" ng-if="notValidName(collection, collections)">{{ notValidName(collection, collections) }}</span></label>
-                    <input type="text" ng-model="collection.name" maxlength="24" required>
+                <div class="sd-line-input">
+                    <label class="sd-line-input__label translate" translate>Collection Name<span class="ft-alert" ng-if="notValidName(collection, collections)">{{ notValidName(collection, collections) }}</span></label>
+                    <input class="sd-line-input__input" type="text"  ng-model="collection.name" maxlength="24" required>
+                    <div sd-character-count data-item="collection.name" data-limit="24" class="sd-line-input__char-count">00/24</div>
                 </div>
                 <div class="field" style="margin-top:10px;">
                     <label translate>Assign adverts to collection</label>
@@ -29,7 +30,7 @@
             </fieldset>
         </div>
     </div>
-    <div class="modal-footer">
+    <div class="modal__footer">
         <div>
             <button type="button" class="btn btn-default pull-left" translate ng-click="cancelCollectionCreate()">Cancel</button>
             <button type="button" class="btn btn-primary btn-info" translate ng-click="saveCollection()"

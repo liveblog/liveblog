@@ -1,4 +1,4 @@
-import freetypeImageTpl from 'scripts/liveblog-edit/views/freetype-image.html';
+import freetypeImageTpl from 'scripts/liveblog-edit/views/freetype-image.ng1';
 
 freetypeImage.$inject = ['$compile', 'modal', 'api', 'upload', 'superdesk', 'urls', 'notify'];
 
@@ -25,7 +25,7 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
             $scope.valid = true;
             $scope._id = _.uniqueId('image');
             if ($scope.compulsory !== undefined) {
-                var sentinel = $scope.$watch('[image,compulsory]', (value) => {
+                const sentinel = $scope.$watch('[image,compulsory]', (value) => {
                     $scope.compulsoryFlag = value[0].picture_url === '' && value[1] === '';
                 }, true);
 
@@ -79,7 +79,7 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
                     }));
             };
 
-            this.removeImage = function() {
+            $scope.removeImage = function() {
                 modal
                     .confirm(gettext('Are you sure you want to remove the image?'))
                     .then(() => {

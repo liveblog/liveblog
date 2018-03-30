@@ -8,8 +8,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <link rel="icon" href="favicon.ico">
+    <style type="text/css">
+    [ng\:cloak], [ng-cloak], [data-ng-cloak], [x-ng-cloak], .ng-cloak, .x-ng-cloak {
+      display: none !important;
+    }
+    </style>
   </head>
-  <body>
+  <body class="ng-cloak">
 
     <div sd-superdesk-view></div>
     <div class="dropdown help-link liveblog-help" dropdown style="visibility: hidden">
@@ -19,12 +24,12 @@
             <li translate ng-click="aboutModal = aboutModal? false: true"><button translate>About</button></li>
         </ul>
     </div>
-    <div sd-modal data-model="aboutModal" style="visibility: hidden" class="about-modal">
-        <div class="modal-header">
-            <button class="close" data-dismiss="modal"><i class="icon-close-small"></i></button>
-            <h3 translate>About</h3>
+    <div sd-modal="" data-model="aboutModal" class="about-modal modal--large">
+        <div class="modal__header">
+            <button class="modal__close pull-right" ng-click="$root.aboutModal = false"><i class="icon-close-small"></i></button>
+            <h3 class="modal__heading" translate>About</h3>
         </div>
-        <div class="modal-body">
+        <div class="modal__body">
             <div>
                 <div style="display:inline-block">
                     <div translate class="text-title">
@@ -63,8 +68,8 @@
                 </p>
             </div>
         </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn--primary" translate data-dismiss="modal">CLOSE</button>
+        <div class="modal__footer">
+            <button type="button" class="btn btn--primary" translate ng-click="$root.aboutModal = false">CLOSE</button>
         </div>
     </div>
 

@@ -1,4 +1,4 @@
-import blogsListTpl from 'scripts/liveblog-marketplace/views/blogs-list.html';
+import blogsListTpl from 'scripts/liveblog-marketplace/views/blogs-list.ng1';
 
 lbBlogsList.$inject = ['MarketplaceActions'];
 
@@ -12,5 +12,5 @@ export default function lbBlogsList(MarketplaceActions) {
         link: function(scope) {
             scope.openEmbedModal = MarketplaceActions.openEmbedModal;
         }
-    }
+    };
 }

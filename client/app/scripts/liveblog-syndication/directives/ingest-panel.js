@@ -1,4 +1,4 @@
-import ingestPanelTpl from 'scripts/liveblog-syndication/views/ingest-panel.html';
+import ingestPanelTpl from 'scripts/liveblog-syndication/views/ingest-panel.ng1';
 
 ingestPanel.$inject = [
     'IngestPanelActions',
@@ -24,7 +24,7 @@ export default function ingestPanel(
             openPanel: '='
         },
         link: function(scope) {
-            var handleError = function() {
+            const handleError = function() {
                 notify.pop();
                 notify.error(gettext(`
                     An error has occurred.
@@ -95,7 +95,7 @@ export default function ingestPanel(
             // This watches for incoming posts when ingest is in focus
             scope.$on('posts', (e, data) => {
                 if (data.posts && data.hasOwnProperty('created')) {
-                    let syndPosts = data.posts
+                    const syndPosts = data.posts
                         .filter((post) => post.hasOwnProperty('syndication_in'));
 
                     IngestPanelActions.setUnreadQueue(syndPosts);

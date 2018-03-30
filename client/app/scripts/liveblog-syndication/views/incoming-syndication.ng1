@@ -27,32 +27,32 @@
     <div class="content content--syndication">
         <ul class="posts">
             <li
-                ng-repeat="post in posts._items" 
+                ng-repeat="post in posts._items"
                 class="lb-post__holder">
                 <div class="lb-post__header">
                     <div class="lb-post__actions">
                         <ul>
                             <li>
                                 <a
-                                    ng-click="lbPostsOnPostSelected(post)" 
-                                    tooltip-placement="bottom" 
-                                    tooltip="Edit">
+                                    ng-click="lbPostsOnPostSelected(post)"
+                                    flow="down"
+                                    sd-tooltip="Edit">
                                     <i class="icon-pencil"></i>
                                 </a>
                             </li>
                             <li>
                                 <a
-                                    ng-click="askRemove(post)" 
-                                    tooltip-placement="bottom" 
-                                    tooltip="{{ 'Remove' | translate }}">
+                                    ng-click="askRemove(post)"
+                                    flow="down"
+                                    sd-tooltip="{{ 'Remove' | translate }}">
                                     <i class="icon-close-thick"></i>
                                 </a>
                             </li>
                             <li>
                                 <a
                                     ng-click="publish(post)"
-                                    tooltip-placement="bottom"
-                                    tooltip="{{ 'Publish' | translate }}">
+                                    flow="down"
+                                    sd-tooltip="{{ 'Publish' | translate }}">
                                     <i class="icon-publish"></i>
                                 </a>
                             </li>
@@ -62,7 +62,7 @@
 
                 <div
                     class="lb-post__item"
-                    lb-bind-html 
+                    lb-bind-html
                     html-content="{{post.mainItem.item.text}}"></div>
             </li>
         </ul>

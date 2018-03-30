@@ -1,8 +1,7 @@
-<div class="subnav pan-right">
-    <div class="subnav__button-stack--square-buttons">
-        <button class="navbtn sd-create-btn" ng-click="createEntry()"></button>
-    </div>
-</div>
+<button class="navbtn dropdown sd-create-btn zIndex2 pull-right" dropdown__toggle="" ng-click="createEntry()">
+     <i class="icon-plus-large"></i>
+     <span class="circle"></span>
+ </button>
 
 <section class="main-section users">
 
