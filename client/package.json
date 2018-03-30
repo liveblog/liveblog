@@ -7,7 +7,9 @@
   },
   "scripts": {
     "build": "grunt build",
-    "test": "grunt ci:travis"
+    "test": "grunt ci:travis",
+    "webdriver-update": "webdriver-manager update",
+    "e2e": "protractor protractor-conf.js"
   },
   "licenses": [
     {
