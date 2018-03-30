@@ -32,6 +32,7 @@ describe('login', () => {
         // wait for sidebar animation to finish
         browser.wait(() => element(by.buttonText('SIGN OUT')).isDisplayed(), 200);
         element(by.buttonText('SIGN OUT')).click();
+        browser.sleep(2000);
         expect(modal.btn.isDisplayed()).toBe(true);
     });
 
