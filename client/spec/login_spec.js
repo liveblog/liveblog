@@ -32,7 +32,7 @@ describe('login', () => {
         // wait for sidebar animation to finish
         browser.wait(() => element(by.buttonText('SIGN OUT')).isDisplayed(), 200);
         element(by.buttonText('SIGN OUT')).click();
-        browser.wait(() => element(by.id('login-btn')).isPresent(), 5000);
+        expect(modal.btn.isDisplayed()).toBe(true);
     });
 
     it('unknown user can\'t log in', () => {
