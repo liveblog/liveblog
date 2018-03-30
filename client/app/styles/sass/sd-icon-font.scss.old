@@ -2,8 +2,8 @@
 // Glyphs and icons for buttons, nav, and more
 // -------------------------------------------
 
-// All icons receive the styles of the <i> tag with a base class 
-// of .i and are then given a unique class to add width, height, 
+// All icons receive the styles of the <i> tag with a base class
+// of .i and are then given a unique class to add width, height,
 // and font specification. Your resulting HTML will look like
 // <i class="icon-ok"></i>.
 
@@ -14,51 +14,53 @@
   font-family: 'sd_icons';
   src:url('/fonts/sd_icons.eot?-r9v51w');
   src:url('/fonts/sd_icons.eot?#iefix-r9v51w') format('embedded-opentype'),
-    url('../../fonts/sd_icons.woff?-r9v51w') format('woff'),
-    url('../../fonts/sd_icons.ttf?-r9v51w') format('truetype'),
-    url('../../fonts/sd_icons.svg?-r9v51w#sd_icons') format('svg');
+    url('/fonts/sd_icons.woff?-r9v51w') format('woff'),
+    url('/fonts/sd_icons.ttf?-r9v51w') format('truetype'),
+    url('/fonts/sd_icons.svg?-r9v51w#sd_icons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
 
 [class^="icon-"],
-[class*=" icon-"] {
+[class*=" icon-"],
+[class^="glyphicon "]
+ {
   display: inline-block;
   width: 16px;
   height: 16px;
   line-height: 16px;
   font-family: 'sd_icons';
   font-size: 16px;
-  color: $grayDark; 
+  color: $grayDark;
   speak: none;
   font-style: normal;
   font-weight: normal;
   font-variant: normal;
   text-transform: none;
-  background-image: none !important;
 
   /* Better Font Rendering =========== */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-
 }
+
+@mixin border-radius($radius: 5px) {
+    border-radius: $radius;
+}
+
 .icon-white {
   color: $white;
 }
-[class^="icon-"].blue {
+[class*="icon-"].blue {
   color: $sd-blue;
 }
-[class^="icon-"].red {
+[class*="icon-"].red {
   color: $red;
 }
-[class^="icon-"].orange {
-  color: $orange;
+[class*="icon-"].gray {
+  color:$grayDark;
 }
-[class^="icon-"].white {
+[class*="icon-"].white {
   color: $white;
-}
-[class^="icon-"].rotate {
- transform: rotate(90deg);
 }
 
 .icon-round {
@@ -127,6 +129,10 @@
 .icon-th-list:before {
   content: "\e611";
 }
+/*.icon-kanban:before {
+  content: "\e611";
+  transform: rotate(90deg);
+}*/
 .icon-pencil:before {
   content: "\e612";
 }
@@ -256,13 +262,8 @@
 .icon-link:before {
   content: "\e63c";
 }
-.icon-expand-thin:before,
-.icon-publish:before,
-.icon-unpublish:before {
+.icon-expand-thin:before {
   content: "\e63d";
-}
-.icon-unpublish {
-  transform: rotate(90deg);
 }
 .icon-assign:before {
   content: "\e63e";
@@ -282,10 +283,12 @@
 .icon-forward-thin:before {
   content: "\e641";
 }
-.icon-chevron-left-thin:before {
+.icon-chevron-left-thin:before,
+.glyphicon-chevron-left:before {
   content: "\e642";
 }
-.icon-chevron-right-thin:before {
+.icon-chevron-right-thin:before,
+.glyphicon-chevron-right:before {
   content: "\e643";
 }
 .icon-switches:before {
@@ -414,12 +417,30 @@
 .icon-graphic:before {
   content: "\e66d";
 }
-.icon-graphic:before {
-  content: "\e66d";
-}
 .icon-close-thick:before {
-  content: "\e66e";
+    content: "\e66e";
 }
 .icon-move:before {
-  content: "\e66f";
+    content: "\e66f";
+}
+.icon-takes-package:before {
+  content: "\e670";
+}
+.icon-highlight-package:before {
+  content: "\e671";
+}
+.icon-preview-mode:before {
+  content: "\e672";
+}
+.icon-unlocked:before {
+    content: "\e673";
+}
+.icon-code:before {
+    content: "\e674";
+}
+.icon-cut:before {
+    content: "\e675";
+}
+.icon-paste:before {
+    content: "\e676";
 }

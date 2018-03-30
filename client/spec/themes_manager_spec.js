@@ -1,61 +1,57 @@
 var login = require('./../node_modules/superdesk-core/spec/helpers/utils').login,
     themeManager = require('./helpers/pages').themeManager;
 
-describe('Themes Manager', function() {
-    'use strict';
-
-    beforeEach(function(done) {
-      browser.ignoreSynchronization = true;
-      login()
-        .then(() => browser.ignoreSynchronization = false)
-        .then(done);
+describe('Themes Manager', () => {
+    beforeEach((done) => {
+        login().then(done);
     });
 
-    it('can open theme manager and list the themes', function() {
+    it('can open theme manager and list the themes', () => {
         themeManager.openThemesManager()
-        .themes
-        .then(function(themes) {
-            expect(themes.length).toBe(3);
-            // angular
-            themeManager.expectTheme(0, {
-              number_of_blogs_expected: 0,
-              is_default_theme: false,
-              name: 'forest'});
-            // classic
-            themeManager.expectTheme(1, {
-              number_of_blogs_expected: 0,
-              is_default_theme: false,
-              name: 'Angular Based Theme'
+            .themes
+            .then((themes) => {
+                expect(themes.length).toBe(3);
+                // angular
+                themeManager.expectTheme(0, {
+                    number_of_blogs_expected: 0,
+                    is_default_theme: false,
+                    name: 'forest'
+                });
+                // classic
+                themeManager.expectTheme(1, {
+                    number_of_blogs_expected: 0,
+                    is_default_theme: false,
+                    name: 'Angular Based Theme'
+                });
+                // open a thumbnail
+                themeManager.openPreview(2);
+                // forest
+                themeManager.expectTheme(2, {
+                    number_of_blogs_expected: 0,
+                    is_default_theme: true,
+                    name: 'Classic Theme'
+                });
             });
-            // open a thumbnail
-            themeManager.openPreview(2);
-            // forest
-            themeManager.expectTheme(2, {
-              number_of_blogs_expected: 0,
-              is_default_theme: true,
-              name: 'Classic Theme'
-            });
-        });
     });
 
-    it('can set a theme as default', function() {
+    it('can set a theme as default', () => {
         themeManager.openThemesManager()
-        .setAsDefault(0)
-        .then(function() {
-            themeManager.expectTheme(2, {
-              number_of_blogs_expected: 0, 
-              is_default_theme: false, 
-              name: 'Classic Theme'
+            .setAsDefault(0)
+            .then(() => {
+                themeManager.expectTheme(2, {
+                    number_of_blogs_expected: 0,
+                    is_default_theme: false,
+                    name: 'Classic Theme'
+                });
+                themeManager.expectTheme(1, {
+                    number_of_blogs_expected: 0,
+                    is_default_theme: false,
+                    name: 'Angular Based Theme'
+                });
             });
-            themeManager.expectTheme(1, {
-              number_of_blogs_expected: 0,
-              is_default_theme: false, 
-              name: 'Angular Based Theme'
-            });
-        });
     });
 
-    //it('can upload a new theme', function() {
+    // it('can upload a new theme', function() {
     //    themeManager.openThemesManager()
     //        .fileThemeElement.sendKeys(path.resolve(__dirname, './upload/dog-theme.zip'));
     //    browser.wait(function() {
@@ -68,9 +64,9 @@ describe('Themes Manager', function() {
     //        // actual-dog
     //        themeManager.expectTheme(1, {number_of_blogs_expected: 0, is_default_theme:false, name: 'Actual Dog'});
     //    });
-    //});
+    // });
 
-    //it('can remove a theme', function() {
+    // it('can remove a theme', function() {
     //    themeManager.openThemesManager()
     //    .themes
     //    .then(function(themes) {
@@ -81,27 +77,29 @@ describe('Themes Manager', function() {
     //            expect(newThemes.length).toEqual(themes.length - 1);
     //        });
     //    });
-    //});
+    // });
 
-    it('can change theme settings', function() {
+    it('can change theme settings', () => {
         themeManager.openThemesManager()
-        .themes
-        .then(() => themeManager.openSettingsForTheme(1))
-        .then(() => element(by.css('[name="postsPerPage"]')).clear().sendKeys('111'))
-        .then(() => themeManager.saveSettings())
-        .then(() => browser.waitForAngular())
-        .then(() => themeManager.openSettingsForTheme(1))
-        .then(() => {
-            return expect(element(by.css('[name="postsPerPage"]')).getAttribute('value'))
-                .toEqual('111');
-        });
-        //.then(function(themes) {
+            .themes
+            .then(() => themeManager.openSettingsForTheme(1))
+            .then(() => element(by.css('[name="postsPerPage"]'))
+                .clear()
+                .sendKeys('111')
+            )
+            .then(() => themeManager.saveSettings())
+            .then(() => browser.waitForAngular())
+            .then(() => themeManager.openSettingsForTheme(1))
+            .then(() => expect(element(by.css('[name="postsPerPage"]')).getAttribute('value'))
+                .toEqual('111')
+            );
+        // .then(function(themes) {
         //    themeManager.openSettingsForTheme(1);
         //    element(by.css('[name="postsPerPage"]')).clear().sendKeys('111');
         //    themeManager.saveSettings();
         //    //browser.waitForAngular();
         //    //themeManager.openSettingsForTheme(1);
         //    //expect(element(by.css('[name="postsPerPage"]')).getAttribute('value')).toEqual('111');
-        //});
+        // });
     });
 });

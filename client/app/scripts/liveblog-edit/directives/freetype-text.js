@@ -1,4 +1,4 @@
-import freetypeTextTpl from 'scripts/liveblog-edit/views/freetype-text.html';
+import freetypeTextTpl from 'scripts/liveblog-edit/views/freetype-text.ng1';
 
 export default function freetypeText() {
     return {
@@ -11,35 +11,35 @@ export default function freetypeText() {
             }
 
             if ($scope.number !== undefined) {
-                $scope.$on('$destroy', $scope.$watch('text', function(value) {
+                $scope.$on('$destroy', $scope.$watch('text', (value) => {
                     $scope.numberFlag = (value !== '') && isNaN(value);
                     $scope.validation['number__' + $scope._id] = !$scope.numberFlag;
                 }, true));
             }
 
             if ($scope.compulsory !== undefined) {
-                $scope.$on('$destroy', $scope.$watch('[text,compulsory]', function(value) {
+                $scope.$on('$destroy', $scope.$watch('[text,compulsory]', (value) => {
                     $scope.compulsoryFlag = (value[0] === '' && value[1] === '');
                     $scope.validation['compulsory__' + $scope._id] = !$scope.compulsoryFlag;
                 }, true));
             }
 
             if ($scope.tandem !== undefined) {
-                $scope.$on('$destroy', $scope.$watch('[text,tandem]', function(value) {
+                $scope.$on('$destroy', $scope.$watch('[text,tandem]', (value) => {
                     $scope.tandemFlag = (value[0] === '' && value[1] !== '');
                     $scope.validation['tandem__' + $scope._id] = !$scope.tandemFlag;
                 }, true));
             }
 
             if ($scope.necessary !== undefined) {
-                $scope.$on('$destroy', $scope.$watch('text', function(value) {
+                $scope.$on('$destroy', $scope.$watch('text', (value) => {
                     $scope.necessaryFlag = (value === '');
                     $scope.validation['necessary__' + $scope._id] = !$scope.necessaryFlag;
                 }, true));
             }
 
-            //listen to event in order to destroy scope and avoid garbage
-            $rootScope.$on('freetypeScopeDestroy', function () {
+            // listen to event in order to destroy scope and avoid garbage
+            $rootScope.$on('freetypeScopeDestroy', () => {
                 $scope.$destroy();
             });
         }],

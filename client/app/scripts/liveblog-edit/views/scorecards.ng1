@@ -360,7 +360,7 @@
     </div>
 </div>
 <div hide-render>
-    <label for="remember" class="inline" tooltip-placement="top"
-    tooltip="If checked the last scorecard will be loaded when choosing a new one">Remember last scorecard</label>
+    <label for="remember" class="inline"
+    sd-tooltip="If checked the last scorecard will be loaded when choosing a new one">Remember last scorecard</label>
     <input id="remember" class="marginleft10" checkbox="$remember" type="checkbox">
 </div>

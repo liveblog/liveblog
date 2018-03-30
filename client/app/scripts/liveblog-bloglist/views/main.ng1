@@ -1,12 +1,13 @@
 <div class="subnav">
 
-    <div class="button-stack left-stack" >
-        <button class="navbtn hover" href="/#/liveblog">
+    <div class="button-stack" >
+    <button class="navbtn hover pull-left" href="/#/liveblog">
             <i class="icon-th-large"></i>
         </button>
-        <ul class="nav nav-tabs pull-left" >
+        <ul class="nav nav-tabs" >
             <li ng-class="{active: activeState === state}" ng-repeat="state in states"><button ng-click="changeState(state)" translate>{{ ::state.text }}</button></li>
         </ul>
+        
     </div>
     <div class="subnav__stretch-bar"></div>
     <div class="subnav__button-stack--square-buttons" ng-if="isUserAllowedToCreateABlog();">
@@ -31,7 +32,7 @@
                 <i class="icon-link"></i>
             </button>
         </div>
-        <div sd-pagination data-items="blogs" data-limit="25"></div>
+        <div sd-pagination data-items="blogs" data-limit="25" class="pull-right"></div>
     </header>
     <div class="list-container">
         <div ng-if="blogsLoading" class="loading-indicator" style="margin-top: 30px;"><span translate>Loading blogs...</span></div>
@@ -117,54 +118,48 @@
     </div>
 
     <div sd-modal="" data-model="embedModal">
-            <div class="modal-header">
-                <button class="close" ng-click="cancelEmbed()"><i class="icon-close-small"></i></button>
-                <h3 translate>Get blog list embed</h3>
-            </div>
-            <div class="modal-body" style="min-height: 240px;">
-                <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click>{{ bloglistEmbed }}</textarea>
-            </div>
-            <div class="modal-footer">
-                <button class="btn" ng-click="cancelEmbed()">Close</button>
-            </div>
+        <div class="modal__header">
+            <button class="modal__close pull-right" ng-click="cancelEmbed()"><i class="icon-close-small"></i></button>
+            <h3 class="modal__heading" translate>Get blog list embed</h3>
+        </div>
+        <div class="modal__body" style="min-height: 240px;">
+            <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click>{{ bloglistEmbed }}</textarea>
+        </div>
+        <div class="modal__footer">
+            <button class="btn" ng-click="cancelEmbed()">Close</button>
+        </div>
     </div>
 
-    <div sd-modal="" data-model="newBlogModalActive">
-            <div class="modal-header">
-                <button class="close" ng-click="cancelCreate()"><i class="icon-close-small"></i></button>
-                <h3 translate>Create New Blog</h3>
-            </div>
-            <div class="upload-progress" ng-show="progress.width">
-                <div class="bar" style="width: {{ progress.width }}%;"></div>
-            </div>
-            <div class="modal-body" style="min-height: 300px;">
+    <div sd-modal="" data-model="newBlogModalActive" class="modal--large modal--tabs">
+        <div class="modal__header">
+            <button class="modal__close pull-right" ng-click="cancelCreate()"><i class="icon-close-small"></i></button>
+            <h3 class="modal__heading" translate>Create New Blog</h3>
+        </div>
+        <div class="modal__body">
             <form ng-submit="createBlog()" name="createBlogForm">
-                <ul class="nav nav-tabs">
-                    <li ng-class="{active: creationStep == 'Details'}">
-                        <button type="button" translate ng-click="switchTab('Details')">Details</button>
-                    </li>
-                    <li ng-class="{active: creationStep == 'Team'}">
-                        <button type="button" translate ng-disabled="!createBlogForm.$valid" ng-click="switchTab('Team')"
-                         ng-class="{'default-cursor': !createBlogForm.$valid}">Team</button>
-                    </li>
-                </ul>
-                <div class="creation-steps">
-                    <div data-title="Details" ng-if="creationStep === 'Details'">
+                <div class="modal__body-header">
+                    <ul class="nav nav-tabs">
+                        <li ng-class="{active: creationStep == 'Details'}">
+                            <button type="button" translate ng-click="switchTab('Details')">Details</button>
+                        </li>
+                        <li ng-class="{active: creationStep == 'Team'}">
+                            <button type="button" translate ng-disabled="!createBlogForm.$valid" ng-click="switchTab('Team')"
+                            ng-class="{'default-cursor': !createBlogForm.$valid}">Team</button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="creation-steps modal__body-content">
+                    <div data-title="Details" ng-if="creationStep === 'Details'" class="modal__body-content">
                         <fieldset>
-                            <div class="field">
-                                <label translate>Blog title</label>
-                                <input type="text" ng-model="newBlog.title" required ng-keydown="handleKeyDown($event, 'goToTeamTab')">
+                            <div class="sd-line-input">
+                                <label class="sd-line-input__label translate">Blog title</label>
+                                <input class="sd-line-input__input" type="text" ng-model="newBlog.title" required ng-keydown="handleKeyDown($event, 'goToTeamTab')">
                             </div>
-                            <div class="field">
-                                <label translate>Blog description</label>
-                                <!--TODO: Fix missing sd-editor-->
-                                <div class="form-box"
-                                    sd-text-editor
-                                    contenteditable="true"
-                                    data-config="{toolbar: {buttons: ['bold', 'italic', 'underline', 'strikethrough', 'orderedlist', 'unorderedlist'],sticky: false,static: true,align: 'left',updateOnEmptySelection: true}}"
-                                    ng-model="newBlog.description"
-                                ></div>
+                            <div class="sd-line-input">
+                                <label class="sd-line-input__label translate">Blog description</label>
+                                <input class="sd-line-input__input" type="text"  ng-model="newBlog.description">
                             </div>
+                            
                             <div class="field ">
                                 <label translate>Blog image</label>
                                 <div class="upload-form">
@@ -208,17 +203,18 @@
                             </div>
                         </fieldset>
                     </div>
-                    <div data-title="Team" ng-if="creationStep === 'Team'" class="team_settings">
+
+                    <div data-title="Team" ng-if="creationStep === 'Team'" class="team_settings modal__body-content">
                         <div>
                             <div ng-if="hasReachedMembersLimit()">
-                              <h3>Sorry.</h3>
-                              <p>You have reached the maximum number of team members for this blog. You can either:</p>
-                              <ul>
-                                  <li>1. Unassign a team member from one of your active blogs or</li>
-                                  <li>2. Subscribe to a bigger plan.</li>
-                              </ul>
-                              <p>To unassign a team member from this blog, simply move your mouse above the below users and click on the X.</p>
-                              <p>Want to upgrade to a plan more suitable to your needs? Email us at <a href="{{settings.mailto}}">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
+                            <h3>Sorry.</h3>
+                            <p>You have reached the maximum number of team members for this blog. You can either:</p>
+                            <ul>
+                                <li>1. Unassign a team member from one of your active blogs or</li>
+                                <li>2. Subscribe to a bigger plan.</li>
+                            </ul>
+                            <p>To unassign a team member from this blog, simply move your mouse above the below users and click on the X.</p>
+                            <p>Want to upgrade to a plan more suitable to your needs? Email us at <a href="{{settings.mailto}}">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
                             </div>
 
                             <div
@@ -240,33 +236,32 @@
                             </div>
                         </div>
                     </div>
+                </div> <!-- /modal body content /creation steps -->
+                <div class="modal__body-footer">
+                    <div
+                        class="loading-indicator"
+                        ng-show="creationInProcess"><span translate>Creating new blog</span></div>
+                    <div ng-if="creationStep === 'Details'">
+                        <span class="error">{{newBlogError}}</span>
+                        <button class="btn btn-primary btn--primary" type="button" ng-disabled="!createBlogForm.$valid"
+                        translate ng-click="switchTab('Team')">Next</button>
+                    </div>
+                    <div ng-if="creationStep === 'Team'">
+                        <button
+                            type="button"
+                            class="btn btn-default pull-left"
+                            translate
+                            ng-click="switchTab('Details')">Back</button>
+                        <button
+                            type="button"
+                            class="btn btn--primary"
+                            ng-hide="creationInProcess"
+                            translate
+                            ng-click="createBlog()">Create</button>
+                    </div>
                 </div>
             </form>
-            </div>
-
-            <div class="modal-footer">
-                <div
-                    class="loading-indicator"
-                    ng-show="creationInProcess"><span translate>Creating new blog</span></div>
-                <div ng-if="creationStep === 'Details'">
-                    <span class="error">{{newBlogError}}</span>
-                    <button class="btn btn-primary btn--primary" type="button" ng-disabled="!createBlogForm.$valid"
-                    translate ng-click="switchTab('Team')">Next</button>
-                </div>
-                <div ng-if="creationStep === 'Team'">
-                    <button
-                        type="button"
-                        class="btn btn-default pull-left"
-                        translate
-                        ng-click="switchTab('Details')">Back</button>
-                    <button
-                        type="button"
-                        class="btn btn--primary"
-                        ng-hide="creationInProcess"
-                        translate
-                        ng-click="createBlog()">Create</button>
-                </div>
-            </div>
+        </div>
     </div>
 
 

@@ -1,4 +1,4 @@
-import searchFilterTpl from 'scripts/liveblog-marketplace/views/search-filter.html';
+import searchFilterTpl from 'scripts/liveblog-marketplace/views/search-filter.ng1';
 
 lbSearchFilter.$inject = ['MarketplaceActions'];
 

@@ -5,7 +5,7 @@ export default function ifBackgroundImage() {
             ifBackgroundImage: '@'
         },
         link: function(scope, element, attrs) {
-            var url = scope.ifBackgroundImage;
+            const url = scope.ifBackgroundImage;
 
             if (url) {
                 element.css({

@@ -61,9 +61,9 @@ class SyndicationOutService(BaseService):
 
     def _lookup(self, consumer_id, producer_blog_id, consumer_blog_id):
         lookup = {'$and': [
-            {'consumer_id': {'$eq': consumer_id}},
-            {'blog_id': {'$eq': producer_blog_id}},
-            {'consumer_blog_id': {'$eq': consumer_blog_id}}
+            {'consumer_id': consumer_id},
+            {'blog_id': producer_blog_id},
+            {'consumer_blog_id': consumer_blog_id}
         ]}
         return lookup
 
@@ -76,7 +76,7 @@ class SyndicationOutService(BaseService):
     def consumer_is_syndicating(self, consumer_id):
         try:
             result = self.find({'$and': [
-                {'consumer_id': {'$eq': consumer_id}}
+                {'consumer_id': consumer_id}
             ]})
             return result.count() > 0
         except IndexError:
@@ -192,9 +192,9 @@ class SyndicationInService(BaseService):
 
     def _lookup(self, producer_id, producer_blog_id, consumer_blog_id):
         lookup = {'$and': [
-            {'producer_id': {'$eq': producer_id}},
-            {'blog_id': {'$eq': consumer_blog_id}},
-            {'producer_blog_id': {'$eq': producer_blog_id}}
+            {'producer_id': producer_id},
+            {'blog_id': consumer_blog_id},
+            {'producer_blog_id': producer_blog_id}
         ]}
         return lookup
 
