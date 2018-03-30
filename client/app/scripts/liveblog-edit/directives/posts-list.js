@@ -129,7 +129,11 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
             },
             isEditable: function(post) {
                 // A syndicated post of type free type is not editable
-                return !(post.syndication_in && post.groups[1].refs[0].item.group_type === 'freetype');
+                return !(
+                    post.syndication_in &&
+                    post.groups[1].refs[0].item.group_type === 'freetype' &&
+                    post.groups[1].refs[0].item.item_type.toLowerCase() !== 'scorecard'
+                );
             },
             isBlogClosed: $scope.$parent.blog.blog_status === 'closed'
 
