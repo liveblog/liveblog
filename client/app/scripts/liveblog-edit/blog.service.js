@@ -35,10 +35,10 @@ export default function blogService(api, $q, $rootScope, config) {
         // for debug purpose
 
         if (!blog.public_url && config.debug) {
-            deferred.resolve('http://localhost:5000/embed/' + blog._id);
+            deferred.resolve(config.server.url.replace('/api', `/embed/${blog._id}`));
         } else if (blog.public_url) {
             // if the blog contains the url, returns it
-            deferred.resolve(blog.public_url.replace('http://', 'https://'));
+            deferred.resolve(config.debug ? blog.public_url : blog.public_url.replace('http://', 'https://'));
         } else {
             // otherwise, listen for websocket notifications regarding publication
             const notifListener = $rootScope.$on('blog', function updateBlogAndResolve(e, data) {
@@ -49,7 +49,7 @@ export default function blogService(api, $q, $rootScope, config) {
                     notifListener();
                     // return the url
                     // fix https issue
-                    deferred.resolve(blog.public_url.replace('http://', 'https://'));
+                    deferred.resolve(config.debug ? blog.public_url : blog.public_url.replace('http://', 'https://'));
                 }
             });
         }
