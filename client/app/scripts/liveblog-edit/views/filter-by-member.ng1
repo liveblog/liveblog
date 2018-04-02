@@ -1,0 +1,41 @@
+<button ng-click="self.toggleSelector()" class="btn btn--primary btn--icon-only btn--small"><i class="icon-white icon-plus-large"></i></button>
+<div class="dropdown-content" ng-click="$event.stopPropagation();" ng-if="self.openSelector">
+    <div class="user-select">
+        <div>
+            <form>
+                <label for="assignee-search" translate>Select users</label>
+                <input type="text" autofocus name="assignee-search" ng-model="self.search">
+            </form>
+            <div class="search-result">
+                <ul class="users-list-embed">
+                    <li ng-repeat="user in self.members | filter:self.search | orderBy: 'display_name' track by user._id"
+                        ng-click="self.toggleUserInPreselection(user)"
+                        ng-class="{'active': self.isUserInPreselection(user)}"
+                        data-username="{{user.username}}">
+                        <figure class="avatar small"><img sd-user-avatar data-src="user.picture_url"></figure>
+                        <div class="name">{{::user.display_name}}</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footer">
+        <button
+            class="btn btn--primary pull-right"
+            ng-click="self.confirmPreselection(); self.toggleSelector()"
+            translate>Select</button>
+        <button
+            class="btn pull-right"
+            ng-click="self.toggleSelector();  $event.stopPropagation();"
+            translate>Cancel</button>
+    </div>
+</div>
+<button
+    class="btn btn-mini"
+    ng-repeat="user in self.selectedUsers track by user._id"
+    ng-click="self.removeUserFromSelection(user)">
+    <div class="title" ng-bind="::user.display_name"></div>
+    <div class="overlay">&#10799</div>
+
+</button>
+<a ng-click="self.clearSelection()" ng-if="self.selectedUsers.length > 0">clear all</a>

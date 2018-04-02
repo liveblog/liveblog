@@ -1,4 +1,4 @@
-import producerListItemTpl from 'scripts/liveblog-syndication/views/producer-list-item.html';
+import producerListItemTpl from 'scripts/liveblog-syndication/views/producer-list-item.ng1';
 
 producerList.$inject = ['api', '$http', 'modal', 'config', 'notify'];
 
@@ -44,9 +44,9 @@ export default function producerList(api, $http, modal, config, notify) {
 
             scope.$on('producers', (e, data) => {
                 if (scope.producers
-                && scope.producers.length > 0
-                && data.producer
-                && data.producer.hasOwnProperty('api_status')) {
+                    && scope.producers.length > 0
+                    && data.producer
+                    && data.producer.hasOwnProperty('api_status')) {
                     scope.producers = scope.producers.map((producer) => {
                         if (producer._id === data.producer._id) {
                             producer.api_status = data.producer.api_status;

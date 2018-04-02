@@ -2056,6 +2056,14 @@
         "producer_id" : "-producer one-",
         "auto_publish" : false
     }
-}
+},
+
+    {
+        "resource": "config",
+        "data": {
+            "_id": "phone_home",
+            "val": {"done": 1}
+        }
+    }
 ]
 

@@ -9,7 +9,6 @@
  */
 
 import angular from 'angular';
-import _ from 'lodash';
 
 import lbPostsList from './directives/posts-list';
 import lbPost from './directives/post';
@@ -46,7 +45,7 @@ angular.module('liveblog.edit')
     .directive('freetypeRender', freetypeRender)
     .directive('freetypeEmbed', freetypeEmbed)
     .directive('freetypeText', freetypeText)
-    .directive('freetypeSelect',freetypeSelect)
+    .directive('freetypeSelect', freetypeSelect)
     .directive('freetypeLink', freetypeLink)
     .directive('freetypeCollectionAdd', freetypeCollectionAdd)
     .directive('freetypeCollectionRemove', freetypeCollectionRemove)

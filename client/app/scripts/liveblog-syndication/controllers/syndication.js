@@ -8,11 +8,12 @@ export default function syndicationController($scope, $route) {
 
     $scope.changeState = function(state) {
         $scope.activeState = state.name;
-        $route.updateParams({ state: state.name });
+        $route.updateParams({state: state.name});
     };
 
-    if ($route.current.params.hasOwnProperty('state'))
+    if ($route.current.params.hasOwnProperty('state')) {
         $scope.activeState = $route.current.params.state;
-    else
+    } else {
         $scope.changeState($scope.states[0]);
+    }
 }

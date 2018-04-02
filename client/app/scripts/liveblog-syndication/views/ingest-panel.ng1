@@ -1,0 +1,38 @@
+<div class="panel panel--contribution">
+    <header>
+        <h4 translate>Ingest</h4>
+        <button class="navbtn sd-create-btn pull-right minusMargin1020" ng-click="openSyndBlogsModal()">
+            <i class="svg-icon-plus"></i>
+            <span class="circle"></span>
+        </button>
+
+
+    </header>
+
+    <ul class="syndicated-blogs-list">
+        <li ng-repeat="blog in locallySyndicatedItems" ng-click="select(blog)" class="blog-item">
+            <h4>
+                <span ng-if="!blog.producer_blog_title">{{blog.blog_token}}</span>
+                <span ng-if="blog.producer_blog_title">{{blog.producer_blog_title}}</span>
+            </h4>
+            <dl class="panel-definition-list">
+                <dt class="panel-definition-list__term">Producer:</dt>
+                <dd class="panel-definition-list__definition">{{blog.producer_name}}</dd>
+                <dt class="panel-definition-list__term">Autopublish:</dt>
+                <dd class="panel-definition-list__definition">
+                    <div ng-if="!blog.auto_publish" class="state-label state-draft state-label--no-float">OFF</div>
+                    <div ng-if="blog.auto_publish" class="state-label state-published state-label--no-float">ON</div>
+                </dd>
+            </dl>
+            <span
+                class="label label-info circle small notification-counter"
+                ng-if="blog.unread > 0">{{blog.unread}}</span>
+            <div lb-ingest-panel-dropdown blog="blog" consumer-blog-id="consumerBlogId"></div>
+        </li>
+    </ul>
+</div>
+
+<div
+    lb-attach-syndicated-blogs-modal
+    ng-if="store"
+    store="store"></div>

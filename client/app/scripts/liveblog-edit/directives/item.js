@@ -1,4 +1,4 @@
-import itemTpl from 'scripts/liveblog-edit/views/item.html';
+import itemTpl from 'scripts/liveblog-edit/views/item.ng1';
 
 export default function lbItem() {
     return {
@@ -6,5 +6,5 @@ export default function lbItem() {
             item: '='
         },
         templateUrl: itemTpl,
-    }
+    };
 }

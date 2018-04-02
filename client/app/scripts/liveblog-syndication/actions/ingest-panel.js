@@ -3,7 +3,7 @@ ingestPanelActions.$inject = ['Dispatcher', 'api', '$http', 'config'];
 export default function ingestPanelActions(Dispatcher, api, $http, config) {
     return {
         getSyndication: function(consumerBlogId, unreadQueue) {
-            var params = {
+            const params = {
                 where: {
                     blog_id: consumerBlogId
                 }
@@ -46,11 +46,11 @@ export default function ingestPanelActions(Dispatcher, api, $http, config) {
                 });
         },
         syndicate: function(params) {
-            var uri = config.server.url +
+            const uri = config.server.url +
                 '/producers/' + params.producerId +
                 '/syndicate/' + params.producerBlogId;
 
-            let data = {
+            const data = {
                 consumer_blog_id: params.consumerBlogId,
                 auto_publish: params.autoPublish,
                 auto_retrieve: params.autoRetrieve
@@ -64,19 +64,19 @@ export default function ingestPanelActions(Dispatcher, api, $http, config) {
                     'Content-Type': 'application/json;charset=utf-8'
                 }
             })
-            .then((response) => api('syndication_in').query())
-            .then((syndicationIn) => {
-                Dispatcher.dispatch({
-                    type: 'ON_GET_SYND',
-                    syndicationIn: syndicationIn
+                .then((response) => api('syndication_in').query())
+                .then((syndicationIn) => {
+                    Dispatcher.dispatch({
+                        type: 'ON_GET_SYND',
+                        syndicationIn: syndicationIn
+                    });
+                })
+                .catch((error) => {
+                    Dispatcher.dispatch({
+                        type: 'ON_ERROR',
+                        error: error
+                    });
                 });
-            })
-            .catch((error) => {
-                Dispatcher.dispatch({
-                    type: 'ON_ERROR',
-                    error: error
-                });
-            });
         },
         getProducerBlogs: function(producerId) {
             api.get('/producers/' + producerId + '/blogs')
@@ -109,12 +109,12 @@ export default function ingestPanelActions(Dispatcher, api, $http, config) {
                     'If-Match': etag
                 }
             })
-            .then((response) => {
-                Dispatcher.dispatch({
-                    type: 'ON_UPDATED_SYND',
-                    syndEntry: response.data
+                .then((response) => {
+                    Dispatcher.dispatch({
+                        type: 'ON_UPDATED_SYND',
+                        syndEntry: response.data
+                    });
                 });
-            });
         },
         flushErrors: function() {
             Dispatcher.dispatch({

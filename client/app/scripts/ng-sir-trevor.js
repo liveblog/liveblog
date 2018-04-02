@@ -1,7 +1,7 @@
 import angular from 'angular';
 
 export default angular
-.module('SirTrevor', [])
+    .module('SirTrevor', [])
     .provider('SirTrevor', function() {
         this.$get = function() {
             return window.SirTrevor;
@@ -9,7 +9,7 @@ export default angular
         angular.extend(this, window.SirTrevor);
     })
     .provider('SirTrevorOptions', function() {
-        var options = {
+        let options = {
             blockTypes: ['Text'],
             transform: {
                 get: function(block) {
@@ -26,6 +26,7 @@ export default angular
                 }
             }
         };
+
         this.$get = function() {
             return options;
         };
@@ -37,47 +38,49 @@ export default angular
         };
     })
     .directive('ngSirTrevor', ['SirTrevor', 'SirTrevorOptions', function(SirTrevor, options) {
-        var directive = {
+        const directive = {
             template: function(element, attr) {
-                var str = '<textarea class="sir-trevor" name="content"></textarea>';
+                let str = '<textarea class="sir-trevor" name="content"></textarea>';
                 // sir trevor needs a parent `form` tag.
+
                 if (!element.parent('form').length) {
                     str = '<form>' + str + '</form>';
                 }
                 return str;
             },
             scope: {
-                'editor': '=stModel',
-                'onChange': '=stChange',
-                'params': '=stParams'
+                editor: '=stModel',
+                onChange: '=stChange',
+                params: '=stParams'
             },
-            link: function (scope, element, attrs) {
-                var opts = angular.copy(options);
+            link: function(scope, element, attrs) {
+                const opts = angular.copy(options);
+
                 angular.extend(opts, scope.params);
                 opts.el = $(element.find('textarea'));
                 scope.editor = new SirTrevor.Editor(opts);
                 scope.editor.get = function() {
-                    var list = [];
+                    const list = [];
                     // sort blocks by index.
-                    scope.editor.blocks.sort(function(a, b) {
-                        return (a.$el.index() - b.$el.index());
-                    });
-                    angular.forEach(scope.editor.blocks, function(block) {
+
+                    scope.editor.blocks.sort((a, b) => a.$el.index() - b.$el.index());
+                    angular.forEach(scope.editor.blocks, (block) => {
                         scope.editor.saveBlockStateToStore(block);
                         list.push(opts.transform.get(block));
                     });
                     return list;
                 };
                 scope.editor.set = function(list) {
-                    var item;
-                    angular.forEach(list, function(block) {
+                    let item;
+
+                    angular.forEach(list, (block) => {
                         item = opts.transform.set(block);
                         scope.editor.createBlock(item.type, item.data);
                     });
                 };
 
                 scope.editor.clear = function() {
-                    angular.forEach(scope.editor.blocks, function(block) {
+                    angular.forEach(scope.editor.blocks, (block) => {
                         block.remove();
                     });
                     scope.editor.dataStore.data = [];
@@ -86,16 +89,15 @@ export default angular
                 element.on('keyup', scope.onChange);
 
                 // @TODO: investigate how to better `digest` out of $scope  variables.
-                //scope.$watchCollection('editor.blocks', function(blocks) {
+                // scope.$watchCollection('editor.blocks', function(blocks) {
                 //     var list = [];
                 //     _.each(blocks, function(block) {
                 //         list.push(scope.editor.get(block));
                 //     });
                 //     scope.model = list;
-                //});
+                // });
             }
         };
+
         return directive;
     }]);
-
-

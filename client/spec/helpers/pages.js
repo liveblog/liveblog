@@ -1,40 +1,35 @@
 var waitAndClick = require('./utils').waitAndClick;
 
 var blogs = [
-    [
-        {
-            title: 'title: end to end image',
-            description: 'description: end to end image',
-            username: 'Victor the Editor',
-            picture_url: 'http://i.imgur.com/L0Ci8Yj.png'
-        },
-        {title: 'title: end To end three', description: 'description: end to end three', username: 'Victor the Editor'},
-        {title: 'title: end to end two', description: 'description: end to end two', username: 'Victor the Editor'},
-        {title: 'title: end to end One', description: 'description: end to end one', username: 'Victor the Editor'}
-    ], [
-        {title: 'title: end to end closed', description: 'description: end to end closed', username: 'Victor the Editor'}
-    ]
-], stateMap = {
-    'active': 0,
-    'archived': 1
-};
+        [
+            {
+                title: 'title: end to end image',
+                description: 'description: end to end image',
+                username: 'Victor the Editor',
+                picture_url: 'http://i.imgur.com/L0Ci8Yj.png'
+            },
+            {title: 'title: end To end three', description: 'description: end to end three', username: 'Victor the Editor'},
+            {title: 'title: end to end two', description: 'description: end to end two', username: 'Victor the Editor'},
+            {title: 'title: end to end One', description: 'description: end to end one', username: 'Victor the Editor'}
+        ], [
+            {title: 'title: end to end closed', description: 'description: end to end closed', username: 'Victor the Editor'}
+        ]
+    ], stateMap = {
+        active: 0,
+        archived: 1
+    };
 
 function waitForModal() {
-    'use strict';
-     /*jshint validthis: true */
-    browser.wait(function() {
-        return element(by.css('.modal-footer')).isDisplayed();
-    }, 1000);
+    /* jshint validthis: true */
+    browser.wait(() => element(by.css('.modal__dialog')).isDisplayed(), 1000);
     return this;
 }
 function okModal() {
-    'use strict';
-     /*jshint validthis: true */
+    /* jshint validthis: true */
     element(by.css('[ng-click="ok()"]')).click();
     return this;
 }
 function BlogsPage() {
-    'use strict';
     var self = this;
 
     self.blog = new BlogPage(self);
@@ -45,7 +40,7 @@ function BlogsPage() {
     self.cloneBlog = function(index, state) {
         index = index || 0;
         state = state || 0;
-        if (parseInt(state, 10) !== state){
+        if (parseInt(state, 10) !== state) {
             state = stateMap[state];
         }
         return JSON.parse(JSON.stringify(self.blogs[state][index]));
@@ -73,21 +68,22 @@ function BlogsPage() {
 
     self.searchBlogs = function(search) {
         element(by.css('[ng-click="flags.extended = !flags.extended"]')).click()
-        .then(function() {
-            element(by.model('q')).waitReady()
-            .then(function(elem) {
-                elem.clear().sendKeys(search.search);
-                browser.getCurrentUrl().then(function(url) {
-                    expect(url.indexOf('q=' + search.search)).toBeGreaterThan(-1);
-                })
-                .then(function () {
-                    self.expectCount(search.blogs.length);
-                    for (var j = 0, countj = search.blogs.length; j < countj; j++) {
-                        self.expectBlog(self.blogs[0][search.blogs[j]], j);
-                    }
-                });
+            .then(() => {
+                element(by.model('q')).waitReady()
+                    .then((elem) => {
+                        elem.clear().sendKeys(search.search);
+                        browser
+                            .getCurrentUrl().then((url) => {
+                                expect(url.indexOf('q=' + search.search)).toBeGreaterThan(-1);
+                            })
+                            .then(() => {
+                                self.expectCount(search.blogs.length);
+                                for (var j = 0, countj = search.blogs.length; j < countj; j++) {
+                                    self.expectBlog(self.blogs[0][search.blogs[j]], j);
+                                }
+                            });
+                    });
             });
-        });
         return self;
     };
 
@@ -116,6 +112,7 @@ function BlogsPage() {
         index = index || 0;
         browser.waitForAngular();
         var currentBlog = element.all(by.repeater('blog in blogs._items')).get(index);
+
         expect(currentBlog.element(by.binding('blog.title')).getText()).toBe(blog.title);
         expect(currentBlog.element(by.binding('blog.description')).getText()).toBe(blog.description);
         if (blog.picture_url) {
@@ -124,7 +121,7 @@ function BlogsPage() {
             expect(currentBlog.element(by.css('[if-background-image]')).isPresent()).toBe(false);
         }
         expect(currentBlog.element(by.binding('blog.original_creator | username')).getText())
-        .toBe(blog.username);
+            .toBe(blog.username);
     };
 
     self.expectCount = function(count) {
@@ -134,7 +131,7 @@ function BlogsPage() {
 
     self.selectState = function(state) {
         state = state || 1;
-        if (parseInt(state, 10) !== state){
+        if (parseInt(state, 10) !== state) {
             state = stateMap[state];
         }
         browser.waitForAngular();
@@ -144,27 +141,25 @@ function BlogsPage() {
 }
 
 function FreetypesManagerPage() {
-    'use strict';
     var self = this;
-    self.title = element(by.css('[ng-model="vm.dialogFreetype.name"]'));
-    self.template = element(by.css('[ng-model="vm.dialogFreetype.template"]'));
+
+    self.title = element(by.css('[ng-model="self.dialogFreetype.name"]'));
+    self.template = element(by.css('[ng-model="self.dialogFreetype.template"]'));
 
     self.getFreetypes = function() {
-        return element.all(by.repeater('freetype in vm.freetypes'));
+        return element.all(by.repeater('freetype in self.freetypes'));
     };
     self.openFreetypesManager = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
-        browser.wait(function() {
-            return element(by.css('[href="#/freetypes/"][title]')).isDisplayed();
-        });
+        browser.wait(() => element(by.css('[href="#/freetypes/"][title]')).isDisplayed());
         waitAndClick(by.css('[href="#/freetypes/"][title]'));
         return self;
     };
     self.saveFreetype = function() {
-        return element(by.css('[ng-click="vm.saveFreetype()"]')).click();
+        return element(by.css('[ng-click="self.saveFreetype()"]')).click();
     };
     self.openNewFreetypeDialog = function() {
-        element(by.css('[ng-click="vm.openFreetypeDialog();"]')).click();
+        element(by.css('[ng-click="self.openFreetypeDialog();"]')).click();
     };
     self.createFreetypeData = function() {
         return {
@@ -176,18 +171,22 @@ function FreetypesManagerPage() {
         var freeData = self.createFreetypeData();
         self.title.sendKeys(freeData.title);
         self.template.sendKeys(freeData.template);
-        return self.saveFreetype().then(function() {return freeData;});
+        return self.saveFreetype().then(() => freeData);
     };
     self.removeFreetype = function(index) {
         index = index || 0;
-        self.getFreetypes().get(index).click().all(by.css('[ng-click="vm.removeFreetype(freetype, $index);"]')).click();
+        self.getFreetypes()
+            .get(index)
+            .click()
+            .all(by.css('[ng-click="self.removeFreetype(freetype, $index);"]'))
+            .click();
         okModal();
     };
 }
 
 function AdvertisingManagerPage() {
-    'use strict';
     var self = this;
+
     self.advertTitle = element(by.css('[ng-model="advert.name"]'));
     self.collectionTitle = element(by.css('[ng-model="collection.name"]'));
     self.advertEmbed = element(by.css('[ng-model="embed"]'));
@@ -268,11 +267,11 @@ function ThemesManagerPage() {
     'use strict';
     var self = this;
     self.themes = element.all(by.css('.theme'));
-    self.blogsRows = element.all(by.repeater('blog in vm.selectedTheme.blogs'));
+    self.blogsRows = element.all(by.repeater('blog in self.selectedTheme.blogs'));
     self.fileThemeElement = element(by.css('#uploadAThemeFile'));
-    self.byRemove = by.css('[ng-click="vm.removeTheme(theme)"]');
-    self.bySettings = by.css('[ng-click="vm.openThemeSettings(theme)"]');
-    self.byPreview = by.css('[ng-click="theme.screenshot_url && vm.openThemePreview(theme)"]');
+    self.byRemove = by.css('[ng-click="self.removeTheme(theme)"]');
+    self.bySettings = by.css('[ng-click="self.openThemeSettings(theme)"]');
+    self.byPreview = by.css('[ng-click="theme.screenshot_url && self.openThemePreview(theme)"]');
 
     self.openThemesManager = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
@@ -284,7 +283,7 @@ function ThemesManagerPage() {
     };
 
     self.setAsDefault = function(theme_index) {
-        return self.themes.get(theme_index).element(by.css('[ng-click="vm.makeDefault(theme)"]')).click();
+        return self.themes.get(theme_index).element(by.css('[ng-click="self.makeDefault(theme)"]')).click();
     };
 
     self.openSettingsForTheme = function(themeIndex) {
@@ -314,8 +313,8 @@ function ThemesManagerPage() {
 
     self.openPreview = function(theme_index) {
         self.themes.get(theme_index).element(self.byPreview).click().then(function() {
-            expect(element(by.css('.theme-preview-modal .modal-dialog')).isDisplayed()).toBe(true);
-            element(by.css('.theme-preview-modal .close')).click();
+            expect(element(by.css('.theme-preview-modal .modal__dialog')).isDisplayed()).toBe(true);
+            element(by.css('.theme-preview-modal .modal__close')).click();
         });
         return self;
     };
@@ -341,7 +340,7 @@ function ThemesManagerPage() {
             }
             // check if the number of row matchs
             expect(self.blogsRows.count()).toBe(params.number_of_blogs_expected);
-            var close_modal = element(by.css('[ng-click="vm.closeThemeBlogsModal()"]'));
+            var close_modal = element(by.css('[ng-click="self.closeThemeBlogsModal()"]'));
             close_modal.isPresent().then(function(is_present) {
                 if (is_present) {
                     close_modal.click();
@@ -377,12 +376,14 @@ function BlogPage(blogs) {
         return self.editor;
     };
 
-    self.openFreetypesEditor = function(index) {
+    self.openFreetypesEditor = (index) => {
         var freetypeIndex = index || 0;
-        element(by.css('[ng-click="toggleTypePostDialog()"]')).click()
-        .then(function() {
-            element(by.repeater('freetype in freetypes').row(freetypeIndex)).click();
-        });
+
+        element(by.css('[ng-click="toggleTypePostDialog()"]'))
+            .click()
+            .then(() => {
+                element(by.repeater('freetype in freetypes').row(freetypeIndex)).click();
+            });
         return self.editor;
     };
 
@@ -480,7 +481,7 @@ function ContributionsPage(blog) {
     AbstractPanelPage.call(self);
 
     self.openFiterByMember = function() {
-        return self.column.element(by.css('.btn--plus')).click();
+        return self.column.element(by.css('[ng-click="self.toggleSelector()"]')).click();
     };
 
     self.filterByMember = function(member_name) {
@@ -595,15 +596,17 @@ function EditPostPage() {
     self.embedElement = element(by.css('.embed-input'));
     self.iframe = element(by.css('.liveblog--card iframe'));
     self.publishElement = element(by.css('[ng-click="publish()"]'));
-    //for scorecards
+    // for scorecards
     self.homeName = element(by.css('[text="freetypeData.home.name"] [ng-model="text"]'));
     self.homeScore = element(by.css('[text="freetypeData.home.score"] [ng-model="text"]'));
     self.awayName = element(by.css('[text="freetypeData.away.name"] [ng-model="text"]'));
     self.awayScore = element(by.css('[text="freetypeData.away.score"] [ng-model="text"]'));
     self.player1Name = element.all(by.css('[text="iterator__1.name"] [ng-model="text"]')).get(0);
     self.player1Time = element.all(by.css('[text="iterator__1.time"] [ng-model="text"]')).get(0);
-    self.player2Name = element.all(by.css('[text="iterator__1.name"] [ng-model="text"]')).get(1);
-    self.player2Time = element.all(by.css('[text="iterator__1.time"] [ng-model="text"]')).get(1);
+    self.player2Name = element.all(by.css('[text="iterator__2.name"] [ng-model="text"]')).get(0);
+    self.player2Time = element.all(by.css('[text="iterator__2.time"] [ng-model="text"]')).get(0);
+    self.player3Name = element.all(by.css('[text="iterator__1.name"] [ng-model="text"]')).get(1);
+    self.player3Time = element.all(by.css('[text="iterator__1.time"] [ng-model="text"]')).get(1);
 
     self.addTop = function() {
         // click on the "+" bar
@@ -639,7 +642,7 @@ function EditPostPage() {
     };
 
     self.waitForPublish = function() {
-        browser.wait(function() {
+        browser.wait(() => {
             return self.publishElement.isEnabled();
         }, 2000);
     };
@@ -666,13 +669,19 @@ function EditPostPage() {
             player1Time: randomNumber(2),
             player2Name: randomString(10),
             player2Time: randomNumber(2),
+            player3Name: randomString(10),
+            player3Time: randomNumber(2)
         };
+
         self.homeName.sendKeys(data.homeName);
         self.homeScore.sendKeys(data.homeScore);
         self.awayName.sendKeys(data.awayName);
         self.awayScore.sendKeys(data.awayScore);
         self.player1Name.sendKeys(data.player1Name);
         self.player1Time.sendKeys(data.player1Time);
+        self.player2Name.sendKeys(data.player2Name);
+        self.player2Time.sendKeys(data.player2Time);
+
 
         return self.publish().then(function() {return data;});
     };
@@ -789,12 +798,12 @@ function BlogSettingsPage(blog) {
     }
 
     self.saveOutput = function() {
-        return element(by.css('[ng-click="vm.saveOutput()"]')).click();
+        return element(by.css('[ng-click="self.saveOutput()"]')).click();
     }
 
     self.editOutput = function() {
         var outputData = self.createOutputData();
-        element(by.css('[ng-model="vm.output.name"]')).sendKeys(outputData.title);
+        element(by.css('[ng-model="self.output.name"]')).sendKeys(outputData.title);
         return self.saveOutput().then(function() {return outputData;});
     }
 
@@ -938,7 +947,6 @@ function randomString(maxLen) {
 }
 
 function randomNumber(maxLen) {
-    'use strict';
     maxLen = maxLen || 15;
     var text = '';
     var possible = '123456789';
@@ -949,23 +957,23 @@ function randomNumber(maxLen) {
 }
 
 function ConsumersManagementPage() {
-    'use strict';
     var self = this;
+
     self.themes = element.all(by.css('.theme'));
-    self.blogsRows = element.all(by.repeater('blog in vm.selectedTheme.blogs'));
+    self.blogsRows = element.all(by.repeater('blog in self.selectedTheme.blogs'));
     self.fileThemeElement = element(by.css('#uploadAThemeFile'));
-    self.byRemove = by.css('[ng-click="vm.removeTheme(theme)"]');
-    self.bySettings = by.css('[ng-click="vm.openThemeSettings(theme)"]');
-    self.byPreview = by.css('[ng-click="theme.screenshot_url && vm.openThemePreview(theme)"]');
+    self.byRemove = by.css('[ng-click="self.removeTheme(theme)"]');
+    self.bySettings = by.css('[ng-click="self.openThemeSettings(theme)"]');
+    self.byPreview = by.css('[ng-click="theme.screenshot_url && self.openThemePreview(theme)"]');
 
     self.openConsumersManagement = function() {
         element(by.css('[ng-click="toggleMenu()"]')).click();
-        browser.wait(function() {
+        browser.wait(() => {
             return element(by.css('[href="#/syndication/"][title]')).isDisplayed();
         });
         waitAndClick(by.css('[href="#/syndication/"][title]'));
 
-        browser.waitForAngular();
+        // browser.waitForAngular();
         element.all(by.repeater('state in states').row(1)).click();
 
         return self;
@@ -973,7 +981,6 @@ function ConsumersManagementPage() {
 }
 
 function ProducersManagementPage() {
-    'use strict';
     var self = this;
 
     self.openProducersManagement = function() {

@@ -120,6 +120,10 @@ class ThemesResource(Resource):
                 'type': 'string'
             }
         },
+        'supportAdsInjection': {
+            'type': 'boolean',
+            'default': False
+        },
         'options': {
             'type': 'list',
             'schema': {
