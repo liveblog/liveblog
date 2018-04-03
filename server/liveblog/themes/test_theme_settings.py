@@ -3,6 +3,7 @@ import liveblog.blogs as blogapp
 from superdesk.tests import TestCase
 from bson import ObjectId
 from superdesk import get_resource_service
+import liveblog.blogs.embeds as embeds
 
 
 class Foo():
@@ -89,3 +90,23 @@ class ThemeSettingsTestCase(TestCase):
         self.assertNotEqual(len(amp_result[1]), len(amp_previous_theme.get('settings')))
         self.assertFalse(amp_previous_theme.get('datetimeFormattest'))
         self.assertTrue(amp_result[1].get('datetimeFormattest'))
+
+    def test_classic_theme(self):
+        # Load the template in classic theme, template found
+        template = embeds.collect_theme_assets(self.classic_theme)[1]
+        self.assertIsNotNone(template, True)
+
+    def test_angular_theme(self):
+        # Load the template in angular theme, template not found
+        template = embeds.collect_theme_assets(self.angular_theme)[1]
+        self.assertIsNone(template, True)
+    
+    def test_default_theme(self):
+        # Load the template in default theme, template found
+        template = embeds.collect_theme_assets(self.default_theme)[1]
+        self.assertIsNotNone(template, True)
+
+    def test_amp_theme(self):
+        # Load the template in amp theme, template found
+        template = embeds.collect_theme_assets(self.amp_theme)[1]
+        self.assertIsNotNone(template, True)
