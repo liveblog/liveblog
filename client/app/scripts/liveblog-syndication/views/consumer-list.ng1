@@ -1,0 +1,69 @@
+<button class="navbtn dropdown sd-create-btn zIndex2 pull-right" dropdown__toggle="" ng-click="createEntry()">
+     <i class="icon-plus-large"></i>
+     <span class="circle"></span>
+ </button>
+ 
+<section class="main-section users">
+
+    <div class="preview-layout" ng-class="{closed: !selected.consumer}">
+        <div class="list-pane">
+            <header>
+                <div class="separator-handler"></div>
+                <div sd-pagination data-items="consumers" data-limit="pageLimit"></div>
+            </header>
+            <div class="content">
+                <div sd-shadow>
+                    <div class="users-table">
+                        <ul class="table-header">
+                            <li>
+                                <div class="row-wrapper four-col">
+                                    <div class="name"
+                                         sd-sort
+                                         data-label="{{ 'Name' | translate }}"
+                                         data-field="name"></div>
+
+                                    <div class="email"
+                                         sd-sort
+                                         data-label="{{ 'Webhook url' | translate }}"
+                                         data-field="webhook_url"></div>
+
+                                    <div class="name api-key"
+                                         sd-sort
+                                         data-label="{{ 'Api key' | translate }}"
+                                         data-field="api_key"></div>
+
+                                    <div
+                                         sd-sort
+                                         data-label="{{ 'Contact' | translate }}"
+                                         data-field="contact"></div>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <ul class="table-body"
+                            lb-consumer-list
+                            data-consumers="consumers._items"
+                            data-selected="selected.consumer"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-pane" ng-if="selected.consumer">
+            <header>
+                <button ng-click="selected.consumer = null" class="close-preview">
+                    <i class="icon-close-small"></i>
+                </button>
+            </header>
+
+            <div class="content" sd-user-details-pane ng-if="selected.consumer">
+                <div
+                    id="user-profile-edit" 
+                    lb-consumer-edit 
+                    data-consumer="selected.consumer" 
+                    data-onsave="render(consumer)" 
+                    data-oncancel="closePreview()"></div>
+            </div>
+        </div>
+    </div>
+</section>

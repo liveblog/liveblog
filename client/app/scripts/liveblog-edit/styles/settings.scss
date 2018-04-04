@@ -17,6 +17,11 @@ $PADDING: 20px;
             background-color: #eaeaea;
             padding: 0 20px;
         }
+
+        .tabbable.outer > .nav-stacked {
+            width: 200px;
+        }
+
         .tab-content {
             > .header {
                 height: $SUBNAV_HEIGHT;
@@ -211,6 +216,11 @@ $PADDING: 20px;
         }
     }
 }
+
+.team_settings .member-list {
+    min-height: 240px;
+}
+
 .edit-contributors {
     .search-result {
         top: 69px!important;

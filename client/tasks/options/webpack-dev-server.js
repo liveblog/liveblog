@@ -1,15 +1,14 @@
-'use strict';
 
-var path = require('path');
-var makeConfig = require('../../webpack.config.js');
+
+const path = require('path');
+const makeConfig = require('../../webpack.config.js');
 
 module.exports = function(grunt) {
-    var webpackConfig = makeConfig(grunt);
+    const webpackConfig = makeConfig(grunt);
 
     return {
         options: {
             webpack: webpackConfig,
-            //publicPath: './dist',
             port: 9000,
             host: '0.0.0.0',
             contentBase: './dist',
@@ -19,10 +18,8 @@ module.exports = function(grunt) {
             }
         },
         start: {
-            keepAlive: true,
             webpack: {
-                devtool: 'eval',
-                debug: true,
+                devtool: 'source-map',
                 entry: {
                     app: ['webpack-dev-server/client?http://0.0.0.0:9000/'].concat(webpackConfig.entry.app)
                 },
@@ -43,8 +40,7 @@ module.exports = function(grunt) {
                     path: path.join(process.cwd(), 'docs/dist'),
                     publicPath: 'docs/dist'
                 },
-                devtool: 'eval',
-                debug: true
+                devtool: 'eval'
             }
         }
     };

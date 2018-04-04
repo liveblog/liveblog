@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.3.56",
+    "version": "3.3.60",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -16,10 +16,10 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-b42bdaaf3c.css"],
-    "devScripts": ["dist/default-f9113c7fcc.js"],
-    "styles": ["dist/default-b42bdaaf3c.css"],
-    "scripts": ["dist/default-f9113c7fcc.js"],
+    "devStyles": ["dist/default-a1295c520c.css"],
+    "devScripts": ["dist/default-3a82ccc51d.js"],
+    "styles": ["dist/default-a1295c520c.css"],
+    "scripts": ["dist/default-3a82ccc51d.js"],
     "options": [
         {
             "name": "datetimeFormat",
@@ -123,6 +123,26 @@
                 "showAuthor": true
             },
             "help": "Shows an author image besides the author name"
+        },
+        {
+            "name": "authorPosition",
+            "label": "Author info position",
+            "default": "top",
+            "type": "select",
+            "options": [
+                {
+                    "value": "top",
+                    "label": "Top"
+                },
+                {
+                    "value": "bottom",
+                    "label": "Bottom"
+                }
+            ],
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "help": "Where to show author info"
         },
         {
             "name": "hasHighlights",

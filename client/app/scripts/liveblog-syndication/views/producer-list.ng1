@@ -1,0 +1,70 @@
+<button class="navbtn dropdown sd-create-btn zIndex2 pull-right" dropdown__toggle="" ng-click="createEntry()">
+     <i class="icon-plus-large"></i>
+     <span class="circle"></span>
+ </button>
+
+<section class="main-section users">
+
+    <div class="preview-layout" ng-class="{closed: !selected.producer}">
+        <div class="list-pane">
+            <header>
+                <div class="separator-handler"></div>
+                <div sd-pagination data-items="producers"></div>
+            </header>
+            <div class="content">
+                <div sd-shadow>
+                    <div class="users-table">
+                        <ul class="table-header">
+                            <li>
+                                <div class="row-wrapper four-col">
+                                    <div class="name"
+                                         sd-sort
+                                         data-label="{{ 'Name' | translate }}"
+                                         data-field="name"></div>
+
+                                    <div class="email"
+                                         sd-sort
+                                         data-label="{{ 'Api url' | translate }}"
+                                         data-field="api_url"></div>
+
+                                    <div class="username"
+                                         sd-sort
+                                         data-label="{{ 'Consumer API key' | translate }}"
+                                         data-field="consumer_api_key"></div>
+
+                                    <div 
+                                        sd-sort 
+                                        data-label="{{ 'Contact' | translate }}" 
+                                        data-field="contact"></div>
+                                </div>
+                            </li>
+                        </ul>
+
+                        <ul class="table-body"
+                            lb-producer-list
+                            data-producers="producers._items"
+                            data-selected="selected.producer"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="preview-pane" ng-if="selected.producer">
+            <header>
+                <button ng-click="selected.producer = null" class="close-preview">
+                    <i class="icon-close-small"></i>
+                </button>
+            </header>
+
+            <div class="content" sd-user-details-pane ng-if="selected.producer">
+                <div
+                    id="user-profile-edit" 
+                    lb-producer-edit 
+                    data-producer="selected.producer" 
+                    data-onsave="render(producer)" 
+                    data-oncancel="closePreview()"
+                    data-producers="producers._items"></div>
+            </div>
+        </div>
+    </div>
+</section>

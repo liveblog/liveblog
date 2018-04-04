@@ -8,7 +8,7 @@ marketplaceController.$inject = [
 ];
 
 export default function marketplaceController($scope, Store, MarketplaceActions, MarketplaceReducers, $route, moment) {
-    var filters = {};
+    let filters = {};
 
     if ($route.current.params.hasOwnProperty('filters')) {
         filters = JSON.parse($route.current.params.filters);

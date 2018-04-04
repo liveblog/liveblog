@@ -1,4 +1,4 @@
-import searchPanelTpl from 'scripts/liveblog-marketplace/views/search-panel.html';
+import searchPanelTpl from 'scripts/liveblog-marketplace/views/search-panel.ng1';
 
 lbSearchPanel.$inject = ['MarketplaceActions'];
 

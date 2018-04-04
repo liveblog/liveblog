@@ -1,0 +1,16 @@
+{% macro translate(text) %}{% if not theme.i18n[settings.language] %}{{ text }}{% elif not theme.i18n[settings.language][text] %}{{ text }}{% else %}{{ theme.i18n[settings.language][text] }}{% endif %}{% endmacro %}
+
+<div id="{{ ad_id }}" class="advertisement">
+  <!-- post start -->
+  <div class="items-container">
+    <!-- item start -->
+    <div class="lb-item lb-item-advertisement">
+      <div class="lb-advertisement">{{ translate('Advertisement') }}</div>
+      <div>
+          {{ item.text | safe }}
+      </div>
+    </div>
+    <!-- item end -->
+  </div>
+  <!-- post end -->
+</div>

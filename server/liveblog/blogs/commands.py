@@ -16,13 +16,17 @@ class PublishBlogsCommand(superdesk.Command):
         outputs = blogs_service.get(req=None, lookup=dict(deleted=False))
         # Republish on s3.
         print('\n* Republishing blogs:\n')
+        i = 1
         for blog in blogs:
             for output in outputs:
                 if output['blog'] == blog['_id']:
                     url = publish_blog_embeds_on_s3(blog_id=str(blog['_id']), output=output, safe=False)
                     print('  - Blog "%s" output "%s" republished: %s' % (blog['title'], output['name'], url))
-            url = publish_blog_embeds_on_s3(blog_id=str(blog['_id']), safe=False)
+            url = publish_blog_embeds_on_s3.apply_async(args=[blog.get('_id')],
+                                                        kwargs={'safe': False},
+                                                        countdown=i * 0.5)
             print('  - Blog "%s" republished: %s' % (blog['title'], url))
+            i += 1
 
 
 class PublishBloglistCommand(superdesk.Command):

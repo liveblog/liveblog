@@ -144,7 +144,6 @@ INSTALLED_APPS = [
     'apps.archive',
     'apps.desks',
     'apps.stages',
-    'apps.groups',
     'apps.privilege',
     'apps.legal_archive',
     'apps.archive_broadcast',

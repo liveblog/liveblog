@@ -1,4 +1,4 @@
-import ingestPanelDropdownTpl from 'scripts/liveblog-syndication/views/ingest-panel-dropdown.html';
+import ingestPanelDropdownTpl from 'scripts/liveblog-syndication/views/ingest-panel-dropdown.ng1';
 
 ingestPanelDropdown.$inject = ['IngestPanelActions', 'datetimeHelper'];
 

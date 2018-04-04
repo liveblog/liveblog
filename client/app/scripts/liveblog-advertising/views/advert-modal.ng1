@@ -1,0 +1,32 @@
+<div sd-modal data-model="advertModalActive">
+    <div class="modal__header">
+        <button class="modal__close pull-right" ng-click="cancelAdvertCreate()"><i class="icon-close-small"></i></button>
+        <h3 class="modal__heading" translate>{{ advert._id? 'Edit Advert': 'Add Advert' | translate }}</h3>
+    </div>
+    <div class="modal__body" style="min-height: 300px;">
+        <div class="item-creation advertising">
+            <fieldset>
+                <div class="sd-line-input">
+                    <label class="sd-line-input__label translate" translate>Advert Name<span class="ft-alert" ng-if="notValidName(advert, adverts)">{{ notValidName(advert, adverts) }}</span></label>
+                    <input class="sd-line-input__input" type="text"  ng-model="advert.name" maxlength="24" required>
+                    <div sd-character-count data-item="advert.name" data-limit="24" class="sd-line-input__char-count">00/24</div>
+                </div>
+                <div class="field">
+                    <freetype-render
+                    freetype="advertType"
+                    freetype-data="freetypesData"
+                    validation="validation"
+                    control="freetypeControl"></freetype-render>
+                </div>
+            </fieldset>
+        </div>
+    </div>
+    <div class="modal__footer">
+        <div>
+            <button type="button" class="btn btn-default pull-left" translate ng-click="cancelAdvertCreate()">Cancel</button>
+            <button type="button" class="btn btn-primary btn-info" translate ng-click="saveAdvert()"
+            ng-disabled="notValidName(advert, adverts) || dialogAdvertLoading || !freetypeValid()"
+            >Save</button>
+        </div>
+    </div>
+</div>
