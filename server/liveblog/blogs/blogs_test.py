@@ -16,9 +16,10 @@ class BlogsTestCase(TestCase):
         self.assertEqual(get_resource_service('blogs')._check_max_active(increment), None)
 
     def test_if_check_max_active(self):
-        try:
-            increment = SUBSCRIPTION_MAX_ACTIVE_BLOGS[SUBSCRIPTION_LEVEL] + 5
-        except KeyError:
-            increment = 10
-        with self.assertRaises(SuperdeskApiError):
-            get_resource_service('blogs')._check_max_active(increment)
+        if SUBSCRIPTION_LEVEL in SUBSCRIPTION_MAX_ACTIVE_BLOGS:
+            try:
+                increment = SUBSCRIPTION_MAX_ACTIVE_BLOGS[SUBSCRIPTION_LEVEL] + 5
+            except KeyError:
+                increment = 10
+            with self.assertRaises(SuperdeskApiError):
+                get_resource_service('blogs')._check_max_active(increment)
