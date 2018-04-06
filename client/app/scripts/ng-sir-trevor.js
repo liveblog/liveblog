@@ -26,6 +26,7 @@ export default angular
                 }
             }
         };
+
         this.$get = function() {
             return options;
         };
@@ -40,6 +41,7 @@ export default angular
         var directive = {
             template: function(element, attr) {
                 var str = '<textarea class="sir-trevor" name="content"></textarea>';
+
                 // sir trevor needs a parent `form` tag.
                 if (!element.parent('form').length) {
                     str = '<form>' + str + '</form>';
@@ -53,6 +55,7 @@ export default angular
             },
             link: function (scope, element, attrs) {
                 var opts = angular.copy(options);
+                opts.blockTypes = ['Text', 'Image', 'Video', 'Embed', 'Quote'];
                 angular.extend(opts, scope.params);
                 opts.el = $(element.find('textarea'));
                 scope.editor = new SirTrevor.Editor(opts);
@@ -95,5 +98,6 @@ export default angular
                 //});
             }
         };
+
         return directive;
     }]);

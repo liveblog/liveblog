@@ -13,6 +13,7 @@ import _ from 'lodash';
 import sanitizeHtml from 'sanitize-html';
 
 import imageBlock from './image-block';
+import videoBlock from './video-block';
 import handlePlaceholder from './handle-placeholder';
 import sanitizeConfig from './sanitizer-config';
 
@@ -48,7 +49,7 @@ var socialEmbedRegex = '(iframe|blockquote)+(?:.|\\n)*(youtube\\.com\\/embed|fac
 
 function fixDataEmbed(data) {
     if (data.html) {
-        var tmp = document.createElement("DIV");
+        var tmp = document.createElement('DIV');
 
         tmp.innerHTML = data.html;
         data.html = tmp.innerHTML;
@@ -95,18 +96,14 @@ function replaceEmbedWithUrl(string) {
     // checking if string contains any of the "big four" embeds
     if (generalPattern.test(string)) {
         if ((m = youtubePattern.exec(string)) !== null) {
-            return 'https://www.youtube.com/watch?v='+m[1];
-        }
-        else if ((m = facebookPattern.exec(string)) !== null) {
+            return 'https://www.youtube.com/watch?v=' + m[1];
+        } else if ((m = facebookPattern.exec(string)) !== null) {
             return decodeURIComponent(m[1]);
-        }
-        else if ((m = instagramPattern.exec(string)) !== null) {
+        } else if ((m = instagramPattern.exec(string)) !== null) {
             return m[1];
-        }
-        else if ((m = twitterPattern.exec(string)) !== null) {
+        } else if ((m = twitterPattern.exec(string)) !== null) {
             return m[1];
-        }
-        else if ((m = bcPattern.exec(string)) !== null) {
+        } else if ((m = bcPattern.exec(string)) !== null) {
             return m[0];
         }
     }
@@ -115,9 +112,8 @@ function replaceEmbedWithUrl(string) {
 }
 
 angular
-.module('SirTrevorBlocks', [])
+    .module('SirTrevorBlocks', [])
     .config(['SirTrevorProvider', 'config', function(SirTrevor, config) {
-
         // replace the plus symbol with text description
         SirTrevor.FloatingBlockControls.prototype.attributes = function() {
             return {
@@ -138,6 +134,7 @@ angular
 
             return instance ? instance.options : null;
         };
+
         SirTrevor.Blocks.Embed = SirTrevor.Block.extend({
             type: 'embed',
             data: {},
@@ -153,6 +150,7 @@ angular
             onBlockRender: function() {
                 var that = this;
                 // create and trigger a 'change' event for the $editor which is a contenteditable
+
                 this.$editor.filter('[contenteditable]').on('focus', function(ev) {
                     var $this = $(this);
 
@@ -173,6 +171,7 @@ angular
                         .text()
                         .trim();
                     // exit if the input field is empty
+
                     if (_.isEmpty(input)) {
                         that.getOptions().disableSubmit(true);
                         return false;
@@ -202,6 +201,7 @@ angular
                         that.loadData({html: input});
                     }
                 };
+
                 this.$editor.on('paste', _.debounce(callServiceAndLoadData, 200));
 
                 this.$editor.on('keydown', function(e) {
@@ -325,6 +325,7 @@ angular
                 }
                 // retrieve the final html code
                 var html_to_return = '';
+
                 html_to_return = '<div class="' + card_class + '">';
                 html_to_return += html.get(0).innerHTML;
                 html_to_return += '</div>';
@@ -334,13 +335,14 @@ angular
             loadData: function(dataParam) {
                 const that = this;
                 const data = _.has(dataParam, 'meta') ? dataParam.meta : dataParam;
+
                 that.data = fixDataEmbed(data);
                 // hide the embed input field, render the card and add it to the DOM
                 that.$('.embed-input')
                     .addClass('hidden')
                     .after(that.renderCard(data));
                 // set somes fields contenteditable
-                ['title', 'description', 'credit'].forEach(function(field_name) {
+                ['title', 'description', 'credit'].forEach((field_name) => {
                     that.$('.' + field_name + '-preview').attr({
                         contenteditable: true,
                         placeholder: field_name
@@ -348,6 +350,7 @@ angular
                 });
                 // remove the loader when media is loaded
                 var iframe = this.$('.embed-preview iframe');
+
                 if (iframe.length > 0) {
                     // special case for iframe
                     iframe.ready(this.ready.bind(this));
@@ -356,6 +359,7 @@ angular
                 }
                 // add a link to remove/show the cover
                 var $cover_handler = this.$('.cover-preview-handler');
+
                 if ($cover_handler.length > 0 && !$cover_handler.hasClass('hidden')) {
                     var $cover_preview = $cover_handler.find('.cover-preview');
                     var $remove_link = $('<a href="#">').text('hide the illustration');
@@ -379,9 +383,9 @@ angular
                     });
                     $cover_handler.append($remove_link, $show_link);
                 }
-                //if instagram process the embed code
+                // if instagram process the embed code
                 if (data.html && data.html.indexOf('platform.instagram.com') !== -1) {
-                    setTimeout(function() {
+                    setTimeout(() => {
                         window.instgrm.Embeds.process();
                     }, 1000);
                 }
@@ -392,6 +396,7 @@ angular
             // toMarkdown: function(markdown) {},
             toHTML: function() {
                 var data = this.retrieveData();
+
                 return this.renderCard(data);
             },
             toMeta: function() {
@@ -502,6 +507,8 @@ angular
 
         SirTrevor.Blocks.Image = imageBlock(SirTrevor, config);
 
+        SirTrevor.Blocks.Video = videoBlock(SirTrevor, config);
+
         SirTrevor.Blocks.Text.prototype.loadData = function(data) {
             this.getTextBlock().html(SirTrevor.toHTML(data.text, this.type));
         };
@@ -513,49 +520,53 @@ angular
         };
 
         SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
-                var that = this;
-                var placeHolderText = window.gettext('Write here (or press Ctrl+Shift+V to paste unformatted text)...');
+            var that = this;
+            var placeHolderText = window.gettext('Write here (or press Ctrl+Shift+V to paste unformatted text)...');
 
-                //add placeholder class and placeholder text
-                this.$editor.attr('placeholder', placeHolderText).addClass('st-placeholder');
-                // create and trigger a 'change' event for the $editor which is a contenteditable
-                this.$editor.filter('[contenteditable]').on('focus', function(ev) {
-                    var $this = $(this);
+            // add placeholder class and placeholder text
+            this.$editor.attr('placeholder', placeHolderText).addClass('st-placeholder');
+            // create and trigger a 'change' event for the $editor which is a contenteditable
+            this.$editor.filter('[contenteditable]').on('focus', function(ev) {
+                var $this = $(this);
+
+                $this.data('before', $this.html());
+            });
+            this.$editor.filter('[contenteditable]').on('click', function(ev) {
+                var $this = $(this);
+
+                if (_.trim($this.html()) === '') {
+                    $this.attr('placeholder', '');
+                }
+            });
+            this.$editor.filter('[contenteditable]').on('focusout', function(ev) {
+                var $this = $(this);
+
+                if (_.trim($this.html()) === '') {
+                    $this.attr('placeholder', placeHolderText);
+                }
+            });
+            this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
+                var $this = $(this);
+
+                if ($this.data('before') !== $this.html()) {
                     $this.data('before', $this.html());
-                });
-                this.$editor.filter('[contenteditable]').on('click', function(ev) {
-                    var $this = $(this);
-                    if (_.trim($this.html()) === '') {
-                        $this.attr('placeholder', '');
-                    }
-                });
-                this.$editor.filter('[contenteditable]').on('focusout', function(ev) {
-                    var $this = $(this);
-                    if (_.trim($this.html()) === '') {
-                        $this.attr('placeholder', placeHolderText);
-                    }
-                });
-                this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
-                    var $this = $(this);
-                    if ($this.data('before') !== $this.html()) {
-                        $this.data('before', $this.html());
-                        $this.trigger('change');
-                    }
-                });
-                // when the link field changes
-                this.$editor.on('change', _.debounce(function () {
-                    var input = $(this)
-                        .text()
-                        .trim();
+                    $this.trigger('change');
+                }
+            });
+            // when the link field changes
+            this.$editor.on('change', _.debounce(function() {
+                var input = $(this)
+                    .text()
+                    .trim();
 
-                    if (_.isEmpty(input)) {
-                        if (that.getOptions())
-                            that.getOptions().disableSubmit(true);
-                        return false;
-                    } else if (that.getOptions()) {
-                        that.getOptions().disableSubmit(false);
-                    }
-                }, 200));
+                if (_.isEmpty(input)) {
+                    if (that.getOptions())
+                        {that.getOptions().disableSubmit(true);}
+                    return false;
+                } else if (that.getOptions()) {
+                    that.getOptions().disableSubmit(false);
+                }
+            }, 200));
         };
 
         // Add toHTML to existing Text Block.
@@ -566,7 +577,7 @@ angular
 
             return html;
         };
-        SirTrevor.Blocks.Text.prototype.onContentPasted = _.debounce(function(event) {
+        SirTrevor.Blocks.Text.prototype.onContentPasted = _.debounce((event) => {
             // Content pasted. Delegate to the drop parse method
             var input = $(event.target).closest('[contenteditable]'),
                 val = input.html();
@@ -585,9 +596,11 @@ angular
         }, 0);
 
         SirTrevor.Blocks.Comment = SirTrevor.Block.extend({
-            type: "comment",
+            type: 'comment',
 
-            title: function() { return window.i18n.t('blocks:comment:title'); },
+            title: function() {
+ return window.i18n.t('blocks:comment:title');
+},
 
             editorHTML: '<div class="st-required st-text-block"></div>',
 
@@ -614,20 +627,23 @@ angular
             },
             toMeta: function() {
                 var data = this.getData();
+
                 return {
                     text: data.text,
                     commenter: data.commenter,
                     _created: data._created,
 
-                }
+                };
             }
         });
+
         var Strikethrough = SirTrevor.Formatter.extend({
             title: 'strikethrough',
             iconName: 'strikethrough',
             cmd: 'strikeThrough',
             text: 'strike'
         });
+
         SirTrevor.Formatters.Strikethrough = new Strikethrough();
 
         var OrderedList = SirTrevor.Formatter.extend({
@@ -636,6 +652,7 @@ angular
             cmd: 'insertOrderedList',
             text: 'orderedlist'
         });
+
         SirTrevor.Formatters.NumberedList = new OrderedList();
 
         var UnorderedList = SirTrevor.Formatter.extend({
@@ -644,6 +661,7 @@ angular
             cmd: 'insertUnorderedList',
             text: 'unorderedlist'
         });
+
         SirTrevor.Formatters.BulletList = new UnorderedList();
 
         var RemoveFormat = SirTrevor.Formatter.extend({
@@ -652,6 +670,7 @@ angular
             cmd: 'removeformat',
             text: 'removeformat'
         });
+
         SirTrevor.Formatters.RemoveFormat = new RemoveFormat();
 
         var Bold = SirTrevor.Formatter.extend({
@@ -661,6 +680,7 @@ angular
             keyCode: 66,
             text: 'bold'
         });
+
         SirTrevor.Formatters.Bold = new Bold();
 
         var Italic = SirTrevor.Formatter.extend({
@@ -670,6 +690,7 @@ angular
             keyCode: 73,
             text: 'italic'
         });
+
         SirTrevor.Formatters.Italic = new Italic();
 
         var UnLink = SirTrevor.Formatter.extend({
@@ -678,6 +699,7 @@ angular
             cmd: 'unlink',
             text: 'unlink'
         });
+
         SirTrevor.Formatters.Unlink = new UnLink();
 
         const HeaderFour = SirTrevor.Formatter.extend({
@@ -689,6 +711,7 @@ angular
                 document.execCommand('formatBlock', false, '<h4>');
             }
         });
+
         SirTrevor.Formatters.HeaderFour = new HeaderFour();
 
         const HeaderFive = SirTrevor.Formatter.extend({
@@ -700,6 +723,7 @@ angular
                 document.execCommand('formatBlock', false, '<h5>');
             }
         });
+
         SirTrevor.Formatters.HeaderFive = new HeaderFive();
 
         var Link = SirTrevor.Formatter.extend({
@@ -709,11 +733,12 @@ angular
             text: 'link',
             onClick: function() {
                 var selection_text = document.getSelection(),
-                    link = prompt(window.i18n.t("general:link")),
+                    link = prompt(window.i18n.t('general:link')),
                     link_regex = /((ftp|http|https):\/\/.)|mailto(?=\:[-\.\w]+@)/;
+
                 if (link && link.length > 0) {
                     if (!link_regex.test(link)) {
-                        link = "http://" + link;
+                        link = 'http://' + link;
                     }
 
                     document.execCommand(
@@ -724,15 +749,17 @@ angular
                 }
             },
             isActive: function() {
-            var selection = window.getSelection(),
-                node;
-            if (selection.rangeCount > 0) {
-              node = selection.getRangeAt(0)
-                              .startContainer
-                              .parentNode;
+                var selection = window.getSelection(),
+                    node;
+
+                if (selection.rangeCount > 0) {
+                    node = selection.getRangeAt(0)
+                        .startContainer
+                        .parentNode;
+                }
+                return node && node.nodeName === 'A';
             }
-            return (node && node.nodeName === 'A');
-          }
         });
+
         SirTrevor.Formatters.Link = new Link();
     }]);
