@@ -6,7 +6,7 @@ from superdesk.errors import SuperdeskApiError
 class AccessAuthService(DbAuthService):
 
     def authenticate(self, credentials):
-    	self._check_subscription_level()
+        self._check_subscription_level()
         DbAuthService.authenticate(self, credentials)
 
     def _check_subscription_level(self):
