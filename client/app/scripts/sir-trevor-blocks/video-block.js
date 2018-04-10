@@ -32,7 +32,7 @@ export default function videoBlock(SirTrevor, config) {
         editorHTML: function() {
             return [
                 '<div class="st-required st-embed-block video-input"></div>',
-                '<div class="video-progress-indicator hidden"><div class="video-progress-indicator__bar"></div></div>'
+                '<div class="video-progress-indicator hidden"><span class="video-progress-indicator__processing hidden"></span><div class="video-progress-indicator__bar"></div></div>'
             ].join('\n');
         },
 
@@ -86,6 +86,40 @@ export default function videoBlock(SirTrevor, config) {
             });
         },
 
+        handleProgress: function(videoId) {
+            var call = "https://upload.embed.ly/1/status?key=" + this.embedlyKey + "&video_id=" + videoId;
+            var _videoId = videoId;
+            var _this = this;
+
+            $.ajax({
+                url: call,
+                type: 'GET',
+                success: function(response) {
+                    if (response.status == 'finished') {
+                        _this.$('.video-progress-indicator')
+                            .addClass('hidden');
+                        _this.$('.embed-preview iframe').attr('src', function ( i, val ) { return val; });
+                    } else if(response.status == 'cancelled' || response.status =='failed') {
+                        _this.$('.embed-preview').html('<h1>Video</h1><p>' + res.status + '</p>');
+                    } else {
+                        var percentComplete = parseInt(response.progress);
+
+                        _this.$('.video-progress-indicator')
+                            .removeClass('hidden');
+                        _this.$('.video-progress-indicator__bar')
+                            .css('width', percentComplete + '%');
+                        _this.$('.video-progress-indicator__processing')
+                            .removeClass('hidden')
+                            .html(percentComplete + '%');
+                        setTimeout(_this.handleProgress(_videoId), 10000);
+                    }
+                },
+                error: function(response) {
+                    setTimeout(_this.handleProgress(_videoId), 10000);
+                }
+            });
+        },
+
         renderCard: function(data) {
             var card_class = 'liveblog--card';
 
@@ -129,6 +163,9 @@ export default function videoBlock(SirTrevor, config) {
             html_to_return = '<div class="' + card_class + '">';
             html_to_return += html.get(0).innerHTML;
             html_to_return += '</div>';
+
+            this.handleProgress(data.video_id);
+
             return html_to_return;
         },
 
@@ -161,24 +198,24 @@ export default function videoBlock(SirTrevor, config) {
         },
         // render a card from data, and make it editable
         loadData: function(data) {
-            const that = this;
+            const _this = this;
 
             // hide the embed input field, render the card and add it to the DOM
-            that.$('.video-input')
+            _this.$('.video-input')
                 .addClass('hidden')
-                .after(that.renderCard(data));
+                .after(_this.renderCard(data));
             // set somes fields contenteditable
-            that.$('.title-preview').attr({
+            _this.$('.title-preview').attr({
                 contenteditable: true,
-                placeholder: that.titlePlaceholder
+                placeholder: _this.titlePlaceholder
             });
-            that.$('.description-preview').attr({
+            _this.$('.description-preview').attr({
                 contenteditable: true,
-                placeholder: that.descriptionPlaceholder
+                placeholder:_this.descriptionPlaceholder
             });
-            that.$('.credit-preview').attr({
+            _this.$('.credit-preview').attr({
                 contenteditable: true,
-                placeholder: that.authorPlaceholder
+                placeholder: _this.authorPlaceholder
             });
 
             // remove the loader when media is loaded
@@ -191,9 +228,9 @@ export default function videoBlock(SirTrevor, config) {
                 this.ready();
             }
             // Remove placeholders
-            handlePlaceholder(this.$('[name=title]'), that.titlePlaceholder);
-            handlePlaceholder(this.$('[name=caption]'), that.descriptionPlaceholder);
-            handlePlaceholder(this.$('[name=credit]'), that.authorPlaceholder, {tabbedOrder: true});
+            handlePlaceholder(this.$('[name=title]'), _this.titlePlaceholder);
+            handlePlaceholder(this.$('[name=caption]'), _this.descriptionPlaceholder);
+            handlePlaceholder(this.$('[name=credit]'), _this.authorPlaceholder, {tabbedOrder: true});
         },
         retrieveData: function() {
             return {

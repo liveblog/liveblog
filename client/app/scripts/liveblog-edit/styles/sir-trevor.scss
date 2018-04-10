@@ -44,12 +44,26 @@
     top: 50%;
     left: 50%;
     width: 70%;
-    height: 10px;
+    height: 15px;
     transform: translateX(-50%) translateY(-50%);
+
+    &__processing {
+        display: block;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        height: 15px;
+        transform: translateX(-50%) translateY(-50%);
+        z-index: 2;
+        font-size: 12px;
+        line-height: 15px;
+        text-align: center;
+        color: #fff;
+    }
 
     &__bar {
         width: 0;
-        height: 10px;
+        height: 15px;
         background-color: #5ea9c8;
         transition: width .2s linear;
     }
