@@ -1,0 +1,59 @@
+// Liveblog Base Theme
+@import "globals.less";
+
+.lb-timeline {
+    .lb-post {
+        padding-right: 10px;
+        padding-left: 10px;
+        margin-left: 0px;
+    }
+    .lb-post:before {
+        display: none;
+    }
+    article.lb-post:after {
+        margin-left: 0px;
+    }
+    .lb-item {
+        margin-left: 0px;
+    }
+    .lb-type {
+        margin-left: 0px;
+    }
+    .lb-post-date-icons {
+        margin-left: 10px;
+    }
+    [class*="lb-type--embed"] {
+        width: 20px;
+        height: 20px;
+        background-size: 9px;
+    }
+    [class*="lb-type--embed"] + .lb-post-date-icons {
+        margin-left: 10px;
+    }
+    .lb-post-bottom {
+        margin-left: 0px;
+    }
+    .items-containerIndent {
+	    margin-left: 20px;
+    }
+    .lb-slideshow {
+        margin-left: 0px;
+    }
+}
+
+@media @medium {
+    .lb-timeline {
+        .lb-post {
+            padding-right: 5px;
+            padding-left: 5px;
+        }
+        .lb-type {
+            width: 12px;
+            height: 12px;
+            background-size: 8px;
+        }
+        .items-containerIndent {
+            margin-left: 15px;
+        }
+    }
+}
