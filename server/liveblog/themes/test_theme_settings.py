@@ -24,11 +24,18 @@ class ThemeSettingsTestCase(TestCase):
 
     def setUp(self):
         if not foo.setup_call:
+            # update configuration
+            test_config = {
+                'LIVEBLOG_DEBUG': True,
+                'EMBED_PROTOCOL': 'http://'
+            }
+            self.app.config.update(test_config)
             foo.setup_called()
             themeapp.init_app(self.app)
             blogapp.init_app(self.app)
             client_modules_app.init_app(self.app)
             self.app.register_blueprint(embed_blueprint)
+            self.client = self.app.test_client()
 
         self.themeservice = get_resource_service('themes')
 
@@ -1342,7 +1349,6 @@ class ThemeSettingsTestCase(TestCase):
 
         # Create blogs
         self.app.data.insert('blogs', self.blogs_list)
-        self.app.testing = True
 
     def test_a_angular_save_theme_settings(self):
         angular_previous_theme = {
@@ -2556,79 +2562,77 @@ class ThemeSettingsTestCase(TestCase):
         # check blog exists
         client_blog = self.client_blog_service.find_one(req=None, _id='5aba336a4d003d61e663eeeb')
         self.assertIsNotNone(client_blog, True)
-
-        with self.app.test_client() as c:
-            response = c.get('/embed/5aba336a4d003d61e663eeeb/')
-            data = str(response.data)
-            # response status 200
-            self.assertEqual(response.status_code, 200)
-            # response contains data
-            self.assertIsNotNone(data, True)
-            # blog id exists in response page
-            test_blog_id = data.find('"_id": "5aba336a4d003d61e663eeeb"')
-            self.assertNotEqual(test_blog_id, -1)
-            # blog title
-            blog_title = data.find('"title": "title: end to end Five"')
-            self.assertNotEqual(blog_title, -1)
-            # blog created date exists in response
-            test_created = data.find('"_created": "2018-03-27T12:04:58+0000"')
-            self.assertNotEqual(test_created, -1)
-            # test blog_preferences
-            blog_pref = data.find('"blog_preferences": {"language": "en", "theme": "classic"}')
-            self.assertNotEqual(blog_pref, -1)
-            # debug is null
-            check_debug = data.find('debug: null')
-            self.assertNotEqual(check_debug, -1)
-            # test settings data in response
-            author_name = data.find('"authorNameFormat": "display_name"')
-            self.assertNotEqual(author_name, -1)
-            post_order = data.find('"postOrder": "editorial"')
-            self.assertNotEqual(post_order, -1)
+        response = self.client.get('/embed/5aba336a4d003d61e663eeeb/')
+        data = str(response.data)
+        # response status 200
+        self.assertEqual(response.status_code, 200)
+        # response contains data
+        self.assertIsNotNone(data, True)
+        # blog id exists in response page
+        test_blog_id = data.find('"_id": "5aba336a4d003d61e663eeeb"')
+        self.assertNotEqual(test_blog_id, -1)
+        # blog title
+        blog_title = data.find('"title": "title: end to end Five"')
+        self.assertNotEqual(blog_title, -1)
+        # blog created date exists in response
+        test_created = data.find('"_created": "2018-03-27T12:04:58+0000"')
+        self.assertNotEqual(test_created, -1)
+        # test blog_preferences
+        blog_pref = data.find('"blog_preferences": {"language": "en", "theme": "classic"}')
+        self.assertNotEqual(blog_pref, -1)
+        # debug is true
+        check_debug = data.find('debug: true')
+        self.assertNotEqual(check_debug, -1)
+        # test settings data in response
+        author_name = data.find('"authorNameFormat": "display_name"')
+        self.assertNotEqual(author_name, -1)
+        post_order = data.find('"postOrder": "editorial"')
+        self.assertNotEqual(post_order, -1)
 
     def test_is_seo(self):
-        with self.app.test_client() as c:
-            response = c.get('/embed/5abe10614d003d5f22ce005e/theme/default')
-            data = str(response.data)
-            # response status 200
-            self.assertEqual(response.status_code, 200)
-            # response contains data
-            self.assertIsNotNone(data, True)
-            # blog id exists in response page
-            test_blog_id = data.find('"_id": "5abe10614d003d5f22ce005e"')
-            self.assertNotEqual(test_blog_id, -1)
-            # blog title
-            blog_title = data.find('"title: end to end Seven"')
-            self.assertNotEqual(blog_title, -1)
-            # blog created date exists in response
-            test_created = data.find('"_created": "2018-03-30T10:24:33+0000"')
-            self.assertNotEqual(test_created, -1)
-            # test blog_preferences
-            blog_pref = data.find('"blog_preferences": {"language": "en", "theme": "default"')
-            self.assertNotEqual(blog_pref, -1)
-            # debug is null
-            check_debug = data.find('debug: null')
-            self.assertNotEqual(check_debug, -1)
-            # assests_root
-            assets_root = data.find('assets_root: \\\'/themes_assets/default/\\\'')
-            self.assertNotEqual(assets_root, -1)
+        response = self.client.get('/embed/5abe10614d003d5f22ce005e/theme/default')
+        data = str(response.data)
+        # response status 200
+        self.assertEqual(response.status_code, 200)
+        # response contains data
+        self.assertIsNotNone(data, True)
+        # blog id exists in response page
+        test_blog_id = data.find('"_id": "5abe10614d003d5f22ce005e"')
+        self.assertNotEqual(test_blog_id, -1)
+        # blog title
+        blog_title = data.find('"title: end to end Seven"')
+        self.assertNotEqual(blog_title, -1)
+        # blog created date exists in response
+        test_created = data.find('"_created": "2018-03-30T10:24:33+0000"')
+        self.assertNotEqual(test_created, -1)
+        # test blog_preferences
+        blog_pref = data.find('"blog_preferences": {"language": "en", "theme": "default"')
+        self.assertNotEqual(blog_pref, -1)
+        # debug is true
+        check_debug = data.find('debug: true')
+        self.assertNotEqual(check_debug, -1)
+        # assests_root
+        assets_root = data.find('assets_root: \\\'/themes_assets/default/\\\'')
+        self.assertNotEqual(assets_root, -1)
 
     def test_is_amp(self):
-        with self.app.test_client() as c:
-            response = c.get('/embed/5abe10614d003d5f22ce005e/theme/amp')
-            data = str(response.data)
-            self.assertEqual(response.status_code, 200)
-            # response contains data
-            self.assertIsNotNone(data, True)
-            # blog title
-            title = data.find('<title>title: end to end Seven</title>')
-            self.assertNotEqual(title, -1)
-            # Test: Add AMP compatible css
-            amp_styles = data.find('<style amp-boilerplate>')
-            self.assertNotEqual(amp_styles, -1)
-            # test amp img
-            amp_img = data.find(
-                '<amp-img src="image.png"\\n  width="1"\\n  height="1"\\n  layout="fixed"\\n  alt="AMP"></amp-img>')
-            self.assertNotEqual(amp_img, -1)
-            # amp live-list
-            amp_live_list = data.find('<amp-live-list\\n    layout="container"\\n    data-poll-interval="15000"\\n    data-max-items-per-page="110"\\n    id="amp-live-list-insert-blog"\\n    class="timeline-body">\\')
-            self.assertNotEqual(amp_live_list, -1)
+        response = self.client.get('/embed/5abe10614d003d5f22ce005e/theme/amp')
+        data = str(response.data)
+        self.assertEqual(response.status_code, 200)
+        # response contains data
+        self.assertIsNotNone(data, True)
+        # blog title
+        title = data.find('<title>title: end to end Seven</title>')
+        self.assertNotEqual(title, -1)
+        # Test: Add AMP compatible css
+        amp_styles = data.find('<style amp-boilerplate>')
+        self.assertNotEqual(amp_styles, -1)
+        # test amp img
+        amp_img = data.find(
+            '<amp-img src="image.png"\\n  width="1"\\n  height="1"\\n  layout="fixed"\\n  alt="AMP"></amp-img>')
+        self.assertNotEqual(amp_img, -1)
+        # amp live-list
+        amp_live_list = data.find(
+            '<amp-live-list\\n    layout="container"\\n    data-poll-interval="15000"\\n    ' +
+            'data-max-items-per-page="110"\\n    id="amp-live-list-insert-blog"\\n    class="timeline-body">\\')
+        self.assertNotEqual(amp_live_list, -1)
