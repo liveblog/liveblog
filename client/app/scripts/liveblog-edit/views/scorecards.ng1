@@ -307,7 +307,7 @@
                         <input name="$home.scorers[0].time" tandem="$home.scorers[0].name" number="true" />
                     </div>
                     <div>
-                        <label hide-render>Home Team</label>
+                        <label hide-render>Name</label>
                         <input name="$home.scorers[0].name" tandem="$home.scorers[0].time"/>
                     </div>
                 </li>
@@ -337,7 +337,7 @@
                         <label hide-render>Minute</label>
                         <input name="$away.scorers[0].time" tandem="$away.scorers[0].name" number="true"/>
                     </div>
-                        <label hide-render>Away Team</label>
+                        <label hide-render>Name</label>
                         <input name="$away.scorers[0].name" tandem="$away.scorers[0].time"/>
                     </div>
                 </li>
