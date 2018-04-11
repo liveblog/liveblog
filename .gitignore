@@ -5,6 +5,7 @@ __pycache__/
 *.py[cod]
 *.sublime-*
 .vagrant
+.push.settings.json
 
 # C extensions
 *.so
