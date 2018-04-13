@@ -21,7 +21,7 @@ from superdesk import get_resource_service
 
 
 blog_posts_blueprint = Blueprint('blog_posts', __name__)
-# CORS(blog_posts_blueprint)
+CORS(blog_posts_blueprint)
 
 
 class ClientUsersResource(Resource):
@@ -240,7 +240,7 @@ class ClientBlogPostsService(BlogPostsService):
                     item['original_creator'] = get_resource_service('users')\
                         .find_one(req=None, _id=item['original_creator'])
                     items.append(item)
-        
+
         items_length = len(items)
         post_items_type = None
         if items_length:
@@ -317,7 +317,7 @@ def get_blog_posts(blog_id):
     # Check max page limit.
     if kwargs['limit'] > Blog.max_page_limit:
         return api_error('"limit" value is not valid.', 403)
-    
+
     response_data = blog.posts(wrap=True, **kwargs)
     result_data = convert_posts(response_data, blog)
     return api_response(result_data, 200)
