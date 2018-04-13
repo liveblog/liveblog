@@ -1,14 +1,14 @@
 {
     "label": "LB SEO Simple Theme",
     "name": "simple",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "seoTheme": true,
     "extends": "default",
     "license": "AGPL-3.0",
-    "devStyles": ["dist/simple-undefined.css"],
-    "devScripts": ["dist/simple-undefined.js"],
-    "styles": ["dist/simple-undefined.css"],
-    "scripts": ["dist/simple-undefined.js"],
+    "devStyles": ["dist/simple-c274e473f0.css"],
+    "devScripts": ["dist/simple-e5c4417fb2.js"],
+    "styles": ["dist/simple-c274e473f0.css"],
+    "scripts": ["dist/simple-e5c4417fb2.js"],
     "options": [],
     "i18n": {
         "cs": {

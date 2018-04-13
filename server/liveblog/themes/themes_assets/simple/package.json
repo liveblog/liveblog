@@ -1,6 +1,6 @@
 {
   "name": "simple",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "LB SEO Simple Theme",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
