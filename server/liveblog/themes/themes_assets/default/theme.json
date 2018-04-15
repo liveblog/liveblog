@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.3.68",
+    "version": "3.3.69",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -513,7 +513,10 @@
             "See one new update": "Pogledajte novi post",
             "See new updates": "Pogledajte nove postove",
             "Send": "Pošalji",
+            "Show all posts": "Prikaži sve postove",
+            "Show highlighted post only": "Prikaži samo odabrane postove",
             "Sort by:": "Sortiraj:",
+            "Updated": "Ažurirano",
             "Your comment was sent for approval": "Vaš komentar je poslat na odobrenje",
             "credit:": "autor:"
         }, "sr-cy": {
@@ -541,7 +544,10 @@
             "See one new update": "Погледајте нови пост",
             "See new updates": "Погледајте нове постове",
             "Send": "Пошаљи",
+            "Show all posts": "Прикажи све постове",
+            "Show highlighted post only": "Прикажи само одабране постове",
             "Sort by:": "Сортирај:",
+            "Updated": "Ажурирано",            
             "Your comment was sent for approval": "Ваш коментар је послат на одобрење",
             "credit:": "аутор:"
         }
