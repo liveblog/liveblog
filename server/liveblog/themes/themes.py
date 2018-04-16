@@ -452,6 +452,7 @@ class ThemesService(BaseService):
         # Get default settings of current theme.
         default_theme_settings = self.get_default_settings(theme)
         default_prev_theme_settings = self.get_default_settings(previous_theme)
+        theme_settings = {}
 
         # Check if theme settings are changed.
         if 'settings' in previous_theme:
@@ -467,7 +468,6 @@ class ThemesService(BaseService):
                 old_theme_settings.update(theme.get('old_theme_settings', {}))
 
             # Initialize the theme settings values for the old theme based on the new settings
-            theme_settings = {}
             # loop over theme settings
             for key, value in old_theme_settings.items():
                 if value == default_prev_theme_settings[key]:
@@ -497,6 +497,8 @@ class ThemesService(BaseService):
                 new_theme_settings.update(default_theme_settings)
                 # Save the blog with the new settings
                 blogs_service.system_update(ObjectId(blog['_id']), {'theme_settings': new_theme_settings}, blog)
+
+        return theme_settings, default_theme_settings
 
     def save_or_update_theme(self, theme, files=[], force_update=False, keep_files=True, upload_path=None):
         theme_name = theme['name']
