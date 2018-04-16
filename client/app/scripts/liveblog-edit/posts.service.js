@@ -105,6 +105,9 @@ export default function postsService(api, $q, userList) {
             postsCriteria.source.query.filtered.filter.and.push({
                 missing: {field: 'syndication_in'}
             });
+            postsCriteria.source.query.filtered.filter.or = [{
+                exists: {field: 'unpublished_date'}
+            }];
         }
 
         return retrievePosts(blogId, postsCriteria);
