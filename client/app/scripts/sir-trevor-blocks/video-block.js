@@ -23,7 +23,6 @@ export default function videoBlock(SirTrevor, config) {
             return 'Video';
         },
         droppable: true,
-        uploadable: true,
         descriptionPlaceholder: window.gettext('Add a description'),
         authorPlaceholder: window.gettext('Add author'),
         titlePlaceholder: window.gettext('Add title'),
@@ -32,8 +31,51 @@ export default function videoBlock(SirTrevor, config) {
         editorHTML: function() {
             return [
                 '<div class="st-required st-embed-block video-input"></div>',
-                '<div class="video-progress-indicator hidden"><span class="video-progress-indicator__processing hidden"></span><div class="video-progress-indicator__bar"></div></div>'
+                '<div class="video-progress-indicator hidden">',
+                '<span class="video-progress-indicator__processing hidden"></span>',
+                '<div class="video-progress-indicator__bar"></div>',
+                '</div>'
             ].join('\n');
+        },
+
+        onBlockRender: function() {
+            var _this = this;
+            var addContentBtns = new AddContentBtns();
+            var uploadBlock = [
+                '<div class="row st-block__upload-container">',
+                    '<div class="col-md-6">',
+                        '<label onclick="$(this).next().trigger(\'click\');" class="btn btn-default">Select from folder</label>',
+                        '<input type="file" id="embedlyUploadFile">',
+                    '</div>',
+                '</div>'
+            ].join('\n');
+
+            _this.$('.st-block__inputs').append(uploadBlock);
+            _this.$('#embedlyUploadFile').on('change', function() {
+                var file = $(this).prop('files')[0];
+
+                if (!file) {
+                    return false;
+                }
+
+                // Handle one upload at a time
+                if (/video/.test(file.type)) {
+                    _this.loading();
+
+                    // Hide add content buttons while uploading
+                    addContentBtns.hide();
+                    _this.$inputs.hide();
+
+                    _this.handleUpload(file)
+                        .then((data) => {
+                            addContentBtns.show();
+                            _this.getOptions().disableSubmit(false);
+                            _this.setData(data);
+                            _this.loadData(data);
+                            _this.ready();
+                        });
+                }
+            });
         },
 
         handleUpload: function(file) {
@@ -95,12 +137,12 @@ export default function videoBlock(SirTrevor, config) {
                 url: call,
                 type: 'GET',
                 success: function(response) {
-                    if (response.status == 'finished') {
+                    if (response.status === 'finished') {
                         _this.$('.video-progress-indicator')
                             .addClass('hidden');
                         _this.$('.embed-preview iframe').attr('src', function ( i, val ) { return val; });
-                    } else if(response.status == 'cancelled' || response.status =='failed') {
-                        _this.$('.embed-preview').html('<h1>Video</h1><p>' + res.status + '</p>');
+                    } else if (response.status === 'cancelled' || response.status ==='failed') {
+                        _this.$('.embed-preview').html('<h1>Video</h1><p>' + response.status + '</p>');
                     } else {
                         var percentComplete = parseInt(response.progress);
 
@@ -211,7 +253,7 @@ export default function videoBlock(SirTrevor, config) {
             });
             _this.$('.description-preview').attr({
                 contenteditable: true,
-                placeholder:_this.descriptionPlaceholder
+                placeholder: _this.descriptionPlaceholder
             });
             _this.$('.credit-preview').attr({
                 contenteditable: true,

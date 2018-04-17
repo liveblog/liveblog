@@ -159,7 +159,7 @@ export default function BlogEditController(
 
     // determine if the loaded item is freetype
     function isItemFreetype(itemType) {
-        var regularItemTypes = ['text', 'image', 'embed', 'quote', 'comment'];
+        var regularItemTypes = ['text', 'video', 'image', 'embed', 'quote', 'comment'];
 
         if (regularItemTypes.indexOf(itemType) !== -1) {
             return false;
@@ -401,6 +401,7 @@ export default function BlogEditController(
                     setDefautPostType();
                     delay = 5;
                 }
+
                 $timeout(() => {
                     var items = post.groups[1].refs;
 
@@ -408,6 +409,7 @@ export default function BlogEditController(
                         var itm = item;
 
                         itm = itm.item;
+
                         if (angular.isDefined(itm)) {
                             if (isItemFreetype(itm.item_type)) {
                                 // post it freetype so we need to reder it
