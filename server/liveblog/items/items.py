@@ -22,7 +22,7 @@ import tempfile
 
 logger = logging.getLogger('superdesk')
 drag_and_drop_blueprint = Blueprint('drag_and_drop', __name__)
-# CORS(drag_and_drop_blueprint)
+CORS(drag_and_drop_blueprint)
 
 
 class ItemsVersionsResource(ArchiveVersionsResource):
