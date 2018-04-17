@@ -8,7 +8,6 @@ from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS
 class BlogsTestCase(TestCase):
 
     def setUp(self):
-        # from nose.tools import set_trace; set_trace()
         init_app(self.app)
 
     def test_if_not_check_max_active(self):

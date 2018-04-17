@@ -96,9 +96,6 @@ class Blog:
                         ref['item'] = get_resource_service('archive').find_one(req=None, _id=ref['residRef'])
                         # Check the original text html markup.
                         original_text = ref['item'].get('text')
-                        # div_wrapped = '<div>{}</div>'.format(original_text)
-                        # if not is_valid_html(original_text) and is_valid_html(div_wrapped):
-                        #     original_text = div_wrapped
                         ref['item']['text'] = self.check_html_markup(original_text)
 
             posts.append(doc)
