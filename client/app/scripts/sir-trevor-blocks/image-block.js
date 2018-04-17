@@ -131,7 +131,9 @@ export default function imageBlock(SirTrevor, config) {
             if (transferData.getData('text/html')) {
                 const addContentBtns = new AddContentBtns();
                 const remoteTag = transferData.getData('text/html');
-                const srcAttr = remoteTag.match(/src="?([^"\s]+)"?\s*/)[1];
+                const regex = /<img.*?src="(.*?)"/;
+                let sourceAttr = regex.exec(remoteTag)[1];
+                const srcAttr = sourceAttr.replace(/&amp;/g, '&');
 
                 addContentBtns.hide();
                 this.loading();
