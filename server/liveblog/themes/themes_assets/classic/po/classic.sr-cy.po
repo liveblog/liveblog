@@ -68,17 +68,17 @@ msgstr "Од најстаријег"
 #: template.html:83
 msgid "One pinned post"
 msgid_plural "{{$count}} pinned posts"
-msgstr[0] "Погледајте одабран пост"
-msgstr[1] "Погледајте {{$count}} одабрана поста"
-msgstr[2] "Погледајте {{$count}} одабраних постова"
+msgstr[0] "Погледајте истакнут пост"
+msgstr[1] "Погледајте {{$count}} истакнута поста"
+msgstr[2] "Погледајте {{$count}} истакнутих постова"
 
 #: comments.html:30
 msgid "Please fill in your Comment."
-msgstr "Молимо унесите Ваш коментар"
+msgstr "Молимо унесите ваш коментар"
 
 #: comments.html:22
 msgid "Please fill in your Name."
-msgstr "Молимо унесите Ваше име."
+msgstr "Молимо унесите ваше име."
 
 #: comments.html:14
 msgid "Post a comment"
@@ -101,7 +101,7 @@ msgstr "Прикажи све постове"
 
 #: template.html:37
 msgid "Show highlighted post only"
-msgstr "Прикажи само одабране постове"
+msgstr "Прикажи најважније постове"
 
 #: template.html:11 template.html:27
 msgid "Sort by:"

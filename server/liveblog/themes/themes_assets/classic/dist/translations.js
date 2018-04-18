@@ -244,12 +244,12 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "No posts for now.": "За сада нема постова.",
   "Oldest first": "Од најстаријег",
   "One pinned post": [
-    "Погледајте одабран пост",
-    "Погледајте {{$count}} одабрана поста",
-    "Погледајте {{$count}} одабраних постова"
+    "Погледајте истакнут пост",
+    "Погледајте {{$count}} истакнута поста",
+    "Погледајте {{$count}} истакнутих постова"
   ],
-  "Please fill in your Comment.": "Молимо унесите Ваш коментар",
-  "Please fill in your Name.": "Молимо унесите Ваше име.",
+  "Please fill in your Comment.": "Молимо унесите ваш коментар",
+  "Please fill in your Name.": "Молимо унесите ваше име.",
   "Post a comment": "Поставите коментар",
   "See one new update": [
     "Погледајте нови пост",
@@ -258,7 +258,7 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   ],
   "Send": "Пошаљи",
   "Show all posts": "Прикажи све постове",
-  "Show highlighted post only": "Прикажи само одабране постове",
+  "Show highlighted post only": "Прикажи најважније постове",
   "Sort by:": "Сортирај:",
   "Updated {{post.content_updated_date | prettifyIsoDate}}": "Ажурирано {{post.content_updated_date | prettifyIsoDate}}",
   "Your comment was sent for approval.": "Ваш коментар је послат на одобрење.",
@@ -279,12 +279,12 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "No posts for now.": "Za sada nema postova.",
   "Oldest first": "Od najstarijeg",
   "One pinned post": [
-    "Pogledajte odabran post",
-    "Pogledajte {{$count}} odabrana posta",
-    "Pogledajte {{$count}} odabranih postova"
+    "Pogledajte istaknut post",
+    "Pogledajte {{$count}} istaknuta posta",
+    "Pogledajte {{$count}} istaknutih postova"
   ],
-  "Please fill in your Comment.": "Molimo unesite Vaš komentar.",
-  "Please fill in your Name.": "Molimo unesite Vaše ime.",
+  "Please fill in your Comment.": "Molimo unesite vaš komentar.",
+  "Please fill in your Name.": "Molimo unesite vaše ime.",
   "Post a comment": "Postavite komentar",
   "See one new update": [
     "Pogledajte novi post",
@@ -293,7 +293,7 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   ],
   "Send": "Pošalji",
   "Show all posts": "Prikaži sve postove",
-  "Show highlighted post only": "Prikaži samo odabrane postove",
+  "Show highlighted post only": "Prikaži najvažnije postove",
   "Sort by:": "Sortiraj:",
   "Updated {{post.content_updated_date | prettifyIsoDate}}": "Ažurirano {{post.content_updated_date | prettifyIsoDate}}",
   "Your comment was sent for approval.": "Vaš komentar je poslat na odobrenje.",
