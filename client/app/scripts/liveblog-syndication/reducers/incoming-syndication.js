@@ -8,15 +8,15 @@ export default function incomingSyndicationReducers() {
 
         case 'ON_GET_SYNDICATION':
             return angular.extend(state, {
-                syndication: action.syndication
+                syndication: action.syndication,
             });
 
         case 'ON_SAVED_POST':
         case 'ON_REMOVED_POST':
             return angular.extend(state, {
                 posts: angular.extend(state.posts, {
-                    _items: state.posts._items.filter((item) => item._id !== action.post._id)
-                })
+                    _items: state.posts._items.filter((item) => item._id !== action.post._id),
+                }),
             });
         }
     };

@@ -6,7 +6,7 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
     return {
         templateUrl: attachSyndicatedBlogsModalTpl,
         scope: {
-            store: '='
+            store: '=',
         },
         link: function(scope) {
             scope.actionName = 'Attach';
@@ -110,7 +110,7 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
                         consumerBlogId: scope.consumerBlogId,
                         autoPublish: blog.auto_publish,
                         autoRetrieve: blog.auto_retrieve,
-                        method: 'POST'
+                        method: 'POST',
                     };
 
                     if (toSyndicate.indexOf(blog._id) !== -1) {
@@ -124,6 +124,6 @@ export default function attachSyndicatedBlogsModal($q, _, IngestPanelActions) {
 
                 IngestPanelActions.toggleModal(false);
             };
-        }
+        },
     };
 }

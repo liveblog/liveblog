@@ -6,7 +6,7 @@ ingestPanel.$inject = [
     'IngestPanelReducers',
     '$routeParams',
     'notify',
-    '$timeout'
+    '$timeout',
 ];
 
 export default function ingestPanel(
@@ -21,7 +21,7 @@ export default function ingestPanel(
         templateUrl: ingestPanelTpl,
         scope: {
             ingestQueue: '=',
-            openPanel: '='
+            openPanel: '=',
         },
         link: function(scope) {
             const handleError = function() {
@@ -43,7 +43,7 @@ export default function ingestPanel(
                 modalActive: false,
                 localProducerBlogIds: [],
                 locallySyndicatedItems: [],
-                unreadQueue: []
+                unreadQueue: [],
             });
 
             scope.store.connect((state) => {
@@ -113,6 +113,6 @@ export default function ingestPanel(
             };
 
             scope.$on('$destroy', scope.store.destroy);
-        }
+        },
     };
 }

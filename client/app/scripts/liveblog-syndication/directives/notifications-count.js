@@ -26,6 +26,6 @@ export default function notificationsCount() {
                     scope.count = 0;
                 }
             });
-        }
+        },
     };
 }

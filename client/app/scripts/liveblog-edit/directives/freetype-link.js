@@ -17,7 +17,7 @@ export default function freetypeLink() {
         }],
         scope: {
             link: '=',
-            validation: '='
-        }
+            validation: '=',
+        },
     };
 }

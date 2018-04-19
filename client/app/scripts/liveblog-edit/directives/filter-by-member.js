@@ -7,7 +7,7 @@ export default function lbFilterByMember(api) {
         restrict: 'E',
         scope: {
             blogId: '=',
-            onFilterChange: '='
+            onFilterChange: '=',
         },
         templateUrl: filterByMemberTpl,
         controllerAs: 'self',
@@ -76,8 +76,8 @@ export default function lbFilterByMember(api) {
                                     });
                             });
                     }
-                }
+                },
             });
-        }]
+        }],
     };
 }

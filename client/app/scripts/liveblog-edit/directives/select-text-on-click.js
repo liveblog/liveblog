@@ -5,6 +5,6 @@ export default function selectTextOnClick() {
                 elem.focus();
                 elem.select();
             });
-        }
+        },
     };
 }
