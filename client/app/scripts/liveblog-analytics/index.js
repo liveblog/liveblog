@@ -19,7 +19,7 @@ export default angular
 
             .api('analytics', {
                 type: 'http',
-                backend: {rel: 'analytics'}
+                backend: {rel: 'analytics'},
             });
     }])
     .controller('LiveblogAnalyticsController', liveblogAnalyticsController)
@@ -27,11 +27,11 @@ export default angular
     .directive('lbAnalyticsList', () => ({
         restrict: 'E',
         scope: {
-            analytics: '='
+            analytics: '=',
         },
         templateUrl: analiticsListTpl,
         controllerAs: 'analyticsList',
-        controller: lbAnalyticsListCtrl
+        controller: lbAnalyticsListCtrl,
     }))
 
     .filter('startFrom', () => function(input, start) {

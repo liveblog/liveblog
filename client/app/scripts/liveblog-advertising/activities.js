@@ -11,6 +11,6 @@ export default function activities(superdesk) {
             category: superdesk.MENU_MAIN,
             adminTools: true,
             privileges: {global_preferences: 1},
-            templateUrl: adManagTemplate
+            templateUrl: adManagTemplate,
         });
 }
