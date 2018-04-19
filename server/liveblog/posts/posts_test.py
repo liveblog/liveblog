@@ -1,20 +1,17 @@
 import flask
 
-import datetime
-import json
 import liveblog.blogs as blogs
 import liveblog.posts as posts
 import superdesk.users as users_app
 from superdesk.tests import TestCase
-from bson import ObjectId
 from superdesk import get_resource_service
 from liveblog.posts.posts import get_publisher, private_draft_filter
-from superdesk.errors import SuperdeskApiError
-from liveblog.posts.tasks import update_post_blog_data, update_post_blog_embed, publish_blog_embeds_on_s3
+from liveblog.posts.tasks import update_post_blog_data, update_post_blog_embed
 import liveblog.client_modules as client_modules
 import liveblog.themes as themes
 import liveblog.advertisements as advertisements
 from unittest.mock import patch
+from superdesk.errors import SuperdeskApiError
 
 
 class Foo():
@@ -27,6 +24,7 @@ class Foo():
 
 
 foo = Foo()
+
 
 class ClientModuleTestCase(TestCase):
     def setUp(self):
@@ -410,34 +408,34 @@ class ClientModuleTestCase(TestCase):
         self.blog_post_ids = self.app.data.insert('client_blog_posts', self.blog_posts)
 
         self.themes = [{
-                "name": "classic",
-                "seoTheme": True,
-                "settings": {
-                    "authorNameFormat": "display_name",
-                    "authorNameLinksToEmail": False,
-                    "blockSearchEngines": False,
-                    "canComment": False,
-                    "datetimeFormat": "lll",
-                    "hasHighlights": False,
-                    "infinitScroll": True,
-                    "language": "en",
-                    "livestream": False,
-                    "livestreamAutoplay": False,
-                    "loadNewPostsManually": True,
-                    "permalinkDelimiter": "?",
-                    "postOrder": "editorial",
-                    "postsPerPage": 20,
-                    "showAuthor": True,
-                    "showAuthorAvatar": True,
-                    "showDescription": True,
-                    "showGallery": False,
-                    "showImage": True,
-                    "showSocialShare": True,
-                    "showSyndicatedAuthor": False,
-                    "showTitle": True
-                }
+            "name": "classic",
+            "seoTheme": True,
+            "settings": {
+                "authorNameFormat": "display_name",
+                "authorNameLinksToEmail": False,
+                "blockSearchEngines": False,
+                "canComment": False,
+                "datetimeFormat": "lll",
+                "hasHighlights": False,
+                "infinitScroll": True,
+                "language": "en",
+                "livestream": False,
+                "livestreamAutoplay": False,
+                "loadNewPostsManually": True,
+                "permalinkDelimiter": "?",
+                "postOrder": "editorial",
+                "postsPerPage": 20,
+                "showAuthor": True,
+                "showAuthorAvatar": True,
+                "showDescription": True,
+                "showGallery": False,
+                "showImage": True,
+                "showSocialShare": True,
+                "showSyndicatedAuthor": False,
+                "showTitle": True
+            }
         }]
-        
+
         self.themes_ids = self.app.data.insert('themes', self.themes)
 
     def test_get_publisher_clean(self):
@@ -475,25 +473,40 @@ class ClientModuleTestCase(TestCase):
     def test_check_post_permission(self):
         forbiddenError = False
         try:
-            self.posts_service.check_post_permission()
-        except:
+            self.posts_service.check_post_permission(self.blog_posts[0])
+        except SuperdeskApiError:
             forbiddenError = True
-        self.assertEqual(forbiddenError, True)
+        self.assertEqual(forbiddenError, False)
 
-    def test_update_post_blog_embed(self):
-        with patch('liveblog.blogs.tasks.publish_blog_embeds_on_s3', return_value=''):
-            update_post_blog_embed(self.blog_posts[0])
-            self.assertTrue(publish_blog_embeds_on_s3.called)
+    @patch('liveblog.posts.tasks.publish_blog_embeds_on_s3')
+    def test_update_post_blog_embed(self, *mocks):
+        fake_get_service = mocks[0]
+
+        update_post_blog_embed(self.blog_posts[0])
+        fake_get_service.assert_called_with(self.blogs_list[0]["_id"], save=False, safe=True)
 
     @patch('liveblog.posts.tasks.get_resource_service')
     def test_update_post_blog_data(self, *mocks):
         fake_get_service = mocks[0]
 
         update_post_blog_data(self.blog_posts[0])
-        fake_get_service().system_update.assert_called_with(self.blogs_list[0]["_id"],  {
-            'last_created_post': {
-                '_updated': '2018-04-03T05:42:43+00:00',
-                '_id': '5ad7a34a336e6f676ff9ea0c'
-            }})
-        
-        
+
+        fake_get_service().find.assert_called_with({'$and': [
+            {'blog': self.blogs_list[0]["_id"]},
+            {'post_status': 'open'},
+            {'deleted': False}
+        ]})
+        total_posts = fake_get_service().find({'$and': [
+            {'blog': self.blogs_list[0]["_id"]},
+            {'post_status': 'open'},
+            {'deleted': False}
+        ]}).count()
+        blog = fake_get_service().find_one(req=None, _id=self.blogs_list[0]["_id"])
+        fake_get_service().system_update.assert_called_with(
+            self.blogs_list[0]["_id"], {
+                'last_created_post': {
+                    '_updated': self.blog_posts[0]["_updated"],
+                    '_id': self.blog_posts[0]["_id"]
+                },
+                'total_posts': total_posts
+            }, blog)
