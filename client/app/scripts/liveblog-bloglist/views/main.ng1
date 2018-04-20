@@ -65,11 +65,16 @@
             </tbody>
         </table>
         <!-- GRID VIEW -->
+        <div class="content" ng-hide="bulkActions">
+            <input type="button" name="archiveBlog" value="{{activeState.name == 'active' ? 'Archive' : 'Active'}}" ng-click="bulkAction(activeState)">
+            <input type="button" name="deleteBlog" value="Delete" ng-click="askRemoveBlog()">
+        </div>
         <ul class="card-list" ng-if="blogsView === 'grid'">
             <li ng-repeat="blog in blogs._items track by blog._id"
                 title="{{ !isUserAllowedToOpenBlog(blog) ? requestAccessMessage: '' }}"
                 ng-click="isUserAllowedToOpenBlog(blog) ? edit(blog): openAccessRequest(blog)"
                 ng-class="{'can-access': isUserAllowedToOpenBlog(blog)}">
+                <input type="checkbox" ng-model="blog.selected" ng-click="blogSelect($event)">
                 <figure class="media">
                     <div ng-if="blog.picture_url" if-background-image="{{blog.picture_url}}"></div>
                 </figure>
@@ -93,7 +98,16 @@
                         <dt> {{ :: 'Last posted' | translate }}:</dt>
                         <dd ng-if="blog.last_created_post._updated" sd-reldate ng-model="blog.last_created_post._updated"></dd>
                         <dd ng-if="blog.posts_count == 0"> No posts yet</dd>
-                        </dl>
+                        <dt> {{ :: 'Syndication' | translate }}:</dt>
+                        <dd>
+                        <div ng-if="blog.syndication_enabled" class="state-label state-published state-label--no-float" translate>Syndicatable</div>
+                        <div ng-if="!blog.syndication_enabled" translate>OFF</div>
+                        </dd>
+                        <dt> {{ :: 'Market' | translate }}:</dt>
+                        <dd>
+                        <div ng-if="blog.market_enabled" class="state-label state-published state-label--no-float" translate>PUBLIC</div>
+                        <div ng-if="!blog.market_enabled" translate>PRIVATE</div>
+                        </dd>
                     </dl>
                 </div>
             </li>
