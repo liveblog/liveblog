@@ -4,7 +4,6 @@
 
 'use strict';
 
-require('./templates');
 const helpers = require('./helpers');
 const adsManager = require('./ads-manager');
 const Slideshow = require('./slideshow');

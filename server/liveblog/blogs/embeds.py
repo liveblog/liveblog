@@ -25,7 +25,7 @@ from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
 from liveblog.themes.template.utils import get_theme_template
-from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
+from liveblog.themes.template.loaders import CompiledThemeTemplateLoader, ThemeTemplateLoader
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
@@ -42,7 +42,7 @@ def collect_theme_assets(theme, assets=None, template=None, parents=[]):
 
     assets = assets or {'scripts': [], 'styles': [], 'devScripts': [], 'devStyles': []}
     # Load the template.
-    if not template:
+    if template is None:
         if themes.is_local_theme(theme_name) or is_local_upload:
             template_file_name = themes.get_theme_template_filename(theme_name)
             if os.path.exists(template_file_name):
@@ -51,6 +51,7 @@ def collect_theme_assets(theme, assets=None, template=None, parents=[]):
                 template = theme.get('template')
         else:
             template = theme.get('template')
+
     # Add assets from parent theme.
     if theme.get('extends') and not \
             theme.get('seoTheme') and \
