@@ -18,8 +18,6 @@ from flask import Blueprint, request
 from flask_cors import CORS
 from distutils.util import strtobool
 from superdesk import get_resource_service
-from flask import make_response
-from bson.json_util import dumps
 
 blog_posts_blueprint = Blueprint('blog_posts', __name__)
 CORS(blog_posts_blueprint)
@@ -316,7 +314,7 @@ def create_amp_comment():
 
     comment = post_comments.find_one(req=None, _id=post_comment)
 
-    resp =  api_response(comment, 201)
+    resp = api_response(comment, 201)
     resp.headers['Access-Control-Allow-Credentials'] = 'true'
     resp.headers['Access-Control-Allow-Origin'] = app.config.get('AMP_ALLOW_ORIGIN')
     resp.headers['AMP-Access-Control-Allow-Source-Origin'] = app.config.get('AMP_ALLOW_ORIGIN')
