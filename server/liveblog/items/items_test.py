@@ -24,7 +24,8 @@ class ItemsTest(TestCase):
             items.init_app(self.app)
             test_config = {
                 'LIVEBLOG_DEBUG': True,
-                'EMBED_PROTOCOL': 'http://'
+                'EMBED_PROTOCOL': 'http://',
+                'DEBUG': False,
             }
             foo.setup_called()
             self.app.config.update(test_config)
