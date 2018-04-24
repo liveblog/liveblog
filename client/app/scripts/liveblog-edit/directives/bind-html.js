@@ -12,6 +12,6 @@ export default function lbBindHtml() {
                     elem.html(attrs.htmlContent);
                 }
             });
-        }
+        },
     };
 }

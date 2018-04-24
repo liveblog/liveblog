@@ -11,7 +11,7 @@ export default function sdPlainImage(gettext, notify, config) {
             maxWidth: '@',
             maxHeight: '@',
             msgErrorMax: '@',
-            msgErrorMin: '@'
+            msgErrorMin: '@',
         },
         link: function(scope, elem) {
             scope.$watch('src', (src) => {
@@ -72,6 +72,6 @@ export default function sdPlainImage(gettext, notify, config) {
                     }
                 }
             });
-        }
+        },
     };
 }

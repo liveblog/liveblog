@@ -5,7 +5,7 @@ export default function lbUserSelectList(api) {
         scope: {
             members: '=',
             user: '=',
-            onchoose: '&'
+            onchoose: '&',
         },
         templateUrl: 'scripts/apps/desks/views/user-select.html',
         link: function(scope, elem, attrs) {
@@ -24,8 +24,8 @@ export default function lbUserSelectList(api) {
                         {username: {$regex: scope.search, $options: '-i'}},
                         {first_name: {$regex: scope.search, $options: '-i'}},
                         {last_name: {$regex: scope.search, $options: '-i'}},
-                        {email: {$regex: scope.search, $options: '-i'}}
-                    ]
+                        {email: {$regex: scope.search, $options: '-i'}},
+                    ],
                 })})
                     .then((result) => {
                         for (var i = 0; i < result._items.length; i++) {
@@ -124,6 +124,6 @@ export default function lbUserSelectList(api) {
             };
 
             scope.getUserDisplay = (user) => user.display_name;
-        }
+        },
     };
 }

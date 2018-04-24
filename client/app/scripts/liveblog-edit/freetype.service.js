@@ -437,14 +437,14 @@ angular.module('liveblog.edit')
                         `(${removeAttr.join('|')})`,
                         '\\s*=\\s*("|\')?',
                         '([^"]+)',
-                        '("|\')?'
+                        '("|\')?',
                     ].join(''),
                     'gi'
                     ), '');
                 return {
                     name,
                     type,
-                    attr
+                    attr,
                 };
             };
 
@@ -566,5 +566,5 @@ angular.module('liveblog.edit')
             })(template);
 
             return wrapBefore + template + wrapAfter;
-        }
+        },
     }));

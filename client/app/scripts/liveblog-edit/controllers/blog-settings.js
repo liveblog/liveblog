@@ -34,7 +34,7 @@ BlogSettingsController.$inject = [
     'moment',
     'superdesk',
     'urls',
-    '$rootScope'
+    '$rootScope',
 
 ];
 
@@ -88,7 +88,7 @@ function BlogSettingsController(
             'Sport',
             'Technology',
             'Politics',
-            'Others'
+            'Others',
         ],
         // used as an aux var to be able to change members and safely cancel the changes
         blogMembers: [],
@@ -115,9 +115,9 @@ function BlogSettingsController(
                 where: JSON.stringify({
                     $and: [
                         {deleted: false},
-                        {blog: vm.blog._id}
-                    ]
-                })
+                        {blog: vm.blog._id},
+                    ],
+                }),
             };
 
             api('outputs').query(criteria)
@@ -147,7 +147,7 @@ function BlogSettingsController(
 
             if (vm.output.style) {
                 vm.output.preview = {
-                    url: vm.output.style['background-image']
+                    url: vm.output.style['background-image'],
                 };
             } else {
                 vm.output.style = {};
@@ -282,7 +282,7 @@ function BlogSettingsController(
                 market_enabled: vm.market_enabled,
                 category: vm.category,
                 start_date: startDate,
-                members: members
+                members: members,
             };
 
             angular.extend(vm.newBlog, changedBlog);
@@ -360,7 +360,7 @@ function BlogSettingsController(
                         details.push(data);
                     });
             });
-        }
+        },
     });
     // retieve the blog's public url
     const qPublicUrl = blogService.getPublicUrl(blog).then((url) => {
@@ -413,7 +413,7 @@ liveblog.loadCallback&&liveblog.loadCallback()});</script>`;
             normal: '<iframe id="liveblog-iframe" width="100%" height="715" src="' +
                 vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>',
             resizeing: '<iframe id="liveblog-iframe" width="100%" scrolling="no" src="' +
-                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>' + loadingScript
+                vm.publicUrl + '" frameborder="0" allowfullscreen></iframe>' + loadingScript,
         };
     });
 
@@ -437,7 +437,7 @@ liveblog.loadCallback&&liveblog.loadCallback()});</script>`;
             vm.getUsers(vm.memberRequests, _.map(data._items,
                 (request) => ({
                     user: request.original_creator,
-                    request_id: request._id
+                    request_id: request._id,
                 })
             ));
         });

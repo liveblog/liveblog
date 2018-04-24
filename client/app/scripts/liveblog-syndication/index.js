@@ -38,7 +38,7 @@ import api from './api';
 export default angular
     .module('liveblog.syndication', [
         'liveblog.security',
-        'liveblog.flux'
+        'liveblog.flux',
     ])
 
     // actions

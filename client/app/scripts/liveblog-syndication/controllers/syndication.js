@@ -3,7 +3,7 @@ syndicationController.$inject = ['$scope', '$route'];
 export default function syndicationController($scope, $route) {
     $scope.states = [
         {name: 'producers', code: 'open', text: gettext('Producers')},
-        {name: 'consumers', code: 'closed', text: gettext('Consumers')}
+        {name: 'consumers', code: 'closed', text: gettext('Consumers')},
     ];
 
     $scope.changeState = function(state) {

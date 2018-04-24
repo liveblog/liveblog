@@ -7,10 +7,10 @@ export default function lbBlogsList(MarketplaceActions) {
         templateUrl: blogsListTpl,
         scope: {
             title: '@',
-            blogs: '='
+            blogs: '=',
         },
         link: function(scope) {
             scope.openEmbedModal = MarketplaceActions.openEmbedModal;
-        }
+        },
     };
 }

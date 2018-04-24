@@ -68,7 +68,7 @@
                     theme.author = {
                         name: authorArray[1],
                         email: authorArray[2],
-                        url: authorArray[3]
+                        url: authorArray[3],
                     };
                 }
             }
@@ -120,7 +120,7 @@
 
                     angular.extend(options, {
                         blogs: false,
-                        details: true
+                        details: true,
                     });
                     if (name) {
                         criteria = {where: {name: name}};
@@ -136,8 +136,8 @@
                             // create criteria to load blogs with the theme.
                                 const criteria = {
                                     source: {
-                                        query: {match: {'blog_preferences.theme': theme.name}}
-                                    }
+                                        query: {match: {'blog_preferences.theme': theme.name}},
+                                    },
                                 };
 
                                 api.blogs.query(criteria).then((data) => {
@@ -156,21 +156,21 @@
                         });
                         return themes;
                     });
-                }
+                },
             };
         }])
         .config(['apiProvider', function(apiProvider) {
             apiProvider.api('global_preferences', {
                 type: 'http',
-                backend: {rel: 'global_preferences'}
+                backend: {rel: 'global_preferences'},
             });
             apiProvider.api('themes', {
                 type: 'http',
-                backend: {rel: 'themes'}
+                backend: {rel: 'themes'},
             });
             apiProvider.api('blogs', {
                 type: 'http',
-                backend: {rel: 'blogs'}
+                backend: {rel: 'blogs'},
             });
         }]);
 })();

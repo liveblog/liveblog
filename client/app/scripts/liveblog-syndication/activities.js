@@ -12,6 +12,6 @@ export default function activities(superdesk) {
             priority: 100,
             adminTools: true,
             privileges: {global_preferences: 1},
-            resolve: {isArchivedFilterSelected: () => false}
+            resolve: {isArchivedFilterSelected: () => false},
         });
 }

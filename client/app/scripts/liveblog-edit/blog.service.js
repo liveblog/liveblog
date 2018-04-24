@@ -60,6 +60,6 @@ export default function blogService(api, $q, $rootScope, config) {
         get: get,
         update: update,
         save: save,
-        getPublicUrl: getPublicUrl
+        getPublicUrl: getPublicUrl,
     };
 }

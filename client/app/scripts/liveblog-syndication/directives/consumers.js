@@ -8,6 +8,6 @@ export default function lbConsumers() {
             $scope.entryName = 'consumer';
 
             angular.extend(this, $controller('BaseController', {$scope: $scope}));
-        }]
+        }],
     };
 }

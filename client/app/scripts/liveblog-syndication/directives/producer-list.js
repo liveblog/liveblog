@@ -9,7 +9,7 @@ export default function producerList(api, $http, modal, config, notify) {
             roles: '=',
             producers: '=',
             selected: '=',
-            done: '='
+            done: '=',
         },
         link: function(scope, elem, attrs) {
             scope.select = function(producer) {
@@ -37,8 +37,8 @@ export default function producerList(api, $http, modal, config, notify) {
                     url: `${config.server.url}/producers/${producer._id}/check_connection`,
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json;charset=utf-8'
-                    }
+                        'Content-Type': 'application/json;charset=utf-8',
+                    },
                 });
             };
 
@@ -68,6 +68,6 @@ export default function producerList(api, $http, modal, config, notify) {
                     });
                 }
             });
-        }
+        },
     };
 }

@@ -10,7 +10,7 @@ export default function freetypeCollectionRemove() {
         controllerAs: 'ftcr',
         scope: {
             vector: '=',
-            index: '='
-        }
+            index: '=',
+        },
     };
 }

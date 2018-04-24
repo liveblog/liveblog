@@ -24,6 +24,6 @@ export default function fullHeight($timeout, $window, _) {
             angular.element($window).on('resize', _.debounce(setHeight, 500));
             // update when offset changes
             $scope.$watch(() => $element.offset().top, _.debounce(setHeight, 500));
-        }
+        },
     };
 }

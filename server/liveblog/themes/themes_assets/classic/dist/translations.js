@@ -229,5 +229,75 @@ angular.module('gettext').run(['gettextCatalog', function (gettextCatalog) {
   "Sort by:": "Ordonează după:",
   "Your comment was sent for approval.": "Comentariul tău a fost trimis spre aprobare."
 });
+  gettextCatalog.setStrings('sr-cy', {
+  "Advertisement": "Реклама",
+  "Cancel": "Откажи",
+  "Comment": "Коментар",
+  "Comment *": "Коментар *",
+  "Comment should be maximum 300 characters in length.": "Коментар је ограничен на 300 карактера.",
+  "Editorial": "Избор уредника",
+  "Load more posts": "Учитај још постова",
+  "Loading": "Учитавање",
+  "Name *": "Име *",
+  "Name should be maximum 30 characters in length.": "Име је ограничено на 30 карактера.",
+  "Newest first": "Од најновијег",
+  "No posts for now.": "За сада нема постова.",
+  "Oldest first": "Од најстаријег",
+  "One pinned post": [
+    "Погледајте истакнут пост",
+    "Погледајте {{$count}} истакнута поста",
+    "Погледајте {{$count}} истакнутих постова"
+  ],
+  "Please fill in your Comment.": "Молимо унесите ваш коментар",
+  "Please fill in your Name.": "Молимо унесите ваше име.",
+  "Post a comment": "Поставите коментар",
+  "See one new update": [
+    "Погледајте нови пост",
+    "Погледајте {{$count}} нова поста",
+    "Погледајте {{$count}} нових постова"
+  ],
+  "Send": "Пошаљи",
+  "Show all posts": "Прикажи све постове",
+  "Show highlighted post only": "Прикажи најважније постове",
+  "Sort by:": "Сортирај:",
+  "Updated {{post.content_updated_date | prettifyIsoDate}}": "Ажурирано {{post.content_updated_date | prettifyIsoDate}}",
+  "Your comment was sent for approval.": "Ваш коментар је послат на одобрење.",
+  "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} аутор: {{ item.meta.credit }}"
+});
+  gettextCatalog.setStrings('sr', {
+  "Advertisement": "Reklama",
+  "Cancel": "Otkaži",
+  "Comment": "Komentar",
+  "Comment *": "Komentar *",
+  "Comment should be maximum 300 characters in length.": "Komentar je ograničen na 300 karaktera.",
+  "Editorial": "Izbor urednika",
+  "Load more posts": "Učitaj još postova",
+  "Loading": "Učitavanje",
+  "Name *": "Ime *",
+  "Name should be maximum 30 characters in length.": "Ime je ograničeno na 30 karaktera.",
+  "Newest first": "Od najnovijeg",
+  "No posts for now.": "Za sada nema postova.",
+  "Oldest first": "Od najstarijeg",
+  "One pinned post": [
+    "Pogledajte istaknut post",
+    "Pogledajte {{$count}} istaknuta posta",
+    "Pogledajte {{$count}} istaknutih postova"
+  ],
+  "Please fill in your Comment.": "Molimo unesite vaš komentar.",
+  "Please fill in your Name.": "Molimo unesite vaše ime.",
+  "Post a comment": "Postavite komentar",
+  "See one new update": [
+    "Pogledajte novi post",
+    "Pogledajte {{$count}} nova posta",
+    "Pogledajte {{$count}} novih postova"
+  ],
+  "Send": "Pošalji",
+  "Show all posts": "Prikaži sve postove",
+  "Show highlighted post only": "Prikaži najvažnije postove",
+  "Sort by:": "Sortiraj:",
+  "Updated {{post.content_updated_date | prettifyIsoDate}}": "Ažurirano {{post.content_updated_date | prettifyIsoDate}}",
+  "Your comment was sent for approval.": "Vaš komentar je poslat na odobrenje.",
+  "{{ item.meta.caption }} credit: {{ item.meta.credit }}": "{{ item.meta.caption }} autor: {{ item.meta.credit }}"
+});
 /* jshint +W100,+W109 */
 }]);

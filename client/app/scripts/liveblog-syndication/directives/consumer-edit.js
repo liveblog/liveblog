@@ -9,7 +9,7 @@ export default function consumerEdit(api, notify, _, superdesk) {
             consumer: '=',
             onsave: '&',
             oncancel: '&',
-            onupdate: '&'
+            onupdate: '&',
         },
         link: function(scope, elem) {
             scope.consumerForm.attempted = false;
@@ -93,6 +93,6 @@ export default function consumerEdit(api, notify, _, superdesk) {
             scope.cancel = function() {
                 scope.oncancel();
             };
-        }
+        },
     };
 }

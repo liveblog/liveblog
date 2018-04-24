@@ -27,8 +27,8 @@ angular.module('liveblog.security', [])
 
                     const criteria = {
                         source: {
-                            query: {filtered: {filter: {term: {blog_status: 'open'}}}}
-                        }
+                            query: {filtered: {filter: {term: {blog_status: 'open'}}}},
+                        },
                     };
 
                     return api.blogs.query(criteria).then((blogs) => blogs._items.length >= numberOfAllowedBlogs);
@@ -74,7 +74,7 @@ angular.module('liveblog.security', [])
                     canAccessSettings: canAccessSettings,
                     canPublishAPost: canPublishAPost,
                     canCreateABlog: canCreateABlog,
-                    canAccessBlog: canAccessBlog
+                    canAccessBlog: canAccessBlog,
                 };
-            }
+            },
         ]);
