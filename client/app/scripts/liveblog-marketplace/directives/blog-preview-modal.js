@@ -6,14 +6,14 @@ export default function lbBlogPreviewModal(MarketplaceActions, $sce) {
     return {
         templateUrl: previewModalTpl,
         scope: {
-            store: '='
+            store: '=',
         },
         link: function(scope) {
             const iframeAttrs = [
                 'width="100%"',
                 'height="715"',
                 'frameborder="0"',
-                'allowfullscreen'
+                'allowfullscreen',
             ].join(' ');
 
             scope.active = 'preview';
@@ -37,10 +37,10 @@ export default function lbBlogPreviewModal(MarketplaceActions, $sce) {
                     scope.currentBlog = angular.extend(scope.currentBlog, {
                         embed: '<iframe ' + iframeAttrs + ' src="'
                             + scope.currentBlog.public_url + '"></iframe>',
-                        iframeUrl: $sce.trustAsResourceUrl(scope.currentBlog.public_url)
+                        iframeUrl: $sce.trustAsResourceUrl(scope.currentBlog.public_url),
                     });
                 }
             });
-        }
+        },
     };
 }

@@ -14,7 +14,7 @@ import moment from 'moment';
 postsService.$inject = [
     'api',
     '$q',
-    'userList'
+    'userList',
 ];
 
 export default function postsService(api, $q, userList) {
@@ -31,8 +31,8 @@ export default function postsService(api, $q, userList) {
         if (angular.isDefined(filters.authors) && filters.authors.length > 0) {
             postsCriteria.source.query.filtered.filter.and.push({
                 or: {
-                    filters: filters.authors.map((author) => ({term: {original_creator: author}}))
-                }
+                    filters: filters.authors.map((author) => ({term: {original_creator: author}})),
+                },
             });
         }
         // filters.updatedAfter
@@ -40,9 +40,9 @@ export default function postsService(api, $q, userList) {
             postsCriteria.source.query.filtered.filter.and.push({
                 range: {
                     _updated: {
-                        gt: filters.updatedAfter
-                    }
-                }
+                        gt: filters.updatedAfter,
+                    },
+                },
             });
         }
         // filters.highlight
@@ -68,11 +68,11 @@ export default function postsService(api, $q, userList) {
         const postsCriteria = {
             source: {
                 query: {filtered: {filter: {
-                    and: []
-                }}}
+                    and: [],
+                }}},
             },
             page: page,
-            max_results: maxResults
+            max_results: maxResults,
         };
 
         // filters.excludeDeleted
@@ -97,16 +97,16 @@ export default function postsService(api, $q, userList) {
         // filters.status
         if (angular.isDefined(filters.syndicationIn)) {
             postsCriteria.source.query.filtered.filter.and.push({
-                term: {syndication_in: filters.syndicationIn}
+                term: {syndication_in: filters.syndicationIn},
             });
         }
 
         if (angular.isDefined(filters.noSyndication)) {
             postsCriteria.source.query.filtered.filter.and.push({
-                missing: {field: 'syndication_in'}
+                missing: {field: 'syndication_in'},
             });
             postsCriteria.source.query.filtered.filter.or = [{
-                exists: {field: 'unpublished_date'}
+                exists: {field: 'unpublished_date'},
             }];
         }
 
@@ -140,7 +140,7 @@ export default function postsService(api, $q, userList) {
                 multipleItems: multipleItems,
                 // add a `mainItem` field containing the first item
                 mainItem: post.groups[1].refs[0],
-                items: post.groups[1].refs
+                items: post.groups[1].refs,
             });
 
             // if an item has a commenter then that post hasComments.
@@ -194,7 +194,7 @@ export default function postsService(api, $q, userList) {
                     });
 
                     return post;
-                })
+                }),
             }));
     }
 
@@ -251,7 +251,7 @@ export default function postsService(api, $q, userList) {
                         group_type: itemParam.group_type,
                         item_type: itemParam.item_type,
                         commenter: itemParam.meta && itemParam.meta.commenter,
-                        syndicated_creator: itemParam.syndicated_creator
+                        syndicated_creator: itemParam.syndicated_creator,
                     };
                 }
                 dfds.push(api.items.save(item));
@@ -266,13 +266,13 @@ export default function postsService(api, $q, userList) {
                         {
                             id: 'root',
                             refs: [{idRef: 'main'}],
-                            role: 'grpRole:NEP'
+                            role: 'grpRole:NEP',
                         }, {
                             id: 'main',
                             refs: [],
-                            role: 'grpRole:Main'
-                        }
-                    ]
+                            role: 'grpRole:Main',
+                        },
+                    ],
                 });
                 // update the post reference (links with items)
                 _.each(items, (item) => {
@@ -322,6 +322,6 @@ export default function postsService(api, $q, userList) {
                 {post_status: 'submitted', sticky: sticky, lb_highlight: highlight}
             );
         },
-        remove: removePost
+        remove: removePost,
     };
 }

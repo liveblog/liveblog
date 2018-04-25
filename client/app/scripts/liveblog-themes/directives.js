@@ -16,7 +16,7 @@ import dateFormTpl from 'scripts/liveblog-themes/views/date-format.ng1';
             return {
                 scope: {
                     options: '=',
-                    value: '=ngModel'
+                    value: '=ngModel',
                 },
                 templateUrl: dateFormTpl,
                 link: function(scope) {
@@ -35,7 +35,7 @@ import dateFormTpl from 'scripts/liveblog-themes/views/date-format.ng1';
                             scope.custom = '';
                         }
                     });
-                }
+                },
             };
         }]);
 })();

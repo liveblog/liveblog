@@ -5,7 +5,7 @@ export default function contactsEdit() {
         templateUrl: contactsEditFormTpl,
         scope: {
             contacts: '=',
-            attempted: '='
+            attempted: '=',
         },
         require: '^form',
         link: function(scope, elem, attrs, form) {
@@ -21,6 +21,6 @@ export default function contactsEdit() {
                 scope.contacts.splice(index, 1);
                 form.$setDirty();
             };
-        }
+        },
     };
 }

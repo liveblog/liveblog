@@ -9,6 +9,6 @@ export default function firstContact() {
             scope.$watch('prosumer', (prosumer) => {
                 scope.contact = prosumer.contacts[0];
             });
-        }
+        },
     };
 }

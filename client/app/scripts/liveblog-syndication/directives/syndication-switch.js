@@ -11,8 +11,8 @@ export default function syndicationSwitch(api, $routeParams) {
 
             const params = {
                 where: {
-                    blog_id: $routeParams._id
-                }
+                    blog_id: $routeParams._id,
+                },
             };
 
             api.syndicationOut.query(params).then((syndOuts) => {
@@ -27,6 +27,6 @@ export default function syndicationSwitch(api, $routeParams) {
                     });
                 }
             });
-        }
+        },
     };
 }

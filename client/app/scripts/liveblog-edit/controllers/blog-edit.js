@@ -44,7 +44,7 @@ BlogEditController.$inject = [
     '$templateCache',
     '$timeout',
     '$rootScope',
-    '$location'
+    '$location',
 ];
 
 export default function BlogEditController(
@@ -112,7 +112,7 @@ export default function BlogEditController(
                         .replace(targetIconRegex, 'target="_blank"'),
                     meta: block.meta,
                     syndicated_creator: syndicatedCreator,
-                    item_type: block.type
+                    item_type: block.type,
                 };
             });
         }
@@ -124,8 +124,8 @@ export default function BlogEditController(
                 item_type: $scope.selectedPostType.name,
                 text: freetypeService.htmlContent($scope.selectedPostType.template, $scope.freetypesData),
                 meta: {data: $scope.freetypesData},
-                syndicated_creator: $scope.freetypesOriginal.syndicated_creator
-            }
+                syndicated_creator: $scope.freetypesOriginal.syndicated_creator,
+            },
         ];
     }
 
@@ -260,17 +260,17 @@ export default function BlogEditController(
         const scorecards = {
             name: 'Scorecard',
             template: $templateCache.get(scorecardsTpl),
-            separator: true
+            separator: true,
         };
 
         const adLocal = {
             name: 'Advertisement Local',
-            template: $templateCache.get(adsLocalTpl)
+            template: $templateCache.get(adsLocalTpl),
         };
 
         const adRemote = {
             name: 'Advertisement Remote',
-            template: $templateCache.get(adsRemoteTpl)
+            template: $templateCache.get(adsRemoteTpl),
         };
 
         $q.all([adLocal, adRemote, scorecards, userFt]).then((freetypes) => {
@@ -540,7 +540,7 @@ export default function BlogEditController(
                     upload.start({
                         method: 'POST',
                         url: url,
-                        data: {media: file}
+                        data: {media: file},
                     })
                         .then((response) => {
                             if (response.data._issues) {
@@ -552,7 +552,7 @@ export default function BlogEditController(
                                 _info: config.server.url + response.data._links.self.href,
                                 _id: response.data._id,
                                 _url: response.data.renditions.thumbnail.href,
-                                renditions: response.data.renditions
+                                renditions: response.data.renditions,
                             };
                             // media will be added latter in the `meta` if this item in this callback
 
@@ -566,11 +566,11 @@ export default function BlogEditController(
                     method: 'POST',
                     data: {
                         image_url: imgURL,
-                        mimetype: 'image/jpeg'
+                        mimetype: 'image/jpeg',
                     },
                     headers: {
-                        'Content-Type': 'application/json;charset=utf-8'
-                    }
+                        'Content-Type': 'application/json;charset=utf-8',
+                    },
                 })
                     .then((response) => {
                         if (response.data._issues) {
@@ -580,10 +580,10 @@ export default function BlogEditController(
                         return {media: {
                             _id: response.data._id,
                             _url: response.data.renditions.thumbnail.href,
-                            renditions: response.data.renditions
+                            renditions: response.data.renditions,
                         }};
                     });
-            }
+            },
         },
         fetchNewContributionPage: function() {
             self.contributionsPostsInstance.fetchNewPage();
@@ -625,7 +625,7 @@ export default function BlogEditController(
         },
         togglePreview: function() {
             $scope.preview = !$scope.preview;
-        }
+        },
     });
     // initalize the view with the editor panel
     var panel = angular.isDefined($routeParams.panel) ? $routeParams.panel : 'editor',

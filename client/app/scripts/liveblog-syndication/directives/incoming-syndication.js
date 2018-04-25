@@ -5,7 +5,7 @@ incomingSyndication.$inject = [
     'IncomingSyndicationActions',
     'IncomingSyndicationReducers',
     'Store',
-    'modal'
+    'modal',
 ];
 
 export default function incomingSyndication(
@@ -20,14 +20,14 @@ export default function incomingSyndication(
         scope: {
             lbPostsOnPostSelected: '=',
             openPanel: '=',
-            syndId: '='
+            syndId: '=',
         },
         link: function(scope) {
             scope.blogId = $routeParams._id;
 
             scope.store = new Store(IncomingSyndicationReducers, {
                 posts: {},
-                syndication: {}
+                syndication: {},
             });
 
             scope.store.connect((state) => {
@@ -69,6 +69,6 @@ export default function incomingSyndication(
             });
 
             scope.$on('$destroy', scope.store.destroy);
-        }
+        },
     };
 }

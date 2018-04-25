@@ -97,6 +97,6 @@ export default function unreadPostsService($rootScope) {
                 listener();
                 listener = undefined;
             }
-        }
+        },
     };
 }

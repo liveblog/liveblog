@@ -13,6 +13,7 @@ from superdesk.services import BaseService
 from superdesk import get_resource_service
 import glob
 import json
+import re
 from io import BytesIO
 import superdesk
 from bson.objectid import ObjectId
@@ -387,6 +388,8 @@ class ThemesService(BaseService):
         return results.get('created'), results.get('updated')
 
     def _save_theme_file(self, name, theme, upload_path=None):
+        if re.search(r"node_modules|.git", name):
+            return
         theme_name = theme['name']
         if not upload_path:
             upload_path = self.get_theme_path(theme_name)

@@ -14,7 +14,7 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                     templateUrl: themeSettingsModalTpl,
                     scope: {
                         theme: '=',
-                        modalOpened: '='
+                        modalOpened: '=',
                     },
                     link: function(scope) {
                         const vm = scope;
@@ -28,7 +28,7 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                                 'YYYY-MM-DD hh:mm a',
                                 'DD/MM/YYYY hh:mm A',
                                 'HH:mm D.M.YYYY',
-                                'lll'
+                                'lll',
                             ],
                             submitSettings: function(shouldClose) {
                                 if (!angular.equals(vm.theme.settings, vm.settings)) {
@@ -65,7 +65,7 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                                     isSatisfied = isSatisfied && vm.settings[key] === value;
                                 });
                                 return isSatisfied;
-                            }
+                            },
                         });
 
                         scope.vm = vm;
@@ -107,7 +107,7 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                             });
                             angular.extend(vm, {
                                 options: options,
-                                optionsAreloading: false
+                                optionsAreloading: false,
                             });
                         });
                     // watch the modalOpened model to reset the selected theme when the user close the modal
@@ -123,7 +123,7 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                     // scope.$watch('themeSettingsModal', () => {
                     //    scope.vm.isOpened = vm.themeSettingsModal;
                     // });
-                    }
+                    },
                     // controllerAs: 'vm',
                     // bindToController: true,
                     // controller: ThemeSettingsModalController

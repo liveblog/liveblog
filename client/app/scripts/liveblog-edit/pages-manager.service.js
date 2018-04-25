@@ -6,7 +6,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
             editorial: {order: {order: 'desc', missing: '_last', unmapped_type: 'long'}},
             updated_first: {_updated: {order: 'desc', missing: '_last', unmapped_type: 'long'}},
             newest_first: {_created: {order: 'desc', missing: '_last', unmapped_type: 'long'}},
-            oldest_first: {_created: {order: 'asc', missing: '_last', unmapped_type: 'long'}}
+            oldest_first: {_created: {order: 'asc', missing: '_last', unmapped_type: 'long'}},
         };
         const self = this;
 
@@ -19,7 +19,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                 posts: posts || [],
                 addPost: function(post) {
                     this.posts.push(post);
-                }
+                },
             };
         }
 
@@ -136,7 +136,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                     }
                     return $q.all(promises).then((updatesPages) => angular.extend({}, updatesPages[0], {
                         _items: [].concat(...updatesPages.map((update) => update._items)),
-                        _meta: angular.extend(meta, {max_results: meta.max_results * updatesPages.length})
+                        _meta: angular.extend(meta, {max_results: meta.max_results * updatesPages.length}),
                     }));
                 })
             // Apply the update if needed
@@ -153,6 +153,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
          * @param {array} updates - List of updated posts
          */
         function applyUpdates(updates) {
+            // eslint-disable-next-line
             updates.forEach((post) => {
                 const existingPostIndexes = getPostPageIndexes(post);
 
@@ -404,7 +405,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
             /**
              * Returns the number of posts in the local pages
              */
-            count: count
+            count: count,
         });
     }
 

@@ -5,7 +5,7 @@ export default function freetypeEmbed($compile) {
         restrict: 'E',
         template: '<textarea ng-model="embed" rows="8"></textarea>',
         scope: {
-            embed: '='
-        }
+            embed: '=',
+        },
     };
 }
