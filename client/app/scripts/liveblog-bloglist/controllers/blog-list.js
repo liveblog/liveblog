@@ -13,7 +13,7 @@ BlogListController.$inject = [
     'urls',
     'moment',
     'modal',
-    'blogService'
+    'blogService',
 ];
 
 export default function BlogListController(
@@ -144,7 +144,7 @@ export default function BlogListController(
                 const deferred = $q.defer();
 
                 const changedBlog = {
-                    blog_status: activeState.name == 'active' ? 'closed' : 'open'
+                    blog_status: activeState.name == 'active' ? 'closed' : 'open',
                 };
 
                 let newBlog = angular.copy(blog);
