@@ -37,3 +37,4 @@ class LanguagesService(BaseService):
     def on_create(self, docs):
         for doc in docs:
             doc['name'] = SUPPORTED_LANGUAGES['languages'][doc['language_code']]
+            return doc

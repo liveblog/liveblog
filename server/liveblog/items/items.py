@@ -144,6 +144,7 @@ class ItemsService(ArchiveService):
                 if match:
                     original_id = match.group('original_id')
                     doc['meta']['original_id'] = original_id
+                    return doc
 
     def get(self, req, lookup):
         if req is None:
@@ -167,6 +168,7 @@ class ItemsService(ArchiveService):
                     if get_filemeta(doc, 'height'):
                         metadata['height'] = str(metadata.get('height'))
                     self.set_embed_metadata(doc)
+        return doc
 
     def on_created(self, docs):
         super().on_created(docs)
