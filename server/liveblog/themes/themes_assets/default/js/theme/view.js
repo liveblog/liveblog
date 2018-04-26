@@ -173,6 +173,7 @@ function updatePost(post, rendered) {
   attachSlideshow();
   attachPermalink();
   attachShareBox();
+  reloadEmbeds(post);
   return true;
 }
 
@@ -186,6 +187,20 @@ function displayNewPosts() {
   }
 }
 
+function reloadEmbeds(post) {
+  /**
+   * Trigger rerender for twitter `element_id` if any.
+   */
+  if (post.post_items_type
+    && post.post_items_type.substr(0,5) === 'embed'
+    && post.post_items_type.substr(6,7) === 'twitter') {
+    post.groups[1].refs.map(ref => {
+      if(ref.item.meta.element_id) {
+        twttr.widgets.load(document.getElementById(ref.item.meta.element_id));
+      }
+    });
+  }
+}
 /**
  * Trigger embed provider unpacking
  */
