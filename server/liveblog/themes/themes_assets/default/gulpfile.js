@@ -288,6 +288,15 @@ const lessCommon = (cleanCss) => {
   const lessFiles = [];
   let themeLess;
 
+  // check if there is _topImports.less file with font @imports etc.
+  // that should be put on very top of compiled css to work
+  if ( !theme.onlyOwnCss && theme.extends ) {
+    themeLess = path.resolve(`./less/topImport.less`);
+    if (fs.existsSync(themeLess)) {
+      lessFiles.push(themeLess);
+    }
+  }
+
   // process inherited styles from extended theme first
   // this makes it easier to override rules with this theme's CSS and avoids specificity war
   if ( !theme.onlyOwnCss && theme.extends ) {
