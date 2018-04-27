@@ -1,5 +1,5 @@
 <article
-         ng-repeat="post in ctrl.allPosts() track by $index"
+         ng-repeat="post in ctrl.allPosts() track by post._id"
          class="lb-post list-group-item ng-cloak "
          ng-class="['lb-mainitem-{{ post.mainItem.item_type | varname }}', {'show-author-avatar': 
                         ctrl.timeline.settings.showAuthor &&

@@ -49,8 +49,8 @@ export default function freetypeRender($compile, freetypeService) {
             freetype: '=',
             freetypeData: '=',
             validation: '=',
-            control: '='
-        }
+            control: '=',
+        },
     };
 }
 

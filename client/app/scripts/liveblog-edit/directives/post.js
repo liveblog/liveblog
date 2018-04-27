@@ -9,7 +9,7 @@ lbPost.$inject = [
     'blogSecurityService',
     '$document',
     'instagramService',
-    '$rootScope'
+    '$rootScope',
 ];
 
 export default function lbPost(notify, gettext, asset, postsService, modal,
@@ -31,7 +31,7 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
             // the index of the post in the list
             index: '=',
             // the controller of parent posts list directive
-            postsListCtrl: '='
+            postsListCtrl: '=',
         },
         restrict: 'E',
         templateUrl: postTpl,
@@ -146,8 +146,8 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                         notify.pop();
                         notify.error(gettext('Something went wrong. Please try again later'));
                     });
-                }
+                },
             });
-        }
+        },
     };
 }

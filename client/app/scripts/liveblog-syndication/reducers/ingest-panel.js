@@ -27,7 +27,7 @@ export default function ingestPanelReducers(moment) {
                     localSyndTokens
                 ),
                 localProducerBlogIds: [], // Reset list after syndication
-                producerBlogs: [] // Same here
+                producerBlogs: [], // Same here
             });
 
         case 'ON_UPDATED_SYND':
@@ -38,7 +38,7 @@ export default function ingestPanelReducers(moment) {
                     }
 
                     return item;
-                })
+                }),
             });
 
             return angular.extend(state, {
@@ -46,12 +46,12 @@ export default function ingestPanelReducers(moment) {
                 locallySyndicatedItems: locallySyndicatedItems(
                     syndicationIn,
                     state.localSyndTokens
-                )
+                ),
             });
 
         case 'ON_GET_PRODUCERS':
             return angular.extend(state, {
-                producers: action.producers
+                producers: action.producers,
             });
 
         case 'ON_GET_PRODUCER_BLOGS':
@@ -80,27 +80,27 @@ export default function ingestPanelReducers(moment) {
                             });
 
                             return blog;
-                        })
+                        }),
                 }),
-                localProducerBlogIds: localProducerBlogIds
+                localProducerBlogIds: localProducerBlogIds,
             });
 
         case 'ON_TOGGLE_MODAL':
             if (action.modalActive) {
                 return angular.extend(state, {
-                    modalActive: action.modalActive
+                    modalActive: action.modalActive,
                 });
             }
 
             return angular.extend(state, {
                 producerBlogs: {},
                 localProducerBlogIds: [],
-                modalActive: action.modalActive
+                modalActive: action.modalActive,
             });
 
         case 'ON_ERROR':
             return angular.extend(state, {
-                error: action.error
+                error: action.error,
             });
 
         case 'ON_SET_UNREAD_QUEUE':
@@ -117,7 +117,7 @@ export default function ingestPanelReducers(moment) {
                     }
 
                     return !isAutoPublished;
-                })
+                }),
             });
         }
     };

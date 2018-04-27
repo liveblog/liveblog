@@ -18,29 +18,29 @@ export default () => (state, action) => {
         return angular.extend(state, {
             blogs: action.blogs,
             filters: action.filters,
-            currentMarketer: findMarketer(state.marketers, action.filters)
+            currentMarketer: findMarketer(state.marketers, action.filters),
         });
 
     case 'ON_GET_MARKETERS':
         return angular.extend(state, {
             marketers: action.marketers,
-            currentMarketer: findMarketer(action.marketers, state.filters)
+            currentMarketer: findMarketer(action.marketers, state.filters),
         });
 
     case 'ON_TOGGLED_PANEL':
         return angular.extend(state, {
-            searchPanel: action.searchPanel
+            searchPanel: action.searchPanel,
         });
 
     case 'ON_TOGGLED_MODAL':
         return angular.extend(state, {
             embedModal: action.embedModal,
-            currentBlog: action.currentBlog
+            currentBlog: action.currentBlog,
         });
 
     case 'ON_GET_LANGUAGES':
         return angular.extend(state, {
-            languages: action.languages
+            languages: action.languages,
         });
     }
 };

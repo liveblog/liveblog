@@ -136,7 +136,7 @@ const sdCore = angular.module('superdesk.core', [
     'superdesk.core.editor3',
     'superdesk.core.services',
 
-    'superdesk.core.directives'
+    'superdesk.core.directives',
 ]);
 
 angular.module('superdesk.apps', [
@@ -165,7 +165,7 @@ angular.module('superdesk.apps', [
     'superdesk.apps.publish', // Can't remove
     'superdesk.apps.templates',
     'superdesk.apps.monitoring',
-    'superdesk.apps.profiling'
+    'superdesk.apps.profiling',
 ]);
 
 angular.module('superdesk.config').constant('config', config);
@@ -179,7 +179,7 @@ const liveblogModules = [
     'liveblog.themes',
     'liveblog.freetypes',
     'liveblog.advertising',
-    'ngMessages'
+    'ngMessages',
 ];
 
 if (config.syndication) {
@@ -339,7 +339,7 @@ body.ready(() => {
         'superdesk.config',
         'superdesk.core',
         'superdesk.apps',
-        'liveblog'
+        'liveblog',
     ], {strictDi: true});
 
     window.superdeskIsReady = true;

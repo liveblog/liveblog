@@ -80,7 +80,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                     theme.author = {
                         name: authorArray[1],
                         email: authorArray[2],
-                        url: authorArray[3]
+                        url: authorArray[3],
                     };
                 }
             }
@@ -99,8 +99,8 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                     // create criteria to load blogs with the theme.
                     const criteria = {
                         source: {
-                            query: {match: {'blog_preferences.theme': theme.name}}
-                        }
+                            query: {match: {'blog_preferences.theme': theme.name}},
+                        },
                     };
 
                     api.blogs.query(criteria).then((data) => {
@@ -123,7 +123,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                 angular.extend(self, {
                     themesHierachy: themesHierachy,
                     themes: themes,
-                    loading: false
+                    loading: false,
                 });
                 return themes;
             });
@@ -178,7 +178,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                 api.themes.getUrl().then((url) => {
                     $http({
                         url: url.replace('/themes', '/theme-redeploy/' + theme.name),
-                        method: 'GET'
+                        method: 'GET',
                     }).then(() => {
                         notify.pop();
                         notify.info(gettext('Theme redeployed.'));
@@ -240,7 +240,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                     upload.start({
                         method: 'POST',
                         url: url.replace('/themes', '/theme-upload'),
-                        data: {media: e.files[0]}
+                        data: {media: e.files[0]},
                     })
                         .then((response) => {
                             loadThemes().then(() => {
@@ -284,7 +284,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
             },
             closeUpgradeModal: function() {
                 self.upgradeModal = false;
-            }
+            },
         });
 
         loadThemes();
@@ -300,7 +300,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                     category: superdesk.MENU_MAIN,
                     adminTools: true,
                     privileges: {global_preferences: 1},
-                    templateUrl: listTpl
+                    templateUrl: listTpl,
                 });
         }])
         .filter('githubUrlFromGit', () => function(string) {
@@ -364,15 +364,15 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
         .config(['apiProvider', function(apiProvider) {
             apiProvider.api('global_preferences', {
                 type: 'http',
-                backend: {rel: 'global_preferences'}
+                backend: {rel: 'global_preferences'},
             });
             apiProvider.api('themes', {
                 type: 'http',
-                backend: {rel: 'themes'}
+                backend: {rel: 'themes'},
             });
             apiProvider.api('blogs', {
                 type: 'http',
-                backend: {rel: 'blogs'}
+                backend: {rel: 'blogs'},
             });
         }]);
 })();

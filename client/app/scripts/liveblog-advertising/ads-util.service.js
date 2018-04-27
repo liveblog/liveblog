@@ -1,6 +1,6 @@
 export default function adsUtil() {
     return {
-        uniqueNameInItems: uniqueNameInItems
+        uniqueNameInItems: uniqueNameInItems,
     };
 
     function uniqueNameInItems(item, existingItems) {

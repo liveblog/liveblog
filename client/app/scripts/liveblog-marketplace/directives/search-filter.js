@@ -10,7 +10,7 @@ export default function lbSearchFilter(MarketplaceActions) {
             terms: '=',
             title: '@',
             key: '@',
-            id: '@'
+            id: '@',
         },
         link: function(scope) {
             scope.toggleFilter = function(type, value) {
@@ -20,6 +20,6 @@ export default function lbSearchFilter(MarketplaceActions) {
             scope.hasFilter = (type, value) => scope.filters
                 && scope.filters.hasOwnProperty(type)
                 && scope.filters[type] === value;
-        }
+        },
     };
 }

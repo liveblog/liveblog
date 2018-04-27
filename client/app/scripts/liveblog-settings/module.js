@@ -29,7 +29,7 @@ import generalTpl from 'scripts/liveblog-settings/views/general.ng1';
             _.map($scope.liveblogSettings, (item, key) => {
                 patch = {
                     key: key,
-                    value: item.value
+                    value: item.value,
                 };
                 reqArr.push(api('global_preferences').save(item, patch));
             });
@@ -52,21 +52,21 @@ import generalTpl from 'scripts/liveblog-settings/views/general.ng1';
                 .activity('/settings/', {
                     label: gettext('Liveblog'),
                     controller: LiveblogSettingsController,
-                    templateUrl: generalTpl
+                    templateUrl: generalTpl,
                 });
         }])
         .config(['apiProvider', function(apiProvider) {
             apiProvider.api('themes', {
                 type: 'http',
-                backend: {rel: 'themes'}
+                backend: {rel: 'themes'},
             });
             apiProvider.api('languages', {
                 type: 'http',
-                backend: {rel: 'languages'}
+                backend: {rel: 'languages'},
             });
             apiProvider.api('global_preferences', {
                 type: 'http',
-                backend: {rel: 'global_preferences'}
+                backend: {rel: 'global_preferences'},
             });
         }]);
 

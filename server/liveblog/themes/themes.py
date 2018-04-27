@@ -13,6 +13,7 @@ from superdesk.services import BaseService
 from superdesk import get_resource_service
 import glob
 import json
+import re
 from io import BytesIO
 import superdesk
 from bson.objectid import ObjectId
@@ -387,6 +388,8 @@ class ThemesService(BaseService):
         return results.get('created'), results.get('updated')
 
     def _save_theme_file(self, name, theme, upload_path=None):
+        if re.search(r"node_modules|.git", name):
+            return
         theme_name = theme['name']
         if not upload_path:
             upload_path = self.get_theme_path(theme_name)
@@ -683,12 +686,10 @@ def download_a_theme(theme_name):
         return _response(theme_filepath)
 
 
-@upload_theme_blueprint.route('/theme-upload', methods=['POST'])
-@cross_origin()
-def upload_a_theme():
+def register_a_theme(zip_archive):
     themes_service = get_resource_service('themes')
 
-    with zipfile.ZipFile(request.files['media']) as zip_file:
+    with zipfile.ZipFile(zip_archive) as zip_file:
         # Keep only actual files (not folders)
         files = [file for file in zip_file.namelist() if not file.endswith('/')]
 
@@ -745,11 +746,17 @@ def upload_a_theme():
         result = themes_service.save_or_update_theme(theme_json, extracted_files, force_update=True,
                                                      keep_files=not themes_service.is_s3_storage_enabled,
                                                      upload_path=upload_path)
+        return result, theme_json
 
-        return json.dumps(
-            dict(
-                _status='OK',
-                _action=result.get('status'),
-                theme=theme_json
-            ), cls=MongoJSONEncoder
-        )
+
+@upload_theme_blueprint.route('/theme-upload', methods=['POST'])
+@cross_origin()
+def upload_a_theme():
+    result, theme_json = register_a_theme(request.files['media'])
+    return json.dumps(
+        dict(
+            _status='OK',
+            _action=result.get('status'),
+            theme=theme_json
+        ), cls=MongoJSONEncoder
+    )

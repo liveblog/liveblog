@@ -56,7 +56,7 @@ export default function freetypeText() {
             order: '@',
             initial: '@',
             // pass on the maxlength attribute to the input
-            maxlength: '@'
-        }
+            maxlength: '@',
+        },
     };
 }

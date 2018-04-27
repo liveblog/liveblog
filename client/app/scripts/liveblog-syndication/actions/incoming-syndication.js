@@ -5,14 +5,14 @@ export default function incomingSyndicationActions(Dispatcher, api, postsService
         getPosts: function(blogId, syndicationId) {
             const filters = {
                 status: 'submitted',
-                syndicationIn: syndicationId
+                syndicationIn: syndicationId,
             };
 
             postsService.getPosts(blogId, filters)
                 .then((posts) => {
                     Dispatcher.dispatch({
                         type: 'ON_GET_POSTS',
-                        posts: posts
+                        posts: posts,
                     });
                 });
         },
@@ -23,7 +23,7 @@ export default function incomingSyndicationActions(Dispatcher, api, postsService
 
                     Dispatcher.dispatch({
                         type: 'ON_GET_SYNDICATION',
-                        syndication: syndication
+                        syndication: syndication,
                     });
                 });
             });
@@ -33,7 +33,7 @@ export default function incomingSyndicationActions(Dispatcher, api, postsService
                 .then((post) => {
                     Dispatcher.dispatch({
                         type: 'ON_SAVED_POST',
-                        post: post
+                        post: post,
                     });
                 });
         },
@@ -41,9 +41,9 @@ export default function incomingSyndicationActions(Dispatcher, api, postsService
             postsService.remove(post).then((post) => {
                 Dispatcher.dispatch({
                     type: 'ON_REMOVED_POST',
-                    post: post
+                    post: post,
                 });
             });
-        }
+        },
     };
 }

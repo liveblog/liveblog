@@ -20,7 +20,7 @@ export default function freetypeCollectionAdd($compile) {
         }],
         controllerAs: 'ftca',
         scope: {
-            vector: '='
-        }
+            vector: '=',
+        },
     };
 }

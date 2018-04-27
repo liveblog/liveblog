@@ -36,8 +36,8 @@ export default angular
                 resolve: {
                     isArchivedFilterSelected: function() {
                         return false;
-                    }
-                }
+                    },
+                },
             });
     }]);
 

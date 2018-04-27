@@ -37,6 +37,6 @@ export default function copyToClipboard(notify) {
                     notify.success('Selection successfully copied to clipboard');
                 }
             };
-        }
+        },
     };
 }

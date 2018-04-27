@@ -269,6 +269,7 @@ class ClientBlogPostsService(BlogPostsService):
         # LBSD-2010
         doc['original_creator'] = get_resource_service('users') \
             .find_one(req=None, _id=doc['original_creator'])
+        return doc
 
     def on_fetched(self, docs):
         super().on_fetched(docs)
@@ -358,10 +359,15 @@ def get_blog_posts(blog_id):
         return api_error('"limit" value is not valid.', 403)
 
     response_data = blog.posts(wrap=True, **kwargs)
+    result_data = convert_posts(response_data, blog)
+    return api_response(result_data, 200)
+
+
+# convert posts - add items in post
+def convert_posts(response_data, blog):
     fields = ['_id', '_etag', '_created', '_updated', 'blog', 'lb_highlight', 'sticky', 'deleted', 'post_status',
               'published_date', 'unpublished_date']
 
-    # Convert posts
     for i, post in enumerate(response_data['_items']):
         doc = {k: post.get(k) for k in fields}
 
@@ -385,7 +391,7 @@ def get_blog_posts(blog_id):
     # Add additional blog metadata to response _meta.
     response_data['_meta']['last_updated_post'] = blog._blog.get('last_updated_post')
     response_data['_meta']['last_created_post'] = blog._blog.get('last_created_post')
-    return api_response(response_data, 200)
+    return response_data
 
 
 def _get_converted_item(item):
