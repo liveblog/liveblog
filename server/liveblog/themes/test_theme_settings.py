@@ -17,6 +17,7 @@ class Foo():
         self.setup_call = True
         return self.setup_call
 
+
 foo = Foo()
 
 
