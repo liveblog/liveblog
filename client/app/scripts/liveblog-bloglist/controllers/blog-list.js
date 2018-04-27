@@ -48,7 +48,7 @@ export default function BlogListController(
         fetchBlogs();
     };
     $scope.modalActive = false;
-    $scope.bulkActions = true;
+    $scope.bulkActions = 0;
 
     $scope.mailto = 'mailto:upgrade@liveblog.pro?subject=' +
         encodeURIComponent(location.hostname) +
@@ -124,19 +124,24 @@ export default function BlogListController(
         $scope.embedModal = true;
     };
 
-    $scope.blogSelect = function($event) {
-        if ($event.target.type === 'checkbox') {
-            $event.stopPropagation();
-        }
-        if ($event.target.checked) {
-            $scope.bulkActions = false;
+    $scope.blogSelect = function($event, isSelected) {
+        $event.stopPropagation();
+        if (isSelected) {
+            $scope.bulkActions += 1;
         } else {
-            $scope.bulkActions = true;
+            $scope.bulkActions -= 1;
         }
     };
 
+    $scope.bulkActionCancel = () => {
+        angular.forEach($scope.blogs._items, (blog) => {
+            blog.selected = false;
+        });
+        $scope.bulkActions = 0;
+    };
+
     $scope.bulkAction = function(activeState) {
-        var selectedBlogs = new Array();
+        let selectedBlogs = [];
 
         angular.forEach($scope.blogs._items, (blog) => {
             if (blog.selected) {
@@ -166,6 +171,7 @@ export default function BlogListController(
                         notify.info(gettext('Blog(s) is actived now'));
                     }
                     deferred.resolve();
+                    $scope.bulkActions = 0;
                 });
                 return deferred.promise;
             }
