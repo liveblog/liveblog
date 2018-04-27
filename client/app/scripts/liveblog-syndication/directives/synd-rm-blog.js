@@ -5,8 +5,8 @@ export default function syndRmBlog(api, $routeParams) {
         link: function(scope, elem, attrs) {
             const params = {
                 where: {
-                    blog_id: $routeParams._id
-                }
+                    blog_id: $routeParams._id,
+                },
             };
 
             api.syndicationOut.query(params).then((syndOuts) => {
@@ -16,6 +16,6 @@ export default function syndRmBlog(api, $routeParams) {
                     elem.removeAttr('disabled');
                 }
             });
-        }
+        },
     };
 }

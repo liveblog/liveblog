@@ -7,7 +7,7 @@ export default function ingestPanelDropdown(IngestPanelActions) {
         templateUrl: ingestPanelDropdownTpl,
         scope: {
             consumerBlogId: '=',
-            blog: '='
+            blog: '=',
         },
         link: function(scope) {
             scope.toggleDropdown = function($event, blog) {
@@ -26,7 +26,7 @@ export default function ingestPanelDropdown(IngestPanelActions) {
                     scope.blog._id,
                     {
                         auto_publish: scope.blog.auto_publish,
-                        auto_retrieve: scope.blog.auto_retrieve
+                        auto_retrieve: scope.blog.auto_retrieve,
                     },
                     scope.blog._etag
                 );
@@ -42,11 +42,11 @@ export default function ingestPanelDropdown(IngestPanelActions) {
                     consumerBlogId: scope.consumerBlogId,
                     autoPublish: scope.blog.auto_publish,
                     autoRetrieve: scope.blog.auto_retrieve,
-                    method: 'DELETE'
+                    method: 'DELETE',
                 });
             };
 
             scope.open = false;
-        }
+        },
     };
 }

@@ -130,12 +130,12 @@ angular
         // replace the plus symbol with text description
         SirTrevor.FloatingBlockControls.prototype.attributes = function() {
             return {
-                'data-icon': 'ADD CONTENT HERE'
+                'data-icon': 'ADD CONTENT HERE',
             };
         };
         SirTrevor.Block.prototype.attributes = function() {
             return _.extend(SirTrevor.SimpleBlock.fn.attributes.call(this), {
-                'data-icon-after': 'ADD CONTENT HERE'
+                'data-icon-after': 'ADD CONTENT HERE',
             });
         };
         // Add toMeta method to all blocks.
@@ -156,7 +156,7 @@ angular
             editorHTML: function() {
                 return [
                     '<div class="st-required st-embed-block embed-input"',
-                    ' placeholder="' + this.embedPlaceholder + '" contenteditable="true"></div>'
+                    ' placeholder="' + this.embedPlaceholder + '" contenteditable="true"></div>',
                 ].join('\n');
             },
             onBlockRender: function() {
@@ -233,7 +233,7 @@ angular
                     title: self.$('.title-preview').text(),
                     description: self.$('.description-preview').text(),
                     credit: self.$('.credit-preview').text(),
-                    syndicated_creator: this.getData().syndicated_creator
+                    syndicated_creator: this.getData().syndicated_creator,
                 };
 
                 // remove thumbnail_url if it was removed by user
@@ -263,14 +263,14 @@ angular
                     '  <div class="st-embed-block description-preview"></div>',
                     '  <div class="st-embed-block credit-preview"></div>',
                     '  <a class="hidden st-embed-block link-preview" target="_blank"></a>',
-                    '</div>'
+                    '</div>',
                 ].join('\n'));
 
                 // hide everything
                 html.find(
                     [
                         '.embed-preview',
-                        '.cover-preview-handler'
+                        '.cover-preview-handler',
                     ].join(', ')
                 ).addClass('hidden');
                 // set the link
@@ -297,7 +297,7 @@ angular
                         'background-image': 'url("' + data.thumbnail_url + '")',
                         width: coverWidth,
                         height: coverHeight,
-                        'background-size': 'cover'
+                        'background-size': 'cover',
                     });
                     html.find('.cover-preview-handler').removeClass('hidden');
                 }
@@ -349,7 +349,7 @@ angular
                 ['title', 'description', 'credit'].forEach((fieldName) => {
                     self.$('.' + fieldName + '-preview').attr({
                         contenteditable: true,
-                        placeholder: fieldName
+                        placeholder: fieldName,
                     });
                 });
                 // remove the loader when media is loadedhtml =
@@ -405,7 +405,7 @@ angular
             },
             toMeta: function() {
                 return this.retrieveData();
-            }
+            },
         });
         SirTrevor.Blocks.Quote = SirTrevor.Block.extend({
             type: 'quote',
@@ -420,7 +420,7 @@ angular
                     '<div class="st-required st-quote-block quote-input" ',
                     ' placeholder="' + this.quotePlaceholder + '" contenteditable="true"></div>',
                     '<div contenteditable="true" name="cite" placeholder="' + this.creditPlaceholder + '"',
-                    ' class="js-cite-input st-quote-block"></div>'
+                    ' class="js-cite-input st-quote-block"></div>',
                 ].join('\n'));
 
                 return template(this);
@@ -463,7 +463,7 @@ angular
                 return {
                     quote: this.$('.quote-input').text() || undefined,
                     credit: this.$('.js-cite-input').text() || undefined,
-                    syndicated_creator: this.getData().syndicated_creator
+                    syndicated_creator: this.getData().syndicated_creator,
                 };
             },
             loadData: function(data) {
@@ -484,12 +484,12 @@ angular
                     data.quote,
                     '</p><h4><i>',
                     data.credit,
-                    '</i></h4></blockquote>'
+                    '</i></h4></blockquote>',
                 ].join('');
             },
             toMeta: function() {
                 return this.retrieveData();
-            }
+            },
         });
 
         // Image Block
@@ -502,8 +502,8 @@ angular
                 '              class="btn btn-default"><%= i18n.t("general:upload") %></label>',
                 '       <input type="file" type="st-file-upload" />',
                 '    </div>',
-                '</div>'
-            ].join('\n')
+                '</div>',
+            ].join('\n'),
         };
 
         SirTrevor.DEFAULTS.Block.upload_options = uploadOptions;
@@ -517,7 +517,7 @@ angular
 
         SirTrevor.Blocks.Text.prototype.toMeta = function() {
             return {
-                syndicated_creator: this.getData().syndicated_creator
+                syndicated_creator: this.getData().syndicated_creator,
             };
         };
 
@@ -616,7 +616,7 @@ angular
             retrieveData: function() {
                 return {
                     text: this.$('.st-text-block').text() || undefined,
-                    syndicated_creator: this.getData().syndicated_creator
+                    syndicated_creator: this.getData().syndicated_creator,
                 };
             },
             toHTML: function(html) {
@@ -634,13 +634,13 @@ angular
                     commenter: data.commenter,
                     _created: data._created,
                 };
-            }
+            },
         });
         const Strikethrough = SirTrevor.Formatter.extend({
             title: 'strikethrough',
             iconName: 'strikethrough',
             cmd: 'strikeThrough',
-            text: 'strike'
+            text: 'strike',
         });
 
         SirTrevor.Formatters.Strikethrough = new Strikethrough();
@@ -649,7 +649,7 @@ angular
             title: 'orderedlist',
             iconName: 'orderedlist',
             cmd: 'insertOrderedList',
-            text: 'orderedlist'
+            text: 'orderedlist',
         });
 
         SirTrevor.Formatters.NumberedList = new OrderedList();
@@ -658,7 +658,7 @@ angular
             title: 'unorderedlist',
             iconName: 'unorderedlist',
             cmd: 'insertUnorderedList',
-            text: 'unorderedlist'
+            text: 'unorderedlist',
         });
 
         SirTrevor.Formatters.BulletList = new UnorderedList();
@@ -667,7 +667,7 @@ angular
             title: 'removeformat',
             iconName: 'removeformat',
             cmd: 'removeformat',
-            text: 'removeformat'
+            text: 'removeformat',
         });
 
         SirTrevor.Formatters.RemoveFormat = new RemoveFormat();
@@ -677,7 +677,7 @@ angular
             iconName: 'bold',
             cmd: 'bold',
             keyCode: 66,
-            text: 'bold'
+            text: 'bold',
         });
 
         SirTrevor.Formatters.Bold = new Bold();
@@ -687,7 +687,7 @@ angular
             iconName: 'italic',
             cmd: 'italic',
             keyCode: 73,
-            text: 'italic'
+            text: 'italic',
         });
 
         SirTrevor.Formatters.Italic = new Italic();
@@ -696,7 +696,7 @@ angular
             title: 'unlink',
             iconName: 'unlink',
             cmd: 'unlink',
-            text: 'unlink'
+            text: 'unlink',
         });
 
         SirTrevor.Formatters.Unlink = new UnLink();
@@ -708,7 +708,7 @@ angular
             text: 'H4',
             onClick: () => {
                 document.execCommand('formatBlock', false, '<h4>');
-            }
+            },
         });
 
         SirTrevor.Formatters.HeaderFour = new HeaderFour();
@@ -720,7 +720,7 @@ angular
             text: 'H5',
             onClick: () => {
                 document.execCommand('formatBlock', false, '<h5>');
-            }
+            },
         });
 
         SirTrevor.Formatters.HeaderFive = new HeaderFive();
@@ -758,7 +758,7 @@ angular
                         .parentNode;
                 }
                 return node && node.nodeName === 'A';
-            }
+            },
         });
 
         SirTrevor.Formatters.Link = new Link();

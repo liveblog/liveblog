@@ -9,7 +9,7 @@ export default function consumerList(api, notify, modal, $http, config) {
             roles: '=',
             consumers: '=',
             selected: '=',
-            done: '='
+            done: '=',
         },
         link: function(scope, elem, attrs) {
             scope.select = function(consumer) {
@@ -66,8 +66,8 @@ export default function consumerList(api, notify, modal, $http, config) {
                     url: `${config.server.url}/consumers/${consumer._id}/check_connection`,
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json;charset=utf-8'
-                    }
+                        'Content-Type': 'application/json;charset=utf-8',
+                    },
                 });
             };
 
@@ -95,6 +95,6 @@ export default function consumerList(api, notify, modal, $http, config) {
                     });
                 }
             });
-        }
+        },
     };
 }

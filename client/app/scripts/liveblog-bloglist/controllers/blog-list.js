@@ -12,7 +12,7 @@ BlogListController.$inject = [
     'config',
     'urls',
     'moment',
-    'modal'
+    'modal',
 ];
 
 export default function BlogListController(
@@ -34,7 +34,7 @@ export default function BlogListController(
     $scope.maxResults = 25;
     $scope.states = [
         {name: 'active', code: 'open', text: gettext('Active blogs')},
-        {name: 'archived', code: 'closed', text: gettext('Archived blogs')}
+        {name: 'archived', code: 'closed', text: gettext('Archived blogs')},
     ];
     $scope.activeState = isArchivedFilterSelected ? $scope.states[1] : $scope.states[0];
     $scope.creationStep = 'Details';
@@ -57,7 +57,7 @@ export default function BlogListController(
         $scope.progress = {width: 0};
         $scope.newBlog = {
             title: '',
-            description: ''
+            description: '',
         };
         $scope.newBlogError = '';
         $scope.creationStep = 'Details';
@@ -70,7 +70,7 @@ export default function BlogListController(
     // blog list embed code.
     function fetchBloglistEmbed() {
         const criteria = {source: {
-            query: {filtered: {filter: {term: {key: 'blogslist'}}}}
+            query: {filtered: {filter: {term: {key: 'blogslist'}}}},
         }};
 
         api.blogslist.query(criteria, false).then((embed) => {
@@ -133,7 +133,7 @@ export default function BlogListController(
                 picture_url: $scope.newBlog.picture_url,
                 picture: $scope.newBlog.picture,
                 picture_renditions: $scope.newBlog.picture_renditions,
-                members: members
+                members: members,
             })
             .then((blog) => {
                 $scope.creationInProcess = false;
@@ -159,7 +159,7 @@ export default function BlogListController(
             return urls.resource('archive').then((uploadUrl) => upload.start({
                 method: 'POST',
                 url: uploadUrl,
-                data: form
+                data: form,
             })
                 .then((response) => {
                     if (response.data._status === 'ERR') {
@@ -222,8 +222,8 @@ export default function BlogListController(
             url: config.server.url + '/blogs/' + blog._id + '/request_membership',
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json;charset=utf-8'
-            }
+                'Content-Type': 'application/json;charset=utf-8',
+            },
         })
             .then((response) => {
                 if (response.data._items.length > 0) {
@@ -341,16 +341,16 @@ export default function BlogListController(
             embedded: {original_creator: 1},
             sort: '[("versioncreated", -1)]',
             source: {
-                query: {filtered: {filter: {term: {blog_status: $scope.activeState.code}}}}
-            }
+                query: {filtered: {filter: {term: {blog_status: $scope.activeState.code}}}},
+            },
         };
 
         if (params.q) {
             criteria.source.query.filtered.query = {
                 query_string: {
                     query: '*' + params.q + '*',
-                    fields: ['title', 'description']
-                }
+                    fields: ['title', 'description'],
+                },
             };
         }
         if (params.page) {

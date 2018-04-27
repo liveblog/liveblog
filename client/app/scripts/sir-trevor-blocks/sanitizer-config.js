@@ -12,7 +12,7 @@ export default {
     allowedTags: [
         'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'blockquote', 'p', 'a', 'ul', 'ol',
         'nl', 'li', 'b', 'i', 'strong', 'em', 'strike', 'code', 'hr', 'br', 'div',
-        'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe'
+        'table', 'thead', 'caption', 'tbody', 'tr', 'th', 'td', 'pre', 'iframe',
     ],
 
     transformTags: {
@@ -23,7 +23,7 @@ export default {
         h4: 'h6',
 
         h5: 'b',
-        h6: 'b'
+        h6: 'b',
     },
 
     allowedAttributes: {
@@ -41,11 +41,11 @@ export default {
             color: [/^#(0x)?[0-9a-f]+$/i, /^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/],
             'text-align': [/^left$/, /^right$/, /^center$/],
             // Match any number with px, em, or %
-            'font-size': [/^\d+$[px|em|%]$/]
+            'font-size': [/^\d+$[px|em|%]$/],
         },
         p: {
-            'font-size': [/^\d+rem$/]
-        }
+            'font-size': [/^\d+rem$/],
+        },
     },
 
     // Lots of these won't come up by default because we don't allow them
@@ -56,5 +56,5 @@ export default {
     allowedSchemesByTag: {},
     allowedSchemesAppliedToAttributes: ['href', 'src', 'cite'],
     allowProtocolRelative: true,
-    allowedIframeHostnames: ['www.youtube.com', 'player.vimeo.com']
+    allowedIframeHostnames: ['www.youtube.com', 'player.vimeo.com'],
 };

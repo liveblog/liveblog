@@ -19,13 +19,13 @@ function LiveblogFreetypesController(api, $location, notify, gettext,
                                 filter: {
                                     and: [{
                                         term: {
-                                            item_type: item.name
-                                        }
-                                    }]
-                                }
-                            }
-                        }
-                    }
+                                            item_type: item.name,
+                                        },
+                                    }],
+                                },
+                            },
+                        },
+                    },
                 }).then((items) => {
                     if (items._items.length) {
                         item.isUsed = true;
@@ -48,7 +48,7 @@ function LiveblogFreetypesController(api, $location, notify, gettext,
         dialogFreetype: {
             loading: false,
             name: '',
-            template: ''
+            template: '',
         },
         // open dialog for adding editing an item type
         openFreetypeDialog: function(freetype) {
@@ -113,7 +113,7 @@ function LiveblogFreetypesController(api, $location, notify, gettext,
                         .freetypes
                         .save(self.editFreetype, {
                             name: self.dialogFreetype.name,
-                            template: self.dialogFreetype.template
+                            template: self.dialogFreetype.template,
                         })
                         .then((data) => {
                             self.dialogFreetype.loading = false;
@@ -167,7 +167,7 @@ function LiveblogFreetypesController(api, $location, notify, gettext,
         },
         cancelCreate: function() {
             self.freetypeModalActive = false;
-        }
+        },
     });
 
     getFreetypes();
@@ -185,20 +185,20 @@ const liveblogFreetypesModule = angular.module('liveblog.freetypes', [])
                     category: superdesk.MENU_MAIN,
                     adminTools: true,
                     privileges: {global_preferences: 1},
-                    templateUrl: listViewTpl
+                    templateUrl: listViewTpl,
                 });
         }
     }])
     .config(['apiProvider', function(apiProvider) {
         apiProvider.api('freetypes', {
             type: 'http',
-            backend: {rel: 'freetypes'}
+            backend: {rel: 'freetypes'},
         });
     }])
     .config(['apiProvider', function(apiProvider) {
         apiProvider.api('freetypes', {
             type: 'http',
-            backend: {rel: 'freetypes'}
+            backend: {rel: 'freetypes'},
         });
     }]);
 

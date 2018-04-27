@@ -36,7 +36,7 @@ function liveblogAnalyticsController($scope, $location, api, analytics, blog, no
         });
 
         const blob = new Blob([fileContent], {
-            type: 'text/csv;charset=utf-8;'
+            type: 'text/csv;charset=utf-8;',
         });
 
         if (navigator.msSaveBlob) { // IE 10+

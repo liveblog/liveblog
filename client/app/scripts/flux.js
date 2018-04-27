@@ -4,7 +4,7 @@ export default angular.module('liveblog.flux', [])
             document.dispatchEvent(
                 new CustomEvent('dispatch', {detail: action})
             );
-        }
+        },
     }))
     .factory('Store', () => {
         const Store = function(reducers, initialState) {

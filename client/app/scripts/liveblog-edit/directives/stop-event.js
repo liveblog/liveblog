@@ -5,6 +5,6 @@ export default function stopEvent() {
             element.bind(attr.stopEvent, (e) => {
                 e.stopPropagation();
             });
-        }
+        },
     };
 }

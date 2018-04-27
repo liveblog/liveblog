@@ -13,12 +13,12 @@ export default function outputModal() {
             outputs: '=',
             output: '=',
             oldOutput: '=',
-            blog: '='
+            blog: '=',
         },
         templateUrl: outputModalTpl,
         controllerAs: 'self',
         controller: outputModalController,
-        bindToController: true
+        bindToController: true,
     };
 }
 
@@ -89,7 +89,7 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
             collection: self.output.collection,
             style: self.output.style,
             settings: self.output.settings,
-            logo_url: self.output.logo_url
+            logo_url: self.output.logo_url,
         };
         // disable save button
 
@@ -119,7 +119,7 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
 
         if (self.oldOutput && self.output.theme !== self.oldOutput.theme) {
             const newBlog = {
-                public_urls: angular.copy(self.blog.public_urls)
+                public_urls: angular.copy(self.blog.public_urls),
             };
 
             newBlog.public_urls.output[self.output._id] = '';
@@ -167,7 +167,7 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
         urls.resource('archive').then((uploadUrl) => upload.start({
             method: 'POST',
             url: uploadUrl,
-            data: form
+            data: form,
         })
             .then((response) => {
                 if (response.data._status === 'ERR') {
@@ -183,7 +183,7 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
                 deferred.reject();
             }, (progress) => {
                 self.output[progress] = {
-                    width: Math.round(progress.loaded / progress.total * 100.0)
+                    width: Math.round(progress.loaded / progress.total * 100.0),
                 };
             }));
         return deferred.promise;
