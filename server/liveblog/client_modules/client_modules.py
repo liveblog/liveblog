@@ -56,6 +56,7 @@ class ClientUsersResource(Resource):
     resource_methods = ['GET']
     schema = {}
     schema.update(UsersResource.schema)
+    allow_unknown = False
 
 
 class ClientUsersService(BaseService):
@@ -67,7 +68,8 @@ class ClientUsersService(BaseService):
 class ClientBlogsResource(BlogsResource):
     datasource = {
         'source': 'blogs',
-        'default_sort': [('_updated', -1)]
+        'default_sort': [('_updated', -1)],
+        'filter': {'page': 1, 'max_results': 1}
     }
     public_methods = ['GET']
     public_item_methods = ['GET']
@@ -75,6 +77,17 @@ class ClientBlogsResource(BlogsResource):
     resource_methods = ['GET']
     schema = {}
     schema.update(BlogsResource.schema)
+    allow_unknown = False
+
+
+# to check query parameters before GET request
+def client_blogs_get_callback(request, lookup):
+    print('client blogs args: {} and lookup: {}'.format(request.args, lookup))
+    fields = ['page', 'max_results']
+    for args in request.args:
+        if args not in fields:
+            print('invalid query parameter {}'.format(args))
+            return api_error('{} value is not valid.'.format(args), 403)
 
 
 class ClientBlogsService(BaseService):
@@ -85,7 +98,8 @@ class ClientPostsResource(PostsResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('order', -1)]
+        'default_sort': [('order', -1)],
+        'filter': {'page': 1, 'max_results': 1}
     }
     public_methods = ['GET']
     public_item_methods = ['GET']
@@ -93,6 +107,7 @@ class ClientPostsResource(PostsResource):
     resource_methods = ['GET']
     schema = {}
     schema.update(PostsResource.schema)
+    allow_unknown = False
 
 
 class ClientPostsService(PostsService):
@@ -102,7 +117,8 @@ class ClientPostsService(PostsService):
 class ClientCollectionsResource(CollectionsResource):
     datasource = {
         'source': 'collections',
-        'default_sort': [('name', 1)]
+        'default_sort': [('name', 1)],
+        'filter': {'page': 1, 'max_results': 1}
     }
     public_methods = ['GET']
     public_item_methods = ['GET']
@@ -110,6 +126,7 @@ class ClientCollectionsResource(CollectionsResource):
     resource_methods = ['GET']
     schema = {}
     schema.update(CollectionsResource.schema)
+    allow_unknown = False
 
 
 class ClientCollectionsService(CollectionsService):
@@ -119,7 +136,8 @@ class ClientCollectionsService(CollectionsService):
 class ClientOutputsResource(OutputsResource):
     datasource = {
         'source': 'outputs',
-        'default_sort': [('name', 1)]
+        'default_sort': [('name', 1)],
+        'filter': {'page': 1, 'max_results': 1}
     }
     public_methods = ['GET']
     public_item_methods = ['GET']
@@ -127,6 +145,7 @@ class ClientOutputsResource(OutputsResource):
     resource_methods = ['GET']
     schema = {}
     schema.update(OutputsResource.schema)
+    allow_unknown = False
 
 
 class ClientOutputsService(OutputsService):
@@ -136,7 +155,8 @@ class ClientOutputsService(OutputsService):
 class ClientAdvertisementsResource(AdvertisementsResource):
     datasource = {
         'source': 'advertisements',
-        'default_sort': [('name', 1)]
+        'default_sort': [('name', 1)],
+        'filter': {'page': 1, 'max_results': 1}
     }
     public_methods = ['GET']
     public_item_methods = ['GET']
@@ -144,6 +164,7 @@ class ClientAdvertisementsResource(AdvertisementsResource):
     resource_methods = ['GET']
     schema = {}
     schema.update(AdvertisementsResource.schema)
+    allow_unknown = False
 
 
 class ClientAdvertisementsService(AdvertisementsService):
@@ -154,7 +175,8 @@ class ClientItemsResource(ItemsResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'item'}},
-        'default_sort': [('order', -1)]
+        'default_sort': [('order', -1)],
+        'filter': {'page': 1, 'max_results': 1}
     }
     public_methods = ['GET', 'POST']
     public_item_methods = ['GET', 'POST']
@@ -164,6 +186,7 @@ class ClientItemsResource(ItemsResource):
         'client_blog': Resource.rel('client_blogs', True)
     }
     schema.update(ItemsResource.schema)
+    allow_unknown = False
 
 
 class ClientItemsService(ItemsService):
@@ -177,7 +200,8 @@ class ClientCommentsResource(PostsResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('order', -1)]
+        'default_sort': [('order', -1)],
+        'filter': {'page': 1, 'max_results': 1}
     }
     public_methods = ['GET', 'POST']
     public_item_methods = ['GET', 'POST']
@@ -190,6 +214,7 @@ class ClientCommentsResource(PostsResource):
         }
     }
     schema.update(PostsResource.schema)
+    allow_unknown = False
 
 
 class ClientCommentsService(PostsService):
@@ -209,7 +234,8 @@ class ClientBlogPostsResource(BlogPostsResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('order', -1)]
+        'default_sort': [('order', -1)],
+        'filter': {'page': 1, 'max_results': 1}
     }
     public_methods = ['GET']
     public_item_methods = ['GET']
@@ -217,6 +243,7 @@ class ClientBlogPostsResource(BlogPostsResource):
     resource_methods = ['GET']
     privileges = {'GET': 'blogs'}
     item_url = item_url
+    allow_unknown = False
 
 
 class ClientBlogPostsService(BlogPostsService):
