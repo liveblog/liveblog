@@ -1,3 +1,4 @@
+import logging
 from itertools import groupby
 from liveblog.blogs.blogs import BlogsResource
 from liveblog.advertisements.collections import CollectionsService, CollectionsResource
@@ -19,6 +20,7 @@ from flask_cors import CORS
 from distutils.util import strtobool
 from superdesk import get_resource_service
 
+logger = logging.getLogger('superdesk')
 
 blog_posts_blueprint = Blueprint('blog_posts', __name__)
 CORS(blog_posts_blueprint)
@@ -82,11 +84,11 @@ class ClientBlogsResource(BlogsResource):
 
 # to check query parameters before GET request
 def client_blogs_get_callback(request, lookup):
-    print('client blogs args: {} and lookup: {}'.format(request.args, lookup))
+    logger.info('client blogs args: {} and lookup: {}'.format(request.args, lookup))
     fields = ['page', 'max_results']
     for args in request.args:
         if args not in fields:
-            print('invalid query parameter {}'.format(args))
+            logger.warning('invalid query parameter: {}'.format(args))
             return api_error('{} value is not valid.'.format(args), 403)
 
 
