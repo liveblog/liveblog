@@ -74,6 +74,7 @@ CLIENT_URL = env('SUPERDESK_CLIENT_URL', 'http://localhost:9000')
 if not CLIENT_URL.startswith('http'):
     CLIENT_URL = 'http:' + CLIENT_URL
 
+AMP_ALLOW_ORIGIN = env('AMP_ALLOW_ORIGIN', 'https://superdesk-test.s3-eu-west-1.amazonaws.com')
 URL_PROTOCOL = server_url.scheme or None
 SERVER_NAME = server_url.netloc or None
 URL_PREFIX = server_url.path.lstrip('/') or ''
