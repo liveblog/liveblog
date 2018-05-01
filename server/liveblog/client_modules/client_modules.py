@@ -58,7 +58,6 @@ class ClientUsersResource(Resource):
     resource_methods = ['GET']
     schema = {}
     schema.update(UsersResource.schema)
-    allow_unknown = False
 
 
 class ClientUsersService(BaseService):
@@ -100,8 +99,7 @@ class ClientPostsResource(PostsResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('order', -1)],
-        'filter': {'page': 1, 'max_results': 1}
+        'default_sort': [('order', -1)]
     }
     public_methods = ['GET']
     public_item_methods = ['GET']
@@ -119,8 +117,7 @@ class ClientPostsService(PostsService):
 class ClientCollectionsResource(CollectionsResource):
     datasource = {
         'source': 'collections',
-        'default_sort': [('name', 1)],
-        'filter': {'page': 1, 'max_results': 1}
+        'default_sort': [('name', 1)]
     }
     public_methods = ['GET']
     public_item_methods = ['GET']
@@ -128,7 +125,6 @@ class ClientCollectionsResource(CollectionsResource):
     resource_methods = ['GET']
     schema = {}
     schema.update(CollectionsResource.schema)
-    allow_unknown = False
 
 
 class ClientCollectionsService(CollectionsService):
@@ -138,8 +134,7 @@ class ClientCollectionsService(CollectionsService):
 class ClientOutputsResource(OutputsResource):
     datasource = {
         'source': 'outputs',
-        'default_sort': [('name', 1)],
-        'filter': {'page': 1, 'max_results': 1}
+        'default_sort': [('name', 1)]
     }
     public_methods = ['GET']
     public_item_methods = ['GET']
@@ -147,7 +142,6 @@ class ClientOutputsResource(OutputsResource):
     resource_methods = ['GET']
     schema = {}
     schema.update(OutputsResource.schema)
-    allow_unknown = False
 
 
 class ClientOutputsService(OutputsService):
@@ -157,8 +151,7 @@ class ClientOutputsService(OutputsService):
 class ClientAdvertisementsResource(AdvertisementsResource):
     datasource = {
         'source': 'advertisements',
-        'default_sort': [('name', 1)],
-        'filter': {'page': 1, 'max_results': 1}
+        'default_sort': [('name', 1)]
     }
     public_methods = ['GET']
     public_item_methods = ['GET']
@@ -166,7 +159,6 @@ class ClientAdvertisementsResource(AdvertisementsResource):
     resource_methods = ['GET']
     schema = {}
     schema.update(AdvertisementsResource.schema)
-    allow_unknown = False
 
 
 class ClientAdvertisementsService(AdvertisementsService):
@@ -202,8 +194,7 @@ class ClientCommentsResource(PostsResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('order', -1)],
-        'filter': {'page': 1, 'max_results': 1}
+        'default_sort': [('order', -1)]
     }
     public_methods = ['GET', 'POST']
     public_item_methods = ['GET', 'POST']
@@ -216,7 +207,6 @@ class ClientCommentsResource(PostsResource):
         }
     }
     schema.update(PostsResource.schema)
-    allow_unknown = False
 
 
 class ClientCommentsService(PostsService):
