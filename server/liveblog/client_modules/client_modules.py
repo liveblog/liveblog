@@ -69,8 +69,7 @@ class ClientUsersService(BaseService):
 class ClientBlogsResource(BlogsResource):
     datasource = {
         'source': 'blogs',
-        'default_sort': [('_updated', -1)],
-        'filter': {'page': 1, 'max_results': 1}
+        'default_sort': [('_updated', -1)]
     }
     public_methods = ['GET']
     public_item_methods = ['GET']
@@ -79,16 +78,6 @@ class ClientBlogsResource(BlogsResource):
     schema = {}
     schema.update(BlogsResource.schema)
     allow_unknown = False
-
-
-# to check query parameters before GET request
-def client_blogs_get_callback(request, lookup):
-    logger.info('client blogs args: {} and lookup: {}'.format(request.args, lookup))
-    fields = ['page', 'max_results']
-    for args in request.args:
-        if args not in fields:
-            logger.warning('invalid query parameter: {}'.format(args))
-            return api_error('{} value is not valid.'.format(args), 403)
 
 
 class ClientBlogsService(BaseService):
@@ -169,8 +158,7 @@ class ClientItemsResource(ItemsResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'item'}},
-        'default_sort': [('order', -1)],
-        'filter': {'page': 1, 'max_results': 1}
+        'default_sort': [('order', -1)]
     }
     public_methods = ['GET', 'POST']
     public_item_methods = ['GET', 'POST']
@@ -226,8 +214,7 @@ class ClientBlogPostsResource(BlogPostsResource):
     datasource = {
         'source': 'archive',
         'elastic_filter': {'term': {'particular_type': 'post'}},
-        'default_sort': [('order', -1)],
-        'filter': {'page': 1, 'max_results': 1}
+        'default_sort': [('order', -1)]
     }
     public_methods = ['GET']
     public_item_methods = ['GET']

@@ -3,14 +3,13 @@ from liveblog.client_modules.client_modules import ClientBlogsResource, ClientBl
     ClientPostsService, ClientPostsResource, ClientUsersResource, ClientUsersService, ClientBlogPostsService,\
     ClientBlogPostsResource, ClientCommentsService, ClientCommentsResource, ClientItemsService, ClientItemsResource,\
     ClientAdvertisementsResource, ClientAdvertisementsService, ClientCollectionsResource, ClientCollectionsService,\
-    ClientOutputsResource, ClientOutputsService, client_blogs_get_callback
+    ClientOutputsResource, ClientOutputsService
 
 
 def init_app(app):
     endpoint_name = 'client_blogs'
     service = ClientBlogsService(endpoint_name, backend=superdesk.get_backend())
     ClientBlogsResource(endpoint_name, app=app, service=service)
-    app.on_pre_GET_client_blogs += client_blogs_get_callback
 
     endpoint_name = 'client_posts'
     service = ClientPostsService(endpoint_name, backend=superdesk.get_backend())
