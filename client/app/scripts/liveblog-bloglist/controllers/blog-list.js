@@ -104,7 +104,7 @@ export default function BlogListController(
     $scope.askRemoveBlog = function() {
         modal.confirm(gettext('Are you sure you want to delete the blog(s)?'))
             .then(() => {
-                var selectedBlogs = new Array();
+                var selectedBlogs = [];
 
                 angular.forEach($scope.blogs._items, (blog) => {
                     if (blog.selected) {
