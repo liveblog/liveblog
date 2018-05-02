@@ -25,7 +25,7 @@ from superdesk import get_resource_service
 from superdesk.errors import SuperdeskApiError
 from liveblog.blogs.blog import Blog
 from liveblog.themes.template.utils import get_theme_template
-from liveblog.themes.template.loaders import CompiledThemeTemplateLoader, ThemeTemplateLoader
+from liveblog.themes.template.loaders import CompiledThemeTemplateLoader
 
 from .app_settings import BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR
 from .utils import is_relative_to_current_folder
