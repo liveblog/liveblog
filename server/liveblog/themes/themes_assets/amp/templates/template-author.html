@@ -9,7 +9,7 @@
           {% elif item.syndication_in and not settings.showSyndicatedAuthor %}
             <span class="lb-producer{% if settings.showSyndicatedAuthor %} lb-producer__author{% endif %}">{{ item.syndication_in.producer_blog_title }}</span>
           {% elif item.original_creator %}
-            {{ item.original_creator.display_name }}
+            {{ item.original_creator[settings.authorNameFormat]|title }}
           {% elif item.publisher %}
             {{ item.publisher.display_name }}
           {% endif %}
