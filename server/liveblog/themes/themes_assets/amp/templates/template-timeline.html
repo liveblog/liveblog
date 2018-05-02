@@ -52,7 +52,9 @@
     {% endif %}
 
   </div>
-
+  {% if settings.canComment %}
+    {% include "template-comment.html" %}
+  {% endif %}
   <amp-img src="image.png"
   width="1"
   height="1"

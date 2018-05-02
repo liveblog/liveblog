@@ -63,6 +63,12 @@ class Blog:
         except KeyError:
             return self.default_order_by, self.default_sort
 
+    def check_html_markup(self, original_text):
+        div_wrapped = '<div>{}</div>'.format(original_text)
+        if not is_valid_html(original_text) and is_valid_html(div_wrapped):
+            original_text = div_wrapped
+        return original_text
+
     def posts(self, sticky=None, highlight=None, ordering=None, page=default_page, limit=default_page_limit, wrap=False,
               all=False, deleted=False):
         order_by, sort = self.get_ordering(ordering or self.default_ordering)
@@ -90,10 +96,7 @@ class Blog:
                         ref['item'] = get_resource_service('archive').find_one(req=None, _id=ref['residRef'])
                         # Check the original text html markup.
                         original_text = ref['item'].get('text')
-                        div_wrapped = '<div>{}</div>'.format(original_text)
-                        if not is_valid_html(original_text) and is_valid_html(div_wrapped):
-                            original_text = div_wrapped
-                        ref['item']['text'] = original_text
+                        ref['item']['text'] = self.check_html_markup(original_text)
 
             posts.append(doc)
 
