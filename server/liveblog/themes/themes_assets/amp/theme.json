@@ -28,10 +28,6 @@
         "help": "Be aware that paging is not yet available for the Liveblog 3 AMP theme"
     },
     {
-        "name": "canComment",
-        "type": null
-    },
-    {
         "name": "autoApplyUpdates",
         "type": null
     },

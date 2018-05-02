@@ -225,6 +225,7 @@ class BlogService(BaseService):
         subscription = SUBSCRIPTION_LEVEL
         if subscription in SUBSCRIPTION_MAX_ACTIVE_BLOGS:
             active = self.find({'blog_status': 'open'})
+            logger.info('active.count() %s ' % active.count())
             if active.count() + increment > SUBSCRIPTION_MAX_ACTIVE_BLOGS[subscription]:
                 raise SuperdeskApiError.forbiddenError(message='Cannot add another active blog.')
 
