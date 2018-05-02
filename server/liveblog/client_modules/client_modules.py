@@ -19,7 +19,6 @@ from flask_cors import CORS
 from distutils.util import strtobool
 from superdesk import get_resource_service
 
-
 blog_posts_blueprint = Blueprint('blog_posts', __name__)
 CORS(blog_posts_blueprint)
 
@@ -283,6 +282,45 @@ class ClientBlogPostsService(BlogPostsService):
             docs = super().get(req, lookup)
             app.blog_cache.set(blog_id, cache_key, docs)
         return docs
+
+
+@blog_posts_blueprint.route('/api/client_item_comments/', methods=['POST'])
+def create_amp_comment():
+    data = request.values
+    check_comment_length(data['text'])
+
+    item_data = dict()
+    item_data['text'] = data['text']
+    item_data['commenter'] = data['commenter']
+    item_data['client_blog'] = data['client_blog']
+    item_data['item_type'] = "comment"
+    items = get_resource_service('client_items')
+    item_id = items.post([item_data])[0]
+
+    comment_data = dict()
+    comment_data["post_status"] = "comment"
+    comment_data["client_blog"] = item_data['client_blog']
+    comment_data["groups"] = [{
+        "id": "root",
+        "refs": [{"idRef": "main"}],
+        "role": "grpRole:NEP"
+    }, {
+        "id": "main",
+        "refs": [{"residRef": item_id}],
+        "role": "grpRole:Main"}
+    ]
+
+    post_comments = get_resource_service('client_posts')
+    post_comment = post_comments.post([comment_data])[0]
+
+    comment = post_comments.find_one(req=None, _id=post_comment)
+
+    resp = api_response(comment, 201)
+    resp.headers['Access-Control-Allow-Credentials'] = 'true'
+    resp.headers['Access-Control-Allow-Origin'] = app.config.get('AMP_ALLOW_ORIGIN')
+    resp.headers['AMP-Access-Control-Allow-Source-Origin'] = app.config.get('AMP_ALLOW_ORIGIN')
+    resp.headers['Access-Control-Expose-Headers'] = 'AMP-Access-Control-Allow-Source-Origin'
+    return resp
 
 
 @blog_posts_blueprint.route('/api/v2/client_blogs/<blog_id>/posts', methods=['GET'])

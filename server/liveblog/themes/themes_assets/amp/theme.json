@@ -1,7 +1,7 @@
 {
   "label": "Liveblog 3 AMP Theme",
   "name": "amp",
-  "version": "3.3.29",
+  "version": "3.3.35",
   "seoTheme": true,
   "ampTheme": true,
   "extends": "default",
@@ -26,10 +26,6 @@
         "type": "number",
         "default": 100,
         "help": "Be aware that paging is not yet available for the Liveblog 3 AMP theme"
-    },
-    {
-        "name": "canComment",
-        "type": null
     },
     {
         "name": "autoApplyUpdates",
