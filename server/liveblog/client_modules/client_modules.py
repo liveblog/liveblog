@@ -4,6 +4,7 @@ from liveblog.advertisements.collections import CollectionsService, CollectionsR
 from liveblog.advertisements.outputs import OutputsService, OutputsResource
 from liveblog.advertisements.advertisements import AdvertisementsService, AdvertisementsResource
 from superdesk.services import BaseService
+from superdesk.errors import SuperdeskApiError
 from liveblog.posts.posts import PostsService, PostsResource, BlogPostsService, BlogPostsResource
 from superdesk.users.users import UsersResource
 from superdesk.metadata.utils import item_url
@@ -18,6 +19,7 @@ from flask import Blueprint, request
 from flask_cors import CORS
 from distutils.util import strtobool
 from superdesk import get_resource_service
+from werkzeug.datastructures import MultiDict
 
 blog_posts_blueprint = Blueprint('blog_posts', __name__)
 CORS(blog_posts_blueprint)
@@ -74,7 +76,6 @@ class ClientBlogsResource(BlogsResource):
     resource_methods = ['GET']
     schema = {}
     schema.update(BlogsResource.schema)
-    allow_unknown = False
 
 
 class ClientBlogsService(BaseService):
@@ -93,7 +94,6 @@ class ClientPostsResource(PostsResource):
     resource_methods = ['GET']
     schema = {}
     schema.update(PostsResource.schema)
-    allow_unknown = False
 
 
 class ClientPostsService(PostsService):
@@ -165,7 +165,6 @@ class ClientItemsResource(ItemsResource):
         'client_blog': Resource.rel('client_blogs', True)
     }
     schema.update(ItemsResource.schema)
-    allow_unknown = False
 
 
 class ClientItemsService(ItemsService):
@@ -219,7 +218,6 @@ class ClientBlogPostsResource(BlogPostsResource):
     resource_methods = ['GET']
     privileges = {'GET': 'blogs'}
     item_url = item_url
-    allow_unknown = False
 
 
 class ClientBlogPostsService(BlogPostsService):
@@ -279,6 +277,18 @@ class ClientBlogPostsService(BlogPostsService):
             self.add_post_info(doc)
 
     def get(self, req, lookup):
+        allowed_params = {
+            'start_date', 'end_date',
+            'include_fields', 'exclude_fields',
+            'max_results', 'page', 'version', 'where',
+            'q', 'default_operator', 'filter',
+            'service', 'subject', 'genre', 'urgency',
+            'priority', 'type', 'item_source', 'source'
+        }
+
+        # check for unknown query parameters
+        _check_for_unknown_params(request, allowed_params)
+
         cache_key = 'lb_ClientBlogPostsService_get_%s' % (hash(frozenset(req.__dict__.items())))
         blog_id = lookup.get('blog_id')
         docs = app.blog_cache.get(blog_id, cache_key)
@@ -286,6 +296,45 @@ class ClientBlogPostsService(BlogPostsService):
             docs = super().get(req, lookup)
             app.blog_cache.set(blog_id, cache_key, docs)
         return docs
+
+
+def _check_for_unknown_params(request, whitelist, allow_filtering=True):
+    """Check if the request contains only allowed parameters.
+
+    :param req: object representing the HTTP request
+    :type req: `eve.utils.ParsedRequest`
+    :param whitelist: iterable containing the names of allowed parameters.
+    :param bool allow_filtering: whether or not the filtering parameter is
+        allowed (True by default). Used for disallowing it when retrieving
+        a single object.
+
+    :raises SuperdeskApiError.badRequestError:
+        * if the request contains a parameter that is not whitelisted
+        * if the request contains more than one value for any of the
+            parameters
+    """
+    if not request or not getattr(request, 'args'):
+        return
+    request_params = request.args or MultiDict()
+
+    if not allow_filtering:
+        err_msg = ("Filtering{} is not supported when retrieving a " "single object (the \"{param}\" parameter)")
+
+        if 'start_date' in request_params.keys():
+            message = err_msg.format(' by date range', param='start_date')
+            raise SuperdeskApiError.badRequestError(message=message)
+
+        if 'end_date' in request_params.keys():
+            message = err_msg.format(' by date range', param='end_date')
+            raise SuperdeskApiError.badRequestError(message=message)
+
+    for param_name in request_params.keys():
+        if param_name not in whitelist:
+            raise SuperdeskApiError.badRequestError(message="Unexpected parameter ({})".format(param_name))
+
+        if len(request_params.getlist(param_name)) > 1:
+            message = "Multiple values received for parameter ({})"
+            raise SuperdeskApiError.badRequestError(message=message.format(param_name))
 
 
 @blog_posts_blueprint.route('/api/client_item_comments/', methods=['POST'])
