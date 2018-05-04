@@ -169,6 +169,7 @@ function updatePost(post, rendered) {
   }
 
   elem.outerHTML = rendered;
+  reloadScripts(elem);
   attachSlideshow();
   attachPermalink();
   attachShareBox();
@@ -185,6 +186,22 @@ function displayNewPosts() {
   }
 }
 
+function reloadScripts(elem) {
+      const $scripts = elem.querySelectorAll('script');
+      $scripts.forEach(($script) => {
+        let s = document.createElement('script');
+        s.type = 'text/javascript';
+        if ($script.src) {
+          s.src = $script.src
+        } else {
+          s.textContent = $script.innerText
+        }
+        // re-insert the script tag so it executes.
+        document.head.appendChild(s);
+        // clean-up
+        document.head.removeChild(s);
+        });
+}
 /**
  * Trigger embed provider unpacking
  */
