@@ -66,7 +66,7 @@ var sendPageview = {
       }
     }
 
-    parent._foundProviders = foundProviders; // cache after initial
+    this._foundProviders = foundProviders; // cache after initial
     return foundProviders;
   },
 
