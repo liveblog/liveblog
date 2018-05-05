@@ -30,11 +30,9 @@ var sendPageview = {
     }
 
     if (window.ga.loaded) {
-      window.ga('send', {
-        hitType: 'pageview',
-        location: window.document.referrer, // set to parent url
-        hitCallback: function() {}
-      });
+      // TODO: discuss about this
+      // window.ga('send', 'pageview', window.parent.location);
+      window.ga('send', 'pageview');
     }
   },
 
