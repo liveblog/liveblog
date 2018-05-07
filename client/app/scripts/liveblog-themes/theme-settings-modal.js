@@ -128,7 +128,6 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                                 optionsAreloading: false,
                             });
                         });
-                        // watch the modalOpened model to reset the selected theme when the user close the modal
                         // scope.$watch(
                         //    function() {return vm.modalOpened;},
                         //    function(isOpened) {
