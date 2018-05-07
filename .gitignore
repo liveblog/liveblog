@@ -5,6 +5,7 @@ __pycache__/
 *.py[cod]
 *.sublime-*
 .vagrant
+.push.settings.json
 
 # C extensions
 *.so
@@ -74,6 +75,7 @@ server/liveblog/themes/themes_assets/*
 !server/liveblog/themes/themes_assets/classic
 !server/liveblog/themes/themes_assets/default
 !server/liveblog/themes/themes_assets/amp
+!server/liveblog/themes/themes_assets/simple
 
 # Vim stuff
 *.swo

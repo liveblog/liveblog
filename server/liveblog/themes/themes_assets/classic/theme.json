@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "3.3.11",
+    "version": "3.3.22",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -77,6 +77,14 @@
                 {
                     "value": "ro",
                     "label": "Română"
+                },
+                {
+                    "value": "sr",
+                    "label": "Srpski"
+                },
+                {
+                    "value": "sr-cy",
+                    "label": "Српски"
                 }
             ],
             "default": "en"

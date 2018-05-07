@@ -45,7 +45,7 @@ const app = angular.module('liveblog.edit', [
     'liveblog.pages-manager',
     'lrInfiniteScroll',
     'liveblog.security',
-    'liveblog.freetypes'
+    'liveblog.freetypes',
 ])
     .config(['superdeskProvider', function(superdesk) {
         superdesk.activity('/liveblog/edit/:_id', {
@@ -54,7 +54,7 @@ const app = angular.module('liveblog.edit', [
             controller: BlogEditController,
             controllerAs: 'blogEdit',
             templateUrl: mainTpl,
-            resolve: {blog: BlogResolver}
+            resolve: {blog: BlogResolver},
         })
             .activity('/liveblog/settings/:_id', {
                 label: gettext('Blog Settings'),
@@ -66,8 +66,8 @@ const app = angular.module('liveblog.edit', [
                     blog: BlogResolver,
                     security: ['blogSecurityService', function(blogSecurityService) {
                         return blogSecurityService.goToSettings();
-                    }]
-                }
+                    }],
+                },
             })
             .activity('/liveblog/analytics/:_id', {
                 label: gettext('Blog Analytics'),
@@ -79,31 +79,31 @@ const app = angular.module('liveblog.edit', [
                     blog: BlogResolver,
                     security: ['blogSecurityService', function(blogSecurityService) {
                         return blogSecurityService.goToSettings();
-                    }]
-                }
+                    }],
+                },
             });
     }])
     .config(['apiProvider', function(apiProvider) {
         apiProvider.api('posts', {
             type: 'http',
-            backend: {rel: 'posts'}
+            backend: {rel: 'posts'},
         });
         apiProvider.api('items', {
             type: 'http',
-            backend: {rel: 'items'}
+            backend: {rel: 'items'},
         });
         apiProvider.api('archive', {
             type: 'http',
-            backend: {rel: 'archive'}
+            backend: {rel: 'archive'},
         });
         // @TODO: remove this when theme at blog level.
         apiProvider.api('global_preferences', {
             type: 'http',
-            backend: {rel: 'global_preferences'}
+            backend: {rel: 'global_preferences'},
         });
         apiProvider.api('themes', {
             type: 'http',
-            backend: {rel: 'themes'}
+            backend: {rel: 'themes'},
         });
     }])
     .config(['SirTrevorOptionsProvider', 'SirTrevorProvider', function(SirTrevorOptions, SirTrevorParam) {
@@ -136,16 +136,16 @@ const app = angular.module('liveblog.edit', [
                     return {
                         type: block.blockStorage.type,
                         text: block.toHTML(),
-                        meta: block.toMeta()
+                        meta: block.toMeta(),
                     };
                 },
                 set: function(block) {
                     return {
                         type: block.type,
-                        data: block.data
+                        data: block.data,
                     };
-                }
-            }
+                },
+            },
         });
     }])
     .filter('convertLinksWithRelativeProtocol', ['config', function fixProtocol(config) {
@@ -223,7 +223,7 @@ const app = angular.module('liveblog.edit', [
             embedService.registerHandler(ngEmbedTwitterHandler); // use embed.ly, load a script to render the card.
             // use embed.ly, and provide a `thumbnail_url` field from the `url`
             embedService.registerHandler(ngEmbedPictureHandler);
-        }
+        },
     ]);
 
 export default app;

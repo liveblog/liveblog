@@ -15,16 +15,16 @@ export default angular
                 get: function(block) {
                     return {
                         type: block.blockStorage.type,
-                        data: block.blockStorage.data
+                        data: block.blockStorage.data,
                     };
                 },
                 set: function(block) {
                     return {
                         type: block.type,
-                        data: block.data
+                        data: block.data,
                     };
-                }
-            }
+                },
+            },
         };
 
         this.$get = function() {
@@ -51,7 +51,7 @@ export default angular
             scope: {
                 editor: '=stModel',
                 onChange: '=stChange',
-                params: '=stParams'
+                params: '=stParams',
             },
             link: function(scope, element, attrs) {
                 const opts = angular.copy(options);
@@ -96,7 +96,7 @@ export default angular
                 //     });
                 //     scope.model = list;
                 // });
-            }
+            },
         };
 
         return directive;

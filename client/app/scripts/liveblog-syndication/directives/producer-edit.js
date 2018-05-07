@@ -10,7 +10,7 @@ export default function producerEdit(api, notify, _, adsUtilSevice, superdesk) {
             onsave: '&',
             oncancel: '&',
             onupdate: '&',
-            producers: '='
+            producers: '=',
         },
         link: function(scope, elem) {
             scope.producerForm.attempted = false;
@@ -106,6 +106,6 @@ export default function producerEdit(api, notify, _, adsUtilSevice, superdesk) {
             };
 
             scope.notValidName = adsUtilSevice.uniqueNameInItems;
-        }
+        },
     };
 }

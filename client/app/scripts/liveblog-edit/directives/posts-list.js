@@ -135,7 +135,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                     post.groups[1].refs[0].item.item_type.toLowerCase() !== 'scorecard'
                 );
             },
-            isBlogClosed: $scope.$parent.blog.blog_status === 'closed'
+            isBlogClosed: $scope.$parent.blog.blog_status === 'closed',
 
         });
         $scope.lbPostsInstance = self;
@@ -193,12 +193,12 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
             lbPostsAllowPublishing: '=',
             lbPostsOnPostSelected: '=',
             lbPostsIsUnreadPost: '=',
-            lbPostsInstance: '='
+            lbPostsInstance: '=',
         },
         restrict: 'EA',
         transclude: true,
         templateUrl: postsTpl,
         controllerAs: 'postsList',
-        controller: LbPostsListCtrl
+        controller: LbPostsListCtrl,
     };
 }

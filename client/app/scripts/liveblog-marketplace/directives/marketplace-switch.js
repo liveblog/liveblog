@@ -4,7 +4,7 @@ export default function lbMarketplaceSwitch() {
     return {
         templateUrl: marketplatplaceSwitchTpl,
         scope: {
-            marketEnabled: '='
-        }
+            marketEnabled: '=',
+        },
     };
 }

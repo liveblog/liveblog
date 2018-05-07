@@ -19,7 +19,7 @@
       "infinitScroll":true,
       "permalinkDelimiter":"?",
       "showImage":true,
-      "canComment":false,
+      "canComment":true,
       "language":"en",
       "postsPerPage":20,
       "postOrder":"editorial",

@@ -13,15 +13,15 @@ export default angular.module('liveblog.bloglist', ['liveblog.security'])
     .config(['apiProvider', function(apiProvider) {
         apiProvider.api('blogslist', {
             type: 'http',
-            backend: {rel: 'blogslist'}
+            backend: {rel: 'blogslist'},
         });
         apiProvider.api('blogs', {
             type: 'http',
-            backend: {rel: 'blogs'}
+            backend: {rel: 'blogs'},
         });
         apiProvider.api('archive', {
             type: 'http',
-            backend: {rel: 'archive'}
+            backend: {rel: 'archive'},
         });
     }])
     .config(['superdeskProvider', function(superdesk) {
@@ -35,8 +35,8 @@ export default angular.module('liveblog.bloglist', ['liveblog.security'])
                 resolve: {
                     isArchivedFilterSelected: function() {
                         return false;
-                    }
-                }
+                    },
+                },
             })
             .activity('/liveblog/active', {
                 label: gettext('Blog List'),
@@ -45,8 +45,8 @@ export default angular.module('liveblog.bloglist', ['liveblog.security'])
                 resolve: {
                     isArchivedFilterSelected: function() {
                         return false;
-                    }
-                }
+                    },
+                },
             })
             .activity('/liveblog/archived', {
                 label: gettext('Blog List'),
@@ -55,8 +55,8 @@ export default angular.module('liveblog.bloglist', ['liveblog.security'])
                 resolve: {
                     isArchivedFilterSelected: function() {
                         return true;
-                    }
-                }
+                    },
+                },
             });
     }])
     .filter('htmlToPlaintext', () => (text) => {

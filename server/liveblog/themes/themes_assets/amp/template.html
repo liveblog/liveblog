@@ -2,6 +2,8 @@
 {% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
 
 <div class="lb-timeline {{ settings.language }}">
+
+  {% block timeline_top %}
   {% if settings.showTitle and blog.title %}
   <h1>{{ blog.title }}</h1>
   {% endif %}
@@ -15,7 +17,9 @@
       <amp-img src="{{ blog.picture_url }}" layout="fill"></amp-img>
     </div>
   {% endif %}
+  {% endblock %}
 
+  {% block timeline_header %}
   <div class="header-bar">
 
     <div class="lb-social-share">
@@ -49,13 +53,18 @@
     {% endif %}
 
   </div>
-
+  {% if settings.canComment %}
+    {% include "template-comment.html" %}
+  {% endif %}
   <amp-img src="image.png"
   width="1"
   height="1"
   layout="fixed"
   alt="AMP"></amp-img>
+  {% endblock %}
 
+
+  {% block timeline_body %}
   <amp-live-list
     layout="container"
     data-poll-interval="15000"
@@ -75,6 +84,7 @@
     </div>
 
   </amp-live-list>
+  {% endblock %}
 
 </div>
 {% block lightbox %}

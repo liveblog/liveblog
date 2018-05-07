@@ -1,7 +1,8 @@
 {% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
 
-{% block timeline %}
 <div data-timeline class="lb-timeline {{ settings.language }}">
+  {% block timeline_top %}
+
   {% if settings.showTitle and blog.title %}
     <h1>{{ blog.title }}</h1>
   {% endif %}
@@ -28,6 +29,10 @@
     </div>
   {% endif %}
 
+  {% endblock %}
+
+
+  {% block timeline_header %}
   <!-- Header -->
   <div class="header-bar">
     <div class="sorting-bar">
@@ -85,6 +90,7 @@
       {% endif %}
     </div>
   <!-- Header End -->
+  {% endblock %}
 
   <!-- Comment -->
   {% if settings.canComment %}
@@ -92,6 +98,7 @@
   {% endif %}
   <!-- Comment End -->
 
+  {% block timeline_body %}
   <!-- Timeline -->
   <div class="timeline-body timeline-body--loaded">
       <div data-one-new-update class="lb-post new-updates mod--displaynone">
@@ -128,9 +135,10 @@
       {% endif %}
   </div>
   <!-- Timeline End -->
+  {% endblock %}
+
 
 </div>
-{% endblock %}
 
 {% include "template-embed-providers.html" %}
 

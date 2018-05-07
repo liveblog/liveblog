@@ -57,7 +57,7 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
                 return urls.resource('archive').then((uploadUrl) => upload.start({
                     method: 'POST',
                     url: uploadUrl,
-                    data: form
+                    data: form,
                 })
                     .then((response) => {
                         if (response.data._status === 'ERR') {
@@ -95,7 +95,7 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
             image: '=',
             // `compulsory` indicates a variable that is needed if the current value is empty.
             compulsory: '=',
-            validation: '='
-        }
+            validation: '=',
+        },
     };
 }

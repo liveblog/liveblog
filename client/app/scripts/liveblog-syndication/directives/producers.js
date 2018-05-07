@@ -8,6 +8,6 @@ export default function lbProducers() {
             $scope.entryName = 'producer';
 
             angular.extend(this, $controller('BaseController', {$scope: $scope}));
-        }]
+        }],
     };
 }

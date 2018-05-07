@@ -1,4 +1,12 @@
 <div class="subnav">
+    <div class="subnav__sliding-toolbar" ng-show="bulkActions">
+        <div class="sliding-toolbar__inner">
+            <a class="btn" ng-click="bulkActionCancel()">Cancel</a>
+            <span class="sliding-toolbar__info-text">{{bulkActions}} item(s) selected</span>
+        </div>
+        <a class="btn btn--primary" ng-click="bulkAction(activeState)">{{activeState.name == 'active' ? 'Archive' : 'Activate'}}</a>
+        <a class="btn btn--alert" ng-click="askRemoveBlog()"><i class="icon-trash"></i>Delete</a>
+    </div>
 
     <div class="button-stack" >
     <button class="navbtn hover pull-left" href="/#/liveblog">
@@ -7,7 +15,7 @@
         <ul class="nav nav-tabs" >
             <li ng-class="{active: activeState === state}" ng-repeat="state in states"><button ng-click="changeState(state)" translate>{{ ::state.text }}</button></li>
         </ul>
-        
+
     </div>
     <div class="subnav__stretch-bar"></div>
     <div class="subnav__button-stack--square-buttons" ng-if="isUserAllowedToCreateABlog();">
@@ -70,6 +78,7 @@
                 title="{{ !isUserAllowedToOpenBlog(blog) ? requestAccessMessage: '' }}"
                 ng-click="isUserAllowedToOpenBlog(blog) ? edit(blog): openAccessRequest(blog)"
                 ng-class="{'can-access': isUserAllowedToOpenBlog(blog)}">
+                <sd-check class="bulk-select" ng-model="blog.selected" ng-click="blogSelect($event, blog.selected)"></sd-check>
                 <figure class="media">
                     <div ng-if="blog.picture_url" if-background-image="{{blog.picture_url}}"></div>
                 </figure>
@@ -93,7 +102,16 @@
                         <dt> {{ :: 'Last posted' | translate }}:</dt>
                         <dd ng-if="blog.last_created_post._updated" sd-reldate ng-model="blog.last_created_post._updated"></dd>
                         <dd ng-if="blog.posts_count == 0"> No posts yet</dd>
-                        </dl>
+                        <dt> {{ :: 'Syndication' | translate }}:</dt>
+                        <dd>
+                        <div ng-if="blog.syndication_enabled" class="state-label state-published state-label--no-float" translate>Syndicatable</div>
+                        <div ng-if="!blog.syndication_enabled" translate>OFF</div>
+                        </dd>
+                        <dt> {{ :: 'Market' | translate }}:</dt>
+                        <dd>
+                        <div ng-if="blog.market_enabled" class="state-label state-published state-label--no-float" translate>PUBLIC</div>
+                        <div ng-if="!blog.market_enabled" translate>PRIVATE</div>
+                        </dd>
                     </dl>
                 </div>
             </li>
@@ -159,7 +177,7 @@
                                 <label class="sd-line-input__label translate">Blog description</label>
                                 <input class="sd-line-input__input" type="text"  ng-model="newBlog.description">
                             </div>
-                            
+
                             <div class="field ">
                                 <label translate>Blog image</label>
                                 <div class="upload-form">

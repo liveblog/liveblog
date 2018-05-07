@@ -19,6 +19,9 @@ import logging
 import re
 import requests
 import tempfile
+import base64
+import imghdr
+
 
 logger = logging.getLogger('superdesk')
 drag_and_drop_blueprint = Blueprint('drag_and_drop', __name__)
@@ -141,6 +144,7 @@ class ItemsService(ArchiveService):
                 if match:
                     original_id = match.group('original_id')
                     doc['meta']['original_id'] = original_id
+                    return doc
 
     def get(self, req, lookup):
         if req is None:
@@ -164,6 +168,7 @@ class ItemsService(ArchiveService):
                     if get_filemeta(doc, 'height'):
                         metadata['height'] = str(metadata.get('height'))
                     self.set_embed_metadata(doc)
+        return doc
 
     def on_created(self, docs):
         super().on_created(docs)
@@ -209,6 +214,11 @@ def drag_and_drop():
     data = request.get_json()
     url = data['image_url']
 
+    # check for base64 image data url
+    if url.startswith('data:image/'):
+        archive = handle_base64_image(url)
+        return make_response(dumps(archive), 201)
+
     try:
         response = requests.get(url, timeout=5)
     except (ConnectionError, RequestException):
@@ -231,3 +241,19 @@ def drag_and_drop():
     archive = archive_service.find_one(req=None, _id=archive_id)
 
     return make_response(dumps(archive), 201)
+
+
+def handle_base64_image(img_url):
+    base64_img = img_url.split(',')[1]
+    decoded_img = base64.b64decode(base64_img)
+    fd = tempfile.NamedTemporaryFile()
+    fd.write(decoded_img)
+    fd.seek(0)
+    content_type = 'image/' + imghdr.what(fd)
+    item_data = dict()
+    item_data['type'] = 'picture'
+    item_data['media'] = FileStorage(stream=fd, content_type=content_type)
+    archive_service = get_resource_service('archive')
+    archive_id = archive_service.post([item_data])[0]
+    archive = archive_service.find_one(req=None, _id=archive_id)
+    return archive

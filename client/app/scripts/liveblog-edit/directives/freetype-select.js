@@ -12,7 +12,7 @@ export default function freetypeLink() {
             select: '=',
             validation: '=',
             options: '@',
-            split: '@'
-        }
+            split: '@',
+        },
     };
 }

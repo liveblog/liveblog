@@ -29,12 +29,12 @@ export default function LiveblogAdvertisingController($scope, api, notify, gette
     $scope.adTypes = [
         {
             name: 'Advertisement Local',
-            template: $templateCache.get(adsLocalTpl)
+            template: $templateCache.get(adsLocalTpl),
         },
         {
             name: 'Advertisement Remote',
-            template: $templateCache.get(adsRemoteTpl)
-        }
+            template: $templateCache.get(adsRemoteTpl),
+        },
     ];
 
     $scope.changeState = function(state) {
@@ -112,7 +112,7 @@ export default function LiveblogAdvertisingController($scope, api, notify, gette
             name: $scope.advert.name,
             type: $scope.advertType.name,
             text: freetypeService.htmlContent($scope.advertType.template, $scope.freetypesData),
-            meta: {data: $scope.freetypesData}
+            meta: {data: $scope.freetypesData},
         };
 
         $scope.dialogAdvertLoading = true;
@@ -192,7 +192,7 @@ export default function LiveblogAdvertisingController($scope, api, notify, gette
         });
         const newCollection = {
             name: $scope.collection.name,
-            advertisements: advertisements
+            advertisements: advertisements,
         };
 
         $scope.dialogCollectionLoading = true;
