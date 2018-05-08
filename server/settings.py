@@ -258,7 +258,8 @@ LDAP_USER_ATTRIBUTES = {'givenName': 'first_name', 'sn': 'last_name', 'displayNa
 if LDAP_SERVER:
     INSTALLED_APPS.append('apps.auth.ldap')
 else:
-    INSTALLED_APPS.append('apps.auth.db')
+    # INSTALLED_APPS.append('apps.auth.db')
+    INSTALLED_APPS.append('liveblog.auth')
 
 SUPERDESK_TESTING = (env('SUPERDESK_TESTING', 'false').lower() == 'true')
 

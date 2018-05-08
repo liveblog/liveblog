@@ -7,7 +7,7 @@ class AccessAuthService(DbAuthService):
 
     def authenticate(self, credentials):
         self._check_subscription_level()
-        DbAuthService.authenticate(self, credentials)
+        return super().authenticate(credentials)
 
     def _check_subscription_level(self):
         subscription = SUBSCRIPTION_LEVEL

@@ -8,4 +8,5 @@ def init_app(app):
     service = AccessAuthService('auth', backend=superdesk.get_backend())
     AuthResource(endpoint_name, app=app, service=service)
 
+
 superdesk.intrinsic_privilege('auth_db', method=['DELETE'])
