@@ -44,6 +44,13 @@
                     <div class="content">
                         <form class="form-horizontal" name="settings.forms.general">
                             <div class="form-group">
+                                    <label class="control-label" translate>Blog ID</label>
+
+                                    <div class="form-input relative">
+                                        <p>{{ settings.blog._id }}</p>
+                                    </div>
+                                </div>
+                            <div class="form-group">
                                 <label for="inputTitle" class="control-label" translate>Blog Status</label>
                                 <p ng-if="settings.deactivateStatus">Too many active blogs</p>
                                 <div class="form-input relative" ng-if="!settings.deactivateStatus">
