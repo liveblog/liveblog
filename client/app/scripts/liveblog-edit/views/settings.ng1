@@ -101,7 +101,7 @@
                                </div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" style="display: none;">
                                 <label for="inputLanguage" class="control-label" translate>Language</label>
                                 <div class="form-input">
                                     <select

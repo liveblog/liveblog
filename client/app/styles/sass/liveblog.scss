@@ -135,10 +135,6 @@
 // Remove language options from general and blog settings
 // because the feature is not implemented yet
 // FIXME: must be uncommented after release (LBSD-546)
-.blog-settings-view div.form-group:nth-child(6),
-.general-settings div.form-group:nth-child(1) {
-    display: none !important;
-}
 
 //Hide liveblog tab in global settings
 :not(.blog-settings-view)>.settings-page>.tabbable.outer>.nav-stacked {
