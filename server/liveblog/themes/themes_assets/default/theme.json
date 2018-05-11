@@ -51,7 +51,17 @@
                 {"value": "newest_first", "label": "Newest first"},
                 {"value": "oldest_first", "label": "Oldest first"}
             ],
-            "default": "editorial"
+            "default": "editorial",
+            "dependsOn": {
+                "hidePostOrder": false
+            }
+        },
+        {
+            "name": "hidePostOrder",
+            "label": "Hide sorting options",
+            "type": "checkbox",
+            "default": false,
+            "help": "Hide the post order sorting options"
         },
         {
             "name": "autoApplyUpdates",
