@@ -370,7 +370,7 @@ def create_amp_comment():
 
     resp = api_response(comment, 201)
     resp.headers['Access-Control-Allow-Credentials'] = 'true'
-    client_domain = "{}{}-{}.{}".format(
+    client_domain = "{}{}.s3-{}.{}".format(
         app.config.get('EMBED_PROTOCOL'),
         app.config.get('AMAZON_CONTAINER_NAME'), app.config.get('AMAZON_REGION'), app.config.get('AMAZON_SERVER'))
     resp.headers['Access-Control-Allow-Origin'] = client_domain
