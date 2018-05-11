@@ -66,6 +66,24 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                                 });
                                 return isSatisfied;
                             },
+
+                            validClientDomain: function(option) {
+                                let clientDomain = angular.element(document.getElementsByName('clientDomain')[0]);
+                                let regexQuery = '^(https?://)?(www\\.)?([-a-z0-9]{1,63}\\.)*?[a-z0-9]' +
+                                    '[-a-z0-9]{0,61}[a-z0-9]\\.[a-z]{2,6}(/[-\\w@\\+\\.~#\\?&/=%]*)?$';
+
+                                var regexp = new RegExp(regexQuery, 'i');
+
+                                if (option.name === 'clientDomain') {
+                                    if (regexp.test(clientDomain.val())) {
+                                        vm.result = '';
+                                        return true;
+                                    } else {
+                                        vm.result = 'Please enter valid URL';
+                                        return false;
+                                    }
+                                }
+                            },
                         });
 
                         scope.vm = vm;
@@ -99,7 +117,7 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                         }
                         // collect the options for the theme and its parents
                         collectOptions(vm.theme).then((options) => {
-                        // set default settings value from options default values
+                            // set default settings value from options default values
                             options.forEach((option) => {
                                 if (!angular.isDefined(vm.settings[option.name])) {
                                     vm.settings[option.name] = option.default;
@@ -110,19 +128,18 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                                 optionsAreloading: false,
                             });
                         });
-                    // watch the modalOpened model to reset the selected theme when the user close the modal
-                    // scope.$watch(
-                    //    function() {return vm.modalOpened;},
-                    //    function(isOpened) {
-                    //        if (!isOpened) {
-                    //            vm.closeModal();
-                    //        }
-                    //    }
-                    // );
+                        // scope.$watch(
+                        //    function() {return vm.modalOpened;},
+                        //    function(isOpened) {
+                        //        if (!isOpened) {
+                        //            vm.closeModal();
+                        //        }
+                        //    }
+                        // );
 
-                    // scope.$watch('themeSettingsModal', () => {
-                    //    scope.vm.isOpened = vm.themeSettingsModal;
-                    // });
+                        // scope.$watch('themeSettingsModal', () => {
+                        //    scope.vm.isOpened = vm.themeSettingsModal;
+                        // });
                     },
                     // controllerAs: 'vm',
                     // bindToController: true,

@@ -1,7 +1,7 @@
 {
   "label": "Liveblog 3 AMP Theme",
   "name": "amp",
-  "version": "3.3.35",
+  "version": "3.3.38",
   "seoTheme": true,
   "ampTheme": true,
   "extends": "default",
@@ -20,6 +20,25 @@
   "devStyles": ["dist/amp-cc215e5b64.css"],
   "styles": ["dist/amp-cc215e5b64.css"],
   "options": [
+    {
+      "name": "canComment",
+      "label": "Users can comment",
+      "type": "checkbox",
+      "default": false,
+      "help": "Enables a commenting form for users"
+    },
+    {
+      "name": "clientDomain",
+      "label": "Your website URL",
+      "type": "url",
+      "placeholder": "e.g. https://www.sourcefabric.org/",
+      "default": "",
+      "required": true,
+      "help": "Please enter your website URL.",
+      "dependsOn": {
+        "canComment": true
+      }
+    },
     {
         "name": "postsPerPage",
         "label": "Number of posts per page",

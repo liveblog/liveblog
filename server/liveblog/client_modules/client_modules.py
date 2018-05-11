@@ -368,10 +368,16 @@ def create_amp_comment():
 
     comment = post_comments.find_one(req=None, _id=post_comment)
 
+    # Get client client Domain
+    blogs_service = get_resource_service('client_blogs')
+    blog = blogs_service.find_one(req=None, _id=data['client_blog'])
+    blog_theme_settings = blog.get("theme_settings")
+    client_domain = blog_theme_settings.get('clientDomain')
+
     resp = api_response(comment, 201)
     resp.headers['Access-Control-Allow-Credentials'] = 'true'
-    resp.headers['Access-Control-Allow-Origin'] = app.config.get('AMP_ALLOW_ORIGIN')
-    resp.headers['AMP-Access-Control-Allow-Source-Origin'] = app.config.get('AMP_ALLOW_ORIGIN')
+    resp.headers['Access-Control-Allow-Origin'] = client_domain
+    resp.headers['AMP-Access-Control-Allow-Source-Origin'] = client_domain
     resp.headers['Access-Control-Expose-Headers'] = 'AMP-Access-Control-Allow-Source-Origin'
     return resp
 
