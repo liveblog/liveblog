@@ -2,7 +2,6 @@
 
 const gulp = require('gulp');
 const browserify = require('browserify');
-const nunjucksify = require('nunjucksify');
 const source = require('vinyl-source-stream');
 const buffer = require('vinyl-buffer');
 const plugins = require('gulp-load-plugins')();
