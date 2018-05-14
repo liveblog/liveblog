@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.3.72",
+    "version": "3.3.89-beta.4",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -17,9 +17,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/default-a1295c520c.css"],
-    "devScripts": ["dist/default-d561bb07fb.js"],
+    "devScripts": ["dist/default-356046279e.js"],
     "styles": ["dist/default-a1295c520c.css"],
-    "scripts": ["dist/default-d561bb07fb.js"],
+    "scripts": ["dist/default-356046279e.js"],
     "options": [
         {
             "name": "datetimeFormat",
@@ -51,7 +51,17 @@
                 {"value": "newest_first", "label": "Newest first"},
                 {"value": "oldest_first", "label": "Oldest first"}
             ],
-            "default": "editorial"
+            "default": "editorial",
+            "dependsOn": {
+                "hidePostOrder": false
+            }
+        },
+        {
+            "name": "hidePostOrder",
+            "label": "Hide sorting options",
+            "type": "checkbox",
+            "default": false,
+            "help": "Hide the post order sorting options"
         },
         {
             "name": "autoApplyUpdates",
@@ -279,6 +289,37 @@
         }
     ],
     "i18n": {
+        "se": {
+            "Highlights": "Höjdpunkter",
+            "Comment by": "Kommentar av",
+            "Powered by": "Powered by",
+            "Advertisement": "Reklam",
+            "Cancel": "Avbryt",
+            "Comment": "Kommentar",
+            "Comment should be maximum 300 characters in length": "Kommentaren får vara högst 300 tecken",
+            "Editorial": "Redaktionellt material",
+            "Load more posts": "Ladda fler inlägg",
+            "Loading": "Laddar",
+            "Name ": "Namn",
+            "Name should be maximum 30 characters in length": "Namnet får bestå av upp till 30 tecken",
+            "Newest first": "Nyaste först",
+            "No posts for now": "Inga inlägg just nu",
+            "Oldest first": "Äldsta först",
+            "One pinned post": "Ett inlägg fastnålat",
+            "pinned posts": "fastnålade inlägg",
+            "Please fill in your Comment": "Fyll i din kommentar",
+            "Please fill in your Name": "Fyll i ditt namn",
+            "Post a comment": "Skicka en kommentar",
+            "See one new update": "Se ett nytt inlägg",
+            "See new updates": "Se nya inlägg",
+            "Send": "Sänd",
+            "Show all posts": "Visa alla inlägg",
+            "Show highlighted post only": "Visa endast höjdpunkter",
+            "Sort by:": "Sortera enligt:",
+            "Updated": "Uppdaterat",
+            "Your comment was sent for approval": "Din kommentar väntar på att godkännas",
+            "credit:": "källa:"
+        },
         "cs": {
           "Highlights": "Hlavní body",
           "Comment by": "Komentář",
