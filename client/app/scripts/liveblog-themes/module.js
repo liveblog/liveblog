@@ -150,7 +150,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
             },
             cannotRemove: function(theme) {
                 const hasChildren = self.themes.some((t) => t.extends === theme.name);
-                const systemThemes = ['angular', 'classic', 'default', 'amp'];
+                const systemThemes = ['angular', 'classic', 'default', 'amp', 'simple'];
                 const isSystemTheme = systemThemes.indexOf(theme.name) !== -1;
 
                 return hasChildren || isSystemTheme;
