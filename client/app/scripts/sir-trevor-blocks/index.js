@@ -234,6 +234,7 @@ angular
                     description: self.$('.description-preview').text(),
                     credit: self.$('.credit-preview').text(),
                     syndicated_creator: this.getData().syndicated_creator,
+                    liveblog_version: '3.4',
                 };
 
                 // remove thumbnail_url if it was removed by user
