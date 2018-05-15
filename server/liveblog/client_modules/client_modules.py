@@ -370,12 +370,7 @@ def create_amp_comment():
 
     resp = api_response(comment, 201)
     resp.headers['Access-Control-Allow-Credentials'] = 'true'
-    if app.config['SERVER_DOMAIN'] == 'localhost':
-        client_domain = 'http://localhost:5000'
-    else:
-        client_domain = "{}{}.s3-{}.{}".format(
-            app.config.get('EMBED_PROTOCOL'),
-            app.config.get('AMAZON_CONTAINER_NAME'), app.config.get('AMAZON_REGION'), app.config.get('AMAZON_SERVER'))
+    client_domain = data.get('__amp_source_origin')
     resp.headers['Access-Control-Allow-Origin'] = client_domain
     resp.headers['AMP-Access-Control-Allow-Source-Origin'] = client_domain
     resp.headers['Access-Control-Expose-Headers'] = 'AMP-Access-Control-Allow-Source-Origin'
