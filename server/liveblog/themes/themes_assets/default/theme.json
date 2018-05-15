@@ -17,9 +17,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/default-a1295c520c.css"],
-    "devScripts": ["dist/default-356046279e.js"],
+    "devScripts": ["dist/default-c4ab3cc4c6.js"],
     "styles": ["dist/default-a1295c520c.css"],
-    "scripts": ["dist/default-356046279e.js"],
+    "scripts": ["dist/default-c4ab3cc4c6.js"],
     "options": [
         {
             "name": "datetimeFormat",
@@ -51,10 +51,7 @@
                 {"value": "newest_first", "label": "Newest first"},
                 {"value": "oldest_first", "label": "Oldest first"}
             ],
-            "default": "editorial",
-            "dependsOn": {
-                "hidePostOrder": false
-            }
+            "default": "editorial"
         },
         {
             "name": "hidePostOrder",
