@@ -484,6 +484,7 @@ class ClientModuleTestCase(TestCase):
         fake_get_service = mocks[0]
 
         update_post_blog_embed(self.blog_posts[0])
+        fake_get_service(self.blogs_list[0]["_id"], save=False, safe=True)
         fake_get_service.assert_called_with(self.blogs_list[0]["_id"], save=False, safe=True)
 
     @patch('liveblog.posts.tasks.get_resource_service')
