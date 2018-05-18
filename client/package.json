@@ -112,7 +112,7 @@
     "raven-js": "3.22.3",
     "sanitize-html": "^1.18.2",
     "sir-trevor": "liveblog/sir-trevor-js",
-    "superdesk-core": "superdesk/superdesk-client-core#v1.17.0"
+    "superdesk-core": "eos87/superdesk-client-core#angular-embed-latest"
   },
   "engines": {
     "node": ">=6.6.0 <7.0.0",
