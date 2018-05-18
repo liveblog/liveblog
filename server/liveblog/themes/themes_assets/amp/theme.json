@@ -19,6 +19,7 @@
   "license": "AGPL-3.0",
   "devStyles": ["dist/amp-cc215e5b64.css"],
   "styles": ["dist/amp-cc215e5b64.css"],
+  "supportAdsInjection": true,
   "options": [
     {
         "name": "postsPerPage",
