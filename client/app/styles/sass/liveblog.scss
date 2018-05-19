@@ -94,6 +94,13 @@
     margin-left: 20px;
 }
 
+.button-stack .navbtn {
+	&.analytics-link,
+	&.settings-link {
+		i { position: relative; top: 10px; }
+	}
+}
+
 .homebtn {
 	width: 48px;
 	padding: 0;
@@ -340,7 +347,7 @@ i.icon-star.orange {
     color: #f89406;
 }
 
-// custom big icon 
+// custom big icon
 
 [class^="lb-big-icon-"], [class*=" lb-big-icon-"] {
 	display: inline-block;
