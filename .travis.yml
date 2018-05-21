@@ -100,4 +100,7 @@ script:
     - ./node_modules/.bin/protractor protractor-conf.js
 
 after_script:
+    - curl -LO https://raw.github.com/stephanmg/travis-dependent-builds/master/trigger.sh
+    - chmod +x trigger.sh
+    - ./trigger.sh liveblog generator-liveblog-theme master $TRAVIS_ACCESS_TOKEN
     - killall -9 python
