@@ -95,9 +95,16 @@
 }
 
 .button-stack .navbtn {
+	text-decoration: none;
+
 	&.analytics-link,
 	&.settings-link {
 		i { position: relative; top: 10px; }
+	}
+
+	.big-icon--analytics,
+	.big-icon--cog {
+		position: relative; top: 10px;
 	}
 }
 
