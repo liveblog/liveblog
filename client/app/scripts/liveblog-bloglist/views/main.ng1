@@ -178,7 +178,7 @@
                                 <input class="sd-line-input__input" type="text"  ng-model="newBlog.description">
                             </div>
 
-                            <div class="field ">
+                            <div class="field">
                                 <label translate>Blog image</label>
                                 <div class="upload-form">
 

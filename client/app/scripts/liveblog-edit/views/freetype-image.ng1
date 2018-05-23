@@ -35,11 +35,11 @@
                         </div>
                     </div>
                     <figure class="ads-media-buttons">
-                        <button class="btn btn-warning pull-right" ng-click="ft.removeImage()" translate>Remove</button>
+                        <button class="btn btn-warning pull-right" ng-click="removeImage()" translate>Remove</button>
                     </figure>
                 </div>
             </section>
-        </div>     
+        </div>
         <div ng-hide="image.picture_url">
             <div class="image-text" translate>Image has not been set so far</div>
         </div>
