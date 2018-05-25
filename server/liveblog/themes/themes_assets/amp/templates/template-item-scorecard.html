@@ -1,6 +1,6 @@
 <div class="scorecard-top">
   <div class="scorecard-top__column scorecard-top__column--result">{{ ref.item.meta.data.home.score }}:{{ ref.item.meta.data.away.score }}</div>
-  
+
   <div class="scorecard-top__column scorecard-top__column--home">
     {% if ref.item.meta.data.home.img1.picture_url %}
       <amp-img src="{{ ref.item.meta.data.home.img1.picture_url }}"
@@ -9,7 +9,9 @@
           width="100">
       </amp-img>
     {% endif %}
-    <span class="team-name">{{ ref.item.meta.data.home.name }}</span>
+    <div>
+      <span class="team-name">{{ ref.item.meta.data.home.name }}</span>
+    </div>
     <ul class="scorecard-top__scorers">
     {% for scorer in ref.item.meta.data.home.scorers %}
       {% if scorer.time %}
@@ -18,7 +20,7 @@
       {% endfor %}
     </ul>
   </div>
-  
+
   <div class="scorecard-top__column scorecard-top__column--away">
     {% if ref.item.meta.data.away.img1.picture_url %}
       <amp-img src="{{ ref.item.meta.data.away.img1.picture_url }}"
@@ -27,7 +29,9 @@
           width="100">
       </amp-img>
     {% endif %}
-    <span class="team-name">{{ ref.item.meta.data.away.name }}</span>
+    <div>
+      <span class="team-name">{{ ref.item.meta.data.away.name }}</span>
+    </div>
     <ul class="scorecard-top__scorers">
     {% for scorer in ref.item.meta.data.away.scorers %}
       {% if scorer.time %}
