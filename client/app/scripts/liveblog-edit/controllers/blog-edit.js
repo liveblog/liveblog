@@ -521,6 +521,7 @@ export default function BlogEditController(
                     $scope.$digest();
                 }
             },
+            isEditorClean: isEditorClean,
             setPending: function(value) {
                 $scope.actionPending = value;
             },
