@@ -92,12 +92,5 @@
         "language_code": "fr",
         "name": "Français"
     }
-},
-{
-    "resource": "config",
-    "data": {
-        "_id": "phone_home",
-        "val": {"done": 1}
-    }
 }
 ]
