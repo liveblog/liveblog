@@ -150,6 +150,9 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
             },
             cannotRemove: function(theme) {
                 const hasChildren = self.themes.some((t) => t.extends === theme.name);
+
+                // Removing simple theme https://dev.sourcefabric.org/browse/LBSD-2199
+                // const systemThemes = ['angular', 'classic', 'default', 'amp', 'simple'];
                 const systemThemes = ['angular', 'classic', 'default', 'amp'];
                 const isSystemTheme = systemThemes.indexOf(theme.name) !== -1;
 

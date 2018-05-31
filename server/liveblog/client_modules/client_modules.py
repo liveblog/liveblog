@@ -370,8 +370,9 @@ def create_amp_comment():
 
     resp = api_response(comment, 201)
     resp.headers['Access-Control-Allow-Credentials'] = 'true'
-    resp.headers['Access-Control-Allow-Origin'] = app.config.get('AMP_ALLOW_ORIGIN')
-    resp.headers['AMP-Access-Control-Allow-Source-Origin'] = app.config.get('AMP_ALLOW_ORIGIN')
+    client_domain = data.get('__amp_source_origin')
+    resp.headers['Access-Control-Allow-Origin'] = client_domain
+    resp.headers['AMP-Access-Control-Allow-Source-Origin'] = client_domain
     resp.headers['Access-Control-Expose-Headers'] = 'AMP-Access-Control-Allow-Source-Origin'
     return resp
 

@@ -28,7 +28,9 @@ class ThemeSettingsTestCase(TestCase):
             # update configuration
             test_config = {
                 'LIVEBLOG_DEBUG': True,
-                'EMBED_PROTOCOL': 'http://'
+                'EMBED_PROTOCOL': 'http://',
+                'CORS_ENABLED': False,
+                'DEBUG': False,
             }
             self.app.config.update(test_config)
             foo.setup_called()

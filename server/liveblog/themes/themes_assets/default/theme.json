@@ -17,9 +17,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/default-a1295c520c.css"],
-    "devScripts": ["dist/default-356046279e.js"],
+    "devScripts": ["dist/default-c4ab3cc4c6.js"],
     "styles": ["dist/default-a1295c520c.css"],
-    "scripts": ["dist/default-356046279e.js"],
+    "scripts": ["dist/default-c4ab3cc4c6.js"],
     "options": [
         {
             "name": "datetimeFormat",
@@ -52,6 +52,13 @@
                 {"value": "oldest_first", "label": "Oldest first"}
             ],
             "default": "editorial"
+        },
+        {
+            "name": "hidePostOrder",
+            "label": "Hide sorting options",
+            "type": "checkbox",
+            "default": false,
+            "help": "Hide the post order sorting options"
         },
         {
             "name": "autoApplyUpdates",
