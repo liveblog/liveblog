@@ -283,6 +283,7 @@ function BlogSettingsController(
                 category: vm.category,
                 start_date: startDate,
                 members: members,
+                posts_limit: vm.newBlog.posts_limit,
             };
 
             angular.extend(vm.newBlog, changedBlog);

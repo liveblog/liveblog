@@ -197,6 +197,13 @@
                             </div>
 
                             <div class="form-group">
+                                <label for="inputPostslimit" class="control-label" translate>Posts limit</label>
+                                <div class="form-input">
+                                    <input name="inputPostslimit" class="sd-line-input__input" type="number" ng-model="settings.newBlog.posts_limit">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="removeBlog" class="control-label" translate>Blog removal</label>
                                 <div class="form-input">
                                     <button

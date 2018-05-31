@@ -204,6 +204,22 @@ export default function BlogEditController(
         return deferred.promise;
     }
 
+    function doOrAskBeforeIfExceedsPostsLimit($scope) {
+        var deferred = $q.defer();
+
+        if (blog.total_posts >= blog.posts_limit && !(session.identity.preventDialog)) {
+            modal
+                .confirm(gettext(`You will lose the oldest post as posts
+                    limit exceeds. Are you sure to continue?<br/>
+                        <input type="checkbox" ng-model="preventDialog" id="prevent_dialog">
+                        Prevent additional dialogs!`))
+                .then(deferred.resolve, deferred.reject);
+        } else {
+            deferred.resolve();
+        }
+        return deferred.promise;
+    }
+
     $scope.enableEditor = true;
 
     $scope.$on('removing_timeline_post', (event, data) => {
@@ -293,6 +309,25 @@ export default function BlogEditController(
                 $scope.freetypesData = angular.copy(item.meta.data);
                 $scope.freetypesOriginal = item;
             }
+        });
+    }
+
+    function savingPost(blog) {
+        postsService.savePost(blog._id,
+            $scope.currentPost,
+            getItemsFromEditor(),
+            {post_status: 'open', sticky: $scope.sticky, lb_highlight: $scope.highlight}
+        ).then((post) => {
+            notify.pop();
+            notify.info(gettext('Post saved'));
+
+            cleanEditor();
+            $scope.selectedPostType = 'Default';
+            $scope.actionPending = false;
+        }, () => {
+            notify.pop();
+            notify.error(gettext('Something went wrong. Please try again later'));
+            $scope.actionPending = false;
         });
     }
 
@@ -464,32 +499,41 @@ export default function BlogEditController(
                     $scope.actionPending = false;
                 });
         },
-        publish: function() {
-            $scope.actionPending = true;
-            // save the keep scoreres setting( if needed)
-            if (isPostScorecard()) {
-                saveScorers().then(() => {
-                    // no need to show anything on success
-                }, () => {
-                    notify.error(gettext('Something went wrong with scoarers status. Please try again later'));
-                });
-            }
-            notify.info(gettext('Saving post'));
-            postsService.savePost(blog._id,
-                $scope.currentPost,
-                getItemsFromEditor(),
-                {post_status: 'open', sticky: $scope.sticky, lb_highlight: $scope.highlight}
-            ).then((post) => {
-                notify.pop();
-                notify.info(gettext('Post saved'));
+        publish: function(blog) {
+            doOrAskBeforeIfExceedsPostsLimit($scope).then(() => {
+                let preventCheck = document.getElementById('prevent_dialog');
 
-                cleanEditor();
-                $scope.selectedPostType = 'Default';
-                $scope.actionPending = false;
-            }, () => {
-                notify.pop();
-                notify.error(gettext('Something went wrong. Please try again later'));
-                $scope.actionPending = false;
+                if (preventCheck && preventCheck.checked) {
+                    session.updateIdentity({preventDialog: true});
+                }
+                $scope.actionPending = true;
+                // save the keep scoreres setting( if needed)
+                if (isPostScorecard()) {
+                    saveScorers().then(() => {
+                        // no need to show anything on success
+                    }, () => {
+                        notify.error(gettext('Something went wrong with scoarers status. Please try again later'));
+                    });
+                }
+                notify.info(gettext('Saving post'));
+                const getAllposts = $scope.blogEdit.timelineInstance.pagesManager.allPosts();
+
+                const filtered = getAllposts.filter((el) => el.lb_highlight == false && el.sticky == false);
+
+                if (blog.total_posts >= blog.posts_limit) {
+                    const post = filtered[(filtered.length - 1)];
+
+                    postsService.remove(angular.copy(post)).then((message) => {
+                        $rootScope.$broadcast('removing_timeline_post', {post: post});
+                        savingPost(blog);
+                    }, () => {
+                        notify.pop();
+                        notify.error(gettext('Something went wrong'));
+                    });
+                } else {
+                    savingPost(blog);
+                }
+                blog.total_posts += 1;
             });
         },
         filterHighlight: function(highlight) {
