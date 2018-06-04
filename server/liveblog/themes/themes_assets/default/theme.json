@@ -236,6 +236,10 @@
                     "label": "Finnish"
                 },
                 {
+                    "value": "se",
+                    "label": "Swedish"
+                },
+                {
                     "value": "de",
                     "label": "Deutsch"
                 },
