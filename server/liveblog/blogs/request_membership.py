@@ -39,10 +39,10 @@ def notify_the_owner(doc, origin):
             item=blog,
             item_slugline=blog.get('title'),
             notify=owner_list)
-        send_email_to_owner(doc, [owner], origin)
+        send_email_to_owner(doc, owner_list, origin)
 
 
-def send_email_to_owner(doc, owner, origin):
+def send_email_to_owner(doc, owner_list, origin):
     blog = get_resource_service('blogs').find_one(req=None, _id=doc.get('blog'))
     prefs_service = get_resource_service('preferences')
 
@@ -64,7 +64,7 @@ def send_email_to_owner(doc, owner, origin):
                                     name_of_user=username, title=title)
         html_body = render_template("owner_request.html", app_name=app_name, link=url,
                                     name_of_user=username, title=title)
-        send_email.delay(subject=subject, sender=admins[0], recipients=recipients,
+        send_email.delay(subject=subject, sender=admins[0], recipients=owner_list,
                          text_body=text_body, html_body=html_body)
 
 
