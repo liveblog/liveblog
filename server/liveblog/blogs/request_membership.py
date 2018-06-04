@@ -30,26 +30,23 @@ def notify_the_owner(doc, origin):
     if not get_user():
         logger.info('there is no logged in user so no membership is allowed')
     else:
-        owner = doc.get('original_creator')
         blog = get_resource_service('blogs').find_one(req=None, _id=doc.get('blog'))
-        owner_list = [blog.get('original_creator')]
+        owner = blog.get('original_creator')
         add_activity(
             'liveblog:request', 'one user requested liveblog membership',
             resource=None,
             item=blog,
             item_slugline=blog.get('title'),
-            notify=owner_list)
-        send_email_to_owner(doc, owner_list, origin)
+            notify=[owner])
+        send_email_to_owner(doc, owner, origin)
 
 
-def send_email_to_owner(doc, owner_list, origin):
+def send_email_to_owner(doc, owner, origin):
     blog = get_resource_service('blogs').find_one(req=None, _id=doc.get('blog'))
     prefs_service = get_resource_service('preferences')
 
-    recipients = None
-    original_creator = doc['original_creator']
-    if prefs_service.email_notification_is_enabled(user_id=original_creator):
-        user_doc = get_resource_service('users').find_one(req=None, _id=original_creator)
+    if prefs_service.email_notification_is_enabled(user_id=owner):
+        user_doc = get_resource_service('users').find_one(req=None, _id=owner)
         if user_doc:
             recipients = [user_doc['email']]
 
@@ -64,7 +61,7 @@ def send_email_to_owner(doc, owner_list, origin):
                                     name_of_user=username, title=title)
         html_body = render_template("owner_request.html", app_name=app_name, link=url,
                                     name_of_user=username, title=title)
-        send_email.delay(subject=subject, sender=admins[0], recipients=owner_list,
+        send_email.delay(subject=subject, sender=admins[0], recipients=recipients,
                          text_body=text_body, html_body=html_body)
 
 
