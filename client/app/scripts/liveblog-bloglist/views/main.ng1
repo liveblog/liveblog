@@ -119,11 +119,11 @@
     </div>
 
     <div sd-modal="" data-model="embedUpgrade">
-        <div class="modal-header">
+        <div class="modal__header">
             <button class="close" ng-click="cancelUpgrade()"><i class="icon-close-small"></i></button>
             <h3 translate>Sorry</h3>
         </div>
-        <div class="modal-body">
+        <div class="modal__body">
             <p translate>You have reached the maximum number of active blogs on your Live Blog plan. You can either:</p>
             <ul>
                 <li translate>1. Archive an active blog or</li>
@@ -284,17 +284,17 @@
 
 
     <div sd-modal="" data-model="showBlogAccessModal">
-        <div class="modal-header">
+        <div class="modal__header">
             <button class="close" ng-click="closeAccessRequest()"><i class="icon-close-small"></i></button>
             <h3 translate><strong>{{ ::accessRequestedTo.title }}</strong></h3>
         </div>
-        <div class="modal-body">
+        <div class="modal__body">
             <p translate>
                 Sorry, you are not allowed to access this blog.<br />
                 Ask the blog owner to add you to the team.
             </p>
         </div>
-        <div class="modal-footer">
+        <div class="modal__footer">
             <button type="button" class="btn btn-default" translate ng-click="closeAccessRequest()">Cancel</button>
             <button
               type="submit"
