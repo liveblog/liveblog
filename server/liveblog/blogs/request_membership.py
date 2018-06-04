@@ -49,6 +49,8 @@ def send_email_to_owner(doc, owner, origin):
         user_doc = get_resource_service('users').find_one(req=None, _id=owner)
         if user_doc:
             recipients = [user_doc['email']]
+        else:
+            recipients = None
 
     if recipients:
         username = g.user.get('display_name') or g.user.get('username')
