@@ -419,6 +419,8 @@ export default function BlogEditController(
                             }
                         }
                     });
+
+                    $scope.actionDisabled = false;
                 }, delay);
             }
             $scope.openPanel('editor');
