@@ -454,6 +454,8 @@ export default function BlogEditController(
                             }
                         }
                     });
+
+                    $scope.actionDisabled = false;
                 }, delay);
             }
             $scope.openPanel('editor');
@@ -565,6 +567,7 @@ export default function BlogEditController(
                     $scope.$digest();
                 }
             },
+            isEditorClean: isEditorClean,
             setPending: function(value) {
                 $scope.actionPending = value;
             },
