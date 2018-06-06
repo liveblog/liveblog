@@ -3,7 +3,7 @@
         "_id": "54e64cde1024542de2649be9",
         "description": "Editor can control and publish content to the liveblog and invite people to contribute",
         "name": "Editor",
-        "privileges": {"blogs": 1, "publish_post": 1, "posts": 1, "archive": 1, "submit_post": 1, "request_membership": 1}
+        "privileges": {"blogs": 1, "publish_post": 1, "posts": 1, "archive": 1, "submit_post": 1, "request_membership": 1, "outputs": 1}
     },
     {
         "_id": "54e64e671024542de640fee6",

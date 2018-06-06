@@ -132,20 +132,21 @@ def inject_advertisements(content, settings, ads_list, theme):
     theme_settings = theme_service.get_default_settings(theme)
 
     for i in range(0, pcount, frequency):
-        index = math.ceil(i / frequency) % acount
+        if acount != 0:
+            index = math.ceil(i / frequency) % acount
 
-        ref_article = articles[i]
-        item = ads_list[index]
-        ad_id = "ads_%s_%s" % (item['_id'], i)
+            ref_article = articles[i]
+            item = ads_list[index]
+            ad_id = "ads_%s_%s" % (item['_id'], i)
 
-        ad_content = template.render(
-            ad_id=ad_id, item=item, theme=theme, settings=theme_settings)
-        ad_content = prepare_amp_content(ad_content)
+            ad_content = template.render(
+                ad_id=ad_id, item=item, theme=theme, settings=theme_settings)
+            ad_content = prepare_amp_content(ad_content)
 
-        # we need to increment the data-update-time in order to trigger amp updating
-        # if date-update-time is not updated, the advertisement will display wrong content
-        ref_article['data-update-time'] = int(time.time())
-        ref_article.append(ad_content)
+            # we need to increment the data-update-time in order to trigger amp updating
+            # if date-update-time is not updated, the advertisement will display wrong content
+            ref_article['data-update-time'] = int(time.time())
+            ref_article.append(ad_content)
 
 
 def prepare_amp_content(content):
