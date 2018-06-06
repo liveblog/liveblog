@@ -122,6 +122,22 @@
             "help": "How to show the author info"
         },
         {
+            "name": "outputChannel",
+            "label": "Output Channel",
+            "type": "checkbox",
+            "default": false,
+            "help": "Turn on to create the output channel automatically."
+        },
+        {
+            "name": "outputName",
+            "label": "Output channel name",
+            "type": "text",
+            "dependsOn  ": {
+                "outputChannel": true
+            },
+            "help": "Enter the output channel name"
+        },
+        {
             "name": "showAuthorAvatar",
             "label": "Show author avatar",
             "type": "checkbox",

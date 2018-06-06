@@ -129,6 +129,16 @@ class BlogService(BaseService):
                 else:
                     recipients.append(user['user'])
 
+            # In theme setting if outputChannel is true then will create Output Channel automatically
+            if blog['theme_settings']['outputChannel']:
+                name = blog['theme_settings']['outputName'] if blog['theme_settings']['outputName'] else "default name"
+                output_data = [{
+                    'name': name,
+                    'blog': ObjectId(blog_id),
+                    'theme': "amp"
+                }]
+
+                get_resource_service('outputs').post(output_data)
             notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def find_one(self, req, checkUser=True, **lookup):
