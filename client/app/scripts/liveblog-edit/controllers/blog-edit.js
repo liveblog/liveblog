@@ -523,11 +523,16 @@ export default function BlogEditController(
                 const filtered = getAllposts.filter((el) => el.lb_highlight == false && el.sticky == false);
 
                 if (blog.total_posts >= blog.posts_limit) {
+                    const deleted = {deleted: true};
                     const post = filtered[(filtered.length - 1)];
 
-                    postsService.remove(angular.copy(post)).then((message) => {
+                    postsService.savePost(post.blog, post, [], deleted).then((message) => {
                         $rootScope.$broadcast('removing_timeline_post', {post: post});
-                        savingPost(blog);
+                        notify.pop();
+                        notify.info(gettext('Wait! saving post'));
+                        $timeout(() => {
+                            savingPost(blog);
+                        }, 1000);
                     }, () => {
                         notify.pop();
                         notify.error(gettext('Something went wrong'));
