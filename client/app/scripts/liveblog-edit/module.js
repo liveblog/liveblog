@@ -127,6 +127,17 @@ const app = angular.module('liveblog.edit', [
                 }
                 SirTrevor.EventBus.on('block:create:existing', removeEmptyBlockExceptTheBlock);
                 SirTrevor.EventBus.on('block:create:new', removeEmptyBlockExceptTheBlock);
+
+                var onRemoveBlock = function() {
+                    const editorOptions = self.options;
+
+                    if (editorOptions.isEditorClean()) {
+                        editorOptions.disableSubmit(true);
+                    }
+                };
+
+                onRemoveBlock = onRemoveBlock.bind(self);
+                SirTrevor.EventBus.on('block:remove', onRemoveBlock);
             },
             blockTypes: ['Text', 'Image', 'Embed', 'Quote', 'Comment'],
             // render a default block when the editor is loaded
