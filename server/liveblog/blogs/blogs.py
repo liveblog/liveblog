@@ -130,15 +130,7 @@ class BlogService(BaseService):
                     recipients.append(user['user'])
 
             # In theme setting if outputChannel is true then will create Output Channel automatically
-            if blog['theme_settings']['outputChannel']:
-                name = blog['theme_settings']['outputName'] if blog['theme_settings']['outputName'] else "default name"
-                output_data = [{
-                    'name': name,
-                    'blog': ObjectId(blog_id),
-                    'theme': "amp"
-                }]
-
-                get_resource_service('outputs').post(output_data)
+            self._auto_create_output(blog)
             notify_members(blog, app.config['CLIENT_URL'], recipients)
 
     def find_one(self, req, checkUser=True, **lookup):
@@ -263,6 +255,20 @@ class BlogService(BaseService):
                 ))
             else:
                 syndication_in_service.delete_action(lookup={'_id': syndication_in['_id']})
+
+    def _auto_create_output(self, blog):
+            blog_theme = blog['theme_settings']
+            if 'outputChannel' in blog_theme and blog_theme['outputChannel']:
+                if blog_theme['outputName']:
+                    name = blog_theme['outputName']
+                else:
+                    name = "default name"
+                output_data = [{
+                    'name': name,
+                    'blog': ObjectId(str(blog['_id'])),
+                    'theme': "amp"
+                }]
+                get_resource_service('outputs').post(output_data)
 
 
 class UserBlogsResource(Resource):
