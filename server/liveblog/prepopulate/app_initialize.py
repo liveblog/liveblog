@@ -36,7 +36,7 @@ dictionary:
 """
 __entities__ = OrderedDict([
     ('global_preferences', ('global_preferences.json', ['key'], False)),
-    ('roles', ('roles.json', ['name'], False)),
+    ('roles', ('roles.json', ['name'], True)),
     ('users', ('users.json', [], False)),
     ('stages', ('stages.json', ['desk'], False)),
     ('desks', ('desks.json', ['incoming_stage'], False)),
