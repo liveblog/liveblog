@@ -127,11 +127,12 @@
         <span>{{ translate('Updated') }}</span> <span class="lb-post-updated-time relativeDate{% if settings.clientDatetimeOnly %} mod--displaynone{% endif %}" data-js-timestamp="{{item.content_updated_date}}">{{item.content_updated_date | date('')}}</span>
       </div>
     {% endif %}
-
-    {% if settings.authorPosition == "bottom"  %}
-      {% include "template-author.html" %}
-    {% else %}
-      {% include "template-post-actions.html" %}
+    {% if (not item.sticky) and (settings.stickyPosition != 'top') %}
+      {% if settings.authorPosition == "bottom"  %}
+        {% include "template-author.html" %}
+      {% else %}
+        {% include "template-post-actions.html" %}
+      {% endif %}
     {% endif %}
   </div>
   {% endblock %}
