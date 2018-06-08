@@ -90,7 +90,7 @@ var buttons = {
 
       highlightButton.classList.toggle('header-bar__highlight--active');
       LB.settings.onlyHighlighted = !LB.settings.onlyHighlighted;
-      return viewmodel.loadPosts()
+      return viewmodel.loadPosts({notDeleted: true})
         .then(view.renderTimeline)
         .then(view.displayNewPosts)
         .catch(catchError);
