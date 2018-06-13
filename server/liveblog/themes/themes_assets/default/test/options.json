@@ -31,7 +31,10 @@
       "gaCode": "UA-XXXXX-Y",
       "language": "de",
       "showSyndicatedAuthor": true,
-      "showUpdateDatetime": true
+      "showUpdateDatetime": true,
+      "showSharingButtons": true,
+      "showPermalinkButton": true,
+      "youtubePrivateMode": true
     },
     "start_date":"2017-03-08T12:30:20+00:00",
     "picture":{
@@ -183,7 +186,10 @@
     "gaCode": "UA-XXXXX-Y",
     "language": "de",
     "showSyndicatedAuthor": true,
-    "showUpdateDatetime": true
+    "showUpdateDatetime": true,
+    "showSharingButtons": true,
+    "showPermalinkButton": true,
+    "youtubePrivateMode": true
   },
   "i18n": {
     "cs": {

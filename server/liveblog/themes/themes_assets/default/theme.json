@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.3.9",
+    "version": "3.3.10",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -17,9 +17,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/default-a1295c520c.css"],
-    "devScripts": ["dist/default-d84b82103a.js"],
+    "devScripts": ["dist/default-af2036e31c.js"],
     "styles": ["dist/default-a1295c520c.css"],
-    "scripts": ["dist/default-d84b82103a.js"],
+    "scripts": ["dist/default-af2036e31c.js"],
     "options": [
         {
             "name": "datetimeFormat",
@@ -188,6 +188,25 @@
             "type": "checkbox",
             "default": false,
             "help": "Multiple image posts will show up as an image gallery"
+        },
+        {
+            "name": "showSharingButtons",
+            "label": "Show social media sharing buttons",
+            "type": "checkbox",
+            "default": true
+        },
+        {
+            "name": "showPermalinkButton",
+            "label": "Show permalink button",
+            "type": "checkbox",
+            "default": true
+        },
+        {
+            "name": "youtubePrivateMode",
+            "label": "Youtube privacy-enhanced mode",
+            "type": "checkbox",
+            "help": "Always use non tracking version of Youtube embeds",
+            "default": false
         },
         {
             "name": "stickyPosition",
