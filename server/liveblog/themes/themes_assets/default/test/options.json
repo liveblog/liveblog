@@ -34,7 +34,8 @@
       "showUpdateDatetime": true,
       "showSharingButtons": true,
       "showPermalinkButton": true,
-      "youtubePrivateMode": true
+      "youtubePrivateMode": true,
+      "showRelativeDate": true
     },
     "start_date":"2017-03-08T12:30:20+00:00",
     "picture":{
@@ -180,7 +181,7 @@
     "authorNameLinksToEmail":false,
     "showAuthor":true,
     "authorPosition": "top",
-    "datetimeFormat":"ago",
+    "datetimeFormat":"lll",
     "infinitScroll":false,
     "stickyPosition": "bottom",
     "gaCode": "UA-XXXXX-Y",
@@ -189,7 +190,8 @@
     "showUpdateDatetime": true,
     "showSharingButtons": true,
     "showPermalinkButton": true,
-    "youtubePrivateMode": true
+    "youtubePrivateMode": true,
+    "showRelativeDate": true
   },
   "i18n": {
     "cs": {
