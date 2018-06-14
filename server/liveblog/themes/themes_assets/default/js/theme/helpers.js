@@ -10,6 +10,17 @@ var moment = require('moment'),
 require("moment/min/locales.min");
 moment.locale(settings.language);
 function convertTimestamp(timestamp) {
+  if (settings.showRelativeDate) {
+    const d = new Date(); // Now
+    const date = moment(timestamp);
+
+    d.setHours(d.getHours() - 8); // Minus 8h
+
+    if (!moment(date).isBefore(d)) {
+      return date.fromNow();
+    }
+  }
+
   if (!settings.datetimeFormat || settings.datetimeFormat === 'ago') {
     return moment(timestamp).fromNow();
   }
