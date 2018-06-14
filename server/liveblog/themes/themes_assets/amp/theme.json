@@ -43,6 +43,18 @@
     {
         "name": "stickyPosition",
         "type": null
+    },
+    {
+      "name": "showSharingButtons",
+      "type": null
+    },
+    {
+      "name": "showPermalinkButton",
+      "type": null
+    },
+    {
+      "name": "youtubePrivateMode",
+      "type": null
     }
    ],
   "i18n": {

@@ -1,5 +1,16 @@
 {% if ref.item.meta.provider_name|lower == 'youtube' and ref.item.meta.html %}
-    <div class="item--embed__element lb-responsive-video">{{ ref.item.meta.html | safe }}</div>
+    <div class="item--embed__element lb-responsive-video">
+        {% if settings.youtubePrivateMode %}
+            <iframe frameborder="0" allowfullscreen="1" allow="autoplay; encrypted-media"
+                title="{{ref.item.meta.title}}"
+                width="{{ref.item.meta.thumbnail_width}}"
+                height="{{ref.item.meta.thumbnail_height}}"
+                src="{{ref.item.meta.url | replace("http:","https:") | replace("youtube.com","youtube-nocookie.com") | replace("watch?v=","embed/")}}">
+            </iframe>
+        {% else %}
+            {{ ref.item.meta.html | safe }}
+        {% endif %}
+    </div>
 {% elif (ref.item.meta.provider_name|lower == 'twitter') and ref.item.meta.html  %}
     <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div>
 {% elif ref.item.meta.provider_name|lower == 'facebook' and ref.item.meta.original_url %}
