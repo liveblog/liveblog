@@ -1,45 +1,48 @@
 {% if item.post_items_type != "advertisement" %}
     <div class="lb-post-actions {% if settings.authorPosition == "bottom"  %}lb-post-actions--top{% endif %}">
 
-        <div class="lb-post-share">
-        <img src="{{ assets_root }}images/action_share.svg" class="lb-post-shareIcon" />
-        <div class="lb-post-shareBox">
-            <a class="lb-post-shareBox__item"
-            onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-            data-link-base="//www.facebook.com/sharer.php?s=100&p[title]=&p[url]="
-            data-link-id={{item._id}}><img src="{{ assets_root }}images/share_facebook.svg"/>
-            </a>
-            <a class="lb-post-shareBox__item"
-            onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-            data-link-base="//plus.google.com/share?url="
-            data-link-id={{item._id}}><img src="{{ assets_root }}images/share_google.svg"/>
-            </a>
-            <a class="lb-post-shareBox__item"
-            onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-            data-link-base="//www.linkedin.com/shareArticle?mini=true&url="
-            data-link-id={{item._id}}><img src="{{ assets_root }}images/share_linkedin.svg"/>
-            </a>
-            <a class="lb-post-shareBox__item"
-            onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
-            data-link-base="//twitter.com/home?status="
-            data-link-id={{item._id}}><img src="{{ assets_root }}images/share_twitter.svg"/>
-            </a>
-            <a class="lb-post-shareBox__item"
-            onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1024,height=768');return false;"
-            data-link-base="mailto:?to=&subject=Liveblog&body="
-            data-link-id={{item._id}}><img src="{{ assets_root }}images/share_email.svg"/>
-            </a>
-            <span> | </span>
-        </div>
-        </div>
+        {% if settings.showSharingButtons %}
+            <div class="lb-post-share">
+                <img src="{{ assets_root }}images/action_share.svg" class="lb-post-shareIcon" />
+                <div class="lb-post-shareBox">
+                    <a class="lb-post-shareBox__item"
+                    onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+                    data-link-base="//www.facebook.com/sharer.php?s=100&p[title]=&p[url]="
+                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_facebook.svg"/>
+                    </a>
+                    <a class="lb-post-shareBox__item"
+                    onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+                    data-link-base="//plus.google.com/share?url="
+                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_google.svg"/>
+                    </a>
+                    <a class="lb-post-shareBox__item"
+                    onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+                    data-link-base="//www.linkedin.com/shareArticle?mini=true&url="
+                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_linkedin.svg"/>
+                    </a>
+                    <a class="lb-post-shareBox__item"
+                    onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=570,height=400');return false;"
+                    data-link-base="//twitter.com/home?status="
+                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_twitter.svg"/>
+                    </a>
+                    <a class="lb-post-shareBox__item"
+                    onclick="window.open(this.href,'targetWindow','toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=1024,height=768');return false;"
+                    data-link-base="mailto:?to=&subject=Liveblog&body="
+                    data-link-id={{item._id}}><img src="{{ assets_root }}images/share_email.svg"/>
+                    </a>
+                    <span> | </span>
+                </div>
+            </div>
+        {% endif %}
         <!-- end share -->
-
-        <!-- permalink -->
-        <div class="lb-post-permalink">
-        <a id="{{ item._id }}" target="_blank">
-            <img src="{{ assets_root }}images/action_link.svg" class="lb-post-linkIcon" />
-        </a>
-        </div>
-        <!-- end permalink -->
+        {% if settings.showPermalinkButton %}
+            <!-- permalink -->
+            <div class="lb-post-permalink">
+                <a id="{{ item._id }}" target="_blank">
+                    <img src="{{ assets_root }}images/action_link.svg" class="lb-post-linkIcon" />
+                </a>
+            </div>
+            <!-- end permalink -->
+        {% endif %}
     </div>
 {% endif %}

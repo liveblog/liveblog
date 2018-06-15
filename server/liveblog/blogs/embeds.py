@@ -259,7 +259,8 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         amp_style = BeautifulSoup(styles_tmpl.render(frequency=frequency), 'html.parser')
 
         style_tag = parsed_content.find('style', attrs={'amp-custom': True})
-        style_tag.append(amp_style.find('style').contents[0])
+        if style_tag:
+            style_tag.append(amp_style.find('style').contents[0])
 
         inject_advertisements(parsed_content, ads_settings, ads, theme)
         response_content = parsed_content.prettify()

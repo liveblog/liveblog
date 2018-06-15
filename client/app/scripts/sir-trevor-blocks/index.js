@@ -42,7 +42,8 @@ function createCaretPlacer(atStart) {
 createCaretPlacer(true);
 var placeCaretAtEnd = createCaretPlacer(false);
 var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?';
-var socialEmbedRegex = '(iframe|blockquote)+(?:.|\\n)*(youtube\\.com\\/embed|facebook\\.com'
+var socialEmbedRegex = '(iframe|blockquote)+(?:.|\\n)*'
+    + '(youtube-nocookie\\.com/embed|youtube\\.com\\/embed|facebook\\.com'
     + '\\/plugins|instagram\\.com\\/p\\/|players\\.brightcove\\.net'
     + '|twitter\\.com\\/.*\\/status)(?:.|\\n)*(iframe|blockquote)';
 
@@ -98,7 +99,8 @@ function isURI(string) {
 
 function replaceEmbedWithUrl(string) {
     var generalPattern = new RegExp(socialEmbedRegex, 'i');
-    var youtubePattern = new RegExp('(?:https?:\\/\\/)?(?:www\\.)?(?:youtu\\.be\\/|youtube\\.com\\/'
+    var youtubePattern = new RegExp('(?:https?:\\/\\/)?'
+        + '(?:www\\.)?(?:youtu\\.be\\/|youtube\\.com\\/|youtube-nocookie\\.com\\/'
         + '(?:embed\\/|v\\/|watch\\?v=|watch\\?.+&v=))(\\w+)', 'i');
     var facebookPattern = /(?:post\.php|video\.php)\?href=(https?(\w|%|\.)+)/i;
     var instagramPattern = /(https?:\/\/(?:www)?\.?instagram\.com\/p\/(?:\w+.)+\/)/i;
