@@ -258,11 +258,11 @@ class BlogService(BaseService):
         # Create output channel automatically
         blog_theme = blog.get('theme_settings')
         if blog_theme and blog_theme.get('outputChannel'):
-            output_name = blog_theme.get('outputName', 'Default output')
+            output_name = blog_theme.get('outputChannelName', 'Default output')
             output_data = [{
                 'name': output_name,
                 'blog': ObjectId(str(blog['_id'])),
-                'theme': "amp"
+                'theme': blog_theme.get('outputChannelTheme', 'amp')
             }]
             get_resource_service('outputs').post(output_data)
 
