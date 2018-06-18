@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.3.90",
+    "version": "3.3.91",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -213,6 +213,13 @@
             "label": "Youtube privacy-enhanced mode",
             "type": "checkbox",
             "help": "Always use non tracking version of Youtube embeds",
+            "default": false
+        },
+        {
+            "name": "twitterDNT",
+            "label": "Twitter - do not track",
+            "type": "checkbox",
+            "help": "You can opt out of having information from your website used for personalization.",
             "default": false
         },
         {
