@@ -35,6 +35,7 @@ BlogSettingsController.$inject = [
     'superdesk',
     'urls',
     '$rootScope',
+    'postsService',
 
 ];
 
@@ -55,7 +56,8 @@ function BlogSettingsController(
     moment,
     superdesk,
     urls,
-    $rootScope
+    $rootScope,
+    postsService
 ) {
     // set view's model
     /* eslint consistent-this: ["error", "vm"]*/
@@ -67,6 +69,29 @@ function BlogSettingsController(
             vm.blog.public_urls = data.public_urls;
         }
     });
+
+    function deleteOldPosts() {
+        let count = (vm.blog.total_posts - vm.newBlog.posts_limit);
+
+        if (count > 0) {
+            postsService.getPosts(vm.blog._id, {excludeDeleted: true, sticky: false, highlight: false})
+                .then((posts) => {
+                    let deleted = {deleted: true};
+                    let filteredPosts = posts._items.slice(Math.max(posts._items.length - count));
+
+                    angular.forEach(filteredPosts, (post) => {
+                        postsService.savePost(post.blog, post, [], deleted).then((message) => {
+                            $rootScope.$broadcast('removing_timeline_post', {post: post});
+                            notify.pop();
+                            notify.info(gettext('Wait! Deleting old posts'));
+                        }, () => {
+                            notify.pop();
+                            notify.error(gettext('Something went wrong'));
+                        });
+                    });
+                });
+        }
+    }
 
     angular.extend(vm, {
         mailto: 'mail:upgrade@liveblog.pro?subject=' +
@@ -318,6 +343,10 @@ function BlogSettingsController(
                 vm.setFormsPristine();
                 deferred.resolve();
             });
+
+
+            deleteOldPosts();
+
             return deferred.promise;
         },
         askRemoveBlog: function() {

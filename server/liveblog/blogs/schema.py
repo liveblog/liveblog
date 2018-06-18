@@ -104,6 +104,6 @@ blogs_schema = {
     'posts_limit': {
         'type': 'integer',
         'nullable': True,
-        'default': 100
+        'default': 500
     }
 }
