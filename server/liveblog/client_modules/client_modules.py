@@ -255,11 +255,11 @@ class ClientBlogPostsService(BlogPostsService):
                 else:
                     post_items_type = items[0].get('item_type')
             elif items_length == 2 and not all([item['item_type'] == 'embed' for item in items]):
-                if items[1].get('item_type', '').lower() == 'embed':
+                if items[1].get('item_type', '').lower() == 'embed' and items[0].get('item_type', '').lower() == 'text':
                     post_items_type = 'embed'
                     if 'provider_name' in items[1]['meta']:
                         post_items_type = "{}-{}".format(post_items_type, items[1]['meta']['provider_name'].lower())
-                elif items[0].get('item_type', '').lower() == 'embed':
+                elif items[0].get('item_type', '').lower() == 'embed' and items[1].get('item_type', '').lower() == 'text':
                     post_items_type = 'embed'
                     if 'provider_name' in items[0]['meta']:
                         post_items_type = "{}-{}".format(post_items_type, items[0]['meta']['provider_name'].lower())
