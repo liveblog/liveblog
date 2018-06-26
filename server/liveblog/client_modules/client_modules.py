@@ -259,7 +259,8 @@ class ClientBlogPostsService(BlogPostsService):
                     post_items_type = 'embed'
                     if 'provider_name' in items[1]['meta']:
                         post_items_type = "{}-{}".format(post_items_type, items[1]['meta']['provider_name'].lower())
-                elif items[0].get('item_type', '').lower() == 'embed' and items[1].get('item_type', '').lower() == 'text':
+                elif (items[0].get('item_type', '').lower() == 'embed' and
+                        items[1].get('item_type', '').lower() == 'text'):
                     post_items_type = 'embed'
                     if 'provider_name' in items[0]['meta']:
                         post_items_type = "{}-{}".format(post_items_type, items[0]['meta']['provider_name'].lower())
