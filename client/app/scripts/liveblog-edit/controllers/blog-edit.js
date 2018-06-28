@@ -207,7 +207,7 @@ export default function BlogEditController(
     function doOrAskBeforeIfExceedsPostsLimit($scope) {
         var deferred = $q.defer();
 
-        if (blog.total_posts >= blog.posts_limit && !(session.identity.preventDialog)) {
+        if (blog.posts_limit != 0 && blog.total_posts >= blog.posts_limit && !(session.identity.preventDialog)) {
             modal
                 .confirm(gettext(`You will lose the oldest post as posts
                     limit exceeds. Are you sure to continue?<br/>
@@ -522,7 +522,7 @@ export default function BlogEditController(
 
                 const filtered = getAllposts.filter((el) => el.lb_highlight == false && el.sticky == false);
 
-                if (blog.total_posts >= blog.posts_limit) {
+                if (blog.posts_limit != 0 && blog.total_posts >= blog.posts_limit) {
                     const deleted = {deleted: true};
                     const post = filtered[(filtered.length - 1)];
 

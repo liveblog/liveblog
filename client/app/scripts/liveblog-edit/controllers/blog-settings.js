@@ -70,10 +70,25 @@ function BlogSettingsController(
         }
     });
 
+    function doOrAskBeforeIfExceedsPostsLimit($scope) {
+        var deferred = $q.defer();
+        let count = (vm.blog.total_posts - vm.newBlog.posts_limit);
+
+        if (vm.newBlog.posts_limit != 0 && count > 0) {
+            modal
+                .confirm(gettext(`You will lose the oldest posts beyond
+                    set limit. Are you sure to continue?`))
+                .then(deferred.resolve, deferred.reject);
+        } else {
+            deferred.resolve();
+        }
+        return deferred.promise;
+    }
+
     function deleteOldPosts() {
         let count = (vm.blog.total_posts - vm.newBlog.posts_limit);
 
-        if (count > 0) {
+        if (vm.newBlog.posts_limit != 0 && count > 0) {
             postsService.getPosts(vm.blog._id, {excludeDeleted: true, sticky: false, highlight: false})
                 .then((posts) => {
                     let deleted = {deleted: true};
@@ -114,6 +129,14 @@ function BlogSettingsController(
             'Technology',
             'Politics',
             'Others',
+        ],
+        availablePostlimit: [
+            {text: 'No restriction', value: 0},
+            {text: 100, value: 100},
+            {text: 500, value: 500},
+            {text: 1000, value: 1000},
+            {text: 2000, value: 2000},
+            {text: 3000, value: 3000},
         ],
         // used as an aux var to be able to change members and safely cancel the changes
         blogMembers: [],
@@ -317,35 +340,36 @@ function BlogSettingsController(
             delete vm.newBlog._version;
             delete vm.newBlog.marked_for_not_publication;
             delete vm.newBlog._type;
-            blogService.update(vm.blog, vm.newBlog).then((blog) => {
-                vm.isSaved = true;
-                vm.blog = blog;
-                vm.newBlog = angular.copy(blog);
-                vm.blogPreferences = angular.copy(blog.blog_preferences);
-                // remove accepted users from the queue
-                if (vm.acceptedMembers.length) {
-                    _.each(vm.acceptedMembers, (member) => {
-                        api('request_membership')
-                            .getById(member.request_id)
-                            .then((item) => {
-                                api('request_membership')
-                                    .remove(item)
-                                    .then(null, () => {
-                                        notify.pop();
-                                        notify.error(gettext('Something went wrong'));
-                                        deferred.reject();
-                                    });
-                            });
-                    });
-                }
-                notify.pop();
-                notify.info(gettext('blog settings saved'));
-                vm.setFormsPristine();
-                deferred.resolve();
+            doOrAskBeforeIfExceedsPostsLimit($scope).then(() => {
+                blogService.update(vm.blog, vm.newBlog).then((blog) => {
+                    vm.isSaved = true;
+                    vm.blog = blog;
+                    vm.newBlog = angular.copy(blog);
+                    vm.blogPreferences = angular.copy(blog.blog_preferences);
+                    // remove accepted users from the queue
+                    if (vm.acceptedMembers.length) {
+                        _.each(vm.acceptedMembers, (member) => {
+                            api('request_membership')
+                                .getById(member.request_id)
+                                .then((item) => {
+                                    api('request_membership')
+                                        .remove(item)
+                                        .then(null, () => {
+                                            notify.pop();
+                                            notify.error(gettext('Something went wrong'));
+                                            deferred.reject();
+                                        });
+                                });
+                        });
+                    }
+                    notify.pop();
+                    notify.info(gettext('blog settings saved'));
+                    vm.setFormsPristine();
+                    deferred.resolve();
+                });
+
+                deleteOldPosts();
             });
-
-
-            deleteOldPosts();
 
             return deferred.promise;
         },
