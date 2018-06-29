@@ -86,21 +86,21 @@
                     <h3>{{ ::blog.title }}</h3>
                     <div class="description">{{ ::blog.description | htmlToPlaintext }}</div>
                 </div>
-                <div class="footer">
+                <div class="footer"> 
                     <dl>
                         <dt>{{ ::'Blog owner' | translate }}:</dt>
                         <dd>{{ ::blog.original_creator | username }}</dd>
                         <dt ng-if="isAdmin()">{{ ::'Theme' | translate }}:</dt>
                         <dd ng-if="isAdmin()">{{ ::blog.blog_preferences.theme }}</dd>
                         <dt>{{ ::'Created' | translate}}:</dt>
-                        <dd sd-reldate ng-model="blog._created"></dd>
+                        <dd><time datetime="{{ blog._created}}">{{ blog._created | reldateAutoUpdate }}</time></dd>
                         <dt>{{ ::'No. of Posts' | translate }}:</dt>
                         <dd>{{ ::blog.total_posts }}</dd>
                         <dl>
                         <dt> {{ :: 'Last updated' | translate }}:</dt>
-                        <dd ng-if="blog._updated" sd-reldate ng-model="blog._updated"></dd>
+                        <dd><time datetime="{{ blog._updated}}">{{ blog._updated | reldateAutoUpdate }}</time></dd>
                         <dt> {{ :: 'Last posted' | translate }}:</dt>
-                        <dd ng-if="blog.last_created_post._updated" sd-reldate ng-model="blog.last_created_post._updated"></dd>
+                        <dd><time datetime="{{ blog.last_created_post._updated}}">{{ blog.last_created_post._updated | reldateAutoUpdate }}</time></dd>
                         <dd ng-if="blog.posts_count == 0"> No posts yet</dd>
                         <dt> {{ :: 'Syndication' | translate }}:</dt>
                         <dd>
@@ -216,7 +216,7 @@
                                             </div>
                                         </div>
                                     </section>
-                                    <button type="button" ng-if="preview.url" class="btn btn-default pull-right" ng-click="removeImage()" translate>Remove</button>
+                                    <button type="button" ng-if="preview.url && progress.width >= 100" class="btn btn-default pull-right" ng-click="removeImage()" translate>Remove</button>
                                 </div>
                             </div>
                         </fieldset>
