@@ -154,10 +154,8 @@
             },
             "options": [
                 {"value": "classic", "label": "Classic Theme"},
-                {"value": "simple", "label": "LB SEO Simple Theme"},
                 {"value": "default", "label": "Liveblog 3 Default SEO Theme"},
-                {"value": "amp", "label": "Liveblog 3 AMP Theme"},
-                {"value": "liveblog-theme-dpa", "label": "dpa Liveblog Theme"}
+                {"value": "amp", "label": "Liveblog 3 AMP Theme"}
             ],
             "help": "Which theme should be used for output channel"
         },
