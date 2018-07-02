@@ -1,3 +1,3 @@
-from .utils import AdsSettings, inject_advertisments
+from .utils import AdsSettings, inject_advertisements
 
-__all__ = ['AdsSettings', 'inject_advertisments']
+__all__ = ['AdsSettings', 'inject_advertisements']

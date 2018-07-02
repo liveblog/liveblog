@@ -1,7 +1,7 @@
 {
   "label": "Liveblog 3 AMP Theme",
   "name": "amp",
-  "version": "3.3.35",
+  "version": "3.3.37",
   "seoTheme": true,
   "ampTheme": true,
   "extends": "default",
@@ -17,8 +17,9 @@
     "url" : "git@github.com:liveblog/liveblog-amp-theme"
   },
   "license": "AGPL-3.0",
-  "devStyles": ["dist/amp-cc215e5b64.css"],
-  "styles": ["dist/amp-cc215e5b64.css"],
+  "devStyles": ["dist/amp-da431b8b6c.css"],
+  "styles": ["dist/amp-da431b8b6c.css"],
+  "supportAdsInjection": true,
   "options": [
     {
         "name": "postsPerPage",
@@ -42,6 +43,18 @@
     {
         "name": "stickyPosition",
         "type": null
+    },
+    {
+      "name": "showSharingButtons",
+      "type": null
+    },
+    {
+      "name": "showPermalinkButton",
+      "type": null
+    },
+    {
+      "name": "youtubePrivateMode",
+      "type": null
     }
    ],
   "i18n": {

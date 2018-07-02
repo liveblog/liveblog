@@ -114,7 +114,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
     from liveblog.themes import UnknownTheme
     # adding import here to avoid circular references
     from liveblog.advertisements.utils import get_advertisements_list
-    from liveblog.advertisements.amp import AdsSettings, inject_advertisments
+    from liveblog.advertisements.amp import AdsSettings, inject_advertisements
 
     api_host = api_host or request.url_root
     blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
@@ -259,9 +259,10 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         amp_style = BeautifulSoup(styles_tmpl.render(frequency=frequency), 'html.parser')
 
         style_tag = parsed_content.find('style', attrs={'amp-custom': True})
-        style_tag.append(amp_style.find('style').contents[0])
+        if style_tag:
+            style_tag.append(amp_style.find('style').contents[0])
 
-        inject_advertisments(parsed_content, ads_settings, ads, theme)
+        inject_advertisements(parsed_content, ads_settings, ads, theme)
         response_content = parsed_content.prettify()
 
     return response_content

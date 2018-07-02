@@ -22,8 +22,6 @@ const defaultTemplates = {
   // itemTest: require("../../templates/test.html")
 };
 
-console.log(defaultTemplates);
-
 function getCustomTemplates() {
   let customTemplates = settings.customTemplates
     , mergedTemplates = defaultTemplates;

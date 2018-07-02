@@ -192,6 +192,9 @@ class ThemesResource(Resource):
         'url': 'regex("[\w\-]+")',
         'field': 'name'
     }
+
+    etag_ignore_fields = ['_type', 'template']
+
     # point accessible at '/themes/<theme_name>'.
     ITEM_METHODS = ['GET', 'POST', 'DELETE']
     privileges = {'GET': 'global_preferences', 'POST': 'global_preferences',

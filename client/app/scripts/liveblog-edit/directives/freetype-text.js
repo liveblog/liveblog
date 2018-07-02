@@ -12,6 +12,7 @@ export default function freetypeText() {
 
             if ($scope.number !== undefined) {
                 $scope.$on('$destroy', $scope.$watch('text', (value) => {
+                    if ($scope.value === undefined) return;
                     $scope.numberFlag = (value !== '') && isNaN(value);
                     $scope.validation['number__' + $scope._id] = !$scope.numberFlag;
                 }, true));
