@@ -93,6 +93,8 @@ if env('MONGO_URI'):
 elif env('MONGODB_PORT'):
     MONGO_URI = '{0}/{1}'.format(env('MONGODB_PORT').replace('tcp:', 'mongodb:'), MONGO_DBNAME)
 
+print("MONGO_URI: %s" % MONGO_URI)
+
 LEGAL_ARCHIVE_DBNAME = env('LEGAL_ARCHIVE_DBNAME', 'legal_archive')
 if env('LEGAL_ARCHIVE_URI'):
     LEGAL_ARCHIVE_URI = env('LEGAL_ARCHIVE_URI')
