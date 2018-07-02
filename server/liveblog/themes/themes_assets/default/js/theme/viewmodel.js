@@ -261,9 +261,17 @@ vm.getQuery = function(opts) {
     query.query.filtered.filter.and[2].range._updated = {
       "gt": opts.fromDate
     };
-    // @TODO: remove `post_status` aswell so we can have unpublish posts
+
     // remove sticky posts from update polling request.
-    query.query.filtered.filter.and.splice(0,1);
+    query.query.filtered.filter.and.splice(0, 1);
+
+    // changing `term`.`post_status` to `terms`.`post_status` with
+    // multiple values so we can have unpublish posts
+    query.query.filtered.filter.and.splice(0, 1);
+
+    query.query.filtered.filter.and.push({
+      terms: { post_status:  ["open", "submitted"] }
+    });
   }
 
   if (opts.highlightsOnly === true) {
