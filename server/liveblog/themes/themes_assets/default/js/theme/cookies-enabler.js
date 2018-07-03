@@ -31,16 +31,7 @@ window.COOKIES_ENABLER = window.COOKIES_ENABLER || (function () {
     wildcardDomain: false,
 
     iframesPlaceholder: true,
-    iframesPlaceholderHTML:
-
-    document.getElementById('ce-iframePlaceholder-html') !== null ?
-
-    document.getElementById('ce-iframePlaceholder-html').innerHTML :
-
-    '<p>To view this content you need to'
-    +'<a href="#" class="ce-accept">Enable Cookies</a>'
-    +'</p>',
-
+    iframesPlaceholderHTML:'',
     iframesPlaceholderClass: 'ce-iframe-placeholder',
 
     onEnable: '',
@@ -340,9 +331,6 @@ function _getClosestParentWithClass(el, parentClass) {
     var iframes = (function() {
 
       function makePlaceholder(iframe) {
-        // var activateButton = document.getElementById('activate');
-        // activateButton.className = opts.ce-accept;
-
 
         var placeholderElement = document.createElement('div');
 
@@ -356,12 +344,13 @@ function _getClosestParentWithClass(el, parentClass) {
       }
 
       function removePlaceholders() {
-        var div =document.getElementById('myBlock');
-        // console.log(div);
-        // div.style.visibility = 'hidden';
-        div.setAttribute("style", "display: none;");
-        // var activateButton = document.getElementById('activateOption');
-        // activateButton.setAttribute("style", "display: none");
+        var postIframes = document.getElementsByClassName("defaultDisplay");
+        var postIframe, j=0,
+        n = postIframes.length;
+        for(j = 0; j < n; j++){
+          postIframe = postIframes[j];
+          postIframe.setAttribute("style", "display: none");
+        }
 
         var iframePlaceholders = document.getElementsByClassName(opts.iframesPlaceholderClass),
         n = iframePlaceholders.length,
@@ -388,6 +377,12 @@ function _getClosestParentWithClass(el, parentClass) {
 
           if (opts.iframesPlaceholder) makePlaceholder(iframe);
 
+        }
+        var blocks = document.getElementsByTagName("blockquote");
+        var j,block,clas;
+        for(j = 0; j < blocks.length; j++) {
+          block = blocks[j];
+          block.style.display = 'none';
         }
 
       }
@@ -464,8 +459,6 @@ function _getClosestParentWithClass(el, parentClass) {
       }
 
     })();
-
-
     return {
       init: init,
       enableCookies: enableCookies,

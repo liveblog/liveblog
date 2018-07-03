@@ -3,7 +3,7 @@
  */
 
 'use strict';
-
+  
 const handlers = require('./handlers'),
   viewmodel = require('./viewmodel'),
   view = require('./view'),
@@ -26,35 +26,35 @@ module.exports = {
     adsManager.init();
 
     COOKIES_ENABLER.init({
-        scriptClass: 'ce-script',
-        iframeClass: 'ce-iframe',
+      scriptClass: 'ce-script',
+      iframeClass: 'ce-iframe',
 
-        acceptClass: 'ce-accept',           
-        dismissClass: 'ce-dismiss',
-        disableClass: 'ce-disable',
+      acceptClass: 'ce-accept',           
+      dismissClass: 'ce-dismiss',
+      disableClass: 'ce-disable',
 
-        bannerClass: 'ce-banner',
-        bannerHTML:'<a style="position: fixed; bottom: 0; left: 0; right: 0;'+
-        '  background-color: #dedede; padding: 1em; color: #232323; font-size: 1em;" '+
-        '  data-toggle="modal" data-target="#myModal">' + 
-        '<b>View Scocial Media</b></a>',
-        eventScroll: false,
-        scrollOffset: 200,
+      bannerClass: 'ce-banner',
+      bannerHTML:'<a style="position: fixed; bottom: 0; left: 0; right: 0;'+
+      '  background-color: #dedede; padding: 1em; color: #232323; font-size: 1em;" '+
+      '  data-toggle="modal" data-target="#myModal">' + 
+      '<b>View Scocial Media</b></a>',
+      eventScroll: false,
+      scrollOffset: 200,
 
-        clickOutside: false,
+      clickOutside: false,
 
-        cookieName: 'ce-cookie',
-        cookieDuration: '365',
-        wildcardDomain: true,
+      cookieName: 'ce-cookie',
+      cookieDuration: '365',
+      wildcardDomain: true,
 
-        iframesPlaceholder: true,
-        iframesPlaceholderHTML:'',
-        iframesPlaceholderClass: 'ce-iframe-placeholder',
-            // Callbacks
-            onEnable: '',
-            onDismiss: '',
-            onDisable: ''
-          });
+      iframesPlaceholder: true,
+      iframesPlaceholderHTML:'',
+      iframesPlaceholderClass: 'ce-iframe-placeholder',
+          // Callbacks
+      onEnable: '',
+      onDismiss: '',
+      onDisable: ''
+    });
 
     view.updateTimestamps();
     setInterval(() => {

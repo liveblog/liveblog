@@ -8,6 +8,11 @@
         src="{{ref.item.meta.url | replace("http:","https:") | replace("youtube.com","youtube-nocookie.com") | replace("watch?v=","embed/")}}">
       </iframe>
     {% else %}
+      <div class="defaultDisplay" style="padding:8px;"> 
+        <div  style=" background:#F8F8F8; line-height:0; margin-top:20px; padding:30.0% 0; text-align:center; width:100%;"> 
+          <div style=" background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAGUElEQVRoQ81aXWxURRT+ztxtaSmQVn6KEEqlFjAVDbR779YGAiGa8EIQKRBEAomRgoDEFjFggoEY+VEEERB4wDQihAjENzUhGkJh9+4uRA3Kb6AIKFCgoQuU7b0zZm5/bKHbndvuFuZlH+53vjPfnJkzZ2aWkIB2oqRkkGXbEwTgI9sewRnL0zjPshnrJek1ziM2Y3c04DyEOMMBv2bbvxSFw/901T11luDE2LH9rWh0FjifA8bGdIaHgLAgqmQNDd8VhcM1neRwZ2Z6vUOEpn1Atv02GEtzZx0DzfkDMLbLYmz9K8ePX3XDqRyBc5Mm9ai9datcCPERGEt340QVy4H7DFiTEYlsLDh1KqpipyQgVFw8klvWfjA2SoW0qxiy7d8BTPeGQmficcUVEDSMaTbwDQMy4pEl8jsH7jGiObrff7Aj3g4FBA3jXRvYwoC4QhPZ+WYuDggSYqFhml/H4o/ZMdMwFgLYmoyOueUUQiyIJaJdAU3TZv+TGvlHBTZF4g3DNA89+u0xAXLBWpyHunvOx4uKECICoNAwzbOtsW0EyFR5p6Ym2F3ZJl6n2/n+W0YkordOsW0EBHV9hSD6pBPE3WYihFhumOb6ZoctAuQOC+BMsjapRCmUm12qx5M/pqrqmuRsERDU9S8F0eJEOUomjyD6wvD7328R4BRm9fWXE1bbJLP3kpvzB4zzHFkAOhEwDeM9AJuS7TeR/CTEYq9pftUowOsNuymJWWoqMseNQ3puLlKzs5HSty88WVnw9OkDLSMDLC0NlJoKYszps+AcIhoFr6+Hfe8erLt3YdXWoqGmBg+vX0f9xYu4c+QIREODskabKFjs9+vkHEYsS72EJcILO3ei16jE1nV1J0/i9IIFygKcmQQMJNPnexNCfKtqmZ6Xhxf37FGFu8Kdmj0b98+fV7chmkkBn28LCbFI1Spr/Hg8v3atKtwV7sLKlbh9+LC6DeebyfR6fwZjr6paZZeWIqe8vEN4/eXLznQYumwZpGDVdnnTJlzft08VDgjxI/kN4wIDhqlaDS4rw6C5czuE3zt9Gn82YfpPmYKcpUudhR2vXdu9G1d37IgHa/kuhLhAQa/3tmAsS9VqaEUFBkybpixAAmW2GrZmDXrm53doJ0dfRsFFuyUjEGVAiqpR7ooV6D95sisBEkwpKchbvRpZEybEtL1x8CCq17eUOXG7xIFotwmQe8dzq1bhmYkTYws4cADVGzbE7XgzwBHgegqVl2NAaamrCMjUK0df/nbU/t27F39v3qwsAIAzhdwt4vnzMWjePGUBcr0MWbIEMgLxmlzAciGrtsZFbBg/CeA1VSOVNPrwyhX8VVaG3OXLkTl2rCo1Lq1bh5uHHjs1xraXadRtGZ3MjexcRQVqjx5VFgy5kQV0fRYRKdcGPYcPR0FlpboTF8g/ZsxAfXW1ugXRDAoVFj7LPR7ndKPUiDBy2zb0Hj1aCa4KuhsK4cwi5YrGoW3QtGynnA4aRkgAharOZE7PLClBWm4uegwciJR+/eDJzGwsp3v1cnZdlpIC8ngcSmFZ4M3ldCTSUk5Hb95EVJbTly6htqrKwak2Dpi+QMBoPA/4fEsghKv8peooWTgCFnkDga2OgFBhYT/OmDxSJuXWOdEi5MGehMgxTPPW/7cShiEjsCTRzpLBR0Js9JqmUxK3CDhWXDyYcX6WAT2T4TRRnPLW2mNZ+c3PU20utkzD+BDAp4lyliSeZXog8FkzdxsBpwoKUu+npweFpr2UJOddohVCnNRs2ygKh1tO/49d7gaLikbYmhZ+2i53wXmd5vGMKTx+vM2hud3rddPnm8qF+P4pul7nGjDVGwj88GgIYz5wBHS9jIi2dynmiTImekf3+3e1R9fh05EUIYi2PalIcIAzorJYnW+TRmMNVkDXXwdQSUTOq3u3Nc7riLG32ps2rfug9HgX0PXhRLQfwMvdIUBmG4+mTX90wbqeQq0NZIqNZGQsFUSrkrXZOU+rwMfMsja3TpUdDZpSBFoTyLvUBtuuINsuS1Tt1PRCv51Z1udu/wDiWkCzGFkACk2baTE2RxPC25mpJUtiDajkQuyThVlnODotoLUzv2FkM6LxsO1iEI0QQD4RZXKgt8QxoE4IUUvAOfl3G2jasQbGfi05duxGZzrd2uY/t+N2NtV/OXQAAAAASUVORK5CYII=); display:block; height:48px; margin:0 auto -48px; position:relative; top:-22px; width:48px;"></div>
+        </div>
+      </div>
       <iframe frameborder="0" allowfullscreen="1" allow="autoplay; encrypted-media"
         class="ce-iframe" 
         title="{{ref.item.meta.title}}"
@@ -15,43 +20,56 @@
         height="{{ref.item.meta.thumbnail_height}}"
         data-ce-src="{{ref.item.meta.url | replace("http:","https:") | replace("watch?v=","embed/")}}">
       </iframe>
-<!-- {{ ref.item.meta.html | safe }} -->
+      <h4>{{ref.item.meta.credit}}</h4>
+      <p><a href="{{ref.item.meta.original_url}}">{{ref.item.meta.title}}</a></p>
     {% endif %}
   </div>
 {% elif (ref.item.meta.provider_name|lower == 'twitter') and ref.item.meta.html  %}
-    <!-- <div class="item--embed__element">{{ ref.item.meta.html | safe }}</div> -->
-  <iframe frameborder="0" allowfullscreen="1" allow="autoplay; encrypted-media"
-    class="ce-iframe" 
-    title="{{ref.item.meta.title}}"
-    width="{{ref.item.meta.thumbnail_width}}"
-    height="{{ref.item.meta.thumbnail_height}}"
-    data-ce-src="{{ref.item.meta.original_url | replace("http:","https:") }}">
-  </iframe>
-{% elif ref.item.meta.provider_name|lower == 'facebook' and ref.item.meta.original_url %}
-    <!-- <blockquote class="embedly-card" data-card-controls="0">
-        <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
-        <p>{{ ref.item.meta.title }}</p>
-    </blockquote> -->
+  <div class="defaultDisplay" style="padding:8px;"> 
+    <div  style=" background:#F8F8F8; line-height:0; margin-top:20px; padding:20.0% 0; text-align:center; width:100%;"> 
+      <div style=" background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAGqUlEQVRoQ9VZbYxcZRV+zpmZ3bazuwU/qoH4AQI1Ighl7wxpa6RIIYQ0gmbpzsiH4g/BmpqdmSVVE51qtEBnB8JHTSUkZQkzs10wigYNCIhll87sWgkKKdDUNKFGorTdsru1O/eeY+7I4u7snbn3zk7HcP9N3nOe8zzveT/OeYfwPv/ofc4fp0aAKt1y10jHNJZ1hrjcDphTgamZ47vS6/7d7AlrioCv3ru3S2f4ChAuFxWDCCsBXl5N1iK8GRDZrxR4gZSeMT9+8MXh66+3FiNqUQJ6B0qrGdikguvAWOqbiOAwAnjEhHn/cGL1Yd/+QGNLKJ7Ze4kyZ6C4rJGgC31kRsEPkfIP8qnuf/nB9JWBDTvHl3VOyl0q8i0w+/L1REpwhFj7csnooCd7PxnYOFA8jyGPA4HPegVv2E5ocLKLbvv1N7un3TA8zWLv9vEoQZ4E4wNugM0aV8gIz5Q35L77+aP1MF0F2OSVzWcYHG4WOa84onhJTL5seEv3RC2fugJuuGdspVXW0VbO/AKihD+Yx8NXDafPn3ESUVOAvWE7JsvFlqx515RQNp80kr4ExAdK9yuwyRW7VQZKV+ZTxtPV4Rwz0JstdpOlpVNyVDYoWEUPLJmavqC6HHEUEMuWnmveJdUgY0c36ssnjXvmDi0QYJcHBIw0M+x7WBbe0oAcUOUwSC5kMPuM8/djodPP/u3mc0/O+i0QEB8oPapA3BMw0ctQvdDVVnSSGJvKHzv06GzxVjnhTPwMpCuJdMgSnMNEG9ywFOgtJCNDjgLsqlJO8j+8FmbMtNYS/QyJ7Ky3X4hpfa7P+H01uXRaKxl4vbP4BQX/CiIdbvtORJ8c6o9e4yggnil9WQmPu83C7LhJ5geHE6uPxLKlDWLJIDOfVu2rwG8KyUjdmd149/gqtqxVIHrQLbaIlKe7gqfNlhnzlpDfo5OYPpXrMw7aQXuyo2cGLb5DGPG5a1uVEoWUcXc9Yr3Z4nVk0TAYATcBlfE5R+o8Ab2ZvUUijngCsXEcyN24vXiWxXSDQK8kwUXKvKWQNB6ohxnbXnoTjDO9xiWl7+dSxk9t+/8JUKVYtnjUqZOqCSw4LKyXDyWjrzvaqFLP1ldDtcoA28feB6+FS9NgavcqAEKD+X7j5nkCbrnzhc4Twbbj3kFEg7A+CgTDj/RH/+bZr8rQzpjJVFmGXj8Vfb7QH600U+9loPfOfWdQ0PTX1hE25hOR3V4DO9nFMmMxkOb8YBCwL5eMXDJPQCMzYZ+A7RyK7uq7+JgfAnNtY5nSLhAqy8HH92o+GTm/SsDICpNDb/kAedfU+qtw6Oahvu59fn17Hnilg6enDjOjy4+vqpQKqUuj8wR8Lf3ckpOd4RN+gGxbu3OCBJPW1NI/19usTrjxzNj3lPQnfmMS6Klc0rhqngD7h9/j7N3AJim+mEtF/uiHiL1kZ1j/0kinJyo7hlKXVkr9efdALLP3aRBf4YdIxVZwggJ0e/n4sp97yUJPdnRpSOl5RcDwHauSdt2cT0XvWyCgd2DshwRNNwRaQdNiqA3XDH47+nYtjKvvfaO9a+bIsJfCrRYGMS7O9UVecsjA+FqQ7PEsQPSkFaB/suqfCPSY+U54d70M3Lh9ZIVJbQWQrvMco8pQFW9/etJYkU6TLBDQs3t3IHjok4e8XOv2WSzA7YWE8SyItB4h+4CY6Qx/XUW3gunDjZKvrFbRnUP90VtnMRb0A7FsaRsUW7wGEch+Ag+z6ggC/EYwJBNlU4Mo4yNEfIEQrSNR++20KW9KCqwpJCOjNQVUqkrlgwC3eRXROjsdzScia+dm3LmpHyjtIOC21hHzGIlwdT4R+d1ca+emPjP+Iai81qy0e6TnZvZEPhn5UrVRzYet+EDxJgU97IbamnGZIG37XC616pBnAXa3EsuM7wLrTa0hWTsKKb6SS0V+4WRR923Ufl4MT5pPEXjN/0sEQbfmktGal6vr63R8257TrVD7s0y4qPUi6L58ovs79e4ZVwE26Z47xpcH2+SXrXytU1C6kOj+kdsl6UlARUT6lbZg5/Q2QBOnNhMyAQS+kU8anp53PAuYJR3LjK1XlR3EdM4pEPIEaXCz02lTK5ZvATbQf5ufjlsB7QdwxuKF6CiIflx9SXnBbUjALLBdGi8vH71WxT5qdT0zh7wEtW3sqlJVHyOmwULCeNFtrTc1A05glX903tE1BBiqWKmQTzBTpwJLVGWSKXDMUusAg/ZTgPacN2G8PFsSexXt+x5YDHCrfBe1hFpFsl6c/wCaSo5PpZ5n4QAAAABJRU5ErkJggg==); display:block; height:48px; margin:0 auto -48px; position:relative; top:-22px; width:48px;"></div>
+    </div>
+  </div>
   <iframe frameborder="0"
     class="ce-iframe" 
     title="{{ref.item.meta.title}}"
-    width="auto"
-    height="auto"
-    data-ce-src="{{ref.item.meta.original_url | replace("http:","https:") }}">
+    width="{{ref.item.meta.thumbnail_width}}"
+    height="{{ref.item.meta.thumbnail_height}}"
+    data-ce-src="https://twitframe.com/show?url={{ref.item.meta.original_url}}">
   </iframe>
+  
+{% elif ref.item.meta.provider_name|lower == 'facebook' and ref.item.meta.original_url %}
+  <div class="defaultDisplay" style="padding:8px;" > 
+    <div style=" background:#F8F8F8; line-height:0; margin-top:20px; padding:20.0% 0; text-align:center; width:100%;"> 
+      <div style=" background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAFoklEQVRoQ9WZbWxTZRTH/+e5Y4w3B4agwgeDGmaCRsnkpe00i4KEGFDUbrcYEWPb8ZJA0JCYmOh8iRiiRoWMdJcpINJ2E0MwAQJBUeitYDBogoFISEwYSCLqJjq23T7H3MKkL7dr721Lxr72nP85v+fce+55zgg3+B/d4PmjTABMngUfj8ZIjFEScrhRZfxTqVR1H9z8/OVSH1hJAGY+s+2mCqNnNhgPs+DpANUAqM5KVuIsKTjJjMOC5IHbjHHxjo6GRDFQRQG41Fa3AK1gYCGAEQ4S6STCp9IwNsQ7lnU68Hf2CNUt0moTkt8lUL2ToNk+sg8QbZUkXz0YbvrdjqatCtTOD42sGiHWsZDLAWHLt7Ck5B/MYnU8GthamD0Kr0BdY+sUSbwDEPcUKu7UjghbL1+Sy4592fRvPo2CTrFODc2UwG5A3JxPsFS/EzhGwph/ePvyPwfTzAtgJp+QOEBCjCpVcoXqJBjHDSnrj3U0deXyGRTA422rYcXQr+fJZybK4IPdibFzT3Q09FlB5AQwX9jho3DkejzzeStC9L4e9r9kC8DToG1ggRV5xfMYsMR5AfwoBboJkq+Yi/EAHrGjTYRHY+HA/kwfywp41LYHGMbRYlqllPKcQuSPRQN7Abqa+JXwnkZtFhPidgAAebqyqvLezHHEEsCltn5d1EdKop8UnhYLB09YJekMAGDC6ng48EGqZhaAOR4QKGbvdDKtZVSPNKm5NJwCmFUd93fvHXv2rOwd0M4C8KjaZwwsKgqAeIUeDrakatT7QuMNKK4EoBDLGoDecRKDADUWCUQtAcypUkn0/OZwMLuWD/HTeji4IzVBl6p9S8CDTpJO9ZHMu7+LBh+zBPA0ak8yIS2wk4BMtDAe9u9M9XWr2ikAU5zopflI9Pf2yLEDY0baI1Sy1mkJEPoFEHcVDQAgtaWmAbjV1iMAzXAYpIuJlpi+FUriyKFtTedTdTw+bY4EJccRkjwVhLccxjEn0FdikcDbSa1rIkxudZM5OGXfpAqJJOUFvb3p1kJMXY2bvETcXoitlY05rcbCgefSADwL2sbwSNntVBS2AFpXEVFaP7cZ9xs9Ekhepv6vgEdtm8iQjq51yeB2AHzaOmKssZl0qvkPeiRQmwbwkFebbCg441RUAr0C8krnYXpPjwa/T+tCDdqHEPKW5M8QMwiY7DQWE/8cDwenpgG4n904Af0VF5yKpvpZtdFZqnZaAHeWQh/go3okODMNoH7JJ1V9l42eUgQoNwCD98UjwbkZXQhwq9pZAJOKhSg3AJha9Kg/Oeqnf8h82n5mzB7yAMQr9XBwvVUFXgPQPOQBBE/TtwePZwHU+UJ1ksWhIQ5wUb+7cwKam2UWgNfbrnQqXb8W+x6U8x0g5lAsGlw6cMjZ9wGftpYZLxdThXICMNgTjwT1nAAu78ZJpIgzgKh0ClFGAF2P+OtS79iWd2K3qpm3qWVDDYCJ5sXD/r2peVkCmNe/PsYppwutslRA0i693f945qHmXGy5GrXFRNjipArmXERSGmknVdxqsguC7tO3+80Gk/Y3yGqRyePbtJkZi51AlNKHGE/FooEvrDQH3Y0m/x8wivYxyFPKhGxqva5HAjk/rvm304taxvUnhn2lEO63Gbh4c8Z6PepflbnZy/sSZ0au9YaqKxXaWdS2zj5Osx7xvzFY8llf4sFiTPW2V1ZXdK8F84v2c7Hl0QXiFzL3SrkU8j5CmY7mdoFZtpRqRZKmL2kXKrDSqtuUDMAUMi8/vb3GUk7INUKIibbO19pYZ6I3Mz9ShejarkCq6Lx5Hw3vrh7xRIJ5sWCaA4FhhQS9anORmD+XhK3xSCCe71kvaQWsxJItd7TwgDEdhBpm3A5gDBNXEeMSA38Ri9MQ8iQIh/Qp534aGIltQGeZFlWBYgKXyveGB/gPXtBGT/ZgAJoAAAAASUVORK5CYII=); display:block; height:48px; margin:0 auto -48px; position:relative; top:-22px; width:48px;"></div>
+    </div>
+  </div>
+  <iframe frameborder="0"
+    class="ce-iframe" 
+    title="{{ref.item.meta.title}}"
+    width="{{ref.item.meta.thumbnail_width}}"
+    height="{{ref.item.meta.thumbnail_height}}"
+    data-ce-src="https://www.facebook.com/plugins/post.php?href={{ref.item.meta.original_url}}"
+    style="margin-bottom: 0px">
+  </iframe>
+  <h4>{{ref.item.meta.credit}}</h4>
+  <p><a href="{{ref.item.meta.original_url}}">{{ref.item.meta.title}}</a></p>
 
 {% elif ref.item.meta.provider_name|lower == 'instagram' and ref.item.meta.original_url %}
-    <!-- <blockquote class="embedly-card" data-card-controls="0">
-        <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
-        <p>{{ ref.item.meta.title }}</p>
-    </blockquote> -->
+  <div class="defaultDisplay" style="padding:8px;"> 
+    <div style=" background:#F8F8F8; line-height:0; margin-top:20px; padding:20.0% 0; text-align:center; width:100%;"> 
+      <div style=" background:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACwAAAAsCAMAAAApWqozAAAABGdBTUEAALGPC/xhBQAAAAFzUkdCAK7OHOkAAAAMUExURczMzPf399fX1+bm5mzY9AMAAADiSURBVDjLvZXbEsMgCES5/P8/t9FuRVCRmU73JWlzosgSIIZURCjo/ad+EQJJB4Hv8BFt+IDpQoCx1wjOSBFhh2XssxEIYn3ulI/6MNReE07UIWJEv8UEOWDS88LY97kqyTliJKKtuYBbruAyVh5wOHiXmpi5we58Ek028czwyuQdLKPG1Bkb4NnM+VeAnfHqn1k4+GPT6uGQcvu2h2OVuIf/gWUFyy8OWEpdyZSa3aVCqpVoVvzZZ2VTnn2wU8qzVjDDetO90GSy9mVLqtgYSy231MxrY6I2gGqjrTY0L8fxCxfCBbhWrsYYAAAAAElFTkSuQmCC); display:block; height:44px; margin:0 auto -44px; position:relative; top:-22px; width:44px;"></div>
+    </div>
+  </div>
   <iframe frameborder="0" allowfullscreen="1" allow="autoplay; encrypted-media"
     class="ce-iframe" 
     title="{{ref.item.meta.title}}"
     width="{{ref.item.meta.thumbnail_width}}"
     height="{{ref.item.meta.thumbnail_height}}"
-    data-ce-src="{{ref.item.meta.original_url | replace("http:","https:") }}">
+    data-ce-src="{{ref.item.meta.original_url | replace("http:","https:") }}embed">
   </iframe>
+  <h4>{{ref.item.meta.credit}}</h4>
+  <p><a href="{{ref.item.meta.original_url}}">{{ref.item.meta.title}}</a></p>
 {% elif ref.item.meta.provider_name|lower == 'brightcove' and ref.item.meta.html %}
   <div class="item--embed__element lb-responsive-video">{{ ref.item.meta.html | safe }}</div>
   <div class="item--embed__info">
@@ -92,4 +110,5 @@
         {% endif %}
       </article>
     {% endif %}
+  
 {% endif %}

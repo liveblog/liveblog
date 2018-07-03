@@ -1,25 +1,5 @@
 <!-- inject:template-content -->
 {% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
-
-<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta http-equiv="X-UA-Compatible" content="chrome=1">
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-  <title>Cookies Enabler JS</title>
-  <meta name="description" content="Cookies-enabler.js is a easy-to-use pure Javascript solution for preventively blocking third-party cookies installed by js and comply with the EU cookie law.">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.0/js/bootstrap.min.js"></script>
-
-
-</head>
-<body>
-
-
-
 <div data-timeline class="lb-timeline {{ settings.language }}">
   {% block timeline_top %}
 
@@ -122,6 +102,19 @@
 
   {% block timeline_body %}
   <!-- Timeline -->
+  <!doctype html>
+  <html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <title>Cookies Enabler JS</title>
+    <meta name="description" content="Cookies-enabler.js is a easy-to-use pure Javascript solution for preventively blocking third-party cookies installed by js and comply with the EU cookie law.">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+  </head>
+  <body>
   <div class="timeline-body timeline-body--loaded">
       <div data-one-new-update class="lb-post new-updates mod--displaynone">
         <div>{{ translate("See one new update") }}</div>
@@ -155,9 +148,8 @@
             {{ translate("Load more posts") }}
         </button>
       {% endif %}
-      
-      
-    <div class="modal" id="myModal">
+      <center>
+    <div class="modal bg-dark" id="myModal">
       <div class="modal-dialog">
         <div class="modal-content">
 
@@ -169,7 +161,7 @@
 
           <!-- Modal body -->
           <div class="modal-body">
-            <div  class=" text-center">
+            <div>
               <p class="text-justify">It is currently showing elements of social networks such as Twitter, Facebook, Instagram or YouTube in a reduced preview. Your browser does not exchange data with these networks. However, images, videos and similar interactive elements can not be displayed in this way. To fully display content from social networks, you can:</p>
               <button class="btn btn-sm btn-default ce-accept" id="activate" data-dismiss="modal">Activate</button><hr>
               <button class="btn btn-sm btn-warning ce-disable" data-dismiss="modal">Do Not Activate</button>
@@ -178,15 +170,11 @@
           </div>
         </div>
       </div>
-    </div>  
-  <!-- </div> -->
-  <!-- Timeline End -->
-
+    </div>  </center>
+  </div>
+  </body>
+  </html>
   {% endblock %}
-
-</div>
-</body>
-</html>
 
 {% include "template-embed-providers.html" %}
 
