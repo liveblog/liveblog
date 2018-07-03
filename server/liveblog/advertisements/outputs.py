@@ -79,7 +79,7 @@ class OutputsService(BaseService):
     def on_created(self, outputs):
         for output in outputs:
             if output.get('blog'):
-                publish_blog_embed_on_s3(output.get('blog'), output=output)
+                publish_blog_embed_on_s3.apply_async(args=[output.get('blog')], kwargs={'output': output}, countdown=2)
 
     def on_updated(self, updates, original):
         super().on_updated(updates, original)

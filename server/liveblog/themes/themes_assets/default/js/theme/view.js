@@ -96,6 +96,7 @@ function renderPosts(api_response) {
     return; // early
   }
 
+  els.emptyMessage.classList.toggle('mod--displaynone', Boolean(renderedPosts.length));
   addPosts(renderedPosts, api_response.requestOpts.fromDate ? 'afterbegin' : 'beforeend');
 
   loadEmbeds();
