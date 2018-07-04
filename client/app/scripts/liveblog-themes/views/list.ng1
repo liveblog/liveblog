@@ -180,4 +180,5 @@
     theme-settings-modal
     theme="self.themeSettingsModalTheme"
     modal-opened="self.themeSettingsModal"
-    ng-if="self.themeSettingsModal"></div>
+    ng-if="self.themeSettingsModal"
+    theme-names="self.themeNames"></div>
