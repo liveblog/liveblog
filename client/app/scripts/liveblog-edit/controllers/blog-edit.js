@@ -207,7 +207,7 @@ export default function BlogEditController(
     function doOrAskBeforeIfExceedsPostsLimit($scope) {
         var deferred = $q.defer();
 
-        if (blog.posts_limit != 0 && blog.total_posts >= blog.posts_limit && !(session.identity.preventDialog)) {
+        if (blog.posts_limit != 0 && blog.total_posts >= blog.posts_limit && !(localStorage.getItem('preventDialog'))) {
             modal
                 .confirm(gettext(`You will lose the oldest post as posts
                     limit exceeds. Are you sure to continue?<br/>
@@ -506,7 +506,7 @@ export default function BlogEditController(
                 let preventCheck = document.getElementById('prevent_dialog');
 
                 if (preventCheck && preventCheck.checked) {
-                    session.updateIdentity({preventDialog: true});
+                    localStorage.setItem('preventDialog', true);
                 }
                 $scope.actionPending = true;
                 // save the keep scoreres setting( if needed)
