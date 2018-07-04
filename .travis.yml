@@ -85,7 +85,7 @@ before_script:
     - (nohup python3 -m http.server 9000 &)
 
 script:
-    - cd $TRAVIS_BUILD_DIR/server && nosetests --all-modules ;
+    - cd $TRAVIS_BUILD_DIR/server && nosetests --all-modules --nocapture;
     - cd $TRAVIS_BUILD_DIR/server && behave --format progress2 --logging-level ERROR ;
     - cd $TRAVIS_BUILD_DIR/server && flake8 ;
     - cd $TRAVIS_BUILD_DIR/client && npm test ;
@@ -101,9 +101,8 @@ script:
 
 after_script:
     - killall -9 python
-    
+
 after_success:
     - curl -LO https://raw.github.com/stephanmg/travis-dependent-builds/master/trigger.sh
     - chmod +x trigger.sh
     - ./trigger.sh liveblog generator-liveblog-theme master $TRAVIS_ACCESS_TOKEN
-

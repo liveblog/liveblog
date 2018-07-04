@@ -8,7 +8,7 @@ function liveblogAnalyticsController($scope, $location, api, analytics, blog, no
     };
 
     const loadAnalytics = function(page = 1) {
-        const q = {page: page, max_results: 200};
+        const q = {page: page, max_results: 500};
 
         api('blogs/<regex("[a-f0-9]{24}"):blog_id>/bloganalytics', {_id: blog._id})
             .query(q)
