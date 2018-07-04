@@ -16,7 +16,7 @@ export default function lbAnalyticsListCtrl($scope, $element) {
         $scope.currentPage = $index;
     };
 
-    $scope.pageSize = 10;
+    $scope.pageSize = 25;
     $scope.currentPage = 0;
     $scope.pages = new Array(Math.ceil($scope.analytics._items.length / $scope.pageSize));
 

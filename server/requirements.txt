@@ -7,6 +7,8 @@ Flask-Cors==2.1.0
 Flask-S3==0.1.7
 html5lib==0.999999999
 beautifulsoup4==4.6.0
+flask_pymongo>=0.5.2,<1.0
+pymongo>=0.4,<4.0
 
 # Superdesk
--e git://github.com/superdesk/superdesk-core.git@v1.17#egg=Superdesk-Core
+-e git://github.com/superdesk/superdesk-core.git@v1.17.1#egg=Superdesk-Core
