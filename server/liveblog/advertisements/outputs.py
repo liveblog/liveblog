@@ -84,6 +84,7 @@ class OutputsService(BaseService):
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
         blogs = get_resource_service('blogs')
+
         if updates.get('deleted', False):
             blog = blogs.find_one(req=None, _id=original.get('blog'))
             delete_blog_embeds_on_s3.apply_async(args=[blog], kwargs={'output': original}, countdown=2)
