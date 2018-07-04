@@ -15,6 +15,7 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                     scope: {
                         theme: '=',
                         modalOpened: '=',
+                        themeNames: '=',
                     },
                     link: function(scope) {
                         const vm = scope;

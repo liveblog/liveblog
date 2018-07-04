@@ -28,10 +28,15 @@
                                 ng-model="vm.settings[option.name]">
                             </textarea>
                         </div>
-                        <div ng-switch-when="select">
+                        <div ng-switch-when="select" ng-hide="option.name == 'outputChannelTheme'">
                             <label class="sd-line-input__label" translate>{{ option.label }}</label>
                             <select class="sd-line-input__select" ng-model="vm.settings[option.name]" 
                                 ng-options="option.value as option.label for option in option.options">
+                            </select>
+                        </div>
+                        <div ng-switch-when="select" ng-if="option.name == 'outputChannelTheme'">
+                            <label class="sd-line-input__label" translate>{{ option.label }}</label>
+                            <select class="sd-line-input__select" ng-model="vm.settings[option.name]" ng-options="option.name as option.label for option in themeNames">
                             </select>
                         </div>
                         <div ng-switch-when="datetimeformat" class="datetimeformat">
