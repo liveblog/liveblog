@@ -67,7 +67,7 @@ function renderPosts(api_response) {
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
 
-    if (!api_response.requestOpts.page && post.deleted) {
+    if (!api_response.requestOpts.page && (post.deleted || post.post_status === 'submitted')) {
       deletePost(post._id);
       continue; // early
     }
