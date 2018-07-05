@@ -97,7 +97,9 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
 
                 self.themeNames = [];
                 for (var i = 0; i < themes.length; i++) {
-                    self.themeNames.push({label: themes[i].label, name: themes[i].name});
+                    if (themes[i].name != 'angular') {
+                        self.themeNames.push({label: themes[i].label, name: themes[i].name});
+                    }
                 }
 
                 themes.forEach((theme) => {
