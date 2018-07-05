@@ -35,6 +35,7 @@ BlogSettingsController.$inject = [
     'superdesk',
     'urls',
     '$rootScope',
+    'postsService',
 
 ];
 
@@ -55,7 +56,8 @@ function BlogSettingsController(
     moment,
     superdesk,
     urls,
-    $rootScope
+    $rootScope,
+    postsService
 ) {
     // set view's model
     /* eslint consistent-this: ["error", "vm"]*/
@@ -67,6 +69,44 @@ function BlogSettingsController(
             vm.blog.public_urls = data.public_urls;
         }
     });
+
+    function doOrAskBeforeIfExceedsPostsLimit($scope) {
+        var deferred = $q.defer();
+        let count = (vm.blog.total_posts - vm.newBlog.posts_limit);
+
+        if (vm.newBlog.posts_limit != 0 && count > 0) {
+            modal
+                .confirm(gettext(`You will lose the oldest posts beyond
+                    set limit. Are you sure to continue?`))
+                .then(deferred.resolve, deferred.reject);
+        } else {
+            deferred.resolve();
+        }
+        return deferred.promise;
+    }
+
+    function deleteOldPosts() {
+        let count = (vm.blog.total_posts - vm.newBlog.posts_limit);
+
+        if (vm.newBlog.posts_limit != 0 && count > 0) {
+            postsService.getPosts(vm.blog._id, {excludeDeleted: true, sticky: false, highlight: false})
+                .then((posts) => {
+                    let deleted = {deleted: true};
+                    let filteredPosts = posts._items.slice(Math.max(posts._items.length - count));
+
+                    angular.forEach(filteredPosts, (post) => {
+                        postsService.savePost(post.blog, post, [], deleted).then((message) => {
+                            $rootScope.$broadcast('removing_timeline_post', {post: post});
+                            notify.pop();
+                            notify.info(gettext('Wait! Deleting old posts'));
+                        }, () => {
+                            notify.pop();
+                            notify.error(gettext('Something went wrong'));
+                        });
+                    });
+                });
+        }
+    }
 
     angular.extend(vm, {
         mailto: 'mail:upgrade@liveblog.pro?subject=' +
@@ -89,6 +129,14 @@ function BlogSettingsController(
             'Technology',
             'Politics',
             'Others',
+        ],
+        availablePostlimit: [
+            {text: 'No restriction', value: 0},
+            {text: 100, value: 100},
+            {text: 500, value: 500},
+            {text: 1000, value: 1000},
+            {text: 2000, value: 2000},
+            {text: 3000, value: 3000},
         ],
         // used as an aux var to be able to change members and safely cancel the changes
         blogMembers: [],
@@ -283,6 +331,7 @@ function BlogSettingsController(
                 category: vm.category,
                 start_date: startDate,
                 members: members,
+                posts_limit: vm.newBlog.posts_limit,
             };
 
             angular.extend(vm.newBlog, changedBlog);
@@ -291,32 +340,37 @@ function BlogSettingsController(
             delete vm.newBlog._version;
             delete vm.newBlog.marked_for_not_publication;
             delete vm.newBlog._type;
-            blogService.update(vm.blog, vm.newBlog).then((blog) => {
-                vm.isSaved = true;
-                vm.blog = blog;
-                vm.newBlog = angular.copy(blog);
-                vm.blogPreferences = angular.copy(blog.blog_preferences);
-                // remove accepted users from the queue
-                if (vm.acceptedMembers.length) {
-                    _.each(vm.acceptedMembers, (member) => {
-                        api('request_membership')
-                            .getById(member.request_id)
-                            .then((item) => {
-                                api('request_membership')
-                                    .remove(item)
-                                    .then(null, () => {
-                                        notify.pop();
-                                        notify.error(gettext('Something went wrong'));
-                                        deferred.reject();
-                                    });
-                            });
-                    });
-                }
-                notify.pop();
-                notify.info(gettext('blog settings saved'));
-                vm.setFormsPristine();
-                deferred.resolve();
+            doOrAskBeforeIfExceedsPostsLimit($scope).then(() => {
+                blogService.update(vm.blog, vm.newBlog).then((blog) => {
+                    vm.isSaved = true;
+                    vm.blog = blog;
+                    vm.newBlog = angular.copy(blog);
+                    vm.blogPreferences = angular.copy(blog.blog_preferences);
+                    // remove accepted users from the queue
+                    if (vm.acceptedMembers.length) {
+                        _.each(vm.acceptedMembers, (member) => {
+                            api('request_membership')
+                                .getById(member.request_id)
+                                .then((item) => {
+                                    api('request_membership')
+                                        .remove(item)
+                                        .then(null, () => {
+                                            notify.pop();
+                                            notify.error(gettext('Something went wrong'));
+                                            deferred.reject();
+                                        });
+                                });
+                        });
+                    }
+                    notify.pop();
+                    notify.info(gettext('blog settings saved'));
+                    vm.setFormsPristine();
+                    deferred.resolve();
+                });
+
+                deleteOldPosts();
             });
+
             return deferred.promise;
         },
         askRemoveBlog: function() {
