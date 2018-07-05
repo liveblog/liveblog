@@ -501,7 +501,7 @@ export default function BlogEditController(
                     $scope.actionPending = false;
                 });
         },
-        publish: function(blog) {
+        publish: function() {
             doOrAskBeforeIfExceedsPostsLimit($scope).then(() => {
                 let preventCheck = document.getElementById('prevent_dialog');
 

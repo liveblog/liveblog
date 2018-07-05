@@ -207,7 +207,7 @@
                             </div>
                             <div class="actions__buttons" style="display:table-row">
                                 <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell">
-                                    <button class="btn btn--primary" ng-disabled="actionStatus() || !validation.imageUploaded" ng-click="publish(blog)" ng-switch="isCurrentPostPublished()">
+                                    <button class="btn btn--primary" ng-disabled="actionStatus() || !validation.imageUploaded" ng-click="publish()" ng-switch="isCurrentPostPublished()">
                                         <span ng-switch-when="true"  translate>Update</span>
                                         <span ng-switch-when="false" translate>Publish</span>
                                     </button>
