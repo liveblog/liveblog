@@ -22,5 +22,11 @@ class AccessAuthService(DbAuthService):
         if not user:
             raise CredentialsAuthError(credentials)
         user_updates = user
-        user_updates['user_preferences']['desktop:notification']['enabled'] = False
+        user_preferences = user_updates.get('user_preferences')
+        if user_preferences:
+            desktop_notification = user_preferences.get('desktop:notification')
+            if desktop_notification:
+                enabled = desktop_notification.get('enabled')
+                if enabled:
+                    user_updates['user_preferences']['desktop:notification']['enabled'] = False
         get_resource_service('users').system_update(user['_id'], user_updates, user)
