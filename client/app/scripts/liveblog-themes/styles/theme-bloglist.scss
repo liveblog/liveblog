@@ -5,9 +5,52 @@
 @import '~lb-variables.scss';
 
 .theme-settings-modal {
-    form {padding: 10px 0;}
-    
+    form { padding: 0; }
+
+    .form__row {
+        padding-bottom: 0px;
+
+        // the group heading of first row should have less margin
+        &:first-child .sd-line-input--is-groupheading {
+            margin-top: 0px;
+        }
+    }
+
     .form-group {
+        margin: 0;
+        padding-top: 0;
+        margin-bottom: 20px;
+
+        // settings groups headline
+        &.sd-line-input--is-groupheading {
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        &.sd-line-input {
+            .sd-line-input__hint {
+                position: relative;
+                margin-top: 0;
+                display: block;
+            }
+
+        }
+
+        .sd-line-input__label {
+            position: relative;
+        }
+
+        .lb-group-heading {
+            .sd-line-input__label {
+                font-size: 1.4rem;
+                border-bottom: 1px solid #ccc;
+                display: block;
+                width: 100%;
+                padding-bottom: 5px;
+            }
+
+        }
+
         .datetimeformat {
             ul {
                 margin: 1em 0;
@@ -26,11 +69,12 @@
                 margin: 0 0 0 15px;
             }
         }
-        margin-bottom: 22px;
     }
+
     .modal-body {
         padding: 10px 20px;
     }
+
 }
 .theme-preview-modal {
     justify-content: flex-start;
