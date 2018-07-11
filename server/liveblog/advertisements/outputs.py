@@ -79,11 +79,12 @@ class OutputsService(BaseService):
     def on_created(self, outputs):
         for output in outputs:
             if output.get('blog'):
-                publish_blog_embed_on_s3(output.get('blog'), output=output)
+                publish_blog_embed_on_s3.apply_async(args=[output.get('blog')], kwargs={'output': output}, countdown=2)
 
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
         blogs = get_resource_service('blogs')
+
         if updates.get('deleted', False):
             blog = blogs.find_one(req=None, _id=original.get('blog'))
             delete_blog_embeds_on_s3.apply_async(args=[blog], kwargs={'output': original}, countdown=2)

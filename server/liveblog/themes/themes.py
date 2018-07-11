@@ -7,31 +7,32 @@
 # For the full copyright and license information, please see the
 # AUTHORS and LICENSE files distributed with this source code, or
 # at https://www.sourcefabric.org/superdesk/license
+import re
+import os
+import glob
+import json
+import magic
 import jinja2
+import superdesk
+import zipfile
+import logging
+from io import BytesIO
+
+from bson.objectid import ObjectId
+from eve.io.mongo import MongoJSONEncoder
+from flask_cors import cross_origin
+from flask import make_response, request, current_app as app
+
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
-import glob
-import json
-import re
-from io import BytesIO
-import superdesk
-from bson.objectid import ObjectId
-from superdesk.errors import SuperdeskApiError
-from flask_cors import cross_origin
-from eve.io.mongo import MongoJSONEncoder
-from flask import request, current_app as app
-from superdesk.errors import SuperdeskError
-import zipfile
-import os
-import magic
-import logging
-from flask import make_response
+from superdesk.errors import SuperdeskApiError, SuperdeskError
 from liveblog.mongo_util import encode as mongoencode
 from liveblog.system_themes import system_themes
 
 from settings import (COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY, SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
+from liveblog.blogs.utils import is_s3_storage_enabled as s3_enabled
 from .template.filters import moment_date_filter_container, addten, ampify
 from .template.loaders import ThemeTemplateLoader
 
@@ -332,7 +333,7 @@ class ThemesService(BaseService):
     @property
     def is_s3_storage_enabled(self):
         # TODO: provide multiple media storage support.
-        return type(app.media).__name__ is 'AmazonMediaStorage'
+        return s3_enabled()
 
     def get_theme_assets_url(self, theme_name):
         """

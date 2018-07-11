@@ -190,6 +190,37 @@
             "help": "How to show the author name"
         },
         {
+            "name": "outputChannel",
+            "label": "Output Channel",
+            "type": "checkbox",
+            "default": false,
+            "help": "Turn on to create the output channel automatically"
+        },
+        {
+            "name": "outputChannelName",
+            "label": "Output channel name",
+            "type": "text",
+            "dependsOn": {
+                "outputChannel": true
+            },
+            "help": "Enter the output channel name"
+        },
+        {
+            "name": "outputChannelTheme",
+            "label": "Output channel theme",
+            "type": "select",
+            "default": "amp",
+            "dependsOn": {
+                "outputChannel": true
+            },
+            "options": [
+                {"value": "classic", "label": "Classic Theme"},
+                {"value": "default", "label": "Liveblog 3 Default SEO Theme"},
+                {"value": "amp", "label": "Liveblog 3 AMP Theme"}
+            ],
+            "help": "Which theme should be used for output channel"
+        },
+        {
             "name": "authorNameLinksToEmail",
             "label": "The author name links to email",
             "type": "checkbox",

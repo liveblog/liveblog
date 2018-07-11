@@ -95,6 +95,13 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
             return api.themes.query().then((data) => {
                 const themes = data._items;
 
+                self.themeNames = [];
+                for (var i = 0; i < themes.length; i++) {
+                    if (themes[i].name != 'angular') {
+                        self.themeNames.push({label: themes[i].label, name: themes[i].name});
+                    }
+                }
+
                 themes.forEach((theme) => {
                     // create criteria to load blogs with the theme.
                     const criteria = {

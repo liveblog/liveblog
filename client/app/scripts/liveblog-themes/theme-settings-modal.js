@@ -15,6 +15,7 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                     scope: {
                         theme: '=',
                         modalOpened: '=',
+                        themeNames: '=',
                     },
                     link: function(scope) {
                         const vm = scope;
@@ -23,6 +24,8 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                             optionsAreloading: true,
                             settings: angular.copy(vm.theme.settings) || {},
                             options: [],
+                            showAdvancedSettings: false,
+                            hasAdvancedOptions: false,
                             datetimeFormats: [
                                 'MMMM Do, YYYY HH:mm',
                                 'YYYY-MM-DD hh:mm a',
@@ -51,10 +54,10 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                                 vm.theme = undefined;
                             },
                             /**
-                         * Check if the option requirements are satified through the `dependsOn` property
-                         * @param {object} option
-                         * @returns {boolean} true if the option `dependsOn` are satisfied
-                         */
+                             * Check if the option requirements are satified through the `dependsOn` property
+                             * @param {object} option
+                             * @returns {boolean} true if the option `dependsOn` are satisfied
+                             */
                             optionRequirementIsSatisfied: function(option) {
                                 if (!angular.isDefined(option.dependsOn)) {
                                     return true;
@@ -71,10 +74,10 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                         scope.vm = vm;
                         // Initialization
                         /**
-                     * Collect a list of options for the given theme and its parents
-                     * @param {object} theme
-                     * @returns {array} list of options
-                     */
+                         * Collect a list of options for the given theme and its parents
+                         * @param {object} theme
+                         * @returns {array} list of options
+                         */
                         function collectOptions(theme, optionsParam = {}) {
                             let options = optionsParam;
                             // keep the theme's options in `options`
@@ -108,25 +111,10 @@ import themeSettingsModalTpl from 'scripts/liveblog-themes/views/theme-settings-
                             angular.extend(vm, {
                                 options: options,
                                 optionsAreloading: false,
+                                hasAdvancedOptions: options.filter((x) => x.isAdvanced).length > 0,
                             });
                         });
-                    // watch the modalOpened model to reset the selected theme when the user close the modal
-                    // scope.$watch(
-                    //    function() {return vm.modalOpened;},
-                    //    function(isOpened) {
-                    //        if (!isOpened) {
-                    //            vm.closeModal();
-                    //        }
-                    //    }
-                    // );
-
-                    // scope.$watch('themeSettingsModal', () => {
-                    //    scope.vm.isOpened = vm.themeSettingsModal;
-                    // });
                     },
-                    // controllerAs: 'vm',
-                    // bindToController: true,
-                    // controller: ThemeSettingsModalController
                 };
             }])
         .filter('linkup', ['$sce', function($sce) {
