@@ -37,7 +37,7 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=50, po
     consumers = get_resource_service('consumers')
     blog_id = syndication_out['blog_id']
     posts_service = get_resource_service('posts')
-    lookup = {'blog': blog_id, ITEM_TYPE: CONTENT_TYPE.COMPOSITE, 'deleted': False, 'post_status': 'open'}
+    lookup = {'blog': blog_id, ITEM_TYPE: CONTENT_TYPE.COMPOSITE, 'deleted': False}
 
     posts = posts_service.find(lookup)
 
@@ -51,19 +51,18 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=50, po
             if len(array) >= limit:
                 break
 
-        array.reverse() ################################################33
+        array.reverse()
+
         for producer_post in array:
-            # Don't forward syndicated posts
-            # if 'syndication_in' in producer_post.keys():
-            #     continue
-            items = extract_post_items_data(producer_post)
-            post = extract_producer_post_data(producer_post)
-            # Force post_status for old posts
-            post['post_status'] = post_status
-            consumers.send_post(syndication_out, {
-                'items': items,
-                'post': post
-            }, action)
+            if producer_post.get('post_status') == 'open' or 'syndication_in' in producer_post.keys():
+                items = extract_post_items_data(producer_post)
+                post = extract_producer_post_data(producer_post)
+                # Force post_status for old posts
+                post['post_status'] = post_status
+                consumers.send_post(syndication_out, {
+                    'items': items,
+                    'post': post
+                }, action)
     except APIConnectionError as e:
         logger.warning('Unable to send posts to consumer: {}'.format(e))
         raise self.retry(exc=e, max_retries=SYNDICATION_CELERY_MAX_RETRIES, countdown=SYNDICATION_CELERY_COUNTDOWN)
