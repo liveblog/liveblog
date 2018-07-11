@@ -129,13 +129,13 @@ class SyndicationOutService(BaseService):
     def on_created(self, docs):
         super().on_created(docs)
         for doc in docs:
-            send_posts_to_consumer.delay(doc)
+            send_posts_to_consumer(doc)
 
     def on_updated(self, updates, original):
         super().on_updated(updates, original)
         doc = original.copy()
         doc.update(updates)
-        send_posts_to_consumer.delay(doc)
+        send_posts_to_consumer(doc)
 
     def on_deleted(self, doc):
         super().on_deleted(doc)
