@@ -24,9 +24,8 @@ class AccessAuthService(DbAuthService):
             (AGENT_MODILE_IOS in user_agent),
             (AGENT_MOBILE_ANDROID in user_agent)
         ])
-        is_solo_mobile_app = subscription == SUBSCRIPTION_LEVEL_SOLO and is_mobile_agent
 
-        if subscription not in ACCESS_SUBSCRIPTIONS_MOBILE and is_solo_mobile_app:
+        if subscription not in ACCESS_SUBSCRIPTIONS_MOBILE and is_mobile_agent:
             raise SuperdeskApiError.forbiddenError(message='Liveblog mobile can not access on this subscription')
 
     def disable_sd_desktop_notification(self, credentials):
