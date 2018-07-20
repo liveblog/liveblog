@@ -1,12 +1,13 @@
 from flask import request
 from apps.auth.db import DbAuthService
-from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_LEVEL_SOLO, ACCESS_SUBSCRIPTIONS_MOBILE
+from settings import SUBSCRIPTION_LEVEL, ACCESS_SUBSCRIPTIONS_MOBILE
 from superdesk.errors import SuperdeskApiError
 from superdesk import get_resource_service
 from apps.auth.errors import CredentialsAuthError
 
 AGENT_MOBILE_ANDROID = "okhttp/"
 AGENT_MODILE_IOS = "org.sourcefabric.LiveBlogReporter"
+
 
 class AccessAuthService(DbAuthService):
 
