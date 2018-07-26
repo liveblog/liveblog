@@ -12,7 +12,7 @@ export default function freetypeText() {
 
             if ($scope.number !== undefined) {
                 $scope.$on('$destroy', $scope.$watch('text', (value) => {
-                    if ($scope.value === undefined) return;
+                    if (value === undefined) return;
                     $scope.numberFlag = (value !== '') && isNaN(value);
                     $scope.validation['number__' + $scope._id] = !$scope.numberFlag;
                 }, true));
@@ -34,7 +34,7 @@ export default function freetypeText() {
 
             if ($scope.necessary !== undefined) {
                 $scope.$on('$destroy', $scope.$watch('text', (value) => {
-                    $scope.necessaryFlag = (value === '');
+                    $scope.necessaryFlag = (value === '') || (value === undefined);
                     $scope.validation['necessary__' + $scope._id] = !$scope.necessaryFlag;
                 }, true));
             }
