@@ -59,10 +59,11 @@
         }" ng-click="order('hits')">Total Hit count</div>
       </div>
       <div ng-repeat="item in analytics | orderBy:predicate:reverse | filter:analyticsSearch | startFrom:currentPage*pageSize | limitTo:pageSize track by ( item._id + $index)" class="analytics-list-row">
-        <div class="analytics-list-row-item" lb-filter-domain>{{item._id}}</div>
+        <div ng-if="!item.context_url" class="analytics-list-row-item" lb-filter-domain>{{item._id.website_url}}</div>
+        <div ng-if="item.context_url" class="analytics-list-row-item" lb-filter-domain>{{item.context_url}}</div>
         <div class="analytics-list-row-item">{{item.hits}}</div>
-        <div class="analytics-list-row-item">
-          <button class="btn btn--primary" ng-click="fetchAnalyticsDetail('week', item._id, 1, true)">View-More</button>
+        <div class="analytics-list-row-item" ng-if="!item.context_url">
+          <button class="btn btn--primary" ng-click="fetchAnalyticsDetail('week', item._id.website_url, 1, true)">View-More</button>
         </div>
       </div>
     </div>
