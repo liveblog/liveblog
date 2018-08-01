@@ -113,7 +113,15 @@ export default function postsService(api, $q, userList) {
         return retrievePosts(blogId, postsCriteria);
     }
 
-    function _completeUser(obj) {
+    /**
+     * This will method will fetch the information of the creator of the post
+     * or item and will attach it to the item object in order to access the user's
+     * information later (profile_url, name, etc)
+     *
+     * @param       {Object} obj         Post or item belonging to post
+     * @param       {String} postCreator (optional) - Id of user to look for
+     */
+    function _completeUser(obj, postCreator) {
         if (obj.commenter) {
             obj.user = {display_name: obj.commenter};
         } else if (obj.syndicated_creator) {
@@ -122,10 +130,11 @@ export default function postsService(api, $q, userList) {
             // TODO: way too many requests in there
             // This getUser func is returning a list of users,
             // who would have thought?
-            userList.getUser(obj.original_creator).then((user) => {
+            userList.getUser(postCreator || obj.original_creator).then((user) => {
                 obj.user = user;
             });
         }
+
         return obj;
     }
     function _completePost(post) {
@@ -157,7 +166,9 @@ export default function postsService(api, $q, userList) {
                     _completeUser(val.item);
                 }
             });
-            _completeUser(post.mainItem.item);
+
+            // let's now complete user for main post
+            _completeUser(post.mainItem.item, post.original_creator);
 
             resolve(post);
         });
