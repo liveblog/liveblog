@@ -47,7 +47,7 @@ class AnalyticsResource(Resource):
 
 class AnalyticsService(BaseService):
     notification_key = 'analytics'
-    
+
 
 @analytics_blueprint.route('/api/blogs/<blog_id>/<sort_type>/bloganalytics', methods=['GET'])
 def get_analytics(blog_id, sort_type):
@@ -69,23 +69,31 @@ def get_analytics(blog_id, sort_type):
             "updated": {"$gte": start}
         }))
     else:
+        response_without_domain = dumps(
+            db_client.find({
+                "blog_id": ObjectId(blog_id),
+                "website_url": {"$exists": False}
+            })
+        )
         response_data = dumps(
             db_client.aggregate([
                 {
                     "$match":
                     {
                         "blog_id": ObjectId(blog_id),
+                        "website_url": {"$exists": True},
                     }
                 },
                 {
                     "$group":
                     {
-                        "_id": "$website_url",
+                        "_id": {"website_url": "$website_url"},
                         "hits": {"$sum": "$hits"}
                     }
                 }
             ])
         )
+        response_data = dumps(json.loads(response_data) + json.loads(response_without_domain))
 
     return make_response(response_data, 200)
 
