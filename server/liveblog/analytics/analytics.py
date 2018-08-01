@@ -71,6 +71,7 @@ def get_analytics(blog_id, sort_type):
     else:
         response_without_domain = dumps(
             db_client.find({
+                "blog_id": ObjectId(blog_id),
                 "website_url": {"$exists": False}
             })
         )
