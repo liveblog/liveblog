@@ -30,6 +30,8 @@ function liveblogAnalyticsController($scope, $http, config, $location, api, anal
                     } else {
                         $scope.analytics_data.concat(response.data);
                     }
+                } else {
+                    $scope.analytics_data = [];
                 }
             });
     };

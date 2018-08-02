@@ -67,14 +67,8 @@ def get_analytics(blog_id, sort_type):
             "blog_id": ObjectId(blog_id),
             "website_url": website_url,
             "updated": {"$gte": start}
-        }))
+        }).limit(500))
     else:
-        response_without_domain = dumps(
-            db_client.find({
-                "blog_id": ObjectId(blog_id),
-                "website_url": {"$exists": False}
-            })
-        )
         response_data = dumps(
             db_client.aggregate([
                 {
@@ -92,6 +86,14 @@ def get_analytics(blog_id, sort_type):
                     }
                 }
             ])
+        )
+        limit = 500 - len(json.loads(response_data))
+        limit = limit if limit > 0 else 500
+        response_without_domain = dumps(
+            db_client.find({
+                "blog_id": ObjectId(blog_id),
+                "website_url": {"$exists": False}
+            }).limit(limit)
         )
         response_data = dumps(json.loads(response_data) + json.loads(response_without_domain))
 
