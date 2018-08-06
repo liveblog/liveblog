@@ -71,7 +71,7 @@ function liveblogAnalyticsController($scope, $http, config, $location, api, anal
         link.click();
     };
 
-    $scope.loadAnalytics('week', null); // load all, calls aren't expensive
+    $scope.loadAnalytics('year', null); // load all, calls aren't expensive
 
     angular.extend(self, {
         blog: blog,
