@@ -22,8 +22,8 @@ const precompileParentTemplates = (theme, nunjucksEnv) => {
   }
 
   return () => {
-    // only if is a theme extension
-    if (!theme.extends) return;
+    // return if amp theme or if not extends another theme
+    if (!theme.extends || theme.ampTheme) return;
 
     var prefixOptions = {
       env: nunjucksEnv,
@@ -61,6 +61,8 @@ const precompileThemeTemplates = (theme, nunjucksEnv) => {
   let paths = discoverThemePaths(theme, suffix, flat);
 
   return () => {
+    if (theme.ampTheme) return;
+
     gulp.src(paths.reverse())
       .pipe(plugins.nunjucks.precompile({ env: nunjucksEnv }))
       .pipe(plugins.concat(`${theme.name}-${constants.TEMPLATES_SUFFIX}`))
