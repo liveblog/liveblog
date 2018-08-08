@@ -16,6 +16,7 @@ const { ampValidate } = require('./tasks/amp');
 const { wireDeps, bundleJs, compileLess, doBrowserify } = require('./tasks/assets');
 const { indexInject, templateInject, themeReplace } = require('./tasks/injecting');
 const { precompileParentTemplates, precompileThemeTemplates } = require('./tasks/templates');
+const { SYSTEM_THEMES } = require('./tasks/constants');
 
 const CWD = process.cwd();
 
@@ -189,7 +190,9 @@ gulp.task('watch-static', ['server'], () => {
 });
 
 gulp.task('install', [], () => {
-  plugins.util.log('ATTENTION: Make sure you ran gulp wire-deps before install step');
+  if (SYSTEM_THEMES.indexOf(theme.name) === -1)
+    plugins.util.log('ATTENTION: Make sure you ran gulp wire-deps before install step');
+
   gulp.src([path.resolve(`${CWD}/package.json`)]).pipe(plugins.install());
 });
 
