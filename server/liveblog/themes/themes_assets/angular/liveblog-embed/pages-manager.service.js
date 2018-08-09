@@ -127,7 +127,7 @@
              * Check to see if we need to require a higher page number
              */
             function checkStep() {
-                
+
                 var shift, step;
                 //if order is 'oldest_first' we only need to care about the removed posts
                 if (self.sort === 'oldest_first') {
@@ -195,9 +195,9 @@
              */
             function processUpdates(updates, should_apply_all_updates) {
                 should_apply_all_updates = should_apply_all_updates === true;
-                
+
                 var newItems = applyUpdates(updates._items, should_apply_all_updates);
-                
+
                 if (self.pages.length !== 0) {
                     processNewPosts(updates._items);
                 }
@@ -255,11 +255,11 @@
                                     if (self.sort !== 'oldest_first') {
                                         self.newUpdatesApplied ++;
                                     }
-                                    
+
                                 }
                             } else {
                                 newItems.push(post);
-                            }               
+                            }
                         }
                     }
                 });
@@ -388,6 +388,7 @@
                         all_posts.push(post);
                     }
                 });
+
                 // and recreate pages
                 createPagesWithPosts(all_posts, true);
                 // update date
@@ -470,7 +471,7 @@
                 /**
                  * Process the latest available updates
                  */
-                processUpdates: processUpdates, 
+                processUpdates: processUpdates,
                 /**
                  * Apply the given updates to the posts list
                  */
