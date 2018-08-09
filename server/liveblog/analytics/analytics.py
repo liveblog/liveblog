@@ -98,6 +98,50 @@ def get_analytics(blog_id, sort_type):
     return make_response(response_data, 200)
 
 
+@analytics_blueprint.route('/api/bloganalytics/<blog_state>', methods=['GET'])
+def get_blog_analytics(blog_state):
+    db_client = app.data.mongo.pymongo('analytics').db['analytics']
+
+    if blog_state == 'active':
+        blog_status = 'open'
+    else:
+        blog_status = 'closed'
+
+    response_data = dumps(
+        db_client.aggregate([
+            {
+                "$sort": {"updated": -1},
+            },
+            {
+                "$group":
+                {
+                    "_id": {"blog_id": "$blog_id"},
+                    "hits": {"$sum": "$hits"},
+                    "updated": {"$first": "$updated"},
+                    "website_count": {"$sum": 1},
+                }
+            },
+            {
+                "$lookup":
+                {
+                    "from": "blogs",
+                    "localField": "_id.blog_id",
+                    "foreignField": "_id",
+                    "as": "blog_details",
+                }
+            },
+            {
+                "$match":
+                {
+                    "blog_details.blog_status": blog_status,
+                }
+            }
+        ])
+    )
+
+    return make_response(response_data, 200)
+
+
 @analytics_blueprint.route('/api/analytics/hit', methods=['POST'])
 def analytics_hit():
     data = request.get_json()
