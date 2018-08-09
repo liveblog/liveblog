@@ -37,6 +37,9 @@
                         <div ng-if="analytics_data">
                             <lb-analytics-list analytics-fn="loadAnalytics(arg1, arg2,arg3,arg4)" showSourceBadge="false" loadMore="loadMore()"" analytics="analytics_data" downloadcsv-fn="downloadCSV()"></lb-analytics-list>
                         </div>
+                        <div ng-if="analytics_data.length === 0">
+                            NO RECORDS!
+                        </div>
                     </div>
                 </div>
             </div>
