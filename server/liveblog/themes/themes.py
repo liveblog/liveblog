@@ -33,7 +33,7 @@ from liveblog.system_themes import system_themes
 from settings import (COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY, SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
 from liveblog.blogs.utils import is_s3_storage_enabled as s3_enabled
-from .template.filters import moment_date_filter_container, addten, ampify
+from .template.filters import moment_date_filter_container, addten, ampify, ampsupport
 from .template.loaders import ThemeTemplateLoader
 
 
@@ -315,6 +315,7 @@ class ThemesService(BaseService):
         embed_env.filters['date'] = moment_date_filter_container(theme)
         embed_env.filters['addten'] = addten
         embed_env.filters['ampify'] = ampify
+        embed_env.filters['ampsupport'] = ampsupport
         return embed_env
 
     def get_theme_compiled_templates_path(self, theme_name):
