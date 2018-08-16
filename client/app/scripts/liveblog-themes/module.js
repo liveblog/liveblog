@@ -147,6 +147,34 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
             isSolo: () => config.subscriptionLevel === 'solo',
             // loading indicatior for the first timeload.
             loading: true,
+            setNotificationCookie: function(cookieName, cookieValue) {
+                if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
+                    document.cookie = cookieName + '=' + cookieValue + ';path=/';
+                document.cookie = encodeURIComponent(cookieName + '=') + encodeURIComponent(cookieValue + ';')
+                 + 'expires=0;path=/';
+            },
+            getNotificationCookie: function(cookieName) {
+                if (getCookie(cookieName))
+                    return true;
+
+                function getCookie(cookieName) {
+                    var name = cookieName + '=';
+                    var decodedCookie = decodeURIComponent(document.cookie);
+                    var cookieArray = decodedCookie.split(';');
+
+                    for (var i = 0; i < cookieArray.length; i++) {
+                        var temp = cookieArray[i];
+
+                        while (temp.charAt(0) == ' ') {
+                            temp = temp.substring(1);
+                        }
+                        if (temp.indexOf(name) == 0) {
+                            return temp.substring(name.length, temp.length);
+                        }
+                    }
+                    return '';
+                }
+            },
             getTheme: function(name) {
                 return _.find(self.themes, (theme) => theme.name === name);
             },
