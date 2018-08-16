@@ -132,3 +132,36 @@ def ampify(html):
             embed.group('embed') if embed else '',
             videoId.group(1) if videoId else '')
     return html
+
+
+def ampsupport(item):
+    """
+    Jinja filter that checks if an item can be rendered on amp theme based on some of its attributes
+    At the moment we only support basic items, Scorecard and Advertisement Local.
+
+    Items of Freetypes group and items of type Advertisement Remote are not yet allowed.
+
+    Args:
+        item (`apps.archive.archive.ArchiveResource`): ArchiveResource instance. This might also be Post item
+
+    Returns:
+        boolean if supports or not the given item
+    """
+
+    def filter_freetypes(obj):
+        return obj['item'].get('group_type') == "freetype"
+
+    def item_type_filter(obj):
+        return obj['item'].get('item_type') not in ["Scorecard", "Advertisement Local"]
+
+    if item.get('groups') and item['groups'][1]['refs']:
+        item_list = item['groups'][1]['refs']
+
+        # let's extract freetypes and then remove the allowed
+        freetypes = list(filter(filter_freetypes, item_list))
+        not_supported = list(filter(item_type_filter, freetypes))
+
+        if len(not_supported) > 0:
+            return False
+
+    return True

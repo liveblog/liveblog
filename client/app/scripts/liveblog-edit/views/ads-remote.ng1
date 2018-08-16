@@ -1,4 +1,7 @@
 <fieldset>
    <legend hide-render>Advertisement Remote:</legend>
    <div><label for="embed" hide-render>Embed</label><input id="embed" embed="$embed"/></div>
+   <p class="warn-block">
+       Be aware that Advertisement Remote is not yet supported in Liveblog AMP Theme.
+   </p>
 </fieldset>
