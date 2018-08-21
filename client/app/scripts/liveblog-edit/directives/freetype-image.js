@@ -6,7 +6,9 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
     return {
         restrict: 'E',
         templateUrl: freetypeImageTpl,
-        controller: ['$scope', function($scope) {
+        controller: ['$scope', '$attrs', function($scope, $attrs) {
+            let self = this;
+
             $scope.preview = {};
             $scope.progress = {width: 0};
             $scope.saved = false;
@@ -25,15 +27,16 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
 
             $scope.valid = true;
             $scope._id = _.uniqueId('image');
-            if ($scope.compulsory !== undefined) {
-                const sentinel = $scope.$watch('[image,compulsory]', (value) => {
-                    $scope.compulsoryFlag = value[0].picture_url === '' && value[1] === '';
+
+            if ($attrs.compulsory !== undefined) {
+                const sentinel = $scope.$watch('[image,compulsory]', ([image, compulsory]) => {
+                    let imageValue = image.picture_url === '' || image.picture_url === undefined;
+
+                    $scope.compulsoryFlag = imageValue && compulsory === '';
                 }, true);
 
                 $scope.$on('$destroy', sentinel);
             }
-
-            let self = this;
 
             $scope.$watch('preview.img', (newValue, oldValue, scope) => {
                 if (newValue !== undefined || newValue !== oldValue) {
@@ -84,14 +87,22 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
                 modal
                     .confirm(gettext('Are you sure you want to remove the image?'))
                     .then(() => {
-                        $scope.image.picture_url = '';
                         $scope.preview = {};
                         $scope.progress = {width: 0};
                         $scope.saved = false;
+
+                        // let's wait more or less until image is fully removed
+                        setTimeout(() => {
+                            $scope.validation.imageUploaded = true;
+                            $scope.image.picture_url = '';
+
+                            // triggers model update so form state is also updated
+                            $scope.$apply();
+                        }, 500);
                     });
             };
         }],
-        controllerAs: 'ft',
+
         scope: {
             image: '=',
             // `compulsory` indicates a variable that is needed if the current value is empty.
