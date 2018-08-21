@@ -33,7 +33,6 @@ export default function blogService(api, $q, $rootScope, config) {
     function getPublicUrl(blog) {
         const deferred = $q.defer();
         let publicUrl;
-        // for debug purpose
 
         if (!blog.public_url && config.debug) {
             publicUrl = config.server.url.replace('/api', `/embed/${blog._id}`);
@@ -53,12 +52,6 @@ export default function blogService(api, $q, $rootScope, config) {
                     publicUrl = config.debug ? blog.public_url : blog.public_url.replace('http://', 'https://');
                 }
             });
-        }
-
-        if (blog.theme_settings.gaCode) {
-            let blogTitle = blog.title.replace(' ', '-');
-
-            publicUrl += `?utm_source=web&utm_medium=liveblog&utm_campaign=${blogTitle}`;
         }
 
         deferred.resolve(publicUrl);
