@@ -3,7 +3,7 @@
 [Fork](https://github.com/liveblog/liveblog) •
 [License](https://github.com/liveblog/liveblog/blob/master/LICENSE) •
 [Documentation](http://sourcefabric.booktype.pro/live-blog-30-for-journalists/what-is-live-blog/) •
-*Version 3.3.8*
+*Version 3.4.2*
 
 [![Build Status](https://travis-ci.org/liveblog/liveblog.svg?branch=master)](https://travis-ci.org/liveblog/liveblog)
 
@@ -100,6 +100,8 @@ sleep 10
 honcho -f ../docker/Procfile-dev start
 ```
 
+##### In Live Blog version 3.4 we updated the Superdesk core libraries to a version higher than v1.8. If you plan to use Amazon S3 to store your assets, please check [this information](AMAZON-S3-PUBLISHED-URL.MD))
+
 #### Configure the client
 
 Now we can install the dependencies for the client
@@ -146,7 +148,7 @@ $ ./scripts/docker-local-demo.sh
 
 ### Testing
 
-How to run the behaviore tests for the syndication feature:
+How to run the behavior tests for the syndication feature:
 
 ```
 cd server
@@ -190,7 +192,7 @@ Once in the virtual machine:
 /opt/liveblog/scripts/vagrant-provision.sh
 ```
 
-Once the provisioning done whil still in the virtual machine:
+Once the provisioning done will still in the virtual machine:
 
 ```
 /opt/liveblog/scripts/vagrant-start-dev.sh

@@ -10,17 +10,6 @@ export default function ingestPanelDropdown(IngestPanelActions) {
             blog: '=',
         },
         link: function(scope) {
-            scope.toggleDropdown = function($event, blog) {
-                if (!blog.hasOwnProperty('isOpen')) {
-                    blog.isOpen = false;
-                }
-
-                $event.preventDefault();
-                $event.stopPropagation();
-
-                blog.isOpen = !blog.isOpen;
-            };
-
             scope.updateSyndication = function() {
                 IngestPanelActions.updateSyndication(
                     scope.blog._id,

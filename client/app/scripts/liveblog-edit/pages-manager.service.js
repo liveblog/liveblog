@@ -302,6 +302,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
                     allPosts.push(post);
                 }
             });
+
             // and recreate pages
             createPagesWithPosts(allPosts, true);
             // update date

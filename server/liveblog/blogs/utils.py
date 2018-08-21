@@ -6,8 +6,12 @@ from .app_settings import BLOGSLIST_ASSETS_DIR
 from .exceptions import MediaStorageUnsupportedForBlogPublishing
 
 
+def is_s3_storage_enabled():
+    return type(app.media).__name__ is 'AmazonMediaStorage'
+
+
 def check_media_storage():
-    if type(app.media).__name__ is not 'AmazonMediaStorage':
+    if not is_s3_storage_enabled():
         raise MediaStorageUnsupportedForBlogPublishing()
 
 

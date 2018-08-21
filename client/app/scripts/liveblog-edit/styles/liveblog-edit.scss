@@ -141,7 +141,7 @@
                     overflow: hidden;
                     border: none;
                 }
-                
+
                 .dropdown-content {
                     background-color: #fff;
                     border: 1px solid #c6c6c6;
@@ -523,8 +523,7 @@
                                     }
                                 }
                                 // make a contenteditable div looking like a custom input
-                                @mixin inline-field()
-{
+                                @mixin inline-field() {
                                     @include box-sizing(border-box); // width and height doesn't include the margin
                                     width: 100%;
                                     min-height: 1em;
@@ -663,7 +662,7 @@
         max-width: 200px;
     }
 
-// Icons LB custom
+    // Icons LB custom
     .lb-big-icon-ingest {
         background-image: url('~images/ingest.svg');
     }

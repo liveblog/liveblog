@@ -8,10 +8,12 @@
 # AUTHORS and LICENSE files distributed with this source code, or
 # at https://www.sourcefabric.org/superdesk/license
 
-import logging
 import time
 import bs4
 import math
+import logging
+from jinja2 import Environment, BaseLoader
+
 from superdesk import get_resource_service
 from liveblog.exceptions import ParameterError
 
@@ -39,7 +41,7 @@ class AdsSettings(object):
         article_class (`str`): Css class used in article tag
         tombstone_class (`str`): Css class used to describe deleted post entries
         order (`int`): Order that will be used to display the ads
-        template (`jinja2.Template`): Template content to be used to render the ad content
+        template (`jinja2.Template` or `str`): Template content to be used to render the ad content
     """
 
     # @TODO:
@@ -50,7 +52,7 @@ class AdsSettings(object):
         'article_tag': 'article',
         'article_class': 'lb-post',
         'tombstone_class': 'hide-item',
-        'template': "{{ item.text }}",
+        'template': '{{ item.text }}',
         'order': ASC
     }
 
@@ -59,6 +61,12 @@ class AdsSettings(object):
 
         parameters = self.DEFAULT_SETTINGS.copy()
         parameters.update(kwargs)
+
+        # if template is string, let's turn it into jinja2 template
+        if isinstance(parameters["template"], str):
+            jinja_env = Environment(loader=BaseLoader())
+            parameters["template"] = jinja_env.from_string(parameters["template"])
+
         self.__dict__ = parameters
 
     def __repr__(self):
@@ -81,7 +89,7 @@ class AdsSettings(object):
             raise ParameterError("Unknown parameters:", tuple(diff))
 
 
-def inject_advertisments(content, settings, ads_list, theme):
+def inject_advertisements(content, settings, ads_list, theme):
     """
     This method receives a parsed with BeautifulSoup content and injects the
     advertisments according to given `settings` (frequency, order, etc)
@@ -124,20 +132,21 @@ def inject_advertisments(content, settings, ads_list, theme):
     theme_settings = theme_service.get_default_settings(theme)
 
     for i in range(0, pcount, frequency):
-        index = math.ceil(i / frequency) % acount
+        if acount != 0:
+            index = math.ceil(i / frequency) % acount
 
-        ref_article = articles[i]
-        item = ads_list[index]
-        ad_id = "ads_%s_%s" % (item['_id'], i)
+            ref_article = articles[i]
+            item = ads_list[index]
+            ad_id = "ads_%s_%s" % (item['_id'], i)
 
-        ad_content = template.render(
-            ad_id=ad_id, item=item, theme=theme, settings=theme_settings)
-        ad_content = prepare_amp_content(ad_content)
+            ad_content = template.render(
+                ad_id=ad_id, item=item, theme=theme, settings=theme_settings)
+            ad_content = prepare_amp_content(ad_content)
 
-        # we need to increment the data-update-time in order to trigger amp updating
-        # if date-update-time is not updated, the advertisement will display wrong content
-        ref_article['data-update-time'] = int(time.time())
-        ref_article.append(ad_content)
+            # we need to increment the data-update-time in order to trigger amp updating
+            # if date-update-time is not updated, the advertisement will display wrong content
+            ref_article['data-update-time'] = int(time.time())
+            ref_article.append(ad_content)
 
 
 def prepare_amp_content(content):

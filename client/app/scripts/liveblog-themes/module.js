@@ -95,6 +95,13 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
             return api.themes.query().then((data) => {
                 const themes = data._items;
 
+                self.themeNames = [];
+                for (var i = 0; i < themes.length; i++) {
+                    if (themes[i].name != 'angular') {
+                        self.themeNames.push({label: themes[i].label, name: themes[i].name});
+                    }
+                }
+
                 themes.forEach((theme) => {
                     // create criteria to load blogs with the theme.
                     const criteria = {
@@ -140,6 +147,34 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
             isSolo: () => config.subscriptionLevel === 'solo',
             // loading indicatior for the first timeload.
             loading: true,
+            setNotificationCookie: function(cookieName, cookieValue) {
+                if (/MSIE \d|Trident.*rv:/.test(navigator.userAgent))
+                    document.cookie = cookieName + '=' + cookieValue + ';path=/';
+                document.cookie = encodeURIComponent(cookieName + '=') + encodeURIComponent(cookieValue + ';')
+                 + 'expires=0;path=/';
+            },
+            getNotificationCookie: function(cookieName) {
+                if (getCookie(cookieName))
+                    return true;
+
+                function getCookie(cookieName) {
+                    var name = cookieName + '=';
+                    var decodedCookie = decodeURIComponent(document.cookie);
+                    var cookieArray = decodedCookie.split(';');
+
+                    for (var i = 0; i < cookieArray.length; i++) {
+                        var temp = cookieArray[i];
+
+                        while (temp.charAt(0) == ' ') {
+                            temp = temp.substring(1);
+                        }
+                        if (temp.indexOf(name) == 0) {
+                            return temp.substring(name.length, temp.length);
+                        }
+                    }
+                    return '';
+                }
+            },
             getTheme: function(name) {
                 return _.find(self.themes, (theme) => theme.name === name);
             },
@@ -150,6 +185,9 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
             },
             cannotRemove: function(theme) {
                 const hasChildren = self.themes.some((t) => t.extends === theme.name);
+
+                // Removing simple theme https://dev.sourcefabric.org/browse/LBSD-2199
+                // const systemThemes = ['angular', 'classic', 'default', 'amp', 'simple'];
                 const systemThemes = ['angular', 'classic', 'default', 'amp'];
                 const isSystemTheme = systemThemes.indexOf(theme.name) !== -1;
 

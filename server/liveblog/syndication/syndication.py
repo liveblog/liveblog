@@ -104,6 +104,12 @@ class SyndicationOutService(BaseService):
             logger.debug('Not sending post "{}": syndicated content.'.format(post['_id']))
             return False
 
+    def _is_repeat_syndication(self, post):
+        # Prevent "loops" by sending only posts with repeat_syndication to false
+        if post.get('repeat_syndication'):
+            logger.debug('Not sending post "{}": syndicated content.'.format(post['_id']))
+            return False
+
         items = extract_post_items_data(post)
         for item in items:
             if item['group_type'] == 'freetype' and item['item_type'] in app.config['SYNDICATION_EXCLUDED_ITEMS']:
@@ -113,7 +119,7 @@ class SyndicationOutService(BaseService):
         return True
 
     def send_syndication_post(self, post, action='created'):
-        if self._is_post_for_syndication(post):
+        if self._is_repeat_syndication(post):
             blog_id = ObjectId(post['blog'])
             out_syndication = self.get_blog_syndication(blog_id)
             for out in out_syndication:

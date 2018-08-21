@@ -8,6 +8,7 @@ from flask import make_response
 from bson import ObjectId
 import logging
 import json
+from eve.utils import config
 
 logger = logging.getLogger('superdesk')
 
@@ -44,6 +45,7 @@ class AnalyticsService(BaseService):
 class BlogAnalyticsResource(Resource):
     url = 'blogs/<regex("[a-f0-9]{24}"):blog_id>/bloganalytics'
     schema = analytics_schema
+    config.PAGINATION_LIMIT = 500
     datasource = {
         'source': 'analytics'
     }

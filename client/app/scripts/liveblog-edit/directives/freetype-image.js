@@ -18,6 +18,7 @@ export default function freetypeImage($compile, modal, api, upload, superdesk, u
 
             $scope.$watch('image', (value) => {
                 if (value.picture_url) {
+                    $scope.progress.width = 100;
                     $scope.preview.url = value.picture_url;
                 }
             });
