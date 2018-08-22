@@ -33,14 +33,21 @@ var sendPageview = {
       // let's build a more meaningful url for ga analytics
       // and also append some utm parameters to make it even better
       var blog = window.LB.blog;
+      var location = window.location.href;
       var blogTitle =  blog.title.replace(' ', '-');
       var campaignData = `utm_source=web&utm_medium=liveblog&utm_campaign=${blogTitle}`;
-      var path = `/liveblog/blogs/${blog._id}/?${campaignData}`;
+      var path = `/liveblog/blogs/${blog._id}/`;
+
+      // now let's check if is possible to get document.referrer
+      if ('referrer' in document) {
+        var aTag = document.createElement('a');
+        aTag.href = document.referrer;
+        path = aTag.pathname;
+        location = `${document.referrer}?${campaignData}`;
+      }
 
       window.gaAnalytics('send', {
-        hitType: 'pageview',
-        page: path,
-        location: `${window.location.href}?${campaignData}`
+        hitType: 'pageview', path, location
       });
     }
   },
