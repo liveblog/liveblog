@@ -507,6 +507,8 @@ liveblog.loadCallback&&liveblog.loadCallback()});</script>`;
         vm.loadOutputs(true);
     });
 
+    $scope.isAdmin = blogSecurityService.isAdmin;
+
 
     // check if form is dirty before leaving the page
     const deregisterPreventer = $scope.$on('$locationChangeStart', routeChange);
