@@ -24,21 +24,40 @@ var sendPageview = {
   },
 
   _sendGA: function() {
-    if (window.ga.length > 0) {
-      window.ga('create', window._iframeDataset.gaProperty, 'auto');
-      window.ga('set', 'anonymizeIp', true);
+    if (window.gaAnalytics.length > 0) {
+      window.gaAnalytics('create', window._iframeDataset.gaProperty, 'auto');
+      window.gaAnalytics('set', 'anonymizeIp', true);
     }
 
-    if (window.ga.loaded) {
-      window.ga('send', {
-        hitType: 'pageview',
-        location: window.document.referrer, // set to parent url
-        hitCallback: function() {}
+    if (window.gaAnalytics.loaded) {
+      // let's build a more meaningful url for ga analytics
+      // and also append some utm parameters to make it even better
+      var blog = window.LB.blog;
+      var location = window.location.href;
+      var blogTitle =  blog.title.replace(' ', '-');
+      var campaignData = `utm_source=web&utm_medium=liveblog&utm_campaign=${blogTitle}`;
+      var path = `/liveblog/blogs/${blog._id}/`;
+
+      // now let's check if is possible to get document.referrer
+      if ('referrer' in document) {
+        var aTag = document.createElement('a');
+        aTag.href = document.referrer;
+        path = aTag.pathname;
+        location = `${document.referrer}?${campaignData}`;
+      }
+
+      window.gaAnalytics('send', {
+        hitType: 'pageview', path, location
       });
     }
   },
 
   _insertScript: function(src, cb) {
+    // there are some situations where google analytics script could be already loaded
+    // and set another name to the tracking function. So that we use our own custom name
+    // to avoid this issue. In this case it's just gaAnalytics
+    window.GoogleAnalyticsObject = "gaAnalytics";
+
     var script = document.createElement('script'); script.src = src;
     document.getElementsByTagName("body")[0].appendChild(script);
     script.addEventListener("load", cb);
@@ -66,7 +85,7 @@ var sendPageview = {
       }
     }
 
-    parent._foundProviders = foundProviders; // cache after initial
+    this._foundProviders = foundProviders; // cache after initial
     return foundProviders;
   },
 
