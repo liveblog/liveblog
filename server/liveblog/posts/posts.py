@@ -131,10 +131,6 @@ class PostsResource(ArchiveResource):
         'producer_post_id': {
             'type': 'string',
             'nullable': True
-        },
-        'repeat_syndication': {
-            'type': 'boolean',
-            'default': False
         }
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}

@@ -250,8 +250,6 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
         post_status = 'submitted'
 
     producer_post_id = get_producer_post_id(in_syndication, producer_post['_id'])
-    posts_service = get_resource_service('posts')
-    post = posts_service.find_one(req=None, _id=producer_post['_id'])
     new_post = {
         'blog': in_syndication['blog_id'],
         'groups': [
@@ -274,8 +272,7 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
         'particular_type': 'post',
         'post_status': post_status,
         'producer_post_id': producer_post_id,
-        'deleted': False,
-        'repeat_syndication': True if post and post.get('syndication_in') else False
+        'deleted': False
     }
 
     if 'published_date' in producer_post.keys():
