@@ -398,12 +398,14 @@ export default function BlogEditController(
         actionStatus: function() {
             if (isPostFreetype()) {
                 if (angular.isDefined($scope.currentPost)) {
-                    return $scope.freetypeControl.isValid()
-                        && ($scope.currentPost.post_status === 'draft'
-                            || $scope.currentPost.post_status === 'submitted');
+                    // @TODO: ask about specific behaviour in draft or submitted
+                    // !$scope.freetypeControl.isValid()
+                    //     && ($scope.currentPost.post_status === 'draft'
+                    //         || $scope.currentPost.post_status === 'submitted');
+                    return !$scope.freetypeControl.isValid();
                 }
 
-                return $scope.freetypeControl.isValid() || $scope.freetypeControl.isClean();
+                return !$scope.freetypeControl.isValid() || $scope.freetypeControl.isClean();
             }
             return $scope.actionDisabled || $scope.actionPending;
         },
