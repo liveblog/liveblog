@@ -132,6 +132,10 @@ class PostsResource(ArchiveResource):
             'type': 'string',
             'nullable': True
         },
+        'syndication_count': {
+            'type': 'number',
+            'default': 0,
+        },
         'repeat_syndication': {
             'type': 'boolean',
             'default': False
