@@ -18,6 +18,8 @@ postsService.$inject = [
 ];
 
 export default function postsService(api, $q, userList) {
+    var listOfUsers = [];
+
     function filterPosts(filters, postsCriteria) {
         // filters.status
         if (angular.isDefined(filters.status)) {
@@ -114,7 +116,7 @@ export default function postsService(api, $q, userList) {
     }
 
     /**
-     * This will method will fetch the information of the creator of the post
+     * This method will fetch the information of the creator of the post
      * or item and will attach it to the item object in order to access the user's
      * information later (profile_url, name, etc)
      *
@@ -127,16 +129,24 @@ export default function postsService(api, $q, userList) {
         } else if (obj.syndicated_creator) {
             obj.user = obj.syndicated_creator;
         } else {
-            // TODO: way too many requests in there
-            // This getUser func is returning a list of users,
-            // who would have thought?
-            userList.getUser(postCreator || obj.original_creator).then((user) => {
-                obj.user = user;
-            });
+            // we pull a set of users from the backend and store it
+            // in a variable. Max results will be 199, if user is not found
+            // then if will hit backend to try to retrieve user from db
+            var userId = postCreator || obj.original_creator;
+            var postUser = listOfUsers.find((x) => x._id === userId);
+
+            if (!postCreator) {
+                userList.getUser(postCreator || obj.original_creator).then((user) => {
+                    obj.user = user;
+                });
+            } else {
+                obj.user = postUser;
+            }
         }
 
         return obj;
     }
+
     function _completePost(post) {
         let multipleItems = false;
 
@@ -210,6 +220,16 @@ export default function postsService(api, $q, userList) {
     }
 
     function retrievePosts(blogId, postsCriteria) {
+        // preload users to avoid pulling them one by one
+        // to later use them to attach creator data to each post
+        if (listOfUsers.length === 0) {
+            api('users')
+                .getAll()
+                .then((data) => {
+                    listOfUsers = data;
+                });
+        }
+
         return api('blogs/<regex("[a-f0-9]{24}"):blog_id>/posts', {_id: blogId})
             .query(postsCriteria)
             .then(retrieveSyndications)
