@@ -196,7 +196,7 @@
                                     class="form-input"></div>
                             </div>
 
-                            <div class="form-group">
+                            <div class="form-group" ng-if="isAdmin()">
                                 <label for="inputPostslimit" class="control-label" translate>Posts limit</label>
                                 <div class="form-input">
                                     <select

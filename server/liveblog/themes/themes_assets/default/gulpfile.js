@@ -122,6 +122,31 @@ nunjucksEnv.addFilter('date', dateFilter);
 nunjucksEnv.addFilter('ampify', ampifyFilter);
 nunjucksEnv.addFilter('addten', addtenFilter);
 
+
+// TODO: add docstrings after merge default theme refactor
+const ampSupport = (item) => {
+  const itemTypeFilter = (obj) => {
+    const supported = ["Scorecard", "Advertisement Local"];
+    return supported.indexOf(obj.item['item_type']) !== -1
+  }
+
+  if (item['groups'] && item['groups'][1]['refs']) {
+    let itemsList = item['groups'][1]['refs']
+
+    // let's extract freetypes and then remove the allowed
+    let freetypes = itemsList.filter(x => x.item['group_type'] == "freetype")
+    let notSupported = freetypes.filter(itemTypeFilter)
+
+    if (notSupported.length > 0)
+        return false;
+  }
+
+  return true;
+}
+
+nunjucksEnv.addFilter('ampsupport', ampSupport);
+
+
 // nunjucks options.
 nunjucks.env = nunjucksEnv;
 

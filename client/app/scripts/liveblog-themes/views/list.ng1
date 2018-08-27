@@ -30,19 +30,23 @@
 <section class="main-section themelist">
     <div class="loading-indicator" ng-show="self.loading"><span translate>loading</span></div>
     <div class="list-container">
-        <div
-            ng-if="!self.isSolo()"
-            class="alert alert-info alert--margin-left"
-            role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="icon-close-small"></i></button>
-            You want to customize a Live Blog theme? All you need is someone in your team with frontend development skills, a download of the <a href="https://github.com/liveblog/generator-liveblog-theme" target="_blank">theme generator</a> and with a good read of our <a href="https://wiki.sourcefabric.org/display/LIVEBLOG/Live+Blog+themes" target="_blank">documentation in the Wiki</a> - you can easily introduce a theme extension matching the exact needs of your organisation.
+        <div ng-if="!self.getNotificationCookie('notification1')">
+            <div
+                ng-if="!self.isSolo()"
+                class="alert alert-info alert--margin-left"
+                role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close" ng-click="self.setNotificationCookie('notification1','customize_theme')"><i class="icon-close-small"></i></button>
+                You want to customize a Live Blog theme? All you need is someone in your team with frontend development skills, a download of the <a href="https://github.com/liveblog/generator-liveblog-theme" target="_blank">theme generator</a> and with a good read of our <a href="https://wiki.sourcefabric.org/display/LIVEBLOG/Live+Blog+themes" target="_blank">documentation in the Wiki</a> - you can easily introduce a theme extension matching the exact needs of your organisation.
+            </div>
         </div>
-        <div
-            ng-if="!self.isSolo()"
-            class="alert alert-error alert--margin-left"
-            role="alert">
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close"><i class="icon-close-small"></i></button>
-            Be aware that the Liveblog 3 AMP theme does not yet support all Live Blog features and post types.
+        <div ng-if="!self.getNotificationCookie('notification2')">
+            <div
+                ng-if="!self.isSolo()"
+                class="alert alert-error alert--margin-left"
+                role="alert">
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close" ng-click="self.setNotificationCookie('notification2','AMP_theme')"><i class="icon-close-small"></i></button>
+                Be aware that the Liveblog 3 AMP theme does not yet support all Live Blog features and post types.
+            </div>
         </div>
 
 

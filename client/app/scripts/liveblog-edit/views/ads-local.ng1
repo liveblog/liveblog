@@ -1,6 +1,6 @@
 <fieldset>
    <legend class="legend--big" hide-render>Advertisement Local</legend>
    <div class="fieldset-group-image"><label for="image" hide-render>Image</label><input id="image" image="$image" compulsory="text"/></div>
-   <div class="fieldset-group"><label for="text" hide-render>Text</label><input type="text" id="text1" name="$text" compulsory="image.picture_url" /></div>
+   <div class="fieldset-group"><label for="text" hide-render>Text</label><input type="text" id="text" name="$text" compulsory="image.picture_url" /></div>
    <div class="fieldset-group"><label for="link" hide-render>Link</label><input id="link" wrap-link="$link"/></div>
 </fieldset>
