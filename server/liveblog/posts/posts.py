@@ -132,10 +132,7 @@ class PostsResource(ArchiveResource):
             'type': 'string',
             'nullable': True
         },
-        'repeat_syndication': {
-            'type': 'boolean',
-            'default': False
-        }
+        'repeat_syndication': Resource.rel('repeat_syndication', embeddable=True, required=False, nullable=True)
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
     mongo_indexes = {
