@@ -81,7 +81,7 @@ export default function BlogEditController(
     // init with empty vector
     $scope.freetypesData = {}; $scope.freetypeControl = {}; $scope.validation = {};
     $scope.freetypesOriginal = {};
-    $scope.validation.imageUploaded = true;
+    $rootScope.uploadingImage = false;
 
     if (blog.blog_preferences.theme) {
         themesService.get(blog.blog_preferences.theme).then((themes) => {

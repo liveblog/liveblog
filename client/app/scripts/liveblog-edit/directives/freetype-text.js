@@ -6,15 +6,7 @@ export default function freetypeText() {
         templateUrl: freetypeTextTpl,
         link: function($scope, element) {
             element.on('$destroy', () => {
-                const prefixes = ['number', 'compulsory', 'tandem', 'necessary'];
-
-                // when the element is detroyed, we should avoid keeping garbage in scope
-                prefixes.forEach((prefix) => {
-                    delete $scope.validation[`${prefix}__${$scope._id}`];
-
-                    // also let's reset flags
-                    $scope[`${prefix}Flag`] = undefined;
-                });
+                $scope.cleanUp();
             });
         },
         controller: ['$scope', '$rootScope', '$attrs', function($scope, $rootScope, $attrs) {
@@ -59,6 +51,22 @@ export default function freetypeText() {
             $rootScope.$on('freetypeScopeDestroy', () => {
                 $scope.$destroy();
             });
+
+            $rootScope.$on('freetypeReset', () => {
+                $scope.cleanUp();
+            });
+
+            $scope.cleanUp = function() {
+                const prefixes = ['number', 'compulsory', 'tandem', 'necessary'];
+
+                // when the element is detroyed, we should avoid keeping garbage in scope
+                prefixes.forEach((prefix) => {
+                    delete $scope.validation[`${prefix}__${$scope._id}`];
+
+                    // also let's reset flags
+                    $scope[`${prefix}Flag`] = undefined;
+                });
+            };
         }],
         scope: {
             text: '=',
