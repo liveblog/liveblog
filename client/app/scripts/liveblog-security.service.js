@@ -48,12 +48,12 @@ angular.module('liveblog.security', [])
                 function canAccessSettings(archive) {
                     return canCreateABlog() && (isUserOwnerOrAdmin(archive) || isMemberOfBlog(archive));
                 }
-                function canAccessblogCheckbox() {
+                function canAccessblogCheckbox(blog) {
                     if ($rootScope.currentUser.user_type === 'editor') {
-                        return isMemberOfBlog();
+                        return isMemberOfBlog(blog);
                     } else if ($rootScope.currentUser.user_type === 'contributor') {
                         return false;
-                    } else {
+                    } else if ($rootScope.currentUser.user_type === 'administrator') {
                         return isAdmin();
                     }
                 }
