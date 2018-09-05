@@ -49,11 +49,11 @@ angular.module('liveblog.security', [])
                     return canCreateABlog() && (isUserOwnerOrAdmin(archive) || isMemberOfBlog(archive));
                 }
                 function canAccessblogCheckbox(blog) {
-                    if ($rootScope.currentUser.user_type === 'editor') {
-                        return isMemberOfBlog(blog);
-                    } else if ($rootScope.currentUser.user_type === 'contributor') {
-                        return false;
-                    } else if ($rootScope.currentUser.user_type === 'administrator') {
+                    const userType = $rootScope.currentUser.user_type;
+
+                    if (userType === 'user') {
+                        return canCreateABlog() && isMemberOfBlog(blog);
+                    } else if (userType === 'administrator') {
                         return isAdmin();
                     }
                 }
