@@ -1,4 +1,6 @@
+/* eslint-disable no-alert */
 import handlePlaceholder from './handle-placeholder';
+var DRIVE_UPLOAD_URL = 'https://www.googleapis.com/upload/youtube/v3/videos';
 
 var AddContentBtns = function() {
     this.top = $('.st-block-controls__top');
@@ -15,6 +17,272 @@ AddContentBtns.prototype.show = function() {
     this.bottom.attr('data-icon-after', 'ADD CONTENT HERE');
 };
 
+
+function getAuthentication(youtubeCredential) {
+    var revokeUrl = 'https://www.googleapis.com/oauth2/v4/token';
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('POST', revokeUrl + '?client_id='
+        + youtubeCredential.clientId + '&client_secret='
+        + youtubeCredential.clientSecret + '&refresh_token='
+        + youtubeCredential.refreshToken + '&grant_type=refresh_token', true);
+
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+    xhr.onreadystatechange = function(e) {
+        if (xhr.response) {
+            var result = JSON.parse(xhr.response);
+
+            localStorage.setItem('accessToken', result.access_token);
+        }
+    };
+    xhr.send(null);
+}
+
+
+var RetryHandler = function() {
+    this.interval = 1000; // Start at one second
+    this.maxInterval = 60 * 1000; // Don't wait longer than a minute
+};
+
+/**
+ * Invoke the function after waiting
+ *
+ * @param {function} fn Function to invoke
+ */
+RetryHandler.prototype.retry = function(fn) {
+    setTimeout(fn, this.interval);
+    this.interval = this.nextInterval_();
+};
+
+/**
+ * Reset the counter (e.g. after successful request.)
+ */
+RetryHandler.prototype.reset = function() {
+    this.interval = 1000;
+};
+
+/**
+ * Calculate the next wait time.
+ * @return {number} Next wait interval, in milliseconds
+ *
+ * @private
+ */
+RetryHandler.prototype.nextInterval_ = function() {
+    var interval = this.interval * 2 + this.getRandomInt_(0, 1000);
+
+    return Math.min(interval, this.maxInterval);
+};
+
+/**
+ * Get a random int in the range of min to max. Used to add jitter to wait times.
+ *
+ * @param {number} min Lower bounds
+ * @param {number} max Upper bounds
+ * @private
+ */
+RetryHandler.prototype.getRandomInt_ = function(min, max) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+};
+
+
+var MediaUploader = function(options) {
+    var noop = function() {
+        // do nothing
+    };
+
+    this.file = options.file;
+    this.contentType = options.contentType || this.file.type || 'application/octet-stream';
+    this.metadata = options.metadata || {
+        title: this.file.name,
+        mimeType: this.contentType,
+    };
+    this.token = options.token;
+    this.onComplete = options.onComplete || noop;
+    this.onProgress = options.onProgress || noop;
+    this.onError = options.onError || noop;
+    this.offset = options.offset || 0;
+    this.chunkSize = options.chunkSize || 0;
+    this.retryHandler = new RetryHandler();
+
+    this.url = options.url;
+    if (!this.url) {
+        var params = options.params || {};
+
+        params.uploadType = 'resumable';
+        params.part = 'snippet,status';
+        this.url = this.buildUrl_(options.fileId, params, options.baseUrl);
+    }
+    this.httpMethod = options.fileId ? 'PUT' : 'POST';
+};
+
+/**
+ * Initiate the upload.
+ */
+MediaUploader.prototype.upload = function() {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open(this.httpMethod, this.url, true);
+    xhr.setRequestHeader('Authorization', 'Bearer ' + this.token);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('X-Upload-Content-Length', this.file.size);
+    xhr.setRequestHeader('X-Upload-Content-Type', this.contentType);
+
+    xhr.onload = function(e) {
+        if (e.target.status < 400) {
+            var location = e.target.getResponseHeader('Location');
+
+            this.url = location;
+            this.sendFile_();
+        } else {
+            this.onUploadError_(e);
+        }
+    }.bind(this);
+    xhr.onerror = this.onUploadError_.bind(this);
+    xhr.send(JSON.stringify(this.metadata));
+};
+
+/**
+ * Send the actual file content.
+ *
+ * @private
+ */
+MediaUploader.prototype.sendFile_ = function() {
+    var content = this.file;
+    var end = this.file.size;
+
+    if (this.offset || this.chunkSize) {
+    // Only bother to slice the file if we're either resuming or uploading in chunks
+        if (this.chunkSize) {
+            end = Math.min(this.offset + this.chunkSize, this.file.size);
+        }
+        content = content.slice(this.offset, end);
+    }
+
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('PUT', this.url, true);
+    xhr.setRequestHeader('Content-Type', this.contentType);
+    xhr.setRequestHeader('Content-Range', 'bytes ' + this.offset + '-' + (end - 1) + '/' + this.file.size);
+    xhr.setRequestHeader('X-Upload-Content-Type', this.file.type);
+    if (xhr.upload) {
+        xhr.upload.addEventListener('progress', this.onProgress);
+    }
+    xhr.onload = this.onContentUploadSuccess_.bind(this);
+    xhr.onerror = this.onContentUploadError_.bind(this);
+    xhr.send(content);
+};
+
+/**
+ * Query for the state of the file for resumption.
+ *
+ * @private
+ */
+MediaUploader.prototype.resume_ = function() {
+    var xhr = new XMLHttpRequest();
+
+    xhr.open('PUT', this.url, true);
+    xhr.setRequestHeader('Content-Range', 'bytes */' + this.file.size);
+    xhr.setRequestHeader('X-Upload-Content-Type', this.file.type);
+    if (xhr.upload) {
+        xhr.upload.addEventListener('progress', this.onProgress);
+    }
+    xhr.onload = this.onContentUploadSuccess_.bind(this);
+    xhr.onerror = this.onContentUploadError_.bind(this);
+    xhr.send();
+};
+
+/**
+ * Extract the last saved range if available in the request.
+ *
+ * @param {XMLHttpRequest} xhr Request object
+ */
+MediaUploader.prototype.extractRange_ = function(xhr) {
+    var range = xhr.getResponseHeader('Range');
+
+    if (range) {
+        this.offset = parseInt(range.match(/\d+/g).pop(), 10) + 1;
+    }
+};
+
+/**
+ * Handle successful responses for uploads. Depending on the context,
+ * may continue with uploading the next chunk of the file or, if complete,
+ * invokes the caller's callback.
+ *
+ * @private
+ * @param {object} e XHR event
+ */
+MediaUploader.prototype.onContentUploadSuccess_ = function(e) {
+    if (e.target.status == 200 || e.target.status == 201) {
+        this.onComplete(e.target.response);
+    } else if (e.target.status == 308) {
+        this.extractRange_(e.target);
+        this.retryHandler.reset();
+        this.sendFile_();
+    }
+};
+
+/**
+ * Handles errors for uploads. Either retries or aborts depending
+ * on the error.
+ *
+ * @private
+ * @param {object} e XHR event
+ */
+MediaUploader.prototype.onContentUploadError_ = function(e) {
+    if (e.target.status && e.target.status < 500) {
+        this.onError(e.target.response);
+    } else {
+        this.retryHandler.retry(this.resume_.bind(this));
+    }
+};
+
+/**
+ * Handles errors for the initial request.
+ *
+ * @private
+ * @param {object} e XHR event
+ */
+MediaUploader.prototype.onUploadError_ = function(e) {
+    this.onError(e.target.response); // TODO - Retries for initial upload
+};
+
+/**
+ * Construct a query string from a hash/object
+ *
+ * @private
+ * @param {object} [params] Key/value pairs for query string
+ * @return {string} query string
+ */
+MediaUploader.prototype.buildQuery_ = function(params) {
+    var param = params || {};
+
+    return Object.keys(param).map((key) => encodeURIComponent(key) + '=' + encodeURIComponent(param[key]))
+        .join('&');
+};
+
+/**
+ * Build the drive upload URL
+ *
+ * @private
+ * @param {string} [id] File ID if replacing
+ * @param {object} [params] Query parameters
+ * @return {string} URL
+ */
+MediaUploader.prototype.buildUrl_ = function(id, params, baseUrl) {
+    var url = baseUrl || DRIVE_UPLOAD_URL;
+
+    if (id) {
+        url += id;
+    }
+    var query = this.buildQuery_(params);
+
+    if (query) {
+        url += '?' + query;
+    }
+    return url;
+};
+
 export default function videoBlock(SirTrevor, config) {
     return SirTrevor.Block.extend({
         type: 'video',
@@ -27,31 +295,40 @@ export default function videoBlock(SirTrevor, config) {
         authorPlaceholder: window.gettext('Add author'),
         titlePlaceholder: window.gettext('Add title'),
         embedlyKey: config.embedly.key,
+        youtubeCredential: config.youtubeCredential,
 
         editorHTML: function() {
             return [
                 '<div class="st-required st-embed-block video-input"></div>',
-                '<div class="video-progress-indicator hidden">',
-                '<span class="video-progress-indicator__processing hidden"></span>',
-                '<div class="video-progress-indicator__bar"></div>',
-                '</div>'
+                '<div class="upload-status"></div><br>',
+                '<div class="remaining_time"></div><br>',
+                '<div class="during-upload">',
+                '<p><span id="percent-transferred">'
+                + '</span>% done (<span id="bytes-transferred"></span>'
+                + '/<span id="total-bytes"></span> bytes)</p>',
+                '<progress id="upload-progress" max="1" value="0"></progress>',
+                '</div>',
             ].join('\n');
         },
 
         onBlockRender: function() {
-            var _this = this;
+            var self = this;
+
+            getAuthentication(this.youtubeCredential);
             var addContentBtns = new AddContentBtns();
             var uploadBlock = [
                 '<div class="row st-block__upload-container">',
-                    '<div class="col-md-6">',
-                        '<label onclick="$(this).next().trigger(\'click\');" class="btn btn-default">Select from folder</label>',
-                        '<input type="file" id="embedlyUploadFile">',
-                    '</div>',
-                '</div>'
+                '<div class="col-md-6">',
+                '<label onclick="$(this).next().trigger(\'click\');"' +
+                    'class="btn btn-default">Select from folder</label>',
+                '<input type="file" id="embedlyUploadFile">',
+                '</div>',
+                '</div>',
             ].join('\n');
 
-            _this.$('.st-block__inputs').append(uploadBlock);
-            _this.$('#embedlyUploadFile').on('change', function() {
+            self.$('.during-upload').hide();
+            self.$('.st-block__inputs').append(uploadBlock);
+            self.$('#embedlyUploadFile').on('change', function() {
                 var file = $(this).prop('files')[0];
 
                 if (!file) {
@@ -60,118 +337,100 @@ export default function videoBlock(SirTrevor, config) {
 
                 // Handle one upload at a time
                 if (/video/.test(file.type)) {
-                    _this.loading();
+                    self.loading();
 
                     // Hide add content buttons while uploading
                     addContentBtns.hide();
-                    _this.$inputs.hide();
+                    self.$inputs.hide();
 
-                    _this.handleUpload(file)
-                        .then((data) => {
-                            addContentBtns.show();
-                            _this.getOptions().disableSubmit(false);
-                            _this.setData(data);
-                            _this.loadData(data);
-                            _this.ready();
-                        });
+                    self.uploadFile(file);
                 }
             });
         },
+        uploadFile: function(file) {
+            var uploadStartTime = 0;
+            var self = this;
+            var metadata = {
+                snippet: {
+                    title: 'test_live_blog',
+                    description: 'just another test',
+                    tags: ['youtube-cors-upload'],
+                    categoryId: 22,
+                },
+                status: {
+                    privacyStatus: 'public',
+                },
+            };
+            var uploader = new MediaUploader({
+                baseUrl: 'https://www.googleapis.com/upload/youtube/v3/videos',
+                file: file,
+                token: localStorage.getItem('accessToken'),
+                metadata: metadata,
+                onError: function(data) {
+                    var message = data;
 
-        handleUpload: function(file) {
-            var _this = this;
+                    try {
+                        var errorResponse = JSON.parse(data);
 
-            return new Promise((resolve, reject) => {
-                var formData = new FormData();
-
-                formData.append('video_file', file);
-
-                var xhr = $.ajax({
-                    url: 'https://upload.embed.ly/1/video?key=' + this.embedlyKey,
-                    data: formData,
-                    cache: false,
-                    processData: false,
-                    contentType: false,
-                    crossDomain: true,
-                    headers: {
-                        'Access-Control-Allow-Origin': '*'
-                    },
-                    type: 'POST',
-                    success: function(response) {
-                        _this.$('.video-progress-indicator').addClass('hidden');
-                        resolve(response);
-                    },
-                    error: function(response) {
-                        _this.$('.video-progress-indicator').addClass('hidden');
-                        reject(response);
-                    },
-                    xhr: function() {
-                        // Monitor and display the percentage uploaded
-                        var xhr = new window.XMLHttpRequest();
-
-                        xhr.upload.addEventListener('progress', (evt) => {
-                            if (evt.lengthComputable) {
-                                var percentComplete = (evt.loaded / evt.total * 100.0).toFixed(2);
-
-                                _this.$('.video-progress-indicator')
-                                    .removeClass('hidden');
-                                _this.$('.video-progress-indicator__bar')
-                                    .css('width', percentComplete + '%');
-                            }
-                        }, false);
-                        return xhr;
-                    }
-
-                });
-
-
-            });
-        },
-
-        handleProgress: function(videoId) {
-            var call = "https://upload.embed.ly/1/status?key=" + this.embedlyKey + "&video_id=" + videoId;
-            var _videoId = videoId;
-            var _this = this;
-
-            $.ajax({
-                url: call,
-                type: 'GET',
-                success: function(response) {
-                    if (response.status === 'finished') {
-                        _this.$('.video-progress-indicator')
-                            .addClass('hidden');
-                        _this.$('.embed-preview iframe').attr('src', function ( i, val ) { return val; });
-                    } else if (response.status === 'cancelled' || response.status ==='failed') {
-                        _this.$('.embed-preview').html('<h1>Video</h1><p>' + response.status + '</p>');
-                    } else {
-                        var percentComplete = parseInt(response.progress);
-
-                        _this.$('.video-progress-indicator')
-                            .removeClass('hidden');
-                        _this.$('.video-progress-indicator__bar')
-                            .css('width', percentComplete + '%');
-                        _this.$('.video-progress-indicator__processing')
-                            .removeClass('hidden')
-                            .html(percentComplete + '%');
-                        setTimeout(_this.handleProgress(_videoId), 10000);
+                        message = errorResponse.error.message;
+                    } finally {
+                        alert(message);
                     }
                 },
-                error: function(response) {
-                    setTimeout(_this.handleProgress(_videoId), 10000);
-                }
+                onProgress: function(data) {
+                    var currentTime = Date.now();
+                    var bytesUploaded = data.loaded;
+                    var totalBytes = data.total;
+                    // The times are in millis, so we need to divide by 1000 to get seconds.
+                    var bytesPerSecond = bytesUploaded / ((currentTime - uploadStartTime) / 1000);
+                    var estimatedSecondsRemaining = (totalBytes - bytesUploaded) / bytesPerSecond;
+                    var percentageComplete = (bytesUploaded * 100) / totalBytes;
+
+                    $('.remaining_time').text('Time Left: ' + estimatedSecondsRemaining + ' Seconds');
+                    $('#upload-progress').attr({
+                        value: bytesUploaded,
+                        max: totalBytes,
+                    });
+
+                    $('#percent-transferred').text(percentageComplete);
+                    $('#bytes-transferred').text(bytesUploaded);
+                    $('#total-bytes').text(totalBytes);
+                    $('.upload-status').text('Please wait!!! uploading the video');
+                    $('.during-upload').show();
+                },
+                onComplete: function(data) {
+                    $('.remaining_time').hide();
+                    $('.upload-status').text('Video uploaded successfully..');
+                    $('.during-upload').hide();
+                    var uploadResponse = JSON.parse(data);
+                    var media = {
+                        html: '<iframe width="400" height="300" scrolling="no"'
+                        + ' frameborder="0" src="https://www.youtube.com/embed/'
+                            + uploadResponse.id + '" allowfullscreen></iframe>',
+                    };
+
+                    self.getOptions().disableSubmit(false);
+                    self.setData(media);
+                    self.loadData(media);
+                    self.ready();
+                },
             });
+            // This won't correspond to the *exact* start of the upload, but it should be close enough.
+
+            uploadStartTime = Date.now();
+            uploader.upload();
         },
 
         renderCard: function(data) {
-            var card_class = 'liveblog--card';
+            var cardClass = 'liveblog--card';
 
             var html = $([
-                '<div class="' + card_class + ' hidden">',
+                '<div class="' + cardClass + ' hidden">',
                 '  <div class="hidden st-embed-block embed-preview"></div>',
                 '  <div name="title" class="st-embed-block title-preview"></div>',
                 '  <div name="caption" class="st-embed-block description-preview"></div>',
                 '  <div name="credit" class="st-embed-block credit-preview"></div>',
-                '</div>'
+                '</div>',
             ].join('\n'));
 
             // hide everything
@@ -200,21 +459,21 @@ export default function videoBlock(SirTrevor, config) {
             }
 
             // retrieve the final html code
-            var html_to_return = '';
+            var htmltoReturn = '';
 
-            html_to_return = '<div class="' + card_class + '">';
-            html_to_return += html.get(0).innerHTML;
-            html_to_return += '</div>';
+            htmltoReturn = '<div class="' + cardClass + '">';
+            htmltoReturn += html.get(0).innerHTML;
+            htmltoReturn += '</div>';
 
-            this.handleProgress(data.video_id);
+            // this.handleProgress(data.video_id);
 
-            return html_to_return;
+            return htmltoReturn;
         },
 
         onDrop: function(transferData) {
             var file = transferData.files[0];
             var addContentBtns = new AddContentBtns();
-            var _this = this;
+            var self = this;
 
             if (!file) {
                 return false;
@@ -227,37 +486,29 @@ export default function videoBlock(SirTrevor, config) {
                 // Hide add content buttons while uploading
                 addContentBtns.hide();
                 this.$inputs.hide();
-
-                this.handleUpload(file)
-                    .then((data) => {
-                        addContentBtns.show();
-                        _this.getOptions().disableSubmit(false);
-                        _this.setData(data);
-                        _this.loadData(data);
-                        _this.ready();
-                    });
+                self.uploadFile(file);
             }
         },
         // render a card from data, and make it editable
         loadData: function(data) {
-            const _this = this;
+            const self = this;
 
             // hide the embed input field, render the card and add it to the DOM
-            _this.$('.video-input')
+            self.$('.video-input')
                 .addClass('hidden')
-                .after(_this.renderCard(data));
+                .after(self.renderCard(data));
             // set somes fields contenteditable
-            _this.$('.title-preview').attr({
+            self.$('.title-preview').attr({
                 contenteditable: true,
-                placeholder: _this.titlePlaceholder
+                placeholder: self.titlePlaceholder,
             });
-            _this.$('.description-preview').attr({
+            self.$('.description-preview').attr({
                 contenteditable: true,
-                placeholder: _this.descriptionPlaceholder
+                placeholder: self.descriptionPlaceholder,
             });
-            _this.$('.credit-preview').attr({
+            self.$('.credit-preview').attr({
                 contenteditable: true,
-                placeholder: _this.authorPlaceholder
+                placeholder: self.authorPlaceholder,
             });
 
             // remove the loader when media is loaded
@@ -270,9 +521,9 @@ export default function videoBlock(SirTrevor, config) {
                 this.ready();
             }
             // Remove placeholders
-            handlePlaceholder(this.$('[name=title]'), _this.titlePlaceholder);
-            handlePlaceholder(this.$('[name=caption]'), _this.descriptionPlaceholder);
-            handlePlaceholder(this.$('[name=credit]'), _this.authorPlaceholder, {tabbedOrder: true});
+            handlePlaceholder(this.$('[name=title]'), self.titlePlaceholder);
+            handlePlaceholder(this.$('[name=caption]'), self.descriptionPlaceholder);
+            handlePlaceholder(this.$('[name=credit]'), self.authorPlaceholder, {tabbedOrder: true});
         },
         retrieveData: function() {
             return {
@@ -281,7 +532,7 @@ export default function videoBlock(SirTrevor, config) {
                 video_id: this.getData().video_id,
                 caption: this.$('[name=caption]').text(),
                 credit: this.$('[name=credit]').text(),
-                title: this.$('[name=title]').text()
+                title: this.$('[name=title]').text(),
             };
         },
         toHTML: function() {
@@ -291,7 +542,7 @@ export default function videoBlock(SirTrevor, config) {
         },
         toMeta: function() {
             return this.retrieveData();
-        }
+        },
 
     });
 }
