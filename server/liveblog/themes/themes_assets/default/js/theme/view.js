@@ -4,7 +4,6 @@
 
 'use strict';
 
-require('./templates');
 const helpers = require('./helpers');
 const adsManager = require('./ads-manager');
 const Slideshow = require('./slideshow');
@@ -68,7 +67,7 @@ function renderPosts(api_response) {
   for (var i = 0; i < posts.length; i++) {
     var post = posts[i];
 
-    if (!api_response.requestOpts.page && post.deleted) {
+    if (!api_response.requestOpts.page && (post.deleted || post.post_status === 'submitted')) {
       deletePost(post._id);
       continue; // early
     }
@@ -97,6 +96,7 @@ function renderPosts(api_response) {
     return; // early
   }
 
+  els.emptyMessage.classList.toggle('mod--displaynone', Boolean(renderedPosts.length));
   addPosts(renderedPosts, api_response.requestOpts.fromDate ? 'afterbegin' : 'beforeend');
 
   loadEmbeds();
@@ -170,6 +170,7 @@ function updatePost(post, rendered) {
   }
 
   elem.outerHTML = rendered;
+  reloadScripts(elem);
   attachSlideshow();
   attachPermalink();
   attachShareBox();
@@ -186,6 +187,22 @@ function displayNewPosts() {
   }
 }
 
+function reloadScripts(elem) {
+  const $scripts = elem.querySelectorAll('script');
+  $scripts.forEach(($script) => {
+    let s = document.createElement('script');
+    s.type = 'text/javascript';
+    if ($script.src) {
+      s.src = $script.src;
+    } else {
+      s.textContent = $script.innerText;
+    }
+    // re-insert the script tag so it executes.
+    document.head.appendChild(s);
+    // clean-up
+    document.head.removeChild(s);
+  });
+}
 /**
  * Trigger embed provider unpacking
  */

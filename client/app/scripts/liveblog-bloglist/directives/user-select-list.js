@@ -5,25 +5,27 @@ export default function lbUserSelectList(api) {
         scope: {
             members: '=',
             user: '=',
-            onchoose: '&'
+            onchoose: '&',
         },
         templateUrl: 'scripts/apps/desks/views/user-select.html',
         link: function(scope, elem, attrs) {
-            var ARROW_UP = 38, ARROW_DOWN = 40, ENTER = 13;
+            const ARROW_UP = 38;
+            const ARROW_DOWN = 40;
+            const ENTER = 13;
 
             scope.selected = null;
             scope.search = null;
             scope.users = {};
 
-            var _refresh = function() {
+            const _refresh = function() {
                 scope.users = {};
                 return api('users').query({where: JSON.stringify({
                     $or: [
                         {username: {$regex: scope.search, $options: '-i'}},
                         {first_name: {$regex: scope.search, $options: '-i'}},
                         {last_name: {$regex: scope.search, $options: '-i'}},
-                        {email: {$regex: scope.search, $options: '-i'}}
-                    ]
+                        {email: {$regex: scope.search, $options: '-i'}},
+                    ],
                 })})
                     .then((result) => {
                         for (var i = 0; i < result._items.length; i++) {
@@ -47,7 +49,7 @@ export default function lbUserSelectList(api) {
                         scope.selected = null;
                     });
             };
-            var refresh = _.debounce(_refresh, 1000);
+            const refresh = _.debounce(_refresh, 1000);
 
             scope.$watch('search', () => {
                 if (scope.search) {
@@ -57,7 +59,7 @@ export default function lbUserSelectList(api) {
 
             function getSelectedIndex() {
                 if (scope.selected) {
-                    var selectedIndex = -1;
+                    let selectedIndex = -1;
 
                     _.each(scope.users._items, (item, index) => {
                         if (item === scope.selected) {
@@ -71,8 +73,8 @@ export default function lbUserSelectList(api) {
             }
 
             function previous() {
-                var selectedIndex = getSelectedIndex(),
-                    previousIndex = _.max([0, selectedIndex - 1]);
+                const selectedIndex = getSelectedIndex();
+                const previousIndex = _.max([0, selectedIndex - 1]);
 
                 if (selectedIndex > 0) {
                     scope.select(scope.users._items[previousIndex]);
@@ -80,8 +82,8 @@ export default function lbUserSelectList(api) {
             }
 
             function next() {
-                var selectedIndex = getSelectedIndex(),
-                    nextIndex = _.min([scope.users._items.length - 1, selectedIndex + 1]);
+                const selectedIndex = getSelectedIndex();
+                const nextIndex = _.min([scope.users._items.length - 1, selectedIndex + 1]);
 
                 scope.select(scope.users._items[nextIndex]);
             }
@@ -122,6 +124,6 @@ export default function lbUserSelectList(api) {
             };
 
             scope.getUserDisplay = (user) => user.display_name;
-        }
+        },
     };
 }

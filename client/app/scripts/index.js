@@ -7,7 +7,6 @@ import 'jquery-gridster';
 import 'bootstrap';
 import 'angular';
 import 'angular-moment';
-import 'angular-bootstrap-npm';
 import 'angular-resource';
 import 'angular-route';
 import 'angular-gettext';
@@ -25,6 +24,7 @@ import 'angular-embed/dist/angular-embed';
 import 'angular-contenteditable';
 import 'angular-messages';
 import 'lr-infinite-scroll';
+import 'superdesk-ui-framework';
 
 import _ from 'lodash';
 import moment from 'moment-timezone';
@@ -75,7 +75,7 @@ import 'superdesk-core/scripts/apps/desks';
 import 'superdesk-core/scripts/apps/authoring';
 import 'superdesk-core/scripts/apps/search';
 import 'superdesk-core/scripts/apps/legal-archive';
-// import 'superdesk-core/scripts/apps/stream';
+import 'superdesk-core/scripts/apps/stream';
 import 'superdesk-core/scripts/apps/packaging';
 import 'superdesk-core/scripts/apps/highlights';
 import 'superdesk-core/scripts/apps/translations';
@@ -99,8 +99,8 @@ import 'liveblog-analytics';
 import 'liveblog-advertising';
 
 import 'liveblog-security.service';
-import notificationsTpl from 'template/core/menu/notifications/views/notifications.html';
 
+// eslint-disable-next-line
 const config = __SUPERDESK_CONFIG__;
 
 if (typeof window.superdeskConfig !== 'undefined') {
@@ -110,12 +110,12 @@ if (typeof window.superdeskConfig !== 'undefined') {
 // Commented angular modules are not required to run liveblog
 // But they are shown here to give a perspective of
 // what is required to run liveblog
-let sdCore = angular.module('superdesk.core', [
+const sdCore = angular.module('superdesk.core', [
     'ngRoute',
     'ngResource',
     'ngFileUpload',
 
-    'ui.bootstrap',
+    'superdesk-ui',
 
     'superdesk.core.activity',
     'superdesk.core.analytics',
@@ -136,7 +136,7 @@ let sdCore = angular.module('superdesk.core', [
     'superdesk.core.editor3',
     'superdesk.core.services',
 
-    'superdesk.core.directives'
+    'superdesk.core.directives',
 ]);
 
 angular.module('superdesk.apps', [
@@ -161,16 +161,16 @@ angular.module('superdesk.apps', [
     'superdesk.apps.dictionaries',
     'superdesk.apps.vocabularies',
     // 'superdesk.apps.searchProviders',
-    // 'superdesk.apps.stream',
+    'superdesk.apps.stream',
     'superdesk.apps.publish', // Can't remove
     'superdesk.apps.templates',
     'superdesk.apps.monitoring',
-    'superdesk.apps.profiling'
+    'superdesk.apps.profiling',
 ]);
 
 angular.module('superdesk.config').constant('config', config);
 
-let liveblogModules = [
+const liveblogModules = [
     'liveblog.analytics',
     'liveblog.bloglist',
     'liveblog.edit',
@@ -179,7 +179,7 @@ let liveblogModules = [
     'liveblog.themes',
     'liveblog.freetypes',
     'liveblog.advertising',
-    'ngMessages'
+    'ngMessages',
 ];
 
 if (config.syndication) {
@@ -190,7 +190,7 @@ if (config.marketplace) {
     liveblogModules.push('liveblog.marketplace');
 }
 
-let liveblog = angular.module('liveblog', liveblogModules);
+const liveblog = angular.module('liveblog', liveblogModules);
 
 sdCore.constant('lodash', _);
 sdCore.constant('moment', moment);
@@ -229,12 +229,12 @@ liveblog.run(['$rootScope', '$timeout', 'notify', 'gettext', 'session', '$templa
         });
         $templateCache.put(
             'scripts/core/menu/notifications/views/notifications.html',
-/**
- * @TODO: from template loacated `template/core/menu/notifications/views/notifications.html`
- * wepack `ngtemplate` isn't loading the content.
- *
-*/
-`
+            /**
+             * @TODO: from template loacated `template/core/menu/notifications/views/notifications.html`
+             * wepack `ngtemplate` isn't loading the content.
+             *
+            */
+            `
 <div class="notification-pane" ng-class="{show: flags.notifications}">
     <div class="header" ng-if="flags.notifications">
         <figure class="avatar medium">
@@ -326,7 +326,7 @@ title="{{ notification.item_slugline }}">
         );
     }]);
 
-let body = angular.element('body');
+const body = angular.element('body');
 
 body.ready(() => {
     /**
@@ -339,7 +339,7 @@ body.ready(() => {
         'superdesk.config',
         'superdesk.core',
         'superdesk.apps',
-        'liveblog'
+        'liveblog',
     ], {strictDi: true});
 
     window.superdeskIsReady = true;

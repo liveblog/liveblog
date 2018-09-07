@@ -8,17 +8,18 @@ const nunjucks = require("nunjucks/browser/nunjucks-slim");
 const settings = window.LB.settings;
 
 const defaultTemplates = {
-  postActions: require("../../templates/template-post-actions.html"),
-  author: require("../../templates/template-author.html"),
-  post: require("../../templates/template-post.html"),
-  adentry: require("../../templates/template-ad-entry.html"),
-  timeline: require("../../templates/template-timeline.html"),
-  postComment: require("../../templates/template-post-comment.html"),
-  itemImage: require("../../templates/template-item-image.html"),
-  itemGalleryImage: require("../../templates/template-item-galleryImage.html"),
-  itemEmbed: require("../../templates/template-item-embed.html"),
-  itemQuote: require("../../templates/template-item-quote.html"),
-  itemComment: require("../../templates/template-item-comment.html")
+  // postActions: require("../../templates/template-post-actions.html"),
+  // author: require("../../templates/template-author.html"),
+  // post: require("../../templates/template-post.html"),
+  // adentry: require("../../templates/template-ad-entry.html"),
+  // timeline: require("../../templates/template-timeline.html"),
+  // postComment: require("../../templates/template-post-comment.html"),
+  // itemImage: require("../../templates/template-item-image.html"),
+  // itemGalleryImage: require("../../templates/template-item-galleryImage.html"),
+  // itemEmbed: require("../../templates/template-item-embed.html"),
+  // itemQuote: require("../../templates/template-item-quote.html"),
+  // itemComment: require("../../templates/template-item-comment.html"),
+  // itemTest: require("../../templates/test.html")
 };
 
 function getCustomTemplates() {

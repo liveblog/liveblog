@@ -9,6 +9,10 @@
         {% if settings.blockSearchEngines %}
         <meta name="robots" content="noindex, follow">
         {% endif %}
+        {% if settings.twitterDNT %}
+        <meta name="twitter:dnt" content="on">
+        {% endif %}
+
         {% if debug %}
             {% for style in assets.devStyles %}
                 <link rel="stylesheet" href="{{ style }}">

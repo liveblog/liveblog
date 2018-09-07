@@ -1,4 +1,4 @@
-import producerEditFormTpl from 'scripts/liveblog-syndication/views/producer-edit-form.html';
+import producerEditFormTpl from 'scripts/liveblog-syndication/views/producer-edit-form.ng1';
 
 producerEdit.$inject = ['api', 'notify', 'lodash', 'adsUtilSevice', 'superdesk'];
 
@@ -10,7 +10,7 @@ export default function producerEdit(api, notify, _, adsUtilSevice, superdesk) {
             onsave: '&',
             oncancel: '&',
             onupdate: '&',
-            producers: '='
+            producers: '=',
         },
         link: function(scope, elem) {
             scope.producerForm.attempted = false;
@@ -39,7 +39,8 @@ export default function producerEdit(api, notify, _, adsUtilSevice, superdesk) {
                     return;
                 }
 
-                var data = {}, apiQuery;
+                const data = {};
+                let apiQuery;
 
                 data.contacts = scope.producer.contacts;
 
@@ -105,6 +106,6 @@ export default function producerEdit(api, notify, _, adsUtilSevice, superdesk) {
             };
 
             scope.notValidName = adsUtilSevice.uniqueNameInItems;
-        }
+        },
     };
 }

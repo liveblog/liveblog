@@ -49,13 +49,13 @@ def get_app(config=None):
 
     media_storage = None
     if config.get('AMAZON_CONTAINER_NAME'):
-        from superdesk.storage.amazon.amazon_media_storage import AmazonMediaStorage
+        from superdesk.storage.amazon_media_storage import AmazonMediaStorage
         media_storage = AmazonMediaStorage
 
     config['DOMAIN'] = {}
 
     # Create superdesk app instance.
-    app = superdesk_app(config, media_storage, init_elastic=config.get('INIT_ELASTIC', False))
+    app = superdesk_app(config, media_storage)
 
     # Add custom jinja2 template loader.
     custom_loader = jinja2.ChoiceLoader([

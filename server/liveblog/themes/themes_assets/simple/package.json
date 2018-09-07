@@ -1,0 +1,17 @@
+{
+  "name": "liveblog-simple-theme",
+  "version": "0.1.2",
+  "description": "Liveblog SEO Simple Theme",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Aleksandar Backo Jelicic <aleksandar.jelicic@sourcefabric.org>",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "liveblog-default-theme": "latest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/liveblog/liveblog/tree/devel/server/liveblog/themes/themes_assets/simple"
+  }
+}

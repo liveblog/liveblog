@@ -12,7 +12,8 @@ BlogListController.$inject = [
     'config',
     'urls',
     'moment',
-    'modal'
+    'modal',
+    'blogService',
 ];
 
 export default function BlogListController(
@@ -29,12 +30,13 @@ export default function BlogListController(
     config,
     urls,
     moment,
-    modal
+    modal,
+    blogService
 ) {
     $scope.maxResults = 25;
     $scope.states = [
         {name: 'active', code: 'open', text: gettext('Active blogs')},
-        {name: 'archived', code: 'closed', text: gettext('Archived blogs')}
+        {name: 'archived', code: 'closed', text: gettext('Archived blogs')},
     ];
     $scope.activeState = isArchivedFilterSelected ? $scope.states[1] : $scope.states[0];
     $scope.creationStep = 'Details';
@@ -46,6 +48,7 @@ export default function BlogListController(
         fetchBlogs();
     };
     $scope.modalActive = false;
+    $scope.bulkActions = 0;
 
     $scope.mailto = 'mailto:upgrade@liveblog.pro?subject=' +
         encodeURIComponent(location.hostname) +
@@ -57,7 +60,7 @@ export default function BlogListController(
         $scope.progress = {width: 0};
         $scope.newBlog = {
             title: '',
-            description: ''
+            description: '',
         };
         $scope.newBlogError = '';
         $scope.creationStep = 'Details';
@@ -69,12 +72,12 @@ export default function BlogListController(
     $scope.isUserAllowedToOpenBlog = blogSecurityService.canAccessBlog;
     // blog list embed code.
     function fetchBloglistEmbed() {
-        var criteria = {source: {
-            query: {filtered: {filter: {term: {key: 'blogslist'}}}}
+        const criteria = {source: {
+            query: {filtered: {filter: {term: {key: 'blogslist'}}}},
         }};
 
         api.blogslist.query(criteria, false).then((embed) => {
-            var url;
+            let url;
 
             if (embed._items.length) {
                 url = embed._items[0].value;
@@ -87,12 +90,94 @@ export default function BlogListController(
             }
         });
     }
+
+    function bulkDelete(blog) {
+        api.blogs.remove(angular.copy(blog)).then((message) => {
+            notify.pop();
+            notify.info(gettext('Blog removed'));
+        }, () => {
+            notify.pop();
+            notify.error(gettext('Something went wrong'));
+        });
+    }
+
+    $scope.askRemoveBlog = function() {
+        modal.confirm(gettext('Are you sure you want to delete the blog(s)?'))
+            .then(() => {
+                var selectedBlogs = [];
+
+                angular.forEach($scope.blogs._items, (blog) => {
+                    if (blog.selected) {
+                        bulkDelete(blog);
+                    }
+                });
+
+                $scope.blogs._items = $scope.blogs._items.filter((el) => selectedBlogs.indexOf(el) < 0);
+            });
+    };
+
     $scope.cancelEmbed = function() {
         $scope.embedModal = false;
     };
     $scope.openEmbed = function() {
         fetchBloglistEmbed();
         $scope.embedModal = true;
+    };
+
+    $scope.blogSelect = function($event, isSelected) {
+        $event.stopPropagation();
+        if (isSelected) {
+            $scope.bulkActions += 1;
+        } else {
+            $scope.bulkActions -= 1;
+        }
+    };
+
+    $scope.bulkActionCancel = () => {
+        angular.forEach($scope.blogs._items, (blog) => {
+            blog.selected = false;
+        });
+        $scope.bulkActions = 0;
+    };
+
+    $scope.bulkAction = function(activeState) {
+        let selectedBlogs = [];
+
+        angular.forEach($scope.blogs._items, (blog) => {
+            if (blog.selected) {
+                selectedBlogs.push(blog);
+                const deferred = $q.defer();
+
+                const changedBlog = {
+                    blog_status: activeState.name == 'active' ? 'closed' : 'open',
+                };
+
+                let newBlog = angular.copy(blog);
+
+                angular.extend(newBlog, changedBlog);
+                delete newBlog._latest_version;
+                delete newBlog._current_version;
+                delete newBlog._version;
+                delete newBlog.marked_for_not_publication;
+                delete newBlog._type;
+                delete newBlog.selected;
+                delete newBlog.firstcreated;
+                newBlog.original_creator = blog.original_creator._id;
+                blogService.update(blog, newBlog).then((blog) => {
+                    notify.pop();
+                    if (blog.blog_status == 'closed') {
+                        notify.info(gettext('Blog(s) moved to archived'));
+                    } else {
+                        notify.info(gettext('Blog(s) is actived now'));
+                    }
+                    deferred.resolve();
+                    $scope.bulkActions = 0;
+                });
+                return deferred.promise;
+            }
+        });
+
+        $scope.blogs._items = $scope.blogs._items.filter((el) => selectedBlogs.indexOf(el) < 0);
     };
 
     $scope.cancelCreate = function() {
@@ -121,10 +206,10 @@ export default function BlogListController(
     $scope.createBlog = function() {
         $scope.creationInProcess = true;
 
-        var members = _.map($scope.blogMembers, (obj) => ({user: obj._id}));
+        const members = _.map($scope.blogMembers, (obj) => ({user: obj._id}));
 
         // Upload image only if we have a valid one chosen
-        var promise = $scope.preview.url ? $scope.upload($scope.preview) : $q.when();
+        const promise = $scope.preview.url ? $scope.upload($scope.preview) : $q.when();
 
         return promise.then(() => api.blogs
             .save({
@@ -133,7 +218,7 @@ export default function BlogListController(
                 picture_url: $scope.newBlog.picture_url,
                 picture: $scope.newBlog.picture,
                 picture_renditions: $scope.newBlog.picture_renditions,
-                members: members
+                members: members,
             })
             .then((blog) => {
                 $scope.creationInProcess = false;
@@ -146,7 +231,7 @@ export default function BlogListController(
     };
 
     $scope.upload = function(config) {
-        var form = {};
+        const form = {};
 
         if (config.img) {
             form.media = config.img;
@@ -159,7 +244,7 @@ export default function BlogListController(
             return urls.resource('archive').then((uploadUrl) => upload.start({
                 method: 'POST',
                 url: uploadUrl,
-                data: form
+                data: form,
             })
                 .then((response) => {
                     if (response.data._status === 'ERR') {
@@ -208,7 +293,7 @@ export default function BlogListController(
     $scope.checkAccessRequestLimit = function(blog) {
         $scope.allowAccessRequest = false;
 
-        var theoricalMembers = [];
+        const theoricalMembers = [];
 
         if (blog.members) {
             blog.members.forEach((member) => {
@@ -222,8 +307,8 @@ export default function BlogListController(
             url: config.server.url + '/blogs/' + blog._id + '/request_membership',
             method: 'GET',
             headers: {
-                'Content-Type': 'application/json;charset=utf-8'
-            }
+                'Content-Type': 'application/json;charset=utf-8',
+            },
         })
             .then((response) => {
                 if (response.data._items.length > 0) {
@@ -241,7 +326,7 @@ export default function BlogListController(
     };
 
     $scope.requestAccess = function(blog) {
-        var showRequestDialog = true;
+        let showRequestDialog = true;
 
         // Check to see if the current user hasn't been accepted during this session (before refreshing)
         if (blog.members) {
@@ -263,7 +348,7 @@ export default function BlogListController(
                     },
                     (data) => {
                         notify.pop();
-                        var message = gettext('Something went wrong, plase try again later!');
+                        let message = gettext('Something went wrong, plase try again later!');
 
                         if (data.data._message === 'A request has already been sent') {
                             message = gettext('A request has already been sent');
@@ -335,22 +420,22 @@ export default function BlogListController(
     $scope.setBlogsView();
 
     function getCriteria() {
-        var params = $location.search(),
-            criteria = {
-                max_results: $scope.maxResults,
-                embedded: {original_creator: 1},
-                sort: '[("versioncreated", -1)]',
-                source: {
-                    query: {filtered: {filter: {term: {blog_status: $scope.activeState.code}}}}
-                }
-            };
+        const params = $location.search();
+        const criteria = {
+            max_results: $scope.maxResults,
+            embedded: {original_creator: 1},
+            sort: '[("versioncreated", -1)]',
+            source: {
+                query: {filtered: {filter: {term: {blog_status: $scope.activeState.code}}}},
+            },
+        };
 
         if (params.q) {
             criteria.source.query.filtered.query = {
                 query_string: {
                     query: '*' + params.q + '*',
-                    fields: ['title', 'description']
-                }
+                    fields: ['title', 'description'],
+                },
             };
         }
         if (params.page) {

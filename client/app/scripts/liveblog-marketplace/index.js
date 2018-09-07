@@ -1,7 +1,7 @@
 import './styles/marketplace.scss';
 import './../flux';
 
-import marketplaceTpl from 'scripts/liveblog-marketplace/views/marketplace.html';
+import marketplaceTpl from 'scripts/liveblog-marketplace/views/marketplace.ng1';
 
 import marketplaceController from './controllers/marketplace';
 
@@ -33,9 +33,11 @@ export default angular
                 category: superdesk.MENU_MAIN,
                 priority: 100,
                 adminTools: true,
-                resolve: {isArchivedFilterSelected: function() {
-                    return false;
-                }}
+                resolve: {
+                    isArchivedFilterSelected: function() {
+                        return false;
+                    },
+                },
             });
     }]);
 

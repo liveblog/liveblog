@@ -1,10 +1,10 @@
-import freetypeSelectTpl from 'scripts/liveblog-edit/views/freetype-select.html';
+import freetypeSelectTpl from 'scripts/liveblog-edit/views/freetype-select.ng1';
 
 export default function freetypeLink() {
     return {
         restrict: 'E',
         templateUrl: freetypeSelectTpl,
-        controller: ['$scope', function($scope) {
+        controller: ['$scope', ($scope) => {
             $scope.split = $scope.split || ',';
             $scope.renderOptions = $scope.options.split($scope.split);
         }],
@@ -12,7 +12,7 @@ export default function freetypeLink() {
             select: '=',
             validation: '=',
             options: '@',
-            split: '@'
-        }
+            split: '@',
+        },
     };
 }

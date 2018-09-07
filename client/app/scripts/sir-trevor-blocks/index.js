@@ -40,10 +40,11 @@ function createCaretPlacer(atStart) {
     };
 }
 
-var placeCaretAtStart = createCaretPlacer(true);
+createCaretPlacer(true);
 var placeCaretAtEnd = createCaretPlacer(false);
-var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:\/~+#-]*[\\w@?^=%&amp;\/~+#-])?';
-var socialEmbedRegex = '(iframe|blockquote)+(?:.|\\n)*(youtube\\.com\\/embed|facebook\\.com'
+var uriRegx = '(https?:)?\\/\\/[\\w-]+(\\.[\\w-]+)+([\\w.,@?^=%&amp;:/~+#-]*[\\w@?^=%&amp;/~+#-])?';
+var socialEmbedRegex = '(iframe|blockquote)+(?:.|\\n)*'
+    + '(youtube-nocookie\\.com/embed|youtube\\.com\\/embed|facebook\\.com'
     + '\\/plugins|instagram\\.com\\/p\\/|players\\.brightcove\\.net'
     + '|twitter\\.com\\/.*\\/status)(?:.|\\n)*(iframe|blockquote)';
 
@@ -58,11 +59,11 @@ function fixDataEmbed(data) {
 }
 
 function fixSecureEmbed(string) {
-    var ret;
+    let ret;
 
     if (window.location.protocol === 'https:') {
-        var pattern = new RegExp(uriRegx, 'i'),
-            matches = string.match(pattern);
+        const pattern = new RegExp(uriRegx, 'i');
+        const matches = string.match(pattern);
 
         if (matches && matches.length && matches[1] === 'http:') {
             ret = matches[0];
@@ -77,6 +78,20 @@ function fixSecureEmbed(string) {
     return ret;
 }
 
+function fixSocial(html, data) {
+    // remove link for some provider (included in the card)
+    if (['Facebook', 'Youtube', 'Twitter', 'Soundcloud'].indexOf(data.provider_name) > -1) {
+        html.find('.link-preview').remove();
+    }
+    // special case for twitter
+    if (data.provider_name === 'Twitter') {
+        // remove credit and title fields (duplicated with rendered card)
+        html.find('.credit-preview, .title-preview').remove();
+        // empty the description
+        html.find('.description-preview').html('');
+    }
+}
+
 function isURI(string) {
     var pattern = new RegExp('^' + uriRegx, 'i');
 
@@ -85,12 +100,13 @@ function isURI(string) {
 
 function replaceEmbedWithUrl(string) {
     var generalPattern = new RegExp(socialEmbedRegex, 'i');
-    var youtubePattern = new RegExp('(?:https?:\\/\\/)?(?:www\\.)?(?:youtu\\.be\\/|youtube\\.com\\/'
+    var youtubePattern = new RegExp('(?:https?:\\/\\/)?'
+        + '(?:www\\.)?(?:youtu\\.be\\/|youtube\\.com\\/|youtube-nocookie\\.com\\/'
         + '(?:embed\\/|v\\/|watch\\?v=|watch\\?.+&v=))(\\w+)', 'i');
     var facebookPattern = /(?:post\.php|video\.php)\?href=(https?(\w|%|\.)+)/i;
     var instagramPattern = /(https?:\/\/(?:www)?\.?instagram\.com\/p\/(?:\w+.)+\/)/i;
-    var twitterPattern = /(https?:\/\/(?:www)?\.?twitter\.com\/\w+\/status\/\d+)/i;
-    var bcPattern = /(http|https)?:?\/\/players.brightcove.net\/\d*\/[a-zA-Z\d\_\-]*\/index\.html\?videoId=\d*/i;
+    var twitterPattern = /(https?:\/\/(?:www|mobile)?\.?twitter\.com\/\w+\/status\/\d+)/i;
+    var bcPattern = /(http|https)?:?\/\/players.brightcove.net\/\d*\/[a-zA-Z\d_-]*\/index\.html\?videoId=\d*/i;
     var m;
 
     // checking if string contains any of the "big four" embeds
@@ -117,12 +133,12 @@ angular
         // replace the plus symbol with text description
         SirTrevor.FloatingBlockControls.prototype.attributes = function() {
             return {
-                'data-icon': 'ADD CONTENT HERE'
+                'data-icon': 'ADD CONTENT HERE',
             };
         };
         SirTrevor.Block.prototype.attributes = function() {
             return _.extend(SirTrevor.SimpleBlock.fn.attributes.call(this), {
-                'data-icon-after': 'ADD CONTENT HERE'
+                'data-icon-after': 'ADD CONTENT HERE',
             });
         };
         // Add toMeta method to all blocks.
@@ -130,7 +146,7 @@ angular
             return this.getData();
         };
         SirTrevor.Block.prototype.getOptions = function() {
-            var instance = SirTrevor.$get().getInstance(this.instanceID);
+            const instance = SirTrevor.$get().getInstance(this.instanceID);
 
             return instance ? instance.options : null;
         };
@@ -144,61 +160,63 @@ angular
             editorHTML: function() {
                 return [
                     '<div class="st-required st-embed-block embed-input"',
-                    ' placeholder="' + this.embedPlaceholder + '" contenteditable="true"></div>'
+                    ' placeholder="' + this.embedPlaceholder + '" contenteditable="true"></div>',
                 ].join('\n');
             },
             onBlockRender: function() {
-                var that = this;
+                var self = this;
+
                 // create and trigger a 'change' event for the $editor which is a contenteditable
 
                 this.$editor.filter('[contenteditable]').on('focus', function(ev) {
-                    var $this = $(this);
+                    const $this = $(this);
 
                     $this.data('before', $this.html());
                 });
                 this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
-                    var $this = $(this);
+                    const $this = $(this);
 
                     if ($this.data('before') !== $this.html()) {
                         $this.data('before', $this.html());
                         $this.trigger('change');
                     }
                 });
-                handlePlaceholder(this.$editor.filter('[contenteditable]'), that.embedPlaceholder);
+                handlePlaceholder(this.$editor.filter('[contenteditable]'), self.embedPlaceholder);
                 // when the link field changes
-                var callServiceAndLoadData = function() {
-                    var input = $(this)
+                const callServiceAndLoadData = function() {
+                    let input = $(this)
                         .text()
                         .trim();
+
                     // exit if the input field is empty
 
                     if (_.isEmpty(input)) {
-                        that.getOptions().disableSubmit(true);
+                        self.getOptions().disableSubmit(true);
                         return false;
                     }
-                    that.getOptions().disableSubmit(false);
+                    self.getOptions().disableSubmit(false);
                     // reset error messages
-                    that.resetMessages();
+                    self.resetMessages();
                     // start a loader over the block, it will be stopped in the loadData function
-                    that.loading();
+                    self.loading();
                     input = replaceEmbedWithUrl(input);
                     input = fixSecureEmbed(input);
                     // if the input is an url, use embed services
                     if (isURI(input)) {
                         // request the embedService with the provided url
-                        that.getOptions().embedService.get(input, that.getOptions().coverMaxWidth).then(
+                        self.getOptions().embedService.get(input, self.getOptions().coverMaxWidth).then(
                             function successCallback(data) {
                                 data.original_url = input;
-                                that.loadData(data);
+                                self.loadData(data);
                             },
                             function errorCallback(error) {
-                                that.addMessage(error);
-                                that.ready();
+                                self.addMessage(error);
+                                self.ready();
                             }
                         );
                     // otherwise, use the input as the embed code
                     } else {
-                        that.loadData({html: input});
+                        self.loadData({html: input});
                     }
                 };
 
@@ -215,34 +233,35 @@ angular
                 return _.isEmpty(this.retrieveData().url || this.retrieveData().html);
             },
             retrieveData: function() {
-                var that = this;
+                const self = this;
                 // retrieve new data from editor
-                var editor_data = {
-                    title: that.$('.title-preview').text(),
-                    description: that.$('.description-preview').text(),
-                    credit: that.$('.credit-preview').text(),
-                    syndicated_creator: this.getData().syndicated_creator
+                var editorData = {
+                    title: self.$('.title-preview').text(),
+                    description: self.$('.description-preview').text(),
+                    credit: self.$('.credit-preview').text(),
+                    syndicated_creator: this.getData().syndicated_creator,
+                    liveblog_version: '3.4',
                 };
 
                 // remove thumbnail_url if it was removed by user
-                if (that.$('.cover-preview').hasClass('hidden')) {
-                    editor_data.thumbnail_url = null;
+                if (self.$('.cover-preview').hasClass('hidden')) {
+                    editorData.thumbnail_url = null;
                 }
                 // add data which are not in the editor but has been saved before (like thumbnail_width)
-                _.merge(that.data, editor_data);
+                _.merge(self.data, editorData);
                 // clean data by removing empty string
-                _.forEach(that.data, (value, key) => {
+                _.forEach(self.data, (value, key) => {
                     if (typeof value === 'string' && value.trim() === '') {
-                        delete that.data[key];
+                        delete self.data[key];
                     }
                 });
-                return that.data;
+                return self.data;
             },
             renderCard: function(data) {
-                var card_class = 'liveblog--card';
+                const cardClass = 'liveblog--card';
 
-                var html = $([
-                    '<div class="' + card_class + ' hidden">',
+                const html = $([
+                    '<div class="' + cardClass + ' hidden">',
                     '  <div class="hidden st-embed-block embed-preview"></div>',
                     '  <div class="hidden st-embed-block cover-preview-handler">',
                     '    <div class="st-embed-block cover-preview"></div>',
@@ -251,14 +270,14 @@ angular
                     '  <div class="st-embed-block description-preview"></div>',
                     '  <div class="st-embed-block credit-preview"></div>',
                     '  <a class="hidden st-embed-block link-preview" target="_blank"></a>',
-                    '</div>'
+                    '</div>',
                 ].join('\n'));
 
                 // hide everything
                 html.find(
                     [
                         '.embed-preview',
-                        '.cover-preview-handler'
+                        '.cover-preview-handler',
                     ].join(', ')
                 ).addClass('hidden');
                 // set the link
@@ -277,15 +296,15 @@ angular
                 }
                 // set the cover illustration
                 if (!_.has(data, 'html') && !_.isEmpty(data.thumbnail_url)) {
-                    var ratio = data.thumbnail_width / data.thumbnail_height;
-                    var cover_width = Math.min(this.getOptions().coverMaxWidth, data.thumbnail_width);
-                    var cover_height = cover_width / ratio;
+                    const ratio = data.thumbnail_width / data.thumbnail_height;
+                    const coverWidth = Math.min(this.getOptions().coverMaxWidth, data.thumbnail_width);
+                    const coverHeight = coverWidth / ratio;
 
                     html.find('.cover-preview').css({
                         'background-image': 'url("' + data.thumbnail_url + '")',
-                        width: cover_width,
-                        height: cover_height,
-                        'background-size': 'cover'
+                        width: coverWidth,
+                        height: coverHeight,
+                        'background-size': 'cover',
                     });
                     html.find('.cover-preview-handler').removeClass('hidden');
                 }
@@ -301,55 +320,46 @@ angular
                 }
                 // set the credit
                 if (_.has(data, 'provider_name')) {
-                    var credit_text = data.provider_name;
+                    let creditText = data.provider_name;
 
                     if (_.has(data, 'author_name')) {
-                        credit_text += ' | <a href="' + data.author_url + '" target="_blank">' +
+                        creditText += ' | <a href="' + data.author_url + '" target="_blank">' +
                             data.author_name + '</a>';
                     }
-                    html.find('.credit-preview').html(credit_text);
+                    html.find('.credit-preview').html(creditText);
                 }
 
                 if (_.has(data, 'credit')) {
                     html.find('.credit-preview').html(data.credit);
                 }
 
-                // remove link for some provider (included in the card)
-                if (['Facebook', 'Youtube', 'Twitter', 'Soundcloud'].indexOf(data.provider_name) > -1) {
-                    html.find('.link-preview').remove();
-                }
-                // special case for twitter
-                if (data.provider_name === 'Twitter') {
-                    // remove credit and title fields (duplicated with rendered card)
-                    html.find('.credit-preview, .title-preview').remove();
-                }
-                // retrieve the final html code
-                var html_to_return = '';
+                fixSocial(html, data);
 
-                html_to_return = '<div class="' + card_class + '">';
-                html_to_return += html.get(0).innerHTML;
-                html_to_return += '</div>';
-                return html_to_return;
+                let htmlToReturn = '';
+
+                htmlToReturn = '<div class="' + cardClass + '">';
+                htmlToReturn += html.get(0).innerHTML;
+                htmlToReturn += '</div>';
+                return htmlToReturn;
             },
             // render a card from data, and make it editable
             loadData: function(dataParam) {
-                const that = this;
+                const self = this;
                 const data = _.has(dataParam, 'meta') ? dataParam.meta : dataParam;
 
-                that.data = fixDataEmbed(data);
+                self.data = fixDataEmbed(data);
                 // hide the embed input field, render the card and add it to the DOM
-                that.$('.embed-input')
+                self.$('.embed-input')
                     .addClass('hidden')
-                    .after(that.renderCard(data));
-                // set somes fields contenteditable
-                ['title', 'description', 'credit'].forEach((field_name) => {
-                    that.$('.' + field_name + '-preview').attr({
+                    .after(self.renderCard(data));
+                ['title', 'description', 'credit'].forEach((fieldName) => {
+                    self.$('.' + fieldName + '-preview').attr({
                         contenteditable: true,
-                        placeholder: field_name
+                        placeholder: fieldName,
                     });
                 });
-                // remove the loader when media is loaded
-                var iframe = this.$('.embed-preview iframe');
+                // remove the loader when media is loadedhtml =
+                const iframe = this.$('.embed-preview iframe');
 
                 if (iframe.length > 0) {
                     // special case for iframe
@@ -357,31 +367,30 @@ angular
                 } else {
                     this.ready();
                 }
-                // add a link to remove/show the cover
-                var $cover_handler = this.$('.cover-preview-handler');
+                const $coverHandler = this.$('.cover-preview-handler');
 
-                if ($cover_handler.length > 0 && !$cover_handler.hasClass('hidden')) {
-                    var $cover_preview = $cover_handler.find('.cover-preview');
-                    var $remove_link = $('<a href="#">').text('hide the illustration');
-                    var $show_link = $('<a href="#">')
+                if ($coverHandler.length > 0 && !$coverHandler.hasClass('hidden')) {
+                    const $coverPreview = $coverHandler.find('.cover-preview');
+                    const $removeLink = $('<a href="#">').text('hide the illustration');
+                    const $showLink = $('<a href="#">')
                         .text('show the illustration')
                         .addClass('hidden');
 
-                    $remove_link.on('click', function removeCoverAndDisillustrationplayShowLink(e) {
-                        that.saved_cover_url = that.data.thumbnail_url;
-                        $cover_preview.addClass('hidden');
+                    $removeLink.on('click', function removeCoverAndDisillustrationplayShowLink(e) {
+                        self.saved_cover_url = self.data.thumbnail_url;
+                        $coverPreview.addClass('hidden');
                         $(this).addClass('hidden');
-                        $show_link.removeClass('hidden');
+                        $showLink.removeClass('hidden');
                         e.preventDefault();
                     });
-                    $show_link.on('click', function showCoverAndDisplayRemoveLink(e) {
-                        that.data.thumbnail_url = that.saved_cover_url;
-                        $cover_preview.removeClass('hidden');
+                    $showLink.on('click', function showCoverAndDisplayRemoveLink(e) {
+                        self.data.thumbnail_url = self.saved_cover_url;
+                        $coverPreview.removeClass('hidden');
                         $(this).addClass('hidden');
-                        $remove_link.removeClass('hidden');
+                        $removeLink.removeClass('hidden');
                         e.preventDefault();
                     });
-                    $cover_handler.append($remove_link, $show_link);
+                    $coverHandler.append($removeLink, $showLink);
                 }
                 // if instagram process the embed code
                 if (data.html && data.html.indexOf('platform.instagram.com') !== -1) {
@@ -395,13 +404,13 @@ angular
             },
             // toMarkdown: function(markdown) {},
             toHTML: function() {
-                var data = this.retrieveData();
+                const data = this.retrieveData();
 
                 return this.renderCard(data);
             },
             toMeta: function() {
                 return this.retrieveData();
-            }
+            },
         });
         SirTrevor.Blocks.Quote = SirTrevor.Block.extend({
             type: 'quote',
@@ -412,19 +421,19 @@ angular
             quotePlaceholder: window.gettext('quote'),
             creditPlaceholder: window.i18n.t('blocks:quote:credit_field'),
             editorHTML: function() {
-                var template = _.template([
+                const template = _.template([
                     '<div class="st-required st-quote-block quote-input" ',
                     ' placeholder="' + this.quotePlaceholder + '" contenteditable="true"></div>',
                     '<div contenteditable="true" name="cite" placeholder="' + this.creditPlaceholder + '"',
-                    ' class="js-cite-input st-quote-block"></div>'
+                    ' class="js-cite-input st-quote-block"></div>',
                 ].join('\n'));
 
                 return template(this);
             },
             onBlockRender: function() {
                 const onEditorChange = () => {
-                    var data = this.retrieveData(),
-                        input = data.quote + data.credit;
+                    const data = this.retrieveData();
+                    const input = data.quote + data.credit;
 
                     if (_.isEmpty(input)) {
                         this.getOptions().disableSubmit(true);
@@ -435,12 +444,12 @@ angular
 
                 this.$('.quote-input .js-cite-input');
                 this.$editor.filter('[contenteditable]').on('focus', function(ev) {
-                    var $this = $(this);
+                    const $this = $(this);
 
                     $this.data('before', $this.html());
                 });
                 this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
-                    var $this = $(this);
+                    const $this = $(this);
 
                     if ($this.data('before') !== $this.html()) {
                         $this.data('before', $this.html());
@@ -459,7 +468,7 @@ angular
                 return {
                     quote: this.$('.quote-input').text() || undefined,
                     credit: this.$('.js-cite-input').text() || undefined,
-                    syndicated_creator: this.getData().syndicated_creator
+                    syndicated_creator: this.getData().syndicated_creator,
                 };
             },
             loadData: function(data) {
@@ -473,23 +482,23 @@ angular
                 return markdown.replace(/^(.+)$/mg, '> $1');
             },
             toHTML: function(html) {
-                var data = this.retrieveData();
+                const data = this.retrieveData();
 
                 return [
                     '<blockquote><p>',
                     data.quote,
                     '</p><h4><i>',
                     data.credit,
-                    '</i></h4></blockquote>'
+                    '</i></h4></blockquote>',
                 ].join('');
             },
             toMeta: function() {
                 return this.retrieveData();
-            }
+            },
         });
 
         // Image Block
-        var upload_options = {
+        const uploadOptions = {
         // NOTE: responsive layout is currently disabled. so row and col-md-6 are useless
             html: [
                 '<div class="row st-block__upload-container">',
@@ -498,11 +507,11 @@ angular
                 '              class="btn btn-default"><%= i18n.t("general:upload") %></label>',
                 '       <input type="file" type="st-file-upload" />',
                 '    </div>',
-                '</div>'
-            ].join('\n')
+                '</div>',
+            ].join('\n'),
         };
 
-        SirTrevor.DEFAULTS.Block.upload_options = upload_options;
+        SirTrevor.DEFAULTS.Block.upload_options = uploadOptions;
         SirTrevor.Locales.en.general.upload = 'Select from folder';
 
         SirTrevor.Blocks.Image = imageBlock(SirTrevor, config);
@@ -515,38 +524,38 @@ angular
 
         SirTrevor.Blocks.Text.prototype.toMeta = function() {
             return {
-                syndicated_creator: this.getData().syndicated_creator
+                syndicated_creator: this.getData().syndicated_creator,
             };
         };
 
         SirTrevor.Blocks.Text.prototype.onBlockRender = function() {
-            var that = this;
-            var placeHolderText = window.gettext('Write here (or press Ctrl+Shift+V to paste unformatted text)...');
+            const self = this;
+            const placeHolderText = window.gettext('Write here (or press Ctrl+Shift+V to paste unformatted text)...');
 
             // add placeholder class and placeholder text
             this.$editor.attr('placeholder', placeHolderText).addClass('st-placeholder');
             // create and trigger a 'change' event for the $editor which is a contenteditable
             this.$editor.filter('[contenteditable]').on('focus', function(ev) {
-                var $this = $(this);
+                const $this = $(this);
 
                 $this.data('before', $this.html());
             });
             this.$editor.filter('[contenteditable]').on('click', function(ev) {
-                var $this = $(this);
+                const $this = $(this);
 
                 if (_.trim($this.html()) === '') {
                     $this.attr('placeholder', '');
                 }
             });
             this.$editor.filter('[contenteditable]').on('focusout', function(ev) {
-                var $this = $(this);
+                const $this = $(this);
 
                 if (_.trim($this.html()) === '') {
                     $this.attr('placeholder', placeHolderText);
                 }
             });
             this.$editor.filter('[contenteditable]').on('blur keyup paste input', function(ev) {
-                var $this = $(this);
+                const $this = $(this);
 
                 if ($this.data('before') !== $this.html()) {
                     $this.data('before', $this.html());
@@ -555,16 +564,17 @@ angular
             });
             // when the link field changes
             this.$editor.on('change', _.debounce(function() {
-                var input = $(this)
+                const input = $(this)
                     .text()
                     .trim();
 
                 if (_.isEmpty(input)) {
-                    if (that.getOptions())
-                        {that.getOptions().disableSubmit(true);}
+                    if (self.getOptions()) {
+                        self.getOptions().disableSubmit(true);
+                    }
                     return false;
-                } else if (that.getOptions()) {
-                    that.getOptions().disableSubmit(false);
+                } else if (self.getOptions()) {
+                    self.getOptions().disableSubmit(false);
                 }
             }, 200));
         };
@@ -579,18 +589,16 @@ angular
         };
         SirTrevor.Blocks.Text.prototype.onContentPasted = _.debounce((event) => {
             // Content pasted. Delegate to the drop parse method
-            var input = $(event.target).closest('[contenteditable]'),
-                val = input.html();
+            const input = $(event.target).closest('[contenteditable]');
+            let val = input.html();
 
             if (val) {
                 val = sanitizeHtml(val, sanitizeConfig);
-                val = (val || "").trim();
-
-                //let's also remove not needed line breaks
+                val = (val || '').trim();
+                // let's also remove not needed line breaks
                 val = val.replace(/\r/g, ' ');
                 val = val.replace(/\n/g, ' ');
             }
-
             input.html(val);
             placeCaretAtEnd(input.get(0));
         }, 0);
@@ -599,8 +607,8 @@ angular
             type: 'comment',
 
             title: function() {
- return window.i18n.t('blocks:comment:title');
-},
+                return window.i18n.t('blocks:comment:title');
+            },
 
             editorHTML: '<div class="st-required st-text-block"></div>',
 
@@ -615,7 +623,7 @@ angular
             retrieveData: function() {
                 return {
                     text: this.$('.st-text-block').text() || undefined,
-                    syndicated_creator: this.getData().syndicated_creator
+                    syndicated_creator: this.getData().syndicated_creator,
                 };
             },
             toHTML: function(html) {
@@ -626,78 +634,76 @@ angular
                 return html;
             },
             toMeta: function() {
-                var data = this.getData();
+                const data = this.getData();
 
                 return {
                     text: data.text,
                     commenter: data.commenter,
                     _created: data._created,
-
                 };
-            }
+            },
         });
-
-        var Strikethrough = SirTrevor.Formatter.extend({
+        const Strikethrough = SirTrevor.Formatter.extend({
             title: 'strikethrough',
             iconName: 'strikethrough',
             cmd: 'strikeThrough',
-            text: 'strike'
+            text: 'strike',
         });
 
         SirTrevor.Formatters.Strikethrough = new Strikethrough();
 
-        var OrderedList = SirTrevor.Formatter.extend({
+        const OrderedList = SirTrevor.Formatter.extend({
             title: 'orderedlist',
             iconName: 'orderedlist',
             cmd: 'insertOrderedList',
-            text: 'orderedlist'
+            text: 'orderedlist',
         });
 
         SirTrevor.Formatters.NumberedList = new OrderedList();
 
-        var UnorderedList = SirTrevor.Formatter.extend({
+        const UnorderedList = SirTrevor.Formatter.extend({
             title: 'unorderedlist',
             iconName: 'unorderedlist',
             cmd: 'insertUnorderedList',
-            text: 'unorderedlist'
+            text: 'unorderedlist',
         });
 
         SirTrevor.Formatters.BulletList = new UnorderedList();
 
-        var RemoveFormat = SirTrevor.Formatter.extend({
+        const RemoveFormat = SirTrevor.Formatter.extend({
             title: 'removeformat',
             iconName: 'removeformat',
             cmd: 'removeformat',
-            text: 'removeformat'
+            text: 'removeformat',
         });
 
         SirTrevor.Formatters.RemoveFormat = new RemoveFormat();
 
-        var Bold = SirTrevor.Formatter.extend({
+        const Bold = SirTrevor.Formatter.extend({
             title: 'bold',
             iconName: 'bold',
             cmd: 'bold',
             keyCode: 66,
-            text: 'bold'
+            text: 'bold',
         });
 
         SirTrevor.Formatters.Bold = new Bold();
 
-        var Italic = SirTrevor.Formatter.extend({
+        const Italic = SirTrevor.Formatter.extend({
             title: 'italic',
             iconName: 'italic',
             cmd: 'italic',
             keyCode: 73,
-            text: 'italic'
+            text: 'italic',
         });
 
         SirTrevor.Formatters.Italic = new Italic();
 
-        var UnLink = SirTrevor.Formatter.extend({
+        const UnLink = SirTrevor.Formatter.extend({
             title: 'unlink',
             iconName: 'unlink',
             cmd: 'unlink',
-            text: 'unlink'
+            text: 'unlink',
         });
 
         SirTrevor.Formatters.Unlink = new UnLink();
@@ -709,7 +715,7 @@ angular
             text: 'H4',
             onClick: () => {
                 document.execCommand('formatBlock', false, '<h4>');
-            }
+            },
         });
 
         SirTrevor.Formatters.HeaderFour = new HeaderFour();
@@ -721,36 +727,37 @@ angular
             text: 'H5',
             onClick: () => {
                 document.execCommand('formatBlock', false, '<h5>');
-            }
+            },
         });
 
         SirTrevor.Formatters.HeaderFive = new HeaderFive();
 
-        var Link = SirTrevor.Formatter.extend({
+        const Link = SirTrevor.Formatter.extend({
             title: 'link',
             iconName: 'link',
             cmd: 'CreateLink',
             text: 'link',
             onClick: function() {
-                var selection_text = document.getSelection(),
-                    link = prompt(window.i18n.t('general:link')),
-                    link_regex = /((ftp|http|https):\/\/.)|mailto(?=\:[-\.\w]+@)/;
+                const selectionText = document.getSelection();
+                /* eslint-disable no-alert */
+                let link = prompt(window.i18n.t('general:link'));
+                const linkRegex = /((ftp|http|https):\/\/.)|mailto(?=:[-.\w]+@)/;
 
                 if (link && link.length > 0) {
-                    if (!link_regex.test(link)) {
+                    if (!linkRegex.test(link)) {
                         link = 'http://' + link;
                     }
 
                     document.execCommand(
                         'insertHTML',
                         false,
-                        '<a href="' + link + '" target="_blank">' + selection_text + '</a>'
+                        '<a href="' + link + '" target="_blank">' + selectionText + '</a>'
                     );
                 }
             },
             isActive: function() {
-                var selection = window.getSelection(),
-                    node;
+                const selection = window.getSelection();
+                let node;
 
                 if (selection.rangeCount > 0) {
                     node = selection.getRangeAt(0)
@@ -758,7 +765,7 @@ angular
                         .parentNode;
                 }
                 return node && node.nodeName === 'A';
-            }
+            },
         });
 
         SirTrevor.Formatters.Link = new Link();

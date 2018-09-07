@@ -4,11 +4,11 @@ marketplaceController.$inject = [
     'MarketplaceActions',
     'MarketplaceReducers',
     '$route',
-    'moment'
+    'moment',
 ];
 
 export default function marketplaceController($scope, Store, MarketplaceActions, MarketplaceReducers, $route, moment) {
-    var filters = {};
+    let filters = {};
 
     if ($route.current.params.hasOwnProperty('filters')) {
         filters = JSON.parse($route.current.params.filters);
@@ -16,7 +16,7 @@ export default function marketplaceController($scope, Store, MarketplaceActions,
 
     $scope.states = [
         'Marketers',
-        'Producers'
+        'Producers',
     ];
 
     $scope.activeState = $scope.states[0];
@@ -48,7 +48,7 @@ export default function marketplaceController($scope, Store, MarketplaceActions,
         filters: filters,
         searchPanel: true,
         embedModal: false,
-        languages: []
+        languages: [],
     });
 
     $scope.store.connect((state) => {
@@ -58,7 +58,7 @@ export default function marketplaceController($scope, Store, MarketplaceActions,
         $scope.currentMarketer = state.currentMarketer;
 
         $route.updateParams({
-            filters: JSON.stringify(state.filters)
+            filters: JSON.stringify(state.filters),
         });
 
         $scope.blogs = {_items: []};

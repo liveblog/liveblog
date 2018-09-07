@@ -1,4 +1,4 @@
-import consumerEditFormTpl from 'scripts/liveblog-syndication/views/consumer-edit-form.html';
+import consumerEditFormTpl from 'scripts/liveblog-syndication/views/consumer-edit-form.ng1';
 
 consumerEdit.$inject = ['api', 'notify', 'lodash', 'superdesk'];
 
@@ -9,7 +9,7 @@ export default function consumerEdit(api, notify, _, superdesk) {
             consumer: '=',
             onsave: '&',
             oncancel: '&',
-            onupdate: '&'
+            onupdate: '&',
         },
         link: function(scope, elem) {
             scope.consumerForm.attempted = false;
@@ -38,9 +38,8 @@ export default function consumerEdit(api, notify, _, superdesk) {
                     return;
                 }
 
-
-                var data = {};
-                var apiQuery;
+                const data = {};
+                let apiQuery;
 
                 data.contacts = scope.consumer.contacts;
                 if (scope.consumer.picture_url) {
@@ -64,36 +63,36 @@ export default function consumerEdit(api, notify, _, superdesk) {
                 }
 
                 apiQuery.then((result) => {
-                    var successMsg = gettext('Consumer saved.');
+                    const successMsg = gettext('Consumer saved.');
 
                     notify.pop();
                     notify.success(successMsg);
 
                     scope.onsave({consumer: result});
                 })
-                .catch((err) => {
-                    var errorMsg = gettext('Fatal error!');
+                    .catch((err) => {
+                        const errorMsg = gettext('Fatal error!');
 
-                    if (err.data.hasOwnProperty('_issues')) {
-                        Object.keys(err.data._issues).forEach((key) => {
-                            var issue = err.data._issues[key];
+                        if (err.data.hasOwnProperty('_issues')) {
+                            Object.keys(err.data._issues).forEach((key) => {
+                                let issue = err.data._issues[key];
 
-                            if (typeof issue === 'object' && issue.unique === 1) {
-                                issue = gettext('The selected field value is not unique.');
-                            }
+                                if (typeof issue === 'object' && issue.unique === 1) {
+                                    issue = gettext('The selected field value is not unique.');
+                                }
 
-                            scope.consumerForm[key].issue = issue;
-                        });
-                    }
+                                scope.consumerForm[key].issue = issue;
+                            });
+                        }
 
-                    notify.pop();
-                    notify.error(errorMsg);
-                });
+                        notify.pop();
+                        notify.error(errorMsg);
+                    });
             };
 
             scope.cancel = function() {
                 scope.oncancel();
             };
-        }
+        },
     };
 }

@@ -1,0 +1,52 @@
+<div class="form-group">
+    <div class="form-input form-image">
+        <div class="upload-form">
+            <section
+                class="main"
+                sd-image-preview="preview.url"
+                data-file="preview.img"
+                data-progress-width="progress.width">
+
+                <div
+                    class="upload-progress"
+                    ng-show="progress.width">
+                    <div
+                        class="bar"
+                        style="width: {{ progress.width }}%;"></div>
+                </div>
+
+
+                <div class="computer" ng-if="!preview.url" ng-hide="progress.width">
+                    <div class="dropzone" ngf-drop="preview.img = $files[0]">
+                        <div class="text" translate>Drop it here</div>
+                        <div class="input-holder">
+                            <input type="file" accept="image/*;capture=camera" ngf-select="preview.img = $files[0]"
+                            label="{{ 'or Select from computer' | translate }}"  ng-model="preview.img">
+                        </div>
+                        </div>
+                    </div>
+
+                    <div class="preview" ng-if="preview.url && progress.width >= 100">
+                    <div class="crop-area">
+                        <div class="preview">
+                            <div class="preview-large">
+                                <img ng-src="{{preview.url}}" class="preview-target-1">
+                            </div>
+                        </div>
+                    </div>
+                    <figure class="ads-media-buttons">
+                        <button class="btn btn-warning pull-right" ng-click="removeImage()" translate>Remove</button>
+                    </figure>
+                </div>
+            </section>
+        </div>
+        <div ng-hide="image.picture_url">
+            <div class="image-text" translate>Image has not been set so far</div>
+        </div>
+        <span
+            class="freetype--error freetype--error-text"
+            ng-show="compulsoryFlag"
+            hide-render
+            translate>One of these is required!</span>
+    </div>
+</div>

@@ -1,11 +1,11 @@
-import incomingSyndicationTpl from 'scripts/liveblog-syndication/views/incoming-syndication.html';
+import incomingSyndicationTpl from 'scripts/liveblog-syndication/views/incoming-syndication.ng1';
 
 incomingSyndication.$inject = [
     '$routeParams',
     'IncomingSyndicationActions',
     'IncomingSyndicationReducers',
     'Store',
-    'modal'
+    'modal',
 ];
 
 export default function incomingSyndication(
@@ -20,14 +20,14 @@ export default function incomingSyndication(
         scope: {
             lbPostsOnPostSelected: '=',
             openPanel: '=',
-            syndId: '='
+            syndId: '=',
         },
         link: function(scope) {
             scope.blogId = $routeParams._id;
 
             scope.store = new Store(IncomingSyndicationReducers, {
                 posts: {},
-                syndication: {}
+                syndication: {},
             });
 
             scope.store.connect((state) => {
@@ -62,13 +62,15 @@ export default function incomingSyndication(
             // Not very fast, but easy to setup
             scope.$on('posts', (e, data) => {
                 if (data.hasOwnProperty('deleted') && data.deleted === true
-                || data.posts && data.posts[0].syndication_in) {
+                    || data.posts && data.posts[0].syndication_in) {
                     IncomingSyndicationActions
                         .getPosts(scope.blogId, scope.syndId);
                 }
+                IncomingSyndicationActions
+                    .getPosts(scope.blogId, scope.syndId);
             });
 
             scope.$on('$destroy', scope.store.destroy);
-        }
+        },
     };
 }

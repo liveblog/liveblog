@@ -1,15 +1,11 @@
-//@import "~superdesk-core/styles/sass/app"; // Modify this for custom colors, font-sizes, etc
-
-// app.scss
-
 // Roboto font import
 @import url(//fonts.googleapis.com/css?family=Roboto+Mono:400,300,500,700,300italic,400italic,500italic,700italic&subset=latin,latin-ext);
 @import url(//fonts.googleapis.com/css?family=Roboto:400,300,300italic,400italic,500,500italic,700,700italic&subset=latin,latin-ext);
 
+
 // Core variables and mixins
-@import '~superdesk-core/styles/sass/variables'; // Modify this for custom colors, font-sizes, etc
-//@import 'sd-icon-font';
-@import '~superdesk-core/styles/sass/mixins';
+@import 'lb-variables'; // Modify this for custom colors, font-sizes, etc
+@import 'lb-mixins';
 
 // CSS Reset
 @import '~superdesk-core/styles/sass/reset';
@@ -24,9 +20,6 @@
 @import '~superdesk-core/styles/sass/tables';
 
 // Dropdowns
-@import '~superdesk-core/styles/sass/dropdowns/basic-dropdown';
-@import '~superdesk-core/styles/sass/dropdowns/nested-dropdown';
-@import '~superdesk-core/styles/sass/dropdowns/navigation-dropdown';
 @import '~superdesk-core/styles/sass/dropdowns/input-dropdown';
 
 // Components: common
@@ -38,9 +31,7 @@
 @import '~superdesk-core/styles/sass/avatars';
 
 // Components: Buttons & Alerts
-@import '~superdesk-core/styles/sass/buttons';
 @import '~superdesk-core/styles/sass/buttons/toggle-buttons';
-@import '~superdesk-core/styles/sass/buttons/basic-buttons';
 @import '~superdesk-core/styles/sass/button-groups';
 @import '~superdesk-core/styles/sass/alerts'; // Note: alerts share common CSS with buttons and thus have styles in buttons.scss
 
@@ -58,98 +49,18 @@
 // Components: Misc
 @import '~superdesk-core/styles/sass/labels';
 
+// Custom
+@import 'liveblog';
+
 // Vendor
 @import '~jquery-jcrop/css/jquery.Jcrop.css';
 @import '~jquery-ui/themes/smoothness/jquery-ui.css';
 @import '~medium-editor/dist/css/medium-editor.css';
 @import '~medium-editor-tables/dist/css/medium-editor-tables.css';
+@import '~superdesk-ui-framework/dist/superdesk-ui.bundle.css';
+@import '~sir-trevor/sir-trevor.css';
 
 @import '~superdesk-core/styles/sass/medium-editor'; // custom skin for medium-editor
 @import '~superdesk-core/styles/sass/sf-additional';
 @import '~superdesk-core/styles/sass/sf-icons';
 @import '~superdesk-core/styles/sass/search-list';
-
-// End of app.scss
-
-@import '~sir-trevor/sir-trevor.css';
-@import "~jquery-jcrop/css/jquery.Jcrop.css";
-
-@import 'lb-mixins.scss';
-@import 'lb-variables.scss';
-@import 'liveblog.scss';
-@import 'sd-icon-font.scss';
-
-// fix button line height
-.btn {
-    line-height: 12px;
-}
-
-a[disabled] {
-    cursor: default;
-    opacity: .5;
-    pointer-events: none;
-}
-
-// modal fix
-.modal {
-    align-items: stretch;
-    flex-direction: column;
-    justify-content: flex-start;
-    box-sizing: border-box;
-    label {
-        display: inline-block;
-        max-width: 100%;
-        margin-bottom: 4px;
-        font-size: 1em;
-    }
-    .field {
-        margin-bottom: 20px;
-    }
-    .help-block {
-        display: block;
-        margin-top: 0px;
-        margin-bottom: 10px;
-        color: #737373 ;
-        font-size: 12px;
-        line-height: 120%;
-    }
-    .modal-dialog {
-        flex: 0 1 auto;
-        margin: 0 auto;
-        justify-content: center;
-        width: auto;
-    }
-    .modal-content {
-        display: flex;
-        flex-direction: column;
-        flex: 0 0 530px;
-        .modal-header {
-            box-sizing: border-box;
-            flex: 0 0 auto;
-        }
-        .modal-body {
-            flex: 0 1 auto;
-            overflow-y: auto; // inner scroll is set here
-        }
-        .modal-footer {
-            box-sizing: border-box;
-            flex: 0 0 auto;
-        }
-        form {
-            width: 100%;
-        }
-    }
-}
-
-// alert fix 
-.alert { 
-    padding: 8px 25px 8px 14px;
-    .close {
-        background: transparent;
-        border: none;
-        opacity: 0.4;
-        &:hover {
-            opacity: 0.8;
-        }
-    }
-}

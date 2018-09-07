@@ -1,0 +1,145 @@
+<li>
+    <div ng-if="functionize(postsListCtrl.allowReordering)(post)"
+        ng-class="{'active top': post.order > reorderPost.order}"
+        class="timeline-reorder {{ post.post_type }}"
+        ng-click="movePost(index, 'above');"
+        translate>Click to place the item here</div>
+    <div class="lb-post" ng-class="{
+        'active': (post.order === reorderPost.order || post.order === keepHighlighted),
+        'unread': functionize(postsListCtrl.isUnreadPost)(post),
+        'pinned': post.sticky == true && !post.lb_highlight,
+        'lb_highlight': post.lb_highlight == true
+    }">
+        <div class="lb-post__holder lb-mainitem-{{ post.mainItem.item.item_type}}">
+            <div class="lb-post__figure">
+                <figure ng-class="{'avatar': (post.mainItem.item.item_type !== 'comment'),
+                                   'avatar-comment': (post.mainItem.item.item_type === 'comment')}">
+                    <img class="ng-isolate-scope" src="{{ post.mainItem.item.user.picture_url }}">
+                </figure>
+            </div>
+            <div class="lb-post__content">
+                <div class="lb-post__header">
+                    <div class="inline" ng-if="post.post_status != 'open'">
+                        <span class="name">{{ ::post.mainItem.item.user.display_name }}</span>
+                        <span ng-if="post.producer_blog_title" class="producer">{{ ::post.producer_blog_title }}</span>
+                        | <time datetime="{{ post._created}}">{{ post._created | reldateAutoUpdate }}</time>
+                    </div>
+                    <div class="inline" ng-if="post.post_status == 'open'">
+                        <span class="name">{{ ::post.mainItem.item.user.display_name }}</span>
+                        <span ng-if="post.producer_blog_title" class="producer">{{ ::post.producer_blog_title }}</span>
+                        | <time datetime="{{ post.published_date}}">{{ post.published_date | reldateAutoUpdate }}</time>
+                    </div>
+                    <div class="inline" ng-if="post.showUpdate">
+                        <span class="updated-label" translate>&nbsp;Updated</span> <time class="updated-time" datetime="{{ post.content_updated_date}}">{{ post.content_updated_date | reldateAutoUpdate }}</time>
+                    </div>
+                    <div class="lb-post__actions" ng-if="!postsListCtrl.isBlogClosed">
+                        <ul>
+                            <li ng-if="functionize(postsListCtrl.allowEditing)(post)">
+                                <a ng-click="highlightPost(post)" flow="down" sd-tooltip="{{ 'Highlight post' | translate }}">
+                                    <i class="icon-star" ng-class="{'orange': post.lb_highlight, 'opaque': post.lb_highlight}"></i>
+                                </a>
+                            </li>
+                            <li ng-if="functionize(postsListCtrl.allowEditing)(post)">
+                                <a ng-click="togglePinStatus(post)" flow="down" sd-tooltip="{{ post.sticky ? 'Unpin': 'Pin' | translate }}">
+                                    <i class="icon-pin" ng-class="{'blue': post.sticky, 'opaque': post.sticky}"></i>
+                                </a>
+                            </li>
+                            <li ng-if="functionize(postsListCtrl.allowDeleting)(post)">
+                                <a ng-click="askRemovePost(post)"flow="down" sd-tooltip="{{ 'Remove' | translate }}">
+                                    <i class="icon-close-thick"></i>
+                                </a>
+                            </li>
+                            <li ng-if="functionize(postsListCtrl.allowEditing)(post) && postsListCtrl.isEditable(post)">
+                                <a ng-click="onEditClick(post)" flow="down" sd-tooltip="{{ 'Edit' | translate }}">
+                                    <i class="icon-pencil"></i>
+                                </a>
+                            </li>
+                            <li ng-if="functionize(postsListCtrl.allowUnpublishing)(post) && postsListCtrl.isEditable(post)">
+                                <a ng-click="unpublishPost(post)" flow="left" sd-tooltip="{{ 'Unpublish and save in contributions' | translate }}">
+                                    <i class="icon-unpublish" alt="contributions posts"></i>
+                                </a>
+                            </li>
+                            <li ng-if="functionize(postsListCtrl.allowReordering)(post)" ng-disable="functionize(postsListCtrl.disableReordering)(post)">
+                                <div class="reorder-disabled"
+                                     ng-if="functionize(postsListCtrl.isSinglePost)(post)"
+                                     flow="down"
+                                     sd-tooltip="{{ 'Change order' | translate }}">
+                                        <i class="icon-move"></i>
+                                </div>
+                                <a  ng-if="!functionize(postsListCtrl.isSinglePost)(post)"
+                                    ng-click="preMovePost(post);"
+                                   flow="down"
+                                   sd-tooltip="{{ 'Change order' | translate }}">
+                                        <i class="icon-move"></i>
+                                </a>
+                            </li>
+                            <li ng-if="functionize(postsListCtrl.allowPublishing)(post)">
+                                <a ng-click="publishPost(post)" flow="down" sd-tooltip="{{ 'Publish' | translate }}">
+                                    <i class="icon-publish"></i>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div ng-if="post.multipleItems" class="lb-post__list">
+                    <div ng-if="!show_all" title="Click to show all items" ng-click="toggleMultipleItems()" class="multiple-item lb-post__item">
+                        <lb-item item="post.mainItem.item"></lb-item>
+                    </div>
+                    <div ng-if="show_all">
+                         <div ng-repeat="item in post.items track by item.item._id" class="lb-item-{{ item.item.item_type }}">
+                           <div class="lb-post__holder" ng-if="post.fullDetails && !$first">
+                               <div class="lb-post__figure">
+                                    <figure ng-class="{'avatar': (item.item.item_type !== 'comment'),
+                                                       'avatar-comment': (item.item.item_type === 'comment')}"
+                                    >
+                                        <img class="ng-isolate-scope" data-src="item.item.user.picture_url" sd-user-avatar="">
+                                    </figure>
+                                </div>
+                                <div class="lb-post__content">
+                                    <div class="lb-post__header">
+                                        <div class="inline">
+                                            <span class="name">{{ ::item.item.user.display_name }}</span>
+                                            <span ng-if="post.producer_blog_title" class="producer">{{ ::post.producer_blog_title }}</span>
+                                            | <time datetime="{{ (item.item.meta._created || item.item._created) }}">{{ ::(item.item.meta._created || item.item._created) | reldateAutoUpdate }}</time>
+                                        </div>
+                                    </div>
+                                    <lb-item item="item.item"></lb-item>
+                                </div>
+                            </div>
+                            <div
+                                ng-if="!post.fullDetails || $first"
+                                lb-bind-html
+                                html-content="{{ item.item.text }}"
+                                class="lb-post__item"
+                                ng-class="{'lb-post__item--even': !$first}"></div>
+                         </div>
+                </div>
+            </div>
+                <div ng-if="!post.multipleItems" class="lb-post__list">
+                        <lb-item item="post.mainItem.item"></lb-item>
+                </div>
+        </div>
+        <a
+            class="lb-post__expander-holder"
+            ng-click="toggleMultipleItems()"
+            ng-if="post.multipleItems && !show_all">
+            <div class="lb-post__expander-multiple-items">
+                <div class="lb-post__expander-multiple-items-roundel">
+                    <div class="lb-post__expander-multiple-items-roundel-text">
+                        {{ post.multipleItems }}
+                    </div>
+                </div>
+                <div translate class="lb-post__expander-multiple-items-roundel-label">
+                    MORE ITEMS
+                </div>
+            </div>
+        </a>
+        <a
+            class="lb-post__expander-holder"
+            ng-click="toggleMultipleItems()"
+            ng-if="post.multipleItems && show_all">
+            <div class="lb-post__collapser-multiple-items"></div>
+        </a>
+    </div>
+    <div ng-if="functionize(postsListCtrl.allowReordering)(post)" ng-class="{'active bottom': post.order < reorderPost.order}" class="timeline-reorder" ng-click="movePost(index, 'below');" translate>Click to place the post here</div>
+</li>

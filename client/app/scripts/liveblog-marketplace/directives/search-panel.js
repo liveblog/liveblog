@@ -1,4 +1,4 @@
-import searchPanelTpl from 'scripts/liveblog-marketplace/views/search-panel.html';
+import searchPanelTpl from 'scripts/liveblog-marketplace/views/search-panel.ng1';
 
 lbSearchPanel.$inject = ['MarketplaceActions'];
 
@@ -6,7 +6,7 @@ export default function lbSearchPanel(MarketplaceActions) {
     return {
         templateUrl: searchPanelTpl,
         scope: {
-            store: '='
+            store: '=',
         },
         link: function(scope) {
             scope.categories = [
@@ -16,7 +16,7 @@ export default function lbSearchPanel(MarketplaceActions) {
                 {code: 'Sport', name: 'Sport'},
                 {code: 'Technology', name: 'Technology'},
                 {code: 'Politics', name: 'Politics'},
-                {code: 'Others', name: 'Others'}
+                {code: 'Others', name: 'Others'},
             ];
 
             scope.store.connect((state) => {
@@ -28,6 +28,6 @@ export default function lbSearchPanel(MarketplaceActions) {
             scope.close = () => {
                 MarketplaceActions.togglePanel(false);
             };
-        }
+        },
     };
 }

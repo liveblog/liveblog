@@ -5,65 +5,76 @@
 @import '~lb-variables.scss';
 
 .theme-settings-modal {
-    form {padding: 10px 0;}
-    label {
-        display: inline-block;
-        max-width: 100%;
-        margin-bottom: 4px;
-        font-size: 1em;
+    form { padding: 0; }
+
+    .form__row {
+        padding-bottom: 0px;
+
+        // the group heading of first row should have less margin
+        &:first-child .sd-line-input--is-groupheading {
+            margin-top: 0px;
+        }
     }
-    .help-block {
-        display: block;
-        margin-top: 0px;
-        margin-bottom: 10px;
-        color: #737373;
-        font-size: 12px;
-        line-height: 120%;
-    }
+
     .form-group {
+        margin: 0;
+        padding-top: 0;
+        margin-bottom: 20px;
+
+        // settings groups headline
+        &.sd-line-input--is-groupheading {
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+
+        &.sd-line-input {
+            .sd-line-input__hint {
+                position: relative;
+                margin-top: 0;
+                display: block;
+            }
+
+        }
+
+        .sd-line-input__label {
+            position: relative;
+        }
+
+        .lb-group-heading {
+            .sd-line-input__label {
+                font-size: 1.4rem;
+                border-bottom: 1px solid #ccc;
+                display: block;
+                width: 100%;
+                padding-bottom: 5px;
+            }
+
+        }
+
         .datetimeformat {
             ul {
-                margin-bottom: 20px;
+                margin: 1em 0;
+            }
+            li {
+                margin-bottom: .5em;
+                height: 20px;
+                display: flex;
+                align-items: center;
             }
             .datetime__text {
                 width: 50%;
-                float: left;
+                margin: 0 0 0 5px;
             }
             .datetime__example {
-                margin-left: 15px;
+                margin: 0 0 0 15px;
             }
-            input {
-                &[type="radio"] {
-                    margin-top: 6px;
-                    margin-right: 8px;
-                    clear: both;
-                }
-            }
-        }
-        margin-bottom: 22px;
-        input {
-            float: left;
-            &[type="checkbox"] {
-                @include box-shadow(none);
-                margin-top: 6px;
-                margin-right: 8px;
-            }
-            &[type="number"] {
-                max-width: 50px;
-            }
-        }
-        select {
-            margin-bottom: 6px;
-            margin-top: 4px;
-        }
-
-        div.text-input {
-            width: 100%;
         }
     }
+
     .modal-body {
         padding: 10px 20px;
     }
+
 }
 .theme-preview-modal {
     justify-content: flex-start;

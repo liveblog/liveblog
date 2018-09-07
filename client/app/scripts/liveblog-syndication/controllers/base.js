@@ -14,7 +14,7 @@ export default function baseController($scope, api, notify, $route) {
     $scope.criteria = {
         max_results: $scope.pageLimit,
         sort: '[("_created", 1)]',
-        page: getPageValue($route)
+        page: getPageValue($route),
     };
 
     $scope.$on('$routeUpdate', () => {
@@ -43,7 +43,7 @@ export default function baseController($scope, api, notify, $route) {
     };
 
     $scope.render = function(newEntry) {
-        var isEditing = false;
+        let isEditing = false;
 
         $scope[$scope.endPoint]._items = $scope[$scope.endPoint]._items
             .map((item) => {

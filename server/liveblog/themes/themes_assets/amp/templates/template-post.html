@@ -24,36 +24,39 @@ data-sort-time="{{ sortTime | date('X') }}"
 class="lb-post list-group-item show-author-avatar {% if item.sticky %}lb-item-pinned{% endif %} {% if not item.sticky and not item.deleted %}lb-not-pinned{% endif %} {% if item.lb_highlight %}lb-post--highlighted{% endif %} {% if item.deleted %} hide-item {% endif %}"
 {% if item.deleted %} data-tombstone="true" {% endif %}>
 
-  <div class="lb-type lb-type--{{ item.post_items_type }}">
-    {% if item.post_items_type =="embed-facebook" %}
+  {% block post_header %}{% endblock %}
+
+  {% block post_body %}
+  <div class="lb-type lb-type-{{ item.post_items_type }}">
+    {% if item.post_items_type == "embed-facebook" %}
       <amp-img src="{{ assets_root }}images/facebook_logo.png"
       layout="responsive"
       width="20"
       height="20"
       >
       </amp-img>
-    {% elif item.post_items_type =="embed-youtube" %}
+    {% elif item.post_items_type == "embed-youtube" %}
       <amp-img src="{{ assets_root }}images/youtube_logo.png"
       layout="responsive"
       width="20"
       height="20"
       >
       </amp-img>
-    {% elif item.post_items_type =="embed-twitter" %}
+    {% elif item.post_items_type == "embed-twitter" %}
       <amp-img src="{{ assets_root }}images/twitter_logo_white.png"
       layout="responsive"
       width="20"
       height="20"
       >
       </amp-img>
-    {% elif item.post_items_type =="embed-instagram" %}
+    {% elif item.post_items_type == "embed-instagram" %}
       <amp-img src="{{ assets_root }}images/instagram_logo.png"
       layout="responsive"
       width="20"
       height="20"
       >
       </amp-img>
-    {% elif item.post_items_type =="embed-brightcove" %}
+    {% elif item.post_items_type == "embed-brightcove" %}
       <amp-img src="{{ assets_root }}images/video_logo.png"
       layout="fixed"
       width="20"
@@ -66,21 +69,25 @@ class="lb-post list-group-item show-author-avatar {% if item.sticky %}lb-item-pi
       width="40"
       height="40"
       >
+    {% elif item.post_items_type == "advertisement" %}
+      <div class="lb-advertisement">{{ translate('Advertisement') }}</div>
     {% endif %}
   </div>
 
-{% if item.sticky and item.lb_highlight %}
-  <amp-img src="{{ assets_root }}images/pinpost.svg" width="10" height="13" class="pin-icon" ></amp-img>
-  <amp-img src="{{ assets_root }}images/highlighted.svg" width="14" height="13" class="highlight-icon" ></amp-img>
-{% elif item.sticky %}
-  <amp-img src="{{ assets_root }}images/pinpost.svg" width="10" height="13" class="pin-icon" ></amp-img>
-{% elif item.lb_highlight %}
-  <amp-img src="{{ assets_root }}images/highlighted.svg" width="14" height="13" class="highlight-icon" ></amp-img>
-{% endif %}
+  {% if item.sticky and item.lb_highlight %}
+    <amp-img src="{{ assets_root }}images/pinpost.svg" width="10" height="13" class="pin-icon" ></amp-img>
+    <amp-img src="{{ assets_root }}images/highlighted.svg" width="14" height="13" class="highlight-icon" ></amp-img>
+  {% elif item.sticky %}
+    <amp-img src="{{ assets_root }}images/pinpost.svg" width="10" height="13" class="pin-icon" ></amp-img>
+  {% elif item.lb_highlight %}
+    <amp-img src="{{ assets_root }}images/highlighted.svg" width="14" height="13" class="highlight-icon" ></amp-img>
+  {% endif %}
 
-  <div class="lb-post-date">{{ postDate | date('') }}</div>
-  {% if settings.authorPosition == "top"  %}
-    {% include "template-author.html" %}
+  {% if item.post_items_type != "advertisement" %}
+    <div class="lb-post-date">{{ postDate | date('') }}</div>
+    {% if settings.authorPosition == "top"  %}
+      {% include "template-author.html" %}
+    {% endif %}
   {% endif %}
 
   <!-- checking if post might be a gallery -->
@@ -102,7 +109,7 @@ class="lb-post list-group-item show-author-avatar {% if item.sticky %}lb-item-pi
       {% if ref.item.item_type == "comment" %}
         <div class="items-containerIndent">
       {% endif %}
-      <div class="lb-item">
+      <div class="lb-item lb-item-{{ ref.item.item_type|lower|replace(' ', '-') }}">
         {% if ref.item.item_type == "embed" %}
           {% include "template-item-embed.html" %}
         {% elif ref.item.item_type == "image" %}
@@ -121,7 +128,9 @@ class="lb-post list-group-item show-author-avatar {% if item.sticky %}lb-item-pi
     {% endfor %}
     <!-- item end -->
   {% endif %}
+  {% endblock %}
 
+  {% block post_footer %}
   {% if settings.showUpdateDatetime and (item.content_updated_date != item.firstcreated) and item.post_items_type != "advertisement" %}
     <div class="lb-post-updated">
       <span>{{ translate('Updated') }}</span> <span class="lb-post-updated-time" >{{ item.content_updated_date | date('') }}</span>
@@ -130,5 +139,6 @@ class="lb-post list-group-item show-author-avatar {% if item.sticky %}lb-item-pi
   {% if settings.authorPosition == "bottom"  %}
     {% include "template-author.html" %}
   {% endif %}
+  {% endblock %}
 
 </article>

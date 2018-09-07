@@ -1,0 +1,309 @@
+<div class="subnav">
+    <div class="subnav__sliding-toolbar" ng-show="bulkActions">
+        <div class="sliding-toolbar__inner">
+            <a class="btn" ng-click="bulkActionCancel()">Cancel</a>
+            <span class="sliding-toolbar__info-text">{{bulkActions}} item(s) selected</span>
+        </div>
+        <a class="btn btn--primary" ng-click="bulkAction(activeState)">{{activeState.name == 'active' ? 'Archive' : 'Activate'}}</a>
+        <a class="btn btn--alert" ng-click="askRemoveBlog()"><i class="icon-trash"></i>Delete</a>
+    </div>
+
+    <div class="button-stack" >
+    <button class="navbtn hover pull-left" href="/#/liveblog">
+            <i class="icon-th-large"></i>
+        </button>
+        <ul class="nav nav-tabs" >
+            <li ng-class="{active: activeState === state}" ng-repeat="state in states"><button ng-click="changeState(state)" translate>{{ ::state.text }}</button></li>
+        </ul>
+
+    </div>
+    <div class="subnav__stretch-bar"></div>
+    <div class="subnav__button-stack--square-buttons" ng-if="isUserAllowedToCreateABlog();">
+        <button class="navbtn sd-create-btn" ng-click="openNewBlog();" title="{{ 'Create Blog' | translate }}">
+            <i class="svg-icon-plus"></i>
+            <span class="circle"></span>
+        </button>
+    </div>
+</div>
+
+<section class="main-section bloglist">
+    <header>
+        <div sd-searchbar style="float: left"></div>
+        <div class="view-select pull-right">
+            <button title="{{ 'switch to grid view' | translate}}" ng-show="blogsView === 'list'" ng-click="setBlogsView('grid');">
+                <i class="icon-th"></i>
+            </button>
+            <button title="{{ 'switch to list view' | translate}}" ng-show="blogsView === 'grid'" ng-click="setBlogsView('list');">
+                <i class="icon-th-list"></i>
+            </button>
+            <button title="{{ 'blog list embed' | translate}}" ng-click="openEmbed()">
+                <i class="icon-link"></i>
+            </button>
+        </div>
+        <div sd-pagination data-items="blogs" data-limit="25" class="pull-right"></div>
+    </header>
+    <div class="list-container">
+        <div ng-if="blogsLoading" class="loading-indicator" style="margin-top: 30px;"><span translate>Loading blogs...</span></div>
+        <!-- empty state -->
+        <div ng-if="blogs._meta.total === 0" class="empty-state">
+            <div translate>No blogs found.</div>
+            <button
+                ng-if="activeState.code === 'open' && isUserAllowedToCreateABlog();"
+                class="btn btn--primary btn-large"
+                ng-click="openNewBlog();">
+                <i class="svg-icon-add inverse"></i>
+                <span class="title" translate>Create a Blog</span>
+            </button>
+        </div>
+        <!-- LIST VIEW -->
+        <table class="row-list table table-striped" ng-if="blogsView === 'list'">
+            <tbody>
+                <tr ng-repeat="blog in blogs._items track by blog._id"
+                    ng-click="isUserAllowedToOpenBlog(blog) ? edit(blog): openAccessRequest(blog)"
+                    ng-class="{'can-access': isUserAllowedToOpenBlog(blog)}">
+                    <td class="content">
+                        <h3>{{ ::blog.title }} <small>by {{ ::blog.original_creator | username }}</small></h3>
+                        <div class="description">{{ ::blog.description | htmlToPlaintext }}</div>
+                        <div class="time visible-phone">
+                            {{ ::'Created' | translate}} {{ ::blog._created | reldate }},
+                            {{ ::'updated' | translate }} {{ ::blog._updated | reldate }}.
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <!-- GRID VIEW -->
+        <ul class="card-list" ng-if="blogsView === 'grid'">
+            <li ng-repeat="blog in blogs._items track by blog._id"
+                title="{{ !isUserAllowedToOpenBlog(blog) ? requestAccessMessage: '' }}"
+                ng-click="isUserAllowedToOpenBlog(blog) ? edit(blog): openAccessRequest(blog)"
+                ng-class="{'can-access': isUserAllowedToOpenBlog(blog)}">
+                <sd-check class="bulk-select" ng-model="blog.selected" ng-click="blogSelect($event, blog.selected)"></sd-check>
+                <figure class="media">
+                    <div ng-if="blog.picture_url" if-background-image="{{blog.picture_url}}"></div>
+                </figure>
+                <div class="content">
+                    <h3>{{ ::blog.title }}</h3>
+                    <div class="description">{{ ::blog.description | htmlToPlaintext }}</div>
+                </div>
+                <div class="footer"> 
+                    <dl>
+                        <dt>{{ ::'Blog owner' | translate }}:</dt>
+                        <dd>{{ ::blog.original_creator | username }}</dd>
+                        <dt ng-if="isAdmin()">{{ ::'Theme' | translate }}:</dt>
+                        <dd ng-if="isAdmin()">{{ ::blog.blog_preferences.theme }}</dd>
+                        <dt>{{ ::'Created' | translate}}:</dt>
+                        <dd><time datetime="{{ blog._created}}">{{ blog._created | reldateAutoUpdate }}</time></dd>
+                        <dt>{{ ::'No. of Posts' | translate }}:</dt>
+                        <dd>{{ ::blog.total_posts }}</dd>
+                        <dl>
+                        <dt> {{ :: 'Last updated' | translate }}:</dt>
+                        <dd><time datetime="{{ blog._updated}}">{{ blog._updated | reldateAutoUpdate }}</time></dd>
+                        <dt> {{ :: 'Last posted' | translate }}:</dt>
+                        <dd><time datetime="{{ blog.last_created_post._updated}}">{{ blog.last_created_post._updated | reldateAutoUpdate }}</time></dd>
+                        <dd ng-if="blog.posts_count == 0"> No posts yet</dd>
+                        <dt> {{ :: 'Syndication' | translate }}:</dt>
+                        <dd>
+                        <div ng-if="blog.syndication_enabled" class="state-label state-published state-label--no-float" translate>Syndicatable</div>
+                        <div ng-if="!blog.syndication_enabled" translate>OFF</div>
+                        </dd>
+                        <dt> {{ :: 'Market' | translate }}:</dt>
+                        <dd>
+                        <div ng-if="blog.market_enabled" class="state-label state-published state-label--no-float" translate>PUBLIC</div>
+                        <div ng-if="!blog.market_enabled" translate>PRIVATE</div>
+                        </dd>
+                    </dl>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div sd-modal="" data-model="embedUpgrade">
+        <div class="modal__header">
+            <button class="close" ng-click="cancelUpgrade()"><i class="icon-close-small"></i></button>
+            <h3 translate>Sorry</h3>
+        </div>
+        <div class="modal__body">
+            <p translate>You have reached the maximum number of active blogs on your Live Blog plan. You can either:</p>
+            <ul>
+                <li translate>1. Archive an active blog or</li>
+                <li translate>2. Subscribe to a bigger plan.</li>
+            </ul>
+            <br />
+            <p translate>To archive a blog, go to blog settings and change the blog status from “active” to “archived.”</p>
+            <p translate>Want to upgrade to a plan more suitable to your needs? Email us at <a href="{{mailto}}">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
+        </div>
+    </div>
+
+    <div sd-modal="" data-model="embedModal">
+        <div class="modal__header">
+            <button class="modal__close pull-right" ng-click="cancelEmbed()"><i class="icon-close-small"></i></button>
+            <h3 class="modal__heading" translate>Get blog list embed</h3>
+        </div>
+        <div class="modal__body" style="min-height: 240px;">
+            <textarea class="form-control" rows="6" readonly="readonly" select-text-on-click>{{ bloglistEmbed }}</textarea>
+        </div>
+        <div class="modal__footer">
+            <button class="btn" ng-click="cancelEmbed()">Close</button>
+        </div>
+    </div>
+
+    <div sd-modal="" data-model="newBlogModalActive" class="modal--large modal--tabs">
+        <div class="modal__header">
+            <button class="modal__close pull-right" ng-click="cancelCreate()"><i class="icon-close-small"></i></button>
+            <h3 class="modal__heading" translate>Create New Blog</h3>
+        </div>
+        <div class="modal__body">
+            <form ng-submit="createBlog()" name="createBlogForm">
+                <div class="modal__body-header">
+                    <ul class="nav nav-tabs">
+                        <li ng-class="{active: creationStep == 'Details'}">
+                            <button type="button" translate ng-click="switchTab('Details')">Details</button>
+                        </li>
+                        <li ng-class="{active: creationStep == 'Team'}">
+                            <button type="button" translate ng-disabled="!createBlogForm.$valid" ng-click="switchTab('Team')"
+                            ng-class="{'default-cursor': !createBlogForm.$valid}">Team</button>
+                        </li>
+                    </ul>
+                </div>
+                <div class="creation-steps modal__body-content">
+                    <div data-title="Details" ng-if="creationStep === 'Details'" class="modal__body-content">
+                        <fieldset>
+                            <div class="sd-line-input">
+                                <label class="sd-line-input__label translate">Blog title</label>
+                                <input class="sd-line-input__input" type="text" ng-model="newBlog.title" required ng-keydown="handleKeyDown($event, 'goToTeamTab')">
+                            </div>
+                            <div class="sd-line-input">
+                                <label class="sd-line-input__label translate">Blog description</label>
+                                <input class="sd-line-input__input" type="text"  ng-model="newBlog.description">
+                            </div>
+
+                            <div class="field">
+                                <label translate>Blog image</label>
+                                <div class="upload-form">
+
+                                    <section
+                                        class="main"
+                                        sd-image-preview="preview.url"
+                                        data-file="preview.img"
+                                        data-progress-width="progress.width">
+
+                                        <div
+                                            class="upload-progress"
+                                            ng-show="progress.width">
+                                            <div
+                                                class="bar"
+                                                style="width: {{ progress.width }}%;"></div>
+                                        </div>
+
+
+                                        <div class="computer" ng-if="!preview.url" ng-hide="progress.width">
+                                            <div class="dropzone" ngf-drop="preview.img = $files[0]">
+                                                <div class="text" translate>Drop it here</div>
+                                                <div class="input-holder">
+                                                    <input type="file" accept="image/*;capture=camera" ngf-select="preview.img = $files[0]" label="{{ 'or Select from computer' | translate }}">
+                                                </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="preview" ng-if="preview.url">
+                                            <div class="crop-area">
+                                                <div class="preview">
+                                                    <div class="preview-large">
+                                                        <img ng-src="{{preview.url}}" class="preview-target-1">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </section>
+                                    <button type="button" ng-if="preview.url && progress.width >= 100" class="btn btn-default pull-right" ng-click="removeImage()" translate>Remove</button>
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+
+                    <div data-title="Team" ng-if="creationStep === 'Team'" class="team_settings modal__body-content">
+                        <div>
+                            <div ng-if="hasReachedMembersLimit()">
+                            <h3>Sorry.</h3>
+                            <p>You have reached the maximum number of team members for this blog. You can either:</p>
+                            <ul>
+                                <li>1. Unassign a team member from one of your active blogs or</li>
+                                <li>2. Subscribe to a bigger plan.</li>
+                            </ul>
+                            <p>To unassign a team member from this blog, simply move your mouse above the below users and click on the X.</p>
+                            <p>Want to upgrade to a plan more suitable to your needs? Email us at <a href="{{settings.mailto}}">upgrade@liveblog.pro</a> and tell us when and how we can best contact you to take your order.</p>
+                            </div>
+
+                            <div
+                                lb-user-select-list
+                                data-members="blogMembers"
+                                ng-if="!hasReachedMembersLimit()"
+                                data-onchoose="addMember(user)"></div>
+                            <div class="content">
+                                <p ng-if="message">{{ message }}</p>
+                                <div class="member-list clearfix">
+                                    <ul>
+                                        <li ng-repeat="user in blogMembers" ng-class="{'inactive' : !user.is_enabled || !user.is_active}">
+                                            <i class="icon-close-small" ng-click="removeMember(user)"></i>
+                                            <figure class="avatar"><img sd-user-avatar data-src="user.picture_url"></figure>
+                                            <div class="name">{{user.display_name}}</div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div> <!-- /modal body content /creation steps -->
+                <div class="modal__body-footer">
+                    <div
+                        class="loading-indicator"
+                        ng-show="creationInProcess"><span translate>Creating new blog</span></div>
+                    <div ng-if="creationStep === 'Details'">
+                        <span class="error">{{newBlogError}}</span>
+                        <button class="btn btn-primary btn--primary" type="button" ng-disabled="!createBlogForm.$valid"
+                        translate ng-click="switchTab('Team')">Next</button>
+                    </div>
+                    <div ng-if="creationStep === 'Team'">
+                        <button
+                            type="button"
+                            class="btn btn-default pull-left"
+                            translate
+                            ng-click="switchTab('Details')">Back</button>
+                        <button
+                            type="button"
+                            class="btn btn--primary"
+                            ng-hide="creationInProcess"
+                            translate
+                            ng-click="createBlog()">Create</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+
+    <div sd-modal="" data-model="showBlogAccessModal">
+        <div class="modal__header">
+            <button class="close" ng-click="closeAccessRequest()"><i class="icon-close-small"></i></button>
+            <h3 translate><strong>{{ ::accessRequestedTo.title }}</strong></h3>
+        </div>
+        <div class="modal__body">
+            <p translate>
+                Sorry, you are not allowed to access this blog.<br />
+                Ask the blog owner to add you to the team.
+            </p>
+        </div>
+        <div class="modal__footer">
+            <button type="button" class="btn btn-default" translate ng-click="closeAccessRequest()">Cancel</button>
+            <button
+              type="submit"
+              class="btn btn--primary pull-left"
+              translate
+              ng-disabled="!allowAccessRequest"
+              ng-click="requestAccess(accessRequestedTo)">Request Access</button>
+        </div>
+    </div>
+
+
+</section>

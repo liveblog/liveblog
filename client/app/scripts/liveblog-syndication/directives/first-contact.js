@@ -6,9 +6,9 @@ export default function firstContact() {
             prosumer: '=',
         },
         link: function(scope) {
-            scope.$watch('prosumer', function(prosumer) {
+            scope.$watch('prosumer', (prosumer) => {
                 scope.contact = prosumer.contacts[0];
-            })
-        }
+            });
+        },
     };
-};
+}

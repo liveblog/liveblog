@@ -1,6 +1,6 @@
 import handlePlaceholder from './handle-placeholder';
 
-var AddContentBtns = function() {
+const AddContentBtns = function() {
     this.top = $('.st-block-controls__top');
     this.bottom = $('[data-icon-after="ADD CONTENT HERE"]');
 };
@@ -27,7 +27,8 @@ export default function imageBlock(SirTrevor, config) {
         descriptionPlaceholder: window.gettext('Add a description'),
         authorPlaceholder: window.gettext('Add author / photographer'),
         loadData: function(data) {
-            let that = this, fileUrl = '';
+            const self = this;
+            let fileUrl = '';
 
             if (typeof data.file !== 'undefined') {
                 fileUrl = data.file.url;
@@ -38,13 +39,13 @@ export default function imageBlock(SirTrevor, config) {
             }
 
             this.$editor.html($('<img>', {
-                src: fileUrl
+                src: fileUrl,
             })).show();
             this.$editor.append($('<div>', {
                 name: 'caption',
                 class: 'st-image-block',
                 contenteditable: true,
-                placeholder: that.descriptionPlaceholder
+                placeholder: self.descriptionPlaceholder,
             }).html(data.caption));
 
             // Add hidden credit size warning just in case
@@ -52,15 +53,15 @@ export default function imageBlock(SirTrevor, config) {
                 name: 'credit-size-alert',
                 class: 'alert alert-error',
                 role: 'alert',
-                style: 'display: none'
+                style: 'display: none',
             })
-            .html(window.gettext('Max. amount of 300 characters is reached')));
+                .html(window.gettext('Max. amount of 300 characters is reached')));
 
             this.$editor.append($('<div>', {
                 name: 'credit',
                 class: 'st-image-block',
                 contenteditable: true,
-                placeholder: that.authorPlaceholder
+                placeholder: self.authorPlaceholder,
             }).html(data.credit));
 
             // limit characters for credit to a max of 300
@@ -68,16 +69,16 @@ export default function imageBlock(SirTrevor, config) {
                 if (this.innerText.length > 300) {
                     this.innerText = this.innerText.substring(0, 300);
                     $(this).css('border', '1px solid red');
-                    that.$editor.find('[name="credit-size-alert"]').css('display', 'block');
+                    self.$editor.find('[name="credit-size-alert"]').css('display', 'block');
                 } else {
-                    that.$editor.find('[name="credit-size-alert"]').css('display', 'none');
+                    self.$editor.find('[name="credit-size-alert"]').css('display', 'none');
                     $(this).css({border: '0px', 'border-bottom': '1px solid #999'});
                 }
             });
 
             // TODO: This shouldn't be here, max image size is defined in the configuration
             // Image size warning
-            var maxFileSize = 2; // in MB
+            const maxFileSize = 2; // in MB
 
             if (data.file && data.file.size / 1048576 > maxFileSize) {
                 this.$editor.prepend($('<div>', {
@@ -85,21 +86,21 @@ export default function imageBlock(SirTrevor, config) {
                     class: 'alert alert-warning',
                     role: 'alert',
                 })
-                .html(window.gettext(
-                    'The image is being uploaded, please stand by. ' +
+                    .html(window.gettext(
+                        'The image is being uploaded, please stand by. ' +
                     'It may take a while as the file is bigger than ' + maxFileSize + 'MB.'
-                )));
+                    )));
                 window.setTimeout(() => {
-                    that.$editor.find('[name="size-warning"]').css('display', 'none');
+                    self.$editor.find('[name="size-warning"]').css('display', 'none');
                 }, 10000);
             }
 
             // Remove placeholders
-            handlePlaceholder(this.$('[name=caption]'), that.descriptionPlaceholder);
-            handlePlaceholder(this.$('[name=credit]'), that.authorPlaceholder, {tabbedOrder: true});
+            handlePlaceholder(this.$('[name=caption]'), self.descriptionPlaceholder);
+            handlePlaceholder(this.$('[name=credit]'), self.authorPlaceholder, {tabbedOrder: true});
         },
         onBlockRender: function() {
-            var that = this;
+            const self = this;
 
             // assert we have an uploader function in options
             if (typeof this.getOptions().uploader !== 'function') {
@@ -113,9 +114,10 @@ export default function imageBlock(SirTrevor, config) {
                 this.onDrop(ev.currentTarget);
             }, this));
 
-            this.$('[data-icon="close"]').on('click', function() {
-                that.getOptions().setPending(false);
-                let addContentBtns = new AddContentBtns();
+            this.$('[data-icon="close"]').on('click', () => {
+                self.getOptions().setPending(false);
+                const addContentBtns = new AddContentBtns();
+
                 addContentBtns.show();
             });
 
@@ -127,9 +129,11 @@ export default function imageBlock(SirTrevor, config) {
         onRemoteDrop: function(transferData) {
             // Check for an existing URL
             if (transferData.getData('text/html')) {
-                let addContentBtns = new AddContentBtns();
-                var remoteTag = transferData.getData('text/html');
-                var srcAttr = remoteTag.match(/src="?([^"\s]+)"?\s*/)[1];
+                const addContentBtns = new AddContentBtns();
+                const remoteTag = transferData.getData('text/html');
+                const regex = /<img.*?src="(.*?)"/;
+                let sourceAttr = regex.exec(remoteTag)[1];
+                const srcAttr = sourceAttr.replace(/&amp;/g, '&');
 
                 addContentBtns.hide();
                 this.loading();
@@ -137,8 +141,8 @@ export default function imageBlock(SirTrevor, config) {
                 this.$inputs.hide();
                 this.loadData({
                     file: {
-                        url: srcAttr
-                    }
+                        url: srcAttr,
+                    },
                 });
 
                 this.getOptions().disableSubmit(false);
@@ -148,7 +152,7 @@ export default function imageBlock(SirTrevor, config) {
                     .gogoGadgetoRemoteImage(srcAttr)
                     .then((data) => {
                         Object.keys(data.media.renditions).forEach((key) => {
-                            let rendition = data.media.renditions[key];
+                            const rendition = data.media.renditions[key];
 
                             rendition.media = rendition.media.$oid;
                         });
@@ -174,9 +178,9 @@ export default function imageBlock(SirTrevor, config) {
         },
         // Drag and drop an image from a local drive
         onDrop: function(transferData) {
-            var file = transferData.files[0];
-            var urlAPI = window.URL;
-            var addContentBtns = new AddContentBtns();
+            const file = transferData.files[0];
+            let urlAPI = window.URL;
+            const addContentBtns = new AddContentBtns();
 
             if (typeof urlAPI === 'undefined') {
                 urlAPI = window.webkitURL;
@@ -187,8 +191,8 @@ export default function imageBlock(SirTrevor, config) {
             }
 
             if (file.size > config.maxContentLength) {
-                let maxContentLengthMB = config.maxContentLength / 1024 / 1024;
-                let message = `Image bigger than ${maxContentLengthMB}MB`;
+                const maxContentLengthMB = config.maxContentLength / 1024 / 1024;
+                const message = `Image bigger than ${maxContentLengthMB}MB`;
 
                 this.addMessage(message);
                 this.ready();
@@ -208,8 +212,8 @@ export default function imageBlock(SirTrevor, config) {
                 this.loadData({
                     file: {
                         url: urlAPI.createObjectURL(file),
-                        size: file.size
-                    }
+                        size: file.size,
+                    },
                 });
                 this.getOptions().uploader(
                     file,
@@ -221,7 +225,7 @@ export default function imageBlock(SirTrevor, config) {
                     },
                     (error) => {
                         addContentBtns.show();
-                        var message = error || window.i18n.t('blocks:image:upload_error');
+                        const message = error || window.i18n.t('blocks:image:upload_error');
 
                         this.addMessage(message);
                         this.ready();
@@ -234,14 +238,14 @@ export default function imageBlock(SirTrevor, config) {
                 media: this.getData().media,
                 caption: this.$('[name=caption]').text(),
                 credit: this.$('[name=credit]').text(),
-                syndicated_creator: this.getData().syndicated_creator
+                syndicated_creator: this.getData().syndicated_creator,
             };
         },
         toHTML: function() {
-            var data = this.retrieveData();
+            const data = this.retrieveData();
 
             if (data.media.hasOwnProperty('renditions')) {
-                var srcset = '';
+                let srcset = '';
 
                 _.forEach(data.media.renditions, (value) => {
                     srcset += ', ' + value.href + ' ' + value.width + 'w';
@@ -255,7 +259,7 @@ export default function imageBlock(SirTrevor, config) {
                     '    <figcaption>',
                     data.caption + (data.credit === '' ? '' : ' Credit: ' + data.credit),
                     '</figcaption>',
-                    '</figure>'
+                    '</figure>',
                 ].join('');
             }
             // When drag & dropping from an external web page
@@ -263,6 +267,6 @@ export default function imageBlock(SirTrevor, config) {
         },
         toMeta: function() {
             return this.retrieveData();
-        }
+        },
     });
 }

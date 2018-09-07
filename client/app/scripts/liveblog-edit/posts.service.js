@@ -14,11 +14,49 @@ import moment from 'moment';
 postsService.$inject = [
     'api',
     '$q',
-    'userList'
+    'userList',
 ];
 
 export default function postsService(api, $q, userList) {
-    let producersList = [];
+    var listOfUsers = [];
+
+    function filterPosts(filters, postsCriteria) {
+        // filters.status
+        if (angular.isDefined(filters.status)) {
+            postsCriteria.source.query.filtered.filter.and.push({term: {post_status: filters.status}});
+        }
+        // filters.sticky
+        if (angular.isDefined(filters.sticky)) {
+            postsCriteria.source.query.filtered.filter.and.push({term: {sticky: filters.sticky}});
+        }
+        // filters.authors
+        if (angular.isDefined(filters.authors) && filters.authors.length > 0) {
+            postsCriteria.source.query.filtered.filter.and.push({
+                or: {
+                    filters: filters.authors.map((author) => ({term: {original_creator: author}})),
+                },
+            });
+        }
+        // filters.updatedAfter
+        if (angular.isDefined(filters.updatedAfter)) {
+            postsCriteria.source.query.filtered.filter.and.push({
+                range: {
+                    _updated: {
+                        gt: filters.updatedAfter,
+                    },
+                },
+            });
+        }
+        // filters.highlight
+        if (angular.isDefined(filters.highlight)) {
+            postsCriteria.source.query.filtered.filter.and.push({term: {lb_highlight: filters.highlight}});
+        }
+        // filters.sticky
+        if (angular.isDefined(filters.sticky)) {
+            postsCriteria.source.query.filtered.filter.and.push({term: {sticky: filters.sticky}});
+        }
+    }
+
     /**
      * Fetch a page of posts
      * @param {string} blog_id - The id of the blog
@@ -26,109 +64,89 @@ export default function postsService(api, $q, userList) {
      * @param {integer} max_results - maximum number of results per page
      * @param {integer} page - page index
      */
-    function getPosts(blog_id, filters, max_results, page) {
-        filters = filters || {};
-        page = page || 1;
-        max_results = max_results || 15;
-
+    function getPosts(blogId, filters = {}, maxResults = 15, page = 1) {
         // excludeDeleted: default set to true
         filters.excludeDeleted = angular.isDefined(filters.excludeDeleted) ? filters.excludeDeleted : true;
-        var posts_criteria = {
+        const postsCriteria = {
             source: {
                 query: {filtered: {filter: {
-                    and: []
-                }}}
+                    and: [],
+                }}},
             },
             page: page,
-            max_results: max_results
+            max_results: maxResults,
         };
 
         // filters.excludeDeleted
         if (filters.excludeDeleted) {
-            posts_criteria.source.query.filtered.filter.and.push({not: {term: {deleted: true}}});
+            postsCriteria.source.query.filtered.filter.and.push({not: {term: {deleted: true}}});
         }
         // filters.sort
         if (angular.isDefined(filters.sort)) {
             // this converts the format '-_created' to the elasticsearch one
-            var order = 'asc';
+            let order = 'asc';
 
             if (filters.sort.charAt(0) === '-') {
                 filters.sort = filters.sort.slice(1);
                 order = 'desc';
             }
-            var sort = {};
+            const sort = {};
 
             sort[filters.sort] = {order: order, missing: '_last', unmapped_type: 'long'};
-            posts_criteria.source.sort = [sort];
+            postsCriteria.source.sort = [sort];
         }
-        // filters.status
-        if (angular.isDefined(filters.status)) {
-            posts_criteria.source.query.filtered.filter.and.push({term: {post_status: filters.status}});
-        }
-        // filters.sticky
-        if (angular.isDefined(filters.sticky)) {
-            posts_criteria.source.query.filtered.filter.and.push({term: {sticky: filters.sticky}});
-        }
-        // filters.authors
-        if (angular.isDefined(filters.authors) && filters.authors.length > 0) {
-            posts_criteria.source.query.filtered.filter.and.push({
-                or: {
-                    filters: filters.authors.map(function(author) {
-                        return {term: {original_creator: author}};
-                    })
-                }
-            });
-        }
-        // filters.updatedAfter
-        if (angular.isDefined(filters.updatedAfter)) {
-            posts_criteria.source.query.filtered.filter.and.push({
-                range: {
-                    _updated: {
-                        gt: filters.updatedAfter
-                    }
-                }
-            });
-        }
-        // filters.highlight
-        if (angular.isDefined(filters.highlight)) {
-            posts_criteria.source.query.filtered.filter.and.push({term: {lb_highlight: filters.highlight}});
-        }
-        // filters.sticky
-        if (angular.isDefined(filters.sticky)) {
-            posts_criteria.source.query.filtered.filter.and.push({term: {sticky: filters.sticky}});
-        }
-
+        filterPosts(filters, postsCriteria);
         // filters.status
         if (angular.isDefined(filters.syndicationIn)) {
-            posts_criteria.source.query.filtered.filter.and.push({
-                term: {syndication_in: filters.syndicationIn}
+            postsCriteria.source.query.filtered.filter.and.push({
+                term: {syndication_in: filters.syndicationIn},
             });
         }
 
         if (angular.isDefined(filters.noSyndication)) {
-            posts_criteria.source.query.filtered.filter.and.push({
-                missing: {field: 'syndication_in'}
+            postsCriteria.source.query.filtered.filter.and.push({
+                missing: {field: 'syndication_in'},
             });
+            postsCriteria.source.query.filtered.filter.or = [{
+                exists: {field: 'unpublished_date'},
+            }];
         }
 
-        return retrievePosts(blog_id, posts_criteria);
+        return retrievePosts(blogId, postsCriteria);
     }
 
-    function _completeUser(obj) {
+    /**
+     * This method will fetch the information of the creator of the post
+     * or item and will attach it to the item object in order to access the user's
+     * information later (profile_url, name, etc)
+     *
+     * @param       {Object} obj         Post or item belonging to post
+     * @param       {String} postCreator (optional) - Id of user to look for
+     */
+    function _completeUser(obj, postCreator) {
         if (obj.commenter) {
             obj.user = {display_name: obj.commenter};
         } else if (obj.syndicated_creator) {
-                obj.user = obj.syndicated_creator;
+            obj.user = obj.syndicated_creator;
         } else {
-            // TODO: way too many requests in there
-            // This getUser func is returning a list of users,
-            // who would have thought?
-            userList.getUser(obj.original_creator).then((user) => {
-                obj.user = user;
-            });
+            // we pull a set of users from the backend and store it
+            // in a variable. Max results will be 199, if user is not found
+            // then if will hit backend to try to retrieve user from db
+            var userId = postCreator || obj.original_creator;
+            var postUser = listOfUsers.find((x) => x._id === userId);
+
+            if (!postCreator) {
+                userList.getUser(postCreator || obj.original_creator).then((user) => {
+                    obj.user = user;
+                });
+            } else {
+                obj.user = postUser;
+            }
         }
+
         return obj;
     }
+
     function _completePost(post) {
         let multipleItems = false;
 
@@ -136,44 +154,44 @@ export default function postsService(api, $q, userList) {
             multipleItems = post.groups[1].refs.length - 1;
         }
 
-        return $q(function(resolve, reject) {
+        return $q((resolve, reject) => {
             angular.extend(post, {
                 multipleItems: multipleItems,
                 // add a `mainItem` field containing the first item
                 mainItem: post.groups[1].refs[0],
-                items: post.groups[1].refs
+                items: post.groups[1].refs,
             });
 
             // if an item has a commenter then that post hasComments.
-            post.hasComments = _.reduce(post.groups[1].refs, function(is, val) {
-                return is || !_.isUndefined(val.item.commenter);
-            }, false);
+            post.hasComments = _.reduce(post.groups[1].refs,
+                (is, val) => is || !_.isUndefined(val.item.commenter)
+                , false);
             // `fullDetails` is a business logic that can be compiled from other objects.
             post.fullDetails = post.hasComments;
             // special cases for comments.
-            post.showUpdate = (post.content_updated_date !== post.published_date) &&
-                               (!post.hasComments) && (post.mainItem.item.item_type !== 'comment');
-            angular.forEach(post.items, function(val) {
+            post.showUpdate = post.content_updated_date !== post.published_date &&
+                               !post.hasComments && post.mainItem.item.item_type !== 'comment';
+            angular.forEach(post.items, (val) => {
                 if (post.fullDetails) {
                     _completeUser(val.item);
                 }
             });
-            _completeUser(post.mainItem.item);
+
+            // let's now complete user for main post
+            _completeUser(post.mainItem.item, post.original_creator);
 
             resolve(post);
         });
     }
 
-    function retrievePost(post_id) {
-        return api.posts.getById(post_id)
+    function retrievePost(postId) {
+        return api.posts.getById(postId)
             .then(_completePost)
-            .then(function(post) {
-                return post;
-            });
+            .then((post) => post);
     }
 
     function retrieveSyndications(posts) {
-        let syndIds = [];
+        const syndIds = [];
 
         // This means the syndication module is not enabled
         if (!api.hasOwnProperty('syndicationIn')) {
@@ -197,97 +215,106 @@ export default function postsService(api, $q, userList) {
                     });
 
                     return post;
-                })
+                }),
             }));
     }
 
-    function retrievePosts(blog_id, posts_criteria) {
-        return api('blogs/<regex(\"[a-f0-9]{24}\"):blog_id>/posts', {_id: blog_id})
-            .query(posts_criteria)
+    function retrievePosts(blogId, postsCriteria) {
+        // preload users to avoid pulling them one by one
+        // to later use them to attach creator data to each post
+        if (listOfUsers.length === 0) {
+            api('users')
+                .getAll()
+                .then((data) => {
+                    listOfUsers = data;
+                });
+        }
+
+        return api('blogs/<regex("[a-f0-9]{24}"):blog_id>/posts', {_id: blogId})
+            .query(postsCriteria)
             .then(retrieveSyndications)
-            .then(function(data) {
-                return $q.all(data._items.map(_completePost))
-                    .then(function(result) {
-                        return angular.extend(data, { _items: result });
-                    });
-            });
+            .then((data) => $q.all(data._items.map(_completePost))
+                .then((result) => angular.extend(data, {_items: result})));
     }
 
     function getLatestUpdateDate(posts) {
         if (!angular.isDefined(posts) || posts.length < 1) {
             return;
         }
-        var latest_date, date;
+        let latestDate;
+        let date;
 
         posts.forEach((post) => {
             date = moment(post._updated);
-            if (angular.isDefined(latest_date)) {
-                if (latest_date.diff(date) < 0) {
-                    latest_date = date;
+            if (angular.isDefined(latestDate)) {
+                if (latestDate.diff(date) < 0) {
+                    latestDate = date;
                 }
             } else {
-                latest_date = date;
+                latestDate = date;
             }
         });
-        return latest_date.utc().format();
+        return latestDate.utc().format();
     }
 
-    function savePost(blog_id, post_to_update, items, post) {
-        post = post || {};
-        post.post_status = post.post_status || _.result(post_to_update, 'post_status') || 'open';
-        var dfds = [];
+    function savePost(blogId, postToUpdate, itemsParam, postParam = {}) {
+        const post = postParam;
+        let items = itemsParam;
+
+        post.post_status = post.post_status || _.result(postToUpdate, 'post_status') || 'open';
+        const dfds = [];
+
         if (items && items.length > 0) {
             // prepare the list of items if needed
-            if (angular.isDefined(items) && items.length > 0) {
-                if (_.difference(_.keys(items[0]), ['residRef', 'item']).length === 0) {
-                    items = _.map(items, function(item) {
-                        return item.item;
-                    });
-                }
+            if (_.difference(_.keys(items[0]), ['residRef', 'item']).length === 0) {
+                items = _.map(items, (item) => item.item);
             }
             // save every items
-            _.each(items, function(item) {
+            _.each(items, (itemParam) => {
+                let item = {};
                 // because it fails when item has a `_id` field without `_links`
-                if (angular.isDefined(item, '_id')) {
+
+                if (angular.isDefined(items, '_id')) {
                     item = {
-                        blog: blog_id,
-                        text: item.text,
-                        meta: item.meta,
-                        group_type: item.group_type,
-                        item_type: item.item_type,
-                        commenter: item.meta && item.meta.commenter,
-                        syndicated_creator: item.syndicated_creator
+                        blog: blogId,
+                        text: itemParam.text,
+                        meta: itemParam.meta,
+                        group_type: itemParam.group_type,
+                        item_type: itemParam.item_type,
+                        commenter: itemParam.meta && itemParam.meta.commenter,
+                        syndicated_creator: itemParam.syndicated_creator,
                     };
                 }
                 dfds.push(api.items.save(item));
             });
         }
         // save the post
-        return $q.all(dfds).then(function(items) {
+        return $q.all(dfds).then((items) => {
             if (dfds.length > 0) {
                 angular.extend(post, {
-                    blog: blog_id,
+                    blog: blogId,
                     groups: [
                         {
                             id: 'root',
                             refs: [{idRef: 'main'}],
-                            role: 'grpRole:NEP'
+                            role: 'grpRole:NEP',
                         }, {
                             id: 'main',
                             refs: [],
-                            role: 'grpRole:Main'
-                        }
-                    ]
+                            role: 'grpRole:Main',
+                        },
+                    ],
                 });
                 // update the post reference (links with items)
-                _.each(items, function(item) {
+                _.each(items, (item) => {
                     post.groups[1].refs.push({residRef: item._id});
                 });
             }
-            var operation;
-            if (angular.isDefined(post_to_update)) {
+            let operation;
+
+            if (angular.isDefined(postToUpdate)) {
                 operation = function updatePost() {
-                    return api.posts.save(post_to_update, post);
+                    return api.posts.save(postToUpdate, post);
                 };
             } else {
                 operation = function createPost() {
@@ -300,7 +327,7 @@ export default function postsService(api, $q, userList) {
     }
 
     function removePost(post) {
-        var deleted = {deleted: true};
+        const deleted = {deleted: true};
 
         return savePost(post.blog, post, [], deleted);
     }
@@ -310,22 +337,22 @@ export default function postsService(api, $q, userList) {
         getLatestUpdateDate: getLatestUpdateDate,
         retrievePost: retrievePost,
         savePost: savePost,
-        saveDraft: function(blog_id, post, items, sticky, highlight) {
+        saveDraft: function(blogId, post, items, sticky, highlight) {
             return savePost(
-                blog_id,
+                blogId,
                 post,
                 items,
-                {post_status: 'draft', 'sticky': sticky, 'lb_highlight': highlight}
+                {post_status: 'draft', sticky: sticky, lb_highlight: highlight}
             );
         },
-        saveContribution: function(blog_id, post, items, sticky, highlight) {
+        saveContribution: function(blogId, post, items, sticky, highlight) {
             return savePost(
-                blog_id,
+                blogId,
                 post,
                 items,
-                {post_status: 'submitted', 'sticky': sticky, 'lb_highlight': highlight}
+                {post_status: 'submitted', sticky: sticky, lb_highlight: highlight}
             );
         },
-        remove: removePost
+        remove: removePost,
     };
 }

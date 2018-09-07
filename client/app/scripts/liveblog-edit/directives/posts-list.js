@@ -1,4 +1,4 @@
-import postsTpl from 'scripts/liveblog-edit/views/posts.html';
+import postsTpl from 'scripts/liveblog-edit/views/posts.ng1';
 
 lbPostsList.$inject = ['postsService', 'notify', '$q', '$timeout', 'session', 'PagesManager'];
 
@@ -7,8 +7,9 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
 
     function LbPostsListCtrl($scope, $element) {
         $scope.lbSticky = $scope.lbSticky === 'true';
-        var vm = this;
-        angular.extend(vm, {
+        const self = this;
+
+        angular.extend(self, {
             isLoading: true,
             blogId: $scope.lbPostsBlogId,
             status: $scope.lbPostsStatus,
@@ -26,29 +27,29 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
             pagesManager: new PagesManager(
                 $scope.lbPostsBlogId,
                 $scope.lbPostsStatus,
-                //if the list is a list with sticky posts, show them all in the 1st pages
-                $scope.lbSticky === true? 100: 10,
+                // if the list is a list with sticky posts, show them all in the 1st pages
+                $scope.lbSticky === true ? 100 : 10,
                 $scope.lbPostsOrderBy || 'editorial',
                 $scope.lbSticky,
                 null,
                 $scope.lbPostsNoSyndication === true
             ),
             fetchNewPage: function() {
-                vm.isLoading = true;
-                return vm.pagesManager.fetchNewPage().then(function() {
-                    vm.isLoading = false;
+                self.isLoading = true;
+                return self.pagesManager.fetchNewPage().then(() => {
+                    self.isLoading = false;
                 });
             },
             startReorder: function(post) {
-                vm.reorderPost = post;
+                self.reorderPost = post;
             },
             clearReorder: function() {
-                vm.reorderPost = false;
-                $timeout(function() {
-                    vm.keepHighlighted = false;
+                self.reorderPost = false;
+                $timeout(() => {
+                    self.keepHighlighted = false;
                 }, 2000);
-                $timeout(function() {
-                    vm.hideAllPosts = false;
+                $timeout(() => {
+                    self.hideAllPosts = false;
                 }, 200);
             },
             getOrder: function(position) {
@@ -63,46 +64,48 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                     .post
                     .order;
             },
-            reorder: function(index, location) {
-                if (vm.allowReordering) {
-                    var position = index;
-                    var order, before, after;
+            reorder: function(position, location) {
+                if (self.allowReordering) {
+                    let order;
+                    let before;
+                    let after;
+
                     if (position === 0) {
-                        order = vm.getOrder(0) + 1;
+                        order = self.getOrder(0) + 1;
                     } else if (position === $element.find('.posts').find('li .lb-post').length - 1) {
-                        order = vm.getOrder(position) - 1;
+                        order = self.getOrder(position) - 1;
                     } else {
                         if (location === 'above') {
-                            before = vm.getOrder(position - 1);
-                            after = vm.getOrder(position);
+                            before = self.getOrder(position - 1);
+                            after = self.getOrder(position);
                         } else {
-                            before = vm.getOrder(position);
-                            after = vm.getOrder(position + 1);
+                            before = self.getOrder(position);
+                            after = self.getOrder(position + 1);
                         }
                         order = after + (before - after) / 2;
                     }
-                    vm.updatePostOrder(vm.reorderPost, order);
+                    self.updatePostOrder(self.reorderPost, order);
                 }
             },
             updatePostOrder: function(post, order) {
-                vm.hideAllPosts = true;
-                postsService.savePost(post.blog, post, undefined, {order: order}).then(function() {
-                    vm.keepHighlighted = order;
-                    vm.clearReorder();
-                }, function() {
-                    vm.hideAllPosts = false;
+                self.hideAllPosts = true;
+                postsService.savePost(post.blog, post, undefined, {order: order}).then(() => {
+                    self.keepHighlighted = order;
+                    self.clearReorder();
+                }, () => {
+                    self.hideAllPosts = false;
                     notify.pop();
                     notify.error(gettext('Something went wrong. Please reload and try again later'));
                 });
             },
             removePostFromList: function(post) {
-                vm.pagesManager.removePost(post);
+                self.pagesManager.removePost(post);
             },
             isPostsEmpty: function() {
-                return vm.pagesManager.count() < 1 && !vm.isLoading && vm.isStickyPostsEmpty();
+                return self.pagesManager.count() < 1 && !self.isLoading && self.isStickyPostsEmpty();
             },
             numberOfPosts: function() {
-                return vm.pagesManager.count();
+                return self.pagesManager.count();
             },
             isStickyPostsEmpty: function() {
                 if ($scope.lbStickyInstance) {
@@ -112,64 +115,68 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                 return true;
             },
             isSinglePost: function() {
-                return vm.pagesManager.count() === 1;
+                return self.pagesManager.count() === 1;
             },
             isFilterEnable: function() {
-                return vm.pagesManager.authors.length > 0;
+                return self.pagesManager.authors.length > 0;
             },
             setAuthorFilter: function(users) {
-                vm.authorFilters = users;
-                vm.isLoading = true;
-                return vm.pagesManager.setAuthors(users.map(function(user) {return user._id;})).then(function() {
-                    vm.isLoading = false;
+                self.authorFilters = users;
+                self.isLoading = true;
+                return self.pagesManager.setAuthors(users.map((user) => user._id)).then(() => {
+                    self.isLoading = false;
                 });
             },
             isEditable: function(post) {
                 // A syndicated post of type free type is not editable
-                return !(post.syndication_in && post.groups[1].refs[0].item.group_type === 'freetype');
+                return !(
+                    post.syndication_in &&
+                    post.groups[1].refs[0].item.group_type === 'freetype' &&
+                    post.groups[1].refs[0].item.item_type.toLowerCase() !== 'scorecard'
+                );
             },
-            isBlogClosed: $scope.$parent.blog.blog_status === 'closed'
+            isBlogClosed: $scope.$parent.blog.blog_status === 'closed',
 
         });
-        $scope.lbPostsInstance = vm;
+        $scope.lbPostsInstance = self;
         // retrieve first page
-        vm.fetchNewPage()
-        // retrieve updates when event is recieved
-        .then(function() {
-            // This function is responsible for updating the timeline,
-            // the contribution, the draft and the comment panel on incoming
-            // new post as well unpublished posts
-            const onNotification = (e, event_params) => {
-                if (!$element.hasClass('timeline-posts-list')
-                && $scope.lbPostsStatus !== 'comment'
-                && event_params.posts
-                && event_params.posts[0].hasOwnProperty('syndication_in')) {
-                    return false;
-                }
-
-                if (!$element.hasClass('timeline-posts-list')
-                && angular.isDefined(event_params.stages)) {
-                    return false;
-                }
-
-                vm.isLoading = true;
-                vm.pagesManager.retrieveUpdate(true).then(function() {
-                    // Regenerate the embed otherwise the image doesn't appear
-                    if (window.hasOwnProperty('instgrm'))
-                        window.instgrm.Embeds.process();
-
-                    if (event_params.deleted === true) {
-                        notify.pop();
-                        notify.info(gettext('Post removed'));
+        self.fetchNewPage()
+            // retrieve updates when event is recieved
+            .then(() => {
+                // This function is responsible for updating the timeline,
+                // the contribution, the draft and the comment panel on incoming
+                // new post as well unpublished posts
+                const onNotification = _.throttle((e, eventParams) => {
+                    if (!$element.hasClass('timeline-posts-list')
+                        && $scope.lbPostsStatus !== 'comment'
+                        && eventParams.posts
+                        && eventParams.posts[0].hasOwnProperty('syndication_in')) {
+                        return false;
                     }
-                    vm.isLoading = false;
-                });
 
-            };
+                    if (!$element.hasClass('timeline-posts-list')
+                        && angular.isDefined(eventParams.stages)) {
+                        return false;
+                    }
 
-            $scope.$on('posts', onNotification);
-            $scope.$on('content:update', onNotification);
-        });
+                    self.isLoading = true;
+                    self.pagesManager.retrieveUpdate(true).then(() => {
+                        // Regenerate the embed otherwise the image doesn't appear
+                        if (window.hasOwnProperty('instgrm')) {
+                            window.instgrm.Embeds.process();
+                        }
+
+                        if (eventParams.deleted === true) {
+                            notify.pop();
+                            notify.info(gettext('Post removed'));
+                        }
+                        self.isLoading = false;
+                    });
+                }, 100);
+
+                $scope.$on('posts', onNotification);
+                $scope.$on('content:update', onNotification);
+            });
     }
     return {
         scope: {
@@ -186,13 +193,12 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
             lbPostsAllowPublishing: '=',
             lbPostsOnPostSelected: '=',
             lbPostsIsUnreadPost: '=',
-            lbPostsInstance: '='
+            lbPostsInstance: '=',
         },
         restrict: 'EA',
         transclude: true,
         templateUrl: postsTpl,
         controllerAs: 'postsList',
-        controller: LbPostsListCtrl
+        controller: LbPostsListCtrl,
     };
-
 }

@@ -1,4 +1,4 @@
-import ingestPanelTpl from 'scripts/liveblog-syndication/views/ingest-panel.html';
+import ingestPanelTpl from 'scripts/liveblog-syndication/views/ingest-panel.ng1';
 
 ingestPanel.$inject = [
     'IngestPanelActions',
@@ -6,7 +6,7 @@ ingestPanel.$inject = [
     'IngestPanelReducers',
     '$routeParams',
     'notify',
-    '$timeout'
+    '$timeout',
 ];
 
 export default function ingestPanel(
@@ -21,10 +21,10 @@ export default function ingestPanel(
         templateUrl: ingestPanelTpl,
         scope: {
             ingestQueue: '=',
-            openPanel: '='
+            openPanel: '=',
         },
         link: function(scope) {
-            var handleError = function() {
+            const handleError = function() {
                 notify.pop();
                 notify.error(gettext(`
                     An error has occurred.
@@ -43,7 +43,7 @@ export default function ingestPanel(
                 modalActive: false,
                 localProducerBlogIds: [],
                 locallySyndicatedItems: [],
-                unreadQueue: []
+                unreadQueue: [],
             });
 
             scope.store.connect((state) => {
@@ -95,7 +95,7 @@ export default function ingestPanel(
             // This watches for incoming posts when ingest is in focus
             scope.$on('posts', (e, data) => {
                 if (data.posts && data.hasOwnProperty('created')) {
-                    let syndPosts = data.posts
+                    const syndPosts = data.posts
                         .filter((post) => post.hasOwnProperty('syndication_in'));
 
                     IngestPanelActions.setUnreadQueue(syndPosts);
@@ -113,6 +113,6 @@ export default function ingestPanel(
             };
 
             scope.$on('$destroy', scope.store.destroy);
-        }
+        },
     };
 }

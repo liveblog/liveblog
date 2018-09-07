@@ -8,8 +8,6 @@
  * at https://www.sourcefabric.org/superdesk/license
  */
 
-import angular from 'angular';
-
 blogService.$inject = ['api', '$q', '$rootScope', 'config'];
 
 export default function blogService(api, $q, $rootScope, config) {
@@ -33,27 +31,31 @@ export default function blogService(api, $q, $rootScope, config) {
     * @return {promise} public_url
     **/
     function getPublicUrl(blog) {
-        var deferred = $q.defer();
-        // for debug purpose
+        const deferred = $q.defer();
+        let publicUrl;
+
         if (!blog.public_url && config.debug) {
-            deferred.resolve('http://localhost:5000/embed/' + blog._id);
+            publicUrl = config.server.url.replace('/api', `/embed/${blog._id}`);
         } else if (blog.public_url) {
             // if the blog contains the url, returns it
-            deferred.resolve(blog.public_url.replace('http://', 'https://'));
+            publicUrl = config.debug ? blog.public_url : blog.public_url.replace('http://', 'https://');
         } else {
             // otherwise, listen for websocket notifications regarding publication
-            var notif_listener = $rootScope.$on('blog', function updateBlogAndResolve(e, data) {
+            const notifListener = $rootScope.$on('blog', function updateBlogAndResolve(e, data) {
                 if (data.blog_id === blog._id && data.published === 1) {
                     // update the blog property
                     blog.public_url = data.public_url;
                     // unbind the listener
-                    notif_listener();
+                    notifListener();
                     // return the url
                     // fix https issue
-                    deferred.resolve(blog.public_url.replace('http://', 'https://'));
+                    publicUrl = config.debug ? blog.public_url : blog.public_url.replace('http://', 'https://');
                 }
             });
         }
+
+        deferred.resolve(publicUrl);
+
         return deferred.promise;
     }
 
@@ -61,6 +63,6 @@ export default function blogService(api, $q, $rootScope, config) {
         get: get,
         update: update,
         save: save,
-        getPublicUrl: getPublicUrl
+        getPublicUrl: getPublicUrl,
     };
 }

@@ -2,7 +2,7 @@ import superdesk
 from .themes import ThemesService, ThemesResource
 from .themes import upload_theme_blueprint, themes_assets_blueprint
 from .themes import UnknownTheme
-from .commands import RegisterLocalThemesCommand
+from .commands import RegisterLocalThemesCommand, RegisterThemeCommand
 from .utils import send_uploaded_static_file
 
 __all__ = ['upload_theme_blueprint', 'ThemesService', 'ThemesResource', 'UnknownTheme']
@@ -17,7 +17,13 @@ def init_app(app):
     # endpoint to serve static files for themes
     app.register_blueprint(themes_assets_blueprint)
     # Additional endpoint to serve uploaded themes (used when s3 storage is disabled)
-    app.add_url_rule('/themes_uploads/<path:filename>', endpoint='themes_uploads.static',
-                     view_func=send_uploaded_static_file(app))
+    try:
+        app.add_url_rule(
+            '/themes_uploads/<path:filename>', endpoint='themes_uploads.static',
+            view_func=send_uploaded_static_file(app))
+    except AssertionError:
+        pass
     # Register local themes command.
     superdesk.command('register_local_themes', RegisterLocalThemesCommand())
+
+    superdesk.command('register_theme', RegisterThemeCommand())

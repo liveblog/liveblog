@@ -2,16 +2,16 @@ export default function ifBackgroundImage() {
     return {
         restrict: 'A',
         scope: {
-            ifBackgroundImage: '@'
+            ifBackgroundImage: '@',
         },
         link: function(scope, element, attrs) {
-            var url = scope.ifBackgroundImage;
+            const url = scope.ifBackgroundImage;
 
             if (url) {
                 element.css({
-                    'background-image': 'url(' + url + ')'
+                    'background-image': 'url(' + url + ')',
                 });
             }
-        }
+        },
     };
 }

@@ -1,0 +1,70 @@
+<div sd-modal="" data-model="modalOpened" class="theme-settings-modal modal--large">
+    <div class="modal__header">
+        <button class="modal__close pull-right" ng-click="vm.closeModal()"><i class="icon-close-small"></i></button>
+        <h3 class="modal__heading">{{ 'Theme Settings' | translate }} : {{ vm.theme.label }}</h3>
+    </div>
+    <div class="modal__body">
+        <div ng-if="vm.optionsAreloading" translate>Options are loading...</div>
+        <form ng-if="!vm.optionsAreloading" name="vm.themeSettingsForm">
+            <div ng-repeat="option in vm.options" ng-if="vm.optionRequirementIsSatisfied(option)" class="form__row">
+                <div class="sd-line-input form-group"
+                    ng-class="{'sd-line-input--is-{{ option.type }} setting--{{ option.name }}': true}"
+                    ng-hide="option.isAdvanced && !vm.showAdvancedSettings"
+                  >
+                    <div ng-switch="option.type">
+                        <div ng-switch-when="groupheading" class="lb-group-heading">
+                            <label class="sd-line-input__label translate" translate>{{ option.label }}</label>
+                        </div>
+                        <div ng-switch-when="checkbox">
+                            <span sd-switch="" ng-model="vm.settings[option.name]" ></span><label>{{ option.label }}</label>
+                        </div>
+                        <div ng-switch-when="number">
+                            <label class="sd-line-input__label translate" translate>{{ option.label }}</label>
+                            <input class="sd-line-input__input"  type="{{ option.type }}" name="{{ option.name }}" ng-model="vm.settings[option.name]">
+                        </div>
+                        <div ng-switch-when="text">
+                            <label class="sd-line-input__label translate" translate>{{ option.label }}</label>
+                            <input class="sd-line-input__input"  type="{{ option.type }}" name="{{ option.name }}" ng-model="vm.settings[option.name]">
+                        </div>
+                        <div ng-switch-when="textarea">
+                            <label class="sd-line-input__label translate" translate>{{ option.label }}</label>
+                            <textarea
+                                rows="4"
+                                name="{{ option.name }}"
+                                ng-model="vm.settings[option.name]">
+                            </textarea>
+                        </div>
+                        <div ng-switch-when="select" ng-hide="option.name == 'outputChannelTheme'">
+                            <label class="sd-line-input__label" translate>{{ option.label }}</label>
+                            <select class="sd-line-input__select" ng-model="vm.settings[option.name]"
+                                ng-options="option.value as option.label for option in option.options">
+                            </select>
+                        </div>
+                        <div ng-switch-when="select" ng-if="option.name == 'outputChannelTheme'">
+                            <label class="sd-line-input__label" translate>{{ option.label }}</label>
+                            <select class="sd-line-input__select" ng-model="vm.settings[option.name]" ng-options="option.name as option.label for option in themeNames">
+                            </select>
+                        </div>
+                        <div ng-switch-when="datetimeformat" class="datetimeformat">
+                            <label class="sd-line-input__label translate" translate>{{ option.label }}</label>
+                            <lb-date-format options="vm.datetimeFormats" ng-model="vm.settings[option.name]" />
+                        </div>
+                    </div>
+                    <span class="sd-line-input__hint" ng-if="option.help.length > 0" ng-bind-html="option.help | linkup"></span>
+                    <div ng-messages="vm.themeSettingsForm[option.name].$error" style="color:maroon" role="alert">
+                        <div ng-message="number" trans>You did not enter a number</div>
+                    </div>
+
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal__footer">
+        <div class="pull-left" ng-if="vm.hasAdvancedOptions">
+          <span sd-switch="" ng-model="vm.showAdvancedSettings" ></span><label trans>Advanced settings</label>
+        </div>
+
+        <button ng-click="vm.submitSettings()" type="submit" class="btn btn--primary" ng-disabled="vm.themeSettingsForm.$invalid || !vm.themeSettingsForm.$dirty">Save</button>
+        <button ng-click="vm.submitSettings(true)" type="submit" class="btn btn-default">Done</button>
+    </div>
+</div>

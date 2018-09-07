@@ -6,13 +6,15 @@ export default function fullHeight($timeout, $window, _) {
         link: function($scope, $element, $attributes) {
             // update the element height to the window height minus its vertical offset
             function setHeight() {
-                $timeout(function() {
-                    var height = $window.innerHeight - $element.offset().top;
+                $timeout(() => {
+                    let height = $window.innerHeight - $element.offset().top;
+
                     if ($attributes.fullHeightOffsetBottom) {
                         height -= $attributes.fullHeightOffsetBottom;
                     }
-                    var css_name = $attributes.fullHeightUseMaxHeight ? 'max-height' : 'height';
-                    $element.css(css_name, height);
+                    const cssName = $attributes.fullHeightUseMaxHeight ? 'max-height' : 'height';
+
+                    $element.css(cssName, height);
                     $element[0].focus();
                 });
             }
@@ -21,9 +23,7 @@ export default function fullHeight($timeout, $window, _) {
             // update when the window size changes
             angular.element($window).on('resize', _.debounce(setHeight, 500));
             // update when offset changes
-            $scope.$watch(function() {
-                return $element.offset().top;
-            }, _.debounce(setHeight, 500));
-        }
+            $scope.$watch(() => $element.offset().top, _.debounce(setHeight, 500));
+        },
     };
 }

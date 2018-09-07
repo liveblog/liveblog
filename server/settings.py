@@ -13,7 +13,12 @@
 import os
 import arrow
 
+from superdesk.default_settings import CORE_APPS as core_apps
 from celery.schedules import crontab
+
+CORE_APPS = [app for app in core_apps if app != 'apps.auth.db']
+CORE_APPS.append('liveblog.auth')
+
 
 try:
     from urllib.parse import urlparse
@@ -144,7 +149,6 @@ INSTALLED_APPS = [
     'apps.archive',
     'apps.desks',
     'apps.stages',
-    'apps.groups',
     'apps.privilege',
     'apps.legal_archive',
     'apps.archive_broadcast',
@@ -253,7 +257,8 @@ LDAP_USER_ATTRIBUTES = {'givenName': 'first_name', 'sn': 'last_name', 'displayNa
 if LDAP_SERVER:
     INSTALLED_APPS.append('apps.auth.ldap')
 else:
-    INSTALLED_APPS.append('apps.auth.db')
+    # INSTALLED_APPS.append('apps.auth.db')
+    INSTALLED_APPS.append('liveblog.auth')
 
 SUPERDESK_TESTING = (env('SUPERDESK_TESTING', 'false').lower() == 'true')
 
@@ -318,6 +323,7 @@ SUBSCRIPTION_LEVEL = env('SUBSCRIPTION_LEVEL', SUBSCRIPTION_LEVEL_NETWORK)
 SUBSCRIPTION_MAX_ACTIVE_BLOGS = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 3}
 SUBSCRIPTION_MAX_BLOG_MEMBERS = {SUBSCRIPTION_LEVEL_SOLO: 2, SUBSCRIPTION_LEVEL_TEAM: 4}
 SUBSCRIPTION_MAX_THEMES = {SUBSCRIPTION_LEVEL_SOLO: 1, SUBSCRIPTION_LEVEL_TEAM: 5}
+ACCESS_SUBSCRIPTIONS_MOBILE = ['solo-mobile', 'team', 'network']
 
 # Settings to NO_TAKES for PACKAGES in ARCHIVE
 NO_TAKES = True

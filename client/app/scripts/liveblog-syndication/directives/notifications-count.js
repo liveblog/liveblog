@@ -3,9 +3,9 @@ export default function notificationsCount() {
         template: '<span ' +
             'class="label label-info circle small notification-counter" ' +
             'ng-if="count > 0">{{count}}</span>' +
-            '<i class="big-icon-ingest" alt="ingest"></i>',
+            '<i class="lb-big-icon-ingest" alt="ingest"></i>',
         link: function(scope) {
-            let ingestPanels = ['ingest', 'incoming-syndication'];
+            const ingestPanels = ['ingest', 'incoming-syndication'];
 
             scope.count = 0;
 
@@ -26,6 +26,6 @@ export default function notificationsCount() {
                     scope.count = 0;
                 }
             });
-        }
+        },
     };
 }

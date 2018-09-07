@@ -1,4 +1,4 @@
-import consumerListTpl from 'scripts/liveblog-syndication/views/consumer-list.html';
+import consumerListTpl from 'scripts/liveblog-syndication/views/consumer-list.ng1';
 
 export default function lbConsumers() {
     return {
@@ -8,6 +8,6 @@ export default function lbConsumers() {
             $scope.entryName = 'consumer';
 
             angular.extend(this, $controller('BaseController', {$scope: $scope}));
-        }]
+        }],
     };
 }

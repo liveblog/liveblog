@@ -1,0 +1,146 @@
+<!-- inject:template-content -->
+{% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
+
+{% block timeline %}
+<div data-timeline class="lb-timeline {{ settings.language }}">
+  {% if settings.showTitle and blog.title %}
+    <h1>{{ blog.title }}</h1>
+  {% endif %}
+
+  {% if settings.showDescription and blog.description %}
+    <div class="description">
+      {{ blog.description | safe }}
+    </div>
+  {% endif %}
+
+  {% if settings.showImage and blog.picture_url %}
+    <img src="{{ blog.picture_url }}" />
+  {% endif %}
+
+  {% if settings.stickyPosition == 'top'%}
+    <div class="timeline-top timeline-top--loaded">
+      <section data-timeline-sticky class="lb-posts list-group{% if not api_response.stickyPosts._items|length %} sticky--empty{% endif %}">
+        {% for item in api_response.stickyPosts._items %}
+          {% if not item.deleted %}
+            {% include "template-post.html" %}
+          {% endif %}
+        {% endfor %}
+      </section>
+    </div>
+  {% endif %}
+
+  <!-- Header -->
+  <div class="header-bar">
+    <div class="sorting-bar">
+      <div class="sorting-bar__orders">
+        <div class="sorting-bar__dropdownBtn" data-js-sort_dropdown_button>
+          {% if settings.postOrder == 'editorial' %}
+            {{  translate("Editorial") }}
+          {% elif settings.postOrder == 'newest_first' %}
+            {{  translate("Newest first") }}
+          {% elif settings.postOrder == 'oldest_first' %}
+            {{ translate("Oldest first") }}
+          {% endif %}
+        </div>
+        <div class="sorting-bar__dropdownContent">
+          <div
+            class="sorting-bar__order {%if settings.postOrder == 'editorial' %}sorting-bar__order--active{% endif %}"
+            data-js-orderby_editorial>
+            {{  translate("Editorial") }}
+          </div>
+          <div
+            class="sorting-bar__order {%if settings.postOrder == 'newest_first' %}sorting-bar__order--active{% endif %}"
+            data-js-orderby_descending>
+            {{  translate("Newest first") }}
+          </div>
+          <div
+            class="sorting-bar__order {%if settings.postOrder == 'oldest_first'%}sorting-bar__order--active{% endif %}"
+            data-js-orderby_ascending>
+            {{ translate("Oldest first") }}
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="header-bar__actions"></div>
+      {% if settings.hasHighlights %}
+          <button class="header-bar__highlight" data-js-show-highlighted><span>{{ translate('Highlights') }}</span></button>
+      {% endif %}
+
+      {% if settings.canComment %}
+        <button class="header-bar__comment" data-js-show-comment-dialog>
+            {{ translate("Comment") }}
+        </button>
+      {% endif %}
+
+      {% if settings.showLiveblogLogo or output.logo_url %}
+        {% if output.logo_url %}
+        <div class="header-bar__logo">
+          <img src="{{ output.logo_url }}"/>
+        </div>
+        {% else %}
+        <a class="header-bar__logo" href="https://www.liveblog.pro" target="_blank">
+          <span>{{ translate("Powered by") }}</span>
+          <img src="{{ assets_root }}images/lb-logo.svg" />
+        </a>
+        {% endif %}
+      {% endif %}
+    </div>
+  <!-- Header End -->
+
+  <!-- Comment -->
+  {% if settings.canComment %}
+    {% include "template-comment.html" %}
+  {% endif %}
+  <!-- Comment End -->
+
+  <!-- Timeline -->
+  <div class="timeline-body timeline-body--loaded">
+      <div data-one-new-update class="lb-post new-updates mod--displaynone">
+        <div>{{ translate("See one new update") }}</div>
+      </div>
+      <div data-new-updates class="lb-post new-updates mod--displaynone">
+        <div>{{ translate("See new updates") }}</div>
+      </div>
+    {% if settings.stickyPosition == 'bottom' %}
+      <section data-timeline-sticky class="lb-posts list-group sticky{% if not api_response.stickyPosts._items|length %} sticky--empty{% endif %}">
+        {% for item in api_response.stickyPosts._items %}
+          {% if not item.deleted %}
+            {% include "template-post.html" %}
+          {% endif %}
+        {% endfor %}
+      </section>
+    {% endif %}
+      <div data-empty-message class="lb-post empty-message {% if api_response.posts._items|length %}mod--displaynone{% endif %}">
+        <div>{{ translate("No posts for now") }}</div>
+      </div>
+      <section data-timeline-normal class="lb-posts list-group normal">
+        {% if api_response.posts._items|length > 0 %}
+            {% for item in api_response.posts._items %}
+              {% if not item.deleted %}
+                {% include "template-post.html" %}
+              {% endif %}
+            {% endfor %}
+        {% endif %}
+      </section>
+      {% if api_response.posts._meta.max_results < api_response.posts._meta.total %}
+        <button data-load-more class="lb-button load-more-posts">
+            {{ translate("Load more posts") }}
+        </button>
+      {% endif %}
+  </div>
+  <!-- Timeline End -->
+
+</div>
+{% endblock %}
+
+{% include "template-embed-providers.html" %}
+
+{% if include_js_options %}
+  <script type="text/javascript">
+    window.LB = {{ json_options|safe }};
+  </script>
+{% endif %}
+
+<!-- endinject -->
+<!-- inject:template-analytics -->
+<!-- endinject -->

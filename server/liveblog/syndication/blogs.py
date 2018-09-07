@@ -128,9 +128,9 @@ def _delete_blogs_syndicate(blog_id, consumer_blog_id):
     else:
         out_service.delete({
             '$and': [
-                {'blog_id': {'$eq': blog_id}},
-                {'consumer_id': {'$eq': consumer_id}},
-                {'consumer_blog_id': {'$eq': consumer_blog_id}}
+                {'blog_id': blog_id},
+                {'consumer_id': consumer_id},
+                {'consumer_blog_id': consumer_blog_id}
             ]
         })
         return api_response({}, 204)

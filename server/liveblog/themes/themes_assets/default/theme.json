@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.3.59",
+    "version": "3.3.94",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -16,17 +16,132 @@
         "url" : "git@github.com:liveblog/liveblog-default-theme"
     },
     "license": "AGPL-3.0",
-    "devStyles": ["dist/default-5b9df93ef3.css"],
-    "devScripts": ["dist/default-d561bb07fb.js"],
-    "styles": ["dist/default-5b9df93ef3.css"],
-    "scripts": ["dist/default-d561bb07fb.js"],
+    "devStyles": ["dist/default-ee49677b83.css"],
+    "devScripts": ["dist/default-b19f4fd68f.js"],
+    "styles": ["dist/default-ee49677b83.css"],
+    "scripts": ["dist/default-b19f4fd68f.js"],
     "options": [
         {
-            "name": "datetimeFormat",
+            "name": "language",
+            "label": "Theme language",
+            "type": "select",
+            "options": [
+                {
+                    "value": "en",
+                    "label": "English"
+                },
+                {
+                    "value": "fi",
+                    "label": "Finnish"
+                },
+                {
+                    "value": "se",
+                    "label": "Swedish"
+                },
+                {
+                    "value": "de",
+                    "label": "Deutsch"
+                },
+                {
+                    "value": "fr",
+                    "label": "Français"
+                },
+                {
+                    "value": "nl",
+                    "label": "Nederlands"
+                },
+                {
+                    "value": "no",
+                    "label": "Norsk"
+                },
+                {
+                    "value": "cs",
+                    "label": "Čeština"
+                },
+                {
+                    "value": "ro",
+                    "label": "Română"
+                },
+                {
+                    "value": "sr",
+                    "label": "Srpski"
+                },
+                {
+                    "value": "sr-cy",
+                    "label": "Српски"
+                }
+            ],
+            "default": "en"
+        },
+        {
+          "name": "show-hide-group",
+          "label": "Show or Hide Liveblog Elements",
+          "type": "groupheading"
+        },
+        {
+            "name": "showTitle",
+            "label": "Show the blog title",
+            "type": "checkbox",
+            "default": false
+        },
+        {
+            "name": "showDescription",
+            "label": "Show the blog description",
+            "type": "checkbox",
+            "default": false
+        },
+        {
+            "name": "showImage",
+            "label": "Show the blog image",
+            "type": "checkbox",
+            "default": false
+        },
+        {
+            "name": "hidePostOrder",
+            "label": "Hide sorting options",
+            "type": "checkbox",
+            "default": false,
+            "help": "Hide the post order sorting options"
+        },
+        {
+            "name": "hasHighlights",
+            "label": "Show highlight button",
+            "type": "checkbox",
+            "default": false,
+            "help": "Introduces a button for the readers to filter the timeline by highlights"
+        },
+        {
+            "name": "canComment",
+            "label": "Users can comment",
+            "type": "checkbox",
+            "default": false,
+            "help": "Enables a commenting form for users"
+        },
+        {
+            "name": "showLiveblogLogo",
+            "label": "Show Liveblog logo",
+            "type": "checkbox",
+            "default": true,
+            "help": "Turn off to hide the “powered by Live Blog” logo"
+        },
+        {
+            "name": "date-group",
             "label": "Date time Format",
+            "type": "groupheading"
+        },
+        {
+            "name": "datetimeFormat",
+            "label": "Pick a format or add a custom one",
             "type": "datetimeformat",
             "default": "lll",
             "help": "Sets the date time format to be used in the embed. Please enter a custom format in valid moment.js format http://momentjs.com/docs/#/parsing/string-format"
+        },
+        {
+            "name": "showRelativeDate",
+            "label": "Show relative date for new posts",
+            "type": "checkbox",
+            "default": false,
+            "help": "If activated, users will see relative date for new posts only. Posts older than 8h will display date in format defined above."
         },
         {
             "name": "showUpdateDatetime",
@@ -34,6 +149,235 @@
             "type": "checkbox",
             "default": false,
             "help": "If activated, users will see an additional timestamp, when the post has been updated"
+        },
+        {
+            "name": "clientDatetimeOnly",
+            "label": "Show datetime only on client",
+            "type": "checkbox",
+            "default": false,
+            "isAdvanced": true,
+            "help": "If the users will see the datetime only on client rendered"
+        },
+        {
+            "name": "authors-group",
+            "label": "Authors",
+            "type": "groupheading"
+        },
+        {
+            "name": "showAuthor",
+            "label": "Show the author",
+            "type": "checkbox",
+            "default": true,
+            "help": "Show the author information on posts"
+        },
+        {
+            "name": "authorNameFormat",
+            "label": "Author name format",
+            "type": "select",
+            "default": "display_name",
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "options": [
+                {"value": "display_name", "label": "Full name"},
+                {"value": "byline", "label": "Byline"},
+                {"value": "sign_off", "label": "Sign off"}
+            ],
+            "help": "How to show the author info"
+        },
+        {
+            "name": "authorPosition",
+            "label": "Author info position",
+            "default": "top",
+            "type": "select",
+            "options": [
+                {
+                    "value": "top",
+                    "label": "Top"
+                },
+                {
+                    "value": "bottom",
+                    "label": "Bottom"
+                }
+            ],
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "help": "Where to show author info"
+        },
+        {
+            "name": "showAuthorAvatar",
+            "label": "Show author avatar",
+            "type": "checkbox",
+            "default": true,
+            "dependsOn": {
+                "showAuthor": true
+            },
+            "help": "Shows an author image besides the author name"
+        },
+        {
+            "name": "showSyndicatedAuthor",
+            "label": "Show syndicated author",
+            "type": "checkbox",
+            "default": false,
+            "isAdvanced": true,
+            "help": "If the users will see the syndicated author"
+        },
+        {
+            "name": "posts-options-group",
+            "label": "Show or hide posts options",
+            "type": "groupheading"
+        },
+        {
+            "name": "stickyPosition",
+            "label": "Pinned post behaviour",
+            "type": "select",
+            "options": [
+                {"value": "bottom", "label": "Show below menu bar"},
+                {"value": "top", "label": "Show above menu bar"}
+            ],
+            "default": "bottom",
+            "help": "Please note: Pinned posts above the menu bar will not show the author info nor a timestamp. This setting is especially useful if you want to show a (streaming) video on top of your timeline."
+        },
+        {
+            "name": "showGallery",
+            "label": "Show slideshow gallery",
+            "type": "checkbox",
+            "default": false,
+            "help": "Multiple image posts will show up as an image gallery"
+        },
+        {
+            "name": "showSharingButtons",
+            "label": "Show social media sharing buttons",
+            "type": "checkbox",
+            "default": true
+        },
+        {
+            "name": "showPermalinkButton",
+            "label": "Show permalink button",
+            "type": "checkbox",
+            "default": true
+        },
+        {
+            "name": "permalinkDelimiter",
+            "label": "Permalink delimiter",
+            "type": "select",
+            "isAdvanced": true,
+            "options": [
+                {
+                    "value": "?",
+                    "label": "Query delimiter (?)"
+                },
+                {
+                    "value": "#",
+                    "label": " Fragment identifier delimiter (#)"
+                }
+            ],
+            "default": "?",
+            "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
+        },
+        {
+            "name": "visibility-group",
+            "label": "Blog visibility",
+            "type": "groupheading"
+        },
+        {
+            "name": "blockSearchEngines",
+            "label": "Block search engines",
+            "type": "checkbox",
+            "default": true,
+            "help": "Will block search engines from indexing the blog content"
+        },
+        {
+            "name": "gaCode",
+            "label": "Google analytics code",
+            "type": "text",
+            "placeholder": "UA-XXXXX-Y",
+            "default": "",
+            "help": "Please enter your google analytics account ID."
+        },
+        {
+            "name": "data-privacy-group",
+            "label": "Data Privacy Options",
+            "type": "groupheading",
+            "isAdvanced": true
+        },
+        {
+            "name": "youtubePrivateMode",
+            "label": "Youtube privacy-enhanced mode",
+            "type": "checkbox",
+            "help": "Always use non tracking version of Youtube embeds",
+            "default": false,
+            "isAdvanced": true
+        },
+        {
+            "name": "twitterDNT",
+            "label": "Twitter - do not track",
+            "type": "checkbox",
+            "help": "You can opt out of having information from your website used for personalization.",
+            "default": false,
+            "isAdvanced": true
+        },
+        {
+            "name": "edge-server-side-group",
+            "label": "Edge or Server Side Include Options",
+            "type": "groupheading",
+            "isAdvanced": true
+        },
+        {
+            "name": "renderForESI",
+            "label": "Optimise the Live Blog output for ESI",
+            "type": "checkbox",
+            "default": false,
+            "help": "Strips the head and body tags from the Live Blog output to publish it using Edge Side Includes",
+            "isAdvanced": true
+        },
+        {
+            "name": "removeStylesESI",
+            "label": "Remove stylesheet from the Live Blog output for ESI",
+            "type": "checkbox",
+            "default": false,
+            "help": "Removes the link to the stylesheet from the Live Blog output to publish it using Edge Side Includes",
+            "isAdvanced": true
+        },
+        {
+            "name": "outputChannel",
+            "label": "Output Channel",
+            "type": "checkbox",
+            "default": false,
+            "help": "Turn on to create the output channel automatically",
+            "isAdvanced": true
+        },
+        {
+            "name": "outputChannelName",
+            "label": "Output channel name",
+            "type": "text",
+            "dependsOn": {
+                "outputChannel": true
+            },
+            "help": "Enter the output channel name",
+            "isAdvanced": true
+        },
+        {
+            "name": "outputChannelTheme",
+            "label": "Output channel theme",
+            "type": "select",
+            "default": "amp",
+            "dependsOn": {
+                "outputChannel": true
+            },
+            "isAdvanced": true,
+            "options": [
+                {"value": "classic", "label": "Classic Theme"},
+                {"value": "default", "label": "Liveblog 3 Default SEO Theme"},
+                {"value": "amp", "label": "Liveblog 3 AMP Theme"}
+            ],
+            "help": "Which theme should be used for output channel"
+        },
+        {
+            "name": "updates-ordering-group",
+            "label": "Post Updates and Ordering",
+            "type": "groupheading"
         },
         {
             "name": "postsPerPage",
@@ -59,215 +403,6 @@
             "type": "checkbox",
             "default": true,
             "help": "Turn off to prompt user to load updates"
-        },
-        {
-            "name": "canComment",
-            "label": "Users can comment",
-            "type": "checkbox",
-            "default": false,
-            "help": "Enables a commenting form for users"
-        },
-        {
-            "name": "showImage",
-            "label": "Show the blog image",
-            "type": "checkbox",
-            "default": false
-        },
-        {
-            "name": "showTitle",
-            "label": "Show the blog title",
-            "type": "checkbox",
-            "default": false
-        },
-        {
-            "name": "showDescription",
-            "label": "Show the blog description",
-            "type": "checkbox",
-            "default": false
-        },
-        {
-            "name": "showLiveblogLogo",
-            "label": "Show Liveblog logo",
-            "type": "checkbox",
-            "default": true,
-            "help": "Turn off to hide the “powered by Live Blog” logo"
-        },
-        {
-            "name": "showAuthor",
-            "label": "Show the author",
-            "type": "checkbox",
-            "default": true,
-            "help": "Show the author information on posts"
-        },
-        {
-            "name": "authorNameFormat",
-            "label": "Author name format",
-            "type": "select",
-            "default": "display_name",
-            "dependsOn": {
-                "showAuthor": true
-            },
-            "options": [
-                {"value": "display_name", "label": "Full name"},
-                {"value": "byline", "label": "Byline"},
-                {"value": "sign_off", "label": "Sign off"}
-            ],
-            "help": "How to show the author info"
-        },
-        {
-            "name": "showAuthorAvatar",
-            "label": "Show author avatar",
-            "type": "checkbox",
-            "default": true,
-            "dependsOn": {
-                "showAuthor": true
-            },
-            "help": "Shows an author image besides the author name"
-        },
-        {
-            "name": "authorPosition",
-            "label": "Author info position",
-            "default": "top",
-            "type": "select",
-            "options": [
-                {
-                    "value": "top",
-                    "label": "Top"
-                },
-                {
-                    "value": "bottom",
-                    "label": "Bottom"
-                }
-            ],
-            "dependsOn": {
-                "showAuthor": true
-            },
-            "help": "Where to show author info"
-        },
-        {
-            "name": "hasHighlights",
-            "label": "Show highlight button",
-            "type": "checkbox",
-            "default": false,
-            "help": "Introduces a button for the readers to filter the timeline by highlights"
-        },
-        {
-            "name": "permalinkDelimiter",
-            "label": "Permalink delimiter",
-            "type": "select",
-            "options": [
-                {
-                    "value": "?",
-                    "label": "Query delimiter (?)"
-                },
-                {
-                    "value": "#",
-                    "label": " Fragment identifier delimiter (#)"
-                }
-            ],
-            "default": "?",
-            "help": "Sets the delimiter used to send the permalink. ex: permalinkHashMark=?, http://example.com/?..."
-        },
-        {
-            "name": "blockSearchEngines",
-            "label": "Block search engines",
-            "type": "checkbox",
-            "default": true,
-            "help": "Will block search engines from indexing the blog content"
-        },
-        {
-            "name": "showGallery",
-            "label": "Show slideshow gallery",
-            "type": "checkbox",
-            "default": false,
-            "help": "Multiple image posts will show up as an image gallery"
-        },
-        {
-            "name": "stickyPosition",
-            "label": "Pinned post behaviour",
-            "type": "select",
-            "options": [
-                {"value": "bottom", "label": "Show below menu bar"},
-                {"value": "top", "label": "Show above menu bar"}
-            ],
-            "default": "bottom",
-            "help": "Please note: Pinned posts above the menu bar will not show the author info nor a timestamp. This setting is especially useful if you want to show a (streaming) video on top of your timeline."
-        },
-        {
-            "name": "gaCode",
-            "label": "Google analytics code",
-            "type": "text",
-            "placeholder": "UA-XXXXX-Y",
-            "default": "",
-            "help": "Please enter your google analytics account ID."
-        },
-        {
-            "name": "renderForESI",
-            "label": "Optimise the Live Blog output for ESI",
-            "type": "checkbox",
-            "default": false,
-            "help": "Strips the head and body tags from the Live Blog output to publish it using Edge Side Includes"
-        },
-        {
-            "name": "removeStylesESI",
-            "label": "Remove stylesheet from the Live Blog output for ESI",
-            "type": "checkbox",
-            "default": false,
-            "help": "Removes the link to the stylesheet from the Live Blog output to publish it using Edge Side Includes "
-        },
-        {
-            "name": "language",
-            "label": "Theme language",
-            "type": "select",
-            "options": [
-                {
-                    "value": "en",
-                    "label": "English"
-                },
-                {
-                    "value": "fi",
-                    "label": "Finnish"
-                },
-                {
-                    "value": "de",
-                    "label": "Deutsch"
-                },
-                {
-                    "value": "fr",
-                    "label": "Français"
-                },
-                {
-                    "value": "nl",
-                    "label": "Nederlands"
-                },
-                {
-                    "value": "no",
-                    "label": "Norsk"
-                },
-                {
-                    "value": "cs",
-                    "label": "Čeština"
-                },
-                {
-                    "value": "ro",
-                    "label": "Română"
-                }
-            ],
-            "default": "en"
-        },
-        {
-            "name": "showSyndicatedAuthor",
-            "label": "Show syndicated author",
-            "type": "checkbox",
-            "default": false,
-            "help": "If the users will see the syndicated author"
-        },
-        {
-            "name": "clientDatetimeOnly",
-            "label": "Show datetime only on client",
-            "type": "checkbox",
-            "default": false,
-            "help": "If the users will see the datetime only on client rendered"
         }
     ],
     "i18n": {
@@ -480,6 +615,100 @@
           "Sort by:": "Ordonează după:",
           "Your comment was sent for approval": "Comentariul tău a fost trimis spre aprobare",
           "credit:": "credit:"
+        }, "se": {
+            "Highlights": "Höjdpunkter",
+            "Comment by": "Kommentar av",
+            "Powered by": "Powered by",
+            "Advertisement": "Reklam",
+            "Cancel": "Avbryt",
+            "Comment": "Kommentar",
+            "Comment *": "Kommentar",
+            "Comment should be maximum 300 characters in length": "Kommentaren får vara högst 300 tecken",
+            "Editorial": "Redaktionellt material",
+            "Load more posts": "Ladda fler inlägg",
+            "Loading": "Laddar",
+            "Name ": "Namn",
+            "Name *": "Namn",
+            "Name should be maximum 30 characters in length": "Namnet får bestå av upp till 30 tecken",
+            "Newest first": "Nyaste först",
+            "No posts for now": "Inga inlägg just nu",
+            "Oldest first": "Äldsta först",
+            "One pinned post": "Ett inlägg fastnålat",
+            "pinned posts": "fastnålade inlägg",
+            "Please fill in your Comment": "Fyll i din kommentar",
+            "Please fill in your Name": "Fyll i ditt namn",
+            "Post a comment": "Skicka en kommentar",
+            "See one new update": "Se ett nytt inlägg",
+            "See new updates": "Se nya inlägg",
+            "Send": "Sänd",
+            "Show all posts": "Visa alla inlägg",
+            "Show highlighted post only": "Visa endast höjdpunkter",
+            "Sort by:": "Sortera enligt:",
+            "Updated": "Uppdaterat",
+            "Your comment was sent for approval": "Din kommentar väntar på att godkännas",
+            "credit:": "källa:"
+        }, "sr": {
+            "Highlights": "Najvažnije",
+            "Comment by": "Komentar postavio",
+            "Powered by": "Ovo je",
+            "Advertisement": "Reklama",
+            "Cancel": "Otkaži",
+            "Comment": "Komentar",
+            "Comment *": "Komentar *",
+            "Comment should be maximum 300 characters in length": "Komentar je ograničen na 300 karaktera",
+            "Editorial": "Izbor urednika",
+            "Load more posts": "Učitaj još postova",
+            "Loading": "Učitavanje",
+            "Name *": "Ime *",
+            "Name should be maximum 30 characters in length": "Ime je ograničeno na 30 karaktera",
+            "Newest first": "Od najnovijeg",
+            "No posts for now": "Za sada nema postova",
+            "Oldest first": "Od najstarijeg",
+            "One pinned post": "Jedan istaknut post",
+            "pinned posts": "istaknuti postovi",
+            "Please fill in your Comment": "Molimo unesite vaš komentar",
+            "Please fill in your Name": "Molimo unesite vaše ime",
+            "Post a comment": "Postavite komentar",
+            "See one new update": "Pogledajte novi post",
+            "See new updates": "Pogledajte nove postove",
+            "Send": "Pošalji",
+            "Show all posts": "Prikaži sve postove",
+            "Show highlighted post only": "Prikaži najvažnije postove",
+            "Sort by:": "Sortiraj:",
+            "Updated": "Ažurirano",
+            "Your comment was sent for approval": "Vaš komentar je poslat na odobrenje",
+            "credit:": "autor:"
+        }, "sr-cy": {
+            "Highlights": "Најважније",
+            "Comment by": "Коментар поставио",
+            "Powered by": "Ово је",
+            "Advertisement": "Реклама",
+            "Cancel": "Откажи",
+            "Comment": "Коментар",
+            "Comment *": "Коментар *",
+            "Comment should be maximum 300 characters in length": "Коментар је ограничен на 300 карактера",
+            "Editorial": "Избор уредника",
+            "Load more posts": "Учитај још постова",
+            "Loading": "Учитавење",
+            "Name *": "Име *",
+            "Name should be maximum 30 characters in length": "Име је ограничено на 30 карактера",
+            "Newest first": "Од најновијег",
+            "No posts for now": "За сада нема постова",
+            "Oldest first": "Од најстаријег",
+            "One pinned post": "Један истакнут пост",
+            "pinned posts": "истакнути постови",
+            "Please fill in your Comment": "Молимо унесите ваш коментар",
+            "Please fill in your Name": "Молимо унесите ваше име",
+            "Post a comment": "Поставите коментар",
+            "See one new update": "Погледајте нови пост",
+            "See new updates": "Погледајте нове постове",
+            "Send": "Пошаљи",
+            "Show all posts": "Прикажи све постове",
+            "Show highlighted post only": "Прикажи најважније постове",
+            "Sort by:": "Сортирај:",
+            "Updated": "Ажурирано",
+            "Your comment was sent for approval": "Ваш коментар је послат на одобрење",
+            "credit:": "аутор:"
         }
     }
 }

@@ -100,42 +100,22 @@ section.marketer div.marketer-banner.open {
 }
 
 .mp-embed-modal {
-    align-items: initial;
-    flex-direction: initial;
-    .modal-dialog {
-        max-width: 840px;
-        width: 100%;
-    }
-    .modal-content {
-        flex: 0 0 100%;
-        width: 100%;
-        .modal-header {
-            width: 100%;
-            h3 {
-                white-space: nowrap;
-                overflow: hidden;
-                text-overflow: ellipsis; 
-            }
-        }
-        .modal-body {
-            width: 100%;
+    .modal__body-content {
+        position: relative;
+        iframe {
+            position: absolute;
+            top:0;
+            left:0;
+            bottom:0;
+            right:0;
             height: 100%;
-            padding: 0;
-            overflow-y: hidden !important;
-            .nav-tabs {
-                position: relative;
-            }
-            iframe {
-                height: calc(100% - 48px);
-            }
-            .settings {
-                padding: 10px 15px;
-            }
-        }
-        .modal-footer {
             width: 100%;
         }
+        .settings {
+            padding: 10px 15px;
+        }
     }
+    
 }
 
 div.not-found {

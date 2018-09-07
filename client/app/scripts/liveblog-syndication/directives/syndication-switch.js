@@ -1,4 +1,4 @@
-import syndicationSwitchTpl from 'scripts/liveblog-syndication/views/syndication-switch.html';
+import syndicationSwitchTpl from 'scripts/liveblog-syndication/views/syndication-switch.ng1';
 
 syndicationSwitch.$inject = ['api', '$routeParams'];
 
@@ -9,13 +9,13 @@ export default function syndicationSwitch(api, $routeParams) {
             scope.enableSyndSwitch = true;
             scope.consumers = [];
 
-            var params = {
+            const params = {
                 where: {
-                    blog_id: $routeParams._id
-                }
+                    blog_id: $routeParams._id,
+                },
             };
 
-            api.syndicationOut.query(params).then(function(syndOuts) {
+            api.syndicationOut.query(params).then((syndOuts) => {
                 if (syndOuts._items.length > 0) {
                     scope.enableSyndSwitch = false;
 
@@ -24,9 +24,9 @@ export default function syndicationSwitch(api, $routeParams) {
                             consumer.contact = `${consumer.contacts[0].first_name}`;
                             scope.consumers.push(consumer);
                         });
-                    })
+                    });
                 }
             });
-        }
+        },
     };
-};
+}

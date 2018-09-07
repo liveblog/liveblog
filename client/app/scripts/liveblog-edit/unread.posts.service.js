@@ -7,29 +7,30 @@
  * AUTHORS and LICENSE files distributed with this source code, or
  * at https://www.sourcefabric.org/superdesk/license
  */
-import angular from 'angular';
 import _ from 'lodash';
 
 unreadPostsService.$inject = ['$rootScope'];
 
 export default function unreadPostsService($rootScope) {
-    var listener;
-    var contributions = [],
-        prevContributions = [],
-        comments = [],
-        prevComments = [];
+    let listener;
+    let contributions = [];
+    let prevContributions = [];
+    let comments = [];
+    let prevComments = [];
     // check if the post is an unread comment.
+
     function isComment(post) {
         return _.indexOf(prevComments, post._id) !== -1;
     }
 
     // check if the post is an unread contribution.
     function isContribution(post) {
-        var isContrib = false;
+        let isContrib = false;
 
-        prevContributions.forEach(function(contrib) {
-            if (contrib.id === post._id)
+        prevContributions.forEach((contrib) => {
+            if (contrib.id === post._id) {
                 isContrib = true;
+            }
         });
 
         return isContrib;
@@ -58,22 +59,22 @@ export default function unreadPostsService($rootScope) {
     }
 
     // add the post in the contributions vector.
-    function onPostReceive(e, event_params) {
-        if (event_params.posts && event_params.posts[0].syndication_in) {
+    function onPostReceive(e, eventParams) {
+        if (eventParams.posts && eventParams.posts[0].syndication_in) {
             return;
         }
 
-        if (event_params.post_status === 'comment') {
-            comments = comments.concat(event_params.posts);
+        if (eventParams.post_status === 'comment') {
+            comments = comments.concat(eventParams.posts);
         }
 
-        if (event_params.post_status === 'submitted') {
-            contributions = contributions.concat(event_params.posts);
+        if (eventParams.post_status === 'submitted') {
+            contributions = contributions.concat(eventParams.posts);
         }
 
-        if (event_params.updated) {
+        if (eventParams.updated) {
             // Update unread comment array
-            event_params.posts.forEach((post) => {
+            eventParams.posts.forEach((post) => {
                 comments = comments
                     .filter((comment) => comment.id !== post._id);
             });
@@ -96,6 +97,6 @@ export default function unreadPostsService($rootScope) {
                 listener();
                 listener = undefined;
             }
-        }
+        },
     };
 }

@@ -1,4 +1,4 @@
-import consumerListItemTpl from 'scripts/liveblog-syndication/views/consumer-list-item.html';
+import consumerListItemTpl from 'scripts/liveblog-syndication/views/consumer-list-item.ng1';
 
 consumerList.$inject = ['api', 'notify', 'modal', '$http', 'config'];
 
@@ -9,7 +9,7 @@ export default function consumerList(api, notify, modal, $http, config) {
             roles: '=',
             consumers: '=',
             selected: '=',
-            done: '='
+            done: '=',
         },
         link: function(scope, elem, attrs) {
             scope.select = function(consumer) {
@@ -51,7 +51,7 @@ export default function consumerList(api, notify, modal, $http, config) {
                     })
                     .catch((err) => {
                         if (err) {
-                            let msg = err.data._error.message || 'Fatal error';
+                            const msg = err.data._error.message || 'Fatal error';
 
                             notify.pop();
                             notify.error(msg);
@@ -66,16 +66,16 @@ export default function consumerList(api, notify, modal, $http, config) {
                     url: `${config.server.url}/consumers/${consumer._id}/check_connection`,
                     method: 'GET',
                     headers: {
-                        'Content-Type': 'application/json;charset=utf-8'
-                    }
+                        'Content-Type': 'application/json;charset=utf-8',
+                    },
                 });
             };
 
             scope.$on('consumers', (e, data) => {
                 if (scope.consumers
-                && scope.consumers.length > 0
-                && data.consumer
-                && data.consumer.hasOwnProperty('webhook_enabled')) {
+                    && scope.consumers.length > 0
+                    && data.consumer
+                    && data.consumer.hasOwnProperty('webhook_enabled')) {
                     scope.consumers = scope.consumers.map((consumer) => {
                         if (consumer._id === data.consumer._id) {
                             consumer.webhook_enabled = data.consumer.webhook_enabled;
@@ -95,6 +95,6 @@ export default function consumerList(api, notify, modal, $http, config) {
                     });
                 }
             });
-        }
+        },
     };
 }

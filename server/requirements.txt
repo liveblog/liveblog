@@ -1,10 +1,14 @@
-gunicorn==19.3.0
-honcho==0.7.1
+gunicorn==19.7.1
+honcho==1.0.1
+newrelic>=2.66,<2.67
 Flask==0.10.1
 Flask-Cache==0.13.1
 Flask-Cors==2.1.0
 Flask-S3==0.1.7
 html5lib==0.999999999
+beautifulsoup4==4.6.0
+flask_pymongo>=0.5.2,<1.0
+pymongo>=0.4,<4.0
 
 # Superdesk
--e git://github.com/superdesk/superdesk-core.git@v1.6.3#egg=Superdesk-Core
+-e git://github.com/superdesk/superdesk-core.git@v1.17.1#egg=Superdesk-Core

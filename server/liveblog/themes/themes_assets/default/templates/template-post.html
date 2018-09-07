@@ -25,6 +25,8 @@
   class="lb-post list-group-item show-author-avatar {{ type }} {% if item.lb_highlight %}lb-post--highlighted{% endif %} {% if displaynone %}mod--displaynone{% endif %}"
   data-post-id="{{ item._id }}"
   data-post-sticky="{{ item.sticky }}">
+
+  {% block post_header %}
   <div class="lb-post-header">
 
     <div class="lb-type lb-type--{{ item.post_items_type }}"></div>
@@ -46,17 +48,19 @@
         <div class="lb-post-date relativeDate{% if settings.clientDatetimeOnly %} mod--displaynone{% endif %}" data-js-timestamp="{{ postDate }}">{{ postDate | date('') }}</div>
       {% endif %}
     </div>
+
     {% if settings.authorPosition == "top"  %}
       {% include "template-author.html" %}
     {% else %}
       {% include "template-post-actions.html" %}
     {% endif %}
-
   </div>
+  {% endblock %}
 
   {% endif %}
   <!-- end sticky position toggle -->
 
+  {% block post_body %}
   <!-- post start -->
   <div class="items-container">
   {% if type == "comment" %}
@@ -114,20 +118,23 @@
   {% endif %}
   </div>
   <!-- post end -->
+  {% endblock %}
 
+  {% block post_footer %}
   <div class="lb-post-bottom">
     {% if settings.showUpdateDatetime and (item.content_updated_date != item.firstcreated) and item.post_items_type != "advertisement" %}
       <div class="lb-post-updated">
         <span>{{ translate('Updated') }}</span> <span class="lb-post-updated-time relativeDate{% if settings.clientDatetimeOnly %} mod--displaynone{% endif %}" data-js-timestamp="{{item.content_updated_date}}">{{item.content_updated_date | date('')}}</span>
       </div>
     {% endif %}
-
-    {% if settings.authorPosition == "bottom"  %}
-      {% include "template-author.html" %}
-    {% else %}
-      {% include "template-post-actions.html" %}
+    {% if (not item.sticky) or (item.sticky and settings.stickyPosition != 'top') %}
+      {% if settings.authorPosition == "bottom"  %}
+        {% include "template-author.html" %}
+      {% else %}
+        {% include "template-post-actions.html" %}
+      {% endif %}
     {% endif %}
-
-    </div>
+  </div>
+  {% endblock %}
 
 </article>

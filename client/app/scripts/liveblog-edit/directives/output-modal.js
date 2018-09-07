@@ -1,4 +1,4 @@
-import outputModalTpl from 'scripts/liveblog-edit/views/output-modal.html';
+import outputModalTpl from 'scripts/liveblog-edit/views/output-modal.ng1';
 
 /**
  * @desc directive to open a modal to create or edit a channel output
@@ -13,142 +13,148 @@ export default function outputModal() {
             outputs: '=',
             output: '=',
             oldOutput: '=',
-            blog: '='
+            blog: '=',
         },
         templateUrl: outputModalTpl,
-        controllerAs: 'vm',
+        controllerAs: 'self',
         controller: outputModalController,
-        bindToController: true
+        bindToController: true,
     };
 }
 
 outputModalController.$inject = ['$rootScope', '$q', 'api', 'urls', 'notify', 'modal', 'upload', 'adsUtilSevice'];
 
 function outputModalController($rootScope, $q, api, urls, notify, modal, upload, adsUtilSevice) {
-    var vm = this;
-    vm.themes = [];
-    vm.collections = [];
-    vm.readyToSave = false;
-    vm.disableSave = false;
-    vm.imageSaved = false;
-    vm.cancelModal = cancelModal;
-    vm.saveOutput = saveOutput;
-    vm.saveOutputImage = saveOutputImage;
-    vm.removeOutputImage = removeOutputImage;
-    vm.removeLogoImage = removeLogoImage;
-    vm.notValidName = adsUtilSevice.uniqueNameInItems;
-    vm.ordering = [{'title': 'Ascending', 'value': 1}, {'title': 'Descending', 'value': -1}];
+    const self = this;
 
-    var notif_listener = $rootScope.$on('blog', (e, data) => {
-        if (data.blog_id === vm.blog._id && data.published === 1) {
+    self.themes = [];
+    self.collections = [];
+    self.readyToSave = false;
+    self.disableSave = false;
+    self.imageSaved = false;
+    self.cancelModal = cancelModal;
+    self.saveOutput = saveOutput;
+    self.saveOutputImage = saveOutputImage;
+    self.removeOutputImage = removeOutputImage;
+    self.removeLogoImage = removeLogoImage;
+    self.notValidName = adsUtilSevice.uniqueNameInItems;
+    self.ordering = [{title: 'Ascending', value: 1}, {title: 'Descending', value: -1}];
+
+    $rootScope.$on('blog', (e, data) => {
+        if (data.blog_id === self.blog._id && data.published === 1) {
             // update the blog property
-            vm.blog.public_urls = data.public_urls;
+            self.blog.public_urls = data.public_urls;
         }
     });
 
-    initialize().then(function() {
-        vm.readyToSave = true;
+    initialize().then(() => {
+        self.readyToSave = true;
     });
     loadThemes();
 
     function cancelModal() {
-        vm.modalActive = false;
-        vm.disableSave = false;
+        self.modalActive = false;
+        self.disableSave = false;
     }
 
     function initialize() {
         return api('collections').query({where: {deleted: false}})
-        .then(function(data) {
-            vm.collections = data._items;
-            return data._items;
-        })
-        .catch(function(data) {
-            notify.error(gettext('There was an error getting the collections'));
-        });
+            .then((data) => {
+                self.collections = data._items;
+                return data._items;
+            })
+            .catch((data) => {
+                notify.error(gettext('There was an error getting the collections'));
+            });
     }
 
     function loadThemes() {
-        vm.themesLoading = true;
+        self.themesLoading = true;
         return api('themes').query({})
-        .then(function(data) {
-            vm.themes = data._items.filter((theme) => !theme.abstract);
-            vm.themesLoading = false;
-        }, function(data) {
-            vm.themesLoading = false;
-            notify.error(gettext('There was an error getting the themes'));
-        });
+            .then((data) => {
+                self.themes = data._items.filter((theme) => !theme.abstract);
+                self.themesLoading = false;
+            }, (data) => {
+                self.themesLoading = false;
+                notify.error(gettext('There was an error getting the themes'));
+            });
     }
 
     function saveOutput() {
-        var promises = [],
-            newOutput = {
-                name: vm.output.name,
-                blog: vm.blog._id,
-                theme: vm.output.theme,
-                collection: vm.output.collection,
-                style: vm.output.style,
-                settings: vm.output.settings,
-                logo_url: vm.output.logo_url
-            };
+        const promises = [];
+        const newOutput = {
+            name: self.output.name,
+            blog: self.blog._id,
+            theme: self.output.theme,
+            collection: self.output.collection,
+            style: self.output.style,
+            settings: self.output.settings,
+            logo_url: self.output.logo_url,
+        };
         // disable save button
-        vm.disableSave = true;
+
+        self.disableSave = true;
         // if there is a new background image uploaded
-        if (vm.output.preview && vm.output.preview.img) {
+        if (self.output.preview && self.output.preview.img) {
             promises.push(saveOutputImage('preview', 'progress')
-                .then(function(data) {
-                    let pictureUrl = data.renditions.original.href;
+                .then((data) => {
+                    const pictureUrl = data.renditions.original.href;
+
                     newOutput.style['background-image'] = pictureUrl;
                     newOutput.picture = data._id;
                 })
             );
         }
         // if there is a new logo image uploaded
-        if (vm.output.preview_logo && vm.output.preview_logo.img) {
+        if (self.output.preview_logo && self.output.preview_logo.img) {
             promises.push(saveOutputImage('preview_logo', 'progress_logo')
-                .then(function(data) {
-                    let logoUrl = data.renditions.original.href;
+                .then((data) => {
+                    const logoUrl = data.renditions.original.href;
+
                     newOutput.logo_url = logoUrl;
                     newOutput.logo = data._id;
                 })
             );
         }
 
-        if (vm.oldOutput && vm.output.theme !== vm.oldOutput.theme) {
-            var newBlog = {
-                public_urls: angular.copy(vm.blog.public_urls)
+        if (self.oldOutput && self.output.theme !== self.oldOutput.theme) {
+            const newBlog = {
+                public_urls: angular.copy(self.blog.public_urls),
             };
-            newBlog.public_urls.output[vm.output._id]='';
-            api('blogs').save(vm.blog, newBlog)
-            .then(function(){
-                notify.info(gettext('Blog saved'));
-            })
+
+            newBlog.public_urls.output[self.output._id] = '';
+            api('blogs').save(self.blog, newBlog)
+                .then(() => {
+                    notify.info(gettext('Blog saved'));
+                });
         }
 
-        $q.all(promises).then(function(){
+        $q.all(promises).then(() => {
             if (newOutput.settings && newOutput.settings.frequency) {
                 newOutput.settings.frequency = parseInt(newOutput.settings.frequency, 10);
             }
-            return api('outputs').save(vm.output, newOutput)
-            .then(handleSuccessSave, handleErrorSave);            
+            return api('outputs').save(self.output, newOutput)
+                .then(handleSuccessSave, handleErrorSave);
         });
     }
 
     function handleSuccessSave() {
         notify.info(gettext('Output saved successfully'));
-        vm.output = {};
-        vm.modalActive = false;
-        vm.disableSave = false;
+        self.output = {};
+        self.modalActive = false;
+        self.disableSave = false;
         $rootScope.$broadcast('output.saved');
     }
 
     function handleErrorSave() {
-        notify.error(gettext('Something went wrong, please try again later!'), 5000)
+        notify.error(gettext('Something went wrong, please try again later!'), 5000);
     }
 
     function saveOutputImage(preview, progress) {
-        var deferred = $q.defer(),
-            form = {},
-            config = vm.output[preview];
+        const deferred = $q.defer();
+        const form = {};
+        const config = self.output[preview];
+
         if (config.img) {
             form.media = config.img;
         } else if (config.url) {
@@ -156,50 +162,50 @@ function outputModalController($rootScope, $q, api, urls, notify, modal, upload,
         } else {
             deferred.reject();
         }
-        
+
         // return a promise of upload which will call the success/error callback
         urls.resource('archive').then((uploadUrl) => upload.start({
             method: 'POST',
             url: uploadUrl,
-            data: form
+            data: form,
         })
-        .then((response) => {
-            if (response.data._status === 'ERR') {
+            .then((response) => {
+                if (response.data._status === 'ERR') {
+                    deferred.reject();
+                    return;
+                }
+                deferred.resolve(response.data);
+                self.imageSaved = true;
+            }, (error) => {
+                notify.error(
+                    error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
+                );
                 deferred.reject();
-                return;
-            }
-            deferred.resolve(response.data);
-            vm.imageSaved = true;
-        }, (error) => {
-            notify.error(
-                error.statusText !== '' ? error.statusText : gettext('There was a problem with your upload')
-            );
-            deferred.reject();
-        }, (progress) => {
-            vm.output[progress] = {
-                width: Math.round(progress.loaded / progress.total * 100.0)
-            }
-        }));
+            }, (progress) => {
+                self.output[progress] = {
+                    width: Math.round(progress.loaded / progress.total * 100.0),
+                };
+            }));
         return deferred.promise;
     }
 
     function removeOutputImage() {
         modal.confirm(gettext('Are you sure you want to remove the background image?'))
-        .then(() => {
-            vm.output.preview = {};
-            vm.output.progress = {width: 0};
-            vm.output.style['background-image'] = '';
-            vm.imageSaved = false;
-        });
+            .then(() => {
+                self.output.preview = {};
+                self.output.progress = {width: 0};
+                self.output.style['background-image'] = '';
+                self.imageSaved = false;
+            });
     }
 
     function removeLogoImage() {
         modal.confirm(gettext('Are you sure you want to remove the logo image?'))
-        .then(() => {
-            vm.output.preview_logo = {};
-            vm.output.progress_logo = {width: 0};
-            vm.output.logo_url = '';
-            vm.imageSaved = false;
-        });        
+            .then(() => {
+                self.output.preview_logo = {};
+                self.output.progress_logo = {width: 0};
+                self.output.logo_url = '';
+                self.imageSaved = false;
+            });
     }
 }

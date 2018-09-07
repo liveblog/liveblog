@@ -3,30 +3,30 @@ ingestPanelActions.$inject = ['Dispatcher', 'api', '$http', 'config'];
 export default function ingestPanelActions(Dispatcher, api, $http, config) {
     return {
         getSyndication: function(consumerBlogId, unreadQueue) {
-            var params = {
+            const params = {
                 where: {
-                    blog_id: consumerBlogId
-                }
+                    blog_id: consumerBlogId,
+                },
             };
 
             api.syndicationIn.query(params)
                 .then((syndicationIn) => {
                     Dispatcher.dispatch({
                         type: 'ON_GET_SYND',
-                        syndicationIn: syndicationIn
+                        syndicationIn: syndicationIn,
                     });
 
                     if (unreadQueue) {
                         Dispatcher.dispatch({
                             type: 'ON_SET_UNREAD_QUEUE',
-                            unreadQueue: unreadQueue
+                            unreadQueue: unreadQueue,
                         });
                     }
                 })
                 .catch((error) => {
                     Dispatcher.dispatch({
                         type: 'ON_ERROR',
-                        error: error
+                        error: error,
                     });
                 });
         },
@@ -35,25 +35,25 @@ export default function ingestPanelActions(Dispatcher, api, $http, config) {
                 .then((producers) => {
                     Dispatcher.dispatch({
                         type: 'ON_GET_PRODUCERS',
-                        producers: producers
+                        producers: producers,
                     });
                 })
                 .catch((error) => {
                     Dispatcher.dispatch({
                         type: 'ON_ERROR',
-                        error: error
+                        error: error,
                     });
                 });
         },
         syndicate: function(params) {
-            var uri = config.server.url +
+            const uri = config.server.url +
                 '/producers/' + params.producerId +
                 '/syndicate/' + params.producerBlogId;
 
-            let data = {
+            const data = {
                 consumer_blog_id: params.consumerBlogId,
                 auto_publish: params.autoPublish,
-                auto_retrieve: params.autoRetrieve
+                auto_retrieve: params.autoRetrieve,
             };
 
             return $http({
@@ -61,42 +61,42 @@ export default function ingestPanelActions(Dispatcher, api, $http, config) {
                 method: params.method === 'DELETE' ? 'DELETE' : 'POST',
                 data: data,
                 headers: {
-                    'Content-Type': 'application/json;charset=utf-8'
-                }
+                    'Content-Type': 'application/json;charset=utf-8',
+                },
             })
-            .then((response) => api('syndication_in').query())
-            .then((syndicationIn) => {
-                Dispatcher.dispatch({
-                    type: 'ON_GET_SYND',
-                    syndicationIn: syndicationIn
+                .then((response) => api('syndication_in').query())
+                .then((syndicationIn) => {
+                    Dispatcher.dispatch({
+                        type: 'ON_GET_SYND',
+                        syndicationIn: syndicationIn,
+                    });
+                })
+                .catch((error) => {
+                    Dispatcher.dispatch({
+                        type: 'ON_ERROR',
+                        error: error,
+                    });
                 });
-            })
-            .catch((error) => {
-                Dispatcher.dispatch({
-                    type: 'ON_ERROR',
-                    error: error
-                });
-            });
         },
         getProducerBlogs: function(producerId) {
             api.get('/producers/' + producerId + '/blogs')
                 .then((blogs) => {
                     Dispatcher.dispatch({
                         type: 'ON_GET_PRODUCER_BLOGS',
-                        producerBlogs: blogs
+                        producerBlogs: blogs,
                     });
                 })
                 .catch((error) => {
                     Dispatcher.dispatch({
                         type: 'ON_ERROR',
-                        error: error
+                        error: error,
                     });
                 });
         },
         toggleModal: function(value) {
             Dispatcher.dispatch({
                 type: 'ON_TOGGLE_MODAL',
-                modalActive: value
+                modalActive: value,
             });
         },
         updateSyndication: function(syndId, data, etag) {
@@ -106,27 +106,27 @@ export default function ingestPanelActions(Dispatcher, api, $http, config) {
                 data: data,
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8',
-                    'If-Match': etag
-                }
+                    'If-Match': etag,
+                },
             })
-            .then((response) => {
-                Dispatcher.dispatch({
-                    type: 'ON_UPDATED_SYND',
-                    syndEntry: response.data
+                .then((response) => {
+                    Dispatcher.dispatch({
+                        type: 'ON_UPDATED_SYND',
+                        syndEntry: response.data,
+                    });
                 });
-            });
         },
         flushErrors: function() {
             Dispatcher.dispatch({
                 type: 'ON_ERROR',
-                error: null
+                error: null,
             });
         },
         setUnreadQueue: function(unreadQueue) {
             Dispatcher.dispatch({
                 type: 'ON_SET_UNREAD_QUEUE',
-                unreadQueue: unreadQueue
+                unreadQueue: unreadQueue,
             });
-        }
+        },
     };
 }

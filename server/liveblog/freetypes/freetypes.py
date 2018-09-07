@@ -34,4 +34,13 @@ class FreetypesResource(Resource):
 
 
 class FreetypesService(BaseService):
-    pass
+    def register_freetype_files(self, template, name):
+        freetype = {
+            'name': name,
+            'template': template
+        }
+        previous = self.find_one(req=None, name=name)
+        if previous:
+            self.replace(previous['_id'], freetype, previous)
+        else:
+            self.create([freetype])

@@ -2,16 +2,20 @@ ingestPanelReducers.$inject = ['moment'];
 
 export default function ingestPanelReducers(moment) {
     // Associate a syndication to a producer blog via blog token
-    var locallySyndicatedItems = function(syndicationIn, localSyndTokens) {
+    const locallySyndicatedItems = function(syndicationIn, localSyndTokens) {
         return syndicationIn._items
             .filter((item) => localSyndTokens.indexOf(item.blog_token) !== -1);
     };
 
     return function(state, action) {
+        let localSyndTokens;
+        let syndicationIn;
+        let localProducerBlogIds;
+
         switch (action.type) {
         case 'ON_GET_SYND':
-                // Filters out syndicationIns that aren't corresponding to the current blog
-            var localSyndTokens = action.syndicationIn._items
+            // Filters out syndicationIns that aren't corresponding to the current blog
+            localSyndTokens = action.syndicationIn._items
                 .filter((syndication) => syndication.blog_id === state.consumerBlogId)
                 .map((syndication) => syndication.blog_token);
 
@@ -23,18 +27,18 @@ export default function ingestPanelReducers(moment) {
                     localSyndTokens
                 ),
                 localProducerBlogIds: [], // Reset list after syndication
-                producerBlogs: [] // Same here
+                producerBlogs: [], // Same here
             });
 
         case 'ON_UPDATED_SYND':
-            var syndicationIn = angular.extend(state.syndicationIn, {
+            syndicationIn = angular.extend(state.syndicationIn, {
                 _items: state.syndicationIn._items.map((item) => {
                     if (item._id === action.syndEntry._id) {
                         return action.syndEntry;
                     }
 
                     return item;
-                })
+                }),
             });
 
             return angular.extend(state, {
@@ -42,16 +46,16 @@ export default function ingestPanelReducers(moment) {
                 locallySyndicatedItems: locallySyndicatedItems(
                     syndicationIn,
                     state.localSyndTokens
-                )
+                ),
             });
 
         case 'ON_GET_PRODUCERS':
             return angular.extend(state, {
-                producers: action.producers
+                producers: action.producers,
             });
 
         case 'ON_GET_PRODUCER_BLOGS':
-            var localProducerBlogIds = [];
+            localProducerBlogIds = [];
 
             return angular.extend(state, {
                 producerBlogs: angular.extend(action.producerBlogs, {
@@ -76,27 +80,27 @@ export default function ingestPanelReducers(moment) {
                             });
 
                             return blog;
-                        })
+                        }),
                 }),
-                localProducerBlogIds: localProducerBlogIds
+                localProducerBlogIds: localProducerBlogIds,
             });
 
         case 'ON_TOGGLE_MODAL':
             if (action.modalActive) {
                 return angular.extend(state, {
-                    modalActive: action.modalActive
+                    modalActive: action.modalActive,
                 });
             }
 
             return angular.extend(state, {
                 producerBlogs: {},
                 localProducerBlogIds: [],
-                modalActive: action.modalActive
+                modalActive: action.modalActive,
             });
 
         case 'ON_ERROR':
             return angular.extend(state, {
-                error: action.error
+                error: action.error,
             });
 
         case 'ON_SET_UNREAD_QUEUE':
@@ -113,7 +117,7 @@ export default function ingestPanelReducers(moment) {
                     }
 
                     return !isAutoPublished;
-                })
+                }),
             });
         }
     };

@@ -7,31 +7,33 @@
 # For the full copyright and license information, please see the
 # AUTHORS and LICENSE files distributed with this source code, or
 # at https://www.sourcefabric.org/superdesk/license
+import re
+import os
+import glob
+import json
+import magic
 import jinja2
+import superdesk
+import zipfile
+import logging
+from io import BytesIO
+
+from bson.objectid import ObjectId
+from eve.io.mongo import MongoJSONEncoder
+from flask_cors import cross_origin
+from flask import make_response, request, current_app as app
+
 from superdesk.resource import Resource
 from superdesk.services import BaseService
 from superdesk import get_resource_service
-import glob
-import json
-from io import BytesIO
-import superdesk
-from bson.objectid import ObjectId
-from superdesk.errors import SuperdeskApiError
-from flask_cors import cross_origin
-from eve.io.mongo import MongoJSONEncoder
-from flask import request, current_app as app
-from superdesk.errors import SuperdeskError
-import zipfile
-import os
-import magic
-import logging
-from flask import make_response
+from superdesk.errors import SuperdeskApiError, SuperdeskError
 from liveblog.mongo_util import encode as mongoencode
 from liveblog.system_themes import system_themes
 
 from settings import (COMPILED_TEMPLATES_PATH, UPLOAD_THEMES_DIRECTORY, SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_THEMES)
 from liveblog.blogs.app_settings import THEMES_ASSETS_DIR, THEMES_UPLOADS_DIR
-from .template.filters import moment_date_filter_container, addten, ampify
+from liveblog.blogs.utils import is_s3_storage_enabled as s3_enabled
+from .template.filters import moment_date_filter_container, addten, ampify, ampsupport
 from .template.loaders import ThemeTemplateLoader
 
 
@@ -191,6 +193,9 @@ class ThemesResource(Resource):
         'url': 'regex("[\w\-]+")',
         'field': 'name'
     }
+
+    etag_ignore_fields = ['_type', 'template']
+
     # point accessible at '/themes/<theme_name>'.
     ITEM_METHODS = ['GET', 'POST', 'DELETE']
     privileges = {'GET': 'global_preferences', 'POST': 'global_preferences',
@@ -310,6 +315,7 @@ class ThemesService(BaseService):
         embed_env.filters['date'] = moment_date_filter_container(theme)
         embed_env.filters['addten'] = addten
         embed_env.filters['ampify'] = ampify
+        embed_env.filters['ampsupport'] = ampsupport
         return embed_env
 
     def get_theme_compiled_templates_path(self, theme_name):
@@ -328,7 +334,7 @@ class ThemesService(BaseService):
     @property
     def is_s3_storage_enabled(self):
         # TODO: provide multiple media storage support.
-        return type(app.media).__name__ is 'AmazonMediaStorage'
+        return s3_enabled()
 
     def get_theme_assets_url(self, theme_name):
         """
@@ -387,6 +393,8 @@ class ThemesService(BaseService):
         return results.get('created'), results.get('updated')
 
     def _save_theme_file(self, name, theme, upload_path=None):
+        if re.search(r"node_modules|.git", name):
+            return
         theme_name = theme['name']
         if not upload_path:
             upload_path = self.get_theme_path(theme_name)
@@ -452,6 +460,7 @@ class ThemesService(BaseService):
         # Get default settings of current theme.
         default_theme_settings = self.get_default_settings(theme)
         default_prev_theme_settings = self.get_default_settings(previous_theme)
+        theme_settings = {}
 
         # Check if theme settings are changed.
         if 'settings' in previous_theme:
@@ -467,7 +476,6 @@ class ThemesService(BaseService):
                 old_theme_settings.update(theme.get('old_theme_settings', {}))
 
             # Initialize the theme settings values for the old theme based on the new settings
-            theme_settings = {}
             # loop over theme settings
             for key, value in old_theme_settings.items():
                 if value == default_prev_theme_settings[key]:
@@ -497,6 +505,8 @@ class ThemesService(BaseService):
                 new_theme_settings.update(default_theme_settings)
                 # Save the blog with the new settings
                 blogs_service.system_update(ObjectId(blog['_id']), {'theme_settings': new_theme_settings}, blog)
+
+        return theme_settings, default_theme_settings
 
     def save_or_update_theme(self, theme, files=[], force_update=False, keep_files=True, upload_path=None):
         theme_name = theme['name']
@@ -683,12 +693,10 @@ def download_a_theme(theme_name):
         return _response(theme_filepath)
 
 
-@upload_theme_blueprint.route('/theme-upload', methods=['POST'])
-@cross_origin()
-def upload_a_theme():
+def register_a_theme(zip_archive):
     themes_service = get_resource_service('themes')
 
-    with zipfile.ZipFile(request.files['media']) as zip_file:
+    with zipfile.ZipFile(zip_archive) as zip_file:
         # Keep only actual files (not folders)
         files = [file for file in zip_file.namelist() if not file.endswith('/')]
 
@@ -745,11 +753,17 @@ def upload_a_theme():
         result = themes_service.save_or_update_theme(theme_json, extracted_files, force_update=True,
                                                      keep_files=not themes_service.is_s3_storage_enabled,
                                                      upload_path=upload_path)
+        return result, theme_json
 
-        return json.dumps(
-            dict(
-                _status='OK',
-                _action=result.get('status'),
-                theme=theme_json
-            ), cls=MongoJSONEncoder
-        )
+
+@upload_theme_blueprint.route('/theme-upload', methods=['POST'])
+@cross_origin()
+def upload_a_theme():
+    result, theme_json = register_a_theme(request.files['media'])
+    return json.dumps(
+        dict(
+            _status='OK',
+            _action=result.get('status'),
+            theme=theme_json
+        ), cls=MongoJSONEncoder
+    )

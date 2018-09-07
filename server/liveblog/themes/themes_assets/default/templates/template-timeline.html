@@ -1,7 +1,8 @@
 {% macro translate(text) %}{% if not options.i18n[settings.language] %}{{ text }}{% elif not options.i18n[settings.language][text] %}{{ text }}{% else %}{{ options.i18n[settings.language][text] }}{% endif %}{% endmacro %}
 
-{% block timeline %}
 <div data-timeline class="lb-timeline {{ settings.language }}">
+  {% block timeline_top %}
+
   {% if settings.showTitle and blog.title %}
     <h1>{{ blog.title }}</h1>
   {% endif %}
@@ -28,38 +29,44 @@
     </div>
   {% endif %}
 
+  {% endblock %}
+
+
+  {% block timeline_header %}
   <!-- Header -->
   <div class="header-bar">
-    <div class="sorting-bar">
-      <div class="sorting-bar__orders">
-        <div class="sorting-bar__dropdownBtn" data-js-sort_dropdown_button>
-          {% if settings.postOrder == 'editorial' %}
-            {{  translate("Editorial") }}
-          {% elif settings.postOrder == 'newest_first' %}
-            {{  translate("Newest first") }}
-          {% elif settings.postOrder == 'oldest_first' %}
-            {{ translate("Oldest first") }}
-          {% endif %}
-        </div>
-        <div class="sorting-bar__dropdownContent">
-          <div
-            class="sorting-bar__order {%if settings.postOrder == 'editorial' %}sorting-bar__order--active{% endif %}"
-            data-js-orderby_editorial>
-            {{  translate("Editorial") }}
+    {% if not settings.hidePostOrder %}
+      <div class="sorting-bar">
+        <div class="sorting-bar__orders">
+          <div class="sorting-bar__dropdownBtn" data-js-sort_dropdown_button>
+            {% if settings.postOrder == 'editorial' %}
+              {{  translate("Editorial") }}
+            {% elif settings.postOrder == 'newest_first' %}
+              {{  translate("Newest first") }}
+            {% elif settings.postOrder == 'oldest_first' %}
+              {{ translate("Oldest first") }}
+            {% endif %}
           </div>
-          <div
-            class="sorting-bar__order {%if settings.postOrder == 'newest_first' %}sorting-bar__order--active{% endif %}"
-            data-js-orderby_descending>
-            {{  translate("Newest first") }}
-          </div>
-          <div
-            class="sorting-bar__order {%if settings.postOrder == 'oldest_first'%}sorting-bar__order--active{% endif %}"
-            data-js-orderby_ascending>
-            {{ translate("Oldest first") }}
+          <div class="sorting-bar__dropdownContent">
+            <div
+              class="sorting-bar__order {%if settings.postOrder == 'editorial' %}sorting-bar__order--active{% endif %}"
+              data-js-orderby_editorial>
+              {{  translate("Editorial") }}
+            </div>
+            <div
+              class="sorting-bar__order {%if settings.postOrder == 'newest_first' %}sorting-bar__order--active{% endif %}"
+              data-js-orderby_descending>
+              {{  translate("Newest first") }}
+            </div>
+            <div
+              class="sorting-bar__order {%if settings.postOrder == 'oldest_first'%}sorting-bar__order--active{% endif %}"
+              data-js-orderby_ascending>
+              {{ translate("Oldest first") }}
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    {% endif %}
     <div class="header-bar__actions"></div>
       {% if settings.hasHighlights %}
           <button class="header-bar__highlight" data-js-show-highlighted><span>{{ translate('Highlights') }}</span></button>
@@ -85,6 +92,7 @@
       {% endif %}
     </div>
   <!-- Header End -->
+  {% endblock %}
 
   <!-- Comment -->
   {% if settings.canComment %}
@@ -92,6 +100,7 @@
   {% endif %}
   <!-- Comment End -->
 
+  {% block timeline_body %}
   <!-- Timeline -->
   <div class="timeline-body timeline-body--loaded">
       <div data-one-new-update class="lb-post new-updates mod--displaynone">
@@ -128,9 +137,10 @@
       {% endif %}
   </div>
   <!-- Timeline End -->
+  {% endblock %}
+
 
 </div>
-{% endblock %}
 
 {% include "template-embed-providers.html" %}
 

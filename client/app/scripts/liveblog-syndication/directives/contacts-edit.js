@@ -1,13 +1,13 @@
-import contactsEditFormTpl from 'scripts/liveblog-syndication/views/contacts-edit-form.html';
+import contactsEditFormTpl from 'scripts/liveblog-syndication/views/contacts-edit-form.ng1';
 
 export default function contactsEdit() {
     return {
         templateUrl: contactsEditFormTpl,
         scope: {
             contacts: '=',
-            attempted: '='
+            attempted: '=',
         },
-        require: "^form",
+        require: '^form',
         link: function(scope, elem, attrs, form) {
             if (!scope.contacts) {
                 scope.contacts = [{}];
@@ -21,6 +21,6 @@ export default function contactsEdit() {
                 scope.contacts.splice(index, 1);
                 form.$setDirty();
             };
-        }
-    }
-};
+        },
+    };
+}

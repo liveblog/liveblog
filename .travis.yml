@@ -85,7 +85,7 @@ before_script:
     - (nohup python3 -m http.server 9000 &)
 
 script:
-    - cd $TRAVIS_BUILD_DIR/server && nosetests --all-modules ;
+    - cd $TRAVIS_BUILD_DIR/server && nosetests --all-modules --nocapture;
     - cd $TRAVIS_BUILD_DIR/server && behave --format progress2 --logging-level ERROR ;
     - cd $TRAVIS_BUILD_DIR/server && flake8 ;
     - cd $TRAVIS_BUILD_DIR/client && npm test ;
@@ -96,8 +96,13 @@ script:
     - python3 manage.py register_local_themes ;
     - python3 manage.py register_bloglist ;
     - cd $TRAVIS_BUILD_DIR/client
-    - ./node_modules/.bin/webdriver-manager update
+    - ./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome 2.36
     - ./node_modules/.bin/protractor protractor-conf.js
 
 after_script:
     - killall -9 python
+
+after_success:
+    - curl -LO https://raw.github.com/stephanmg/travis-dependent-builds/master/trigger.sh
+    - chmod +x trigger.sh
+    - ./trigger.sh liveblog generator-liveblog-theme master $TRAVIS_ACCESS_TOKEN

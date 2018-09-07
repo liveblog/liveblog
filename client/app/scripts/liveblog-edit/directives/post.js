@@ -1,4 +1,4 @@
-import postTpl from 'scripts/liveblog-edit/views/post.html';
+import postTpl from 'scripts/liveblog-edit/views/post.ng1';
 
 lbPost.$inject = [
     'notify',
@@ -9,7 +9,7 @@ lbPost.$inject = [
     'blogSecurityService',
     '$document',
     'instagramService',
-    '$rootScope'
+    '$rootScope',
 ];
 
 export default function lbPost(notify, gettext, asset, postsService, modal,
@@ -18,20 +18,20 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
         scope: {
             post: '=',
             onEditAction: '=',
-            //the post that is in the process of being reordered
+            // the post that is in the process of being reordered
             reorderPost: '=',
-            //the order property of the post that was reordered and should stay highlighted a bit more
+            // the order property of the post that was reordered and should stay highlighted a bit more
             keepHighlighted: '=',
-            //call when the user clicks on the reorder icon
+            // call when the user clicks on the reorder icon
             startReorder: '&',
-            //call when the user escaped the reorder action
+            // call when the user escaped the reorder action
             clearReorderAction: '=',
-            //call when the user has chosen a new place for the post
+            // call when the user has chosen a new place for the post
             reorder: '&',
-            //the index of the post in the list
+            // the index of the post in the list
             index: '=',
             // the controller of parent posts list directive
-            postsListCtrl: '='
+            postsListCtrl: '=',
         },
         restrict: 'E',
         templateUrl: postTpl,
@@ -42,11 +42,12 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                     scope.clearReorder();
                 }
             }
-            function changePostStatus(post, status) {
+            function changePostStatus(postRef, status) {
                 // don't save the original post coming for the posts list, because it needs
                 // to conserve its original update date in the posts list directive
                 // in order to retrieve updates from this date (if latest)
-                post = angular.copy(post);
+                const post = angular.copy(postRef);
+
                 // save the post with the new status
                 return postsService.savePost(post.blog, post, undefined, {post_status: status});
             }
@@ -55,8 +56,8 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
             }
 
             angular.extend(scope, {
-                functionize: function (obj) {
-                    if (typeof(obj) !== 'function') {
+                functionize: function(obj) {
+                    if (typeof obj !== 'function') {
                         return function() {
                             return obj;
                         };
@@ -72,11 +73,11 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                     }
                 },
                 removePost: function(post) {
-                    postsService.remove(angular.copy(post)).then(function(message) {
+                    postsService.remove(angular.copy(post)).then((message) => {
                         notify.pop();
                         notify.info(gettext('Removing post...'));
                         $rootScope.$broadcast('removing_timeline_post', {post: post});
-                    }, function() {
+                    }, () => {
                         notify.pop();
                         notify.error(gettext('Something went wrong'));
                     });
@@ -92,14 +93,14 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                     $document.unbind('keypress', escClearReorder);
                     scope.clearReorderAction();
                 },
-                changePinStatus: function (post, status) {
+                changePinStatus: function(post, status) {
                     return postsService.savePost(post.blog, post, undefined, {sticky: status});
                 },
                 togglePinStatus: function(post) {
-                    scope.changePinStatus(post, !post.sticky).then(function(post) {
+                    scope.changePinStatus(post, !post.sticky).then((post) => {
                         notify.pop();
                         notify.info(post.sticky ? gettext('Post was pinned') : gettext('Post was unpinned'));
-                    }, function() {
+                    }, () => {
                         notify.pop();
                         notify.error(gettext('Something went wrong. Please try again later'));
                     });
@@ -111,42 +112,42 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                 askRemovePost: function(post) {
                     scope.clearReorder();
                     modal.confirm(gettext('Are you sure you want to delete the post?'))
-                        .then(function() {
+                        .then(() => {
                             scope.removePost(post);
                         });
                 },
                 unpublishPost: function(post) {
                     scope.clearReorder();
-                    changePostStatus(post, 'submitted').then(function(post) {
+                    changePostStatus(post, 'submitted').then((post) => {
                         notify.pop();
                         notify.info(gettext('Post saved as contribution'));
-                    }, function() {
+                    }, () => {
                         notify.pop();
                         notify.error(gettext('Something went wrong. Please try again later'));
                     });
                 },
                 highlightPost: function(post) {
-                    changeHighlightStatus(post, !post.lb_highlight).then(function(post) {
+                    changeHighlightStatus(post, !post.lb_highlight).then((post) => {
                         notify.pop();
                         notify.info(
                             post.lb_highlight ? gettext('Post was highlighted') : gettext('Post was un-highlighted')
                         );
-                    }, function() {
-                       notify.pop();
-                       notify.error(gettext('Something went wrong. Please try again later'));
+                    }, () => {
+                        notify.pop();
+                        notify.error(gettext('Something went wrong. Please try again later'));
                     });
                 },
                 publishPost: function(post) {
                     scope.clearReorder();
-                    changePostStatus(post, 'open').then(function(post) {
+                    changePostStatus(post, 'open').then((post) => {
                         notify.pop();
                         notify.info(gettext('Post published'));
-                    }, function() {
+                    }, () => {
                         notify.pop();
                         notify.error(gettext('Something went wrong. Please try again later'));
                     });
-                }
+                },
             });
-        }
+        },
     };
 }

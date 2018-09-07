@@ -17,6 +17,10 @@
 .page-nav-title {
     padding: 10px 0;
 }
+
+.page-nav-title--paddingLeft {
+    padding-left: 20px;
+}
 .navbtn i+.title {
     margin-left: 10px;
 }
@@ -94,6 +98,20 @@
     margin-left: 20px;
 }
 
+.button-stack .navbtn {
+	text-decoration: none;
+
+	&.analytics-link,
+	&.settings-link {
+		i { position: relative; top: 10px; }
+	}
+
+	.big-icon--analytics,
+	.big-icon--cog {
+		position: relative; top: 10px;
+	}
+}
+
 .homebtn {
 	width: 48px;
 	padding: 0;
@@ -132,12 +150,12 @@
     line-height: 1.4;
 }
 
-// Remove language options from general and blog settings
-// because the feature is not implemented yet
-// FIXME: must be uncommented after release (LBSD-546)
-.blog-settings-view div.form-group:nth-child(5),
-.general-settings div.form-group:nth-child(1) {
-    display: none !important;
+// Remove language option form users profile
+// https://dev.sourcefabric.org/browse/LBSD-2196
+.profile-info {
+	div.field__language {
+		display: none;
+	}
 }
 
 //Hide liveblog tab in global settings
@@ -152,7 +170,7 @@
 .help-link {
     color: white;
     z-index: 2000;
-    position:absolute;
+    position:absolute !important;
     right: 126px;
     top:15px;
     .dropdown-menu {
@@ -319,9 +337,11 @@
 div.subnav div.button-stack.left-stack a.homebtn {
     border-right: 1px solid rgba(0, 0, 0, 0.1);
 }
-div.settings-page .subnav .btn {
-    margin-top: 10px;
+
+div.subnav div.button-stack .navbtn i {
+	opacity: 1;
 }
+
 div.settings-page div.datepicker-input button, div.settings-page div.timepicker-input button {
     height: 22px!important;
     margin-top: 0px!important;
@@ -331,7 +351,7 @@ button.btn-info {
     color: white;
 }
 #main-menu .footer .icon-superdesk {
-    background-size: 156px 48px;
+    background-size: 156px 48px !important;
 }
 
 .liveblog-help {
@@ -340,4 +360,59 @@ button.btn-info {
 
 i.icon-star.orange {
     color: #f89406;
+}
+
+// custom big icon
+
+[class^="lb-big-icon-"], [class*=" lb-big-icon-"] {
+	display: inline-block;
+    width: 28px;
+    height: 24px;
+    line-height: 24px;
+    vertical-align: middle;
+    background-position: center center;
+    background-repeat: no-repeat;
+    opacity: 0.7;
+}
+
+.active [class^="lb-big-icon-"],
+.active [class*=" lb-big-icon-"],
+.active button:hover [class^="lb-big-icon-"],
+.active button:hover [class*=" lb-big-icon-"],
+.active a:hover [class^="lb-big-icon-"],
+.active a:hover [class*=" lb-big-icon-"] {
+	opacity: 1;
+}
+
+@mixin border-radius($radius: 5px) {
+    border-radius: $radius;
+}
+
+.icon-white {
+  color: $white;
+}
+[class*="icon-"].blue {
+  color: $sd-blue;
+}
+[class*="icon-"].red {
+  color: $red;
+}
+[class*="icon-"].gray {
+  color:$grayDark;
+}
+[class*="icon-"].white {
+  color: $white;
+}
+
+.icon-round {
+  @include border-radius(50%);
+  background-color: $sd-blue;
+}
+
+.word-break {
+    word-break: break-all;
+}
+
+.minusMargin1020{
+    margin: -10px -20px;
 }

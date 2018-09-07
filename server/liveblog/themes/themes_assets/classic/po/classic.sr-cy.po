@@ -1,0 +1,120 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Classic Theme\n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: Aleksandar Jeličić <aleksandar.jelicic@sourcefabric.org>\n"
+"Language-Team: Live Blog <liveblog@sourcefabric.org>\n"
+"Language: sr-cy\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2);\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: posts.html:23
+msgid "Advertisement"
+msgstr "Реклама"
+
+#: comments.html:37
+msgid "Cancel"
+msgstr "Откажи"
+
+#: template.html:46
+msgid "Comment"
+msgstr "Коментар"
+
+#: comments.html:27
+msgid "Comment *"
+msgstr "Коментар *"
+
+#: comments.html:31
+msgid "Comment should be maximum 300 characters in length."
+msgstr "Коментар је ограничен на 300 карактера."
+
+#: main.js:49 template.html:13
+msgid "Editorial"
+msgstr "Избор уредника"
+
+#: template.html:98
+msgid "Load more posts"
+msgstr "Учитај још постова"
+
+#: template.html:101
+msgid "Loading"
+msgstr "Учитавање"
+
+#: comments.html:19
+msgid "Name *"
+msgstr "Име *"
+
+#: comments.html:23
+msgid "Name should be maximum 30 characters in length."
+msgstr "Име је ограничено на 30 карактера."
+
+#: main.js:52 template.html:17
+msgid "Newest first"
+msgstr "Од најновијег"
+
+#: template.html:59
+msgid "No posts for now."
+msgstr "За сада нема постова."
+
+#: main.js:55 template.html:21
+msgid "Oldest first"
+msgstr "Од најстаријег"
+
+#: template.html:83
+msgid "One pinned post"
+msgid_plural "{{$count}} pinned posts"
+msgstr[0] "Погледајте истакнут пост"
+msgstr[1] "Погледајте {{$count}} истакнута поста"
+msgstr[2] "Погледајте {{$count}} истакнутих постова"
+
+#: comments.html:30
+msgid "Please fill in your Comment."
+msgstr "Молимо унесите ваш коментар"
+
+#: comments.html:22
+msgid "Please fill in your Name."
+msgstr "Молимо унесите ваше име."
+
+#: comments.html:14
+msgid "Post a comment"
+msgstr "Поставите коментар"
+
+#: template.html:67
+msgid "See one new update"
+msgid_plural "See {{$count}} new updates"
+msgstr[0] "Погледајте нови пост"
+msgstr[1] "Погледајте {{$count}} нова поста"
+msgstr[2] "Погледајте {{$count}} нових постова"
+
+#: comments.html:38
+msgid "Send"
+msgstr "Пошаљи"
+
+#: template.html:38
+msgid "Show all posts"
+msgstr "Прикажи све постове"
+
+#: template.html:37
+msgid "Show highlighted post only"
+msgstr "Прикажи најважније постове"
+
+#: template.html:11 template.html:27
+msgid "Sort by:"
+msgstr "Сортирај:"
+
+#: posts.html:38
+msgid "Updated {{post.content_updated_date | prettifyIsoDate}}"
+msgstr "Ажурирано {{post.content_updated_date | prettifyIsoDate}}"
+
+#: comments.html:6
+msgid "Your comment was sent for approval."
+msgstr "Ваш коментар је послат на одобрење."
+
+#: item.html:18
+msgid "{{ item.meta.caption }} credit: {{ item.meta.credit }}"
+msgstr "{{ item.meta.caption }} аутор: {{ item.meta.credit }}"

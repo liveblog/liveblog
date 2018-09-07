@@ -225,3 +225,11 @@ i.webhook-status.warn {
 i.webhook-status.on {
     color: $green;
 }
+
+.zIndex2 {
+    z-index: 2;
+}
+
+.preview-layout .list-pane > .content, .preview-layout .preview-pane > .content {
+    height: auto;
+}

@@ -1,0 +1,40 @@
+<div
+    class="dropdown dropdown--dropleft blog-actions-menu"
+    dropdown
+    >
+    <button
+        id="btn-append-to-body"
+        type="button"
+        dropdown__toggle
+        ng-click="$event.stopPropagation()"
+        class="btn-dots-vertical condensed dropdown__toggle dropdown-toggle"
+       >
+        <i class="icon-dots-vertical"></i>
+    </button>
+    <ul class="dropdown__menu">
+        <li>
+            <div class="dropdown__menu-label">
+                Actions
+            </div>
+        </li>
+        <li class="dropdown__menu-divider"></li>
+        <li class="divider"></li>
+        <li role="menuitem">
+            <button ng-click="destroy($event, blog)">
+                <i class="icon-trash"></i> Remove
+            </button>
+        </li>
+        <li class="divider"></li>
+        <li role="menuitem" class="dropdown__menu-item--no-link">
+            <span>Auto Publish</span>
+            <div class="dropdown__sd-toggle">
+                <span
+                sd-switch
+                ng-change="updateSyndication()"
+                ng-model="blog.auto_publish"
+                class="sd-toggle--vertical-middle"></span>
+            </div>
+        </li>
+    </ul>
+</div>
+

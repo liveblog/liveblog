@@ -1,4 +1,4 @@
-import filterByMemberTpl from 'scripts/liveblog-edit/views/filter-by-member.html';
+import filterByMemberTpl from 'scripts/liveblog-edit/views/filter-by-member.ng1';
 
 lbFilterByMember.$inject = ['api'];
 
@@ -7,75 +7,77 @@ export default function lbFilterByMember(api) {
         restrict: 'E',
         scope: {
             blogId: '=',
-            onFilterChange: '='
+            onFilterChange: '=',
         },
         templateUrl: filterByMemberTpl,
-        controllerAs: 'vm',
+        controllerAs: 'self',
         controller: ['$scope', function($scope) {
-            var vm = this;
-            angular.extend(vm, {
+            const self = this;
+
+            angular.extend(self, {
                 members: [],
                 openSelector: false,
                 preselectedUsers: [],
                 selectedUsers: [],
-                findUserInPreselection: function(user_id) {
-                    return _.find(vm.preselectedUsers, function(user) {
-                        return user._id === user_id;
-                    });
+                findUserInPreselection: function(userId) {
+                    return _.find(self.preselectedUsers, (user) => user._id === userId);
                 },
                 toggleUserInPreselection: function(user) {
-                    var old_user = vm.findUserInPreselection(user._id);
-                    if (old_user) {
-                        vm.preselectedUsers.splice(vm.preselectedUsers.indexOf(old_user), 1);
+                    const oldUser = self.findUserInPreselection(user._id);
+
+                    if (oldUser) {
+                        self.preselectedUsers.splice(self.preselectedUsers.indexOf(oldUser), 1);
                     } else {
-                        vm.preselectedUsers.push(user);
+                        self.preselectedUsers.push(user);
                     }
                 },
                 isUserInPreselection: function(user) {
-                    return vm.findUserInPreselection(user._id);
+                    return self.findUserInPreselection(user._id);
                 },
                 confirmPreselection: function() {
-                    vm.updateFilters(angular.copy(vm.preselectedUsers));
+                    self.updateFilters(angular.copy(self.preselectedUsers));
                 },
                 updateFilters: function(fitlers) {
-                    vm.selectedUsers = fitlers;
-                    $scope.onFilterChange(vm.selectedUsers);
+                    self.selectedUsers = fitlers;
+                    $scope.onFilterChange(self.selectedUsers);
                 },
                 clearSelection: function() {
-                    vm.updateFilters([]);
+                    self.updateFilters([]);
                 },
                 removeUserFromSelection: function(user) {
-                    var filters = angular.copy(vm.selectedUsers);
-                    filters.splice(vm.selectedUsers.indexOf(user), 1);
-                    vm.updateFilters(filters);
+                    const filters = angular.copy(self.selectedUsers);
+
+                    filters.splice(self.selectedUsers.indexOf(user), 1);
+                    self.updateFilters(filters);
                 },
                 toggleSelector: function() {
-                    vm.openSelector = !vm.openSelector;
-                    if (vm.openSelector) {
+                    self.openSelector = !self.openSelector;
+                    if (self.openSelector) {
                         // clear the search input
-                        vm.search = '';
+                        self.search = '';
                         // preset the preselection to the current selection
-                        vm.preselectedUsers = angular.copy(vm.selectedUsers);
+                        self.preselectedUsers = angular.copy(self.selectedUsers);
                         // retrieve blog information to know the owner and the members
                         api('blogs')
                             .getById($scope.blogId)
-                            .then(function(blog) {
+                            .then((blog) => {
                                 // add the owner
-                                var ids = [blog.original_creator];
+                                const ids = [blog.original_creator];
+
                                 // add the members
                                 if (blog.members) {
-                                    ids.push.apply(ids, blog.members.map(function(member) {return member.user;}));
+                                    ids.push(...blog.members.map((member) => member.user));
                                 }
                                 // retrieve information about these users and list them in the view
                                 api('users')
                                     .query({where: {_id: {$in: ids}}})
-                                    .then(function(data) {
-                                        vm.members = data._items;
+                                    .then((data) => {
+                                        self.members = data._items;
                                     });
                             });
                     }
-                }
+                },
             });
-        }]
+        }],
     };
 }

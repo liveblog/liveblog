@@ -1,3 +1,4 @@
+
 /**
  * This file is part of Superdesk.
  *
@@ -7,7 +8,7 @@
  * AUTHORS and LICENSE files distributed with this source code, or
  * at https://www.sourcefabric.org/superdesk/license
  */
-import dateFormTpl from 'scripts/liveblog-themes/views/date-format.html';
+import dateFormTpl from 'scripts/liveblog-themes/views/date-format.ng1';
 
 (function() {
     angular.module('liveblog.themes')
@@ -15,7 +16,7 @@ import dateFormTpl from 'scripts/liveblog-themes/views/date-format.html';
             return {
                 scope: {
                     options: '=',
-                    value: '=ngModel'
+                    value: '=ngModel',
                 },
                 templateUrl: dateFormTpl,
                 link: function(scope) {
@@ -26,7 +27,7 @@ import dateFormTpl from 'scripts/liveblog-themes/views/date-format.html';
                         scope.radio = '';
                         scope.custom = scope.value;
                     }
-                    scope.$watch('radio + custom', function() {
+                    scope.$watch('radio + custom', () => {
                         if (scope.radio === '') {
                             scope.value = scope.custom;
                         } else {
@@ -34,7 +35,7 @@ import dateFormTpl from 'scripts/liveblog-themes/views/date-format.html';
                             scope.custom = '';
                         }
                     });
-                }
+                },
             };
-        }])
+        }]);
 })();

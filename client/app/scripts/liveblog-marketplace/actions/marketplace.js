@@ -3,9 +3,9 @@ marketplaceActions.$inject = ['Dispatcher', 'api', '$http', 'lodash'];
 export default function marketplaceActions(Dispatcher, api, $http, _) {
     return {
         getBlogs: function(filters) {
-            var params = {
+            const params = {
                 where: filters,
-                sort: '-start_date'
+                sort: '-start_date',
             };
 
             api.get('/marketplace/blogs', params)
@@ -13,7 +13,7 @@ export default function marketplaceActions(Dispatcher, api, $http, _) {
                     Dispatcher.dispatch({
                         type: 'ON_GET_BLOGS',
                         blogs: blogs,
-                        filters: filters
+                        filters: filters,
                     });
                 });
         },
@@ -21,7 +21,7 @@ export default function marketplaceActions(Dispatcher, api, $http, _) {
             api.get('/marketplace/marketers').then((marketers) => {
                 Dispatcher.dispatch({
                     type: 'ON_GET_MARKETERS',
-                    marketers: marketers
+                    marketers: marketers,
                 });
             });
         },
@@ -29,20 +29,22 @@ export default function marketplaceActions(Dispatcher, api, $http, _) {
             api.get('/marketplace/languages').then((languages) => {
                 Dispatcher.dispatch({
                     type: 'ON_GET_LANGUAGES',
-                    languages: languages
+                    languages: languages,
                 });
             });
         },
-        toggleFilter: function(filters, type, value) {
+        toggleFilter: function(filtersParam, type, value) {
+            let filters = filtersParam;
+
             if (filters && filters[type] === value) {
                 filters = _.omit(filters, type);
             } else {
                 filters[type] = value;
             }
 
-            var params = {
+            const params = {
                 where: filters,
-                sort: '-start_date'
+                sort: '-start_date',
             };
 
             api
@@ -51,36 +53,36 @@ export default function marketplaceActions(Dispatcher, api, $http, _) {
                     Dispatcher.dispatch({
                         type: 'ON_GET_BLOGS',
                         blogs: blogs,
-                        filters: filters
+                        filters: filters,
                     });
                 })
                 .catch((error) => {
                     Dispatcher.dispatch({
                         type: 'ON_GET_BLOGS',
                         blogs: {_items: {}},
-                        filters: filters
+                        filters: filters,
                     });
                 });
         },
         togglePanel: function(value) {
             Dispatcher.dispatch({
                 type: 'ON_TOGGLED_PANEL',
-                searchPanel: value
+                searchPanel: value,
             });
         },
         openEmbedModal: function(blog) {
             Dispatcher.dispatch({
                 type: 'ON_TOGGLED_MODAL',
                 embedModal: true,
-                currentBlog: blog
+                currentBlog: blog,
             });
         },
         closeEmbedModal: function() {
             Dispatcher.dispatch({
                 type: 'ON_TOGGLED_MODAL',
                 embedModal: false,
-                currentBlog: {}
+                currentBlog: {},
             });
-        }
+        },
     };
 }

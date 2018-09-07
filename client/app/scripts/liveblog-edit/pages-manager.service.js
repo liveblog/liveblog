@@ -1,15 +1,14 @@
 pagesManagerFactory.$inject = ['postsService', '$q', 'lodash', 'moment', 'instagramService'];
 
 export default function pagesManagerFactory(postsService, $q, _, moment, instagramService) {
-
-    function PagesManager (blog_id, status, max_results, sort, sticky, highlight, noSynd) {
-        var SORTS = {
-            'editorial': {order: {order: 'desc', missing: '_last', unmapped_type: 'long'}},
-            'updated_first': {_updated: {order: 'desc', missing: '_last', unmapped_type: 'long'}},
-            'newest_first': {_created: {order: 'desc', missing: '_last', unmapped_type: 'long'}},
-            'oldest_first': {_created: {order: 'asc', missing: '_last', unmapped_type: 'long'}}
+    function PagesManager(blogId, status, maxResults, sort, sticky, highlight, noSynd) {
+        const SORTS = {
+            editorial: {order: {order: 'desc', missing: '_last', unmapped_type: 'long'}},
+            updated_first: {_updated: {order: 'desc', missing: '_last', unmapped_type: 'long'}},
+            newest_first: {_created: {order: 'desc', missing: '_last', unmapped_type: 'long'}},
+            oldest_first: {_created: {order: 'asc', missing: '_last', unmapped_type: 'long'}},
         };
-        var self = this;
+        const self = this;
 
         /**
          * Represent a page of posts
@@ -18,7 +17,9 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
         function Page(posts) {
             return {
                 posts: posts || [],
-                addPost: function(post) {this.posts.push(post);}
+                addPost: function(post) {
+                    this.posts.push(post);
+                },
             };
         }
 
@@ -28,28 +29,29 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
          * @param {integer} [max_results=self.maxResults] - The maximum number of results to retrieve
          * @returns {promise}
          */
-        function retrievePage(page, max_results) {
+        function retrievePage(page, maxResults) {
+            const options = {status: self.status, authors: self.authors};
+            // only care about the sticky status if post if open otherwise show them all together
+            // @TODO refactor when refactoring the page manager
 
-            var options = {status: self.status, authors: self.authors}
-            //only care about the sticky status if post if open otherwise show them all together
-            //@TODO refactor when refactoring the page manager
             if (self.status === 'open') {
-                options.sticky = sticky
+                options.sticky = sticky;
             }
 
-            if (noSynd)
+            if (noSynd) {
                 options.noSyndication = true;
+            }
 
-            //only care about the highlight status if it is set to true
+            // only care about the highlight status if it is set to true
             if (self.highlight) {
                 options.highlight = self.highlight;
             }
-            return postsService.getPosts(self.blogId, options ,max_results || self.maxResults, page)
-            .then(function(data) {
+            return postsService.getPosts(self.blogId, options, maxResults || self.maxResults, page)
+                .then((data) => {
                 // update posts meta data (used to know the total number of posts and pages)
-                self.meta = data._meta;
-                return data;
-            });
+                    self.meta = data._meta;
+                    return data;
+                });
         }
         /**
          * Filter the posts in timeline by their highlight attribute
@@ -63,11 +65,11 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
         }
         /**
          * Change the order in the future posts request, remove exising post and load a new page
-         * @param {string} sort_name - The name of the new order (see self.SORTS)
+         * @param {string} sortName - The name of the new order (see self.SORTS)
          * @returns {promise}
          */
-        function changeOrder(sort_name) {
-            self.sort = sort_name;
+        function changeOrder(sortName) {
+            self.sort = sortName;
             self.pages = [];
             return fetchNewPage();
         }
@@ -88,16 +90,15 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
          * @returns {promise}
          */
         function fetchNewPage() {
-            var promise = $q.when();
+            let promise = $q.when();
             // for the first time, retrieve the updates just to know the latest update date
+
             if (self.pages.length === 0) {
-                promise = self.retrieveUpdate().then(function(updates) {
+                promise = self.retrieveUpdate().then((updates) => {
                     updateLatestDates(updates._items);
                 });
             }
-            return promise.then(function() {
-                return loadPage(self.pages.length + 1);
-            });
+            return promise.then(() => loadPage(self.pages.length + 1));
         }
 
         /**
@@ -105,48 +106,46 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
          * @param {boolean} [should_apply_updates=false] - If true, will apply the updates into the posts list
          * @returns {promise}
          */
-        function retrieveUpdate(should_apply_updates) {
-            should_apply_updates = should_apply_updates === true;
-            var date = self.latestUpdatedDate ? self.latestUpdatedDate.utc().format() : undefined;
-            var page = 1;
+        function retrieveUpdate(shouldApplyUpdates) {
+            const date = self.latestUpdatedDate ? self.latestUpdatedDate.utc().format() : undefined;
+            let page = 1;
+
             return postsService.getPosts(self.blogId, {updatedAfter: date, excludeDeleted: false}, undefined, page)
-            .then(function(updates) {
-                var meta = updates._meta;
-                // if
-                // - there is no other page
-                // - or if we don't give a latest update date (b/c we look after the meta or the latest date)
-                // = then we return the first page of result
-                if (meta.total <= meta.max_results * meta.page || !angular.isDefined(date)) {
-                    return updates;
-                // Otherwise we ask page after page and concatenate them in the response
-                }
+                .then((updates) => {
+                    const meta = updates._meta;
+                    // if
+                    // - there is no other page
+                    // - or if we don't give a latest update date (b/c we look after the meta or the latest date)
+                    // = then we return the first page of result
 
-                var promises = [];
+                    if (meta.total <= meta.max_results * meta.page || !angular.isDefined(date)) {
+                        return updates;
+                        // Otherwise we ask page after page and concatenate them in the response
+                    }
 
-                for (var i = meta.page + 1; i <= Math.floor(meta.total / meta.max_results) + 1; i++) {
-                    page = i;
-                    promises.push(postsService.getPosts(
-                        self.blogId, 
-                        {updatedAfter: date, excludeDeleted: false},
-                        undefined,
-                        page
-                    ));
-                }
-                return $q.all(promises).then(function(updates_pages) {
-                    return angular.extend({}, updates_pages[0], {
-                        _items: [].concat.apply([], updates_pages.map(function(update) {return update._items;})),
-                        _meta: angular.extend(meta, {max_results: meta.max_results * updates_pages.length})
-                    });
-                });
-            })
+                    const promises = [];
+
+                    for (let i = meta.page + 1; i <= Math.floor(meta.total / meta.max_results) + 1; i++) {
+                        page = i;
+                        promises.push(postsService.getPosts(
+                            self.blogId,
+                            {updatedAfter: date, excludeDeleted: false},
+                            undefined,
+                            page
+                        ));
+                    }
+                    return $q.all(promises).then((updatesPages) => angular.extend({}, updatesPages[0], {
+                        _items: [].concat(...updatesPages.map((update) => update._items)),
+                        _meta: angular.extend(meta, {max_results: meta.max_results * updatesPages.length}),
+                    }));
+                })
             // Apply the update if needed
-            .then(function(updates) {
-                if (should_apply_updates) {
-                    applyUpdates(updates._items);
-                }
-                return updates;
-            });
-            
+                .then((updates) => {
+                    if (shouldApplyUpdates) {
+                        applyUpdates(updates._items);
+                    }
+                    return updates;
+                });
         }
 
         /**
@@ -154,18 +153,20 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
          * @param {array} updates - List of updated posts
          */
         function applyUpdates(updates) {
-            updates.forEach(function(post) {
-                var existing_post_indexes = getPostPageIndexes(post);
-                if (angular.isDefined(existing_post_indexes)) {
+            // eslint-disable-next-line
+            updates.forEach((post) => {
+                const existingPostIndexes = getPostPageIndexes(post);
+
+                if (angular.isDefined(existingPostIndexes)) {
                     // post already in the list
                     if (post.deleted) {
                         // post deleted
                         removePost(post);
                         // post updated
                     } if (post.post_status !== self.status
-                    || (self.status === 'open' && post.sticky !== sticky)
-                    || (self.highlight && !post.lb_highlight)) {
-                       removePost(post);
+                    || self.status === 'open' && post.sticky !== sticky
+                    || self.highlight && !post.lb_highlight) {
+                        removePost(post);
                     } else {
                         updatePost(post);
                         createPagesWithPosts(self.allPosts(), true);
@@ -201,8 +202,9 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
          * @param {array} posts - List of posts
          */
         function updateLatestDates(posts) {
-            var date;
-            posts.forEach(function(post) {
+            let date;
+
+            posts.forEach((post) => {
                 date = moment(post._updated);
                 if (angular.isDefined(self.latestUpdatedDate)) {
                     if (self.latestUpdatedDate.diff(date) < 0) {
@@ -219,18 +221,21 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
          * @param {array} [posts=self.allPosts()] - List of posts
          * @param {boolean} resetPages - Clear the array of pages or not
          */
-        function createPagesWithPosts(posts, resetPages) {
-            posts = posts || self.allPosts();
+        function createPagesWithPosts(postsParams, resetPages) {
+            let posts = postsParams || self.allPosts();
+
             if (resetPages) {
                 self.pages = [];
             }
             // respect the order
-            var sort_by = Object.keys(SORTS[self.sort])[0];
-            var order_by = SORTS[self.sort][sort_by].order;
-            posts = _.sortByOrder(posts, sort_by, order_by);
-            var page;
-            var processInstagram = false;
-            posts.forEach(function(post, index) {
+            const sortBy = Object.keys(SORTS[self.sort])[0];
+            const orderBy = SORTS[self.sort][sortBy].order;
+
+            posts = _.sortByOrder(posts, sortBy, orderBy);
+            let page;
+            let processInstagram = false;
+
+            posts.forEach((post, index) => {
                 if (index % self.maxResults === 0) {
                     page = new Page();
                 }
@@ -247,7 +252,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
             }
             if (processInstagram) {
                 instagramService.processEmbeds();
-            };
+            }
         }
 
         /**
@@ -256,26 +261,28 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
          * @returns {promise}
          */
         function loadPage(page) {
-            page = page || self.pages.length;
-            return retrievePage(page).then(function(posts) {
+            return retrievePage(page || self.pages.length).then((posts) => {
                 createPagesWithPosts(posts._items, false);
                 return posts;
-
             });
         }
 
         /**
          * Returns the page index and the post index of the given post in the local pages
-         * @param {Post} post_to_find - post to find in the pages
-         * @returns {array|undefined} - [page_index, post_index]
+         * @param {Post} postToFind - post to find in the pages
+         * @returns {array|undefined} - [pageIndex, postIndex]
          */
-        function getPostPageIndexes(post_to_find){
-            var page;
-            for (var page_index = 0; page_index < self.pages.length; page_index++) {
-                page = self.pages[page_index];
-                for (var post_index = 0; post_index < page.posts.length; post_index++) {
-                    if (page.posts[post_index]._id === post_to_find._id) {
-                        return [page_index, post_index];
+        function getPostPageIndexes(postToFind) {
+            if (!postToFind) {
+                return [0, 0];
+            }
+            let page;
+
+            for (let pageIndex = 0; pageIndex < self.pages.length; pageIndex++) {
+                page = self.pages[pageIndex];
+                for (let postIndex = 0; postIndex < page.posts.length; postIndex++) {
+                    if (page.posts[postIndex]._id === postToFind._id) {
+                        return [pageIndex, postIndex];
                     }
                 }
             }
@@ -283,35 +290,37 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
 
         /**
          * Add a post or a list of posts to the local pages
-         * @param {Post|array<Post>} posts - posts to be added to the pages
+         * @param {Post|array<Post>} postsParams - posts to be added to the pages
          */
-        function addPost(posts) {
-            var all_posts = self.allPosts();
-            if (!angular.isArray(posts)) {
-                posts = [posts];
-            }
+        function addPost(postsParams) {
+            const allPosts = self.allPosts();
+            const posts = angular.isArray(postsParams) ? postsParams : [postsParams];
             // for every post, check if exist before or add it
-            posts.forEach(function(post) {
+
+            posts.forEach((post) => {
                 if (!angular.isDefined(getPostPageIndexes(post))) {
-                    all_posts.push(post);
+                    allPosts.push(post);
                 }
             });
+
             // and recreate pages
-            createPagesWithPosts(all_posts, true);
+            createPagesWithPosts(allPosts, true);
             // update date
-            updateLatestDates(all_posts);
+            updateLatestDates(allPosts);
         }
 
         /**
          * Remove a post in the local pages
-         * @param {Post} post_to_remove - posts to be removed from the pages
+         * @param {Post} postToRemove - posts to be removed from the pages
          */
-        function removePost(post_to_remove) {
-            var indexes = getPostPageIndexes(post_to_remove);
-            if (angular.isDefined(post_to_remove)) {
-                var page_index = indexes[0];
-                var post_index = indexes[1];
-                self.pages[page_index].posts.splice(post_index, 1);
+        function removePost(postToRemove) {
+            const indexes = getPostPageIndexes(postToRemove);
+
+            if (angular.isDefined(postToRemove)) {
+                const pageIndex = indexes[0];
+                const postIndex = indexes[1];
+
+                self.pages[pageIndex].posts.splice(postIndex, 1);
 
                 createPagesWithPosts(self.allPosts(), true);
             }
@@ -330,9 +339,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
          * @returns {integer}
          */
         function count() {
-            return self.pages.reduce(function(previous_value, current_value) {
-                return previous_value + current_value.posts.length;
-            }, 0);
+            return self.pages.reduce((previousValue, currentValue) => previousValue + currentValue.posts.length, 0);
         }
 
         angular.extend(self, {
@@ -348,7 +355,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
              * Set the initial order (see self.SORTS)
              */
             sort: sort || 'editorial',
-            blogId: blog_id,
+            blogId: blogId,
             status: status,
             /**
              * Filter by post's highlight field
@@ -371,7 +378,7 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
             /**
              * Number of results per page
              */
-            maxResults: max_results,
+            maxResults: maxResults,
             /**
              *
              * Remove a post from the page
@@ -392,20 +399,14 @@ export default function pagesManagerFactory(postsService, $q, _, moment, instagr
             /**
              * Return all the posts from the local pages
              */
-            allPosts: function () {
-                var posts = self.pages.map(function(page) {
-                    return page.posts.map(function(post) {
-                        return post;
-                    });
-                });
+            allPosts: function() {
                 // flatten array
-                var merged = [];
-                return merged.concat.apply(merged, posts);
+                return [].concat(...self.pages.map((page) => page.posts));
             },
             /**
              * Returns the number of posts in the local pages
              */
-            count: count
+            count: count,
         });
     }
 

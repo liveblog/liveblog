@@ -11,13 +11,13 @@ export default function sdPlainImage(gettext, notify, config) {
             maxWidth: '@',
             maxHeight: '@',
             msgErrorMax: '@',
-            msgErrorMin: '@'
+            msgErrorMin: '@',
         },
         link: function(scope, elem) {
             scope.$watch('src', (src) => {
                 elem.empty();
                 if (src) {
-                    var img = new Image();
+                    const img = new Image();
 
                     if (scope.file.size > config.maxContentLength) {
                         notify.error(gettext(
@@ -32,10 +32,10 @@ export default function sdPlainImage(gettext, notify, config) {
                         img.onload = function() {
                             scope.progressWidth = 80;
 
-                            var minWidth = scope.minWidth || 320,
-                                minHeight = scope.minHeight || 240,
-                                maxWidth = scope.maxWidth || 3840,
-                                maxHeight = scope.maxHeight || 2160;
+                            const minWidth = scope.minWidth || 320;
+                            const minHeight = scope.minHeight || 240;
+                            const maxWidth = scope.maxWidth || 3840;
+                            const maxHeight = scope.maxHeight || 2160;
 
                             if (this.width < minWidth || this.height < minHeight) {
                                 scope.$apply(() => {
@@ -72,6 +72,6 @@ export default function sdPlainImage(gettext, notify, config) {
                     }
                 }
             });
-        }
+        },
     };
 }

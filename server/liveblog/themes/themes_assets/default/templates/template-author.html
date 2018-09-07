@@ -11,7 +11,7 @@
       {% if mainItem.syndicated_creator and settings.showSyndicatedAuthor %}
         {{ mainItem.syndicated_creator.display_name }}
       {% elif item.original_creator %}
-        {{ item.original_creator.display_name }}
+        {{ item.original_creator[settings.authorNameFormat]|title }}
       {% elif item.publisher %}
         {{ item.publisher.display_name }}
       {% endif %}

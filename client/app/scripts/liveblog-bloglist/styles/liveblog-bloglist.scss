@@ -157,15 +157,6 @@
     }
 }
 
-.creation-steps {
-    margin-top: 50px;
-    .form-box {
-        min-height: 95px;
-    }
-    .text-editor {
-        min-height: 95px;
-    }
-}
 
 .item-creation{
     .form-box {
@@ -197,7 +188,7 @@
         padding: 10px;
         position: absolute;
         right: 40px;
-        top: 101px;
+        top: 119px;
         z-index: 1;
     }
     .member-list ul > li {
@@ -211,7 +202,7 @@
     }
     .member-list ul > li .name {
         text-align: center;
-        width: 115px;
+        max-width: 115px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -245,4 +236,10 @@
 div.button-stack.right-stack.create-blog {
     position: absolute;
     right: 0;
+}
+
+.bulk-select {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
 }

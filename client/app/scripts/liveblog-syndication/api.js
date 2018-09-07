@@ -4,18 +4,18 @@ export default function api(apiProvider) {
     apiProvider
         .api('syndicationIn', {
             type: 'http',
-            backend: {rel: 'syndication_in'}
+            backend: {rel: 'syndication_in'},
         })
         .api('syndicationOut', {
             type: 'http',
-            backend: {rel: 'syndication_out'}
+            backend: {rel: 'syndication_out'},
         })
-         .api('consumers', {
+        .api('consumers', {
             type: 'http',
-            backend: {rel: 'consumers'}
+            backend: {rel: 'consumers'},
         })
         .api('producers', {
             type: 'http',
-            backend: {rel: 'producers'}
+            backend: {rel: 'producers'},
         });
-};
+}

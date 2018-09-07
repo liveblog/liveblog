@@ -17,9 +17,9 @@ export default function copyToClipboard(notify) {
 
                 e.stopPropagation();
 
-                var apiKey = document.getElementById(attrs.for),
-                    range = document.createRange(),
-                    selection = window.getSelection();
+                const apiKey = document.getElementById(attrs.for);
+                const range = document.createRange();
+                const selection = window.getSelection();
 
                 if (apiKey) {
                     range.selectNode(apiKey);
@@ -37,6 +37,6 @@ export default function copyToClipboard(notify) {
                     notify.success('Selection successfully copied to clipboard');
                 }
             };
-        }
+        },
     };
 }
