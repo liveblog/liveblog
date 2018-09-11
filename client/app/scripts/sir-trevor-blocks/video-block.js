@@ -19,6 +19,9 @@ AddContentBtns.prototype.show = function() {
 
 
 function getAuthentication(youtubeCredential) {
+    if (!youtubeCredential.clientId) {
+        alert('The direct video upload requires a connection to Youtube');
+    }
     var revokeUrl = 'https://www.googleapis.com/oauth2/v4/token';
     var xhr = new XMLHttpRequest();
 
@@ -283,6 +286,13 @@ MediaUploader.prototype.buildUrl_ = function(id, params, baseUrl) {
     return url;
 };
 
+function handleFileSize(size) {
+    var i = Math.floor(Math.log(size) / Math.log(1024));
+
+    return (size / Math.pow(1024, i)).toFixed(2) * 1
+    + ' ' + ['B', 'kB', 'MB', 'GB', 'TB'][i];
+}
+
 export default function videoBlock(SirTrevor, config) {
     return SirTrevor.Block.extend({
         type: 'video',
@@ -304,7 +314,7 @@ export default function videoBlock(SirTrevor, config) {
                 '<div class="remaining_time"></div><br>',
                 '<div class="during-upload">',
                 '<p><span id="percent-transferred">'
-                + '</span>% done (<span id="bytes-transferred"></span>'
+                + '</span>% Done (<span id="bytes-transferred"></span>'
                 + '/<span id="total-bytes"></span> bytes)</p>',
                 '<progress id="upload-progress" max="1" value="0"></progress>',
                 '</div>',
@@ -349,11 +359,13 @@ export default function videoBlock(SirTrevor, config) {
         },
         uploadFile: function(file) {
             var uploadStartTime = 0;
+            var title = 'liveblog-' + Math.random().toString(36)
+                .substr(2, 5);
             var self = this;
             var metadata = {
                 snippet: {
-                    title: 'test_live_blog',
-                    description: 'just another test',
+                    title: title,
+                    description: '',
                     tags: ['youtube-cors-upload'],
                     categoryId: 22,
                 },
@@ -374,7 +386,8 @@ export default function videoBlock(SirTrevor, config) {
 
                         message = errorResponse.error.message;
                     } finally {
-                        alert(message);
+                        alert(message
+                            + '\nThe direct video upload requires a connection to Youtube');
                     }
                 },
                 onProgress: function(data) {
@@ -383,8 +396,8 @@ export default function videoBlock(SirTrevor, config) {
                     var totalBytes = data.total;
                     // The times are in millis, so we need to divide by 1000 to get seconds.
                     var bytesPerSecond = bytesUploaded / ((currentTime - uploadStartTime) / 1000);
-                    var estimatedSecondsRemaining = (totalBytes - bytesUploaded) / bytesPerSecond;
-                    var percentageComplete = (bytesUploaded * 100) / totalBytes;
+                    var estimatedSecondsRemaining = ((totalBytes - bytesUploaded) / bytesPerSecond).toFixed(2);
+                    var percentageComplete = ((bytesUploaded * 100) / totalBytes).toFixed(2);
 
                     $('.remaining_time').text('Time Left: ' + estimatedSecondsRemaining + ' Seconds');
                     $('#upload-progress').attr({
@@ -393,8 +406,8 @@ export default function videoBlock(SirTrevor, config) {
                     });
 
                     $('#percent-transferred').text(percentageComplete);
-                    $('#bytes-transferred').text(bytesUploaded);
-                    $('#total-bytes').text(totalBytes);
+                    $('#bytes-transferred').text(handleFileSize(bytesUploaded));
+                    $('#total-bytes').text(handleFileSize(totalBytes));
                     $('.upload-status').text('Please wait!!! uploading the video');
                     $('.during-upload').show();
                 },
