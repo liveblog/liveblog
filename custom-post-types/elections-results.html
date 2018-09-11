@@ -1,0 +1,543 @@
+<!-- Works with Liveblog 3.4 -->
+
+<div class="results">
+    <label for="result.headline" hide-render="">Headline</label>
+     <input class="results__headline" placeholder=" " name="$result.headline">
+     <label for="result.text" hide-render="">Additional text</label>
+     <input class="results__subheadline" placeholder=" " name="$result.text">
+
+     <div class="results__list">
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display1" hide-render="">Show Candidate 1</label>
+             <input select="$result.display1" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate1" style="display: @result.display1">
+             <div class="result__itemImage">
+                 <label for="candidate.img1" hide-render="">Candidate image 1</label>
+                 <input image="$candidate.img1">
+             </div>
+             <div class="result__candidateWrap">
+                 <label for="candidate.name1" hide-render="">Candidate name 1</label>
+                 <input class="result__candidateName" placeholder="Candidate 1" name="$candidate.name1">
+                 <label for="candidate.score1" hide-render="">Candidate score 1</label>
+                 <input class="result__candidateScore" placeholder="Score 1" name="$candidate.score1">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score1"></div>
+                 </div>
+                 <label for="candidate.party1" hide-render="">Candidate party 1</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 1" name="$candidate.party1">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display2" hide-render="">Show Candidate 2</label>
+             <input select="$result.display2" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate2" style="display: @result.display2">
+             <div class="result__itemImage">
+                 <label for="candidate.img2" hide-render="">Candidate image 2</label>
+                 <input image="$candidate.img2">
+             </div>
+             <div class="result__candidateWrap">
+                 <label for="candidate.name2" hide-render="">Candidate name 2</label>
+                 <input class="result__candidateName" placeholder="Candidate 2" name="$candidate.name2">
+                 <label for="candidate.score2" hide-render="">Candidate score 2</label>
+                 <input class="result__candidateScore" placeholder="Score 2" name="$candidate.score2">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score2"></div>
+                 </div>
+                 <label for="candidate.party2" hide-render="">Candidate party 2</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 2" name="$candidate.party2">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display3" hide-render="">Show Candidate 3</label>
+             <input select="$result.display3" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate3" style="display: @result.display3">
+             <div class="result__itemImage">
+                 <label for="candidate.img3" hide-render="">Candidate image 3</label>
+                 <input image="$candidate.img3">
+             </div>
+             <div class="result__candidateWrap result__candidateWrap--red">
+                 <label for="candidate.name3" hide-render="">Candidate name 3</label>
+                 <input class="result__candidateName" placeholder="Candidate 3" name="$candidate.name3">
+                 <label for="candidate.score3" hide-render="">Candidate score 3</label>
+                 <input class="result__candidateScore" placeholder="Score 3" name="$candidate.score3">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score3"></div>
+                 </div>
+                 <label for="candidate.party3" hide-render="">Candidate party 3</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 3" name="$candidate.party3">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display4" hide-render="">Show Candidate 4</label>
+             <input select="$result.display4" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate4" style="display: @result.display4">
+             <div class="result__itemImage">
+                 <label for="candidate.img4" hide-render="">Candidate image 4</label>
+                 <input image="$candidate.img4">
+             </div>
+             <div class="result__candidateWrap  result__candidateWrap--yellow">
+                 <label for="candidate.name4" hide-render="">Candidate name 4</label>
+                 <input class="result__candidateName" placeholder="Candidate 4" name="$candidate.name4">
+                 <label for="candidate.score4" hide-render="">Candidate score 4</label>
+                 <input class="result__candidateScore" placeholder="Score 4" name="$candidate.score4">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score4"></div>
+                 </div>
+                 <label for="candidate.party4" hide-render="">Candidate party 4</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 4" name="$candidate.party4">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display5" hide-render="">Show Candidate 5</label>
+             <input select="$result.display5" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate5" style="display: @result.display5">
+             <div class="result__itemImage">
+                 <label for="candidate.img5" hide-render="">Candidate image 5</label>
+                 <input image="$candidate.img5">
+             </div>
+             <div class="result__candidateWrap  result__candidateWrap--yellow">
+                 <label for="candidate.name5" hide-render="">Candidate name 5</label>
+                 <input class="result__candidateName" placeholder="Candidate 5" name="$candidate.name5">
+                 <label for="candidate.score5" hide-render="">Candidate score 5</label>
+                 <input class="result__candidateScore" placeholder="Score 5" name="$candidate.score5">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score5"></div>
+                 </div>
+                 <label for="candidate.party5" hide-render="">Candidate party 5</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 5" name="$candidate.party5">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display6" hide-render="">Show Candidate 6</label>
+             <input select="$result.display6" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate6" style="display: @result.display6">
+             <div class="result__itemImage">
+                 <label for="candidate.img6" hide-render="">Candidate image 6</label>
+                 <input image="$candidate.img6">
+             </div>
+             <div class="result__candidateWrap  result__candidateWrap--yellow">
+                 <label for="candidate.name6" hide-render="">Candidate name 6</label>
+                 <input class="result__candidateName" placeholder="Candidate 6" name="$candidate.name6">
+                 <label for="candidate.score6" hide-render="">Candidate score 6</label>
+                 <input class="result__candidateScore" placeholder="Score 6" name="$candidate.score6">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score6"></div>
+                 </div>
+                 <label for="candidate.party6" hide-render="">Candidate party 6</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 6" name="$candidate.party6">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display7" hide-render="">Show Candidate 7</label>
+             <input select="$result.display7" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate7" style="display: @result.display7">
+             <div class="result__itemImage">
+                 <label for="candidate.img7" hide-render="">Candidate image 7</label>
+                 <input image="$candidate.img7">
+             </div>
+             <div class="result__candidateWrap  result__candidateWrap--yellow">
+                 <label for="candidate.name7" hide-render="">Candidate name 7</label>
+                 <input class="result__candidateName" placeholder="Candidate 7" name="$candidate.name7">
+                 <label for="candidate.score7" hide-render="">Candidate score 7</label>
+                 <input class="result__candidateScore" placeholder="Score 7" name="$candidate.score7">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score7"></div>
+                 </div>
+                 <label for="candidate.party7" hide-render="">Candidate party 7</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 7" name="$candidate.party7">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display8" hide-render="">Show Candidate 8</label>
+             <input select="$result.display8" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate8" style="display: @result.display8">
+             <div class="result__itemImage">
+                 <label for="candidate.img8" hide-render="">Candidate image 8</label>
+                 <input image="$candidate.img8">
+             </div>
+             <div class="result__candidateWrap  result__candidateWrap--yellow">
+                 <label for="candidate.name8" hide-render="">Candidate name 8</label>
+                 <input class="result__candidateName" placeholder="Candidate 8" name="$candidate.name8">
+                 <label for="candidate.score8" hide-render="">Candidate score 8</label>
+                 <input class="result__candidateScore" placeholder="Score 8" name="$candidate.score8">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score8"></div>
+                 </div>
+                 <label for="candidate.party8" hide-render="">Candidate party 8</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 8" name="$candidate.party8">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display9" hide-render="">Show Candidate 9</label>
+             <input select="$result.display9" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate9" style="display: @result.display9">
+             <div class="result__itemImage">
+                 <label for="candidate.img9" hide-render="">Candidate image 9</label>
+                 <input image="$candidate.img9">
+             </div>
+             <div class="result__candidateWrap  result__candidateWrap--yellow">
+                 <label for="candidate.name9" hide-render="">Candidate name 9</label>
+                 <input class="result__candidateName" placeholder="Candidate 9" name="$candidate.name9">
+                 <label for="candidate.score9" hide-render="">Candidate score 9</label>
+                 <input class="result__candidateScore" placeholder="Score 9" name="$candidate.score9">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score9"></div>
+                 </div>
+                 <label for="candidate.party9" hide-render="">Candidate party 9</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 9" name="$candidate.party9">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display10" hide-render="">Show Candidate 10</label>
+             <input select="$result.display10" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate10" style="display: @result.display10">
+             <div class="result__itemImage">
+                 <label for="candidate.img10" hide-render="">Candidate image 10</label>
+                 <input image="$candidate.img10">
+             </div>
+             <div class="result__candidateWrap  result__candidateWrap--yellow">
+                 <label for="candidate.name10" hide-render="">Candidate name 10</label>
+                 <input class="result__candidateName" placeholder="Candidate 10" name="$candidate.name10">
+                 <label for="candidate.score10" hide-render="">Candidate score 10</label>
+                 <input class="result__candidateScore" placeholder="Score 10" name="$candidate.score10">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score10"></div>
+                 </div>
+                 <label for="candidate.party10" hide-render="">Candidate party 10</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 10" name="$candidate.party10">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display11" hide-render="">Show Candidate 11</label>
+             <input select="$result.display11" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate11" style="display: @result.display11">
+             <div class="result__itemImage">
+                 <label for="candidate.img11" hide-render="">Candidate image 11</label>
+                 <input image="$candidate.img11">
+             </div>
+             <div class="result__candidateWrap">
+                 <label for="candidate.name11" hide-render="">Candidate name 11</label>
+                 <input class="result__candidateName" placeholder="Candidate 11" name="$candidate.name11">
+                 <label for="candidate.score11" hide-render="">Candidate score 11</label>
+                 <input class="result__candidateScore" placeholder="Score 11" name="$candidate.score11">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score11"></div>
+                 </div>
+                 <label for="candidate.party11" hide-render="">Candidate party 11</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 11" name="$candidate.party11">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display12" hide-render="">Show Candidate 12</label>
+             <input select="$result.display12" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate12" style="display: @result.display12">
+             <div class="result__itemImage">
+                 <label for="candidate.img12" hide-render="">Candidate image 12</label>
+                 <input image="$candidate.img12">
+             </div>
+             <div class="result__candidateWrap">
+                 <label for="candidate.name12" hide-render="">Candidate name 12</label>
+                 <input class="result__candidateName" placeholder="Candidate 12" name="$candidate.name12">
+                 <label for="candidate.score12" hide-render="">Candidate score 12</label>
+                 <input class="result__candidateScore" placeholder="Score 12" name="$candidate.score12">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score12"></div>
+                 </div>
+                 <label for="candidate.party12" hide-render="">Candidate party 12</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 12" name="$candidate.party12">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display13" hide-render="">Show Candidate 13</label>
+             <input select="$result.display13" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate13" style="display: @result.display13">
+             <div class="result__itemImage">
+                 <label for="candidate.img13" hide-render="">Candidate image 13</label>
+                 <input image="$candidate.img13">
+             </div>
+             <div class="result__candidateWrap result__candidateWrap--red">
+                 <label for="candidate.name13" hide-render="">Candidate name 13</label>
+                 <input class="result__candidateName" placeholder="Candidate 13" name="$candidate.name13">
+                 <label for="candidate.score13" hide-render="">Candidate score 13</label>
+                 <input class="result__candidateScore" placeholder="Score 13" name="$candidate.score13">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score13"></div>
+                 </div>
+                 <label for="candidate.party13" hide-render="">Candidate party 13</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 13" name="$candidate.party13">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display14" hide-render="">Show Candidate 14</label>
+             <input select="$result.display14" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate14" style="display: @result.display14">
+             <div class="result__itemImage">
+                 <label for="candidate.img14" hide-render="">Candidate image 14</label>
+                 <input image="$candidate.img14">
+             </div>
+             <div class="result__candidateWrap  result__candidateWrap--yellow">
+                 <label for="candidate.name14" hide-render="">Candidate name 14</label>
+                 <input class="result__candidateName" placeholder="Candidate 14" name="$candidate.name14">
+                 <label for="candidate.score14" hide-render="">Candidate score 4</label>
+                 <input class="result__candidateScore" placeholder="Score 14" name="$candidate.score14">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score14"></div>
+                 </div>
+                 <label for="candidate.party14" hide-render="">Candidate party 14</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 14" name="$candidate.party14">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display15" hide-render="">Show Candidate 15</label>
+             <input select="$result.display15" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate15" style="display: @result.display15">
+             <div class="result__itemImage">
+                 <label for="candidate.img15" hide-render="">Candidate image 15</label>
+                 <input image="$candidate.img15">
+             </div>
+             <div class="result__candidateWrap  result__candidateWrap--yellow">
+                 <label for="candidate.name15" hide-render="">Candidate name 15</label>
+                 <input class="result__candidateName" placeholder="Candidate 15" name="$candidate.name15">
+                 <label for="candidate.score15" hide-render="">Candidate score 15</label>
+                 <input class="result__candidateScore" placeholder="Score 15" name="$candidate.score15">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score15"></div>
+                 </div>
+                 <label for="candidate.party15" hide-render="">Candidate party 15</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 15" name="$candidate.party15">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display16" hide-render="">Show Candidate 16</label>
+             <input select="$result.display16" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate16" style="display: @result.display16">
+             <div class="result__itemImage">
+                 <label for="candidate.img16" hide-render="">Candidate image 16</label>
+                 <input image="$candidate.img16">
+             </div>
+             <div class="result__candidateWrap  result__candidateWrap--yellow">
+                 <label for="candidate.name16" hide-render="">Candidate name 16</label>
+                 <input class="result__candidateName" placeholder="Candidate 16" name="$candidate.name16">
+                 <label for="candidate.score16" hide-render="">Candidate score 16</label>
+                 <input class="result__candidateScore" placeholder="Score 16" name="$candidate.score16">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score16"></div>
+                 </div>
+                 <label for="candidate.party16" hide-render="">Candidate party 16</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 16" name="$candidate.party16">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display17" hide-render="">Show Candidate 17</label>
+             <input select="$result.display17" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate17" style="display: @result.display17">
+             <div class="result__itemImage">
+                 <label for="candidate.img17" hide-render="">Candidate image 17</label>
+                 <input image="$candidate.img17">
+             </div>
+             <div class="result__candidateWrap  result__candidateWrap--yellow">
+                 <label for="candidate.name17" hide-render="">Candidate name 17</label>
+                 <input class="result__candidateName" placeholder="Candidate 17" name="$candidate.name17">
+                 <label for="candidate.score17" hide-render="">Candidate score 17</label>
+                 <input class="result__candidateScore" placeholder="Score 17" name="$candidate.score17">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score17"></div>
+                 </div>
+                 <label for="candidate.party17" hide-render="">Candidate party 17</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 17" name="$candidate.party17">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display18" hide-render="">Show Candidate 18</label>
+             <input select="$result.display18" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate18" style="display: @result.display18">
+             <div class="result__itemImage">
+                 <label for="candidate.img18" hide-render="">Candidate image 18</label>
+                 <input image="$candidate.img18">
+             </div>
+             <div class="result__candidateWrap  result__candidateWrap--yellow">
+                 <label for="candidate.name18" hide-render="">Candidate name 18</label>
+                 <input class="result__candidateName" placeholder="Candidate 18" name="$candidate.name18">
+                 <label for="candidate.score18" hide-render="">Candidate score 18</label>
+                 <input class="result__candidateScore" placeholder="Score 18" name="$candidate.score18">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score18"></div>
+                 </div>
+                 <label for="candidate.party18" hide-render="">Candidate party 18</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 18" name="$candidate.party18">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display19" hide-render="">Show Candidate 19</label>
+             <input select="$result.display19" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate19" style="display: @result.display19">
+             <div class="result__itemImage">
+                 <label for="candidate.img19" hide-render="">Candidate image 19</label>
+                 <input image="$candidate.img19">
+             </div>
+             <div class="result__candidateWrap  result__candidateWrap--yellow">
+                 <label for="candidate.name19" hide-render="">Candidate name 19</label>
+                 <input class="result__candidateName" placeholder="Candidate 19" name="$candidate.name9">
+                 <label for="candidate.score19" hide-render="">Candidate score 19</label>
+                 <input class="result__candidateScore" placeholder="Score 19" name="$candidate.score19">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score19"></div>
+                 </div>
+                 <label for="candidate.party9" hide-render="">Candidate party 19</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 19" name="$candidate.party19">
+             </div>
+         </div>
+
+         <div class="result__hide-item">
+             <label class="legend--padding-top" for="result.display10" hide-render="">Show Candidate 20</label>
+             <input select="$result.display20" options=",none;" hide-render="">
+         </div>
+         <div class="result__item result__item--candidate20" style="display: @result.display20">
+             <div class="result__itemImage">
+                 <label for="candidate.img20" hide-render="">Candidate image 20</label>
+                 <input image="$candidate.img20">
+             </div>
+             <div class="result__candidateWrap  result__candidateWrap--yellow">
+                 <label for="candidate.name20" hide-render="">Candidate name 20</label>
+                 <input class="result__candidateName" placeholder="Candidate 20" name="$candidate.name20">
+                 <label for="candidate.score20" hide-render="">Candidate score 20</label>
+                 <input class="result__candidateScore" placeholder="Score 20" name="$candidate.score20">
+                 <div class="result__candidateBarWrap">
+                     <div class="result__candidateBar" style="width: @candidate.score20"></div>
+                 </div>
+                 <label for="candidate.party20" hide-render="">Candidate party 20</label>
+                 <input class="result__candidateParty" placeholder="Candidate party 20" name="$candidate.party20">
+             </div>
+         </div>
+
+         <label for="poll.source" hide-render="">Poll source</label>
+         <input class="result__pollSource" placeholder="Poll source" name="$poll.source">
+
+     </div>
+ </div>
+
+ <style type="text/css">
+ .results {
+     max-width: 700px;
+ }
+ span.results__headline {
+     display: block;
+     font-size: 1.06em;
+     font-weight: 700;
+     margin-bottom: .7em;
+ }
+ .results .results__list {
+
+ }
+ .results .result__item {
+     display: flex;
+     align-items: center;
+     margin: 20px 0px;
+ }
+ .editor-holder .results .result__item {
+     align-items: flex-start;
+ }
+ .results .result__itemImage {
+     flex: 0 1 auto;
+     max-width: 100px;
+     margin-right: 30px;
+ }
+ .results .result__itemImage img {
+     border-radius: 100%;
+     margin-right: 30px;
+ }
+ .results .result__candidateWrap {
+     flex: 1 1 100%;
+     margin: 10px 0px;
+ }
+ .results .result__candidateName {
+     font-weight: bold;
+ }
+ .results .result__candidateScore {
+     font-size: 19px;
+     font-weight: bold;
+     float: right;
+ }
+ .results .result__candidateBarWrap {
+     position: relative;
+     display: block;
+     margin: 5px 0px;
+     background: #ecf1f5;
+     width: 100%;
+     height: 20px;
+ }
+ .results .result__candidateBar {
+     height: 20px;
+     display: block;
+     background: #66cfa0;
+ }
+ .results .result__candidateParty {
+     color: #888888;
+ }
+ .editor-holder .results .result__itemImage {
+     align-self: flex-start;
+     white-space: nowrap;
+ }
+ .editor-holder .results .result__candidateWrap {
+     margin-top: 0px;
+ }
+ .editor-holder .results .result__candidateScore {
+     font-size: 13px;
+     float: none;
+ }
+ .results .upload-form .main .computer .dropzone .text {
+     font-size: 16px;
+ }
+ .results .upload-form .main .computer .dropzone .input-holder {
+     margin-top: 10px;
+     width: auto;
+ }
+ .results .upload-form .main .computer .dropzone .input-holder input {
+     line-height: 20px;
+ }
+ .results .upload-form .main .computer .dropzone .input-holder input:before, .blogedit .panel--editor .content .editor-holder .results .image-text {
+     white-space: pre-wrap;
+ }
+ @media screen and (max-width: 580px) {
+     .results .result__candidateScore {
+         float: none;
+     }
+ }
+ </style>
