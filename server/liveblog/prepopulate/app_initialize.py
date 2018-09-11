@@ -173,7 +173,7 @@ __entities__ = OrderedDict([
     ], True)),
     ('audit', (None, [[('_updated', pymongo.ASCENDING)],
                       [('_id', pymongo.ASCENDING), ('_updated', pymongo.ASCENDING)]], False)),
-    ('config', ('config.json', [], True))
+    ('config', ('config.json', [], True)),
 ])
 INIT_DATA_PATH = Path(__file__).resolve().parent / 'data_init'
 
@@ -227,6 +227,9 @@ class AppInitializeWithDataCommand(superdesk.Command):
         """
         logger.info('Starting data import')
         logger.info('Config: %s', app.config['APP_ABSPATH'])
+
+        # create indexes in mongo
+        app.init_indexes()
 
         if sample_data:
             if not path:

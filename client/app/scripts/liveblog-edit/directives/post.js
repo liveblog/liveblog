@@ -36,6 +36,13 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
         restrict: 'E',
         templateUrl: postTpl,
         link: function(scope, elem, attrs) {
+            // we set timeout function to remove edit flag after expireAt date
+            if (scope.post.edit_flag) {
+                postsService.setFlagTimeout(scope.post, () => {
+                    scope.$apply();
+                });
+            }
+
             // if the escape key is press then clear the reorder action.
             function escClearReorder(e) {
                 if (e.keyCode === 27) {
