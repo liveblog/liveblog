@@ -207,7 +207,7 @@ def get_producer_post_id(in_syndication, post_id):
 
 
 def extract_producer_post_data(post, fields=('_id', '_updated', 'lb_highlight', 'sticky', 'post_status',
-                                             'published_date')):
+                                             'published_date', 'syndication_in')):
     """Extract only useful data from original producer blog post."""
     return {key: post.get(key) for key in fields}
 
@@ -277,6 +277,9 @@ def create_syndicated_blog_post(producer_post, items, in_syndication):
 
     if 'published_date' in producer_post.keys():
         new_post['published_date'] = producer_post['published_date']
+
+    if producer_post.get('syndication_in'):
+        new_post['repeat_syndication'] = in_syndication['_id']
 
     return new_post
 
