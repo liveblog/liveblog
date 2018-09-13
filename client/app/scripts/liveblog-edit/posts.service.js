@@ -239,7 +239,7 @@ export default function postsService(api, $q, userList) {
 
     function savePost(blogId, postToUpdate, itemsParam, postParam = {}) {
         if (postToUpdate && postToUpdate.syndication_in
-            && postToUpdate.post_status == 'open') {
+            && postToUpdate.post_status === 'open') {
             postParam = {// eslint-disable-line no-param-reassign
                 post_status: 'submitted',
                 syndication_in: null,

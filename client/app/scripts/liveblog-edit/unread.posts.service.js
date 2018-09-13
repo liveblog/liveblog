@@ -61,7 +61,7 @@ export default function unreadPostsService($rootScope) {
     // add the post in the contributions vector.
     function onPostReceive(e, eventParams) {
         if (eventParams.posts && eventParams.posts[0].syndication_in) {
-            if (eventParams.posts[0].post_status == 'submitted')
+            if (eventParams.posts[0].post_status === 'submitted')
                 contributions = contributions.concat(eventParams.posts);
             else
                 return;
