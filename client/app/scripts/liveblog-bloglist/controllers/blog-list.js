@@ -422,7 +422,7 @@ export default function BlogListController(
     function getCriteria() {
         const params = $location.search();
         const criteria = {
-            max_results: $scope.maxResults,
+            max_results: params.max_results,
             embedded: {original_creator: 1},
             sort: '[("versioncreated", -1)]',
             source: {
