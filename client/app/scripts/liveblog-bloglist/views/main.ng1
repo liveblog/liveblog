@@ -78,7 +78,7 @@
                 title="{{ !isUserAllowedToOpenBlog(blog) ? requestAccessMessage: '' }}"
                 ng-click="isUserAllowedToOpenBlog(blog) ? edit(blog): openAccessRequest(blog)"
                 ng-class="{'can-access': isUserAllowedToOpenBlog(blog)}">
-                <sd-check class="bulk-select" ng-model="blog.selected" ng-click="blogSelect($event, blog.selected)"></sd-check>
+                <sd-check ng-show="isUserAllowedToSelectblog(blog)" class="bulk-select" ng-model="blog.selected" ng-click="blogSelect($event, blog.selected)"></sd-check>
                 <figure class="media">
                     <div ng-if="blog.picture_url" if-background-image="{{blog.picture_url}}"></div>
                 </figure>

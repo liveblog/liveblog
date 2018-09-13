@@ -70,6 +70,7 @@ export default function BlogListController(
     $scope.isAdmin = blogSecurityService.isAdmin;
     $scope.isUserAllowedToCreateABlog = blogSecurityService.canCreateABlog;
     $scope.isUserAllowedToOpenBlog = blogSecurityService.canAccessBlog;
+    $scope.isUserAllowedToSelectblog = blogSecurityService.canAccessblogCheckbox;
     // blog list embed code.
     function fetchBloglistEmbed() {
         const criteria = {source: {

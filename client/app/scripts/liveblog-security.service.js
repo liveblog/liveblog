@@ -48,6 +48,15 @@ angular.module('liveblog.security', [])
                 function canAccessSettings(archive) {
                     return canCreateABlog() && (isUserOwnerOrAdmin(archive) || isMemberOfBlog(archive));
                 }
+                function canAccessblogCheckbox(blog) {
+                    const userType = $rootScope.currentUser.user_type;
+
+                    if (userType === 'user') {
+                        return canCreateABlog() && isMemberOfBlog(blog);
+                    } else if (userType === 'administrator') {
+                        return isAdmin();
+                    }
+                }
                 function goToSettings() {
                     const def = $q.defer();
 
@@ -75,6 +84,7 @@ angular.module('liveblog.security', [])
                     canPublishAPost: canPublishAPost,
                     canCreateABlog: canCreateABlog,
                     canAccessBlog: canAccessBlog,
+                    canAccessblogCheckbox: canAccessblogCheckbox,
                 };
             },
         ]);
