@@ -167,6 +167,7 @@ INSTALLED_APPS = [
     'liveblog.marketplace',
     'liveblog.analytics',
     'liveblog.advertisements',
+    'liveblog.video_upload',
 ]
 
 RESOURCE_METHODS = ['GET', 'POST']

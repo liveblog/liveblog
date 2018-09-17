@@ -18,30 +18,6 @@ AddContentBtns.prototype.show = function() {
 };
 
 
-function getAuthentication(youtubeCredential) {
-    if (!youtubeCredential.clientId) {
-        alert('The direct video upload requires a connection to Youtube');
-    }
-    var revokeUrl = 'https://www.googleapis.com/oauth2/v4/token';
-    var xhr = new XMLHttpRequest();
-
-    xhr.open('POST', revokeUrl + '?client_id='
-        + youtubeCredential.clientId + '&client_secret='
-        + youtubeCredential.clientSecret + '&refresh_token='
-        + youtubeCredential.refreshToken + '&grant_type=refresh_token', true);
-
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
-    xhr.onreadystatechange = function(e) {
-        if (xhr.response) {
-            var result = JSON.parse(xhr.response);
-
-            localStorage.setItem('accessToken', result.access_token);
-        }
-    };
-    xhr.send(null);
-}
-
-
 var RetryHandler = function() {
     this.interval = 1000; // Start at one second
     this.maxInterval = 60 * 1000; // Don't wait longer than a minute
@@ -324,7 +300,6 @@ export default function videoBlock(SirTrevor, config) {
         onBlockRender: function() {
             var self = this;
 
-            getAuthentication(this.youtubeCredential);
             var addContentBtns = new AddContentBtns();
             var uploadBlock = [
                 '<div class="row st-block__upload-container">',
@@ -336,15 +311,23 @@ export default function videoBlock(SirTrevor, config) {
                 '</div>',
             ].join('\n');
 
+            self.getOptions().getAccessToken(
+                (data) => {
+                    localStorage.setItem('accessToken', data);
+                },
+                (error) => {
+                    self.getOptions().displayModalBox();
+                }
+            );
             self.$('.during-upload').hide();
             self.$('.st-block__inputs').append(uploadBlock);
+
             self.$('#embedlyUploadFile').on('change', function() {
                 var file = $(this).prop('files')[0];
 
                 if (!file) {
                     return false;
                 }
-
                 // Handle one upload at a time
                 if (/video/.test(file.type)) {
                     self.loading();

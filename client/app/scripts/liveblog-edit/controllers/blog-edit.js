@@ -616,6 +616,78 @@ export default function BlogEditController(
                         }, handleError);
                 });
             },
+            displayModalBox: function() {
+                function confirmCredential() {
+                    var deferred = $q.defer();
+
+                    modal
+                        .confirm(gettext(`The direct video upload requires a connection to Youtube<br/>
+                        Do you want to update the YouTube Credential?`))
+                        .then(deferred.resolve, deferred.reject);
+                    return deferred.promise;
+                }
+                function openCredentialForm() {
+                    var deferred = $q.defer();
+
+                    modal
+                        .confirm(gettext(`Enter YouTube Credential<br/>
+                            <input type="text" ng-model="clientId" id="clientId"
+                            placeholder="Enter ClientId" required>
+                            <input type="text" ng-model="clientSecret" id="clientSecret"
+                            placeholder="Enter Client Secret" required>
+                            <input type="text" ng-model="refreshToken" id="refreshToken"
+                            placeholder="Enter Refresh Token" required>
+                            `))
+                        .then(deferred.resolve, deferred.reject);
+                    return deferred.promise;
+                }
+                confirmCredential().then(() => {
+                    openCredentialForm().then(() => {
+                        let clientId = document.getElementById('clientId').value;
+                        let clientSecret = document.getElementById('clientSecret').value;
+                        let refreshToken = document.getElementById('refreshToken').value;
+
+                        $http({
+                            url: `${config.server.url}/video_upload/credential`,
+                            method: 'POST',
+                            data: {
+                                client_id: clientId,
+                                client_secret: clientSecret,
+                                refresh_token: refreshToken,
+                            },
+                            headers: {
+                                'Content-Type': 'application/json;charset=utf-8',
+                            },
+                        })
+                            .then((response) => {
+                                notify.pop();
+                                notify.info(gettext('Saved credentials'));
+                            });
+                    });
+                });
+            },
+            getAccessToken: function(successCallback, errorCallback) {
+                $scope.actionPending = true;
+                const handleError = function(response) {
+                    errorCallback(response.data ? response.data._message : undefined);
+                    $scope.actionPending = true;
+                };
+
+                return $http({
+                    url: `${config.server.url}/video_upload/token`,
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then((response) => {
+                        $scope.actionPending = false;
+                        if (response.data != 'Not Found')
+                            successCallback(response.data);
+                        else
+                            errorCallback(response.data);
+                    }, handleError);
+            },
             gogoGadgetoRemoteImage: function(imgURL) {
                 return $http({
                     url: `${config.server.url}/archive/draganddrop`,
