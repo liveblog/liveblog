@@ -7,7 +7,7 @@ export default function activities(superdesk) {
         .activity('/advertising/', {
             label: gettext('Advertising manager'),
             controller: advertisingController,
-            betaMark: true,
+            betaMark: false,
             category: superdesk.MENU_MAIN,
             adminTools: true,
             privileges: {global_preferences: 1},
