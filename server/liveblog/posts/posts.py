@@ -466,7 +466,6 @@ class PostFlagService(BaseService):
         return super().create(docs, **kwargs)
 
     def on_created(self, docs):
-        posts = []
         for doc in docs:
             complete_flag_info(doc)
 
@@ -496,6 +495,7 @@ class PostFlagService(BaseService):
 
     def delete_notify(self, flag, update=False):
         push_notification('posts:deletedFlag', flag=flag, update=update)
+
 
 class BlogPostsResource(Resource):
     url = 'blogs/<regex("[a-f0-9]{24}"):blog_id>/posts'
