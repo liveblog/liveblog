@@ -551,23 +551,11 @@ export default function BlogEditController(
             function openEditPost(post) {
                 $scope.openPanel('editor');
                 doOrAskBeforeIfEditorIsNotEmpty().then(() => {
-                    let flag;
-
                     // let's flag the post so other users are aware of editing status
-                    postsService.flagPost(post._id)
-                        .then((data) => {
-                            flag = data;
-                        });
+                    postsService.flagPost(post._id);
 
                     // do editor stuff
                     fillEditor(post);
-
-                    // finally add before unload screen in case user left the page
-                    window.onbeforeunload = () => {
-                        if ($scope.currentPost) {
-                            removeEditFlag(post._id, flag);
-                        }
-                    };
                 });
             }
 
@@ -822,4 +810,14 @@ export default function BlogEditController(
             $scope.ingestQueue.queue = $scope.ingestQueue.queue.concat(syndPosts);
         }
     });
+
+    // we listen to change route event in order to remove flag when leaving the
+    // the editor view. We also make sure to destroy it to avoid multiple listeners
+    const sentinel = $rootScope.$on('$routeChangeSuccess', (e, currentRoute, prevRoute) => {
+        if ($scope.currentPost) {
+            cleanUpFlag();
+        }
+    });
+
+    $scope.$on('$destroy', sentinel);
 }
