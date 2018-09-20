@@ -621,6 +621,24 @@ An auth-token is provided by the response, which should be used for subsequent r
             "username": "admin"
         }
 
++ Response 403 (application/json)
+
+       {
+            "_message": "Liveblog mobile can not access on this subscription",
+            "_status": "ERR"
+        }
+
++ Response 401 (application/json)
+
+       {
+            "_issues": {
+                "credentials": 1
+              },
+            "_message": "",
+            "_status": "ERR"
+        }
+
+
 # Group User Management
 
 **Authentication required.**
