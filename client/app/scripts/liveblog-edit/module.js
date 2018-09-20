@@ -132,6 +132,7 @@ const app = angular.module('liveblog.edit', [
                     const editorOptions = self.options;
 
                     if (editorOptions.isEditorClean()) {
+                        editorOptions.cleanUpFlag();
                         editorOptions.disableSubmit(true);
                     }
                 };

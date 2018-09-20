@@ -203,6 +203,8 @@ export default function BlogEditController(
     function doOrAskBeforeIfEditorIsNotEmpty() {
         var deferred = $q.defer();
 
+        cleanUpFlag();
+
         if (isEditorClean()) {
             deferred.resolve();
         } else {
@@ -211,7 +213,6 @@ export default function BlogEditController(
                     'You have content in the editor. You will lose it if you continue without saving it before.'
                 ))
                 .then(() => {
-                    cleanUpFlag();
                     deferred.resolve();
                 }, deferred.reject);
         }
@@ -331,6 +332,7 @@ export default function BlogEditController(
         if (!self.editor) {
             return;
         }
+
         $scope.enableEditor = false;
 
         actionDisable = typeof actionDisable === 'boolean' ? actionDisable : true;
@@ -681,6 +683,7 @@ export default function BlogEditController(
                 }
             },
             isEditorClean: isEditorClean,
+            cleanUpFlag: cleanUpFlag,
             setPending: function(value) {
                 $scope.actionPending = value;
             },
