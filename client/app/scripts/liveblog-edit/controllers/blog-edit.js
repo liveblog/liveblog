@@ -616,53 +616,75 @@ export default function BlogEditController(
                         }, handleError);
                 });
             },
-            displayModalBox: function() {
+            displayModalBox: function(message) {
+                var redirectUrl = null;
+                var currentUrl = window.location.href;
+
+                $http({
+                    url: `${config.server.url}/video_upload/callback_url`,
+                    method: 'GET',
+                    params: {currentUrl: currentUrl},
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                })
+                    .then((response) => {
+                        redirectUrl = response.data;
+                    });
                 function confirmCredential() {
                     var deferred = $q.defer();
 
-                    modal
-                        .confirm(gettext(`The direct video upload requires a connection to Youtube<br/>
-                        Do you want to update the YouTube Credential?`))
+                    modal.confirm(gettext(message))
                         .then(deferred.resolve, deferred.reject);
                     return deferred.promise;
                 }
-                function openCredentialForm() {
+                function openCredentialForm(scope) {
                     var deferred = $q.defer();
 
                     modal
-                        .confirm(gettext(`Enter YouTube Credential<br/>
-                            <input type="text" ng-model="clientId" id="clientId"
-                            placeholder="Enter ClientId" required>
-                            <input type="text" ng-model="clientSecret" id="clientSecret"
-                            placeholder="Enter Client Secret" required>
-                            <input type="text" ng-model="refreshToken" id="refreshToken"
-                            placeholder="Enter Refresh Token" required>
+                        .confirm(gettext('Please Make Sure that Authorized redirect URIs in Google Console is Set to: "'
+                            + redirectUrl +
+                            `"<br/><br/>Please Upload Your Credential File<br/>
+                            <input type="file" ng-model="jsonFile" id="jsonFile">
+                            <div id="file"></div>
+                            <script>
+                                $('#jsonFile').on('change', function() {
+                                    var file = $(this).prop('files')[0];
+                                    document.getElementById('file').value = file;
+                                });
+                            </script>
                             `))
                         .then(deferred.resolve, deferred.reject);
                     return deferred.promise;
                 }
                 confirmCredential().then(() => {
                     openCredentialForm().then(() => {
-                        let clientId = document.getElementById('clientId').value;
-                        let clientSecret = document.getElementById('clientSecret').value;
-                        let refreshToken = document.getElementById('refreshToken').value;
+                        let file = document.getElementById('file').value;
 
-                        $http({
-                            url: `${config.server.url}/video_upload/credential`,
-                            method: 'POST',
-                            data: {
-                                client_id: clientId,
-                                client_secret: clientSecret,
-                                refresh_token: refreshToken,
-                            },
-                            headers: {
-                                'Content-Type': 'application/json;charset=utf-8',
-                            },
-                        })
-                            .then((response) => {
-                                notify.pop();
-                                notify.info(gettext('Saved credentials'));
-                            });
+                        api.archive.getUrl().then((url) => {
+                            upload.start({
+                                method: 'POST',
+                                url: url,
+                                data: {media: file},
+                            })
+                                .then((response) => {
+                                    $http({
+                                        url: `${config.server.url}/video_upload/credential`,
+                                        method: 'POST',
+                                        data: {
+                                            file: response.data.renditions.original.href,
+                                        },
+                                        headers: {
+                                            'Content-Type': 'application/json;charset=utf-8',
+                                        },
+                                    })
+                                        .then((response) => {
+                                            notify.pop();
+                                            notify.info(gettext('Saved credentials'));
+                                            window.location.replace(response.data);
+                                        });
+                                });
+                        });
                     });
                 });
             },
@@ -687,6 +709,9 @@ export default function BlogEditController(
                         else
                             errorCallback(response.data);
                     }, handleError);
+            },
+            isAdmin: function() {
+                return blogSecurityService.isAdmin;
             },
             gogoGadgetoRemoteImage: function(imgURL) {
                 return $http({

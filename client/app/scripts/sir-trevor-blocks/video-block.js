@@ -1,4 +1,4 @@
-/* eslint-disable no-alert */
+/* eslint-disable no-alert, complexity */
 import handlePlaceholder from './handle-placeholder';
 var DRIVE_UPLOAD_URL = 'https://www.googleapis.com/upload/youtube/v3/videos';
 
@@ -301,12 +301,14 @@ export default function videoBlock(SirTrevor, config) {
             var self = this;
 
             var addContentBtns = new AddContentBtns();
+            var isAdmin = self.getOptions().isAdmin();
             var uploadBlock = [
                 '<div class="row st-block__upload-container">',
                 '<div class="col-md-6">',
                 '<label onclick="$(this).next().trigger(\'click\');"' +
                     'class="btn btn-default">Select from folder</label>',
                 '<input type="file" id="embedlyUploadFile">',
+                '<span class="btn btn--primary pull-right" id="updateButton">Update Credentials</span>',
                 '</div>',
                 '</div>',
             ].join('\n');
@@ -316,11 +318,21 @@ export default function videoBlock(SirTrevor, config) {
                     localStorage.setItem('accessToken', data);
                 },
                 (error) => {
-                    self.getOptions().displayModalBox();
+                    var message = `The direct video upload requires a connection to Youtube<br/>
+                        Do you want to update the YouTube Credential?`;
+
+                    self.getOptions().displayModalBox(message);
                 }
             );
             self.$('.during-upload').hide();
             self.$('.st-block__inputs').append(uploadBlock);
+            if (!isAdmin)
+                self.$('#updateButton').hide();
+            self.$('#updateButton').on('click', () => {
+                var message = 'Are you sure to update the credentials?';
+
+                self.getOptions().displayModalBox(message);
+            });
 
             self.$('#embedlyUploadFile').on('change', function() {
                 var file = $(this).prop('files')[0];
