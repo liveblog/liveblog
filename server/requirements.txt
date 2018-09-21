@@ -9,6 +9,7 @@ html5lib==0.999999999
 beautifulsoup4==4.6.0
 flask_pymongo>=0.5.2,<1.0
 pymongo>=0.4,<4.0
+google-auth-oauthlib==0.2.0
 
 # Superdesk
 -e git://github.com/superdesk/superdesk-core.git@v1.17.1#egg=Superdesk-Core
