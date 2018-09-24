@@ -21,7 +21,7 @@ CORS(video_upload_blueprint)
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 # set this only when in local server
-# os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 CLIENT_SECRETS_FILE = dir_path + '/client-secret.json'
 SCOPES = ['https://www.googleapis.com/auth/youtube']
 API_SERVICE_NAME = 'youtube'
