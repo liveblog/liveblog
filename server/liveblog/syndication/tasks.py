@@ -54,7 +54,7 @@ def send_posts_to_consumer(self, syndication_out, action='created', limit=50, po
         array.reverse()
         for producer_post in array:
             # Don't forward syndicated posts
-            if 'syndication_in' in producer_post.keys():
+            if 'repeat_syndication' in producer_post.keys():
                 continue
             items = extract_post_items_data(producer_post)
             post = extract_producer_post_data(producer_post)

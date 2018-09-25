@@ -70,6 +70,7 @@ export default function BlogListController(
     $scope.isAdmin = blogSecurityService.isAdmin;
     $scope.isUserAllowedToCreateABlog = blogSecurityService.canCreateABlog;
     $scope.isUserAllowedToOpenBlog = blogSecurityService.canAccessBlog;
+    $scope.isUserAllowedToSelectblog = blogSecurityService.canAccessblogCheckbox;
     // blog list embed code.
     function fetchBloglistEmbed() {
         const criteria = {source: {
@@ -422,7 +423,7 @@ export default function BlogListController(
     function getCriteria() {
         const params = $location.search();
         const criteria = {
-            max_results: $scope.maxResults,
+            max_results: params.max_results,
             embedded: {original_creator: 1},
             sort: '[("versioncreated", -1)]',
             source: {
