@@ -1,6 +1,6 @@
 {
   "name": "liveblog-simple-theme",
-  "version": "0.1.4-beta.1",
+  "version": "0.1.4-beta.2",
   "description": "Liveblog SEO Simple Theme",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -9,7 +9,7 @@
   "license": "AGPL-3.0",
   "main": "index.js",
   "dependencies": {
-    "liveblog-default-theme": "^4.0.0-beta.4"
+    "liveblog-default-theme": "^4.0.0-beta.5"
   },
   "repository": {
     "type": "git",

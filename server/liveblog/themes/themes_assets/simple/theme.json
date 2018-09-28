@@ -1,7 +1,7 @@
 {
     "label": "LB SEO Simple Theme",
     "name": "simple",
-    "version": "0.1.4-beta.1",
+    "version": "0.1.4-beta.2",
     "seoTheme": true,
     "extends": "default",
     "extendsFromPackage": "liveblog-default-theme",

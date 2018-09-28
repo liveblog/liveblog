@@ -77,9 +77,9 @@ const templateInject = (theme, inputPath) => {
     let templates = [];
     let timeline = `./templates/template-timeline.html`;
 
-    templates.push(fs.existsSync(timeline) ? timeline : path.resolve(inputPath, timeline));
+    templates.push(fs.existsSync(timeline) ? timeline : resolveResource(timeline, theme, CWD));
     let main = `./templates/template.html`;
-    main = fs.existsSync(main) ? main : path.resolve(inputPath, main);
+    main = fs.existsSync(main) ? main : resolveResource(main, theme, CWD);
 
     return gulp.src(main)
       .pipe(plugins.nunjucks.compile({
