@@ -22,7 +22,7 @@ class Permalink {
     var matches = this.href.match(this.regexHash);
         
     if (matches) {
-      var arr = decodeURIComponent(matches[1]).split('->');
+      var arr = decodeURIComponent(matches[1]).split('__');
       this._id = arr[0];
       if (LB.settings.postOrder !== arr[1]) {
         LB.settings.postOrder = arr[1];
@@ -34,7 +34,7 @@ class Permalink {
   getUrl(id) {
     var permalink = false,
       DELIMITER = LB.settings.permalinkDelimiter || '?', // delimiter can be `?` or `#`.
-      newHash = this.PARAM_NAME + '=' + id + '->' + LB.settings.postOrder;
+      newHash = this.PARAM_NAME + '=' + id + '__' + LB.settings.postOrder;
 
     if (this.href.indexOf(DELIMITER) === -1) {
       permalink = this.href + DELIMITER + newHash;

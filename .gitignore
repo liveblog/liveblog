@@ -98,3 +98,6 @@ server/themes/
 
 # Monorepo
 node_modules
+
+.python-version
+setup.cfg
