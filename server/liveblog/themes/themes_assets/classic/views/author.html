@@ -14,12 +14,12 @@
         <!-- author name, with or without mailto link  -->
         <div ng-if="!timeline.settings.authorNameLinksToEmail || item.item_type === 'comment'"
              class="lb-author__name"
-             ng-bind="item.original_creator[timeline.settings.authorNameFormat]">
+             ng-bind="post.original_creator[timeline.settings.authorNameFormat]">
         </div>
         <div ng-if="timeline.settings.authorNameLinksToEmail && item.item_type !== 'comment'"
              class="lb-author__name">
             <a href="mailto:{{post.mainItem.original_creator.email}}"
-               ng-bind="item.original_creator[timeline.settings.authorNameFormat]"></a>
+               ng-bind="post.original_creator[timeline.settings.authorNameFormat]"></a>
         </div>
     </div>
     <div ng-if="post.syndication_in.producer_blog_title && !timeline.settings.showSyndicatedAuthor"
