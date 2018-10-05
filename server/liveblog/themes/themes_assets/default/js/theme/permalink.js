@@ -7,16 +7,12 @@ class Permalink {
     this.PARAM_NAME = 'liveblog._id', // the parameter name for permalink.  
     this.regexHash = new RegExp(this.escapeRegExp(this.PARAM_NAME) + '=([^&#]*)');
 
-    if (document.parent) {
-      // use document parent if avalible, see iframe cors limitation.
-      try {
-        this.href = document.location.href; 
-      } catch (e) {
-        // if not use the referrer of the iframe.
-        this.href = document.referrer; 
-      }
-    } else {                
-      this.href = document.location.href; // use this option if it is access directly not via iframe.
+    // first of all, we make sure to have an url
+    this.href = document.location.href;
+
+    // then let's check if we're inside of an iframe
+    if (window !== window.parent && "referrer" in document) {
+      this.href = document.referrer;
     }
 
     var matches = this.href.match(this.regexHash);
