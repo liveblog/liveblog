@@ -203,9 +203,8 @@ export default function BlogEditController(
     function doOrAskBeforeIfEditorIsNotEmpty() {
         var deferred = $q.defer();
 
-        cleanUpFlag();
-
         if (isEditorClean()) {
+            cleanUpFlag();
             deferred.resolve();
         } else {
             modal
@@ -213,6 +212,7 @@ export default function BlogEditController(
                     'You have content in the editor. You will lose it if you continue without saving it before.'
                 ))
                 .then(() => {
+                    cleanUpFlag();
                     deferred.resolve();
                 }, deferred.reject);
         }
@@ -299,7 +299,7 @@ export default function BlogEditController(
         });
 
         if (!foundPost) {
-            // then let's try to update if in timeline if not post
+            // then let's try to update it in timeline if not found
             self.timelineInstance.pagesManager.updatePostFlag(postId, flag, (post) => {
                 cb(post, flag);
             });

@@ -349,11 +349,18 @@ export default function postsService(api, $q, userList, session) {
         const current = moment().utc();
         const flatExpireAt = moment(editFlag.expireAt);
         const seconds = flatExpireAt.diff(current, 'seconds');
+        const key = `flagTimeout_${editFlag.postId}`;
 
-        // but first, remove previous timeout just in case
-        clearTimeout(window[editFlag.postId]);
+        // if flag is already expired, let's remove id right away
+        if (seconds < 0) {
+            removeFlagPost(editFlag);
+            return;
+        }
 
-        window[editFlag.postId] = setTimeout(() => {
+        // try to remove previous timeout just in case
+        clearTimeout(window[key]);
+
+        window[key] = setTimeout(() => {
             post.edit_flag = undefined;
             cb();
 

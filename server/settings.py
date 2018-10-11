@@ -344,4 +344,4 @@ DEFAULT_THEME_DATE_FORMAT = env('DEFAULT_THEME_DATE_FORMAT', 'D. MMMM YYYY HH:mm
 DEFAULT_THEME_TIMEZONE = env('DEFAULT_THEME_TIMEZONE', arrow.now().format('ZZZ'))
 
 # TTL for editing post flag (seconds). Default: 5 minutes
-EDIT_POST_FLAG_TTL = int(env('EDIT_POST_FLAG_TTL', 60))
+EDIT_POST_FLAG_TTL = int(env('EDIT_POST_FLAG_TTL', 5 * 60))
