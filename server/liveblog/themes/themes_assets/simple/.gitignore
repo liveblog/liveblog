@@ -8,7 +8,7 @@ node_modules
 Thumbs.db
 !*.pot
 index.html
-liveblog-default-theme.zip
+liveblog-simple-theme.zip
 py-test/env
 yarn.lock
 package-lock.json
