@@ -68,6 +68,9 @@ export default function incomingSyndication(
                 }
                 IncomingSyndicationActions
                     .getPosts(scope.blogId, scope.syndId);
+
+                IncomingSyndicationActions
+                    .getSyndication(scope.syndId);
             });
 
             scope.$on('$destroy', scope.store.destroy);
