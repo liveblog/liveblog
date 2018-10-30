@@ -1,7 +1,7 @@
 {
     "label": "Classic Theme",
     "name": "classic",
-    "version": "3.3.22",
+    "version": "3.3.23",
     "author": "Edouard Richard <edouard.richard@sourcefabric.org>",
     "repository": {
         "type": "git",
@@ -214,9 +214,18 @@
                 "outputChannel": true
             },
             "options": [
-                {"value": "classic", "label": "Classic Theme"},
-                {"value": "default", "label": "Liveblog 3 Default SEO Theme"},
-                {"value": "amp", "label": "Liveblog 3 AMP Theme"}
+                {
+                    "value": "classic",
+                    "label": "Classic Theme"
+                },
+                {
+                    "value": "default",
+                    "label": "Liveblog 3 Default SEO Theme"
+                },
+                {
+                    "value": "amp",
+                    "label": "Liveblog 3 AMP Theme"
+                }
             ],
             "help": "Which theme should be used for output channel"
         },
