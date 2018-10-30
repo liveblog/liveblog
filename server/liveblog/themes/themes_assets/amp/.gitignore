@@ -8,3 +8,5 @@ node_modules
 Thumbs.db
 !*.pot
 index.html
+package-lock.json
+yarn.lock
