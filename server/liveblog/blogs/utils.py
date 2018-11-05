@@ -1,9 +1,14 @@
 import os
+import logging
+import pymongo
+from bson.objectid import ObjectId
 from flask import current_app as app
 from superdesk import get_resource_service
 
 from .app_settings import BLOGSLIST_ASSETS_DIR
 from .exceptions import MediaStorageUnsupportedForBlogPublishing
+
+logger = logging.getLogger('superdesk')
 
 
 def is_s3_storage_enabled():
@@ -70,3 +75,28 @@ def is_seo_enabled(blog_or_id):
 
         if theme.get('seoTheme'):
             return True
+
+
+def check_limit_and_delete_oldest(blog_id):
+    """
+    Simple method that checks if a blog has reached the limit of posts and
+    deletes ({deleted: true}) the oldest post that belongs to the given blog
+    """
+
+    UNLIMITED = 0
+
+    blog = get_resource_service('blogs').find_one(req=None, _id=blog_id)
+    if not blog:
+        return
+
+    post_service = get_resource_service('posts')
+    query_params = {'blog': ObjectId(blog_id), 'particular_type': 'post'}
+
+    if blog['posts_limit'] != UNLIMITED and blog['total_posts'] >= blog['posts_limit']:
+        oldest_post = post_service.find(query_params).sort('_created', pymongo.ASCENDING).limit(1)
+
+        for doc in oldest_post:
+            post_service.update(doc['_id'], {'deleted': True}, doc)
+            logger.warning(
+                'Deleted oldest post `%s` because posts_limit (%s) in blog `%s` has been reached'
+                % (doc['_id'], blog['posts_limit'], blog['_id']))

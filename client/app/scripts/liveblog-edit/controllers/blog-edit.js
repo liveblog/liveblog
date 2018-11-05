@@ -313,22 +313,25 @@ export default function BlogEditController(
     }
 
     function savingPost(blog) {
-        postsService.savePost(blog._id,
-            $scope.currentPost,
-            getItemsFromEditor(),
-            {post_status: 'open', sticky: $scope.sticky, lb_highlight: $scope.highlight}
-        ).then((post) => {
-            notify.pop();
-            notify.info(gettext('Post saved'));
+        let postParams = {
+            post_status: 'open',
+            sticky: $scope.sticky,
+            lb_highlight: $scope.highlight,
+        };
 
-            cleanEditor();
-            $scope.selectedPostType = 'Default';
-            $scope.actionPending = false;
-        }, () => {
-            notify.pop();
-            notify.error(gettext('Something went wrong. Please try again later'));
-            $scope.actionPending = false;
-        });
+        postsService.savePost(blog._id, $scope.currentPost, getItemsFromEditor(), postParams)
+            .then((post) => {
+                notify.pop();
+                notify.info(gettext('Post saved'));
+
+                cleanEditor();
+                $scope.selectedPostType = 'Default';
+                $scope.actionPending = false;
+            }, () => {
+                notify.pop();
+                notify.error(gettext('Something went wrong. Please try again later'));
+                $scope.actionPending = false;
+            });
     }
 
     getFreetypes();
@@ -516,32 +519,12 @@ export default function BlogEditController(
                     saveScorers().then(() => {
                         // no need to show anything on success
                     }, () => {
-                        notify.error(gettext('Something went wrong with scoarers status. Please try again later'));
+                        notify.error(gettext('Something went wrong with scorers status. Please try again later'));
                     });
                 }
+
                 notify.info(gettext('Saving post'));
-                const getAllposts = $scope.blogEdit.timelineInstance.pagesManager.allPosts();
-
-                const filtered = getAllposts.filter((el) => el.lb_highlight == false && el.sticky == false);
-
-                if (blog.posts_limit != 0 && blog.total_posts >= blog.posts_limit) {
-                    const deleted = {deleted: true};
-                    const post = filtered[(filtered.length - 1)];
-
-                    postsService.savePost(post.blog, post, [], deleted).then((message) => {
-                        $rootScope.$broadcast('removing_timeline_post', {post: post});
-                        notify.pop();
-                        notify.info(gettext('Wait! saving post'));
-                        $timeout(() => {
-                            savingPost(blog);
-                        }, 1000);
-                    }, () => {
-                        notify.pop();
-                        notify.error(gettext('Something went wrong'));
-                    });
-                } else {
-                    savingPost(blog);
-                }
+                savingPost(blog);
                 blog.total_posts += 1;
             });
         },
