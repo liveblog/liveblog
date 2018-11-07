@@ -7,22 +7,18 @@ class Permalink {
     this.PARAM_NAME = 'liveblog._id', // the parameter name for permalink.  
     this.regexHash = new RegExp(this.escapeRegExp(this.PARAM_NAME) + '=([^&#]*)');
 
-    if (document.parent) {
-      // use document parent if avalible, see iframe cors limitation.
-      try {
-        this.href = document.location.href; 
-      } catch (e) {
-        // if not use the referrer of the iframe.
-        this.href = document.referrer; 
-      }
-    } else {                
-      this.href = document.location.href; // use this option if it is access directly not via iframe.
+    // first of all, we make sure to have an url
+    this.href = document.location.href;
+
+    // then let's check if we're inside of an iframe
+    if (window !== window.parent && "referrer" in document) {
+      this.href = document.referrer;
     }
 
     var matches = this.href.match(this.regexHash);
         
     if (matches) {
-      var arr = decodeURIComponent(matches[1]).split('->');
+      var arr = decodeURIComponent(matches[1]).split('__');
       this._id = arr[0];
       if (LB.settings.postOrder !== arr[1]) {
         LB.settings.postOrder = arr[1];
@@ -34,7 +30,7 @@ class Permalink {
   getUrl(id) {
     var permalink = false,
       DELIMITER = LB.settings.permalinkDelimiter || '?', // delimiter can be `?` or `#`.
-      newHash = this.PARAM_NAME + '=' + id + '->' + LB.settings.postOrder;
+      newHash = this.PARAM_NAME + '=' + id + '__' + LB.settings.postOrder;
 
     if (this.href.indexOf(DELIMITER) === -1) {
       permalink = this.href + DELIMITER + newHash;

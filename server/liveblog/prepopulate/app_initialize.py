@@ -318,9 +318,13 @@ class AppInitializeWithDataCommand(superdesk.Command):
             for index in index_params:
                 crt_index = list(index) if isinstance(index, list) else index
                 options = crt_index.pop() if isinstance(crt_index[-1], dict) and isinstance(index, list) else {}
-                collection = app.data.mongo.pymongo(resource=entity_name).db[entity_name]
-                index_name = collection.create_index(crt_index, **options)
-                logger.info(' - index: %s for collection %s created successfully.', index_name, entity_name)
+
+                try:
+                    collection = app.data.mongo.pymongo(resource=entity_name).db[entity_name]
+                    index_name = collection.create_index(crt_index, **options)
+                    logger.info(' - index: %s for collection %s created successfully.', index_name, entity_name)
+                except KeyError:
+                    logger.info(' - Not able to create index: %s. Collection %s not found', index, entity_name)
 
 
 def fillEnvironmentVariables(item):
