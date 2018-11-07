@@ -287,7 +287,7 @@ import listTpl from 'scripts/liveblog-themes/views/list.ng1';
                             });
                         }, (error) => {
                             notify.pop();
-                            notify.error(error.data.error);
+                            notify.error(error.data._message);
                         });
                 });
             },
