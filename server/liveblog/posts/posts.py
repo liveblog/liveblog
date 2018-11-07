@@ -240,7 +240,8 @@ class PostsService(ArchiveService):
                 out_service.send_syndication_post(doc, action='created')
 
             # let's check for posts limits in blog and remove old one if needed
-            check_limit_and_delete_oldest(blog_id)
+            if blog_id:
+                check_limit_and_delete_oldest(blog_id)
 
         # send notifications
         push_notification('posts', created=True, post_status=doc['post_status'], posts=posts)
