@@ -15,6 +15,7 @@ from superdesk.errors import SuperdeskApiError
 from superdesk import get_resource_service
 from liveblog.common import check_comment_length
 
+from ..blogs.utils import check_limit_and_delete_oldest
 from .tasks import update_post_blog_data, update_post_blog_embed
 
 
@@ -226,7 +227,8 @@ class PostsService(ArchiveService):
                     post['auto_publish'] = synd_in.get('auto_publish')
 
             posts.append(post)
-            app.blog_cache.invalidate(doc.get('blog'))
+            blog_id = doc.get('blog')
+            app.blog_cache.invalidate(blog_id)
 
             # Update blog post data and embed for SEO-enabled blogs.
             update_post_blog_data.delay(doc, action='created')
@@ -236,6 +238,10 @@ class PostsService(ArchiveService):
             if doc['post_status'] == 'open':
                 logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
                 out_service.send_syndication_post(doc, action='created')
+
+            # let's check for posts limits in blog and remove old one if needed
+            if blog_id:
+                check_limit_and_delete_oldest(blog_id)
 
         # send notifications
         push_notification('posts', created=True, post_status=doc['post_status'], posts=posts)
@@ -311,10 +317,6 @@ class PostsService(ArchiveService):
             out_service.send_syndication_post(original, action='deleted')
             # Push notification.
             push_notification('posts', deleted=True, post_id=original.get('_id'))
-        # NOTE: Seems unsused, to be removed later if no bug appears.
-        # elif updates.get('post_status') == 'draft':
-        #     push_notification('posts', drafted=True, post_id=original.get('_id'),
-        #                       author_id=original.get('original_creator'))
         else:
             # Update blog post data and embed for SEO-enabled blogs.
             update_post_blog_data.delay(doc, action='updated')
