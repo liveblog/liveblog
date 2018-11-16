@@ -261,6 +261,8 @@
         .scorecard-top span.team-score {
             font-size: 32px;
         }
+    }
+    @media (max-width:500px) {
         .scorecard-top .scorecard-top__scorers {
             display: none;
         }

@@ -30,6 +30,7 @@ export default function incomingSyndication(
                 syndication: {},
             });
 
+            // simply attach a listener to our store
             scope.store.connect((state) => {
                 scope.posts = state.posts;
                 scope.syndication = state.syndication;
@@ -61,11 +62,13 @@ export default function incomingSyndication(
             // On incoming post, we reload all the posts.
             // Not very fast, but easy to setup
             scope.$on('posts', (e, data) => {
-                if (data.hasOwnProperty('deleted') && data.deleted === true
-                    || data.posts && data.posts[0].syndication_in) {
+                // let's wait for tasks to finish and then pull data from backend
+                setTimeout(() => {
                     IncomingSyndicationActions
                         .getPosts(scope.blogId, scope.syndId);
-                }
+
+                    scope.$apply();
+                }, 1000);
             });
 
             scope.$on('$destroy', scope.store.destroy);

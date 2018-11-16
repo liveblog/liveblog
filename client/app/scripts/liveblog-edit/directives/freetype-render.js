@@ -1,9 +1,9 @@
-freetypeRender.$inject = ['$compile', 'freetypeService'];
+freetypeRender.$inject = ['$compile', '$rootScope', 'freetypeService'];
 
 /**
 * Main directive to render the freetype editor.
 */
-export default function freetypeRender($compile, freetypeService) {
+export default function freetypeRender($compile, $rootScope, freetypeService) {
     return {
         restrict: 'E',
         link: function(scope, element, attrs) {
@@ -21,9 +21,9 @@ export default function freetypeRender($compile, freetypeService) {
                 return angular.equals(scope.freetypeData, scope.initialData);
             };
             scope.internalControl.isValid = function() {
-                const isInvalid = _.reduce(scope.validation, (memo, val) => memo && val, true);
+                const isFreetypeValid = _.reduce(scope.validation, (memo, val) => memo && val, true);
 
-                return !isInvalid;
+                return isFreetypeValid;
             };
             function recursiveClean(obj) {
                 for (const key in obj) {
@@ -34,7 +34,7 @@ export default function freetypeRender($compile, freetypeService) {
                         }
                         recursiveClean(obj[key]);
                     } else if (angular.isString(obj[key])) {
-                        obj[key] = '';
+                        obj[key] = undefined;
                     }
                 }
             }
@@ -43,8 +43,13 @@ export default function freetypeRender($compile, freetypeService) {
                 scope.validation = {};
                 recursiveClean(scope.freetypeData);
                 scope.initialData = angular.copy(scope.freetypeData);
+
+                // triggering this in case we want to achieve custom actions
+                // on each freetype when resetting editor
+                $rootScope.$emit('freetypeReset');
             };
         },
+
         scope: {
             freetype: '=',
             freetypeData: '=',

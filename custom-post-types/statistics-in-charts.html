@@ -1,0 +1,240 @@
+<!-- Works with Liveblog 3.4 -->
+
+<div class="pieWrap">
+
+	<div class="colorWrap pieValue">
+
+		<div class="color__item pieValue__item">
+			<label hide-render="">Home color</label>
+			<input class="color__itemColor1"  placeholder="Home color"  name="$pie.color1">
+		</div>
+
+		<div class="color__item pieValue__item">
+			<label hide-render="">Away color</label>
+			<input class="color__itemColor2"  placeholder="Away color"  name="$pie.color2">
+		</div>
+
+	</div>
+
+	<div class="pieItem">
+
+		<div class="pieName">
+			<label class="legend--padding-top" for="pie.name1" hide-render="">Statistic name 1</label>
+			<input class="pieName__text" placeholder="Statistic name" name="$pie.name1">
+		</div>
+
+		<div class="pieWrap">
+			<div class="pieValue">
+				<div class="pieValue__item">
+					<label for="pie.value1" hide-render="">Value 1 (E.G. 14)</label>
+					<input class="pieValue__itemScore pieValue__itemScore1" placeholder="Value 1" name="$pie.value1">
+				</div>
+
+				<div class="pieValue__item">
+					<label for="pie.value2" hide-render="">Value 2 (E.G. 9)</label>
+					<input class="pieValue__itemScore pieValue__itemScore2" placeholder="Value 2" name="$pie.value2">
+				</div>
+			</div>
+
+			<div class="pie" data-value="">
+				<svg viewBox="0 0 32 32">
+					<circle style="fill: @pie.color1 ; stroke: @pie.color2 ;" r="16" cx="16" cy="16" />
+				</svg>
+			</div>
+		</div>
+	</div>
+
+	<div class="pieItem">
+
+		<div class="pieName">
+			<label class="legend--padding-top" for="pie.name" hide-render="">Statistic name 2</label>
+			<input class="pieName__text" placeholder="Statistic name" name="$pie.name2">
+		</div>
+
+		<div class="pieWrap">
+			<div class="pieValue">
+				<div class="pieValue__item">
+					<label for="pie.value3" hide-render="">Value 1 (E.G. 14)</label>
+					<input class="pieValue__itemScore pieValue__itemScore1" placeholder="Value 1" name="$pie.value3">
+				</div>
+
+				<div class="pieValue__item">
+					<label for="pie.value4" hide-render="">Value 2 (E.G. 9)</label>
+					<input class="pieValue__itemScore pieValue__itemScore2" placeholder="Value 2" name="$pie.value4">
+				</div>
+			</div>
+
+			<div class="pie" data-value="">
+				<svg viewBox="0 0 32 32">
+					<circle style="fill: @pie.color1 ; stroke: @pie.color2 ;" r="16" cx="16" cy="16" />
+				</svg>
+			</div>
+		</div>
+	</div>
+
+	<div class="pieItem">
+
+		<div class="pieName">
+			<label class="legend--padding-top" for="pie.name" hide-render="">Statistic name 3</label>
+			<input class="pieName__text" placeholder="Statistic name" name="$pie.name3">
+		</div>
+
+		<div class="pieWrap">
+			<div class="pieValue">
+				<div class="pieValue__item">
+					<label for="pie.value5" hide-render="">Value 1 (E.G. 14)</label>
+					<input class="pieValue__itemScore pieValue__itemScore1" placeholder="Value 1" name="$pie.value5">
+				</div>
+
+				<div class="pieValue__item">
+					<label for="pie.value6" hide-render="">Value 2 (E.G. 9)</label>
+					<input class="pieValue__itemScore pieValue__itemScore2" placeholder="Value 2" name="$pie.value6">
+				</div>
+			</div>
+
+			<div class="pie" data-value="">
+				<svg viewBox="0 0 32 32">
+					<circle style="fill: @pie.color1 ; stroke: @pie.color2 ;" r="16" cx="16" cy="16" />
+				</svg>
+			</div>
+		</div>
+	</div>
+</div>
+<style type="text/css">
+	.pieWrap {
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+	}
+	.editor-holder .pieWrap  {
+		flex-direction: column;
+	}
+	.pieWrap .pieItem {
+		flex: 0 1 auto;
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		align-items: center;
+		margin-bottom: 10px;
+	}
+	.editor-holder .pieWrap .pieItem {
+		align-items: stretch;
+		width: 100%;
+		margin-bottom: 0px;
+	}
+	.pieWrap .pieName {
+		text-align: center;
+		margin-bottom: 25px;
+	}
+	.editor-holder .pieWrap .pieName {
+		text-align: left;
+	}
+	.pieWrap .pieValue {
+		position: absolute;
+		width: 160px;
+		height: 160px;
+		text-align: center;
+		z-index: 1;
+		display: flex;
+	}
+	.editor-holder .pieWrap .pieValue {
+		position: relative;
+		width: auto;
+		height: auto;
+		flex: 1 1 auto;
+	}
+	.pieWrap .pieValue__item {
+		font-size: 20px;
+		flex: 1 1 auto;
+		align-self: center;
+	}
+	.editor-holder .pieWrap .pieValue__item {
+		text-align: left;
+		padding-right: 10px;
+	}
+	.editor-holder .pieWrap .pieValue__item:last-child {
+		padding-left: 10px;
+		padding-right: 0px;
+	}
+	.pieWrap .colorWrap {
+		display: none;
+	}
+	.editor-holder .pieWrap .colorWrap {
+		display: flex;
+	}
+	.pieWrap .pie {
+		display: inline-block;
+		position: relative;
+	}
+	.pieWrap .pie:before {
+		content: " ";
+		display: block;
+		width: 1px;
+		height: calc(100% - 20px);
+		background: #eaeef1;
+		position: absolute;
+		left: 50%;
+		top: 10px;
+		z-index: 1;
+		margin-left: -1px;
+	}
+	.pieWrap .pie:after {
+		font-size: 20px;
+		font-weight: 500;
+		align-items: center;
+		background: #FFF;
+		border-radius: 50%;
+		content: attr(data-value);
+		display: flex;
+		justify-content: center;
+		position: absolute;
+		left: 10px;
+		top: 10px;
+		height: 140px;
+		width: 140px;
+	}
+
+	.editor-holder .pieWrap .pie {
+		display: none;
+	}
+
+	.pieWrap svg {
+		position: relative;
+		display: block;
+		width: 160px;
+		height: 160px;
+		transform: rotate(-90deg);
+		background: #E0E0DA;
+		border-radius: 50%;
+	}
+
+	.pieWrap circle {
+		fill: #e9e9e9;
+		stroke: #66cfa0;
+		stroke-width: 10;
+	}
+</style>
+
+<script>
+  if (typeof statPie_init != 'function') {
+    function statPie_init() {
+
+      document.querySelectorAll('.pieItem').forEach(function(item, i) {
+
+	var chart1 = parseInt(item.querySelectorAll('.pieValue__itemScore1')[0].innerHTML),
+	chart2 = parseInt(item.querySelectorAll('.pieValue__itemScore2')[0].innerHTML);
+
+	var actual = (chart2 * 100)/(chart2+chart1);
+
+	item.querySelectorAll('circle')[0].style.strokeDasharray = actual + ' 100';
+      });
+    };
+  }
+
+  if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading"){
+    statPie_init();
+  } else {
+    document.addEventListener('DOMContentLoaded', statPie_init);
+  }
+
+</script>

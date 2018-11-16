@@ -131,7 +131,8 @@ class PostsResource(ArchiveResource):
         'producer_post_id': {
             'type': 'string',
             'nullable': True
-        }
+        },
+        'repeat_syndication': Resource.rel('repeat_syndication', embeddable=True, required=False, nullable=True)
     })
     privileges = {'GET': 'posts', 'POST': 'posts', 'PATCH': 'posts', 'DELETE': 'posts'}
     mongo_indexes = {
@@ -248,8 +249,8 @@ class PostsService(ArchiveService):
                 blog['posts_order_sequence'] = self.get_next_order_sequence(original.get('blog'))
         # in the case we have a comment
         if original['post_status'] == 'comment':
-            original['blog'] = original['groups'][1]['refs'][0]['item']['client_blog']
-            updates['blog'] = original['groups'][1]['refs'][0]['item']['client_blog']
+            original['blog'] = ObjectId(original['groups'][1]['refs'][0]['item']['client_blog'])
+            updates['blog'] = ObjectId(original['groups'][1]['refs'][0]['item']['client_blog'])
             # if the length of the comment is not between 1 and 300 then we get an error
             check_comment_length(original['groups'][1]['refs'][0]['item']['text'])
         # check if updates `content` is diffrent then the original.

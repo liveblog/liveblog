@@ -4,37 +4,45 @@ export default function freetypeText() {
     return {
         restrict: 'E',
         templateUrl: freetypeTextTpl,
-        controller: ['$scope', '$rootScope', function($scope, $rootScope, element) {
+        link: function($scope, element) {
+            element.on('$destroy', () => {
+                $scope.cleanUp();
+            });
+        },
+        controller: ['$scope', '$rootScope', '$attrs', function($scope, $rootScope, $attrs) {
             $scope._id = _.uniqueId('text');
             if ($scope.initial !== undefined && $scope.text === '') {
                 $scope.text = String($scope.initial);
             }
 
-            if ($scope.number !== undefined) {
+            if ($attrs.number !== undefined) {
                 $scope.$on('$destroy', $scope.$watch('text', (value) => {
-                    if ($scope.value === undefined) return;
+                    if (value === undefined) return;
                     $scope.numberFlag = (value !== '') && isNaN(value);
                     $scope.validation['number__' + $scope._id] = !$scope.numberFlag;
                 }, true));
             }
 
-            if ($scope.compulsory !== undefined) {
-                $scope.$on('$destroy', $scope.$watch('[text,compulsory]', (value) => {
-                    $scope.compulsoryFlag = (value[0] === '' && value[1] === '');
+            if ($attrs.compulsory !== undefined) {
+                $scope.$on('$destroy', $scope.$watch('[text,compulsory]', ([text, compulsory]) => {
+                    // if initially they're undefined we return and do nothing
+                    if (text === undefined && compulsory === undefined) return;
+
+                    $scope.compulsoryFlag = (text === '' && (compulsory === '' || compulsory === undefined));
                     $scope.validation['compulsory__' + $scope._id] = !$scope.compulsoryFlag;
                 }, true));
             }
 
-            if ($scope.tandem !== undefined) {
+            if ($attrs.tandem !== undefined) {
                 $scope.$on('$destroy', $scope.$watch('[text,tandem]', (value) => {
                     $scope.tandemFlag = (value[0] === '' && value[1] !== '');
                     $scope.validation['tandem__' + $scope._id] = !$scope.tandemFlag;
                 }, true));
             }
 
-            if ($scope.necessary !== undefined) {
+            if ($attrs.necessary !== undefined) {
                 $scope.$on('$destroy', $scope.$watch('text', (value) => {
-                    $scope.necessaryFlag = (value === '');
+                    $scope.necessaryFlag = (value === '') || (value === undefined);
                     $scope.validation['necessary__' + $scope._id] = !$scope.necessaryFlag;
                 }, true));
             }
@@ -43,6 +51,22 @@ export default function freetypeText() {
             $rootScope.$on('freetypeScopeDestroy', () => {
                 $scope.$destroy();
             });
+
+            $rootScope.$on('freetypeReset', () => {
+                $scope.cleanUp();
+            });
+
+            $scope.cleanUp = function() {
+                const prefixes = ['number', 'compulsory', 'tandem', 'necessary'];
+
+                // when the element is detroyed, we should avoid keeping garbage in scope
+                prefixes.forEach((prefix) => {
+                    delete $scope.validation[`${prefix}__${$scope._id}`];
+
+                    // also let's reset flags
+                    $scope[`${prefix}Flag`] = undefined;
+                });
+            };
         }],
         scope: {
             text: '=',

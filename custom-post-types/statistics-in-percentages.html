@@ -1,0 +1,224 @@
+<!-- Works with Liveblog 3.4 -->
+
+<div class="statPerc">
+
+    <div class="statPerc__itemWrap colorWrap">
+
+      <div class="statPerc__item">
+        <label hide-render="">Home color</label>
+        <input class="statPerc__colorPickerValue1"  placeholder="Home color"  name="$stat.color1">
+      </div>
+
+      <div class="statPerc__item">
+        <label hide-render="">Away color</label>
+        <input class="statPerc__colorPickerValue2"  placeholder="Away color"  name="$stat.color2">
+      </div>
+
+    </div>
+
+    <div class="statPerc__itemWrap">
+
+      <div class="statPerc__name statPerc__item">
+      <div class="statPerc__nameInput">
+        <label class="legend--padding-top" for="stat.name1" hide-render="">Statistic name</label>
+        <input class="statPerc__nameText" placeholder="Statistic name" name="$stat.name1">
+      </div>
+      <div class="statPerc__nameIcon">
+        <label class="legend--padding-top" for="stat.img1" hide-render="">Statistic icon</label>
+        <input image="$stat.img1"/>
+      </div>
+    </div>
+        <div class="statPerc__item statPerc__result statPerc__result--home statPerc__result--perc">
+            <div class="statPerc__resultWrap">
+                <div class="statPerc__resultBarWrap">
+                    <div class="statPerc__resultBar statPerc__resultBar--perc home" style="width: 0%; background-color: @stat.color1"></div>
+                </div>
+                <label class="legend--padding-top" for="stat.score1" hide-render="">Home result (e.g. 72%)</label>
+                <input class="statPerc__resultScore statPerc__resultScore--perc"  placeholder="Home result"  name="$stat.score1">
+            </div>
+        </div>
+        <div class="statPerc__item statPerc__result statPerc__result--away statPerc__result--perc">
+            <div class="statPerc__resultWrap">
+                <div class="statPerc__resultBarWrap">
+                    <div class="statPerc__resultBar statPerc__resultBar--perc away" style="width: 0%; background-color: @stat.color2"></div>
+                </div>
+                <label class="legend--padding-top" for="stat.score2" hide-render="">Away result (e.g. 28%)</label>
+                <input class="statPerc__resultScore statPerc__resultScore--perc"  placeholder="Home result"  name="$stat.score2">
+            </div>
+        </div>
+    </div>
+
+    <div class="statPerc__itemWrap statPerc__itemWrap--number">
+      <div class="statPerc__name statPerc__item">
+      <div class="statPerc__nameInput">
+        <label class="legend--padding-top" for="stat.name2" hide-render="">Statistic name</label>
+        <input class="statPerc__nameText" placeholder="Statistic name" name="$stat.name2">
+      </div>
+      <div class="statPerc__nameIcon">
+        <label class="legend--padding-top" for="stat.img2" hide-render="">Statistic icon</label>
+        <input image="$stat.img2"/>
+      </div>
+    </div>
+        <div class="statPerc__item statPerc__result statPerc__result--home">
+            <div class="statPerc__resultWrap statPerc__resultWrap--number">
+                <div class="statPerc__resultBarWrap">
+                    <div class="statPerc__resultBar statPerc__resultBar1 home" style="width: 0%; background-color: @stat.color1"></div>
+                </div>
+                <label class="legend--padding-top" for="stat.score3" hide-render="">Home result (e.g. 2)</label>
+                <input class="statPerc__resultScore statPerc__resultScore1"  placeholder="Home result"  name="$stat.score3">
+            </div>
+        </div>
+        <div class="statPerc__item statPerc__result statPerc__result--away">
+            <div class="statPerc__resultWrap statPerc__resultWrap--number">
+                <div class="statPerc__resultBarWrap">
+                    <div class="statPerc__resultBar statPerc__resultBar2 away" style="width: 0%; background-color: @stat.color2"></div>
+                </div>
+                <label class="legend--padding-top" for="stat.score4" hide-render="">Away result (e.g. 1)</label>
+                <input class="statPerc__resultScore statPerc__resultScore2"  placeholder="Home result"  name="$stat.score4">
+            </div>
+        </div>
+    </div>
+  </div>
+
+
+  <style type="text/css">
+  .statPerc {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  .statPerc .statPerc__itemWrap {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 20px;
+  }
+  .editor-holder .statPerc .statPerc__itemWrap {
+    flex-wrap: wrap;
+  }
+  .statPerc .colorWrap {
+    display: none;
+  }
+  .editor-holder .statPerc .colorWrap {
+    display: flex;
+  }
+  .statPerc .statPerc__item {
+    flex: 0 1 170px;
+    max-width: 50%;
+    text-align: center;
+    box-sizing: border-box;
+  }
+  .editor-holder .statPerc .statPerc__item {
+    flex: 0 1 48%;
+    text-align: left;
+  }
+
+  .statPerc .statPerc__result--home {
+    order: 0;
+  }
+  .statPerc .statPerc__result--away {
+    order: 2;
+  }
+  .statPerc .statPerc__resultBarWrap {
+    position: relative;
+    display: block;
+    margin: 10px 0px;
+    background: #e9e9e9;
+    width: 100%;
+    height: 10px;
+  }
+  .editor-holder .statPerc .statPerc__resultBarWrap {
+    display: none;
+  }
+  .statPerc .statPerc__resultBar {
+    height: 10px;
+    display: block;
+    width: 0%;
+    background: #66cfa0;
+    transition: width 1s;
+  }
+  .statPerc .statPerc__colorPicker {
+    display: none;
+  }
+  .editor-holder .statPerc .statPerc__colorPicker {
+    display: block;
+  }
+  .statPerc .statPerc__name {
+    flex: 0 1 33%;
+    max-width: 33%;
+    order: 1;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 0px 10px;
+  }
+  .editor-holder .statPerc .statPerc__name {
+    flex: 0 0 100%;
+    max-width: 100%;
+    order: 0;
+    padding: 0px;
+  }
+  .statPerc .statPerc__nameInput {
+    flex: 0 0 100%;
+    order: 1;
+  }
+  .editor-holder .statPerc .statPerc__nameInput {
+    order: 0;
+  }
+  .statPerc .statPerc__nameIcon {
+    flex: 1 1 auto;
+  }
+  .editor-holder .statPerc__nameIcon {
+    flex: 0 0 auto;
+  }
+  .statPerc .statPerc__nameIcon img {
+    max-height: 30px;
+    width: auto !important;
+  }
+
+  .editor-holder .statPerc .statPerc__nameIcon img {
+    max-width: 40px;
+    margin: 0 auto 10px auto;
+    display: block;
+  }
+  </style>
+  <script type="text/javascript">
+
+  // checking if function already exists
+  if (typeof statPerc_init != 'function') {
+    function statPerc_init() {
+
+        document.querySelectorAll('.statPerc__result--perc').forEach(function(item, i) {
+            var value = item.querySelectorAll('.statPerc__resultScore--perc')[0].innerHTML;
+
+            item.querySelectorAll('.statPerc__resultBar--perc')[0].style.width = value;
+
+        });
+
+        document.querySelectorAll('.statPerc__itemWrap--number').forEach(function(item, i) {
+
+        var number1 = parseInt(item.querySelectorAll('.statPerc__resultScore1')[0].innerHTML),
+        number2 = parseInt(item.querySelectorAll('.statPerc__resultScore2')[0].innerHTML);
+
+        var actual2 = (number2 * 100)/(number2+number1);
+        var actual1 = 100 - actual2;
+
+        item.querySelectorAll('.statPerc__resultBar1')[0].style.width = actual1 + '%';
+        item.querySelectorAll('.statPerc__resultBar2')[0].style.width = actual2 + '%';
+      });
+    };
+  }
+
+  if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading"){
+    setTimeout(statPerc_init, 500);
+  } else {
+    document.addEventListener('DOMContentLoaded', function(){
+      setTimeout(statPerc_init, 500);
+    });
+  }
+
+
+  </script>

@@ -46,6 +46,14 @@ var socialEmbedRegex = '(iframe|blockquote)+(?:.|\\n)*'
     + '(youtube-nocookie\\.com/embed|youtube\\.com\\/embed|facebook\\.com'
     + '\\/plugins|instagram\\.com\\/p\\/|players\\.brightcove\\.net'
     + '|twitter\\.com\\/.*\\/status)(?:.|\\n)*(iframe|blockquote)';
+var generalPattern = new RegExp(socialEmbedRegex, 'i');
+var youtubePattern = new RegExp('(?:https?:\\/\\/)?'
+    + '(?:www\\.)?(?:youtu\\.be\\/|youtube\\.com\\/|youtube-nocookie\\.com\\/'
+    + '(?:embed\\/|v\\/|watch\\?v=|watch\\?.+&v=))(\\w+)', 'i');
+var facebookPattern = /(?:post\.php|video\.php)\?href=(https?(\w|%|\.)+)/i;
+var instagramPattern = /(https?:\/\/(?:www)?\.?instagram\.com\/p\/(?:\w+.)+\/)/i;
+var twitterPattern = /(https?:\/\/(?:www|mobile)?\.?twitter\.com\/\w+\/status\/\d+)/i;
+var bcPattern = /(http|https)?:?\/\/players.brightcove.net\/\d*\/[a-zA-Z\d_-]*\/index\.html\?videoId=\d*/i;
 
 function fixDataEmbed(data) {
     if (data.html) {
@@ -97,15 +105,16 @@ function isURI(string) {
     return pattern.test(string);
 }
 
+function cleanupURL(string) {
+    var m;
+
+    if ((m = twitterPattern.exec(string)) !== null) {
+        return m[1];
+    }
+    return string;
+}
+
 function replaceEmbedWithUrl(string) {
-    var generalPattern = new RegExp(socialEmbedRegex, 'i');
-    var youtubePattern = new RegExp('(?:https?:\\/\\/)?'
-        + '(?:www\\.)?(?:youtu\\.be\\/|youtube\\.com\\/|youtube-nocookie\\.com\\/'
-        + '(?:embed\\/|v\\/|watch\\?v=|watch\\?.+&v=))(\\w+)', 'i');
-    var facebookPattern = /(?:post\.php|video\.php)\?href=(https?(\w|%|\.)+)/i;
-    var instagramPattern = /(https?:\/\/(?:www)?\.?instagram\.com\/p\/(?:\w+.)+\/)/i;
-    var twitterPattern = /(https?:\/\/(?:www)?\.?twitter\.com\/\w+\/status\/\d+)/i;
-    var bcPattern = /(http|https)?:?\/\/players.brightcove.net\/\d*\/[a-zA-Z\d_-]*\/index\.html\?videoId=\d*/i;
     var m;
 
     // checking if string contains any of the "big four" embeds
@@ -199,6 +208,7 @@ angular
                     input = fixSecureEmbed(input);
                     // if the input is an url, use embed services
                     if (isURI(input)) {
+                        input = cleanupURL(input);
                         // request the embedService with the provided url
                         self.getOptions().embedService.get(input, self.getOptions().coverMaxWidth).then(
                             function successCallback(data) {

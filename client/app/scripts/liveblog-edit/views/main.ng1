@@ -155,11 +155,10 @@
                             <h4>{{'Editor' | translate}}</h4>
                             <button class="btn btn--primary pull-right" ng-click="togglePreview()" ng-disabled="actionStatus() && !isCurrentPostPublished()" translate  ng-if="selectedPostType=='Default'">Preview
                             </button>
-                            <button class="btn pull-right" ng-click="askAndResetEditor()" translate>Reset</button>
+                            <button class="btn pull-right" ng-disabled="uploadingImage" ng-click="askAndResetEditor()" translate>Reset</button>
                             <button class="btn pull-right btn--with-icon-right btn--with-label" ng-click="toggleTypePostDialog()">
                                 <span ng-if="selectedPostType=='Default'">
                                     {{'Choose post type' | translate}}
-                                    <sup class="btn-toggle-label">Beta</sup>
                                 </span>
                                 <span ng-if="selectedPostType!='Default'" translate class="selector-size-limit">{{selectedPostType.name}}</span>
                                 <i class="icon-chevron-right-thin"></i>
@@ -207,7 +206,7 @@
                             </div>
                             <div class="actions__buttons" style="display:table-row">
                                 <div ng-if="blogSecurityService.canPublishAPost()" style="display:table-cell">
-                                    <button class="btn btn--primary" ng-disabled="actionStatus() || !validation.imageUploaded" ng-click="publish()" ng-switch="isCurrentPostPublished()">
+                                    <button class="btn btn--primary" ng-disabled="actionStatus()" ng-click="publish()" ng-switch="isCurrentPostPublished()">
                                         <span ng-switch-when="true"  translate>Update</span>
                                         <span ng-switch-when="false" translate>Publish</span>
                                     </button>

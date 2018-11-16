@@ -91,8 +91,8 @@ vm.getPosts = function(opts) {
   var self = this;
 
   var dbQuery = self.getQuery({
-    sort: opts.sort || self.settings.postOrder,
-    highlightsOnly: self.settings.onlyHighlighted || false,
+    sort: opts.sort || settings.postOrder,
+    highlightsOnly: settings.onlyHighlighted || false,
     notDeleted: opts.notDeleted,
     fromDate: opts.fromDate ? opts.fromDate : false,
     sticky: opts.sticky
@@ -169,7 +169,7 @@ vm.updateViewModel = function(api_response) {
     latestUpdate = self.getLatestUpdate(api_response);
   }
 
-  if (api_response.requestOpts.sort && api_response.requestOpts.sort !== self.settings.postOrder) {
+  if (api_response.requestOpts.sort && api_response.requestOpts.sort !== settings.postOrder) {
     self.vm = getEmptyVm();
     view.hideLoadMore(self.isTimelineEnd(api_response));
     Object.assign(self.vm, api_response);
@@ -178,7 +178,7 @@ vm.updateViewModel = function(api_response) {
   }
 
   if (api_response.requestOpts.sort) {
-    self.settings.postOrder = api_response.requestOpts.sort;
+    settings.postOrder = api_response.requestOpts.sort;
   }
 
   return api_response;
@@ -261,9 +261,17 @@ vm.getQuery = function(opts) {
     query.query.filtered.filter.and[2].range._updated = {
       "gt": opts.fromDate
     };
-    // @TODO: remove `post_status` aswell so we can have unpublish posts
+
     // remove sticky posts from update polling request.
-    query.query.filtered.filter.and.splice(0,1);
+    query.query.filtered.filter.and.splice(0, 1);
+
+    // changing `term`.`post_status` to `terms`.`post_status` with
+    // multiple values so we can have unpublish posts
+    query.query.filtered.filter.and.splice(0, 1);
+
+    query.query.filtered.filter.and.push({
+      terms: { post_status:  ["open", "submitted"] }
+    });
   }
 
   if (opts.highlightsOnly === true) {

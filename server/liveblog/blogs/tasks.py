@@ -5,10 +5,10 @@ import os
 import magic
 import superdesk
 
-from eve.io.base import DataLayer
 from bson import ObjectId
-from celery.exceptions import SoftTimeLimitExceeded
+from eve.io.base import DataLayer
 from flask import current_app as app
+from celery.exceptions import SoftTimeLimitExceeded
 from superdesk import get_resource_service
 from superdesk.celery_app import celery
 from superdesk.errors import SuperdeskApiError
@@ -18,7 +18,8 @@ from .app_settings import (BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR,
                            BLOGSLIST_DIRECTORY, CONTENT_TYPES)
 from .embeds import embed, render_bloglist_embed
 from .exceptions import MediaStorageUnsupportedForBlogPublishing
-from .utils import check_media_storage, get_blog_path, get_bloglist_path
+from .utils import (check_media_storage, get_blog_path,
+                    get_bloglist_path, is_s3_storage_enabled)
 
 logger = logging.getLogger('superdesk')
 
@@ -46,7 +47,12 @@ def publish_embed(blog_id, theme=None, output=None, api_host=None):
 
 
 def delete_embed(blog, theme=None, output=None):
-    check_media_storage()
+    """
+    Will remove the corresponding embed file from S3 storage if enabled.
+    It also update `public_urls` value on the given blog. This should be
+    handled or migrated to the OutputResource later
+    """
+
     outputs = get_resource_service('outputs')
     blog_id = blog.get('_id')
     public_urls = blog.get('public_urls', {'output': {}, 'theme': {}})
@@ -60,18 +66,21 @@ def delete_embed(blog, theme=None, output=None):
         file_path = get_blog_path(blog_id, theme)
         public_urls['theme'].pop(theme, None)
     else:
-        for output_id, output_url in public_urls['output'].items():
-            out = outputs.find_one(req=None, _id=output_id)
-            if out:
-                output_path = get_blog_path(blog_id, out.get('theme'), output_id)
-                app.media.delete(app.media.media_id(output_path, version=False))
-        for theme_name, theme_url in public_urls['theme'].items():
-            theme_path = get_blog_path(blog_id, theme_name)
-            app.media.delete(app.media.media_id(theme_path, version=False))
-        file_path = get_blog_path(blog_id)
+        if is_s3_storage_enabled():
+            for output_id, output_url in public_urls['output'].items():
+                out = outputs.find_one(req=None, _id=output_id)
+                if out:
+                    output_path = get_blog_path(blog_id, out.get('theme'), output_id)
+                    app.media.delete(app.media.media_id(output_path, version=False))
+            for theme_name, theme_url in public_urls['theme'].items():
+                theme_path = get_blog_path(blog_id, theme_name)
+                app.media.delete(app.media.media_id(theme_path, version=False))
+            file_path = get_blog_path(blog_id)
 
     # Remove existing file.
-    app.media.delete(app.media.media_id(file_path, version=False))
+    if is_s3_storage_enabled():
+        app.media.delete(app.media.media_id(file_path, version=False))
+
     if output or theme:
         get_resource_service('blogs').system_update(blog_id, {'public_urls': public_urls}, blog)
 
@@ -199,6 +208,7 @@ def publish_blog_embeds_on_s3(blog_or_id, safe=True, save=True, subtask_save=Fal
 @celery.task(soft_time_limit=1800)
 def delete_blog_embeds_on_s3(blog, theme=None, output=None, safe=True):
     logger.warning('delete_blog_embed_on_s3 for blog "{}" started.'.format(blog.get('_id')))
+
     try:
         delete_embed(blog, theme=theme, output=output)
     except MediaStorageUnsupportedForBlogPublishing as e:
