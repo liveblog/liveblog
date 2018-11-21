@@ -111,7 +111,8 @@ def check_limit_and_delete_oldest(blog_id):
                 % (doc['_id'], blog['posts_limit'], blog['_id']))
 
         stats = get_blog_stats(blog_id)
-        push_notification('blog:limits', blog_id=blog_id, stats=stats)
+        if stats:
+            push_notification('blog:limits', blog_id=blog_id, stats=stats)
 
 
 def get_blog_stats(blog_or_id):

@@ -320,7 +320,8 @@ class PostsService(ArchiveService):
             push_notification('posts', deleted=True, post_id=original.get('_id'))
 
             stats = get_blog_stats(blog_id)
-            push_notification('blog:limits', blog_id=blog_id, stats=stats)
+            if stats:
+                push_notification('blog:limits', blog_id=blog_id, stats=stats)
         else:
             # Update blog post data and embed for SEO-enabled blogs.
             update_post_blog_data.delay(doc, action='updated')

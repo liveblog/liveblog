@@ -4,7 +4,7 @@ from superdesk import get_resource_service
 from superdesk.celery_app import celery
 from celery.exceptions import SoftTimeLimitExceeded
 from liveblog.blogs.tasks import publish_blog_embeds_on_s3
-from liveblog.blogs.utils import is_seo_enabled, get_blog_stats
+from liveblog.blogs.utils import is_seo_enabled
 from eve.io.base import DataLayer
 
 logger = logging.getLogger('superdesk')
@@ -20,6 +20,7 @@ def update_post_blog_data(post, action='created'):
     :return: None
     """
     blogs = get_resource_service('client_blogs')
+    posts = get_resource_service('posts')
     blog_id = post.get('blog')
     if not blog_id:
         return
@@ -29,8 +30,14 @@ def update_post_blog_data(post, action='created'):
         return
 
     # Fetch total posts.
-    stats = get_blog_stats(blog_id)
-    updates = {'total_posts': stats['total_posts']}
+    total_posts = posts.find({'$and': [
+        {'blog': blog_id},
+        {'post_status': 'open'},
+        {'deleted': False}
+    ]}).count()
+    updates = {
+        'total_posts': total_posts,
+    }
 
     if action in ('updated', 'created'):
         # Update last_updated_post or last_created_post.

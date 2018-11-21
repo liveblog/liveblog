@@ -76,7 +76,7 @@ before_script:
     - ./scripts/elastic.sh
     - sudo service elasticsearch restart && sleep 10
     - cd $TRAVIS_BUILD_DIR/server
-    - (nohup env LOG_CONFIG_FILE=../logging_travis_config.yml SUPERDESK_URL='http://localhost:5000/api' SUPERDESK_CLIENT_URL='http://localhost:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &)
+    - (nohup env SUPERDESK_URL='http://localhost:5000/api' SUPERDESK_CLIENT_URL='http://localhost:9000' WEB_CONCURRENCY=3 WEB_TIMEOUT=8 SUPERDESK_TESTING='True' honcho start &)
     - cd $TRAVIS_BUILD_DIR/client
     - MARKETPLACE=true SYNDICATION=true grunt build --server='http://localhost:5000/api' --ws='ws://localhost:5100'
     - cd dist
@@ -96,7 +96,7 @@ script:
     - python3 manage.py register_local_themes ;
     - python3 manage.py register_bloglist ;
     - cd $TRAVIS_BUILD_DIR/client
-    - ./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome 2.36
+    - ./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome 2.44
     - ./node_modules/.bin/protractor protractor-conf.js
 
 after_script:
