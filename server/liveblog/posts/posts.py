@@ -15,7 +15,7 @@ from superdesk.errors import SuperdeskApiError
 from superdesk import get_resource_service
 from liveblog.common import check_comment_length
 
-from ..blogs.utils import check_limit_and_delete_oldest
+from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
 from .tasks import update_post_blog_data, update_post_blog_embed
 
 
@@ -304,7 +304,8 @@ class PostsService(ArchiveService):
         super().on_updated(updates, original)
         out_service = get_resource_service('syndication_out')
         # invalidate cache for updated blog
-        app.blog_cache.invalidate(original.get('blog'))
+        blog_id = original.get('blog')
+        app.blog_cache.invalidate(blog_id)
         doc = original.copy()
         doc.update(updates)
         posts = []
@@ -317,6 +318,9 @@ class PostsService(ArchiveService):
             out_service.send_syndication_post(original, action='deleted')
             # Push notification.
             push_notification('posts', deleted=True, post_id=original.get('_id'))
+
+            stats = get_blog_stats(blog_id)
+            push_notification('blog:limits', blog_id=blog_id, stats=stats)
         else:
             # Update blog post data and embed for SEO-enabled blogs.
             update_post_blog_data.delay(doc, action='updated')

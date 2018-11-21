@@ -687,4 +687,13 @@ export default function BlogEditController(
             $scope.ingestQueue.queue = $scope.ingestQueue.queue.concat(syndPosts);
         }
     });
+
+    // receives update data of the blog from backend.
+    // for we will just update total posts and posts limit
+    $scope.$on('blog:limits', (event, data) => {
+        if (blog._id === data.blog_id) {
+            blog['posts_limit'] = data.stats['posts_limit'];
+            blog['total_posts'] = data.stats['total_posts'];
+        }
+    });
 }
