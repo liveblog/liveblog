@@ -1,17 +1,17 @@
 version: 1
 disable_existing_loggers: true
 loggers:
- superdesk:
-  level: DEBUG
- superdesk.ws:
-  level: DEBUG
- superdesk.websockets_comms:
-  level: DEBUG
- flask.ext.cors:
-  level: DEBUG
- elasticsearch:
-  level: DEBUG
- ldap:
-  level: DEBUG
- worker:
-  level: DEBUG
+  superdesk:
+    level: WARN
+  superdesk.ws:
+    level: WARN
+  superdesk.websockets_comms:
+    level: WARN
+  flask.ext.cors:
+    level: ERROR
+  elasticsearch:
+    level: WARN
+  ldap:
+    level: WARN
+  worker:
+    level: WARN

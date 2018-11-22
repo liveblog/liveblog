@@ -164,7 +164,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         return str(e), 500
 
     if not template_content:
-        logger.error('Template file not found for theme "%s". Theme: %s' % (theme_name, theme))
+        logger.warning('Template file not found for theme "%s". Theme: %s' % (theme_name, theme))
         return 'Template file not found', 500
 
     # Compute the assets root.
