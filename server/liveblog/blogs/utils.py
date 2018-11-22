@@ -99,7 +99,7 @@ def check_limit_and_delete_oldest(blog_id):
         return
 
     post_service = get_resource_service('posts')
-    query_params = {'blog': ObjectId(blog_id), 'particular_type': 'post'}
+    query_params = {'blog': ObjectId(blog_id), 'particular_type': 'post', 'deleted': False}
 
     if blog['posts_limit'] != UNLIMITED and blog['total_posts'] >= blog['posts_limit']:
         oldest_post = post_service.find(query_params).sort('_created', pymongo.ASCENDING).limit(1)
