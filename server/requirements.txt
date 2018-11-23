@@ -12,3 +12,5 @@ pymongo>=0.4,<4.0
 
 # Superdesk
 -e git://github.com/superdesk/superdesk-core.git@v1.17.1#egg=Superdesk-Core
+
+redis>=2.10.5,<3.0
