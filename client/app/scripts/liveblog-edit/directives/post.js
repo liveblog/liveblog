@@ -79,6 +79,13 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                         instagramService.processEmbeds();
                     }
                 },
+                userify: function(user) {
+                    if (user._id === $rootScope.currentUser._id) {
+                        return 'You';
+                    }
+
+                    return user.display_name;
+                },
                 removePost: function(post) {
                     postsService.remove(angular.copy(post)).then((message) => {
                         notify.pop();

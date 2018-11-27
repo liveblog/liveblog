@@ -16,13 +16,13 @@
             <figure class="icon-stop"><img /></figure>
             <div ng-switch on="post.edit_flag.users.length">
                 <span ng-switch-when="1" ng-switch-when-separator="|">
-                    <strong>{{post.edit_flag.users[0].display_name}}</strong> is currently working on this post.
+                    <strong>{{userify(post.edit_flag.users[0])}}</strong> {{userify(post.edit_flag.users[0]) === "You" ? "are" : "is"}} currently working on this post.
                 </span>
                 <span ng-switch-when="2">
-                    <strong>{{post.edit_flag.users[0].display_name}}</strong> and <strong>{{post.edit_flag.users[1].display_name}}</strong> are currently working on this post.
+                    <strong>{{userify(post.edit_flag.users[0])}}</strong> and <strong>{{userify(post.edit_flag.users[1])}}</strong> are currently working on this post.
                 </span>
                 <span ng-switch-default>
-                    <strong>{{post.edit_flag.users[0].display_name}}</strong> and <strong>{{post.edit_flag.users[1].display_name}}</strong> and others are currently working on this post.
+                    <strong>{{userify(post.edit_flag.users[0])}}</strong> and <strong>{{userify(post.edit_flag.users[1])}}</strong> and others are currently working on this post.
                 </span>
             </div>
         </div>
