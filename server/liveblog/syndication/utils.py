@@ -118,7 +118,7 @@ def extract_post_items_data(original_doc):
     for group in original_doc['groups']:
         if group['id'] == 'main':
             for ref in group['refs']:
-                item = items_service.find_one(req=None, guid=ref['guid'])
+                item = items_service.find_one(req=None, _id=ref['residRef'])
                 syndicated_creator = user_service.find_one(req=None, _id=item['original_creator'])
                 syndicated_obj = None
                 if syndicated_creator:

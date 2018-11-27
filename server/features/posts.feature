@@ -862,7 +862,7 @@ Feature: Post operations
         Given "blogs"
         """
         [{"title": "test_blog3", "blog_preferences": {"theme": "forest", "language": "fr"}}]
-        """        
+        """
         When we post to "items" with success
         """
         [{"text": "open test", "blog": "#blogs._id#"}]
@@ -940,7 +940,7 @@ Feature: Post operations
         Then we get list with 3 items
         """
         {"_items": [{"post_status":"open", "sticky": true, "order": 2}, {"post_status":"open", "order": 0}, {"post_status":"draft", "order": 1}]}
-        """      
+        """
         When we patch "posts/#posts._id#"
         """
         {
@@ -950,4 +950,4 @@ Feature: Post operations
         Then we get new resource
         """
         {"post_status": "open", "sticky": false,"blog": "#blogs._id#", "order": 2}
-        """   
+        """

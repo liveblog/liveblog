@@ -528,6 +528,7 @@ class ThemesService(BaseService):
             else:
                 response = dict(status='unchanged', theme=theme)
         else:
+            self.check_themes_limit()
             self.create([theme])
             response = dict(status='created', theme=theme)
 
@@ -566,13 +567,17 @@ class ThemesService(BaseService):
 
         return blogs
 
-    def on_create(self, docs):
+    def check_themes_limit(self, docs=[]):
         subscription = SUBSCRIPTION_LEVEL
+
         if subscription in SUBSCRIPTION_MAX_THEMES:
             all = self.find({})
 
             if (all.count() + len(docs) > SUBSCRIPTION_MAX_THEMES[subscription]):
                 raise SuperdeskApiError.forbiddenError(message='Cannot add another theme.')
+
+    def on_create(self, docs):
+        self.check_themes_limit(docs)
 
     def on_updated(self, updates, original):
         # Republish the related blogs if the settings have been changed.
