@@ -15,9 +15,10 @@ postsService.$inject = [
     'api',
     '$q',
     'userList',
+    'session',
 ];
 
-export default function postsService(api, $q, userList) {
+export default function postsService(api, $q, userList, session) {
     var listOfUsers = [];
 
     function filterPosts(filters, postsCriteria) {
@@ -332,11 +333,52 @@ export default function postsService(api, $q, userList) {
         return savePost(post.blog, post, [], deleted);
     }
 
+    function flagPost(postId) {
+        return api('post_flags').save({postId: postId});
+    }
+
+    function removeFlagPost(flag) {
+        api('post_flags').remove(flag);
+    }
+
+    function setFlagTimeout(post, cb) {
+        // perhaps not the best place to put this but I needed this
+        // to be accessible from diferent directives. If there is another/better way
+        // please improve this ;)
+        const editFlag = post.edit_flag;
+        const current = moment().utc();
+        const flatExpireAt = moment(editFlag.expireAt);
+        const seconds = flatExpireAt.diff(current, 'seconds');
+        const key = `flagTimeout_${editFlag.postId}`;
+
+        // if flag is already expired, let's remove id right away
+        if (seconds < 0) {
+            removeFlagPost(editFlag);
+            return;
+        }
+
+        // try to remove previous timeout just in case
+        clearTimeout(window[key]);
+
+        window[key] = setTimeout(() => {
+            post.edit_flag = undefined;
+            cb();
+
+            // then remove also from backend if user is editing
+            if (editFlag.users.indexOf(session.identity) !== -1) {
+                removeFlagPost(editFlag);
+            }
+        }, seconds * 1000);
+    }
+
     return {
         getPosts: getPosts,
         getLatestUpdateDate: getLatestUpdateDate,
         retrievePost: retrievePost,
         savePost: savePost,
+        flagPost: flagPost,
+        removeFlagPost: removeFlagPost,
+        setFlagTimeout: setFlagTimeout,
         saveDraft: function(blogId, post, items, sticky, highlight) {
             return savePost(
                 blogId,

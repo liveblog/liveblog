@@ -187,19 +187,51 @@ export default function BlogEditController(
         return areallBlocksempty || !$scope.isCurrentPostUnsaved();
     }
 
+    function removeEditFlag(postId, flag) {
+        postsService.removeFlagPost(flag);
+        findPostAndUpdate(postId, undefined, angular.noop);
+    }
+
+    function cleanUpFlag() {
+        if ($scope.currentPost && $scope.currentPost.edit_flag) {
+            removeEditFlag($scope.currentPost._id, $scope.currentPost.edit_flag);
+        }
+    }
+
     // ask in a modalbox if the user is sure to want to overwrite editor.
     // call the callback if user say yes or if editor is empty
     function doOrAskBeforeIfEditorIsNotEmpty() {
         var deferred = $q.defer();
 
         if (isEditorClean()) {
+            cleanUpFlag();
             deferred.resolve();
         } else {
             modal
                 .confirm(gettext(
                     'You have content in the editor. You will lose it if you continue without saving it before.'
                 ))
+                .then(() => {
+                    cleanUpFlag();
+                    deferred.resolve();
+                }, deferred.reject);
+        }
+        return deferred.promise;
+    }
+
+    function doOrAskBeforeIfPostFlagged(post) {
+        var deferred = $q.defer();
+
+        if (post.edit_flag) {
+            let subMsg = post.edit_flag.users.length > 1 ? 'other users are' : 'another user is';
+            let confirmMsg =
+                `Currently ${subMsg} editing this post. Do you still want to proceed?`;
+
+            modal
+                .confirm(confirmMsg)
                 .then(deferred.resolve, deferred.reject);
+        } else {
+            deferred.resolve();
         }
         return deferred.promise;
     }
@@ -237,6 +269,62 @@ export default function BlogEditController(
         }
     });
 
+    /**
+     * Basically this just receives the data from flag registry with
+     * the users information attached to it. It also includes the flag TTL
+     */
+    $scope.$on('posts:updateFlag', (event, data) => {
+        data.flags.forEach((flag, index) => {
+            findPostAndUpdate(flag.postId, flag, afterPostFlagUpdate);
+        });
+    });
+
+    $scope.$on('posts:deletedFlag', (event, data) => {
+        const refreshCallback = () => {
+            $scope.$apply();
+        };
+        const flag = data.update ? data.flag : undefined;
+        const callback = data.update ? afterPostFlagUpdate : refreshCallback;
+
+        findPostAndUpdate(data.flag.postId, flag, callback);
+    });
+
+    function findPostAndUpdate(postId, flag, cb) {
+        let foundPost;
+
+        // let's first try to update at sticky items
+        self.timelineStickyInstance.pagesManager.updatePostFlag(postId, flag, (post) => {
+            cb(post, flag);
+            foundPost = post;
+        });
+
+        if (!foundPost) {
+            // then let's try to update it in timeline if not found
+            self.timelineInstance.pagesManager.updatePostFlag(postId, flag, (post) => {
+                cb(post, flag);
+            });
+        }
+    }
+
+    function afterPostFlagUpdate(post, flag) {
+        // let's also update post if its being edited
+        if ($scope.currentPost && $scope.currentPost._id === post._id) {
+            $scope.currentPost.edit_flag = flag;
+        }
+
+        // to trigger rendering
+        $scope.$apply();
+
+        // let's set the timeout and refresh when expired
+        postsService.setFlagTimeout(post, () => {
+            if ($scope.currentPost && post._id === $scope.currentPost._id) {
+                cleanEditor();
+            } else {
+                $scope.$apply();
+            }
+        });
+    }
+
     // remove and clean every items from the editor
     function cleanEditor(actionDisabled) {
         var actionDisable = actionDisabled;
@@ -244,6 +332,7 @@ export default function BlogEditController(
         if (!self.editor) {
             return;
         }
+
         $scope.enableEditor = false;
 
         actionDisable = typeof actionDisable === 'boolean' ? actionDisable : true;
@@ -463,8 +552,25 @@ export default function BlogEditController(
                     $scope.actionDisabled = false;
                 }, delay);
             }
-            $scope.openPanel('editor');
-            doOrAskBeforeIfEditorIsNotEmpty().then(fillEditor.bind(null, post));
+
+            function openEditPost(post) {
+                $scope.openPanel('editor');
+                doOrAskBeforeIfEditorIsNotEmpty().then(() => {
+                    // let's flag the post so other users are aware of editing status
+                    postsService.flagPost(post._id);
+
+                    // do editor stuff
+                    fillEditor(post);
+                });
+            }
+
+            if (post.edit_flag) {
+                doOrAskBeforeIfPostFlagged(post).then(() => {
+                    openEditPost(post);
+                });
+            } else {
+                openEditPost(post);
+            }
         },
         saveAsContribution: function() {
             $scope.actionPending = true;
@@ -526,6 +632,8 @@ export default function BlogEditController(
                 notify.info(gettext('Saving post'));
                 savingPost(blog);
                 blog.total_posts += 1;
+
+                cleanUpFlag();
             });
         },
         filterHighlight: function(highlight) {
@@ -558,6 +666,7 @@ export default function BlogEditController(
                 }
             },
             isEditorClean: isEditorClean,
+            cleanUpFlag: cleanUpFlag,
             setPending: function(value) {
                 $scope.actionPending = value;
             },
@@ -687,6 +796,16 @@ export default function BlogEditController(
             $scope.ingestQueue.queue = $scope.ingestQueue.queue.concat(syndPosts);
         }
     });
+
+    // we listen to change route event in order to remove flag when leaving the
+    // the editor view. We also make sure to destroy it to avoid multiple listeners
+    const sentinel = $rootScope.$on('$routeChangeSuccess', (e, currentRoute, prevRoute) => {
+        if ($scope.currentPost) {
+            cleanUpFlag();
+        }
+    });
+
+    $scope.$on('$destroy', sentinel);
 
     // receives update data of the blog from backend.
     // for we will just update total posts and posts limit

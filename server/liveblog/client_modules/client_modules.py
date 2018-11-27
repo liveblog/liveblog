@@ -280,6 +280,7 @@ class ClientBlogPostsService(BlogPostsService):
         # LBSD-2010
         doc['original_creator'] = get_resource_service('users') \
             .find_one(req=None, _id=doc['original_creator'])
+
         return doc
 
     def on_fetched(self, docs):
