@@ -18,6 +18,7 @@ from superdesk import get_resource_service
 from liveblog.common import check_comment_length, get_user
 
 from settings import EDIT_POST_FLAG_TTL
+from ..blogs.utils import check_limit_and_delete_oldest, get_blog_stats
 from .tasks import update_post_blog_data, update_post_blog_embed
 
 
@@ -230,7 +231,8 @@ class PostsService(ArchiveService):
                     post['auto_publish'] = synd_in.get('auto_publish')
 
             posts.append(post)
-            app.blog_cache.invalidate(doc.get('blog'))
+            blog_id = doc.get('blog')
+            app.blog_cache.invalidate(blog_id)
 
             # Update blog post data and embed for SEO-enabled blogs.
             update_post_blog_data.delay(doc, action='created')
@@ -240,6 +242,10 @@ class PostsService(ArchiveService):
             if doc['post_status'] == 'open':
                 logger.info('Send document to consumers (if syndicated): {}'.format(doc['_id']))
                 out_service.send_syndication_post(doc, action='created')
+
+            # let's check for posts limits in blog and remove old one if needed
+            if blog_id:
+                check_limit_and_delete_oldest(blog_id)
 
         # send notifications
         push_notification('posts', created=True, post_status=doc['post_status'], posts=posts)
@@ -302,7 +308,8 @@ class PostsService(ArchiveService):
         super().on_updated(updates, original)
         out_service = get_resource_service('syndication_out')
         # invalidate cache for updated blog
-        app.blog_cache.invalidate(original.get('blog'))
+        blog_id = original.get('blog')
+        app.blog_cache.invalidate(blog_id)
         doc = original.copy()
         doc.update(updates)
         posts = []
@@ -315,10 +322,10 @@ class PostsService(ArchiveService):
             out_service.send_syndication_post(original, action='deleted')
             # Push notification.
             push_notification('posts', deleted=True, post_id=original.get('_id'))
-        # NOTE: Seems unsused, to be removed later if no bug appears.
-        # elif updates.get('post_status') == 'draft':
-        #     push_notification('posts', drafted=True, post_id=original.get('_id'),
-        #                       author_id=original.get('original_creator'))
+
+            stats = get_blog_stats(blog_id)
+            if stats:
+                push_notification('blog:limits', blog_id=blog_id, stats=stats)
         else:
             # Update blog post data and embed for SEO-enabled blogs.
             update_post_blog_data.delay(doc, action='updated')

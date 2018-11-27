@@ -98,3 +98,7 @@ server/themes/
 
 # Monorepo
 node_modules
+
+package-lock.json
+.vscode/
+.python-version

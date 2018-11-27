@@ -164,7 +164,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         return str(e), 500
 
     if not template_content:
-        logger.error('Template file not found for theme "%s". Theme: %s' % (theme_name, theme))
+        logger.warning('Template file not found for theme "%s". Theme: %s' % (theme_name, theme))
         return 'Template file not found', 500
 
     # Compute the assets root.
@@ -208,7 +208,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
             api_host=api_host
         )
 
-    async = theme.get('asyncTheme', False)
+    asyncTheme = theme.get('asyncTheme', False)
     api_host = api_host.replace('//', app.config.get('EMBED_PROTOCOL')) if api_host.startswith('//') else api_host
     api_host = api_host.replace('http://', app.config.get('EMBED_PROTOCOL'))
 
@@ -221,7 +221,7 @@ def embed(blog_id, theme=None, output=None, api_host=None):
         'template': template_content,
         'debug': app.config.get('LIVEBLOG_DEBUG'),
         'assets_root': assets_root,
-        'async': async,
+        'async': asyncTheme,
         'i18n': i18n
     }
     if is_amp:
