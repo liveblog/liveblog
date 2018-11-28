@@ -19,7 +19,7 @@ from .app_settings import (BLOGLIST_ASSETS, BLOGSLIST_ASSETS_DIR,
 from .embeds import embed, render_bloglist_embed
 from .exceptions import MediaStorageUnsupportedForBlogPublishing
 from .utils import (check_media_storage, get_blog_path,
-                    get_bloglist_path, is_s3_storage_enabled)
+                    get_bloglist_path, is_s3_storage_enabled, get_blog)
 
 logger = logging.getLogger('superdesk')
 
@@ -153,23 +153,9 @@ def _publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sa
         return public_url, public_urls
 
 
-def _get_blog(blog_or_id):
-    blogs = get_resource_service('client_blogs')
-    if isinstance(blog_or_id, (str, ObjectId)):
-        blog_id = blog_or_id
-        blog = blogs.find_one(req=None, _id=blog_or_id)
-    elif isinstance(blog_or_id, dict):
-        blog = blog_or_id
-        blog_id = blog['_id']
-    else:
-        raise ValueError(blog_or_id)
-
-    return blog_id, blog
-
-
 @celery.task(soft_time_limit=1800)
 def publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, save=True):
-    blog_id, blog = _get_blog(blog_or_id)
+    blog_id, blog = get_blog(blog_or_id)
     if not blog:
         logger.warning('publish_blog_on_s3 for blog "{}" not started: blog not found'.format(blog_id))
         return
@@ -188,7 +174,7 @@ def publish_blog_embed_on_s3(blog_or_id, theme=None, output=None, safe=True, sav
 @celery.task(soft_time_limit=1800)
 def publish_blog_embeds_on_s3(blog_or_id, safe=True, save=True, subtask_save=False):
     blogs = get_resource_service('client_blogs')
-    blog_id, blog = _get_blog(blog_or_id)
+    blog_id, blog = get_blog(blog_or_id)
     if not blog:
         logger.warning('publish_blog_on_s3 for blog "{}" not started: blog not found'.format(blog_id))
         return

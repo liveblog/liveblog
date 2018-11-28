@@ -8,8 +8,24 @@
         'active': (post.order === reorderPost.order || post.order === keepHighlighted),
         'unread': functionize(postsListCtrl.isUnreadPost)(post),
         'pinned': post.sticky == true && !post.lb_highlight,
-        'lb_highlight': post.lb_highlight == true
-    }">
+        'lb_highlight': post.lb_highlight == true,
+        'flag-yellow': post.edit_flag && post.edit_flag.users.length === 1,
+        'flag-red': post.edit_flag && post.edit_flag.users.length > 1,
+        }">
+        <div class="flag-editors" ng-if="post.edit_flag">
+            <figure class="icon-stop"><img /></figure>
+            <div ng-switch on="post.edit_flag.users.length">
+                <span ng-switch-when="1" ng-switch-when-separator="|">
+                    <strong>{{userify(post.edit_flag.users[0])}}</strong> {{userify(post.edit_flag.users[0]) === "You" ? "are" : "is"}} currently working on this post.
+                </span>
+                <span ng-switch-when="2">
+                    <strong>{{userify(post.edit_flag.users[0])}}</strong> and <strong>{{userify(post.edit_flag.users[1])}}</strong> are currently working on this post.
+                </span>
+                <span ng-switch-default>
+                    <strong>{{userify(post.edit_flag.users[0])}}</strong> and <strong>{{userify(post.edit_flag.users[1])}}</strong> and others are currently working on this post.
+                </span>
+            </div>
+        </div>
         <div class="lb-post__holder lb-mainitem-{{ post.mainItem.item.item_type}}">
             <div class="lb-post__figure">
                 <figure ng-class="{'avatar': (post.mainItem.item.item_type !== 'comment'),

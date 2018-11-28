@@ -96,7 +96,7 @@ script:
     - python3 manage.py register_local_themes ;
     - python3 manage.py register_bloglist ;
     - cd $TRAVIS_BUILD_DIR/client
-    - ./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome 2.36
+    - ./node_modules/protractor/bin/webdriver-manager update --gecko false --versions.chrome 2.44
     - ./node_modules/.bin/protractor protractor-conf.js
 
 after_script:

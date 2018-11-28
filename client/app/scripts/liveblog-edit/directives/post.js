@@ -36,6 +36,13 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
         restrict: 'E',
         templateUrl: postTpl,
         link: function(scope, elem, attrs) {
+            // we set timeout function to remove edit flag after expireAt date
+            if (scope.post.edit_flag) {
+                postsService.setFlagTimeout(scope.post, () => {
+                    scope.$apply();
+                });
+            }
+
             // if the escape key is press then clear the reorder action.
             function escClearReorder(e) {
                 if (e.keyCode === 27) {
@@ -71,6 +78,13 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                     if (instagramService.postHasEmbed(scope.post.groups[1].refs)) {
                         instagramService.processEmbeds();
                     }
+                },
+                userify: function(user) {
+                    if (user._id === $rootScope.currentUser._id) {
+                        return 'You';
+                    }
+
+                    return user.display_name;
                 },
                 removePost: function(post) {
                     postsService.remove(angular.copy(post)).then((message) => {

@@ -204,4 +204,51 @@
     &__editable:focus {
         border-color: #999999;
     }
+
+    &.flag-yellow {
+        border-left: 5px solid #f8a501 !important;
+
+        .flag-editors {
+            color: #ef7d4f;
+        }
+    }
+
+    &.flag-red {
+        border-left: 5px solid #ea5000 !important;
+
+        .flag-editors {
+            color: #f0845a;
+        }
+    }
+
+    &[class*="flag-"] {
+        border-bottom-left-radius: 5px;
+        border-top-left-radius: 5px;
+
+        .flag-editors {
+            border-bottom: 1px solid #d0d0d0;
+            font-size: 12px;
+            background: white;
+            line-height: 15px;
+            padding: 6px 12px 7px 12px;
+
+            .icon-stop {
+                background: transparent url("~images/icon-stop.svg") no-repeat;
+                background-size: 100%;
+                display: block;
+                float: left;
+                height: 15px;
+                width: 15px;
+                overflow: hidden;
+                margin-right: 5px;
+                margin-top: 1px;
+
+                img {
+                    width: 100%;
+                    height: auto;
+                    display: block;
+                }
+            }
+        }
+    }
 }

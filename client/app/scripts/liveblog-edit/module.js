@@ -109,9 +109,27 @@ const app = angular.module('liveblog.edit', [
     .config(['SirTrevorOptionsProvider', 'SirTrevorProvider', function(SirTrevorOptions, SirTrevorParam) {
         // here comes all the sir trevor customization (except custom blocks which are in the SirTrevorBlocks module)
         const SirTrevor = SirTrevorParam.$get();
-        // change the remove trash icon by a cross
 
+        var onRemoveBlock = function() {
+            const editorOptions = SirTrevor.Block.prototype.getOptions();
+
+            // I don't like this solution using timeout, but we need to wait just a bit
+            // to check if operations are done (block removing, reset, edit, etc)
+            setTimeout(() => {
+                if (editorOptions.isEditorClean()) {
+                    editorOptions.disableSubmit(true);
+                    editorOptions.cleanUpFlag();
+                }
+            }, 500);
+        };
+
+        // let's make sure to avoid double binding
+        SirTrevor.EventBus.off('block:remove');
+        SirTrevor.EventBus.on('block:remove', onRemoveBlock);
+
+        // change the remove trash icon by a cross
         SirTrevor.BlockDeletion.prototype.attributes['data-icon'] = 'close';
+
         // extends the options given as parameter to the editor contructor
         SirTrevorOptions.$extend({
             onEditorRender: function() {
@@ -127,17 +145,6 @@ const app = angular.module('liveblog.edit', [
                 }
                 SirTrevor.EventBus.on('block:create:existing', removeEmptyBlockExceptTheBlock);
                 SirTrevor.EventBus.on('block:create:new', removeEmptyBlockExceptTheBlock);
-
-                var onRemoveBlock = function() {
-                    const editorOptions = self.options;
-
-                    if (editorOptions.isEditorClean()) {
-                        editorOptions.disableSubmit(true);
-                    }
-                };
-
-                onRemoveBlock = onRemoveBlock.bind(self);
-                SirTrevor.EventBus.on('block:remove', onRemoveBlock);
             },
             blockTypes: ['Text', 'Image', 'Embed', 'Quote', 'Comment'],
             // render a default block when the editor is loaded
