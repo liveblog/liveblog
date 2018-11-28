@@ -31,7 +31,8 @@ def get_theme_template(theme, template_name, theme_service=None):
 
     if os.path.exists(template_file_name):
         template_cnt = open(template_file_name, encoding='utf-8').read()
+        return template_env.from_string(template_cnt)
     else:
-        logger.warning("Theme template `%s` not found. Using empty string" % template_file_name)
-
-    return template_env.from_string(template_cnt)
+        logger.warning(
+            "Theme template `%s` not found. Trying to get it from env (inheritance)" % template_file_name)
+        return template_env.get_template(template_name)
