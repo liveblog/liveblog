@@ -291,18 +291,21 @@ export default function BlogEditController(
 
     function findPostAndUpdate(postId, flag, cb) {
         let foundPost;
+        let placesToLook = [
+            self.timelineStickyInstance,
+            self.timelineInstance,
+            self.contributionsPostsInstance,
+            self.draftPostsInstance,
+        ];
 
-        // let's first try to update at sticky items
-        self.timelineStickyInstance.pagesManager.updatePostFlag(postId, flag, (post) => {
-            cb(post, flag);
-            foundPost = post;
-        });
-
-        if (!foundPost) {
-            // then let's try to update it in timeline if not found
-            self.timelineInstance.pagesManager.updatePostFlag(postId, flag, (post) => {
+        // let's loop over the possible places to find the post and update it
+        for (let place of placesToLook) {
+            place.pagesManager.updatePostFlag(postId, flag, (post) => {
                 cb(post, flag);
+                foundPost = post;
             });
+
+            if (foundPost) break;
         }
     }
 
