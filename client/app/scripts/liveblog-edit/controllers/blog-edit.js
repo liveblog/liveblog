@@ -93,7 +93,7 @@ export default function BlogEditController(
     const targetIconRegex = /target\s*=\s*"<\/?i>blank"/g;
     // start listening for unread posts.
 
-    unreadPostsService.startListening();
+    unreadPostsService.startListening(blog);
     // return the list of items from the editor
     function getItemsFromEditor() {
         if (!isPostFreetype()) {

@@ -218,8 +218,10 @@ class PostsService(ArchiveService):
         posts = []
         out_service = get_resource_service('syndication_out')
         for doc in docs:
+            blog_id = doc.get('blog')
             post = {}
             post['id'] = doc.get('_id')
+            post['blog_id'] = blog_id
 
             # Check if post has syndication_in entry.
             post['syndication_in'] = doc.get('syndication_in')
@@ -231,7 +233,6 @@ class PostsService(ArchiveService):
                     post['auto_publish'] = synd_in.get('auto_publish')
 
             posts.append(post)
-            blog_id = doc.get('blog')
             app.blog_cache.invalidate(blog_id)
 
             # Update blog post data and embed for SEO-enabled blogs.
