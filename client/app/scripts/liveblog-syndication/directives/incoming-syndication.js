@@ -62,7 +62,6 @@ export default function incomingSyndication(
             // On incoming post, we reload all the posts.
             // Not very fast, but easy to setup
             scope.$on('posts', (e, data) => {
-                console.log('Hay un update', e, data); // eslint-disable-line
                 // let's wait for tasks to finish and then pull data from backend
                 setTimeout(() => {
                     IncomingSyndicationActions
