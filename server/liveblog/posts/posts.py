@@ -322,7 +322,7 @@ class PostsService(ArchiveService):
             # Syndication.
             out_service.send_syndication_post(original, action='deleted')
             # Push notification.
-            _posts = [{'post_id': original.get('_id'), 'blog_id': blog_id}]
+            _posts = [{'post_id': original.get('_id'), 'blog': blog_id}]
             push_notification('posts', deleted=True, posts=_posts)
 
             stats = get_blog_stats(blog_id)

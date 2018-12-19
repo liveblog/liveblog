@@ -162,7 +162,7 @@ export default function lbPostsList(postsService, notify, $q, $timeout, session,
                     // only update if posts belong to same blog
                     const posts = eventParams.posts || [];
 
-                    if (posts && posts.length > 0 && posts.find((x) => x.blog_id === $scope.lbPostsBlogId)) {
+                    if (posts && posts.length > 0 && posts.find((x) => x.blog === $scope.lbPostsBlogId)) {
                         self.isLoading = true;
                         self.pagesManager.retrieveUpdate(true).then(() => {
                             // Regenerate the embed otherwise the image doesn't appear
