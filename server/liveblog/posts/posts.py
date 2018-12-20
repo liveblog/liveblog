@@ -221,7 +221,7 @@ class PostsService(ArchiveService):
             blog_id = doc.get('blog')
             post = {}
             post['id'] = doc.get('_id')
-            post['blog_id'] = blog_id
+            post['blog'] = blog_id
 
             # Check if post has syndication_in entry.
             post['syndication_in'] = doc.get('syndication_in')
