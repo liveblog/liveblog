@@ -70,7 +70,7 @@ export default function unreadPostsService($rootScope) {
         }
 
         if (eventParams.post_status === 'submitted') {
-            let onlyCurrentBlogPosts = eventParams.posts.filter(x => x.blog_id === blog._id); // eslint-disable-line
+            let onlyCurrentBlogPosts = eventParams.posts.filter(x => x.blog === blog._id); // eslint-disable-line
             contributions = contributions.concat(onlyCurrentBlogPosts);
         }
 
