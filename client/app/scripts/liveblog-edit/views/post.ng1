@@ -13,7 +13,6 @@
         'flag-red': post.edit_flag && post.edit_flag.users.length > 1,
         }">
         <div class="flag-editors" ng-if="post.edit_flag">
-            <figure class="icon-stop"><img /></figure>
             <div ng-switch on="post.edit_flag.users.length">
                 <span ng-switch-when="1" ng-switch-when-separator="|">
                     <strong>{{userify(post.edit_flag.users[0])}}</strong> {{userify(post.edit_flag.users[0]) === "You" ? "are" : "is"}} currently working on this post.
