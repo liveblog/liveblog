@@ -118,7 +118,16 @@ const app = angular.module('liveblog.edit', [
             setTimeout(() => {
                 if (editorOptions.isEditorClean()) {
                     editorOptions.disableSubmit(true);
-                    editorOptions.cleanUpFlag();
+
+                    // NOTE: this below was meant to remove the flag indicator from the
+                    // post in timeline. We don't need to remove the flag as the post is still
+                    // being edited. Clicking `delete` button doesn't mean deleting the post bu
+                    // the block in the editor.
+
+                    // const editor = SirTrevor.getInstance(0);
+                    // if (editor && editor.blocks.length === 0) {
+                    //     editorOptions.cleanUpFlag();
+                    // }
                 }
             }, 500);
         };
@@ -134,8 +143,8 @@ const app = angular.module('liveblog.edit', [
         SirTrevorOptions.$extend({
             onEditorRender: function() {
                 const self = this;
-                // when a new block is added, remove empty blocks
 
+                // when a new block is added, remove empty blocks
                 function removeEmptyBlockExceptTheBlock(newBlock) {
                     _.each(self.blocks, (block) => {
                         if (block !== newBlock && block.isEmpty()) {
