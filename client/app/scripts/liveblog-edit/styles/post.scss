@@ -206,6 +206,14 @@
     }
 
     &.flag-yellow {
+        border-left: 2px solid #f8a501 !important;
+
+        .flag-editors {
+            color: #ef7d4f;
+        }
+    }
+
+    &.flag-yellow.flag-gray__me {
         border-left: 2px solid #D4D4D4 !important;
 
         .flag-editors {
@@ -214,7 +222,7 @@
     }
 
     &.flag-red {
-        border-left: 5px solid #ea5000 !important;
+        border-left: 2px solid #ea5000 !important;
 
         .flag-editors {
             color: #f0845a;

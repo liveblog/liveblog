@@ -80,9 +80,10 @@ export default function lbPost(notify, gettext, asset, postsService, modal,
                     }
                 },
                 userify: function(user) {
-                    if (user._id === $rootScope.currentUser._id) {
+                    if (!user) return;
+
+                    if (user._id === $rootScope.currentUser._id)
                         return 'You';
-                    }
 
                     return user.display_name;
                 },

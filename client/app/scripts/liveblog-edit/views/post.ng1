@@ -9,6 +9,7 @@
         'unread': functionize(postsListCtrl.isUnreadPost)(post),
         'pinned': post.sticky == true && !post.lb_highlight,
         'lb_highlight': post.lb_highlight == true,
+        'flag-gray__me': userify(post.edit_flag.users[0]) === 'You' && post.edit_flag.users.length === 1,
         'flag-yellow': post.edit_flag && post.edit_flag.users.length === 1,
         'flag-red': post.edit_flag && post.edit_flag.users.length > 1,
         }">
