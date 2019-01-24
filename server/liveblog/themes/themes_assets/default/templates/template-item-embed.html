@@ -19,7 +19,7 @@
         <p>{{ ref.item.meta.title }}</p>
     </blockquote>
 {% elif ref.item.meta.provider_name|lower == 'instagram' and ref.item.meta.original_url %}
-    <blockquote class="embedly-card" data-card-controls="0">
+    <blockquote class="instagram-media" data-instgrm-version="12" data-instgrm-captioned>
         <h4><a href="{{ ref.item.meta.original_url }}">{{ ref.item.meta.credit }}</a></h4>
         <p>{{ ref.item.meta.title }}</p>
     </blockquote>
