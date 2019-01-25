@@ -277,3 +277,14 @@ def publish_bloglist_embed_on_s3():
 
         publish_bloglist_assets('scripts')
         publish_bloglist_assets('styles')
+
+
+@celery.task
+def post_auto_output_creation(output_data):
+    """
+    Dummy task to trigger the automatic creation of
+    output channel. The reason of this task is to avoid race
+    condition between the blog creation and output creation
+    """
+
+    get_resource_service('outputs').post(output_data)
