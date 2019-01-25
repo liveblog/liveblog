@@ -185,7 +185,7 @@ function BlogSettingsController(
             vm.output = output;
             const outputTheme = _.find(vm.availableThemes, (theme) => theme.name === vm.output.theme);
 
-            if (outputTheme.styles && outputTheme.settings.removeStylesESI) {
+            if (outputTheme.styles && outputTheme.settings && outputTheme.settings.removeStylesESI) {
                 vm.output.styleUrl = outputTheme.public_url + outputTheme.styles[outputTheme.styles.length - 1];
             }
         },
@@ -460,7 +460,7 @@ var liveblog={load:function(e,t){
     var a=document,l=a.createElement("script"),
         o=a.getElementsByTagName("script")[0];
     return l.type="text/javascript",l.onload=t,l.async=!0,l.src=e,o.parentNode.insertBefore(l,o),l}};
-liveblog.load("${parentIframe}parent-iframe.js?"+parseInt(new Date().getTime()/900000,10),function(){"function"==typeof 
+liveblog.load("${parentIframe}parent-iframe.js?"+parseInt(new Date().getTime()/900000,10),function(){"function"==typeof
 liveblog.loadCallback&&liveblog.loadCallback()});</script>`;
 
         vm.embeds = {

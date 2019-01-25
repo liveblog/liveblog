@@ -29,7 +29,8 @@ from liveblog.common import get_user, update_dates_for
 from settings import SUBSCRIPTION_LEVEL, SUBSCRIPTION_MAX_ACTIVE_BLOGS
 
 from .schema import blogs_schema
-from .tasks import delete_blog_embeds_on_s3, publish_blog_embed_on_s3, publish_blog_embeds_on_s3
+from .tasks import delete_blog_embeds_on_s3, publish_blog_embed_on_s3, \
+    publish_blog_embeds_on_s3, post_auto_output_creation
 
 logger = logging.getLogger('superdesk')
 
@@ -264,7 +265,8 @@ class BlogService(BaseService):
                 'blog': ObjectId(str(blog['_id'])),
                 'theme': blog_theme.get('outputChannelTheme', 'amp')
             }]
-            get_resource_service('outputs').post(output_data)
+
+            post_auto_output_creation.apply_async(args=[output_data], countdown=3)
 
 
 class UserBlogsResource(Resource):
