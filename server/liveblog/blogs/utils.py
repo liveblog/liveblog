@@ -13,7 +13,7 @@ logger = logging.getLogger('superdesk')
 
 
 def is_s3_storage_enabled():
-    return type(app.media).__name__ is 'AmazonMediaStorage'
+    return type(app.media).__name__ == 'AmazonMediaStorage'
 
 
 def check_media_storage():
