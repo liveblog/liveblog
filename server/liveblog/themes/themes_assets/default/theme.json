@@ -1,7 +1,7 @@
 {
     "label": "Liveblog 3 Default SEO Theme",
     "name": "default",
-    "version": "3.3.96",
+    "version": "3.5.0",
     "asyncTheme": true,
     "seoTheme": true,
     "author": "Sourcefabric <contact@sourcefabric.org>",
@@ -9,7 +9,8 @@
         "Paul Solbach <psolbach@dpa-newslab.com>",
         "Massimo Scamarcia <massimo.scamarcia@sourcefabric.org>",
         "Löic Nogues <loic.nogues@sourcefabric.org>",
-        "Aleksandar Backo Jelicic <aleksandar.jelicic@sourcefabric.org>"
+        "Aleksandar Backo Jelicic <aleksandar.jelicic@sourcefabric.org>",
+        "Helmy Giacoman <helmy.giacoman@sourcefabric.org>"
     ],
     "repository": {
         "type" : "git",
@@ -17,9 +18,9 @@
     },
     "license": "AGPL-3.0",
     "devStyles": ["dist/default-2afdbfcb68.css"],
-    "devScripts": ["dist/default-981f8194e8.js"],
+    "devScripts": ["dist/default-a779536bbb.js"],
     "styles": ["dist/default-2afdbfcb68.css"],
-    "scripts": ["dist/default-981f8194e8.js"],
+    "scripts": ["dist/default-a779536bbb.js"],
     "options": [
         {
             "name": "language",

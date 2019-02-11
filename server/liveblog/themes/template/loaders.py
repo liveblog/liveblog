@@ -39,29 +39,41 @@ class CompiledThemeTemplateLoader(ChoiceLoader):
         """
 
         self.loaders = []
-
-        theme_name = theme['name']
         themes = get_resource_service('themes')
-        parent_theme = theme.get('extends')
 
-        files = theme.get('files', {'templates': {}})
-        if files.get('templates'):
-            self.addDictonary(theme)
+        def recursive_add(theme):
+            theme_name = theme['name']
+            parent_name = theme.get('extends')
+            parent = None
 
-            if parent_theme:
-                parent = themes.find_one(req=None, name=parent_theme)
-                self.addDictonary(parent)
-        else:
-            compiled = themes.get_theme_compiled_templates_path(theme_name)
-            self.loaders.append(ModuleLoader(compiled))
-            if parent_theme:
-                parent_compiled = themes.get_theme_compiled_templates_path(parent_theme)
-                self.loaders.append(ModuleLoader(parent_compiled))
+            if parent_name:
+                parent = themes.find_one(req=None, name=parent_name)
 
-        # let's now add the parent theme prefix loader
-        if parent_theme:
-            prefix_loader = self._parent_prefix_loader(parent_theme)
-            self.loaders.append(prefix_loader)
+            files = theme.get('files', {'templates': {}})
+            if files.get('templates'):
+                self.addDictonary(theme)
+
+                if parent:
+                    self.addDictonary(parent)
+            else:
+                compiled = themes.get_theme_compiled_templates_path(theme_name)
+                self.loaders.append(ModuleLoader(compiled))
+
+                if parent_name:
+                    parent_compiled = themes.get_theme_compiled_templates_path(parent_name)
+                    self.loaders.append(ModuleLoader(parent_compiled))
+
+            # let's now add the parent theme prefix loader
+            if parent_name:
+                prefix_loader = self._parent_prefix_loader(parent_name)
+                self.loaders.append(prefix_loader)
+
+            # now check if parent theme extends another and repeat the story :)
+            if parent and parent.get('extends'):
+                ancestor = themes.find_one(req=None, name=parent.get('extends'))
+                recursive_add(ancestor)
+
+        recursive_add(theme)
 
     def _parent_prefix_loader(self, name):
         """
@@ -92,6 +104,6 @@ class CompiledThemeTemplateLoader(ChoiceLoader):
         files = theme.get('files', {'templates': {}})
         if files.get('templates'):
             compiled = {}
-            for file, content in files.get('templates').items():
-                compiled[mongodecode(file)] = content
+            for tfile, content in files.get('templates').items():
+                compiled[mongodecode(tfile)] = content
             self.loaders.append(DictLoader(compiled))

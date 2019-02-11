@@ -13,7 +13,7 @@ logger = logging.getLogger('superdesk')
 
 
 def is_s3_storage_enabled():
-    return type(app.media).__name__ is 'AmazonMediaStorage'
+    return type(app.media).__name__ == 'AmazonMediaStorage'
 
 
 def check_media_storage():
@@ -94,7 +94,7 @@ def check_limit_and_delete_oldest(blog_id):
 
     UNLIMITED = 0
 
-    blog = get_resource_service('blogs').find_one(req=None, _id=blog_id)
+    blog = get_resource_service('client_blogs').find_one(req=None, _id=blog_id)
     if not blog:
         return
 

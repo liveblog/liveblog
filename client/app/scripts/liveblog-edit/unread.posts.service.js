@@ -12,6 +12,7 @@ import _ from 'lodash';
 unreadPostsService.$inject = ['$rootScope'];
 
 export default function unreadPostsService($rootScope) {
+    let blog;
     let listener;
     let contributions = [];
     let prevContributions = [];
@@ -69,7 +70,8 @@ export default function unreadPostsService($rootScope) {
         }
 
         if (eventParams.post_status === 'submitted') {
-            contributions = contributions.concat(eventParams.posts);
+            let onlyCurrentBlogPosts = eventParams.posts.filter(x => x.blog === blog._id); // eslint-disable-line
+            contributions = contributions.concat(onlyCurrentBlogPosts);
         }
 
         if (eventParams.updated) {
@@ -86,8 +88,9 @@ export default function unreadPostsService($rootScope) {
         isComment: isComment,
         countComments: countComments,
         reset: reset,
-        startListening: function() {
+        startListening: function(currentBlog) {
             if (!listener) {
+                blog = currentBlog;
                 listener = $rootScope.$on('posts', onPostReceive);
             }
         },
@@ -96,6 +99,7 @@ export default function unreadPostsService($rootScope) {
             if (listener) {
                 listener();
                 listener = undefined;
+                blog = undefined;
             }
         },
     };

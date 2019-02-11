@@ -109,15 +109,42 @@ const app = angular.module('liveblog.edit', [
     .config(['SirTrevorOptionsProvider', 'SirTrevorProvider', function(SirTrevorOptions, SirTrevorParam) {
         // here comes all the sir trevor customization (except custom blocks which are in the SirTrevorBlocks module)
         const SirTrevor = SirTrevorParam.$get();
-        // change the remove trash icon by a cross
 
+        var onRemoveBlock = function() {
+            const editorOptions = SirTrevor.Block.prototype.getOptions();
+
+            // I don't like this solution using timeout, but we need to wait just a bit
+            // to check if operations are done (block removing, reset, edit, etc)
+            setTimeout(() => {
+                if (editorOptions.isEditorClean()) {
+                    editorOptions.disableSubmit(true);
+
+                    // NOTE: this below was meant to remove the flag indicator from the
+                    // post in timeline. We don't need to remove the flag as the post is still
+                    // being edited. Clicking `delete` button doesn't mean deleting the post bu
+                    // the block in the editor.
+
+                    // const editor = SirTrevor.getInstance(0);
+                    // if (editor && editor.blocks.length === 0) {
+                    //     editorOptions.cleanUpFlag();
+                    // }
+                }
+            }, 500);
+        };
+
+        // let's make sure to avoid double binding
+        SirTrevor.EventBus.off('block:remove');
+        SirTrevor.EventBus.on('block:remove', onRemoveBlock);
+
+        // change the remove trash icon by a cross
         SirTrevor.BlockDeletion.prototype.attributes['data-icon'] = 'close';
+
         // extends the options given as parameter to the editor contructor
         SirTrevorOptions.$extend({
             onEditorRender: function() {
                 const self = this;
-                // when a new block is added, remove empty blocks
 
+                // when a new block is added, remove empty blocks
                 function removeEmptyBlockExceptTheBlock(newBlock) {
                     _.each(self.blocks, (block) => {
                         if (block !== newBlock && block.isEmpty()) {
@@ -127,17 +154,6 @@ const app = angular.module('liveblog.edit', [
                 }
                 SirTrevor.EventBus.on('block:create:existing', removeEmptyBlockExceptTheBlock);
                 SirTrevor.EventBus.on('block:create:new', removeEmptyBlockExceptTheBlock);
-
-                var onRemoveBlock = function() {
-                    const editorOptions = self.options;
-
-                    if (editorOptions.isEditorClean()) {
-                        editorOptions.disableSubmit(true);
-                    }
-                };
-
-                onRemoveBlock = onRemoveBlock.bind(self);
-                SirTrevor.EventBus.on('block:remove', onRemoveBlock);
             },
             blockTypes: ['Text', 'Image', 'Embed', 'Quote', 'Comment'],
             // render a default block when the editor is loaded

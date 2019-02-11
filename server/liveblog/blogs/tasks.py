@@ -235,9 +235,8 @@ def publish_bloglist_embed_on_s3():
         logger.warning('Blog list embed publishing is disabled.')
         return
 
-    if type(app.media).__name__ is not 'AmazonMediaStorage':
-        pass
-    else:
+    # TODO: check how it should be if there is no AWS S3
+    if type(app.media).__name__ == 'AmazonMediaStorage':
         assets = copy.deepcopy(BLOGLIST_ASSETS)
 
         # Publish version file to get the asset_root.

@@ -10,3 +10,5 @@ Thumbs.db
 index.html
 liveblog-default-theme.zip
 py-test/env
+package-lock.json
+yarn.lock

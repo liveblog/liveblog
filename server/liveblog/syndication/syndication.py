@@ -98,9 +98,9 @@ class SyndicationOutService(BaseService):
         else:
             return bool(out_syndication.count())
 
-    def _is_post_for_syndication(self, post):
-        # Prevent "loops" by sending only posts without syndication_in set.
-        if post.get('syndication_in'):
+    def _is_repeat_syndication(self, post):
+        # Prevent "loops" by sending only posts with repeat_syndication to false
+        if post.get('repeat_syndication'):
             logger.debug('Not sending post "{}": syndicated content.'.format(post['_id']))
             return False
 
@@ -113,7 +113,7 @@ class SyndicationOutService(BaseService):
         return True
 
     def send_syndication_post(self, post, action='created'):
-        if self._is_post_for_syndication(post):
+        if self._is_repeat_syndication(post):
             blog_id = ObjectId(post['blog'])
             out_syndication = self.get_blog_syndication(blog_id)
             for out in out_syndication:
@@ -283,17 +283,25 @@ def syndication_webhook():
         return api_response({}, 200)
     elif request.method in ('POST', 'PUT'):
         new_post = create_syndicated_blog_post(producer_post, items, in_syndication)
+
+        def _notify(**kwargs):
+            dicc = {"posts": [new_post]}
+            dicc.update(kwargs)
+            push_notification('posts', **dicc)
+
         if request.method == 'POST':
             # Create post
             if post:
                 # Post may have been previously deleted
                 if post.get('deleted'):
                     posts_service.update(post_id, new_post, post)
+                    _notify(updated=True)
                     return api_response({'post_id': post_id}, 200)
                 else:
                     return api_error('Post already exist', 409)
 
             new_post_id = posts_service.post([new_post])[0]
+            _notify(created=True)
             return api_response({'post_id': str(new_post_id)}, 201)
         else:
             # Update post
@@ -301,6 +309,7 @@ def syndication_webhook():
                 return api_error('Post does not exist', 404)
 
             posts_service.patch(post_id, new_post)
+            _notify(updated=True)
             return api_response({'post_id': post_id}, 200)
     else:
         # Delete post
