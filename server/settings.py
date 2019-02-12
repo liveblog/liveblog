@@ -16,7 +16,20 @@ import arrow
 from superdesk.default_settings import CORE_APPS as core_apps
 from celery.schedules import crontab
 
-CORE_APPS = [app for app in core_apps if app != 'apps.auth.db']
+# these apps below are not used in Liveblog and because of that
+# they produce some errors given their missing configurations
+EXCLUDED_APPS = [
+    'apps.archived',
+    'apps.auth.db',  # this is replace with local one in liveblog
+    'content_api.publish',
+    'content_api.items',
+    'content_api.tokens',
+    'content_api.items_versions',
+    'content_api.api_audit',
+    'content_api.search'
+]
+
+CORE_APPS = [app for app in core_apps if app not in EXCLUDED_APPS]
 CORE_APPS.append('liveblog.auth')
 
 
